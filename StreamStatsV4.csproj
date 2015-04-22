@@ -1,0 +1,209 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <ProjectGuid>{1C191781-759F-4FF2-8B35-6A1B93320985}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <OutputPath>bin</OutputPath>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <TypeScriptToolsVersion>1.4</TypeScriptToolsVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="src\appConfig.js" />
+    <Content Include="src\Content\bootstrap-theme.css" />
+    <Content Include="src\Content\bootstrap-theme.min.css" />
+    <Content Include="src\Content\bootstrap.css" />
+    <Content Include="src\Content\bootstrap.min.css" />
+    <Content Include="src\Content\datepicker3.css" />
+    <Content Include="src\Content\L.Control.Locate.min.css" />
+    <Content Include="src\Content\L.Control.ZoomMin.css" />
+    <Content Include="src\Content\leaflet-sidebar.css" />
+    <Content Include="src\Content\leaflet.draw.css" />
+    <Content Include="src\Content\leaflet.groupedlayercontrol.css" />
+    <Content Include="src\Content\leaflet.iconlabel.css" />
+    <Content Include="src\Content\leaflet.rrose.css" />
+    <Content Include="src\Content\MarkerCluster.css" />
+    <Content Include="src\Content\select.css" />
+    <Content Include="src\Content\select.min.css" />
+    <Content Include="src\Content\toaster.css" />
+    <Content Include="src\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="src\index.html" />
+    <Content Include="src\Scripts\angular-leaflet-directive\directives\bounds.js" />
+    <Content Include="src\Scripts\angular-leaflet-directive\directives\center.js" />
+    <Content Include="src\Scripts\angular-leaflet-directive\directives\controls.js" />
+    <Content Include="src\Scripts\angular-leaflet-directive\directives\decorations.js" />
+    <Content Include="src\Scripts\angular-leaflet-directive\directives\eventBroadcast.js" />
+    <Content Include="src\Scripts\angular-leaflet-directive\directives\geojson.js" />
+    <Content Include="src\Scripts\angular-leaflet-directive\directives\layercontrol.js" />
+    <Content Include="src\Scripts\angular-leaflet-directive\directives\layers.js" />
+    <Content Include="src\Scripts\angular-leaflet-directive\directives\leaflet.js" />
+    <Content Include="src\Scripts\angular-leaflet-directive\directives\legend.js" />
+    <Content Include="src\Scripts\angular-leaflet-directive\directives\markers.js" />
+    <Content Include="src\Scripts\angular-leaflet-directive\directives\maxbounds.js" />
+    <Content Include="src\Scripts\angular-leaflet-directive\directives\paths.js" />
+    <Content Include="src\Scripts\angular-leaflet-directive\directives\tiles.js" />
+    <Content Include="src\Scripts\angular-leaflet-directive\directives\watchOptions.js" />
+    <Content Include="src\Scripts\angular-leaflet-directive\services\events\leafletEventsHelpers.js" />
+    <Content Include="src\Scripts\angular-leaflet-directive\services\events\leafletLabelEvents.js" />
+    <Content Include="src\Scripts\angular-leaflet-directive\services\events\leafletMapEvents.js" />
+    <Content Include="src\Scripts\angular-leaflet-directive\services\events\leafletMarkerEvents.js" />
+    <Content Include="src\Scripts\angular-leaflet-directive\services\events\leafletPathEvents.js" />
+    <Content Include="src\Scripts\angular-leaflet-directive\services\leafletBoundsHelpers.js" />
+    <Content Include="src\Scripts\angular-leaflet-directive\services\leafletControlHelpers.js" />
+    <Content Include="src\Scripts\angular-leaflet-directive\services\leafletData.js" />
+    <Content Include="src\Scripts\angular-leaflet-directive\services\leafletDirectiveControlsHelpers.js" />
+    <Content Include="src\Scripts\angular-leaflet-directive\services\leafletEvents.js" />
+    <Content Include="src\Scripts\angular-leaflet-directive\services\leafletGeoJsonHelpers.js" />
+    <Content Include="src\Scripts\angular-leaflet-directive\services\leafletHelpers.js" />
+    <Content Include="src\Scripts\angular-leaflet-directive\services\leafletIterators.js" />
+    <Content Include="src\Scripts\angular-leaflet-directive\services\leafletLayerHelpers.js" />
+    <Content Include="src\Scripts\angular-leaflet-directive\services\leafletLegendHelpers.js" />
+    <Content Include="src\Scripts\angular-leaflet-directive\services\leafletMapDefaults.js" />
+    <Content Include="src\Scripts\angular-leaflet-directive\services\leafletMarkersHelpers.js" />
+    <Content Include="src\Scripts\angular-leaflet-directive\services\leafletPathsHelpers.js" />
+    <Content Include="src\Scripts\angular-leaflet-directive\services\leafletWatchHelpers.js" />
+    <Content Include="src\Scripts\angular-mocks.js" />
+    <Content Include="src\Scripts\angular-ui-router.js" />
+    <Content Include="src\Scripts\angular-ui-router.min.js" />
+    <Content Include="src\Scripts\angular-ui\ui-bootstrap-tpls.js" />
+    <Content Include="src\Scripts\angular-ui\ui-bootstrap-tpls.min.js" />
+    <Content Include="src\Scripts\angular-ui\ui-bootstrap.js" />
+    <Content Include="src\Scripts\angular-ui\ui-bootstrap.min.js" />
+    <Content Include="src\Scripts\angular.js" />
+    <Content Include="src\Scripts\angular.min.js" />
+    <Content Include="src\Scripts\bootstrap-datepicker.js" />
+    <Content Include="src\Scripts\bootstrap.js" />
+    <Content Include="src\Scripts\bootstrap.min.js" />
+    <Content Include="src\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="src\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="src\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="src\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="src\Content\bootstrap-theme.css.map" />
+    <Content Include="src\Content\bootstrap.css.map" />
+    <Content Include="src\Scripts\esri-leaflet.js.map" />
+    <Content Include="src\Content\main.css" />
+    <None Include="src\Scripts\jquery-1.9.1.intellisense.js" />
+    <Content Include="src\Scripts\esri-leaflet.js" />
+    <Content Include="src\Scripts\jquery-1.9.1.js" />
+    <Content Include="src\Scripts\jquery-1.9.1.min.js" />
+    <Content Include="src\Scripts\L.Control.InfoBox.js" />
+    <Content Include="src\Scripts\L.Control.Locate.js" />
+    <Content Include="src\Scripts\leaflet-sidebar.js" />
+    <Content Include="src\Scripts\leaflet.draw.js" />
+    <Content Include="src\Scripts\leaflet.groupedlayercontrol.js" />
+    <Content Include="src\Scripts\leaflet.iconlabel.js" />
+    <Content Include="src\Scripts\leaflet.markercluster.js" />
+    <Content Include="src\Scripts\lodash.js" />
+    <Content Include="src\Scripts\lodash.min.js" />
+    <Content Include="src\Scripts\npm.js" />
+    <Content Include="src\Scripts\rrose-src.js" />
+    <Content Include="src\Scripts\select.js" />
+    <Content Include="src\Scripts\select.min.js" />
+    <Content Include="src\Scripts\toaster.js" />
+    <Content Include="src\Views\mapview.html" />
+    <Content Include="src\Views\navigationview.html" />
+    <Content Include="src\Views\SidebarComponents\locationTemplate.html" />
+    <Content Include="src\Views\SidebarComponents\studyareaview.html" />
+    <Content Include="src\Views\sidebarview.html" />
+    <Content Include="web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="src\Scripts\jquery-1.9.1.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="src\config.ts" />
+    <TypeScriptCompile Include="src\Controllers\controller.module.ts" />
+    <TypeScriptCompile Include="src\Controllers\SidebarController.ts" />
+    <TypeScriptCompile Include="src\Controllers\MapController.ts" />
+    <TypeScriptCompile Include="src\Models\Region.ts" />
+    <TypeScriptCompile Include="src\Models\StudyArea.ts" />
+    <TypeScriptCompile Include="src\Scripts\WiM\Extensions\String.ts" />
+    <TypeScriptCompile Include="src\Scripts\typings\angular-ui\angular-ui-router.d.ts" />
+    <TypeScriptCompile Include="src\Scripts\typings\angular-ui\angular-ui-sortable.d.ts" />
+    <TypeScriptCompile Include="src\Scripts\typings\angularjs\angular-animate.d.ts" />
+    <TypeScriptCompile Include="src\Scripts\typings\angularjs\angular-cookies.d.ts" />
+    <TypeScriptCompile Include="src\Scripts\typings\angularjs\angular-mocks.d.ts" />
+    <TypeScriptCompile Include="src\Scripts\typings\angularjs\angular-resource.d.ts" />
+    <TypeScriptCompile Include="src\Scripts\typings\angularjs\angular-route.d.ts" />
+    <TypeScriptCompile Include="src\Scripts\typings\angularjs\angular-sanitize.d.ts" />
+    <TypeScriptCompile Include="src\Scripts\typings\angularjs\angular.d.ts" />
+    <TypeScriptCompile Include="src\Scripts\typings\jquery\jquery.d.ts" />
+    <TypeScriptCompile Include="src\Scripts\typings\leaflet\leaflet.d.ts" />
+    <TypeScriptCompile Include="src\Scripts\WiM\Models\Citation.ts" />
+    <TypeScriptCompile Include="src\Scripts\WiM\Models\KeyValue.ts" />
+    <TypeScriptCompile Include="src\Scripts\WiM\Models\Parameter.ts" />
+    <TypeScriptCompile Include="src\Scripts\WiM\Models\Point.ts" />
+    <TypeScriptCompile Include="src\Scripts\WiM\Models\TimeSeries\TimeSeries.ts" />
+    <TypeScriptCompile Include="src\Scripts\WiM\Services\AuthenticationServiceBase.ts" />
+    <TypeScriptCompile Include="src\Scripts\WiM\Services\SearchAPIService.ts" />
+    <TypeScriptCompile Include="src\Services\RegionService.ts" />
+    <TypeScriptCompile Include="src\Services\StreamStatsService.ts" />
+    <TypeScriptCompile Include="src\Scripts\WiM\Services\service.module.ts" />
+    <TypeScriptCompile Include="src\Services\service.module.ts" />
+    <TypeScriptCompile Include="src\Scripts\WiM\Services\HTTPServiceBase.ts" />
+    <TypeScriptCompile Include="src\Scripts\WiM\Services\Helpers\RequestInfo.ts" />
+    <TypeScriptCompile Include="src\Scripts\WiM\Services\StateWatcherService.ts" />
+    <TypeScriptCompile Include="src\Services\StudyAreaService.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="src\Scripts\angular.min.js.map" />
+    <Content Include="packages.config" />
+    <None Include="web.Debug.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+    <None Include="web.Release.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="dist\" />
+    <Folder Include="src\Assets\images\" />
+    <Folder Include="src\ViewModels\" />
+    <Folder Include="src\Views\Reports\" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>StreamStatsV4</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\WebApplications\Microsoft.WebApplication.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\WebApplications\Microsoft.WebApplication.targets')" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>55481</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:55481/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <TypeScriptRemoveComments>false</TypeScriptRemoveComments>
+    <TypeScriptSourceMap>true</TypeScriptSourceMap>
+    <TypeScriptTarget>ES5</TypeScriptTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <TypeScriptRemoveComments>true</TypeScriptRemoveComments>
+    <TypeScriptSourceMap>false</TypeScriptSourceMap>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
+</Project>
