@@ -23,7 +23,7 @@
 //04.15.2015 jkn - Created
 
 //Imports"
-///<reference path="../Scripts/typings/leaflet/leaflet.d.ts" />
+///<reference path="../../typings/leaflet/leaflet.d.ts" />
 
 declare var configuration: any;
 
@@ -138,7 +138,8 @@ module StreamStats.Controllers {
                 scale: true,
                 zoomControl:false,
                 custom: new Array(
-                    new (<any>L.Control).ZoomMin(),
+                    //zoom home button control
+                    (<any>L.Control).zoomHome({ homeCoordinates: [39, -100], homeZoom: 4 }),
                     //location control
                     (<any>L.control).locate({ follow: true })       
                     )

@@ -5,36 +5,40 @@
     <meta charset="utf-8" />
     <title>StreamStats 4.0</title>
 
-    <!--css ref-->
-    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css">
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet"> 
-    <link rel="stylesheet" href="Content/bootstrap.css">
-    <link rel="stylesheet" href="Content/datepicker3.css" />
-    <link rel="stylesheet" href="Content/L.Control.Locate.min.css" />
-    <link rel="stylesheet" href="Content/L.Control.ZoomMin.css" />
-    <link rel="stylesheet" href="Content/leaflet.groupedlayercontrol.css" />
-    <link rel="stylesheet" href="Content/MarkerCluster.css" />
-    <link rel="stylesheet" href="Content/leaflet.rrose.css" />
-    <link rel="stylesheet" href="Content/leaflet.iconlabel.css" />
-    <link rel="stylesheet" href="Content/leaflet-sidebar.css" />
-    <link rel="stylesheet" href="Content/leaflet.draw.css" />
-    <link rel="stylesheet" href="Content/main.css" />
-    <link rel="stylesheet" href="Content/toaster.css" />
-  
+    <!--vendor css-->
+    <link rel="stylesheet" href="../bower_components/leaflet/dist/leaflet.css">
+    <link rel="stylesheet" href="../bower_components/font-awesome/css/font-awesome.css"> 
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="../bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css" />
+    <link rel="stylesheet" href="../bower_components/leaflet.locatecontrol/dist/L.Control.Locate.css" />
+    <link rel="stylesheet" href="../bower_components/leaflet.zoomhome/dist/leaflet.zoomhome.css" />
+    <link rel="stylesheet" href="../bower_components/leaflet-groupedlayercontrol/dist/leaflet.groupedlayercontrol.min.css" />
+    <link rel="stylesheet" href="../bower_components/sidebar-v2/css/leaflet-sidebar.css" />
+    <link rel="stylesheet" href="../bower_components/leaflet-draw/dist/leaflet.draw.css" />
+    <link rel="stylesheet" href="../bower_components/angularjs-toaster/toaster.css" />
 
-     <!-- Angularjs ref-->
-    <script src="Scripts/angular.js"></script>
-    <script src="Scripts/angular-ui-router.js"></script>
-    <script src="Scripts/angular-ui/ui-bootstrap.js"></script>
-    <script src="Scripts/angular-ui/ui-bootstrap-tpls.js"></script>
+    <!-- main css-->
+    <link rel="stylesheet" href="css/main.css" />
+ 
+     <!-- vendor js-->
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="../bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+    <script src="../bower_components/angular-bootstrap/ui-bootstrap.js"></script>
+    <script src="../bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="../bower_components/angular-leaflet-directive/dist/angular-leaflet-directive.js"></script>
+    <script src="../bower_components/angularjs-toaster/toaster.js"></script>
+    <script src="../bower_components/leaflet/dist/leaflet.js"></script>
+    <script src="../bower_components/esri-leaflet/dist/esri-leaflet.js"></script>
+    <script src="../bower_components/leaflet.locatecontrol/dist/L.Control.Locate.min.js"></script>
+    <script src="../bower_components/leaflet-draw/dist/leaflet.draw.js"></script>
+    <script src="../bower_components/leaflet.zoomhome/dist/leaflet.zoomhome.min.js"></script>
+    <script src="../bower_components/leaflet-groupedlayercontrol/dist/leaflet.groupedlayercontrol.min.js"></script>
+    <script src="../bower_components/sidebar-v2/js/leaflet-sidebar.js"></script>
 
-    <!--lib ref-->
+    <!-- custom js-->
+    <script src="Scripts/WiM/Extensions/String.js"></script>
     <script src="Config.js"></script>
     <script src="appConfig.js"></script>
-    <script src="Scripts/WiM/Extensions/String.js"></script>
-    <script src="Scripts/toaster.js"></script>
-    <script src="Scripts/lodash.js"></script>
-    <!--<script src="ServiceAgent/ServiceHelpers/StateWatcherService.js"></script>-->
     
     <!-- Models ref-->
     <script src="Models/Region.js"></script>
@@ -47,62 +51,10 @@
     <!-- Services ref-->
     <script src="Services/service.module.js"></script>
     <script src="Scripts/WiM/Services/service.module.js"></script>
-
     <script src="Scripts/WiM/Services/Helpers/RequestInfo.js"></script>
     <script src="Scripts/WiM/Services/HTTPServiceBase.js"></script>
-    <script src="Scripts/WiM/Services/SearchAPIService.js"></script>
+    <script src="Scripts/WiM/Services/SearchAPIService.js"></script> 
 
-    <!--map ref-->
-    <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
-    <script src="Scripts/esri-leaflet.js"></script>
-    <script src="Scripts/L.Control.Locate.js"></script>
-    <script src="Scripts/leaflet.draw.js"></script>
-    <script src="Scripts/L.Control.InfoBox.js"></script>
-    <script src="Scripts/L.Control.ZoomMin.js"></script>
-    <script src="Scripts/leaflet.groupedlayercontrol.js"></script>
-    <script src="Scripts/leaflet.markercluster.js"></script>
-    <script src="Scripts/rrose-src.js"></script>
-    <script src="Scripts/leaflet.iconlabel.js"></script>
-    <script src="Scripts/leaflet-sidebar.js"></script>
-
-    <!-- leaflet-directive ref-->
-    <script src="Scripts/angular-leaflet-directive/directives/leaflet.js"></script>
-    <script src="Scripts/angular-leaflet-directive/directives/bounds.js"></script>
-    <script src="Scripts/angular-leaflet-directive/directives/center.js"></script>
-    <script src="Scripts/angular-leaflet-directive/directives/controls.js"></script>
-    <script src="Scripts/angular-leaflet-directive/directives/decorations.js"></script>
-    <script src="Scripts/angular-leaflet-directive/directives/eventBroadcast.js"></script>
-    <script src="Scripts/angular-leaflet-directive/directives/geojson.js"></script>
-    <script src="Scripts/angular-leaflet-directive/directives/layercontrol.js"></script>
-    <script src="Scripts/angular-leaflet-directive/directives/layers.js"></script>
-    <script src="Scripts/angular-leaflet-directive/directives/legend.js"></script>
-    <script src="Scripts/angular-leaflet-directive/directives/markers.js"></script>
-    <script src="Scripts/angular-leaflet-directive/directives/maxbounds.js"></script>
-    <script src="Scripts/angular-leaflet-directive/directives/paths.js"></script>
-    <script src="Scripts/angular-leaflet-directive/directives/tiles.js"></script>
-    <script src="Scripts/angular-leaflet-directive/directives/tiles.js"></script>
-    <script src="Scripts/angular-leaflet-directive/directives/watchOptions.js"></script>
-
-    <script src="Scripts/angular-leaflet-directive/services/leafletBoundsHelpers.js"></script>
-    <script src="Scripts/angular-leaflet-directive/services/leafletControlHelpers.js"></script>
-    <script src="Scripts/angular-leaflet-directive/services/leafletData.js"></script>
-    <script src="Scripts/angular-leaflet-directive/services/leafletDirectiveControlsHelpers.js"></script>
-    <script src="Scripts/angular-leaflet-directive/services/leafletEvents.js"></script>
-    <script src="Scripts/angular-leaflet-directive/services/leafletGeoJsonHelpers.js"></script>
-    <script src="Scripts/angular-leaflet-directive/services/leafletHelpers.js"></script>
-    <script src="Scripts/angular-leaflet-directive/services/leafletIterators.js"></script>
-    <script src="Scripts/angular-leaflet-directive/services/leafletLayerHelpers.js"></script>
-    <script src="Scripts/angular-leaflet-directive/services/leafletLegendHelpers.js"></script>
-    <script src="Scripts/angular-leaflet-directive/services/leafletMapDefaults.js"></script>
-    <script src="Scripts/angular-leaflet-directive/services/leafletMarkersHelpers.js"></script>
-    <script src="Scripts/angular-leaflet-directive/services/leafletPathsHelpers.js"></script>
-    <script src="Scripts/angular-leaflet-directive/services/leafletWatchHelpers.js"></script>
-
-    <script src="Scripts/angular-leaflet-directive/services/events/leafletEventsHelpers.js"></script>
-    <script src="Scripts/angular-leaflet-directive/services/events/leafletLabelEvents.js"></script>
-    <script src="Scripts/angular-leaflet-directive/services/events/leafletMapEvents.js"></script>
-    <script src="Scripts/angular-leaflet-directive/services/events/leafletMarkerEvents.js"></script>
-    <script src="Scripts/angular-leaflet-directive/services/events/leafletPathEvents.js"></script>
 </head>
 
 <body>
