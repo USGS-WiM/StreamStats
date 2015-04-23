@@ -23,7 +23,7 @@
 //03.26.2015 jkn - Created
 
 //Import
-///<reference path="../../typings/angularjs/angular.d.ts" />
+///<reference path="../../../../typings/angularjs/angular.d.ts" />
 ///<reference path="./Helpers/RequestInfo.ts" />
 
 module WiM.Services{

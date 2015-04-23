@@ -1,4 +1,4 @@
-﻿///<reference path="./Scripts/typings/angular-ui/angular-ui-router.d.ts" />
+﻿///<reference path="../typings/angular-ui-router/angular-ui-router.d.ts" />
 
 //http://lgorithms.blogspot.com/2013/07/angularui-router-as-infrastructure-of.html
 //http://www.funnyant.com/angularjs-ui-router/

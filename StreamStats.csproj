@@ -17,159 +17,6 @@
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
   </PropertyGroup>
-  <ItemGroup>
-    <Content Include="src\appConfig.js" />
-    <Content Include="src\Content\bootstrap-theme.css" />
-    <Content Include="src\Content\bootstrap-theme.min.css" />
-    <Content Include="src\Content\bootstrap.css" />
-    <Content Include="src\Content\bootstrap.min.css" />
-    <Content Include="src\Content\datepicker3.css" />
-    <Content Include="src\Content\L.Control.Locate.min.css" />
-    <Content Include="src\Content\L.Control.ZoomMin.css" />
-    <Content Include="src\Content\leaflet-sidebar.css" />
-    <Content Include="src\Content\leaflet.draw.css" />
-    <Content Include="src\Content\leaflet.groupedlayercontrol.css" />
-    <Content Include="src\Content\leaflet.iconlabel.css" />
-    <Content Include="src\Content\leaflet.rrose.css" />
-    <Content Include="src\Content\MarkerCluster.css" />
-    <Content Include="src\Content\select.css" />
-    <Content Include="src\Content\select.min.css" />
-    <Content Include="src\Content\toaster.css" />
-    <Content Include="src\fonts\glyphicons-halflings-regular.svg" />
-    <Content Include="src\index.html" />
-    <Content Include="src\Scripts\angular-leaflet-directive\directives\bounds.js" />
-    <Content Include="src\Scripts\angular-leaflet-directive\directives\center.js" />
-    <Content Include="src\Scripts\angular-leaflet-directive\directives\controls.js" />
-    <Content Include="src\Scripts\angular-leaflet-directive\directives\decorations.js" />
-    <Content Include="src\Scripts\angular-leaflet-directive\directives\eventBroadcast.js" />
-    <Content Include="src\Scripts\angular-leaflet-directive\directives\geojson.js" />
-    <Content Include="src\Scripts\angular-leaflet-directive\directives\layercontrol.js" />
-    <Content Include="src\Scripts\angular-leaflet-directive\directives\layers.js" />
-    <Content Include="src\Scripts\angular-leaflet-directive\directives\leaflet.js" />
-    <Content Include="src\Scripts\angular-leaflet-directive\directives\legend.js" />
-    <Content Include="src\Scripts\angular-leaflet-directive\directives\markers.js" />
-    <Content Include="src\Scripts\angular-leaflet-directive\directives\maxbounds.js" />
-    <Content Include="src\Scripts\angular-leaflet-directive\directives\paths.js" />
-    <Content Include="src\Scripts\angular-leaflet-directive\directives\tiles.js" />
-    <Content Include="src\Scripts\angular-leaflet-directive\directives\watchOptions.js" />
-    <Content Include="src\Scripts\angular-leaflet-directive\services\events\leafletEventsHelpers.js" />
-    <Content Include="src\Scripts\angular-leaflet-directive\services\events\leafletLabelEvents.js" />
-    <Content Include="src\Scripts\angular-leaflet-directive\services\events\leafletMapEvents.js" />
-    <Content Include="src\Scripts\angular-leaflet-directive\services\events\leafletMarkerEvents.js" />
-    <Content Include="src\Scripts\angular-leaflet-directive\services\events\leafletPathEvents.js" />
-    <Content Include="src\Scripts\angular-leaflet-directive\services\leafletBoundsHelpers.js" />
-    <Content Include="src\Scripts\angular-leaflet-directive\services\leafletControlHelpers.js" />
-    <Content Include="src\Scripts\angular-leaflet-directive\services\leafletData.js" />
-    <Content Include="src\Scripts\angular-leaflet-directive\services\leafletDirectiveControlsHelpers.js" />
-    <Content Include="src\Scripts\angular-leaflet-directive\services\leafletEvents.js" />
-    <Content Include="src\Scripts\angular-leaflet-directive\services\leafletGeoJsonHelpers.js" />
-    <Content Include="src\Scripts\angular-leaflet-directive\services\leafletHelpers.js" />
-    <Content Include="src\Scripts\angular-leaflet-directive\services\leafletIterators.js" />
-    <Content Include="src\Scripts\angular-leaflet-directive\services\leafletLayerHelpers.js" />
-    <Content Include="src\Scripts\angular-leaflet-directive\services\leafletLegendHelpers.js" />
-    <Content Include="src\Scripts\angular-leaflet-directive\services\leafletMapDefaults.js" />
-    <Content Include="src\Scripts\angular-leaflet-directive\services\leafletMarkersHelpers.js" />
-    <Content Include="src\Scripts\angular-leaflet-directive\services\leafletPathsHelpers.js" />
-    <Content Include="src\Scripts\angular-leaflet-directive\services\leafletWatchHelpers.js" />
-    <Content Include="src\Scripts\angular-mocks.js" />
-    <Content Include="src\Scripts\angular-ui-router.js" />
-    <Content Include="src\Scripts\angular-ui-router.min.js" />
-    <Content Include="src\Scripts\angular-ui\ui-bootstrap-tpls.js" />
-    <Content Include="src\Scripts\angular-ui\ui-bootstrap-tpls.min.js" />
-    <Content Include="src\Scripts\angular-ui\ui-bootstrap.js" />
-    <Content Include="src\Scripts\angular-ui\ui-bootstrap.min.js" />
-    <Content Include="src\Scripts\angular.js" />
-    <Content Include="src\Scripts\angular.min.js" />
-    <Content Include="src\Scripts\bootstrap-datepicker.js" />
-    <Content Include="src\Scripts\bootstrap.js" />
-    <Content Include="src\Scripts\bootstrap.min.js" />
-    <Content Include="src\fonts\glyphicons-halflings-regular.woff2" />
-    <Content Include="src\fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="src\fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="src\fonts\glyphicons-halflings-regular.eot" />
-    <Content Include="src\Content\bootstrap-theme.css.map" />
-    <Content Include="src\Content\bootstrap.css.map" />
-    <Content Include="src\Scripts\esri-leaflet.js.map" />
-    <Content Include="src\Content\main.css" />
-    <None Include="src\Scripts\jquery-1.9.1.intellisense.js" />
-    <Content Include="src\Scripts\esri-leaflet.js" />
-    <Content Include="src\Scripts\jquery-1.9.1.js" />
-    <Content Include="src\Scripts\jquery-1.9.1.min.js" />
-    <Content Include="src\Scripts\L.Control.InfoBox.js" />
-    <Content Include="src\Scripts\L.Control.Locate.js" />
-    <Content Include="src\Scripts\leaflet-sidebar.js" />
-    <Content Include="src\Scripts\leaflet.draw.js" />
-    <Content Include="src\Scripts\leaflet.groupedlayercontrol.js" />
-    <Content Include="src\Scripts\leaflet.iconlabel.js" />
-    <Content Include="src\Scripts\leaflet.markercluster.js" />
-    <Content Include="src\Scripts\lodash.js" />
-    <Content Include="src\Scripts\lodash.min.js" />
-    <Content Include="src\Scripts\npm.js" />
-    <Content Include="src\Scripts\rrose-src.js" />
-    <Content Include="src\Scripts\select.js" />
-    <Content Include="src\Scripts\select.min.js" />
-    <Content Include="src\Scripts\toaster.js" />
-    <Content Include="src\Views\mapview.html" />
-    <Content Include="src\Views\navigationview.html" />
-    <Content Include="src\Views\SidebarComponents\locationTemplate.html" />
-    <Content Include="src\Views\SidebarComponents\studyareaview.html" />
-    <Content Include="src\Views\sidebarview.html" />
-    <Content Include="web.config">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="src\Scripts\jquery-1.9.1.min.map" />
-  </ItemGroup>
-  <ItemGroup>
-    <TypeScriptCompile Include="src\config.ts" />
-    <TypeScriptCompile Include="src\Controllers\controller.module.ts" />
-    <TypeScriptCompile Include="src\Controllers\SidebarController.ts" />
-    <TypeScriptCompile Include="src\Controllers\MapController.ts" />
-    <TypeScriptCompile Include="src\Models\Region.ts" />
-    <TypeScriptCompile Include="src\Models\StudyArea.ts" />
-    <TypeScriptCompile Include="src\Scripts\WiM\Extensions\String.ts" />
-    <TypeScriptCompile Include="src\Scripts\typings\angular-ui\angular-ui-router.d.ts" />
-    <TypeScriptCompile Include="src\Scripts\typings\angular-ui\angular-ui-sortable.d.ts" />
-    <TypeScriptCompile Include="src\Scripts\typings\angularjs\angular-animate.d.ts" />
-    <TypeScriptCompile Include="src\Scripts\typings\angularjs\angular-cookies.d.ts" />
-    <TypeScriptCompile Include="src\Scripts\typings\angularjs\angular-mocks.d.ts" />
-    <TypeScriptCompile Include="src\Scripts\typings\angularjs\angular-resource.d.ts" />
-    <TypeScriptCompile Include="src\Scripts\typings\angularjs\angular-route.d.ts" />
-    <TypeScriptCompile Include="src\Scripts\typings\angularjs\angular-sanitize.d.ts" />
-    <TypeScriptCompile Include="src\Scripts\typings\angularjs\angular.d.ts" />
-    <TypeScriptCompile Include="src\Scripts\typings\jquery\jquery.d.ts" />
-    <TypeScriptCompile Include="src\Scripts\typings\leaflet\leaflet.d.ts" />
-    <TypeScriptCompile Include="src\Scripts\WiM\Models\Citation.ts" />
-    <TypeScriptCompile Include="src\Scripts\WiM\Models\KeyValue.ts" />
-    <TypeScriptCompile Include="src\Scripts\WiM\Models\Parameter.ts" />
-    <TypeScriptCompile Include="src\Scripts\WiM\Models\Point.ts" />
-    <TypeScriptCompile Include="src\Scripts\WiM\Models\TimeSeries\TimeSeries.ts" />
-    <TypeScriptCompile Include="src\Scripts\WiM\Services\AuthenticationServiceBase.ts" />
-    <TypeScriptCompile Include="src\Scripts\WiM\Services\SearchAPIService.ts" />
-    <TypeScriptCompile Include="src\Services\RegionService.ts" />
-    <TypeScriptCompile Include="src\Services\StreamStatsService.ts" />
-    <TypeScriptCompile Include="src\Scripts\WiM\Services\service.module.ts" />
-    <TypeScriptCompile Include="src\Services\service.module.ts" />
-    <TypeScriptCompile Include="src\Scripts\WiM\Services\HTTPServiceBase.ts" />
-    <TypeScriptCompile Include="src\Scripts\WiM\Services\Helpers\RequestInfo.ts" />
-    <TypeScriptCompile Include="src\Scripts\WiM\Services\StateWatcherService.ts" />
-    <TypeScriptCompile Include="src\Services\StudyAreaService.ts" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="src\Scripts\angular.min.js.map" />
-    <Content Include="packages.config" />
-    <None Include="web.Debug.config">
-      <DependentUpon>web.config</DependentUpon>
-    </None>
-    <None Include="web.Release.config">
-      <DependentUpon>web.config</DependentUpon>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="dist\" />
-    <Folder Include="src\Assets\images\" />
-    <Folder Include="src\ViewModels\" />
-    <Folder Include="src\Views\Reports\" />
-  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>
   </PropertyGroup>
@@ -205,5 +52,108 @@
     <TypeScriptRemoveComments>true</TypeScriptRemoveComments>
     <TypeScriptSourceMap>false</TypeScriptSourceMap>
   </PropertyGroup>
+  <ItemGroup>
+    <Content Include="src\appConfig.js" />
+    <Content Include="src\config.js" />
+    <Content Include="src\Controllers\controller.module.js" />
+    <Content Include="src\Controllers\MapController.js" />
+    <Content Include="src\Controllers\SidebarController.js" />
+    <Content Include="src\css\main.css" />
+    <Content Include="src\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="src\images\Animatedkayakers.gif" />
+    <Content Include="src\images\arrows.gif" />
+    <Content Include="src\images\multi_sw_act.png" />
+    <Content Include="src\images\multi_sw_act_blank.png" />
+    <Content Include="src\images\sw_act_30.png" />
+    <Content Include="src\images\usgs-logo.png" />
+    <Content Include="src\images\usgs_logo.png" />
+    <Content Include="src\index.html" />
+    <Content Include="src\Models\Region.js" />
+    <Content Include="src\Models\StudyArea.js" />
+    <Content Include="src\Scripts\WiM\Extensions\String.js" />
+    <Content Include="src\Scripts\WiM\Models\Citation.js" />
+    <Content Include="src\Scripts\WiM\Models\KeyValue.js" />
+    <Content Include="src\Scripts\WiM\Models\Parameter.js" />
+    <Content Include="src\Scripts\WiM\Models\Point.js" />
+    <Content Include="src\Scripts\WiM\Services\AuthenticationServiceBase.js" />
+    <Content Include="src\Scripts\WiM\Services\Helpers\RequestInfo.js" />
+    <Content Include="src\Scripts\WiM\Services\HTTPServiceBase.js" />
+    <Content Include="src\Scripts\WiM\Services\SearchAPIService.js" />
+    <Content Include="src\Scripts\WiM\Services\service.module.js" />
+    <Content Include="src\Scripts\WiM\Services\StateWatcherService.js" />
+    <Content Include="StreamStats - Copy.csproj" />
+    <Content Include="bower.json" />
+    <Content Include="src\Services\RegionService.js" />
+    <Content Include="src\Services\service.module.js" />
+    <Content Include="src\Services\StreamStatsService.js" />
+    <Content Include="src\Services\StudyAreaService.js" />
+    <Content Include="src\Views\mapview.html" />
+    <Content Include="src\Views\navigationview.html" />
+    <Content Include="src\Views\Reports\FAView.html" />
+    <Content Include="src\Views\Reports\FDCTMView.html" />
+    <Content Include="src\Views\Reports\PRMSView.html" />
+    <Content Include="src\Views\Reports\QView.html" />
+    <Content Include="src\Views\SidebarComponents\locationTemplate.html" />
+    <Content Include="src\Views\SidebarComponents\studyareaview.html" />
+    <Content Include="src\Views\sidebarview.html" />
+    <Content Include="web.config" />
+    <None Include="web.Debug.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+    <None Include="web.Release.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="src\config.js.map" />
+    <Content Include="src\Controllers\controller.module.js.map" />
+    <Content Include="src\Controllers\MapController.js.map" />
+    <Content Include="src\Controllers\SidebarController.js.map" />
+    <Content Include="src\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="src\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="src\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="src\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="src\Models\Region.js.map" />
+    <Content Include="src\Models\StudyArea.js.map" />
+    <Content Include="src\Scripts\WiM\Extensions\String.js.map" />
+    <Content Include="src\Scripts\WiM\Models\Citation.js.map" />
+    <Content Include="src\Scripts\WiM\Models\KeyValue.js.map" />
+    <Content Include="src\Scripts\WiM\Models\Parameter.js.map" />
+    <Content Include="src\Scripts\WiM\Models\Point.js.map" />
+    <Content Include="src\Scripts\WiM\Services\AuthenticationServiceBase.js.map" />
+    <Content Include="src\Scripts\WiM\Services\Helpers\RequestInfo.js.map" />
+    <Content Include="src\Scripts\WiM\Services\HTTPServiceBase.js.map" />
+    <Content Include="src\Scripts\WiM\Services\SearchAPIService.js.map" />
+    <Content Include="src\Scripts\WiM\Services\service.module.js.map" />
+    <Content Include="src\Scripts\WiM\Services\StateWatcherService.js.map" />
+    <Content Include="src\Services\RegionService.js.map" />
+    <Content Include="src\Services\service.module.js.map" />
+    <Content Include="src\Services\StreamStatsService.js.map" />
+    <Content Include="src\Services\StudyAreaService.js.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="src\config.ts" />
+    <TypeScriptCompile Include="src\Controllers\controller.module.ts" />
+    <TypeScriptCompile Include="src\Controllers\MapController.ts" />
+    <TypeScriptCompile Include="src\Controllers\SidebarController.ts" />
+    <TypeScriptCompile Include="src\Models\Region.ts" />
+    <TypeScriptCompile Include="src\Models\StudyArea.ts" />
+    <TypeScriptCompile Include="src\Scripts\WiM\Extensions\String.ts" />
+    <TypeScriptCompile Include="src\Scripts\WiM\Models\Citation.ts" />
+    <TypeScriptCompile Include="src\Scripts\WiM\Models\KeyValue.ts" />
+    <TypeScriptCompile Include="src\Scripts\WiM\Models\Parameter.ts" />
+    <TypeScriptCompile Include="src\Scripts\WiM\Models\Point.ts" />
+    <TypeScriptCompile Include="src\Scripts\WiM\Services\AuthenticationServiceBase.ts" />
+    <TypeScriptCompile Include="src\Scripts\WiM\Services\Helpers\RequestInfo.ts" />
+    <TypeScriptCompile Include="src\Scripts\WiM\Services\HTTPServiceBase.ts" />
+    <TypeScriptCompile Include="src\Scripts\WiM\Services\SearchAPIService.ts" />
+    <TypeScriptCompile Include="src\Scripts\WiM\Services\service.module.ts" />
+    <TypeScriptCompile Include="src\Scripts\WiM\Services\StateWatcherService.ts" />
+    <TypeScriptCompile Include="src\Services\RegionService.ts" />
+    <TypeScriptCompile Include="src\Services\service.module.ts" />
+    <TypeScriptCompile Include="src\Services\StreamStatsService.ts" />
+    <TypeScriptCompile Include="src\Services\StudyAreaService.ts" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
 </Project>

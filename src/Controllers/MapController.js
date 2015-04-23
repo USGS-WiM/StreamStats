@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 //----- MapController ----------------------------------------------------------
 //------------------------------------------------------------------------------
-///<reference path="../Scripts/typings/leaflet/leaflet.d.ts" />
+///<reference path="../../typings/leaflet/leaflet.d.ts" />
 var StreamStats;
 (function (StreamStats) {
     var Controllers;
@@ -73,7 +73,7 @@ var StreamStats;
                 this.controls = {
                     scale: true,
                     zoomControl: false,
-                    custom: new Array(new L.Control.ZoomMin(), L.control.locate({ follow: true }))
+                    custom: new Array(L.Control.zoomHome({ homeCoordinates: [39, -100], homeZoom: 4 }), L.control.locate({ follow: true }))
                 };
                 this.events = {
                     map: {
