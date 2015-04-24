@@ -2,15 +2,15 @@
 
 > This is the pre-alpha version of StreamStats v4.  It is an angular that is styled with bootstrap and uses leaflet as its mapping API
 
-> Build environment: Visual Studio 2013 with TypeScript
+> Build environment: Visual Studio 2013 with TypeScript 1.4
 
 
 ## Project setup
 
 ##### required software
 [node.js](http://nodejs.org)  
-[github for windows](https://windows.github.com/) 
-[cmder](http://gooseberrycreative.com/cmder/)
+[github for windows](https://windows.github.com/)   
+[cmder](http://gooseberrycreative.com/cmder/)   
 
 #### 1.  Install global dependencies
 This will install the following packages globally
