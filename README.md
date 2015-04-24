@@ -4,6 +4,7 @@
 
 > Build environment: Visual Studio 2013 with TypeScript
 
+------
 
 ## Project setup
 
@@ -30,6 +31,8 @@ npm install
 bower install
 tsd install
 ```
+
+------
 
 ## Building a release
 
