@@ -7,9 +7,10 @@
 
 ## Project setup
 
-#### 1.  Install required software (see Getting Started above before proceeding)
+#### required software
 [node.js](http://nodejs.org)  
-[github for windows](https://windows.github.com/) (only required if GUI is preferred, otherwise can use command line)  
+[github for windows](https://windows.github.com/) 
+[cmder](http://gooseberrycreative.com/cmder/)
 
 #### 2.  Install global dependencies
 This will install the following packages globally
@@ -23,7 +24,7 @@ npm install -g tsd
 #### 3.  Update/add packages
 This will install the required dependencies to the project
 
-Inside of your project folder (after git fork and clone)
+Inside of your project folder (after git fork and clone):
 ```bash
 npm install
 bower install
