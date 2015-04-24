@@ -21,6 +21,5 @@
   },
   "_source": "git://github.com/eternicode/bootstrap-datepicker.git",
   "_target": "~1.4.0",
-  "_originalSource": "bootstrap-datepicker",
-  "_direct": true
+  "_originalSource": "bootstrap-datepicker"
 }

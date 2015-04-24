@@ -5,6 +5,9 @@
 *.suo
 *.user
 *.sln.docstates
+web.*
+bower_components/
+
 
 # Build results
 

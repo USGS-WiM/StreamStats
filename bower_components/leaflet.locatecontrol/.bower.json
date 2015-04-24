@@ -41,6 +41,5 @@
   },
   "_source": "git://github.com/domoritz/leaflet-locatecontrol.git",
   "_target": "~0.40.0",
-  "_originalSource": "leaflet.locatecontrol",
-  "_direct": true
+  "_originalSource": "leaflet.locatecontrol"
 }

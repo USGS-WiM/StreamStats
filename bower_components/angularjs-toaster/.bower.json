@@ -23,6 +23,5 @@
   },
   "_source": "git://github.com/jirikavi/AngularJS-Toaster.git",
   "_target": "~0.4.12",
-  "_originalSource": "angularjs-toaster",
-  "_direct": true
+  "_originalSource": "angularjs-toaster"
 }
