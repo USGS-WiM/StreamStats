@@ -5,9 +5,8 @@
     <meta charset="utf-8" />
     <title>StreamStats 4.0</title>
     
-    <!-- build:css styles/all.min.css -->
-    <!-- bower:css -->
-    <!-- vendor css-->
+    <!-- build:css styles/vendor.min.css -->
+     <!-- bower:css -->
     <link rel="stylesheet" href="../bower_components/leaflet/dist/leaflet.css">
     <link rel="stylesheet" href="../bower_components/font-awesome/css/font-awesome.css"> 
     <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css">
@@ -18,16 +17,14 @@
     <link rel="stylesheet" href="../bower_components/sidebar-v2/css/leaflet-sidebar.css" />
     <link rel="stylesheet" href="../bower_components/leaflet-draw/dist/leaflet.draw.css" />
     <link rel="stylesheet" href="../bower_components/angularjs-toaster/toaster.css" />
-        
-    <!-- main css-->
+    <!-- endbuild -->
+    <!-- build:css styles/custom.min.css -->
     <link rel="stylesheet" href="css/main.css" />
-
     <!-- endbower -->
     <!-- endbuild -->
- 
-    <!-- build:js scripts/all_min.js -->
+
+    <!-- build:js scripts/vendor.min.js -->
     <!-- bower:js -->
-     <!-- vendor js-->
     <script src="../bower_components/angular/angular.js"></script>
     <script src="../bower_components/angular-ui-router/release/angular-ui-router.js"></script>
     <script src="../bower_components/angular-bootstrap/ui-bootstrap.js"></script>
@@ -41,30 +38,27 @@
     <script src="../bower_components/leaflet.zoomhome/dist/leaflet.zoomhome.min.js"></script>
     <script src="../bower_components/leaflet-groupedlayercontrol/dist/leaflet.groupedlayercontrol.min.js"></script>
     <script src="../bower_components/sidebar-v2/js/leaflet-sidebar.js"></script>
-
+    <!-- endbuild -->
+    <!-- build:js scripts/custom.min.js -->
     <!-- custom js-->
     <script src="Scripts/WiM/Extensions/String.js"></script>
     <script src="Config.js"></script>
     <script src="appConfig.js"></script>
-    
     <!-- Models ref-->
     <script src="Models/Region.js"></script>
-
     <!-- Controllers ref-->
     <script src="Controllers/controller.module.js"></script>
     <script src="Controllers/MapController.js"></script>
     <script src="Controllers/SidebarController.js"></script>
-    
     <!-- Services ref-->
     <script src="Services/service.module.js"></script>
     <script src="Scripts/WiM/Services/service.module.js"></script>
     <script src="Scripts/WiM/Services/Helpers/RequestInfo.js"></script>
     <script src="Scripts/WiM/Services/HTTPServiceBase.js"></script>
     <script src="Scripts/WiM/Services/SearchAPIService.js"></script> 
-
     <!-- endbower -->
     <!-- endbuild -->
-
+    
 </head>
 
 <body>
