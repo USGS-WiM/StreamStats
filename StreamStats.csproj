@@ -81,8 +81,6 @@
     <Content Include="src\Scripts\WiM\Services\SearchAPIService.js" />
     <Content Include="src\Scripts\WiM\Services\service.module.js" />
     <Content Include="src\Scripts\WiM\Services\StateWatcherService.js" />
-    <Content Include="StreamStats - Copy.csproj" />
-    <Content Include="bower.json" />
     <Content Include="src\Services\RegionService.js" />
     <Content Include="src\Services\service.module.js" />
     <Content Include="src\Services\StreamStatsService.js" />

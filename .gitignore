@@ -5,8 +5,9 @@
 *.suo
 *.user
 *.sln.docstates
-web.*
-bower_components/
+bower_components
+node_modules
+typings
 
 
 # Build results
