@@ -1,0 +1,7 @@
+<leaflet layers="vm.layers" center="vm.center" controls="vm.controls" markers="vm.markers" defaults ="vm.mapDefaults">
+    <i id="loadingSpinner" class="fa fa-spinner fa-5x fa-spin"></i>    
+</leaflet>
+<div class="map-position leaflet-bottom leaflet-left">
+    <span>Zoom Level: {{vm.center.zoom}}</span> <br/>
+    <span>{{(vm.mapPoint.lat).toFixed(4)}}, {{(vm.mapPoint.long).toFixed(4)}}</span>
+</div>
