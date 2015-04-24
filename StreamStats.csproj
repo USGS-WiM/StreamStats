@@ -54,13 +54,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="src\appConfig.js" />
-    <Content Include="src\config.js" />
-    <Content Include="src\Controllers\controller.module.js" />
-    <Content Include="src\Controllers\MapController.js" />
-    <Content Include="src\Controllers\SidebarController.js" />
+    <Content Include="src\Assets\images\Animatedkayakers.gif" />
+    <Content Include="src\Assets\images\arrows.gif" />
+    <Content Include="src\Assets\images\multi_sw_act.png" />
+    <Content Include="src\Assets\images\multi_sw_act_blank.png" />
+    <Content Include="src\Assets\images\sw_act_30.png" />
+    <Content Include="src\Assets\images\usgs-logo.png" />
+    <Content Include="src\Assets\images\usgs_logo.png" />
     <Content Include="src\css\main.css" />
     <Content Include="src\fonts\glyphicons-halflings-regular.svg" />
-    <Content Include="src\images\Animatedkayakers.gif" />
     <Content Include="src\images\arrows.gif" />
     <Content Include="src\images\multi_sw_act.png" />
     <Content Include="src\images\multi_sw_act_blank.png" />
@@ -68,33 +70,18 @@
     <Content Include="src\images\usgs-logo.png" />
     <Content Include="src\images\usgs_logo.png" />
     <Content Include="src\index.html" />
-    <Content Include="src\Models\Region.js" />
-    <Content Include="src\Models\StudyArea.js" />
-    <Content Include="src\Scripts\WiM\Extensions\String.js" />
-    <Content Include="src\Scripts\WiM\Models\Citation.js" />
-    <Content Include="src\Scripts\WiM\Models\KeyValue.js" />
-    <Content Include="src\Scripts\WiM\Models\Parameter.js" />
-    <Content Include="src\Scripts\WiM\Models\Point.js" />
-    <Content Include="src\Scripts\WiM\Services\AuthenticationServiceBase.js" />
-    <Content Include="src\Scripts\WiM\Services\Helpers\RequestInfo.js" />
-    <Content Include="src\Scripts\WiM\Services\HTTPServiceBase.js" />
-    <Content Include="src\Scripts\WiM\Services\SearchAPIService.js" />
-    <Content Include="src\Scripts\WiM\Services\service.module.js" />
-    <Content Include="src\Scripts\WiM\Services\StateWatcherService.js" />
+    <Content Include="bower.json" />
     <Content Include="src\Services\RegionService.js" />
     <Content Include="src\Services\service.module.js" />
     <Content Include="src\Services\StreamStatsService.js" />
     <Content Include="src\Services\StudyAreaService.js" />
     <Content Include="src\Views\mapview.html" />
     <Content Include="src\Views\navigationview.html" />
-    <Content Include="src\Views\Reports\FAView.html" />
-    <Content Include="src\Views\Reports\FDCTMView.html" />
-    <Content Include="src\Views\Reports\PRMSView.html" />
-    <Content Include="src\Views\Reports\QView.html" />
     <Content Include="src\Views\SidebarComponents\locationTemplate.html" />
     <Content Include="src\Views\SidebarComponents\studyareaview.html" />
     <Content Include="src\Views\sidebarview.html" />
     <Content Include="web.config" />
+    <Content Include="tsd.json" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
@@ -103,27 +90,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="src\config.js.map" />
-    <Content Include="src\Controllers\controller.module.js.map" />
-    <Content Include="src\Controllers\MapController.js.map" />
-    <Content Include="src\Controllers\SidebarController.js.map" />
     <Content Include="src\fonts\glyphicons-halflings-regular.eot" />
     <Content Include="src\fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="src\fonts\glyphicons-halflings-regular.woff" />
     <Content Include="src\fonts\glyphicons-halflings-regular.woff2" />
-    <Content Include="src\Models\Region.js.map" />
-    <Content Include="src\Models\StudyArea.js.map" />
-    <Content Include="src\Scripts\WiM\Extensions\String.js.map" />
-    <Content Include="src\Scripts\WiM\Models\Citation.js.map" />
-    <Content Include="src\Scripts\WiM\Models\KeyValue.js.map" />
-    <Content Include="src\Scripts\WiM\Models\Parameter.js.map" />
-    <Content Include="src\Scripts\WiM\Models\Point.js.map" />
-    <Content Include="src\Scripts\WiM\Services\AuthenticationServiceBase.js.map" />
-    <Content Include="src\Scripts\WiM\Services\Helpers\RequestInfo.js.map" />
-    <Content Include="src\Scripts\WiM\Services\HTTPServiceBase.js.map" />
-    <Content Include="src\Scripts\WiM\Services\SearchAPIService.js.map" />
-    <Content Include="src\Scripts\WiM\Services\service.module.js.map" />
-    <Content Include="src\Scripts\WiM\Services\StateWatcherService.js.map" />
     <Content Include="src\Services\RegionService.js.map" />
     <Content Include="src\Services\service.module.js.map" />
     <Content Include="src\Services\StreamStatsService.js.map" />
@@ -151,6 +121,11 @@
     <TypeScriptCompile Include="src\Services\service.module.ts" />
     <TypeScriptCompile Include="src\Services\StreamStatsService.ts" />
     <TypeScriptCompile Include="src\Services\StudyAreaService.ts" />
+    <TypeScriptCompile Include="typings\angular-ui-router\angular-ui-router.d.ts" />
+    <TypeScriptCompile Include="typings\angularjs\angular.d.ts" />
+    <TypeScriptCompile Include="typings\jquery\jquery.d.ts" />
+    <TypeScriptCompile Include="typings\leaflet\leaflet.d.ts" />
+    <TypeScriptCompile Include="typings\tsd.d.ts" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
