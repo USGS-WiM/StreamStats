@@ -5,6 +5,10 @@
 *.suo
 *.user
 *.sln.docstates
+bower_components
+node_modules
+typings
+
 
 # Build results
 
