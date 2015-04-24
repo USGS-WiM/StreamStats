@@ -4,16 +4,15 @@
 
 > Build environment: Visual Studio 2013 with TypeScript
 
-------
 
 ## Project setup
 
-#### required software
+##### required software
 [node.js](http://nodejs.org)  
 [github for windows](https://windows.github.com/) 
 [cmder](http://gooseberrycreative.com/cmder/)
 
-#### 2.  Install global dependencies
+#### 1.  Install global dependencies
 This will install the following packages globally
 
 ```bash
@@ -22,7 +21,7 @@ npm install -g gulp
 npm install -g tsd
 ```
 
-#### 3.  Update/add packages
+#### 2.  Update/add packages
 This will install the required dependencies to the project
 
 Inside of your project folder (after git fork and clone):
