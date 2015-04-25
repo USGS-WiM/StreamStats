@@ -1,4 +1,4 @@
-# streamstats
+﻿# streamstats
 
 > This is the pre-alpha version of StreamStats v4.  It is an angular that is styled with bootstrap and uses leaflet as its mapping API
 
@@ -48,8 +48,19 @@ gulp watch
 ```
 
 #### 2.  Create release build
-This will copy "/dist" to "/release", tag with a github release tag with version number
+Bumping version number and tagging the repository with it.   
+Please read http://semver.org/
+
+You can use the commands
+ ```bash
+gulp patch     # makes v0.1.0 → v0.1.1
+gulp feature   # makes v0.1.1 → v0.2.0
+gulp release   # makes v0.2.1 → v1.0.0
+ ```
+
+To run, use the appropriate versioning text above, then use "gulp push" to push the commit with the release tags up to the repository
 
 ```bash
-gulp release [ver]
+gulp patch
+gulp push
 ```
