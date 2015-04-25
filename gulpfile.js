@@ -66,7 +66,7 @@ gulp.task('tag', ['bump'], function () {
             this.pipe(git.push('origin', 'master', { args: '--tags' }))
             .end();
         })
-    pipe(git.push('origin', 'master', { args: '--tags' }));
+    .pipe(git.push('origin', 'master', { args: '--tags' }));
       
       //.pipe(gulp.dest('./'));
 });
