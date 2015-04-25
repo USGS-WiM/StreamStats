@@ -8,7 +8,8 @@ var gulp = require('gulp'),
     tag_version = require('gulp-tag-version'),
     open = require('open'),
     del = require('del'),
-    wiredep = require('wiredep').stream;
+    wiredep = require('wiredep').stream,
+    semver = require('semver');
 
 // Load plugins
 var $ = require('gulp-load-plugins')();
@@ -28,44 +29,42 @@ var $ = require('gulp-load-plugins')();
  */
 
 function inc(importance) {
+    //get current version number
+    var version = require('./package.json').version;
+    //get new version number
+    var newVer = semver.inc(version, importance);
+
     // get all the files to bump version in 
     return gulp.src(['./package.json', './bower.json'])
         // bump the version number in those files 
         .pipe(bump({ type: importance }))
         // save it back to filesystem 
         .pipe(gulp.dest('./'))
-        // commit the changed version number 
-        .pipe(git.commit('bumps package version'))
 
-        // read only one file to get the version number 
-        .pipe(filter('package.json'))
-        // **tag it in the repository** 
-        .pipe(tag_version());
+        // commit the changed version number 
+         .pipe(git.commit('Release v' + newVer))
+
+         // read only one file to get the version number 
+         .pipe(filter('package.json'))
+         // **tag it in the repository** 
+         .pipe(tag_version());
 }
 
 gulp.task('patch', function () { return inc('patch'); })
 gulp.task('feature', function () { return inc('minor'); })
 gulp.task('release', function () { return inc('major'); })
 
-
-gulp.task('bump', function () {
-    return gulp.src(['./package.json', './bower.json'])
-      .pipe(bump())
-      .pipe(gulp.dest('./'));
-});
-
-gulp.task('tag', ['bump'], function () {
-    var pkg = require('./package.json');
-    var v = 'v' + pkg.version;
-    var message = 'Release ' + v;
-
-    return gulp.src('.')
-        .pipe(git.commit(message))
-        .pipe(git.tag(v, message))
-        .pipe(git.push('origin', 'master', { args: " --tags" }, function (err) {
-            if (err) throw err;
-        }));
-        //.pipe(gulp.dest('./'));
+gulp.task('push', function () {
+    console.info('Pushing...');
+    return git.push('origin', 'master', { args: " --tags" }, function (err) {
+        console.info('In callback');
+        if (err) {
+            console.error(err);
+            throw err;
+        } else {
+            console.info('done!');
+        }
+    });
 });
 
 //copy leaflet images
