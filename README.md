@@ -35,8 +35,8 @@ tsd install
 
 ## Building a release
 
-#### 1.  Create distribution build
-This will concatenate and minify all css and js files, trim and clean project and copy to "/dist"
+#### 1.  Create test build
+This will concatenate and minify all css and js files, trim and clean project and copy to "/test"
 
 ```bash
 gulp
@@ -48,7 +48,7 @@ gulp watch
 ```
 
 #### 2.  Create release build
-Bumping version number and tagging the repository with it.   
+Copies "/test" to "/dist", bumps version number and tagging the repository with it.   
 Please read http://semver.org/
 
 You can use the commands
