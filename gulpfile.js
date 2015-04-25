@@ -59,12 +59,11 @@ gulp.task('tag', ['bump'], function () {
     var v = 'v' + pkg.version;
     var message = 'Release ' + v;
 
-    return gulp.src('./')
-      .pipe(git.commit(message))
-      .pipe(git.tag(v, message))
-      .pipe(git.exec({ args: 'push origin master' }));
-      
-      //.pipe(gulp.dest('./'));
+    return gulp.src('.')
+        .pipe(git.commit(message))
+        .pipe(git.tag(v, message))
+        .pipe(git.push('origin', 'master'))
+        //.pipe(gulp.dest('./'));
 });
 
 //copy leaflet images
