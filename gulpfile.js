@@ -54,7 +54,7 @@ gulp.task('patch', function () { return inc('patch'); })
 gulp.task('feature', function () { return inc('minor'); })
 gulp.task('release', function () { return inc('major'); })
 
-gulp.task('push', function () {
+gulp.task('push-upstream', function () {
     console.info('Pushing...');
     return git.push('USGS-WiM', 'master', { args: " --tags" }, function (err) {
         console.info('In callback');
@@ -66,6 +66,21 @@ gulp.task('push', function () {
         }
     });
 });
+
+gulp.task('push-origin', function () {
+    console.info('Pushing...');
+    return git.push('origin', 'master', { args: " --tags" }, function (err) {
+        console.info('In callback');
+        if (err) {
+            console.error(err);
+            throw err;
+        } else {
+            console.info('done!');
+        }
+    });
+});
+
+gulp.task('push', ['push-upstream', 'push-origin']);
 
 //copy leaflet images
 gulp.task('leaflet', function() {
