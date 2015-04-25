@@ -25,7 +25,7 @@ var $ = require('gulp-load-plugins')();
  *
  * To bump the version numbers accordingly after you did a patch,
  * introduced a feature or made a backwards-incompatible release.
-
+ */
 
 function inc(importance) {
     // get all the files to bump version in 
@@ -35,17 +35,18 @@ function inc(importance) {
         // save it back to filesystem 
         .pipe(gulp.dest('./'))
         // commit the changed version number 
-        .pipe(git.commit('bumps package version', { cwd: './dist' }))
+        .pipe(git.commit('bumps package version'))
+
         // read only one file to get the version number 
         .pipe(filter('package.json'))
         // **tag it in the repository** 
-        .pipe(tag_version({cwd: './dist'}));
+        .pipe(tag_version());
 }
 
 gulp.task('patch', function () { return inc('patch'); })
 gulp.task('feature', function () { return inc('minor'); })
 gulp.task('release', function () { return inc('major'); })
- */
+
 
 gulp.task('bump', function () {
     return gulp.src(['./package.json', './bower.json'])
