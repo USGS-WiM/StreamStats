@@ -64,8 +64,8 @@ gulp.task('tag', ['bump'], function () {
       .pipe(git.tag(v, message, function (err) {
           if (err) throw err;
       }))
-      .pipe(git.push('origin', 'master', '--tags'))
-      .pipe(gulp.dest('./'));
+      //.pipe(git.push('origin', 'master', '--tags'))
+      //.pipe(gulp.dest('./'));
 });
 
 //copy leaflet images
