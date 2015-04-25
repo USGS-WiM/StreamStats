@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 // Generated on <%= (new Date).toISOString().split('T')[0] %> using <%= pkg.name %> <%= pkg.version %>
 
 var gulp = require('gulp'),
@@ -19,13 +19,13 @@ var $ = require('gulp-load-plugins')();
  *
  * You can use the commands
  *
- *     gulp patch     # makes v0.1.0 ? v0.1.1
- *     gulp feature   # makes v0.1.1 ? v0.2.0
- *     gulp release   # makes v0.2.1 ? v1.0.0
+ *     gulp patch     # makes v0.1.0 → v0.1.1
+ *     gulp feature   # makes v0.1.1 → v0.2.0
+ *     gulp release   # makes v0.2.1 → v1.0.0
  *
  * To bump the version numbers accordingly after you did a patch,
  * introduced a feature or made a backwards-incompatible release.
- */
+
 
 function inc(importance) {
     // get all the files to bump version in 
@@ -35,17 +35,35 @@ function inc(importance) {
         // save it back to filesystem 
         .pipe(gulp.dest('./'))
         // commit the changed version number 
-        .pipe(git.commit('bumps package version'))
-
+        .pipe(git.commit('bumps package version', { cwd: './dist' }))
         // read only one file to get the version number 
         .pipe(filter('package.json'))
         // **tag it in the repository** 
-        .pipe(tag_version());
+        .pipe(tag_version({cwd: './dist'}));
 }
 
 gulp.task('patch', function () { return inc('patch'); })
 gulp.task('feature', function () { return inc('minor'); })
 gulp.task('release', function () { return inc('major'); })
+ */
+
+gulp.task('bump', function () {
+    return gulp.src(['./package.json', './bower.json'])
+      .pipe(bump())
+      .pipe(gulp.dest('./'));
+});
+
+gulp.task('tag', ['bump'], function () {
+    var pkg = require('./package.json');
+    var v = 'v' + pkg.version;
+    var message = 'Release ' + v;
+
+    return gulp.src('./')
+      .pipe(git.commit(message))
+      .pipe(git.tag(v, message))
+      .pipe(git.push('origin', 'master', '--tags'))
+      .pipe(gulp.dest('./'));
+});
 
 //copy leaflet images
 gulp.task('leaflet', function() {
