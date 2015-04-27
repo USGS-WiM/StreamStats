@@ -35,7 +35,7 @@ function inc(importance) {
     var newVer = semver.inc(version, importance);
 
     // get all the files to bump version in 
-    return gulp.src(['./package.json', './bower.json'])
+    return gulp.src(['./package.json', './bower.json', './tsd.json'])
         // bump the version number in those files 
         .pipe(bump({ type: importance }))
         // save it back to filesystem 
@@ -63,34 +63,20 @@ gulp.task('release', ['dist'], function () { return inc('major'); })
 gulp.task('push-upstream', function () {
     console.info('Pushing...');
     return git.push('USGS-WiM', 'master', { args: " --tags" }, function (err) {
-        console.info('In callback');
         if (err) {
             console.error(err);
             throw err;
         } else {
-            console.info('done!');
+            console.info('done pushing to github!');
         }
     });
 });
 
-gulp.task('push-origin', function () {
-    console.info('Pushing...');
-    return git.push('origin', 'master', { args: " --tags" }, function (err) {
-        console.info('In callback');
-        if (err) {
-            console.error(err);
-            throw err;
-        } else {
-            console.info('done!');
-        }
-    });
-});
-
-gulp.task('push', ['push-upstream', 'push-origin']);
+gulp.task('push', ['push-upstream']);
 
 //copy leaflet images
 gulp.task('leaflet', function() {
-    return gulp.src('bower_components/leaflet/test/images/*.*')
+    return gulp.src('bower_components/leaflet/dist/images/*.*')
         .pipe(gulp.dest('test/styles/images'));
 });
 
@@ -110,7 +96,7 @@ gulp.task('styles', function () {
 
 // Icons
 gulp.task('icons', function() {
-    return gulp.src(['bower_components/bootstrap/test/fonts/*.*','bower_components/font-awesome/fonts/*.*'])
+    return gulp.src(['bower_components/bootstrap/dist/fonts/*.*','bower_components/font-awesome/fonts/*.*'])
         .pipe(gulp.dest('test/fonts'));
 });
 
