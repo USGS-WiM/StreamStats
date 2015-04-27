@@ -15,6 +15,7 @@
 //Comments
 //04.14.2015 jkn - Created
 //Imports"
+///<reference path="../../bower_components/wim_angular/src/Services/SearchAPIService.ts" />
 var StreamStats;
 (function (StreamStats) {
     var Controllers;

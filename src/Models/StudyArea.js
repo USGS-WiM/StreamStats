@@ -15,7 +15,7 @@
 //Comments
 //08.20.2014 jkn - Created
 //Imports"
-///<reference path="../Scripts/WiM/Models/Point.ts" />
+///<reference path="../../bower_components/wim_angular/src/Models/Point.ts" />
 // Interface
 var StreamStats;
 (function (StreamStats) {

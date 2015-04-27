@@ -29,6 +29,7 @@
     "leaflet-groupedlayercontrol": "~0.3.0",
     "leaflet-draw": "~0.2.4",
     "sidebar-v2": "~0.2.1",
-    "leaflet.zoomhome": "~0.1.0"
+    "leaflet.zoomhome": "~0.1.0",
+    "wim_angular": "https://github.com/USGS-WiM/wim_angular.git"
   }
 }
