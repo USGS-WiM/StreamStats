@@ -23,6 +23,8 @@
 //04.14.2015 jkn - Created
 
 //Imports"
+///<reference path="../../bower_components/wim_angular/src/Services/SearchAPIService.ts" />
+
 module StreamStats.Controllers {
     'use strinct';
     interface ISidebarControllerScope extends ng.IScope {
