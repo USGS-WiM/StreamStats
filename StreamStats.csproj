@@ -106,17 +106,6 @@
     <TypeScriptCompile Include="src\Controllers\SidebarController.ts" />
     <TypeScriptCompile Include="src\Models\Region.ts" />
     <TypeScriptCompile Include="src\Models\StudyArea.ts" />
-    <TypeScriptCompile Include="src\Scripts\WiM\Extensions\String.ts" />
-    <TypeScriptCompile Include="src\Scripts\WiM\Models\Citation.ts" />
-    <TypeScriptCompile Include="src\Scripts\WiM\Models\KeyValue.ts" />
-    <TypeScriptCompile Include="src\Scripts\WiM\Models\Parameter.ts" />
-    <TypeScriptCompile Include="src\Scripts\WiM\Models\Point.ts" />
-    <TypeScriptCompile Include="src\Scripts\WiM\Services\AuthenticationServiceBase.ts" />
-    <TypeScriptCompile Include="src\Scripts\WiM\Services\Helpers\RequestInfo.ts" />
-    <TypeScriptCompile Include="src\Scripts\WiM\Services\HTTPServiceBase.ts" />
-    <TypeScriptCompile Include="src\Scripts\WiM\Services\SearchAPIService.ts" />
-    <TypeScriptCompile Include="src\Scripts\WiM\Services\service.module.ts" />
-    <TypeScriptCompile Include="src\Scripts\WiM\Services\StateWatcherService.ts" />
     <TypeScriptCompile Include="src\Services\RegionService.ts" />
     <TypeScriptCompile Include="src\Services\service.module.ts" />
     <TypeScriptCompile Include="src\Services\StreamStatsService.ts" />
