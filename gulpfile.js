@@ -12,8 +12,8 @@ var gulp = require('gulp'),
     connect = require('gulp-connect'),
     autoprefixer = require('gulp-autoprefixer'),
     filter = require('gulp-filter'),
-    clean = require('gulp-clean'),
-    open = require('gulp-open'),
+    del= require('del'),
+    open = require('open'),
     wiredep = require('wiredep').stream,
     semver = require('semver');
 
@@ -76,7 +76,7 @@ gulp.task('views', function () {
 // Styles
 gulp.task('styles', function () {
     return gulp.src(['src/styles/main.css'])
-        //.pipe(autoprefixer('last 1 version'))
+        .pipe(autoprefixer('last 1 version'))
         .pipe(gulp.dest('test/styles'))
         .pipe(size());
 });
@@ -98,7 +98,7 @@ gulp.task('scripts', function () {
 // HTML
 gulp.task('html', ['styles', 'scripts', 'icons', 'leaflet', 'views'], function () {
     var jsFilter = filter('**/*.js');
-    var cssFilter =filter('**/*.css');
+    var cssFilter = filter('**/*.css');
 
     return gulp.src('src/*.html')
         .pipe(useref.assets())
@@ -124,13 +124,12 @@ gulp.task('images', function () {
 });
 
 // Clean
-gulp.task('clean', function () {
-    return gulp.src([
+gulp.task('clean', function (cb) {
+    del([
       'test/styles/**',
       'test/scripts/**',
       'test/images/**',
-    ], { read: false })
-        .pipe(clean());
+    ], cb);
 });
 
 // build test
