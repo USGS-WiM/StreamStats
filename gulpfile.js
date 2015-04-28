@@ -1,9 +1,16 @@
 ﻿'use strict';
-// Generated on <%= (new Date).toISOString().split('T')[0] %> using <%= pkg.name %> <%= pkg.version %>
 
+//load dependencies
 var gulp = require('gulp'),
     git = require('gulp-git'),
     bump = require('gulp-bump'),
+    jshint = require('gulp-jshint'),
+    size = require('gulp-size'),
+    uglify = require('gulp-uglify'),
+    useref = require('gulp-useref'),
+    csso = require('gulp-csso'),
+    connect = require('gulp-connect'),
+    autoprefixer = require('gulp-autoprefixer'),
     filter = require('gulp-filter'),
     tag_version = require('gulp-tag-version'),
     open = require('open'),
@@ -11,22 +18,8 @@ var gulp = require('gulp'),
     wiredep = require('wiredep').stream,
     semver = require('semver');
 
-// Load plugins
-var $ = require('gulp-load-plugins')();
-
-/**
- * Bumping version number and tagging the repository with it.
- * Please read http://semver.org/
- *
- * You can use the commands
- *
- *     gulp patch     # makes v0.1.0 → v0.1.1
- *     gulp feature   # makes v0.1.1 → v0.2.0
- *     gulp release   # makes v0.2.1 → v1.0.0
- *
- * To bump the version numbers accordingly after you did a patch,
- * introduced a feature or made a backwards-incompatible release.
- */
+//get current app version
+var version = require('./package.json').version;
 
 function inc(importance) {
     //get current version number
@@ -35,15 +28,13 @@ function inc(importance) {
     var newVer = semver.inc(version, importance);
 
     // get all the files to bump version in 
-    return gulp.src(['./package.json', './bower.json'])
+    return gulp.src(['./package.json', './bower.json', './tsd.json'])
         // bump the version number in those files 
         .pipe(bump({ type: importance }))
         // save it back to filesystem 
         .pipe(gulp.dest('./'))
-
         // commit the changed version number 
          .pipe(git.commit('Release v' + newVer))
-
          // read only one file to get the version number 
          .pipe(filter('package.json'))
          // **tag it in the repository** 
@@ -60,42 +51,26 @@ gulp.task('patch', ['dist'], function () { return inc('patch'); })
 gulp.task('feature', ['dist'], function () { return inc('minor'); })
 gulp.task('release', ['dist'], function () { return inc('major'); })
 
-gulp.task('push-upstream', function () {
+gulp.task('push', function () {
     console.info('Pushing...');
     return git.push('USGS-WiM', 'master', { args: " --tags" }, function (err) {
-        console.info('In callback');
         if (err) {
             console.error(err);
             throw err;
         } else {
-            console.info('done!');
+            console.info('done pushing to github!');
         }
     });
 });
-
-gulp.task('push-origin', function () {
-    console.info('Pushing...');
-    return git.push('origin', 'master', { args: " --tags" }, function (err) {
-        console.info('In callback');
-        if (err) {
-            console.error(err);
-            throw err;
-        } else {
-            console.info('done!');
-        }
-    });
-});
-
-gulp.task('push', ['push-upstream', 'push-origin']);
 
 //copy leaflet images
-gulp.task('leaflet', function() {
-    return gulp.src('bower_components/leaflet/test/images/*.*')
+gulp.task('leaflet', function () {
+    return gulp.src('bower_components/leaflet/dist/images/*.*')
         .pipe(gulp.dest('test/styles/images'));
 });
 
 //copy Views folder
-gulp.task('views', function() {
+gulp.task('views', function () {
     return gulp.src('src/Views/**/*')
         .pipe(gulp.dest('test/Views'));
 });
@@ -103,42 +78,42 @@ gulp.task('views', function() {
 // Styles
 gulp.task('styles', function () {
     return gulp.src(['src/styles/main.css'])
-        .pipe($.autoprefixer('last 1 version'))
+        .pipe(autoprefixer('last 1 version'))
         .pipe(gulp.dest('test/styles'))
-        .pipe($.size());
+        .pipe(size());
 });
 
 // Icons
-gulp.task('icons', function() {
-    return gulp.src(['bower_components/bootstrap/test/fonts/*.*','bower_components/font-awesome/fonts/*.*'])
+gulp.task('icons', function () {
+    return gulp.src(['bower_components/bootstrap/dist/fonts/*.*', 'bower_components/font-awesome/fonts/*.*'])
         .pipe(gulp.dest('test/fonts'));
 });
 
 // Scripts
 gulp.task('scripts', function () {
     return gulp.src(['src/scripts/**/*.js'])
-        //.pipe($.jshint('.jshintrc'))
-        //.pipe($.jshint.reporter('default'))
-        //.pipe($.size());
+    //.pipe(jshint('.jshintrc'))
+    //.pipe(jshint.reporter('default'))
+    //.pipe(size());
 });
 
 // HTML
 gulp.task('html', ['styles', 'scripts', 'icons', 'leaflet', 'views'], function () {
-    var jsFilter = $.filter('**/*.js');
-    var cssFilter = $.filter('**/*.css');
+    var jsFilter = filter('**/*.js');
+    var cssFilter =filter('**/*.css');
 
     return gulp.src('src/*.html')
-        .pipe($.useref.assets())
+        .pipe(useref.assets())
         .pipe(jsFilter)
-        .pipe($.uglify())
+        .pipe(uglify())
         .pipe(jsFilter.restore())
         .pipe(cssFilter)
-        .pipe($.csso())
+        .pipe(csso())
         .pipe(cssFilter.restore())
-        .pipe($.useref.restore())
-        .pipe($.useref())
+        .pipe(useref.restore())
+        .pipe(useref())
         .pipe(gulp.dest('test'))
-        .pipe($.size());
+        .pipe(size());
 });
 
 // Images
@@ -147,16 +122,16 @@ gulp.task('images', function () {
     		'src/images/**/*',
     		'src/lib/images/*'])
         .pipe(gulp.dest('test/images'))
-        .pipe($.size());
+        .pipe(size());
 });
 
 // Clean
 gulp.task('clean', function (cb) {
-  del([
-    'test/styles/**',
-    'test/scripts/**',
-	'test/images/**',
-  ], cb);
+    del([
+      'test/styles/**',
+      'test/scripts/**',
+      'test/images/**',
+    ], cb);
 });
 
 // build test
@@ -168,19 +143,20 @@ gulp.task('default', ['clean'], function () {
 });
 
 // Connect
-gulp.task('connect', function(){
-    $.connect.server({
+gulp.task('connect', function () {
+    connect.server({
         root: 'test',
         port: 9000,
     });
 });
 
 // Open
-gulp.task('serve', ['connect'], function() {
-  open("http://localhost:9000");
+gulp.task('serve', ['connect'], function () {
+    open("http://localhost:9000");
 });
 
 // Inject Bower components
+/*
 gulp.task('wiredep', function () {
     gulp.src('src/styles/*.css')
         .pipe(wiredep({
@@ -196,6 +172,7 @@ gulp.task('wiredep', function () {
         }))
         .pipe(gulp.dest('src'));
 });
+*/
 
 // Watch
 gulp.task('watch', ['connect', 'serve'], function () {

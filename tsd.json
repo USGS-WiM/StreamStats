@@ -1,5 +1,12 @@
 {
-  "version": "v4",
+    "name": "StreamStats",
+    "version": "0.0.3",
+    "homepage": "https://github.com/USGS-WiM/StreamStats",
+    "authors": [
+        "Jeremy Newson <jknewson@usgs.gov>",
+        "Martyn Smith <marsmith@usgs.gov>"
+    ],
+    "license": "MIT",
   "repo": "borisyankov/DefinitelyTyped",
   "ref": "master",
   "path": "typings",
