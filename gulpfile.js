@@ -12,9 +12,8 @@ var gulp = require('gulp'),
     connect = require('gulp-connect'),
     autoprefixer = require('gulp-autoprefixer'),
     filter = require('gulp-filter'),
-    tag_version = require('gulp-tag-version'),
-    open = require('open'),
-    del = require('del'),
+    clean = require('gulp-clean'),
+    open = require('gulp-open'),
     wiredep = require('wiredep').stream,
     semver = require('semver');
 
@@ -22,8 +21,6 @@ var gulp = require('gulp'),
 var version = require('./package.json').version;
 
 function inc(importance) {
-    //get current version number
-    var version = require('./package.json').version;
     //get new version number
     var newVer = semver.inc(version, importance);
 
@@ -34,11 +31,12 @@ function inc(importance) {
         // save it back to filesystem 
         .pipe(gulp.dest('./'))
         // commit the changed version number 
-         .pipe(git.commit('Release v' + newVer))
-         // read only one file to get the version number 
-         .pipe(filter('package.json'))
-         // **tag it in the repository** 
-         .pipe(tag_version());
+        .pipe(git.commit('Release v' + newVer))
+        // **tag it in the repository** 
+        //.pipe(git.tag('v' + newVer));
+        .pipe(git.tag('v' + newVer, 'Version message', function (err) {
+            if (err) throw err;
+        }));
 }
 
 //copy Views folder
@@ -78,7 +76,7 @@ gulp.task('views', function () {
 // Styles
 gulp.task('styles', function () {
     return gulp.src(['src/styles/main.css'])
-        .pipe(autoprefixer('last 1 version'))
+        //.pipe(autoprefixer('last 1 version'))
         .pipe(gulp.dest('test/styles'))
         .pipe(size());
 });
@@ -126,12 +124,13 @@ gulp.task('images', function () {
 });
 
 // Clean
-gulp.task('clean', function (cb) {
-    del([
+gulp.task('clean', function () {
+    return gulp.src([
       'test/styles/**',
       'test/scripts/**',
       'test/images/**',
-    ], cb);
+    ], { read: false })
+        .pipe(clean());
 });
 
 // build test
@@ -142,11 +141,16 @@ gulp.task('default', ['clean'], function () {
     gulp.start('test');
 });
 
+// Watch
+gulp.task('watch', ['connect', 'serve'], function () {
+    // start up
+});
+
 // Connect
 gulp.task('connect', function () {
     connect.server({
         root: 'test',
-        port: 9000,
+        port: 9000
     });
 });
 
@@ -173,9 +177,3 @@ gulp.task('wiredep', function () {
         .pipe(gulp.dest('src'));
 });
 */
-
-// Watch
-gulp.task('watch', ['connect', 'serve'], function () {
-    // start up
-
-});
