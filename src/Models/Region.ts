@@ -21,7 +21,7 @@
 
 
 //Imports"
-///<reference path="../../bower_components/wim_angular/src/Models/Point.ts" />
+
 // Interface
 module StreamStats.Models {
     export interface IRegion {

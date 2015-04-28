@@ -110,11 +110,6 @@
     <TypeScriptCompile Include="src\Services\service.module.ts" />
     <TypeScriptCompile Include="src\Services\StreamStatsService.ts" />
     <TypeScriptCompile Include="src\Services\StudyAreaService.ts" />
-    <TypeScriptCompile Include="typings\angular-ui-router\angular-ui-router.d.ts" />
-    <TypeScriptCompile Include="typings\angularjs\angular.d.ts" />
-    <TypeScriptCompile Include="typings\jquery\jquery.d.ts" />
-    <TypeScriptCompile Include="typings\leaflet\leaflet.d.ts" />
-    <TypeScriptCompile Include="typings\tsd.d.ts" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />

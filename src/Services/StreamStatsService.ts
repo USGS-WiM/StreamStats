@@ -26,7 +26,6 @@
 ///<reference path="../../typings/angularjs/angular.d.ts" />
 ///<reference path="../../bower_components/wim_angular/src/Models/Point.ts" />
 ///<reference path="../../bower_components/wim_angular/src/Services/HTTPServiceBase.ts" />
-///<reference path="../../bower_components/wim_angular/src/Services/Helpers/RequestInfo.ts" />
 module StreamStats.Services {
     'use strict'
     export interface IStreamStatsService{
