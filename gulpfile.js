@@ -20,6 +20,7 @@ var gulp = require('gulp'),
 //get current app version
 var version = require('./package.json').version;
 
+//function for version lookup and tagging
 function inc(importance) {
     //get new version number
     var newVer = semver.inc(version, importance);
@@ -39,16 +40,18 @@ function inc(importance) {
         }));
 }
 
-//copy Views folder
+//copy to dist folder
 gulp.task('dist', function () {
     return gulp.src('test/**/*')
         .pipe(gulp.dest('dist'));
 });
 
+//tasks for version tags
 gulp.task('patch', ['dist'], function () { return inc('patch'); })
 gulp.task('feature', ['dist'], function () { return inc('minor'); })
 gulp.task('release', ['dist'], function () { return inc('major'); })
 
+//push task for versioning
 gulp.task('push', function () {
     console.info('Pushing...');
     return git.push('USGS-WiM', 'master', { args: " --tags" }, function (err) {
@@ -61,13 +64,7 @@ gulp.task('push', function () {
     });
 });
 
-//copy leaflet images
-gulp.task('leaflet', function () {
-    return gulp.src('bower_components/leaflet/dist/images/*.*')
-        .pipe(gulp.dest('test/styles/images'));
-});
-
-//copy Views folder
+//copy to views folder
 gulp.task('views', function () {
     return gulp.src('src/Views/**/*')
         .pipe(gulp.dest('test/Views'));
@@ -89,14 +86,14 @@ gulp.task('icons', function () {
 
 // Scripts
 gulp.task('scripts', function () {
-    return gulp.src(['src/scripts/**/*.js'])
-    //.pipe(jshint('.jshintrc'))
-    //.pipe(jshint.reporter('default'))
-    //.pipe(size());
+    return gulp.src(['src/**/*.js'])
+    .pipe(jshint('.jshintrc'))
+    .pipe(jshint.reporter('default'))
+    .pipe(size());
 });
 
 // HTML
-gulp.task('html', ['styles', 'scripts', 'icons', 'leaflet', 'views'], function () {
+gulp.task('html', ['styles', 'scripts', 'icons', 'views'], function () {
     var jsFilter = filter('**/*.js');
     var cssFilter = filter('**/*.css');
 
@@ -118,7 +115,8 @@ gulp.task('html', ['styles', 'scripts', 'icons', 'leaflet', 'views'], function (
 gulp.task('images', function () {
     return gulp.src([
     		'src/images/**/*',
-    		'src/lib/images/*'])
+    		'src/lib/images/*',
+            'bower_components/leaflet/dist/images/*.*'])
         .pipe(gulp.dest('test/images'))
         .pipe(size());
 });

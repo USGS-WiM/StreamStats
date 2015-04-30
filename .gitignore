@@ -158,9 +158,3 @@ $RECYCLE.BIN/
 
 # Mac desktop service store files
 .DS_Store
-
-#exluded folders
-typings/
-bower_components/
-bin/
-obj/
