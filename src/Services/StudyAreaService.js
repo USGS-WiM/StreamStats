@@ -28,17 +28,6 @@ var StreamStats;
             function StudyAreaService(streamStatsService) {
                 this.streamStatsService = streamStatsService;
             }
-            //Methods
-            //-+-+-+-+-+-+-+-+-+-+-+-
-            StudyAreaService.prototype.SetRegion = function (location) {
-                var _this = this;
-                //query point to determine regions
-                this.streamStatsService.getRegionList(location).then(function (response) {
-                    _this.RegionList = response.data.map(function (item) {
-                        return null;
-                    });
-                });
-            };
             return StudyAreaService;
         })(); //end class
         factory.$inject = ['StreamStats.Services.StreamStatsService'];

@@ -7,22 +7,22 @@
         "Martyn Smith <marsmith@usgs.gov>"
     ],
     "license": "MIT",
-    "repo": "borisyankov/DefinitelyTyped",
-    "ref": "master",
-    "path": "typings",
-    "bundle": "typings/tsd.d.ts",
-    "installed": {
-        "jquery/jquery.d.ts": {
-            "commit": "51d426745a1c0a88ca3234102f0a87ab3fcff334"
-        },
-        "leaflet/leaflet.d.ts": {
-            "commit": "51d426745a1c0a88ca3234102f0a87ab3fcff334"
-        },
-        "angularjs/angular.d.ts": {
-            "commit": "51d426745a1c0a88ca3234102f0a87ab3fcff334"
-        },
-        "angular-ui-router/angular-ui-router.d.ts": {
-            "commit": "51d426745a1c0a88ca3234102f0a87ab3fcff334"
-        }
+  "repo": "borisyankov/DefinitelyTyped",
+  "ref": "master",
+  "path": "typings",
+  "bundle": "typings/tsd.d.ts",
+  "installed": {
+    "jquery/jquery.d.ts": {
+      "commit": "00e7f3fede5f2df55b56c72f40a144824f0f0bfa"
+    },
+    "leaflet/leaflet.d.ts": {
+      "commit": "00e7f3fede5f2df55b56c72f40a144824f0f0bfa"
+    },
+    "angularjs/angular.d.ts": {
+      "commit": "00e7f3fede5f2df55b56c72f40a144824f0f0bfa"
+    },
+    "angular-ui-router/angular-ui-router.d.ts": {
+      "commit": "00e7f3fede5f2df55b56c72f40a144824f0f0bfa"
     }
+  }
 }

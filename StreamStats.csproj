@@ -71,12 +71,9 @@
     <Content Include="src\images\usgs_logo.png" />
     <Content Include="src\index.html" />
     <Content Include="bower.json" />
-    <Content Include="src\Services\RegionService.js" />
-    <Content Include="src\Services\service.module.js" />
-    <Content Include="src\Services\StreamStatsService.js" />
-    <Content Include="src\Services\StudyAreaService.js" />
     <Content Include="src\Views\mapview.html" />
     <Content Include="src\Views\navigationview.html" />
+    <Content Include="src\Views\Reports\searchPopup.html" />
     <Content Include="src\Views\SidebarComponents\locationTemplate.html" />
     <Content Include="src\Views\SidebarComponents\studyareaview.html" />
     <Content Include="src\Views\sidebarview.html" />
@@ -94,10 +91,6 @@
     <Content Include="src\fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="src\fonts\glyphicons-halflings-regular.woff" />
     <Content Include="src\fonts\glyphicons-halflings-regular.woff2" />
-    <Content Include="src\Services\RegionService.js.map" />
-    <Content Include="src\Services\service.module.js.map" />
-    <Content Include="src\Services\StreamStatsService.js.map" />
-    <Content Include="src\Services\StudyAreaService.js.map" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="src\config.ts" />
@@ -108,14 +101,14 @@
     <TypeScriptCompile Include="src\Models\StudyArea.ts" />
     <TypeScriptCompile Include="src\Services\RegionService.ts" />
     <TypeScriptCompile Include="src\Services\service.module.ts" />
-    <TypeScriptCompile Include="src\Services\StreamStatsService.ts" />
+    <TypeScriptCompile Include="src\Services\SessionService.ts" />
     <TypeScriptCompile Include="src\Services\StudyAreaService.ts" />
-    <TypeScriptCompile Include="typings\angular-ui-router\angular-ui-router.d.ts" />
-    <TypeScriptCompile Include="typings\angularjs\angular.d.ts" />
-    <TypeScriptCompile Include="typings\jquery\jquery.d.ts" />
-    <TypeScriptCompile Include="typings\leaflet\leaflet.d.ts" />
-    <TypeScriptCompile Include="typings\tsd.d.ts" />
+    <TypeScriptCompile Include="_references.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="src\Directives\" />
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
 </Project>

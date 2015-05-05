@@ -38,7 +38,15 @@
     <script src="../bower_components/leaflet.zoomhome/dist/leaflet.zoomhome.min.js"></script>
     <script src="../bower_components/leaflet-groupedlayercontrol/dist/leaflet.groupedlayercontrol.min.js"></script>
     <script src="../bower_components/sidebar-v2/js/leaflet-sidebar.js"></script>
-    <script src="../bower_components/wim_angular/dist/wim_angular.min.js"></script>
+    <script src="../bower_components/wim_angular/dist/src/Extensions/String.js"></script>
+    <script src="../bower_components/wim_angular/dist/src/Events/Delegate.js"></script>
+    <script src="../bower_components/wim_angular/dist/src/Events/EventArgs.js"></script>
+    <script src="../bower_components/wim_angular/dist/src/Events/EventHandler.js"></script>
+    <script src="../bower_components/wim_angular/dist/src/Models/Point.js"></script>
+    <script src="../bower_components/wim_angular/dist/src/Services/service.module.js"></script>
+    <script src="../bower_components/wim_angular/dist/src/Services/Helpers/RequestInfo.js"></script>
+    <script src="../bower_components/wim_angular/dist/src/Services/HTTPServiceBase.js"></script>
+    <script src="../bower_components/wim_angular/dist/src/Services/SearchAPIService.js"></script>
     <!-- endbuild -->
 
     <!-- build:js scripts/custom.min.js -->
@@ -46,12 +54,15 @@
     <script src="appConfig.js"></script>
     <!-- Models ref-->
     <script src="Models/Region.js"></script>
+    <!-- Services ref-->
+    <script src="Services/service.module.js"></script>
+    <script src="Services/SessionService.js"></script>
+    <script src="Services/RegionService.js"></script>
+
     <!-- Controllers ref-->
     <script src="Controllers/controller.module.js"></script>
     <script src="Controllers/MapController.js"></script>
     <script src="Controllers/SidebarController.js"></script>
-    <!-- Services ref-->
-    <script src="Services/service.module.js"></script>
 
     <!-- endbower -->
     <!-- endbuild -->
@@ -61,8 +72,7 @@
 <body>
     <div ui-view="navbar" class="navbar navbar-gray navbar-fixed-top" role="navigation"></div>      
     <div ui-view="sidebar" ng-class="{'collapsed':vm.sideBarCollapsed}" class="sidebar sidebar-content" ></div> 
-    <div ui-view="map" class="fullsized sidebar-map"></div>   
-    
+    <div ui-view="map" class="fullsized sidebar-map"></div>       
 </body>
 
 </html>
