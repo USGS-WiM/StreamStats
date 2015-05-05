@@ -23,30 +23,45 @@
 //03.26.2015 jkn - Created
 
 //Import
-///<reference path="../../typings/angularjs/angular.d.ts" />
-///<reference path="../../bower_components/wim_angular/src/Models/Point.ts" />
-///<reference path="../../bower_components/wim_angular/src/Services/HTTPServiceBase.ts" />
 module StreamStats.Services {
     'use strict'
-    export interface IStreamStatsService{
-        getRegionList(point: WiM.Models.IPoint):ng.IPromise<Array<Models.IRegion>>;
+    export interface ISessionService{
+        selectedAreaOfInterest: WiM.Services.ISearchAPIOutput;
+        onSelectedAreaOfInterestChanged: WiM.Event.Delegate<WiM.Event.EventArgs>;
+        selectedRegion: Models.IRegion;
     }
 
-    class StreamStatsService extends WiM.Services.HTTPServiceBase {
+    class SessionService implements ISessionService {
+        //Events
+        private _onSelectedAreaOfInterestChanged: WiM.Event.Delegate<WiM.Event.EventArgs>;
+        public get onSelectedAreaOfInterestChanged(): WiM.Event.Delegate<WiM.Event.EventArgs> {
+            return this._onSelectedAreaOfInterestChanged;
+        }
+        
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
+        private _selectedAreaOfInterest;
+        public set selectedAreaOfInterest(val: WiM.Services.ISearchAPIOutput) {
+            if (this._selectedAreaOfInterest !== val) {
+                this._selectedAreaOfInterest = val;
+                this._onSelectedAreaOfInterestChanged.raise(null, WiM.Event.EventArgs.Empty);
+            }
+        }
+        public get selectedAreaOfInterest(): WiM.Services.ISearchAPIOutput {
+            return this._selectedAreaOfInterest
+        }
         
+        public selectedRegion: Models.IRegion;
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        constructor($http: ng.IHttpService, private $q:ng.IQService) {
-            super($http, configuration.requests['StreamStats']);
+        constructor() {
+            this._onSelectedAreaOfInterestChanged = new WiM.Event.Delegate<WiM.Event.EventArgs>();
+            
         }
 
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
-        public getRegionList(point: WiM.Models.IPoint): ng.IPromise<Array<string>> {
-            return this.Execute(null);
-        }
+
         //public AddStudyBoundary() {
         //    var sa: Models.IStudyArea = this.SelectedStudyArea;
 
@@ -77,10 +92,10 @@ module StreamStats.Services {
 
     }//end class
 
-    factory.$inject = ['$http','$q'];
-    function factory($http: ng.IHttpService, $q:ng.IQService) {
-        return new StreamStatsService($http, $q)
+    factory.$inject = [];
+    function factory() {
+        return new SessionService()
     }
-    angular.module('StreamStats.Services ')
-        .factory('StreamStats.Services.StreamStatsService', factory)
+    angular.module('StreamStats.Services')
+        .factory('StreamStats.Services.SessionService', factory)
 }//end module

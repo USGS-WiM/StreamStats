@@ -33,26 +33,44 @@ module StreamStats.Services {
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        constructor(private streamStatsService:IStreamStatsService) {
+        constructor(private streamStatsService:ISessionService) {
        
         }
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
-        public SetRegion(location: WiM.Models.IPoint):void {
-            //query point to determine regions
-            this.streamStatsService.getRegionList(location).then(
-                (response: ng.IHttpPromiseCallbackArg<Array<Models.IRegion>>) => {
-                    this.RegionList = response.data.map((item) => { return null });
-                });
-        }
+
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
+        //public AddStudyBoundary() {
+        //    var sa: Models.IStudyArea = this.SelectedStudyArea;
+
+        //    var url = configuration.requests['SSdelineation'].format(sa.RegionID, sa.Pourpoint.Longitude.toString(),
+        //        sa.Pourpoint.Latitude.toString(), sa.Pourpoint.crs.toString(), false)
+        //    var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url);
+
+        //    this.Execute(request).then(
+        //        (response) => {
+        //            sa.Basin = response.hasOwnProperty("delineatedbasin") ? response["delineatedbasin"].features[0] : null;
+        //            sa.WorkspaceID = response.hasOwnProperty("workspaceID") ? response["workspaceID"] : null;
+        //        },(error) => {
+        //            return this.$q.reject(error.data)
+        //        });
+
+        //    this.SetSelectedStudy(sa);
+        //}
+
+        //public SetSelectedStudy(sa: Models.IStudyArea) {
+        //    var saIndex: number = this.StudyAreaList.indexOf(sa);
+        //    if (saIndex <= 0) throw new Error("Study area not in collection");
+
+        //    this.SelectedStudyArea = this.StudyAreaList[this.StudyAreaList.indexOf(sa)]
+        //}
 
 
     }//end class
 
     factory.$inject = ['StreamStats.Services.StreamStatsService'];
-    function factory(streamStatsService:IStreamStatsService) {
+    function factory(streamStatsService:ISessionService) {
         return new StudyAreaService(streamStatsService)
     }
     angular.module('StreamStats.Services')

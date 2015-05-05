@@ -23,21 +23,25 @@
 //04.15.2015 jkn - Created
 
 //Imports"
-///<reference path="../../typings/leaflet/leaflet.d.ts" />
-
 declare var configuration: any;
 
 module StreamStats.Controllers {
     'use strinct';
-
+    interface ILeafletData {
+        getMap(): ng.IPromise<any>;
+    }
     interface ICenter {
         lat: number;
         lng: number;
         zoom: number;    
     }
+    interface IBounds {
+        southWest: IMapPoint;
+        northEast: IMapPoint;
+    }
     interface IMapPoint {
         lat: number;
-        long: number;
+        lng: number;
     }
     interface ILayer {
         baselayers: Object;
@@ -54,6 +58,7 @@ module StreamStats.Controllers {
         layers: ILayer;
         controls: Object;
         markers: Object;
+        bounds: Object;
 
     }
     interface IMapControllerScope extends ng.IScope {
@@ -61,10 +66,10 @@ module StreamStats.Controllers {
     }
     class MapPoint implements IMapPoint{
         lat: number;
-        long: number;
+        lng: number;
         constructor() {
             this.lat = 0;
-            this.long = 0;    
+            this.lng = 0;    
         }
     }
     class Center implements ICenter {
@@ -95,27 +100,43 @@ module StreamStats.Controllers {
     //examples/access-leaflet-object-example.html
     //http://www.codeitive.com/0JiejWjjXg/two-or-multiple-geojson-layers-in-angular-leaflet-directive.html
     class MapController implements IMapController {
+        //Events
+        //-+-+-+-+-+-+-+-+-+-+-+-
+        private _onSelectedAreaOfInterestHandler: WiM.Event.EventHandler<WiM.Event.EventArgs>;
+      
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
+        private streamStatsService: Services.ISessionService;
+        private regionServices: Services.IRegionService;
+
         public center: ICenter = null;
         public layers: ILayer = null;
+        public mapDefaults: IMapDefault = null;
+        public mapPoint: IMapPoint = null;
+        public bounds: IBounds = null;
+
         public controls: Object = null;
         public markers: Object = null;
-        public mapDefaults: IMapDefault = null;
         public events: Object = null;
-        public mapPoint: IMapPoint = null;
-
+        
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope'];
-        constructor($scope:IMapControllerScope) {
+        static $inject = ['$scope', 'StreamStats.Services.SessionService', 'StreamStats.Services.RegionService'];
+        constructor($scope:IMapControllerScope, streamStats:Services.ISessionService, regionService:Services.IRegionService) {
             $scope.vm = this;
             $scope.$on('leafletDirectiveMap.mousemove',  (event, args) => {
                 var latlng = args.leafletEvent.latlng;
                 this.mapPoint.lat = latlng.lat;
-                this.mapPoint.long = latlng.lng;
+                this.mapPoint.lng = latlng.lng;
             });
-            this.init();            
+            $scope.$watch(() => this.bounds,(newval, oldval) => this.setRegionsByBounds(oldval, newval));
+
+            this.init(); 
+            this.streamStatsService = streamStats;
+            this.regionServices = regionService;
+            
+            //subscribe to Events
+            streamStats.onSelectedAreaOfInterestChanged.subscribe(this._onSelectedAreaOfInterestHandler);
                         
         }
 
@@ -124,15 +145,21 @@ module StreamStats.Controllers {
         
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
-        private init(): void {
+        private init(): void { 
+            //init event handler
+            this._onSelectedAreaOfInterestHandler = new WiM.Event.EventHandler<WiM.Event.EventArgs>((sender: any, e: WiM.Event.EventArgs) => {
+                this.onSelectedAreaOfInterestChanged(sender);
+            });
             
+            //init map           
             this.center = new Center(39, -100, 4);
             this.layers = {
                 baselayers: configuration.basemaps,
                 overlays: configuration.overlayedLayers,
                 markers: this.markers
             }             
-            this.mapDefaults = new MapDefault(null, 3, false);           
+            this.mapDefaults = new MapDefault(null, 3, false);   
+            this.markers = {};        
             //add custom controls
             this.controls = {
                 scale: true,
@@ -146,15 +173,30 @@ module StreamStats.Controllers {
             };
             this.events= { 
                 map: {
-                    enable: ['mousemove'],
-                    logic:'emit'
+                    enable: ['mousemove']
                 }
             }
-
-            this.mapPoint = new MapPoint();
-            
+            this.mapPoint = new MapPoint();            
         }
+        private onSelectedAreaOfInterestChanged(e: WiM.Event.EventArgs) {
+            var AOI = this.streamStatsService.selectedAreaOfInterest;
 
+            this.markers['AOI'] = {
+                lat: AOI.Latitude,
+                lng: AOI.Longitude,
+                message: AOI.Name,
+                focus: true,
+                draggable:false
+            }
+
+            this.center = new Center(AOI.Latitude, AOI.Longitude, 14);
+        }
+        private setRegionsByBounds(oldValue, newValue) {
+            if (this.center.zoom >= 14 && oldValue !== newValue) {
+                this.regionServices.LoadRegions(this.bounds.northEast.lng, this.bounds.southWest.lng,
+                                                this.bounds.southWest.lat, this.bounds.northEast.lat);
+            }
+        }
 
     }//end class
 

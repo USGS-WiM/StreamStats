@@ -1,5 +1,4 @@
 ﻿var configuration = {}
-
 configuration.baseurls =
 {
     'MercuryService': 'http://54.174.81.42/mercuryservices',
@@ -9,7 +8,7 @@ configuration.baseurls =
     "NWISurl": 'http://waterservices.usgs.gov/nwis',
     'StreamStats': 'http://ssdev.cr.usgs.gov',
     'SearchAPI': 'http://txpub.usgs.gov/DSS/search_api/1.0/dataService/dataService.ashx',
-    'FARefGage': 'http://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowAnywhere/MapServer'       
+    'FARefGage': 'http://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowAnywhere/MapServer'
 }
 
 configuration.queryparams =
@@ -19,7 +18,8 @@ configuration.queryparams =
     'RegressionMScenarios': '/{0}/estimate?state={1}',
     'SSdelineation': '/watershed.geojson?state={0}&xlocation={1}&ylocation={2}&wkid={3}&includecharacteristics={4}',
     'SSbasinChar': '/basincharacteristics?state={0}&workspaceID={1}&includecharacteristics={2}',
-    'FARefGage':'/2/query?geometry={0}&geometryType=esriGeometryPoint&inSR={1}&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson'
+    'FARefGage': '/2/query?geometry={0}&geometryType=esriGeometryPoint&inSR={1}&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
+    'regionService': '/arcgis/rest/services/ss_studyAreas_prod/MapServer/identify'
 }
 
 configuration.basemaps = 
@@ -99,7 +99,7 @@ configuration.overlayedLayers = {
 
 "SSLayer": {
     "name": "streamStats implementation",
-    "url": "http://ssdev.cr.usgs.gov/arcgis/rest/services/ss_studyAreas_dev/MapServer",
+    "url": configuration.baseurls['StreamStats'] + "/arcgis/rest/services/ss_studyAreas_prod/MapServer",
     "type": 'dynamic',
     "visible": true,
     "layerOptions": {
@@ -109,9 +109,10 @@ configuration.overlayedLayers = {
         }
                   
     }
-}
-    
+}    
 
 }//end statelayer
+
+
 
 
