@@ -27,17 +27,14 @@ module StreamStats.Models {
     export interface IRegion {
         RegionID: string;
         Name: string;
+        Bounds: Array<Array<number>>;
     }
 
     export class Region implements IRegion {
         //properties
         public RegionID: string;
         public Name: string;
-
-        constructor(id: string, name: string) {
-            this.RegionID = id;
-            this.Name = name;
-        }
+        public Bounds: Array<Array<number>>;
 
     }//end class
 }//end module 

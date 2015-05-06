@@ -36,15 +36,15 @@ var StreamStats;
             function RegionService($http, $q) {
                 _super.call(this, $http, configuration.baseurls['StreamStats']);
                 this.$q = $q;
-                this.RegionList = [];
+                this.regionList = [];
             }
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
-            RegionService.prototype.LoadRegions = function (xmin, xmax, ymin, ymax, sr) {
+            RegionService.prototype.loadRegionListByExtent = function (xmin, xmax, ymin, ymax, sr) {
                 var _this = this;
                 if (sr === void 0) { sr = 4326; }
                 //    clear List
-                this.RegionList.length = 0; //clear array
+                this.regionList.length = 0; //clear array
                 var input = {
                     f: 'json',
                     geometry: { "xmin": xmin, "ymin": ymin, "xmax": xmax, "ymax": ymax, "spatialReference": { "wkid": sr } },
@@ -60,11 +60,36 @@ var StreamStats;
                 request.params = input;
                 this.Execute(request).then(function (response) {
                     response.data.results.map(function (item) {
-                        _this.RegionList.push(new StreamStats.Models.Region(item.attributes.st_abbr, item.value));
+                        var region = _this.getRegion(item.attributes.st_abbr);
+                        if (region != null)
+                            _this.regionList.push(region);
                     });
                 }, function (error) {
                     return _this.$q.reject(error.data);
                 });
+            };
+            RegionService.prototype.loadRegionListByRegion = function (c) {
+                this.regionList.length = 0; //clear array;
+                var selectedRegion = this.getRegion(c);
+                if (selectedRegion == null)
+                    return false;
+                this.regionList.push(selectedRegion);
+                return true;
+            };
+            //HelperMethods
+            //-+-+-+-+-+-+-+-+-+-+-+-
+            RegionService.prototype.getRegion = function (lookupID) {
+                var regionArray = configuration.regions;
+                try {
+                    for (var i = 0; i < regionArray.length; i++) {
+                        if (regionArray[i].Name.toUpperCase().trim() === lookupID.toUpperCase().trim() || regionArray[i].RegionID.toUpperCase().trim() === lookupID.toUpperCase().trim())
+                            return regionArray[i];
+                    }
+                    return null;
+                }
+                catch (e) {
+                    return null;
+                }
             };
             return RegionService;
         })(WiM.Services.HTTPServiceBase); //end class

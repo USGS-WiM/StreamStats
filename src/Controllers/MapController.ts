@@ -103,11 +103,13 @@ module StreamStats.Controllers {
         //Events
         //-+-+-+-+-+-+-+-+-+-+-+-
         private _onSelectedAreaOfInterestHandler: WiM.Event.EventHandler<WiM.Event.EventArgs>;
-      
+        
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
         private streamStatsService: Services.ISessionService;
         private regionServices: Services.IRegionService;
+        private leafletBoundsHelperService: any;
+        private $locationService: ng.ILocationService;
 
         public center: ICenter = null;
         public layers: ILayer = null;
@@ -121,23 +123,33 @@ module StreamStats.Controllers {
         
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', 'StreamStats.Services.SessionService', 'StreamStats.Services.RegionService'];
-        constructor($scope:IMapControllerScope, streamStats:Services.ISessionService, regionService:Services.IRegionService) {
+        static $inject = ['$scope', '$location','$stateParams','leafletBoundsHelpers','StreamStats.Services.SessionService', 'StreamStats.Services.RegionService'];
+        constructor($scope:IMapControllerScope, $location:ng.ILocationService,$stateParams, leafletBoundsHelper:any, streamStats:Services.ISessionService, regionService:Services.IRegionService) {
             $scope.vm = this;
+            this.init(); 
+
             $scope.$on('leafletDirectiveMap.mousemove',  (event, args) => {
                 var latlng = args.leafletEvent.latlng;
                 this.mapPoint.lat = latlng.lat;
                 this.mapPoint.lng = latlng.lng;
-            });
-            $scope.$watch(() => this.bounds,(newval, oldval) => this.setRegionsByBounds(oldval, newval));
+            }); 
+                       
 
-            this.init(); 
-            this.streamStatsService = streamStats;
-            this.regionServices = regionService;
+            $scope.$watch(() => this.bounds,(newval, oldval) => this.setRegionsByBounds(oldval, newval));
+            $scope.$on('$locationChangeStart',() => this.updateRegion());
+
+
             
+            this.streamStatsService = streamStats;
+            this.$locationService = $location;
+            this.regionServices = regionService;
+            this.leafletBoundsHelperService = leafletBoundsHelper;
+
             //subscribe to Events
             streamStats.onSelectedAreaOfInterestChanged.subscribe(this._onSelectedAreaOfInterestHandler);
-                        
+
+            if ($stateParams.region) this.setBoundsByRegion($stateParams.region);
+                       
         }
 
         //Methods
@@ -176,7 +188,7 @@ module StreamStats.Controllers {
                     enable: ['mousemove']
                 }
             }
-            this.mapPoint = new MapPoint();            
+            this.mapPoint = new MapPoint();          
         }
         private onSelectedAreaOfInterestChanged(e: WiM.Event.EventArgs) {
             var AOI = this.streamStatsService.selectedAreaOfInterest;
@@ -192,12 +204,26 @@ module StreamStats.Controllers {
             this.center = new Center(AOI.Latitude, AOI.Longitude, 14);
         }
         private setRegionsByBounds(oldValue, newValue) {
+
             if (this.center.zoom >= 14 && oldValue !== newValue) {
-                this.regionServices.LoadRegions(this.bounds.northEast.lng, this.bounds.southWest.lng,
+                this.regionServices.loadRegionListByExtent(this.bounds.northEast.lng, this.bounds.southWest.lng,
                                                 this.bounds.southWest.lat, this.bounds.northEast.lat);
             }
         }
+        private updateRegion() {
+            //get regionkey
+            var key: string= (this.$locationService.search()).region
+            this.setBoundsByRegion(key);
 
+        }
+        private setBoundsByRegion(key:string) {           
+            if (key && this.regionServices.loadRegionListByRegion(key)) {
+                this.streamStatsService.selectedRegion = this.regionServices.regionList[0];
+                this.bounds = this.leafletBoundsHelperService.createBoundsFromArray(this.streamStatsService.selectedRegion.Bounds);      
+                this.center = <ICenter>{};         
+            }
+
+        }
     }//end class
 
     angular.module('StreamStats.Controllers')

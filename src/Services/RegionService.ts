@@ -26,27 +26,28 @@
 module StreamStats.Services {
     'use strict'
     export interface IRegionService {
-        RegionList: Array<Models.IRegion>;
-        LoadRegions(xmin: number, xmax: number, ymin: number, ymax: number, sr?: number);
+        regionList: Array<Models.IRegion>;
+        loadRegionListByExtent(xmin: number, xmax: number, ymin: number, ymax: number, sr?: number):boolean;
+        loadRegionListByRegion(region: string): boolean;
     }
 
     class RegionService extends WiM.Services.HTTPServiceBase {
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
-        public RegionList: Array<Models.IRegion>;
+        public regionList: Array<Models.IRegion>;
         
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         constructor($http: ng.IHttpService, private $q: ng.IQService) {
             super($http, configuration.baseurls['StreamStats']);
-            this.RegionList = [];
+            this.regionList = [];
         }
 
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
-        public LoadRegions(xmin:number,xmax:number,ymin:number,ymax:number, sr:number=4326) {
+        public loadRegionListByExtent(xmin:number,xmax:number,ymin:number,ymax:number, sr:number=4326) {
         //    clear List
-            this.RegionList.length =0;//clear array
+            this.regionList.length =0;//clear array
             var input = {
                 f: 'json',
                 geometry: { "xmin": xmin, "ymin": ymin, "xmax": xmax, "ymax": ymax, "spatialReference": { "wkid": sr } },
@@ -65,15 +66,40 @@ module StreamStats.Services {
             this.Execute(request).then(
                 (response: any) => {
                     response.data.results.map((item) => {
-                        this.RegionList.push(new Models.Region(item.attributes.st_abbr, item.value));
+                        var region = this.getRegion(item.attributes.st_abbr);
+                        if(region != null) this.regionList.push(region);
                     });
                 },(error) => {
                     return this.$q.reject(error.data)
                 });
         }
+        public loadRegionListByRegion(c: string): boolean{
+            this.regionList.length = 0;//clear array;
+            var selectedRegion = this.getRegion(c);
+            if (selectedRegion == null) return false;
 
+            this.regionList.push(selectedRegion);
+            return true;
+        }
         //HelperMethods
         //-+-+-+-+-+-+-+-+-+-+-+-
+        private getRegion(lookupID: string): Models.IRegion {
+            var regionArray: Array<Models.IRegion> = configuration.regions;
+
+            try {
+                //search for item
+                for (var i = 0; i < regionArray.length; i++){
+                    if (regionArray[i].Name.toUpperCase().trim() === lookupID.toUpperCase().trim() ||
+                        regionArray[i].RegionID.toUpperCase().trim() === lookupID.toUpperCase().trim())
+                        return regionArray[i];
+                }//next region
+
+                return null;
+            }
+            catch (e) {
+                return null;
+            }
+        }
 
     }//end class
 
