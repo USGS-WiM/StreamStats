@@ -21,9 +21,7 @@ var StreamStats;
     var Models;
     (function (Models) {
         var Region = (function () {
-            function Region(id, name) {
-                this.RegionID = id;
-                this.Name = name;
+            function Region() {
             }
             return Region;
         })();

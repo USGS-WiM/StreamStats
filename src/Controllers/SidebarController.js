@@ -27,7 +27,7 @@ var StreamStats;
                 this.sideBarCollapsed = false;
                 this.selectedProcedure = 1 /* INIT */;
                 this.sessionService = session;
-                this.regionList = region.RegionList;
+                this.regionList = region.regionList;
                 this.SelectedRegion = session.selectedRegion;
             }
             //Methods

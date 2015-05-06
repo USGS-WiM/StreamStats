@@ -61,7 +61,7 @@ module StreamStats.Controllers {
             this.selectedProcedure = ProcedureType.INIT;
 
             this.sessionService = session;
-            this.regionList = region.RegionList;
+            this.regionList = region.regionList;
 
             this.SelectedRegion = session.selectedRegion;       
         }

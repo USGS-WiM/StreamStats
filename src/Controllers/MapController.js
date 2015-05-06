@@ -37,7 +37,7 @@ var StreamStats;
         //examples/access-leaflet-object-example.html
         //http://www.codeitive.com/0JiejWjjXg/two-or-multiple-geojson-layers-in-angular-leaflet-directive.html
         var MapController = (function () {
-            function MapController($scope, streamStats, regionService) {
+            function MapController($scope, $location, $stateParams, leafletBoundsHelper, streamStats, regionService) {
                 var _this = this;
                 this.center = null;
                 this.layers = null;
@@ -48,17 +48,22 @@ var StreamStats;
                 this.markers = null;
                 this.events = null;
                 $scope.vm = this;
+                this.init();
                 $scope.$on('leafletDirectiveMap.mousemove', function (event, args) {
                     var latlng = args.leafletEvent.latlng;
                     _this.mapPoint.lat = latlng.lat;
                     _this.mapPoint.lng = latlng.lng;
                 });
                 $scope.$watch(function () { return _this.bounds; }, function (newval, oldval) { return _this.setRegionsByBounds(oldval, newval); });
-                this.init();
+                $scope.$on('$locationChangeStart', function () { return _this.updateRegion(); });
                 this.streamStatsService = streamStats;
+                this.$locationService = $location;
                 this.regionServices = regionService;
+                this.leafletBoundsHelperService = leafletBoundsHelper;
                 //subscribe to Events
                 streamStats.onSelectedAreaOfInterestChanged.subscribe(this._onSelectedAreaOfInterestHandler);
+                if ($stateParams.region)
+                    this.setBoundsByRegion($stateParams.region);
             }
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
@@ -105,12 +110,24 @@ var StreamStats;
             };
             MapController.prototype.setRegionsByBounds = function (oldValue, newValue) {
                 if (this.center.zoom >= 14 && oldValue !== newValue) {
-                    this.regionServices.LoadRegions(this.bounds.northEast.lng, this.bounds.southWest.lng, this.bounds.southWest.lat, this.bounds.northEast.lat);
+                    this.regionServices.loadRegionListByExtent(this.bounds.northEast.lng, this.bounds.southWest.lng, this.bounds.southWest.lat, this.bounds.northEast.lat);
+                }
+            };
+            MapController.prototype.updateRegion = function () {
+                //get regionkey
+                var key = (this.$locationService.search()).region;
+                this.setBoundsByRegion(key);
+            };
+            MapController.prototype.setBoundsByRegion = function (key) {
+                if (key && this.regionServices.loadRegionListByRegion(key)) {
+                    this.streamStatsService.selectedRegion = this.regionServices.regionList[0];
+                    this.bounds = this.leafletBoundsHelperService.createBoundsFromArray(this.streamStatsService.selectedRegion.Bounds);
+                    this.center = {};
                 }
             };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
-            MapController.$inject = ['$scope', 'StreamStats.Services.SessionService', 'StreamStats.Services.RegionService'];
+            MapController.$inject = ['$scope', '$location', '$stateParams', 'leafletBoundsHelpers', 'StreamStats.Services.SessionService', 'StreamStats.Services.RegionService'];
             return MapController;
         })(); //end class
         angular.module('StreamStats.Controllers').controller('StreamStats.Controllers.MapController', MapController);
