@@ -2,8 +2,8 @@
 <table class="table borderless">
 
     <thead>
-        <tr>
-            <th><a href="" ng-click="vm.toggleSideBar()" role="tab"><i id="chevron" ng-class="vm.sideBarCollapsed ? 'glyphicon glyphicon-chevron-right': 'glyphicon glyphicon-chevron-left'"></i></a></th>
+        <tr ng-click="vm.toggleSideBar()">
+            <th><a href="" role="tab"><i id="chevron" ng-class="vm.sideBarCollapsed ? 'glyphicon glyphicon-chevron-right': 'glyphicon glyphicon-chevron-left'"></i></a></th>
             <th><i class="fa fa-leaf"></i></span>&nbsp;&nbspStreamStats <small>a great new app</small></th>
         </tr>
     </thead>
@@ -21,17 +21,20 @@
                     <p>To begin, search or use the map to select an area of interest, then select a region</p>
                                       
                     <input type="text" class="form-control"
-                           ng-model="vm.selectedLocation"
+                           ng-model="selection"
                            typeahead="loc as loc.Name +'(' + loc.State +')' for loc in vm.GetLocations($viewValue)"
                            typeahead-loading="loadingLocations"
                            typeahead-wait-ms="100"
                            typeahead-min-length="4"
+                           typeahead-on-select="vm.onAOISelect($item); selection=''"
                            placeholder="Enter an area of interest" />
                     <i ng-show="loadingLocations" class="glyphicon glyphicon-refresh"></i>
                         
-                    <div class="form-group">
-                        <label> Selected Region</label>
-                        <select class="form-control"></select>
+                    <div class="form-group" ng-show="vm.regionList.length > 0">
+                        <label> Select a Region</label>
+                        <div ng-repeat="region in vm.regionList">
+                            <button ng-class="region.Name === vm.sessionService.selectedRegion.Name ? 'btn btn-primary btn-group-justified':'btn btn-group-justified'" ng-click="vm.setRegion(region)"><span>{{region.Name}} </span></button>
+                        </div>
                     </div> 
                               
                 </div>
@@ -48,7 +51,7 @@
                 <div class="accordian-body">
                     <p>To identify a study area, zoom to at least a zoom level of 15 and select a blue stream cell</p>
                     <h4>OR</h4>
-                    <button id="PRMSmodel" class='btn btn-primary'<span>Use Iowa PRMS Model</span></button></br>
+                    <!--<button id="PRMSmodel" class='btn btn-primary'<span>Use Iowa PRMS Model</span></button></br>-->
 
                     <div id="PRMSeditToolBar" class="btn-group" style="display:none;">
                         <button id="drawPolyline" type="button" class="btn btn-sm btn-default"><span class="leaflet-draw-draw-polyline"></span> Polyline</button>
