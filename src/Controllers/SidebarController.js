@@ -15,21 +15,20 @@
 //Comments
 //04.14.2015 jkn - Created
 //Imports"
-///<reference path="../../bower_components/wim_angular/src/Services/SearchAPIService.ts" />
 var StreamStats;
 (function (StreamStats) {
     var Controllers;
     (function (Controllers) {
         'use strinct';
         var SidebarController = (function () {
-            function SidebarController($scope, service) {
+            function SidebarController($scope, service, session, region) {
                 $scope.vm = this;
                 this.searchService = service;
                 this.sideBarCollapsed = false;
                 this.selectedProcedure = 1 /* INIT */;
-                this.RegionList = [new StreamStats.Models.Region('1', "Iowa"), new StreamStats.Models.Region('2', 'New York'), new StreamStats.Models.Region('2', 'New York2'), new StreamStats.Models.Region('2', 'New York3'), new StreamStats.Models.Region('2', 'Ill')];
-                this.SelectedRegion = this.RegionList[0];
-                this.selectedLocation = undefined;
+                this.sessionService = session;
+                this.regionList = region.regionList;
+                this.SelectedRegion = session.selectedRegion;
             }
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
@@ -46,6 +45,14 @@ var StreamStats;
                     this.sideBarCollapsed = false;
                 else
                     this.sideBarCollapsed = true;
+            };
+            SidebarController.prototype.onAOISelect = function (item) {
+                this.sessionService.selectedAreaOfInterest = item;
+            };
+            SidebarController.prototype.setRegion = function (region) {
+                if (this.sessionService.selectedRegion == undefined || this.sessionService.selectedRegion.RegionID !== region.RegionID)
+                    this.sessionService.selectedRegion = region;
+                this.setProcedureType(2 /* IDENTIFY */);
             };
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
@@ -85,7 +92,7 @@ var StreamStats;
             };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
-            SidebarController.$inject = ['$scope', 'WiM.Services.SearchAPIService'];
+            SidebarController.$inject = ['$scope', 'WiM.Services.SearchAPIService', 'StreamStats.Services.SessionService', 'StreamStats.Services.RegionService'];
             return SidebarController;
         })(); //end class
         var ProcedureType;

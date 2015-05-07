@@ -15,16 +15,13 @@
 //Comments
 //08.20.2014 jkn - Created
 //Imports"
-///<reference path="../../bower_components/wim_angular/src/Models/Point.ts" />
 // Interface
 var StreamStats;
 (function (StreamStats) {
     var Models;
     (function (Models) {
         var Region = (function () {
-            function Region(id, name) {
-                this.RegionID = id;
-                this.Name = name;
+            function Region() {
             }
             return Region;
         })();

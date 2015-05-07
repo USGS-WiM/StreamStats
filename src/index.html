@@ -37,23 +37,45 @@
     <script src="../bower_components/leaflet.zoomhome/dist/leaflet.zoomhome.min.js"></script>
     <script src="../bower_components/leaflet-groupedlayercontrol/dist/leaflet.groupedlayercontrol.min.js"></script>
     <script src="../bower_components/sidebar-v2/js/leaflet-sidebar.js"></script>
+<<<<<<< HEAD
     <script src="../bower_components/wim_angular/src/Extensions/String.js"></script>
     <script src="../bower_components/wim_angular/src/Services/service.module.js"></script>
     <script src="../bower_components/wim_angular/src/Services/Helpers/RequestInfo.js"></script>
     <script src="../bower_components/wim_angular/src/Services/HTTPServiceBase.js"></script>
     <script src="../bower_components/wim_angular/src/Services/SearchAPIService.js"></script> 
+=======
+    <script src="../bower_components/wim_angular/dist/src/Extensions/String.js"></script>
+    <script src="../bower_components/wim_angular/dist/src/Events/Delegate.js"></script>
+    <script src="../bower_components/wim_angular/dist/src/Events/EventArgs.js"></script>
+    <script src="../bower_components/wim_angular/dist/src/Events/EventHandler.js"></script>
+    <script src="../bower_components/wim_angular/dist/src/Models/Point.js"></script>
+    <script src="../bower_components/wim_angular/dist/src/Services/service.module.js"></script>
+    <script src="../bower_components/wim_angular/dist/src/Services/Helpers/RequestInfo.js"></script>
+    <script src="../bower_components/wim_angular/dist/src/Services/HTTPServiceBase.js"></script>
+    <script src="../bower_components/wim_angular/dist/src/Services/SearchAPIService.js"></script>
+>>>>>>> ef51a211846831e84b98b0cf58e517753b3e3111
     <!-- endbuild -->
     <!-- build:js scripts/custom.min.js -->
     <script src="Config.js"></script>
     <script src="appConfig.js"></script>
     <!-- Models ref-->
     <script src="Models/Region.js"></script>
+    <!-- Services ref-->
+    <script src="Services/service.module.js"></script>
+    <script src="Services/SessionService.js"></script>
+    <script src="Services/RegionService.js"></script>
+    <script src="Services/UrlService.js"></script>
+
     <!-- Controllers ref-->
     <script src="Controllers/controller.module.js"></script>
     <script src="Controllers/MapController.js"></script>
     <script src="Controllers/SidebarController.js"></script>
+<<<<<<< HEAD
     <!-- Services ref-->
     <script src="Services/service.module.js"></script>
+=======
+
+>>>>>>> ef51a211846831e84b98b0cf58e517753b3e3111
     <!-- endbower -->
     <!-- endbuild -->
     
@@ -62,7 +84,11 @@
 <body>
     <div ui-view="navbar" class="navbar navbar-gray navbar-fixed-top" role="navigation"></div>      
     <div ui-view="sidebar" ng-class="{'collapsed':vm.sideBarCollapsed}" class="sidebar sidebar-content" ></div> 
+<<<<<<< HEAD
     <div ui-view="map" class="fullsized sidebar-map"></div>   
+=======
+    <div ui-view="map" class="fullsized sidebar-map"></div>       
+>>>>>>> ef51a211846831e84b98b0cf58e517753b3e3111
 </body>
 
 </html>

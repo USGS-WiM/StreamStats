@@ -23,63 +23,90 @@
 //03.26.2015 jkn - Created
 
 //Import
-///<reference path="../../typings/angularjs/angular.d.ts" />
-///<reference path="../../bower_components/wim_angular/src/Models/Point.ts" />
-///<reference path="../../bower_components/wim_angular/src/Services/HTTPServiceBase.ts" />
-///<reference path="../../bower_components/wim_angular/src/Services/Helpers/RequestInfo.ts" />
 module StreamStats.Services {
     'use strict'
+    export interface IRegionService {
+        regionList: Array<Models.IRegion>;
+        loadRegionListByExtent(xmin: number, xmax: number, ymin: number, ymax: number, sr?: number):boolean;
+        loadRegionListByRegion(region: string): boolean;
+    }
 
-    class StreamStatsService extends WiM.Services.HTTPServiceBase {
+    class RegionService extends WiM.Services.HTTPServiceBase {
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
-        public StudyAreaList: Array<Models.IStudyArea>;
-        public SelectedStudyArea: Models.IStudyArea
+        public regionList: Array<Models.IRegion>;
         
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         constructor($http: ng.IHttpService, private $q: ng.IQService) {
-            super($http, configuration.requests['StreamStats']);
+            super($http, configuration.baseurls['StreamStats']);
+            this.regionList = [];
         }
 
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
-        public AddStudyBoundary() {
-            var sa: Models.IStudyArea = this.SelectedStudyArea;
+        public loadRegionListByExtent(xmin:number,xmax:number,ymin:number,ymax:number, sr:number=4326) {
+        //    clear List
+            this.regionList.length =0;//clear array
+            var input = {
+                f: 'json',
+                geometry: { "xmin": xmin, "ymin": ymin, "xmax": xmax, "ymax": ymax, "spatialReference": { "wkid": sr } },
+                tolerance: 2,
+                returnGeometry: false,
+                mapExtent: { "xmin": xmin, "ymin": ymin, "xmax": xmax, "ymax": ymax, "spatialReference": { "wkid": sr } },
+                imageDisplay: "1647, 457,96",
+                geometryType:"esriGeometryEnvelope",
+                sr:sr,
+                layers:"all: 4"
+            }
 
-            var url = configuration.requests['SSdelineation'].format(sa.RegionID, sa.Pourpoint.Longitude.toString(),
-                sa.Pourpoint.Latitude.toString(), sa.Pourpoint.crs.toString(), false)
-            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url);
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(configuration.queryparams['regionService'],WiM.Services.Helpers.methodType.GET,'json');
+            request.params = input;
 
             this.Execute(request).then(
-                (response) => {
-                    sa.Basin = response.hasOwnProperty("delineatedbasin") ? response["delineatedbasin"].features[0] : null;
-                    sa.WorkspaceID = response.hasOwnProperty("workspaceID") ? response["workspaceID"] : null;
+                (response: any) => {
+                    response.data.results.map((item) => {
+                        var region = this.getRegion(item.attributes.st_abbr);
+                        if(region != null) this.regionList.push(region);
+                    });
                 },(error) => {
                     return this.$q.reject(error.data)
                 });
-
-            this.SetSelectedStudy(sa);
         }
-        public AddStudyParameters() {
+        public loadRegionListByRegion(c: string): boolean{
+            this.regionList.length = 0;//clear array;
+            var selectedRegion = this.getRegion(c);
+            if (selectedRegion == null) return false;
 
+            this.regionList.push(selectedRegion);
+            return true;
         }
-        public SetSelectedStudy(sa: Models.IStudyArea) {
-            var saIndex: number = this.StudyAreaList.indexOf(sa);
-            if (saIndex <= 0) throw new Error("Study area not in collection");
-
-            this.SelectedStudyArea = this.StudyAreaList[this.StudyAreaList.indexOf(sa)]
-        }
-
         //HelperMethods
         //-+-+-+-+-+-+-+-+-+-+-+-
+        private getRegion(lookupID: string): Models.IRegion {
+            var regionArray: Array<Models.IRegion> = configuration.regions;
+
+            try {
+                //search for item
+                for (var i = 0; i < regionArray.length; i++){
+                    if (regionArray[i].Name.toUpperCase().trim() === lookupID.toUpperCase().trim() ||
+                        regionArray[i].RegionID.toUpperCase().trim() === lookupID.toUpperCase().trim())
+                        return regionArray[i];
+                }//next region
+
+                return null;
+            }
+            catch (e) {
+                return null;
+            }
+        }
 
     }//end class
 
     factory.$inject = ['$http', '$q'];
     function factory($http: ng.IHttpService, $q: ng.IQService) {
-        return new StreamStatsService($http, $q)
+        return new RegionService($http, $q)
     }
-    angular.module('WiM.Services')
-        .factory('WiM.Services.DelineationService', factory)
+    angular.module('StreamStats.Services')
+        .factory('StreamStats.Services.RegionService', factory)
 }//end module 

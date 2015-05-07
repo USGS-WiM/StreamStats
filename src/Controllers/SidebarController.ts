@@ -23,8 +23,6 @@
 //04.14.2015 jkn - Created
 
 //Imports"
-///<reference path="../../bower_components/wim_angular/src/Services/SearchAPIService.ts" />
-
 module StreamStats.Controllers {
     'use strinct';
     interface ISidebarControllerScope extends ng.IScope {
@@ -45,30 +43,27 @@ module StreamStats.Controllers {
         public sideBarCollapsed: boolean;
         public selectedProcedure: ProcedureType;
 
-        public RegionList:Array<Models.IRegion>
         public SelectedRegion: Models.IRegion;
 
-        public selectedLocation: string;
-        public locations: Array<string>;
+        public sessionService: StreamStats.Services.ISessionService;
+        public regionList: Array<Models.IRegion>;
 
         private searchService: WiM.Services.ISearchAPIService;
+        
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope','WiM.Services.SearchAPIService'];
-        constructor($scope: ISidebarControllerScope, service:WiM.Services.ISearchAPIService) {
+        static $inject = ['$scope', 'WiM.Services.SearchAPIService', 'StreamStats.Services.SessionService','StreamStats.Services.RegionService'];
+        constructor($scope: ISidebarControllerScope, service:WiM.Services.ISearchAPIService, session:Services.ISessionService, region:Services.IRegionService) {
             $scope.vm = this;
             this.searchService = service;
-
             this.sideBarCollapsed = false;
             this.selectedProcedure = ProcedureType.INIT;
 
-            this.RegionList = [new Models.Region('1', "Iowa"), new Models.Region('2', 'New York'), new Models.Region('2', 'New York2'), new Models.Region('2', 'New York3'), new Models.Region('2', 'Ill')];
-            this.SelectedRegion = this.RegionList[0];
+            this.sessionService = session;
+            this.regionList = region.regionList;
 
-            this.selectedLocation = undefined;
-     
-
+            this.SelectedRegion = session.selectedRegion;       
         }
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -83,7 +78,14 @@ module StreamStats.Controllers {
             if (this.sideBarCollapsed) this.sideBarCollapsed = false;
             else this.sideBarCollapsed = true;          
         }
-    
+        public onAOISelect(item: WiM.Services.ISearchAPIOutput) {
+            this.sessionService.selectedAreaOfInterest = item;
+        }
+        public setRegion(region: Models.IRegion) {
+            if (this.sessionService.selectedRegion == undefined || this.sessionService.selectedRegion.RegionID !== region.RegionID)
+                this.sessionService.selectedRegion = region;
+            this.setProcedureType(ProcedureType.IDENTIFY);
+        }
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         private canUpdateProceedure(pType: ProcedureType): boolean {

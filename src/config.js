@@ -9,7 +9,8 @@ var StreamStats;
             this.$stateProvider = $stateProvider;
             this.$urlRouterProvider = $urlRouterProvider;
             this.$stateProvider.state("main", {
-                url: '/',
+                url: '/?region',
+                reloadOnSearch: false,
                 template: '<ui-view/>',
                 views: {
                     'map': {
@@ -26,21 +27,7 @@ var StreamStats;
                     }
                 }
             }); //end main state 
-            //.state("main.region", {
-            //url: '/{region}',
-            //views: {
-            //    'step1': {
-            //        templateUrl: 'Views/SidebarComponents/step1view.html',
-            //        controller: "StreamStats.Step1Controller"
-            //        //resolve: {
-            //        //    //JKN just pass back he param into the controller instead of below where it
-            //        //    // calls a service to get the resource
-            //        //    initialData: ['$stateParams', function ($stateParams) { return $stateParams.region}]
-            //        //}
-            //    }
-            //}
-            //})//end main.iowa state
-            this.$urlRouterProvider.otherwise('/');
+            this.$urlRouterProvider.when('', '/');
         } //end constructor
         config.$inject = ['$stateProvider', '$urlRouterProvider'];
         return config;
