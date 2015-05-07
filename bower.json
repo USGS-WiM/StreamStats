@@ -1,10 +1,10 @@
 {
   "name": "StreamStats",
-    "version": "0.0.3",
+  "version": "0.0.4",
   "homepage": "https://github.com/USGS-WiM/StreamStats",
   "authors": [
-        "Jeremy Newson <jknewson@usgs.gov>",
-        "Martyn Smith <marsmith@usgs.gov>"
+    "Jeremy Newson <jknewson@usgs.gov>",
+    "Martyn Smith <marsmith@usgs.gov>"
   ],
   "license": "MIT",
   "ignore": [
@@ -30,7 +30,6 @@
     "leaflet-draw": "~0.2.4",
     "sidebar-v2": "~0.2.1",
     "leaflet.zoomhome": "~0.1.0",
-
     "wim_angular": "https://github.com/USGS-WiM/wim_angular.git"
   }
 }

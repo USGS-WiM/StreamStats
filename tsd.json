@@ -1,28 +1,28 @@
 {
     "name": "StreamStats",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "homepage": "https://github.com/USGS-WiM/StreamStats",
     "authors": [
         "Jeremy Newson <jknewson@usgs.gov>",
         "Martyn Smith <marsmith@usgs.gov>"
     ],
     "license": "MIT",
-  "repo": "borisyankov/DefinitelyTyped",
-  "ref": "master",
-  "path": "typings",
-  "bundle": "typings/tsd.d.ts",
-  "installed": {
-    "jquery/jquery.d.ts": {
-      "commit": "00e7f3fede5f2df55b56c72f40a144824f0f0bfa"
-    },
-    "leaflet/leaflet.d.ts": {
-      "commit": "00e7f3fede5f2df55b56c72f40a144824f0f0bfa"
-    },
-    "angularjs/angular.d.ts": {
-      "commit": "00e7f3fede5f2df55b56c72f40a144824f0f0bfa"
-    },
-    "angular-ui-router/angular-ui-router.d.ts": {
-      "commit": "00e7f3fede5f2df55b56c72f40a144824f0f0bfa"
+    "repo": "borisyankov/DefinitelyTyped",
+    "ref": "master",
+    "path": "typings",
+    "bundle": "typings/tsd.d.ts",
+    "installed": {
+        "jquery/jquery.d.ts": {
+            "commit": "00e7f3fede5f2df55b56c72f40a144824f0f0bfa"
+        },
+        "leaflet/leaflet.d.ts": {
+            "commit": "00e7f3fede5f2df55b56c72f40a144824f0f0bfa"
+        },
+        "angularjs/angular.d.ts": {
+            "commit": "00e7f3fede5f2df55b56c72f40a144824f0f0bfa"
+        },
+        "angular-ui-router/angular-ui-router.d.ts": {
+            "commit": "00e7f3fede5f2df55b56c72f40a144824f0f0bfa"
+        }
     }
-  }
 }
