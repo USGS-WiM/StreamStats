@@ -111,12 +111,16 @@ gulp.task('html', ['styles', 'scripts', 'icons', 'views'], function () {
         .pipe(size());
 });
 
+// Leaflet
+gulp.task('leaflet', function () {
+    return gulp.src('bower_components/leaflet/dist/images/**/*')
+        .pipe(gulp.dest('test/styles/images'))
+        .pipe(size());
+});
+
 // Images
 gulp.task('images', function () {
-    return gulp.src([
-    		'src/images/**/*',
-    		'src/lib/images/*',
-            'bower_components/leaflet/dist/images/*.*'])
+    return gulp.src('src/images/**/*')
         .pipe(gulp.dest('test/images'))
         .pipe(size());
 });
@@ -131,7 +135,7 @@ gulp.task('clean', function (cb) {
 });
 
 // build test
-gulp.task('test', ['html', 'images']);
+gulp.task('test', ['html', 'images', 'leaflet']);
 
 // Default task
 gulp.task('default', ['clean'], function () {
