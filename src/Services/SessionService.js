@@ -29,7 +29,7 @@ var StreamStats;
             function SessionService() {
                 this._onSelectedAreaOfInterestChanged = new WiM.Event.Delegate();
                 this._onSelectedStudyAreaChanged = new WiM.Event.Delegate();
-                this.StudyAreaList = [];
+                this._studyAreaList = [];
             }
             Object.defineProperty(SessionService.prototype, "onSelectedAreaOfInterestChanged", {
                 get: function () {

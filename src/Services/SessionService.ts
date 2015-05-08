@@ -80,7 +80,7 @@ module StreamStats.Services {
         constructor() {
             this._onSelectedAreaOfInterestChanged = new WiM.Event.Delegate<WiM.Event.EventArgs>();  
             this._onSelectedStudyAreaChanged = new WiM.Event.Delegate<WiM.Event.EventArgs>(); 
-            this.StudyAreaList = [];          
+            this._studyAreaList = [];          
         }
 
         //Methods

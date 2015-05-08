@@ -6,8 +6,8 @@ module StreamStats {
     'use strinct';
 
     class config {
-        static $inject = ['$stateProvider','$urlRouterProvider'];
-        constructor(private $stateProvider: ng.ui.IStateProvider, private $urlRouterProvider: ng.ui.IUrlRouterProvider) {
+        static $inject = ['$stateProvider', '$urlRouterProvider', '$locationProvider'];
+        constructor(private $stateProvider: ng.ui.IStateProvider, private $urlRouterProvider: ng.ui.IUrlRouterProvider, private $locationProvider: ng.ILocationProvider) {
             this.$stateProvider
                 .state("main", {
                 url: '/?region',
@@ -30,7 +30,9 @@ module StreamStats {
                 }
             })//end main state 
           
-            this.$urlRouterProvider.when('', '/');                                 
+            this.$urlRouterProvider.otherwise('/');     
+            
+            this.$locationProvider.html5Mode(true);                            
         }//end constructor
     }//end class
 
