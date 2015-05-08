@@ -1,6 +1,6 @@
 {
   "name": "StreamStats",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "homepage": "https://github.com/USGS-WiM/StreamStats",
   "repository": "https://github.com/USGS-WiM/StreamStats",
   "authors": [
@@ -19,7 +19,6 @@
     "gulp-uglify": "^0.2.1",
     "gulp-useref": "^0.4.3",
     "gulp-util": "^2.2.14",
-    "gulp-tag-version": "^1.2.1",
     "gulp-git": "^1.2.1",
     "gulp-bump": "^0.3.0",
     "del": "^1.1.1",

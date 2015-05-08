@@ -22,7 +22,6 @@
     <link rel="stylesheet" href="css/main.css" />
     <!-- endbower -->
     <!-- endbuild -->
-
     <!-- build:js scripts/vendor.min.js -->
     <!-- bower:js -->
     <script src="../bower_components/angular/angular.js"></script>
@@ -49,7 +48,6 @@
     <script src="../bower_components/wim_angular/dist/src/Services/HTTPServiceBase.js"></script>
     <script src="../bower_components/wim_angular/dist/src/Services/SearchAPIService.js"></script>
     <!-- endbuild -->
-
     <!-- build:js scripts/custom.min.js -->
     <script src="Config.js"></script>
     <script src="appConfig.js"></script>
@@ -59,21 +57,16 @@
     <script src="Services/service.module.js"></script>
     <script src="Services/SessionService.js"></script>
     <script src="Services/RegionService.js"></script>
-
     <!-- Controllers ref-->
     <script src="Controllers/controller.module.js"></script>
     <script src="Controllers/MapController.js"></script>
     <script src="Controllers/SidebarController.js"></script>
-
     <!-- endbower -->
     <!-- endbuild -->
-    
 </head>
-
 <body>
     <div ui-view="navbar" class="navbar navbar-gray navbar-fixed-top" role="navigation"></div>      
     <div ui-view="sidebar" ng-class="{'collapsed':vm.sideBarCollapsed}" class="sidebar sidebar-content" ></div> 
     <div ui-view="map" class="fullsized sidebar-map"></div>       
 </body>
-
 </html>

@@ -12,18 +12,16 @@ var gulp = require('gulp'),
     connect = require('gulp-connect'),
     autoprefixer = require('gulp-autoprefixer'),
     filter = require('gulp-filter'),
-    tag_version = require('gulp-tag-version'),
+    del= require('del'),
     open = require('open'),
-    del = require('del'),
     wiredep = require('wiredep').stream,
     semver = require('semver');
 
 //get current app version
 var version = require('./package.json').version;
 
+//function for version lookup and tagging
 function inc(importance) {
-    //get current version number
-    var version = require('./package.json').version;
     //get new version number
     var newVer = semver.inc(version, importance);
 
@@ -34,23 +32,26 @@ function inc(importance) {
         // save it back to filesystem 
         .pipe(gulp.dest('./'))
         // commit the changed version number 
-         .pipe(git.commit('Release v' + newVer))
-         // read only one file to get the version number 
-         .pipe(filter('package.json'))
-         // **tag it in the repository** 
-         .pipe(tag_version());
+        .pipe(git.commit('Release v' + newVer))
+        // **tag it in the repository** 
+        //.pipe(git.tag('v' + newVer));
+        .pipe(git.tag('v' + newVer, 'Version message', function (err) {
+            if (err) throw err;
+        }));
 }
 
-//copy Views folder
+//copy to dist folder
 gulp.task('dist', function () {
     return gulp.src('test/**/*')
         .pipe(gulp.dest('dist'));
 });
 
+//tasks for version tags
 gulp.task('patch', ['dist'], function () { return inc('patch'); })
 gulp.task('feature', ['dist'], function () { return inc('minor'); })
 gulp.task('release', ['dist'], function () { return inc('major'); })
 
+//push task for versioning
 gulp.task('push', function () {
     console.info('Pushing...');
     return git.push('USGS-WiM', 'master', { args: " --tags" }, function (err) {
@@ -63,13 +64,7 @@ gulp.task('push', function () {
     });
 });
 
-//copy leaflet images
-gulp.task('leaflet', function () {
-    return gulp.src('bower_components/leaflet/dist/images/*.*')
-        .pipe(gulp.dest('test/styles/images'));
-});
-
-//copy Views folder
+//copy to views folder
 gulp.task('views', function () {
     return gulp.src('src/Views/**/*')
         .pipe(gulp.dest('test/Views'));
@@ -91,16 +86,16 @@ gulp.task('icons', function () {
 
 // Scripts
 gulp.task('scripts', function () {
-    return gulp.src(['src/scripts/**/*.js'])
-    //.pipe(jshint('.jshintrc'))
-    //.pipe(jshint.reporter('default'))
-    //.pipe(size());
+    return gulp.src(['src/**/*.js'])
+    .pipe(jshint('.jshintrc'))
+    .pipe(jshint.reporter('default'))
+    .pipe(size());
 });
 
 // HTML
-gulp.task('html', ['styles', 'scripts', 'icons', 'leaflet', 'views'], function () {
+gulp.task('html', ['styles', 'scripts', 'icons', 'views'], function () {
     var jsFilter = filter('**/*.js');
-    var cssFilter =filter('**/*.css');
+    var cssFilter = filter('**/*.css');
 
     return gulp.src('src/*.html')
         .pipe(useref.assets())
@@ -116,11 +111,16 @@ gulp.task('html', ['styles', 'scripts', 'icons', 'leaflet', 'views'], function (
         .pipe(size());
 });
 
+// Leaflet
+gulp.task('leaflet', function () {
+    return gulp.src('bower_components/leaflet/dist/images/**/*')
+        .pipe(gulp.dest('test/styles/images'))
+        .pipe(size());
+});
+
 // Images
 gulp.task('images', function () {
-    return gulp.src([
-    		'src/images/**/*',
-    		'src/lib/images/*'])
+    return gulp.src('src/images/**/*')
         .pipe(gulp.dest('test/images'))
         .pipe(size());
 });
@@ -135,18 +135,23 @@ gulp.task('clean', function (cb) {
 });
 
 // build test
-gulp.task('test', ['html', 'images']);
+gulp.task('test', ['html', 'images', 'leaflet']);
 
 // Default task
 gulp.task('default', ['clean'], function () {
     gulp.start('test');
 });
 
+// Watch
+gulp.task('watch', ['connect', 'serve'], function () {
+    // start up
+});
+
 // Connect
 gulp.task('connect', function () {
     connect.server({
         root: 'test',
-        port: 9000,
+        port: 9000
     });
 });
 
@@ -173,9 +178,3 @@ gulp.task('wiredep', function () {
         .pipe(gulp.dest('src'));
 });
 */
-
-// Watch
-gulp.task('watch', ['connect', 'serve'], function () {
-    // start up
-
-});
