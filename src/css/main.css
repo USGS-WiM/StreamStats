@@ -19,7 +19,7 @@ a {
     color:#6f84aa;    
 }
 
- .accordion-toggle:hover td {
+.accordion-toggle:hover td {
   background-color:#F8F8F8;
 }
 
@@ -32,9 +32,11 @@ a {
     bottom: 10px !important;
     
 }
-.sidebar div {
-    min-width:235px;
+.accordion-body {
+    min-width:18em;
+    margin-right:2em;
 }
+
 .sidebar thead{
     font-size:18px;
 }
