@@ -1,5 +1,5 @@
 ﻿//------------------------------------------------------------------------------
-//----- DelineationService -----------------------------------------------------
+//----- SessionService -----------------------------------------------------
 //------------------------------------------------------------------------------
 
 //-------1---------2---------3---------4---------5---------6---------7---------8
@@ -28,6 +28,7 @@ module StreamStats.Services {
     export interface ISessionService{
         selectedAreaOfInterest: WiM.Services.ISearchAPIOutput;
         onSelectedAreaOfInterestChanged: WiM.Event.Delegate<WiM.Event.EventArgs>;
+        onSelectedStudyAreaChanged: WiM.Event.Delegate<WiM.Event.EventArgs>;
         selectedRegion: Models.IRegion;
     }
 
@@ -37,10 +38,17 @@ module StreamStats.Services {
         public get onSelectedAreaOfInterestChanged(): WiM.Event.Delegate<WiM.Event.EventArgs> {
             return this._onSelectedAreaOfInterestChanged;
         }
+
+        private _onSelectedStudyAreaChanged: WiM.Event.Delegate<WiM.Event.EventArgs>;
+        public get onSelectedStudyAreaChanged(): WiM.Event.Delegate<WiM.Event.EventArgs> {
+            return this._onSelectedStudyAreaChanged;
+        }
         
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
-        private _selectedAreaOfInterest;
+        public selectedRegion: Models.IRegion;
+
+        private _selectedAreaOfInterest:WiM.Services.ISearchAPIOutput;
         public set selectedAreaOfInterest(val: WiM.Services.ISearchAPIOutput) {
             if (this._selectedAreaOfInterest !== val) {
                 this._selectedAreaOfInterest = val;
@@ -50,42 +58,39 @@ module StreamStats.Services {
         public get selectedAreaOfInterest(): WiM.Services.ISearchAPIOutput {
             return this._selectedAreaOfInterest
         }
-        
-        public selectedRegion: Models.IRegion;
+
+        private _studyAreaList: Array<Models.IStudyArea>;
+        public get StudyAreaList(): Array<Models.IStudyArea> {
+            return this._studyAreaList;
+        }
+
+        private _selectedStudyArea:Models.IStudyArea;
+        public set selectedStudyArea(val: Models.IStudyArea) {
+            if (this._selectedStudyArea != val) {
+                this._selectedStudyArea = val;
+                this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
+            }
+        }
+        public get selectedStudyArea(): Models.IStudyArea {
+            return this._selectedStudyArea
+        }
+
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         constructor() {
-            this._onSelectedAreaOfInterestChanged = new WiM.Event.Delegate<WiM.Event.EventArgs>();
-            
+            this._onSelectedAreaOfInterestChanged = new WiM.Event.Delegate<WiM.Event.EventArgs>();  
+            this._onSelectedStudyAreaChanged = new WiM.Event.Delegate<WiM.Event.EventArgs>(); 
+            this.StudyAreaList = [];          
         }
 
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
-
-        //public AddStudyBoundary() {
-        //    var sa: Models.IStudyArea = this.SelectedStudyArea;
-
-        //    var url = configuration.requests['SSdelineation'].format(sa.RegionID, sa.Pourpoint.Longitude.toString(),
-        //        sa.Pourpoint.Latitude.toString(), sa.Pourpoint.crs.toString(), false)
-        //    var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url);
-        
-        //    this.Execute(request).then(
-        //        (response) => {
-        //            sa.Basin = response.hasOwnProperty("delineatedbasin") ? response["delineatedbasin"].features[0] : null;
-        //            sa.WorkspaceID = response.hasOwnProperty("workspaceID") ? response["workspaceID"] : null;
-        //        },(error) => {
-        //            return this.$q.reject(error.data)
-        //        });
-
-        //    this.SetSelectedStudy(sa);
-        //}
-
-        //public SetSelectedStudy(sa:Models.IStudyArea) {
-        //    var saIndex: number = this.StudyAreaList.indexOf(sa);
-        //    if (saIndex <= 0) throw new Error("Study area not in collection");
-
-        //    this.SelectedStudyArea = this.StudyAreaList[this.StudyAreaList.indexOf(sa)]
-        //}
+        public AddStudyArea() {
+            //add the study area to studyAreaList
+        } 
+        public RemoveStudyArea() {
+            //add the study area to studyAreaList
+        } 
 
         //HelperMethods
         //-+-+-+-+-+-+-+-+-+-+-+-

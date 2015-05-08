@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-//----- DelineationService -----------------------------------------------------
+//----- SessionService -----------------------------------------------------
 //------------------------------------------------------------------------------
 //-------1---------2---------3---------4---------5---------6---------7---------8
 //       01234567890123456789012345678901234567890123456789012345678901234567890
@@ -28,10 +28,19 @@ var StreamStats;
             //-+-+-+-+-+-+-+-+-+-+-+-
             function SessionService() {
                 this._onSelectedAreaOfInterestChanged = new WiM.Event.Delegate();
+                this._onSelectedStudyAreaChanged = new WiM.Event.Delegate();
+                this.StudyAreaList = [];
             }
             Object.defineProperty(SessionService.prototype, "onSelectedAreaOfInterestChanged", {
                 get: function () {
                     return this._onSelectedAreaOfInterestChanged;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(SessionService.prototype, "onSelectedStudyAreaChanged", {
+                get: function () {
+                    return this._onSelectedStudyAreaChanged;
                 },
                 enumerable: true,
                 configurable: true
@@ -49,6 +58,34 @@ var StreamStats;
                 enumerable: true,
                 configurable: true
             });
+            Object.defineProperty(SessionService.prototype, "StudyAreaList", {
+                get: function () {
+                    return this._studyAreaList;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(SessionService.prototype, "selectedStudyArea", {
+                get: function () {
+                    return this._selectedStudyArea;
+                },
+                set: function (val) {
+                    if (this._selectedStudyArea != val) {
+                        this._selectedStudyArea = val;
+                        this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
+            //Methods
+            //-+-+-+-+-+-+-+-+-+-+-+-
+            SessionService.prototype.AddStudyArea = function () {
+                //add the study area to studyAreaList
+            };
+            SessionService.prototype.RemoveStudyArea = function () {
+                //add the study area to studyAreaList
+            };
             return SessionService;
         })(); //end class
         factory.$inject = [];
