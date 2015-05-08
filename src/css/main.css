@@ -3,6 +3,7 @@
     margin: 0;
    height: 100%;
     width: 100%;
+    overflow-y:hidden;
 }
 body {
     padding-top: 50px;
@@ -99,7 +100,9 @@ a {
 
 .map-position {
     left:50%;
-    background-color: rgba(255, 255, 255, 0.50);
+    padding: 0px 4px;
+    font-size:small;
+    background-color: rgba(255, 255, 255, 0.75);
     margin-bottom:50px;
     margin-left:9px;
     border-radius:5px;
