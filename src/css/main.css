@@ -98,6 +98,7 @@ a {
 
 .map-position {
     left:50%;
+    padding: 4px;
     background-color: rgba(255, 255, 255, 0.50);
     margin-bottom:50px;
     margin-left:9px;
