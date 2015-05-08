@@ -5,9 +5,10 @@ var StreamStats;
 (function (StreamStats) {
     'use strinct';
     var config = (function () {
-        function config($stateProvider, $urlRouterProvider) {
+        function config($stateProvider, $urlRouterProvider, $locationProvider) {
             this.$stateProvider = $stateProvider;
             this.$urlRouterProvider = $urlRouterProvider;
+            this.$locationProvider = $locationProvider;
             this.$stateProvider.state("main", {
                 url: '/?region',
                 reloadOnSearch: false,
@@ -27,9 +28,10 @@ var StreamStats;
                     }
                 }
             }); //end main state 
-            this.$urlRouterProvider.when('', '/');
+            this.$urlRouterProvider.otherwise('/');
+            this.$locationProvider.html5Mode(true);
         } //end constructor
-        config.$inject = ['$stateProvider', '$urlRouterProvider'];
+        config.$inject = ['$stateProvider', '$urlRouterProvider', '$locationProvider'];
         return config;
     })(); //end class
     angular.module('StreamStats', [
