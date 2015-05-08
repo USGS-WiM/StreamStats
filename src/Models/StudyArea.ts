@@ -29,6 +29,7 @@ module StreamStats.Models {
         Description: string;
         Basin: Object;
         WorkspaceID: string;
+        Parameters: Array<WiM.Models.IParameter>;
     }
 
     export class StudyArea implements IStudyArea {
@@ -38,6 +39,8 @@ module StreamStats.Models {
         public Description: string;
         public Basin: Object;
         public WorkspaceID: string;
+        public Parameters: Array<WiM.Models.IParameter>;
+        //public Scenarios: Array<WiM.Models.IScenario>;
 
         constructor(region: string, point: WiM.Models.IPoint) {
             this.RegionID = region;
