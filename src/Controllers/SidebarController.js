@@ -28,7 +28,6 @@ var StreamStats;
                 this.selectedProcedure = 1 /* INIT */;
                 this.sessionService = session;
                 this.regionList = region.regionList;
-                this.SelectedRegion = session.selectedRegion;
             }
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
@@ -60,24 +59,21 @@ var StreamStats;
                 //Project flow:
                 var msg;
                 try {
-                    //switch (pType) {
-                    //    case ProcedureType.IMPORT:
-                    //        return !this.fileLoaded || !this.fileValid;
-                    //    case ProcedureType.VALIDATE:
-                    //        if (!this.fileLoaded || !this.fileValid) this.sm(new MSG.NotificationArgs("Import a valid lab document", MSG.NotificationType.WARNING));
-                    //        return this.fileLoaded && this.fileValid;
-                    //    case ProcedureType.SUBMIT:
-                    //        var isOK = this.fileIsOK();
-                    //        if (!this.fileLoaded || !this.fileValid) this.sm(new MSG.NotificationArgs("Import a valid lab document", MSG.NotificationType.WARNING));
-                    //        if (!isOK) this.sm(new MSG.NotificationArgs("Samples contains invalid entries. Please fix before submitting", MSG.NotificationType.WARNING));
-                    //        return isOK && this.fileLoaded && this.fileValid;
-                    //    case ProcedureType.LOG:
-                    //        if (!this.fileLoaded) this.sm(new MSG.NotificationArgs("Import a valid lab document", MSG.NotificationType.WARNING));
-                    //        return this.fileLoaded;
-                    //    default:
-                    //        return false;
-                    //}//end switch  
-                    return true;
+                    switch (pType) {
+                        case 1 /* INIT */:
+                            return true;
+                        case 2 /* IDENTIFY */:
+                            return this.sessionService.selectedRegion != null;
+                        case 3 /* SELECT */:
+                            return this.sessionService.selectedRegion != null;
+                        case 4 /* REFINE */:
+                            //if (!this.fileLoaded) this.sm(new MSG.NotificationArgs("Import a valid lab document", MSG.NotificationType.WARNING));
+                            return false;
+                        case 5 /* BUILD */:
+                            return false;
+                        default:
+                            return false;
+                    }
                 }
                 catch (e) {
                     //this.sm(new MSG.NotificationArgs(e.message, MSG.NotificationType.INFORMATION, 1.5));

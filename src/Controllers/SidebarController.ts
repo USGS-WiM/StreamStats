@@ -31,7 +31,6 @@ module StreamStats.Controllers {
     interface ISidebarController {
         sideBarCollapsed: boolean;
         selectedProcedure: ProcedureType;
-        SelectedRegion: Models.IRegion;
 
         setProcedureType(pType: ProcedureType): void;
         toggleSideBar(): void;
@@ -43,11 +42,8 @@ module StreamStats.Controllers {
         public sideBarCollapsed: boolean;
         public selectedProcedure: ProcedureType;
 
-        public SelectedRegion: Models.IRegion;
-
         public sessionService: StreamStats.Services.ISessionService;
         public regionList: Array<Models.IRegion>;
-
         private searchService: WiM.Services.ISearchAPIService;
         
 
@@ -62,8 +58,7 @@ module StreamStats.Controllers {
 
             this.sessionService = session;
             this.regionList = region.regionList;
-
-            this.SelectedRegion = session.selectedRegion;       
+    
         }
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -92,28 +87,26 @@ module StreamStats.Controllers {
             //Project flow:
             var msg: string;
             try {               
-                //switch (pType) {
-                //    case ProcedureType.IMPORT:
-                //        return !this.fileLoaded || !this.fileValid;
-                //    case ProcedureType.VALIDATE:
-                //        if (!this.fileLoaded || !this.fileValid) this.sm(new MSG.NotificationArgs("Import a valid lab document", MSG.NotificationType.WARNING));
+                switch (pType) {
+                    case ProcedureType.INIT:
+                        return true;
+                    case ProcedureType.IDENTIFY:
 
-                //        return this.fileLoaded && this.fileValid;
-                //    case ProcedureType.SUBMIT:
-                //        var isOK = this.fileIsOK();
-                //        if (!this.fileLoaded || !this.fileValid) this.sm(new MSG.NotificationArgs("Import a valid lab document", MSG.NotificationType.WARNING));
-                //        if (!isOK) this.sm(new MSG.NotificationArgs("Samples contains invalid entries. Please fix before submitting", MSG.NotificationType.WARNING));
+                        return this.sessionService.selectedRegion != null;
+                    case ProcedureType.SELECT:
 
-                //        return isOK && this.fileLoaded && this.fileValid;
+                        return this.sessionService.selectedRegion != null;
 
-                //    case ProcedureType.LOG:
-                //        if (!this.fileLoaded) this.sm(new MSG.NotificationArgs("Import a valid lab document", MSG.NotificationType.WARNING));
+                    case ProcedureType.REFINE:
+                        //if (!this.fileLoaded) this.sm(new MSG.NotificationArgs("Import a valid lab document", MSG.NotificationType.WARNING));
 
-                //        return this.fileLoaded;
-                //    default:
-                //        return false;
-                //}//end switch  
-                return true;          
+                        return false
+                    case ProcedureType.BUILD:
+                        return false;
+
+                    default:
+                        return false;
+                }//end switch          
             }
             catch (e) {
                 //this.sm(new MSG.NotificationArgs(e.message, MSG.NotificationType.INFORMATION, 1.5));

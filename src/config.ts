@@ -36,6 +36,7 @@ module StreamStats {
 
     angular.module('StreamStats',[
         "ui.router", 'ui.bootstrap',
+        "ngAnimate",
         "leaflet-directive",
         "StreamStats.Services",
         "StreamStats.Controllers",
