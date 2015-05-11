@@ -99,8 +99,13 @@ module StreamStats.Services {
             this.Execute(request).then(
                 (response: any) => {
                     response.data.results.map((item) => {
-                        var region = this.getRegion(item.attributes.st_abbr);
-                        if(region != null) this.regionList.push(region);
+                        try {
+                            var region = this.getRegion(item.attributes.st_abbr);
+                            if (region != null) this.regionList.push(region);
+                        }
+                        catch (e) {
+                            alert(e);
+                        }
                     });
                 },(error) => {
                     return this.$q.reject(error.data)

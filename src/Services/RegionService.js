@@ -87,9 +87,14 @@ var StreamStats;
                 request.params = input;
                 this.Execute(request).then(function (response) {
                     response.data.results.map(function (item) {
-                        var region = _this.getRegion(item.attributes.st_abbr);
-                        if (region != null)
-                            _this.regionList.push(region);
+                        try {
+                            var region = _this.getRegion(item.attributes.st_abbr);
+                            if (region != null)
+                                _this.regionList.push(region);
+                        }
+                        catch (e) {
+                            alert(e);
+                        }
                     });
                 }, function (error) {
                     return _this.$q.reject(error.data);
