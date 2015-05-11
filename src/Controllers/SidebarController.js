@@ -21,17 +21,17 @@ var StreamStats;
     (function (Controllers) {
         'use strinct';
         var SidebarController = (function () {
-            function SidebarController($scope, service, session, region) {
+            function SidebarController($scope, service, region) {
                 $scope.vm = this;
                 this.searchService = service;
                 this.sideBarCollapsed = false;
                 this.selectedProcedure = 1 /* INIT */;
-                this.sessionService = session;
+                this.regionService = region;
                 this.regionList = region.regionList;
             }
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
-            SidebarController.prototype.GetLocations = function (term) {
+            SidebarController.prototype.getLocations = function (term) {
                 return this.searchService.getLocations(term);
             };
             SidebarController.prototype.setProcedureType = function (pType) {
@@ -46,11 +46,11 @@ var StreamStats;
                     this.sideBarCollapsed = true;
             };
             SidebarController.prototype.onAOISelect = function (item) {
-                this.sessionService.selectedAreaOfInterest = item;
+                this.searchService.onSelectedAreaOfInterestChanged.raise(this, new WiM.Services.SearchAPIEventArgs(item));
             };
             SidebarController.prototype.setRegion = function (region) {
-                if (this.sessionService.selectedRegion == undefined || this.sessionService.selectedRegion.RegionID !== region.RegionID)
-                    this.sessionService.selectedRegion = region;
+                if (this.regionService.selectedRegion == undefined || this.regionService.selectedRegion.RegionID !== region.RegionID)
+                    this.regionService.selectedRegion = region;
                 this.setProcedureType(2 /* IDENTIFY */);
             };
             //Helper Methods
@@ -63,9 +63,9 @@ var StreamStats;
                         case 1 /* INIT */:
                             return true;
                         case 2 /* IDENTIFY */:
-                            return this.sessionService.selectedRegion != null;
+                            return this.regionService.selectedRegion != null;
                         case 3 /* SELECT */:
-                            return this.sessionService.selectedRegion != null;
+                            return this.regionService.selectedRegion != null;
                         case 4 /* REFINE */:
                             //if (!this.fileLoaded) this.sm(new MSG.NotificationArgs("Import a valid lab document", MSG.NotificationType.WARNING));
                             return false;
@@ -88,7 +88,7 @@ var StreamStats;
             };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
-            SidebarController.$inject = ['$scope', 'WiM.Services.SearchAPIService', 'StreamStats.Services.SessionService', 'StreamStats.Services.RegionService'];
+            SidebarController.$inject = ['$scope', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService'];
             return SidebarController;
         })(); //end class
         var ProcedureType;

@@ -30,54 +30,97 @@ var StreamStats;
         'use strict';
         var StudyAreaService = (function (_super) {
             __extends(StudyAreaService, _super);
-            //Properties
-            //-+-+-+-+-+-+-+-+-+-+-+-
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
             function StudyAreaService($http, $q) {
                 _super.call(this, $http, configuration['StreamStats']);
                 this.$q = $q;
+                this._onSelectedStudyAreaChanged = new WiM.Event.Delegate();
+                this._studyAreaList = [];
+                this.canUpdate = true;
             }
+            Object.defineProperty(StudyAreaService.prototype, "onSelectedStudyAreaChanged", {
+                get: function () {
+                    return this._onSelectedStudyAreaChanged;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(StudyAreaService.prototype, "StudyAreaList", {
+                get: function () {
+                    return this._studyAreaList;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(StudyAreaService.prototype, "selectedStudyArea", {
+                get: function () {
+                    return this._selectedStudyArea;
+                },
+                set: function (val) {
+                    if (!this.canUpdate)
+                        return;
+                    if (this._selectedStudyArea != val) {
+                        this._selectedStudyArea = val;
+                        this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
-            StudyAreaService.prototype.loadStudyBoundary = function (sa) {
-                var url = configuration.requests['SSdelineation'].format(sa.RegionID, sa.Pourpoint.Longitude.toString(), sa.Pourpoint.Latitude.toString(), sa.Pourpoint.crs.toString(), false);
+            StudyAreaService.prototype.AddStudyArea = function () {
+                //add the study area to studyAreaList
+            };
+            StudyAreaService.prototype.RemoveStudyArea = function () {
+                //add the study area to studyAreaList
+            };
+            StudyAreaService.prototype.loadStudyBoundary = function () {
+                var _this = this;
+                this.canUpdate = false;
+                var url = configuration.requests['SSdelineation'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString(), false);
                 var request = new WiM.Services.Helpers.RequestInfo(url);
                 this.Execute(request).then(function (response) {
-                    sa.Basin = response.hasOwnProperty("delineatedbasin") ? response["delineatedbasin"].features[0] : null;
-                    sa.WorkspaceID = response.hasOwnProperty("workspaceID") ? response["workspaceID"] : null;
+                    _this.selectedStudyArea.Basin = response.hasOwnProperty("delineatedbasin") ? response["delineatedbasin"].features[0] : null;
+                    _this.selectedStudyArea.WorkspaceID = response.hasOwnProperty("workspaceID") ? response["workspaceID"] : null;
                     //sm when complete
                 }, function (error) {
-                    //sm when complete
+                    //sm when error
+                }).finally(function () {
+                    _this.canUpdate = true;
                 });
             };
-            StudyAreaService.prototype.loadParameters = function (sa, params) {
+            StudyAreaService.prototype.loadParameters = function (params) {
                 var _this = this;
                 if (params === void 0) { params = []; }
-                if (!sa.WorkspaceID || !sa.RegionID)
+                this.canUpdate = false;
+                if (!this.selectedStudyArea.WorkspaceID || !this.selectedStudyArea.RegionID)
                     return; //sm study area is incomplete
-                var paramsToCalc = params.length < 1 ? sa.Parameters : params;
+                var paramsToCalc = params.length < 1 ? this.selectedStudyArea.Parameters : params;
                 if (paramsToCalc.length < 1)
                     return;
-                var url = configuration.requests['SSparams'].format(sa.RegionID, sa.WorkspaceID, paramsToCalc.map(function (param) {
+                var url = configuration.requests['SSparams'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID, paramsToCalc.map(function (param) {
                     param.code;
                 }).join(';'));
                 var request = new WiM.Services.Helpers.RequestInfo(url);
                 this.Execute(request).then(function (response) {
                     var msg;
-                    response.hasOwnProperty("parameters") ? _this.loadParameterResults(response["parameters"], sa) : [];
+                    response.hasOwnProperty("parameters") ? _this.loadParameterResults(response["parameters"]) : [];
                     //sm when complete
                 }, function (error) {
                     //sm when complete
+                }).finally(function () {
+                    _this.canUpdate = true;
                 });
             };
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+-       
-            StudyAreaService.prototype.loadParameterResults = function (results, sa) {
+            StudyAreaService.prototype.loadParameterResults = function (results) {
                 for (var i = 0; i < results.length; i++) {
-                    for (var j = 0; j < sa.Parameters.length; j++) {
-                        if (results[i].code.toUpperCase().trim() === sa.Parameters[j].code.toUpperCase().trim()) {
-                            sa.Parameters[j].value = results[i].value;
+                    for (var j = 0; j < this.selectedStudyArea.Parameters.length; j++) {
+                        if (results[i].code.toUpperCase().trim() === this.selectedStudyArea.Parameters[j].code.toUpperCase().trim()) {
+                            this.selectedStudyArea.Parameters[j].value = results[i].value;
                             break;
                         } //endif
                     }

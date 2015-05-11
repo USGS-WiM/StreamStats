@@ -29,6 +29,12 @@ var StreamStats;
     var Services;
     (function (Services) {
         'use strict';
+        var Region = (function () {
+            function Region() {
+            }
+            return Region;
+        })();
+        Services.Region = Region; //end class
         var RegionService = (function (_super) {
             __extends(RegionService, _super);
             //Constructor
@@ -36,8 +42,16 @@ var StreamStats;
             function RegionService($http, $q) {
                 _super.call(this, $http, configuration.baseurls['StreamStats']);
                 this.$q = $q;
+                this._onSelectedRegionChanged = new WiM.Event.Delegate();
                 this.regionList = [];
             }
+            Object.defineProperty(RegionService.prototype, "onSelectedRegionChanged", {
+                get: function () {
+                    return this._onSelectedRegionChanged;
+                },
+                enumerable: true,
+                configurable: true
+            });
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             RegionService.prototype.loadRegionListByExtent = function (xmin, xmax, ymin, ymax, sr) {
@@ -68,9 +82,9 @@ var StreamStats;
                     return _this.$q.reject(error.data);
                 });
             };
-            RegionService.prototype.loadRegionListByRegion = function (c) {
+            RegionService.prototype.loadRegionListByRegion = function (regionid) {
                 this.regionList.length = 0; //clear array;
-                var selectedRegion = this.getRegion(c);
+                var selectedRegion = this.getRegion(regionid);
                 if (selectedRegion == null)
                     return false;
                 this.regionList.push(selectedRegion);

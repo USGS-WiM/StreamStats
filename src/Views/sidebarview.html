@@ -22,7 +22,7 @@
 
                     <input type="text" class="form-control"
                            ng-model="selection"
-                           typeahead="loc as loc.Name +'(' + loc.State +')' for loc in vm.GetLocations($viewValue)"
+                           typeahead="loc as loc.Name +'(' + loc.State +')' for loc in vm.getLocations($viewValue)"
                            typeahead-loading="loadingLocations"
                            typeahead-wait-ms="100"
                            typeahead-min-length="4"
@@ -33,7 +33,7 @@
                     <div class="form-group" ng-show="vm.regionList.length > 0">
                         <label> Select a Region</label>
                         <div ng-repeat="region in vm.regionList">
-                            <button ng-class="region.Name === vm.sessionService.selectedRegion.Name ? 'btn btn-primary btn-group-justified':'btn btn-group-justified'" ng-click="vm.setRegion(region)"><span>{{region.Name}} </span></button>
+                            <button ng-class="region.Name === vm.regionService.selectedRegion.Name ? 'btn btn-primary btn-group-justified':'btn btn-group-justified'" ng-click="vm.setRegion(region)"><span>{{region.Name}} </span></button>
                         </div>
                     </div>
 
