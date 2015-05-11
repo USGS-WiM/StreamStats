@@ -97,11 +97,9 @@
     <TypeScriptCompile Include="src\Controllers\controller.module.ts" />
     <TypeScriptCompile Include="src\Controllers\MapController.ts" />
     <TypeScriptCompile Include="src\Controllers\SidebarController.ts" />
-    <TypeScriptCompile Include="src\Models\Region.ts" />
     <TypeScriptCompile Include="src\Models\StudyArea.ts" />
     <TypeScriptCompile Include="src\Services\RegionService.ts" />
     <TypeScriptCompile Include="src\Services\service.module.ts" />
-    <TypeScriptCompile Include="src\Services\SessionService.ts" />
     <TypeScriptCompile Include="src\Services\StudyAreaService.ts" />
     <TypeScriptCompile Include="_references.ts">
       <SubType>Code</SubType>

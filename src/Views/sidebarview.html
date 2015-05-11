@@ -14,7 +14,7 @@
             <td><a href="" role="tab"><span class="label label-default">1</span></a></td>
             <td><a href="#"><span class="step-label">&nbsp;Select a State / Region</span></a></td>
         </tr>
-        <tr ng-class="vm.selectedProcedure != 1 || vm.sideBarCollapsed ? 'collapse activeitem': 'activeitem'">
+        <tr ng-hide="vm.selectedProcedure != 1 || vm.sideBarCollapsed" class="activeitem">
             <td></td>
             <td colspan="12" class="activeitem">
                 <div class="accordion-body">
@@ -22,7 +22,7 @@
 
                     <input type="text" class="form-control"
                            ng-model="selection"
-                           typeahead="loc as loc.Name +'(' + loc.State +')' for loc in vm.GetLocations($viewValue)"
+                           typeahead="loc as loc.Name +'(' + loc.State +')' for loc in vm.getLocations($viewValue)"
                            typeahead-loading="loadingLocations"
                            typeahead-wait-ms="100"
                            typeahead-min-length="4"
@@ -33,7 +33,7 @@
                     <div class="form-group" ng-show="vm.regionList.length > 0">
                         <label> Select a Region</label>
                         <div ng-repeat="region in vm.regionList">
-                            <button ng-class="region.Name === vm.sessionService.selectedRegion.Name ? 'btn btn-primary btn-group-justified':'btn btn-group-justified'" ng-click="vm.setRegion(region)"><span>{{region.Name}} </span></button>
+                            <button ng-class="region.Name === vm.regionService.selectedRegion.Name ? 'btn btn-primary btn-group-justified':'btn btn-group-justified'" ng-click="vm.setRegion(region)"><span>{{region.Name}} </span></button>
                         </div>
                     </div>
 
@@ -45,7 +45,7 @@
             <td><a href="#"><span class="label label-default">2</span></a></td>
             <td><a href="#"><span class="step-label">&nbsp;Identify a Study Area</span></td>
         </tr>
-        <tr ng-class="vm.selectedProcedure != 2 || vm.sideBarCollapsed ? 'collapse activeitem': 'activeitem'">
+        <tr ng-hide="vm.selectedProcedure != 2 || vm.sideBarCollapsed" class="activeitem">
             <td></td>
             <td colspan="6">
                 <div class="accordion-body">
@@ -75,7 +75,7 @@
             <td><a href="#"><span class="label label-default">3</span></a></td>
             <td><a href="#"><span class="step-label">&nbsp;Select Scenarios</span></a></td>
         </tr>
-        <tr ng-class="vm.selectedProcedure != 3 || vm.sideBarCollapsed ? 'collapse activeitem': 'activeitem'">
+        <tr ng-hide="vm.selectedProcedure != 3 || vm.sideBarCollapsed" class="activeitem">
             <td></td>
             <td colspan="6">
 
@@ -86,8 +86,8 @@
                 </div>-->
                     <p>Available Parameters</p>
                     <!--<div data-bind="foreach: ModelList" id="modelSelector">
-        <button data-bind="attr:{'class': $root.SelectedScenario() === ModelType? 'btn btn-primary btn-group-justified':'btn btn-default btn-group-justified'},  click: function() { $root.SelectedScenario(ModelType); $root.SelectModel($data); }"><span data-bind="text: Description"> </span></button>
-    </div>-->
+                    <button data-bind="attr:{'class': $root.SelectedScenario() === ModelType? 'btn btn-primary btn-group-justified':'btn btn-default btn-group-justified'},  click: function() { $root.SelectedScenario(ModelType); $root.SelectModel($data); }"><span data-bind="text: Description"> </span></button>
+                </div>-->
 
                 </div>
             </td>
@@ -97,7 +97,7 @@
             <td><a href="#" role="tab"><span class="label label-default">4</span></a></td>
             <td><a href="#"><span class="step-label">&nbsp;Select a Scenario</span></a></td>
         </tr>
-        <tr ng-class="vm.selectedProcedure != 4 || vm.sideBarCollapsed ? 'collapse activeitem': 'activeitem'">
+        <tr ng-hide="vm.selectedProcedure != 4 || vm.sideBarCollapsed" class="activeitem">
             <td></td>
             <td colspan="6">
                 <div class="accordion-body">
@@ -135,7 +135,7 @@
             <td><a href="#"><span class="label label-default">5</span></a></td>
             <td><a href="#"><span class="step-label">&nbsp;Build a Flow Report</span></a></td>
         </tr>
-        <tr ng-class="vm.selectedProcedure != 5 || vm.sideBarCollapsed ? 'collapse activeitem': 'activeitem'">
+        <tr ng-hide="vm.selectedProcedure != 5 || vm.sideBarCollapsed" class="activeitem">
             <td></td>
             <td colspan="6">
                 <div class="accordion-body">

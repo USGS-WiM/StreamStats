@@ -23,8 +23,6 @@
 //04.15.2015 jkn - Created
 
 //Imports"
-declare var configuration: any;
-
 module StreamStats.Controllers {
     'use strinct';
     interface ILeafletData {
@@ -45,8 +43,11 @@ module StreamStats.Controllers {
     }
     interface ILayer {
         baselayers: Object;
-        overlays: Object;
+        overlays: IOverlay;
         markers: Object;
+    }
+    interface IOverlay {
+
     }
     interface IMapDefault {
         maxZoom: number;
@@ -106,8 +107,8 @@ module StreamStats.Controllers {
         
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
-        private streamStatsService: Services.ISessionService;
         private regionServices: Services.IRegionService;
+        private searchService: WiM.Services.ISearchAPIService;
         private leafletBoundsHelperService: any;
         private $locationService: ng.ILocationService;
 
@@ -123,33 +124,29 @@ module StreamStats.Controllers {
         
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$location','$stateParams','leafletBoundsHelpers','StreamStats.Services.SessionService', 'StreamStats.Services.RegionService'];
-        constructor($scope:IMapControllerScope, $location:ng.ILocationService,$stateParams, leafletBoundsHelper:any, streamStats:Services.ISessionService, regionService:Services.IRegionService) {
+        static $inject = ['$scope', '$location','$stateParams','leafletBoundsHelpers','WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService'];
+        constructor($scope:IMapControllerScope, $location:ng.ILocationService,$stateParams, leafletBoundsHelper:any, search:WiM.Services.ISearchAPIService, region:Services.IRegionService) {
             $scope.vm = this;
             this.init(); 
-
-            $scope.$on('leafletDirectiveMap.mousemove',  (event, args) => {
-                var latlng = args.leafletEvent.latlng;
-                this.mapPoint.lat = latlng.lat;
-                this.mapPoint.lng = latlng.lng;
-            }); 
-                       
-
-            $scope.$watch(() => this.bounds,(newval, oldval) => this.setRegionsByBounds(oldval, newval));
-            $scope.$on('$locationChangeStart',() => this.updateRegion());
-
-
-            
-            this.streamStatsService = streamStats;
+           
+            this.searchService = search;
             this.$locationService = $location;
-            this.regionServices = regionService;
+            this.regionServices = region;
             this.leafletBoundsHelperService = leafletBoundsHelper;
 
             //subscribe to Events
-            streamStats.onSelectedAreaOfInterestChanged.subscribe(this._onSelectedAreaOfInterestHandler);
+            search.onSelectedAreaOfInterestChanged.subscribe(this._onSelectedAreaOfInterestHandler);
 
-            if ($stateParams.region) this.setBoundsByRegion($stateParams.region);
-                       
+            $scope.$on('leafletDirectiveMap.mousemove',(event, args) => {
+                var latlng = args.leafletEvent.latlng;
+                this.mapPoint.lat = latlng.lat;
+                this.mapPoint.lng = latlng.lng;
+            });
+            $scope.$watch(() => this.bounds,(newval, oldval) => this.setRegionsByBounds(oldval, newval));
+            $scope.$on('$locationChangeStart',() => this.updateRegion());
+
+            // check if region was explicitly set.
+            if ($stateParams.region) this.setBoundsByRegion($stateParams.region);                       
         }
 
         //Methods
@@ -159,8 +156,8 @@ module StreamStats.Controllers {
         //-+-+-+-+-+-+-+-+-+-+-+-
         private init(): void { 
             //init event handler
-            this._onSelectedAreaOfInterestHandler = new WiM.Event.EventHandler<WiM.Event.EventArgs>((sender: any, e: WiM.Event.EventArgs) => {
-                this.onSelectedAreaOfInterestChanged(sender);
+            this._onSelectedAreaOfInterestHandler = new WiM.Event.EventHandler<WiM.Event.EventArgs>((sender: any, e: WiM.Services.SearchAPIEventArgs) => {
+                this.onSelectedAreaOfInterestChanged(sender, e);
             });
             
             //init map           
@@ -190,8 +187,8 @@ module StreamStats.Controllers {
             }
             this.mapPoint = new MapPoint();          
         }
-        private onSelectedAreaOfInterestChanged(e: WiM.Event.EventArgs) {
-            var AOI = this.streamStatsService.selectedAreaOfInterest;
+        private onSelectedAreaOfInterestChanged(sender:any, e: WiM.Services.SearchAPIEventArgs) {
+            var AOI = e.selectedAreaOfInterest;
 
             this.markers['AOI'] = {
                 lat: AOI.Latitude,
@@ -218,8 +215,8 @@ module StreamStats.Controllers {
         }
         private setBoundsByRegion(key:string) {           
             if (key && this.regionServices.loadRegionListByRegion(key)) {
-                this.streamStatsService.selectedRegion = this.regionServices.regionList[0];
-                this.bounds = this.leafletBoundsHelperService.createBoundsFromArray(this.streamStatsService.selectedRegion.Bounds);      
+                this.regionServices.selectedRegion = this.regionServices.regionList[0];
+                this.bounds = this.leafletBoundsHelperService.createBoundsFromArray(this.regionServices.selectedRegion.Bounds);      
                 this.center = <ICenter>{};         
             }
 

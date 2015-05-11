@@ -1,6 +1,20 @@
 //------------------------------------------------------------------------------
 //----- MapController ----------------------------------------------------------
 //------------------------------------------------------------------------------
+//-------1---------2---------3---------4---------5---------6---------7---------8
+//       01234567890123456789012345678901234567890123456789012345678901234567890
+//-------+---------+---------+---------+---------+---------+---------+---------+
+// copyright:   2015 WiM - USGS
+//    authors:  Jeremy K. Newson USGS Wisconsin Internet Mapping
+//   purpose:  
+//discussion:   Controllers are typically built to reflect a View. 
+//              and should only contailn business logic needed for a single view. For example, if a View 
+//              contains a ListBox of objects, a Selected object, and a Save button, the Controller 
+//              will have an ObservableCollection ObectList, 
+//              Model SelectedObject, and SaveCommand.
+//Comments
+//04.15.2015 jkn - Created
+//Imports"
 var StreamStats;
 (function (StreamStats) {
     var Controllers;
@@ -37,7 +51,7 @@ var StreamStats;
         //examples/access-leaflet-object-example.html
         //http://www.codeitive.com/0JiejWjjXg/two-or-multiple-geojson-layers-in-angular-leaflet-directive.html
         var MapController = (function () {
-            function MapController($scope, $location, $stateParams, leafletBoundsHelper, streamStats, regionService) {
+            function MapController($scope, $location, $stateParams, leafletBoundsHelper, search, region) {
                 var _this = this;
                 this.center = null;
                 this.layers = null;
@@ -49,6 +63,12 @@ var StreamStats;
                 this.events = null;
                 $scope.vm = this;
                 this.init();
+                this.searchService = search;
+                this.$locationService = $location;
+                this.regionServices = region;
+                this.leafletBoundsHelperService = leafletBoundsHelper;
+                //subscribe to Events
+                search.onSelectedAreaOfInterestChanged.subscribe(this._onSelectedAreaOfInterestHandler);
                 $scope.$on('leafletDirectiveMap.mousemove', function (event, args) {
                     var latlng = args.leafletEvent.latlng;
                     _this.mapPoint.lat = latlng.lat;
@@ -56,12 +76,7 @@ var StreamStats;
                 });
                 $scope.$watch(function () { return _this.bounds; }, function (newval, oldval) { return _this.setRegionsByBounds(oldval, newval); });
                 $scope.$on('$locationChangeStart', function () { return _this.updateRegion(); });
-                this.streamStatsService = streamStats;
-                this.$locationService = $location;
-                this.regionServices = regionService;
-                this.leafletBoundsHelperService = leafletBoundsHelper;
-                //subscribe to Events
-                streamStats.onSelectedAreaOfInterestChanged.subscribe(this._onSelectedAreaOfInterestHandler);
+                // check if region was explicitly set.
                 if ($stateParams.region)
                     this.setBoundsByRegion($stateParams.region);
             }
@@ -73,7 +88,7 @@ var StreamStats;
                 var _this = this;
                 //init event handler
                 this._onSelectedAreaOfInterestHandler = new WiM.Event.EventHandler(function (sender, e) {
-                    _this.onSelectedAreaOfInterestChanged(sender);
+                    _this.onSelectedAreaOfInterestChanged(sender, e);
                 });
                 //init map           
                 this.center = new Center(39, -100, 4);
@@ -97,8 +112,8 @@ var StreamStats;
                 };
                 this.mapPoint = new MapPoint();
             };
-            MapController.prototype.onSelectedAreaOfInterestChanged = function (e) {
-                var AOI = this.streamStatsService.selectedAreaOfInterest;
+            MapController.prototype.onSelectedAreaOfInterestChanged = function (sender, e) {
+                var AOI = e.selectedAreaOfInterest;
                 this.markers['AOI'] = {
                     lat: AOI.Latitude,
                     lng: AOI.Longitude,
@@ -120,14 +135,14 @@ var StreamStats;
             };
             MapController.prototype.setBoundsByRegion = function (key) {
                 if (key && this.regionServices.loadRegionListByRegion(key)) {
-                    this.streamStatsService.selectedRegion = this.regionServices.regionList[0];
-                    this.bounds = this.leafletBoundsHelperService.createBoundsFromArray(this.streamStatsService.selectedRegion.Bounds);
+                    this.regionServices.selectedRegion = this.regionServices.regionList[0];
+                    this.bounds = this.leafletBoundsHelperService.createBoundsFromArray(this.regionServices.selectedRegion.Bounds);
                     this.center = {};
                 }
             };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
-            MapController.$inject = ['$scope', '$location', '$stateParams', 'leafletBoundsHelpers', 'StreamStats.Services.SessionService', 'StreamStats.Services.RegionService'];
+            MapController.$inject = ['$scope', '$location', '$stateParams', 'leafletBoundsHelpers', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService'];
             return MapController;
         })(); //end class
         angular.module('StreamStats.Controllers').controller('StreamStats.Controllers.MapController', MapController);

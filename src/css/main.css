@@ -69,7 +69,6 @@ a {
 .activeitem {
     background-color:#F8F8F8 ;
 }
-
 .nav-list {
     padding:12px;
 }
@@ -87,13 +86,13 @@ a {
 }
 
 .selectize-control {
-      /* Align Selectize with input-group-btn */
+       Align Selectize with input-group-btn 
       top: 2px;
     }
 .selectize-control > .selectize-dropdown {
     top: 34px;
 }
-/* Reset right rounded corners, see Bootstrap input-groups.less */
+/*Reset right rounded corners, see Bootstrap input-groups.less*/
 .input-group > .selectize-control > .selectize-input {
     border-bottom-right-radius: 0;
     border-top-right-radius: 0;

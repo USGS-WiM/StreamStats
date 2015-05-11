@@ -26,20 +26,44 @@
 module StreamStats.Services {
     'use strict'
     export interface IRegionService {
-        regionList: Array<Models.IRegion>;
+        onSelectedRegionChanged: WiM.Event.Delegate<WiM.Event.EventArgs>;
+        regionList: Array<IRegion>;
+        selectedRegion: IRegion;
+
         loadRegionListByExtent(xmin: number, xmax: number, ymin: number, ymax: number, sr?: number):boolean;
         loadRegionListByRegion(region: string): boolean;
     }
+    export interface IRegion {
+        RegionID: string;
+        Name: string;
+        Bounds: Array<Array<number>>;
+    }
+
+    export class Region implements IRegion {
+        //properties
+        public RegionID: string;
+        public Name: string;
+        public Bounds: Array<Array<number>>;
+
+    }//end class
 
     class RegionService extends WiM.Services.HTTPServiceBase {
+        //Events
+        private _onSelectedRegionChanged: WiM.Event.Delegate<WiM.Event.EventArgs>;
+        public get onSelectedRegionChanged(): WiM.Event.Delegate<WiM.Event.EventArgs> {
+            return this._onSelectedRegionChanged;
+        }
+        
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
-        public regionList: Array<Models.IRegion>;
-        
+        public regionList: Array<IRegion>;
+        public selectedRegion: IRegion;
+
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         constructor($http: ng.IHttpService, private $q: ng.IQService) {
             super($http, configuration.baseurls['StreamStats']);
+            this._onSelectedRegionChanged = new WiM.Event.Delegate<WiM.Event.EventArgs>(); 
             this.regionList = [];
         }
 
@@ -47,7 +71,7 @@ module StreamStats.Services {
         //-+-+-+-+-+-+-+-+-+-+-+-
         public loadRegionListByExtent(xmin:number,xmax:number,ymin:number,ymax:number, sr:number=4326) {
         //    clear List
-            this.regionList.length =0;//clear array
+            this.regionList.length = 0;//clear array
             var input = {
                 f: 'json',
                 geometry: { "xmin": xmin, "ymin": ymin, "xmax": xmax, "ymax": ymax, "spatialReference": { "wkid": sr } },
@@ -73,9 +97,9 @@ module StreamStats.Services {
                     return this.$q.reject(error.data)
                 });
         }
-        public loadRegionListByRegion(c: string): boolean{
+        public loadRegionListByRegion(regionid: string): boolean{
             this.regionList.length = 0;//clear array;
-            var selectedRegion = this.getRegion(c);
+            var selectedRegion = this.getRegion(regionid);
             if (selectedRegion == null) return false;
 
             this.regionList.push(selectedRegion);
@@ -83,8 +107,8 @@ module StreamStats.Services {
         }
         //HelperMethods
         //-+-+-+-+-+-+-+-+-+-+-+-
-        private getRegion(lookupID: string): Models.IRegion {
-            var regionArray: Array<Models.IRegion> = configuration.regions;
+        private getRegion(lookupID: string): IRegion {
+            var regionArray: Array<IRegion> = configuration.regions;
 
             try {
                 //search for item

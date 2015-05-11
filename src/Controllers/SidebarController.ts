@@ -31,7 +31,6 @@ module StreamStats.Controllers {
     interface ISidebarController {
         sideBarCollapsed: boolean;
         selectedProcedure: ProcedureType;
-        SelectedRegion: Models.IRegion;
 
         setProcedureType(pType: ProcedureType): void;
         toggleSideBar(): void;
@@ -43,31 +42,26 @@ module StreamStats.Controllers {
         public sideBarCollapsed: boolean;
         public selectedProcedure: ProcedureType;
 
-        public SelectedRegion: Models.IRegion;
-
-        public sessionService: StreamStats.Services.ISessionService;
-        public regionList: Array<Models.IRegion>;
-
+        public regionList: Array<Services.IRegion>;
         private searchService: WiM.Services.ISearchAPIService;
+        private regionService: Services.IRegionService;
         
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', 'WiM.Services.SearchAPIService', 'StreamStats.Services.SessionService','StreamStats.Services.RegionService'];
-        constructor($scope: ISidebarControllerScope, service:WiM.Services.ISearchAPIService, session:Services.ISessionService, region:Services.IRegionService) {
+        static $inject = ['$scope', 'WiM.Services.SearchAPIService','StreamStats.Services.RegionService'];
+        constructor($scope: ISidebarControllerScope, service:WiM.Services.ISearchAPIService, region:Services.IRegionService) {
             $scope.vm = this;
             this.searchService = service;
             this.sideBarCollapsed = false;
             this.selectedProcedure = ProcedureType.INIT;
-
-            this.sessionService = session;
-            this.regionList = region.regionList;
-
-            this.SelectedRegion = session.selectedRegion;       
+            this.regionService = region;
+            this.regionList = region.regionList;    
         }
+
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
-        public GetLocations(term: string) {
+        public getLocations(term: string):ng.IPromise<Array<WiM.Services.ISearchAPIOutput>> {
             return this.searchService.getLocations(term);
         }
         public setProcedureType(pType: ProcedureType) {           
@@ -79,11 +73,11 @@ module StreamStats.Controllers {
             else this.sideBarCollapsed = true;          
         }
         public onAOISelect(item: WiM.Services.ISearchAPIOutput) {
-            this.sessionService.selectedAreaOfInterest = item;
+            this.searchService.onSelectedAreaOfInterestChanged.raise(this, new WiM.Services.SearchAPIEventArgs(item));
         }
-        public setRegion(region: Models.IRegion) {
-            if (this.sessionService.selectedRegion == undefined || this.sessionService.selectedRegion.RegionID !== region.RegionID)
-                this.sessionService.selectedRegion = region;
+        public setRegion(region: Services.IRegion) {
+            if (this.regionService.selectedRegion == undefined || this.regionService.selectedRegion.RegionID !== region.RegionID)
+                this.regionService.selectedRegion = region;
             this.setProcedureType(ProcedureType.IDENTIFY);
         }
         //Helper Methods
@@ -92,28 +86,26 @@ module StreamStats.Controllers {
             //Project flow:
             var msg: string;
             try {               
-                //switch (pType) {
-                //    case ProcedureType.IMPORT:
-                //        return !this.fileLoaded || !this.fileValid;
-                //    case ProcedureType.VALIDATE:
-                //        if (!this.fileLoaded || !this.fileValid) this.sm(new MSG.NotificationArgs("Import a valid lab document", MSG.NotificationType.WARNING));
+                switch (pType) {
+                    case ProcedureType.INIT:
+                        return true;
+                    case ProcedureType.IDENTIFY:
 
-                //        return this.fileLoaded && this.fileValid;
-                //    case ProcedureType.SUBMIT:
-                //        var isOK = this.fileIsOK();
-                //        if (!this.fileLoaded || !this.fileValid) this.sm(new MSG.NotificationArgs("Import a valid lab document", MSG.NotificationType.WARNING));
-                //        if (!isOK) this.sm(new MSG.NotificationArgs("Samples contains invalid entries. Please fix before submitting", MSG.NotificationType.WARNING));
+                        return this.regionService.selectedRegion != null;
+                    case ProcedureType.SELECT:
 
-                //        return isOK && this.fileLoaded && this.fileValid;
+                        return this.regionService.selectedRegion != null;
 
-                //    case ProcedureType.LOG:
-                //        if (!this.fileLoaded) this.sm(new MSG.NotificationArgs("Import a valid lab document", MSG.NotificationType.WARNING));
+                    case ProcedureType.REFINE:
+                        //if (!this.fileLoaded) this.sm(new MSG.NotificationArgs("Import a valid lab document", MSG.NotificationType.WARNING));
 
-                //        return this.fileLoaded;
-                //    default:
-                //        return false;
-                //}//end switch  
-                return true;          
+                        return false
+                    case ProcedureType.BUILD:
+                        return false;
+
+                    default:
+                        return false;
+                }//end switch          
             }
             catch (e) {
                 //this.sm(new MSG.NotificationArgs(e.message, MSG.NotificationType.INFORMATION, 1.5));

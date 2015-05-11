@@ -1,7 +1,9 @@
-﻿///<reference path="../typings/angular-ui-router/angular-ui-router.d.ts" />
-
+﻿
 //http://lgorithms.blogspot.com/2013/07/angularui-router-as-infrastructure-of.html
 //http://www.funnyant.com/angularjs-ui-router/
+
+///<reference path="../typings/angular-ui-router/angular-ui-router.d.ts" />
+declare var configuration: any;
 module StreamStats {
     'use strinct';
 
@@ -11,7 +13,7 @@ module StreamStats {
             this.$stateProvider
                 .state("main", {
                 url: '/?region',
-                reloadOnSearch:false,
+                reloadOnSearch:true,
                 template:'<ui-view/>',
                 views: {
                     'map': {
@@ -38,6 +40,7 @@ module StreamStats {
 
     angular.module('StreamStats',[
         "ui.router", 'ui.bootstrap',
+        "ngAnimate",
         "leaflet-directive",
         "StreamStats.Services",
         "StreamStats.Controllers",
