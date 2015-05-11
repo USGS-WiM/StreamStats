@@ -32,7 +32,7 @@
 
                     <div class="form-group" ng-show="vm.regionList.length > 0">
                         <label> Select a Region</label>
-                        <div ng-repeat="region in vm.regionList">
+                        <div ng-repeat="region in vm.regionList track by $index">
                             <button ng-class="region.Name === vm.regionService.selectedRegion.Name ? 'btn btn-primary btn-group-justified':'btn btn-group-justified'" ng-click="vm.setRegion(region)"><span>{{region.Name}} </span></button>
                         </div>
                     </div>

@@ -132,10 +132,11 @@ var StreamStats;
             MapController.prototype.onSelectedRegionChanged = function () {
                 var region = this.regionServices.selectedRegion.RegionID;
                 //delete if already there
-                if (this.layers.overlays.hasOwnProperty('ss_stateLayer'))
-                    delete this.layers.overlays['ss_stateLayer'];
+                var layerid = this.findLayerByName("streamStats", this.layers.overlays);
+                if (layerid != undefined)
+                    delete this.layers.overlays[layerid];
                 //reload region Maps
-                this.layers.overlays['ss_stateLayer'] = {
+                this.layers.overlays['ss_stateLayer' + region] = {
                     "name": "streamStats " + region,
                     "url": configuration.baseurls['StreamStats'] + "/arcgis/rest/services/{0}_ss/MapServer".format(region.toLowerCase()),
                     "type": 'dynamic',
@@ -148,7 +149,7 @@ var StreamStats;
                         }
                     }
                 };
-                this.layers.overlays['ss_stateLayer'].doRefresh = true;
+                //this.layers.overlays['ss_stateLayer'].doRefresh = true;
             };
             MapController.prototype.setRegionsByBounds = function (oldValue, newValue) {
                 if (this.center.zoom >= 14 && oldValue !== newValue) {
@@ -165,6 +166,13 @@ var StreamStats;
                     this.regionServices.selectedRegion = this.regionServices.regionList[0];
                     this.bounds = this.leafletBoundsHelperService.createBoundsFromArray(this.regionServices.selectedRegion.Bounds);
                     this.center = {};
+                }
+            };
+            MapController.prototype.findLayerByName = function (name, layerObj) {
+                for (var variable in layerObj) {
+                    if (layerObj[variable].hasOwnProperty("name") && (layerObj[variable].name.indexOf(name) > -1)) {
+                        return variable;
+                    }
                 }
             };
             //Constructor

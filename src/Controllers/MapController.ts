@@ -209,16 +209,18 @@ module StreamStats.Controllers {
         private onSelectedRegionChanged() {
             var region:string = this.regionServices.selectedRegion.RegionID;
             //delete if already there
-            if (this.layers.overlays.hasOwnProperty('ss_stateLayer')) delete this.layers.overlays['ss_stateLayer'];
-           
 
+            var layerid = this.findLayerByName("streamStats", this.layers.overlays);
+            if (layerid != undefined) delete this.layers.overlays[layerid];
+
+            
             //reload region Maps
-            this.layers.overlays['ss_stateLayer'] = {
+            this.layers.overlays['ss_stateLayer'+region] = {
                 "name": "streamStats " + region,
                 "url": configuration.baseurls['StreamStats'] + "/arcgis/rest/services/{0}_ss/MapServer".format(region.toLowerCase()),
                 "type": 'dynamic',
                 "visible": true,
-                "doRefresh":false,
+                "doRefresh": false,
                 "layerOptions": {
                     "opacity": 0.5,
                     "style": function (feature) {
@@ -226,8 +228,8 @@ module StreamStats.Controllers {
                     }
                 }
             };
-
-            this.layers.overlays['ss_stateLayer'].doRefresh = true;
+            
+            //this.layers.overlays['ss_stateLayer'].doRefresh = true;
                       
         }
         private setRegionsByBounds(oldValue, newValue) {
@@ -248,6 +250,14 @@ module StreamStats.Controllers {
                 this.regionServices.selectedRegion = this.regionServices.regionList[0];
                 this.bounds = this.leafletBoundsHelperService.createBoundsFromArray(this.regionServices.selectedRegion.Bounds);      
                 this.center = <ICenter>{};         
+            }
+
+        }
+        private findLayerByName(name: string, layerObj: Object):string {
+            for (var variable in layerObj) {
+                if (layerObj[variable].hasOwnProperty("name") && (layerObj[variable].name.indexOf(name) >-1)) {
+                    return variable;
+                }
             }
 
         }

@@ -97,7 +97,7 @@ configuration.overlayedLayers = {
 //    }
 //},
     "SSLayer": {
-        "name": "streamStats implementation",
+        "name": "Implementated Regions",
         "url": configuration.baseurls['StreamStats'] + "/arcgis/rest/services/ss_studyAreas_prod/MapServer",
         "type": 'dynamic',
         "visible": true,
