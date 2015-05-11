@@ -52,6 +52,19 @@ var StreamStats;
                 enumerable: true,
                 configurable: true
             });
+            Object.defineProperty(RegionService.prototype, "selectedRegion", {
+                get: function () {
+                    return this._selectedRegion;
+                },
+                set: function (val) {
+                    if (this._selectedRegion != val) {
+                        this._selectedRegion = val;
+                        this._onSelectedRegionChanged.raise(null, WiM.Event.EventArgs.Empty);
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             RegionService.prototype.loadRegionListByExtent = function (xmin, xmax, ymin, ymax, sr) {
