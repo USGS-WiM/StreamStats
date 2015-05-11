@@ -104,7 +104,7 @@ module StreamStats.Controllers {
         //Events
         //-+-+-+-+-+-+-+-+-+-+-+-
         private _onSelectedAreaOfInterestHandler: WiM.Event.EventHandler<WiM.Event.EventArgs>;
-        
+        private _onSelectedRegionHandler: WiM.Event.EventHandler<WiM.Event.EventArgs>;
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
         private regionServices: Services.IRegionService;
@@ -121,11 +121,11 @@ module StreamStats.Controllers {
         public controls: Object = null;
         public markers: Object = null;
         public events: Object = null;
-        
+        public regionLayer: Object = null;
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$location','$stateParams','leafletBoundsHelpers','WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService'];
-        constructor($scope:IMapControllerScope, $location:ng.ILocationService,$stateParams, leafletBoundsHelper:any, search:WiM.Services.ISearchAPIService, region:Services.IRegionService) {
+        static $inject = ['$scope', '$location','$stateParams','leafletBoundsHelpers','leafletData','WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService'];
+        constructor($scope:IMapControllerScope, $location:ng.ILocationService,$stateParams, leafletBoundsHelper:any,leafletData:any, search:WiM.Services.ISearchAPIService, region:Services.IRegionService) {
             $scope.vm = this;
             this.init(); 
            
@@ -136,6 +136,8 @@ module StreamStats.Controllers {
 
             //subscribe to Events
             search.onSelectedAreaOfInterestChanged.subscribe(this._onSelectedAreaOfInterestHandler);
+            region.onSelectedRegionChanged.subscribe(this._onSelectedRegionHandler);
+
 
             $scope.$on('leafletDirectiveMap.mousemove',(event, args) => {
                 var latlng = args.leafletEvent.latlng;
@@ -159,7 +161,10 @@ module StreamStats.Controllers {
             this._onSelectedAreaOfInterestHandler = new WiM.Event.EventHandler<WiM.Event.EventArgs>((sender: any, e: WiM.Services.SearchAPIEventArgs) => {
                 this.onSelectedAreaOfInterestChanged(sender, e);
             });
-            
+            this._onSelectedRegionHandler = new WiM.Event.EventHandler<WiM.Event.EventArgs>(() => {
+                this.onSelectedRegionChanged();
+            });
+
             //init map           
             this.center = new Center(39, -100, 4);
             this.layers = {
@@ -168,7 +173,8 @@ module StreamStats.Controllers {
                 markers: this.markers
             }             
             this.mapDefaults = new MapDefault(null, 3, false);   
-            this.markers = {};        
+            this.markers = {};   
+            this.regionLayer = {};     
             //add custom controls
             this.controls = {
                 scale: true,
@@ -199,6 +205,30 @@ module StreamStats.Controllers {
             }
 
             this.center = new Center(AOI.Latitude, AOI.Longitude, 14);
+        }
+        private onSelectedRegionChanged() {
+            var region:string = this.regionServices.selectedRegion.RegionID;
+            //delete if already there
+            if (this.layers.overlays.hasOwnProperty('ss_stateLayer')) delete this.layers.overlays['ss_stateLayer'];
+           
+
+            //reload region Maps
+            this.layers.overlays['ss_stateLayer'] = {
+                "name": "streamStats " + region,
+                "url": configuration.baseurls['StreamStats'] + "/arcgis/rest/services/{0}_ss/MapServer".format(region.toLowerCase()),
+                "type": 'dynamic',
+                "visible": true,
+                "doRefresh":false,
+                "layerOptions": {
+                    "opacity": 0.5,
+                    "style": function (feature) {
+                        return { color: 'gray', weight: 2 };
+                    }
+                }
+            };
+
+            this.layers.overlays['ss_stateLayer'].doRefresh = true;
+                      
         }
         private setRegionsByBounds(oldValue, newValue) {
 

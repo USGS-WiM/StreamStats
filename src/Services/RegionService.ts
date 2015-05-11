@@ -57,7 +57,16 @@ module StreamStats.Services {
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
         public regionList: Array<IRegion>;
-        public selectedRegion: IRegion;
+        private _selectedRegion: IRegion;
+        public get selectedRegion(): IRegion {
+            return this._selectedRegion;
+        }
+        public set selectedRegion(val: IRegion) {
+            if (this._selectedRegion != val) {
+                this._selectedRegion = val;
+                this._onSelectedRegionChanged.raise(null, WiM.Event.EventArgs.Empty);
+            }
+        }
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-

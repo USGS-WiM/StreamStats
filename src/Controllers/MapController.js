@@ -51,7 +51,7 @@ var StreamStats;
         //examples/access-leaflet-object-example.html
         //http://www.codeitive.com/0JiejWjjXg/two-or-multiple-geojson-layers-in-angular-leaflet-directive.html
         var MapController = (function () {
-            function MapController($scope, $location, $stateParams, leafletBoundsHelper, search, region) {
+            function MapController($scope, $location, $stateParams, leafletBoundsHelper, leafletData, search, region) {
                 var _this = this;
                 this.center = null;
                 this.layers = null;
@@ -61,6 +61,7 @@ var StreamStats;
                 this.controls = null;
                 this.markers = null;
                 this.events = null;
+                this.regionLayer = null;
                 $scope.vm = this;
                 this.init();
                 this.searchService = search;
@@ -69,6 +70,7 @@ var StreamStats;
                 this.leafletBoundsHelperService = leafletBoundsHelper;
                 //subscribe to Events
                 search.onSelectedAreaOfInterestChanged.subscribe(this._onSelectedAreaOfInterestHandler);
+                region.onSelectedRegionChanged.subscribe(this._onSelectedRegionHandler);
                 $scope.$on('leafletDirectiveMap.mousemove', function (event, args) {
                     var latlng = args.leafletEvent.latlng;
                     _this.mapPoint.lat = latlng.lat;
@@ -90,6 +92,9 @@ var StreamStats;
                 this._onSelectedAreaOfInterestHandler = new WiM.Event.EventHandler(function (sender, e) {
                     _this.onSelectedAreaOfInterestChanged(sender, e);
                 });
+                this._onSelectedRegionHandler = new WiM.Event.EventHandler(function () {
+                    _this.onSelectedRegionChanged();
+                });
                 //init map           
                 this.center = new Center(39, -100, 4);
                 this.layers = {
@@ -99,6 +104,7 @@ var StreamStats;
                 };
                 this.mapDefaults = new MapDefault(null, 3, false);
                 this.markers = {};
+                this.regionLayer = {};
                 //add custom controls
                 this.controls = {
                     scale: true,
@@ -123,6 +129,27 @@ var StreamStats;
                 };
                 this.center = new Center(AOI.Latitude, AOI.Longitude, 14);
             };
+            MapController.prototype.onSelectedRegionChanged = function () {
+                var region = this.regionServices.selectedRegion.RegionID;
+                //delete if already there
+                if (this.layers.overlays.hasOwnProperty('ss_stateLayer'))
+                    delete this.layers.overlays['ss_stateLayer'];
+                //reload region Maps
+                this.layers.overlays['ss_stateLayer'] = {
+                    "name": "streamStats " + region,
+                    "url": configuration.baseurls['StreamStats'] + "/arcgis/rest/services/{0}_ss/MapServer".format(region.toLowerCase()),
+                    "type": 'dynamic',
+                    "visible": true,
+                    "doRefresh": false,
+                    "layerOptions": {
+                        "opacity": 0.5,
+                        "style": function (feature) {
+                            return { color: 'gray', weight: 2 };
+                        }
+                    }
+                };
+                this.layers.overlays['ss_stateLayer'].doRefresh = true;
+            };
             MapController.prototype.setRegionsByBounds = function (oldValue, newValue) {
                 if (this.center.zoom >= 14 && oldValue !== newValue) {
                     this.regionServices.loadRegionListByExtent(this.bounds.northEast.lng, this.bounds.southWest.lng, this.bounds.southWest.lat, this.bounds.northEast.lat);
@@ -142,7 +169,7 @@ var StreamStats;
             };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
-            MapController.$inject = ['$scope', '$location', '$stateParams', 'leafletBoundsHelpers', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService'];
+            MapController.$inject = ['$scope', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService'];
             return MapController;
         })(); //end class
         angular.module('StreamStats.Controllers').controller('StreamStats.Controllers.MapController', MapController);
