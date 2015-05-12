@@ -37,6 +37,17 @@ var StreamStats;
             }
             return Center;
         })();
+        var Layer = (function () {
+            function Layer(nm, ul, ty, vis, op) {
+                if (op === void 0) { op = undefined; }
+                this.name = nm;
+                this.url = ul;
+                this.type = ty;
+                this.visible = vis;
+                this.layerOptions = op;
+            }
+            return Layer;
+        })();
         var MapDefault = (function () {
             function MapDefault(mxZm, mnZm, zmCtrl) {
                 if (mxZm === void 0) { mxZm = null; }
@@ -130,26 +141,8 @@ var StreamStats;
                 this.center = new Center(AOI.Latitude, AOI.Longitude, 14);
             };
             MapController.prototype.onSelectedRegionChanged = function () {
-                var region = this.regionServices.selectedRegion.RegionID;
-                //delete if already there
-                var layerid = this.findLayerByName("streamStats", this.layers.overlays);
-                if (layerid != undefined)
-                    delete this.layers.overlays[layerid];
-                //reload region Maps
-                this.layers.overlays['ss_stateLayer' + region] = {
-                    "name": "streamStats " + region,
-                    "url": configuration.baseurls['StreamStats'] + "/arcgis/rest/services/{0}_ss/MapServer".format(region.toLowerCase()),
-                    "type": 'dynamic',
-                    "visible": true,
-                    "doRefresh": false,
-                    "layerOptions": {
-                        "opacity": 0.5,
-                        "style": function (feature) {
-                            return { color: 'gray', weight: 2 };
-                        }
-                    }
-                };
-                //this.layers.overlays['ss_stateLayer'].doRefresh = true;
+                this.removeOverlayLayers("_region", true);
+                this.addRegionOverlayLayers(this.regionServices.selectedRegion.RegionID);
             };
             MapController.prototype.setRegionsByBounds = function (oldValue, newValue) {
                 if (this.center.zoom >= 14 && oldValue !== newValue) {
@@ -168,12 +161,45 @@ var StreamStats;
                     this.center = {};
                 }
             };
-            MapController.prototype.findLayerByName = function (name, layerObj) {
+            MapController.prototype.addRegionOverlayLayers = function (regionId) {
+                this.layers.overlays[regionId + "_region"] = new Layer(regionId + " Region", configuration.baseurls['StreamStats'] + "/arcgis/rest/services/{0}_ss/MapServer".format(regionId.toLowerCase()), "dynamic", true, {
+                    "opacity": 0.5,
+                    "layers": [1, 2, 3, 4, 5, 6]
+                });
+                //get any other layers specified in config
+                var layers = configuration.customMapServices[regionId];
+                if (layers == undefined)
+                    return;
+                for (var layer in layers) {
+                    this.layers.overlays[layer + "_region"] = layers[layer];
+                }
+            };
+            MapController.prototype.removeOverlayLayers = function (name, isPartial) {
+                var _this = this;
+                if (isPartial === void 0) { isPartial = false; }
+                var layeridList;
+                layeridList = this.getLayerIdsByID(name, this.layers.overlays, isPartial);
+                layeridList.forEach(function (item) {
+                    delete _this.layers.overlays[item];
+                });
+            };
+            MapController.prototype.getLayerIdsByName = function (name, layerObj, isPartial) {
+                var layeridList = [];
                 for (var variable in layerObj) {
-                    if (layerObj[variable].hasOwnProperty("name") && (layerObj[variable].name.indexOf(name) > -1)) {
-                        return variable;
+                    if (layerObj[variable].hasOwnProperty("name") && (isPartial ? (layerObj[variable].name.indexOf(name) > -1) : (layerObj[variable].name === name))) {
+                        layeridList.push(variable);
                     }
                 }
+                return layeridList;
+            };
+            MapController.prototype.getLayerIdsByID = function (id, layerObj, isPartial) {
+                var layeridList = [];
+                for (var variable in layerObj) {
+                    if (isPartial ? (variable.indexOf(id) > -1) : (variable === id)) {
+                        layeridList.push(variable);
+                    }
+                }
+                return layeridList;
             };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
