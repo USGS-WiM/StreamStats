@@ -41,13 +41,17 @@ module StreamStats.Controllers {
         lat: number;
         lng: number;
     }
-    interface ILayer {
+    interface IMapLayers {
         baselayers: Object;
-        overlays: IOverlay;
+        overlays: ILayer;
         markers: Object;
     }
-    interface IOverlay {
-
+    interface ILayer {
+        name: string;
+        url: string;
+        type: string;
+        visible: boolean;
+        layerOptions: Object;
     }
     interface IMapDefault {
         maxZoom: number;
@@ -56,7 +60,7 @@ module StreamStats.Controllers {
     }
     interface IMapController {
         center: ICenter;
-        layers: ILayer;
+        layers: IMapLayers;
         controls: Object;
         markers: Object;
         bounds: Object;
@@ -65,6 +69,7 @@ module StreamStats.Controllers {
     interface IMapControllerScope extends ng.IScope {
         vm: MapController;
     }
+    
     class MapPoint implements IMapPoint{
         lat: number;
         lng: number;
@@ -85,6 +90,22 @@ module StreamStats.Controllers {
             this.lat = lt;
             this.lng = lg;
             this.zoom = zm;
+        }
+    }
+    class Layer implements ILayer {
+        public name: string;
+        public url: string;
+        public type: string;
+        public visible: boolean;
+        public layerOptions: Object;
+
+        public constructor(nm: string, ul: string, ty: string, vis: boolean, op: Object = undefined) {
+            this.name = nm;
+            this.url = ul;
+            this.type = ty;
+            this.visible = vis;
+            this.layerOptions = op;
+
         }
     }
     class MapDefault implements IMapDefault {
@@ -113,7 +134,7 @@ module StreamStats.Controllers {
         private $locationService: ng.ILocationService;
 
         public center: ICenter = null;
-        public layers: ILayer = null;
+        public layers: IMapLayers = null;
         public mapDefaults: IMapDefault = null;
         public mapPoint: IMapPoint = null;
         public bounds: IBounds = null;
@@ -207,30 +228,8 @@ module StreamStats.Controllers {
             this.center = new Center(AOI.Latitude, AOI.Longitude, 14);
         }
         private onSelectedRegionChanged() {
-            var region:string = this.regionServices.selectedRegion.RegionID;
-            //delete if already there
-
-            var layerid = this.findLayerByName("streamStats", this.layers.overlays);
-            if (layerid != undefined) delete this.layers.overlays[layerid];
-
-            
-            //reload region Maps
-            this.layers.overlays['ss_stateLayer'+region] = {
-                "name": "streamStats " + region,
-                "url": configuration.baseurls['StreamStats'] + "/arcgis/rest/services/{0}_ss/MapServer".format(region.toLowerCase()),
-                "type": 'dynamic',
-                "visible": true,
-                "doRefresh": false,
-                "layerOptions": {
-                    "opacity": 0.5,
-                    "style": function (feature) {
-                        return { color: 'gray', weight: 2 };
-                    }
-                }
-            };
-            
-            //this.layers.overlays['ss_stateLayer'].doRefresh = true;
-                      
+            this.removeOverlayLayers("_region", true)            
+            this.addRegionOverlayLayers(this.regionServices.selectedRegion.RegionID);                       
         }
         private setRegionsByBounds(oldValue, newValue) {
 
@@ -253,13 +252,46 @@ module StreamStats.Controllers {
             }
 
         }
-        private findLayerByName(name: string, layerObj: Object):string {
-            for (var variable in layerObj) {
-                if (layerObj[variable].hasOwnProperty("name") && (layerObj[variable].name.indexOf(name) >-1)) {
-                    return variable;
-                }
-            }
+        private addRegionOverlayLayers(regionId: string) {
+            this.layers.overlays[regionId+"_region"] = new Layer(regionId + " Region", configuration.baseurls['StreamStats'] + "/arcgis/rest/services/{0}_ss/MapServer".format(regionId.toLowerCase()),
+                "dynamic", true, {
+                    "opacity": 0.5,
+                    "layers": [1, 2, 3, 4, 5, 6]
+                });
 
+            //get any other layers specified in config
+            var layers = configuration.customMapServices[regionId];
+            if (layers == undefined) return;
+
+            for (var layer in layers) {
+                this.layers.overlays[layer + "_region"] = layers[layer];
+            }
+        }
+        private removeOverlayLayers(name: string, isPartial: boolean = false) {
+            var layeridList: Array<string>;
+
+            layeridList = this.getLayerIdsByID(name, this.layers.overlays, isPartial);
+            layeridList.forEach((item) => { delete this.layers.overlays[item] });
+        }
+        private getLayerIdsByName(name: string, layerObj: Object, isPartial: boolean):Array<string> {
+            var layeridList: Array<string>=[];
+
+            for (var variable in layerObj) {
+                if (layerObj[variable].hasOwnProperty("name") && (isPartial ? (layerObj[variable].name.indexOf(name) > -1) : (layerObj[variable].name === name))) {
+                    layeridList.push(variable);
+                }
+            }//next variable
+            return layeridList;
+        }
+        private getLayerIdsByID(id: string, layerObj: Object, isPartial: boolean): Array<string> {
+            var layeridList: Array<string> = [];
+
+            for (var variable in layerObj) {
+                if (isPartial ? (variable.indexOf(id) > -1) : (variable === id)) {
+                    layeridList.push(variable);
+                }
+            }//next variable
+            return layeridList;
         }
     }//end class
 

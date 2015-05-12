@@ -109,6 +109,38 @@ configuration.overlayedLayers = {
         }
     }//end ssLayer    
 }//end overlayedLayers
+configuration.customMapServices =
+    {
+        'IA': {
+            'FLA': {
+                "name": "Flow Anywhere Model",
+                "url":'http://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowAnywhere/MapServer',
+                "type": 'dynamic',
+                "visible": true,
+                "layerOptions": {
+                    "opacity": 0.5
+                }            
+            },
+            'FDCTM': {
+                "name":"Flow Duration Curve Transfer Model",
+                "url": 'http://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowDuration2/MapServer',
+                "type": 'dynamic',
+                "visible": true,
+                "layerOptions": {
+                    "opacity": 0.5
+                }
+            },
+            'PRMS': {
+                "name": "PRMS",
+                "url": 'http://wim.usgs.gov/arcgis/rest/services/IowaPRMSMapper/IOWA_PRMS/MapServer',
+                "type": 'dynamic',
+                "visible": false,
+                "layerOptions": {
+                    "opacity": 0.5
+                }
+            }
+        }//end IA
+    }
 
 configuration.regions = [
     { "RegionID": "AL", "Name": "Alabama", "Bounds": [[30.189622, -88.47203], [35.00888, -84.893486]] },
