@@ -127,7 +127,7 @@ module StreamStats.Services {
             this.Execute(request).then(
                 (response: any) => {
                     angular.forEach(response.data.layers, function (value, key) {
-                        if (value.name.toLowerCase().indexOf('streamgages') != -1 || value.name.toLowerCase().indexOf('study area bndys') != -1) {
+                        if (value.name.toLowerCase().indexOf('stream grid') != -1 || value.name.toLowerCase().indexOf('study area bndys') != -1) {
                             console.log(value);
                             layerArray.push(value.id);
                         };
