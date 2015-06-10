@@ -32,6 +32,7 @@ module StreamStats.Services {
 
         loadRegionListByExtent(xmin: number, xmax: number, ymin: number, ymax: number, sr?: number):boolean;
         loadRegionListByRegion(region: string): boolean;
+        loadMapLayersByRegion(region: string): boolean;
     }
     export interface IRegion {
         RegionID: string;
@@ -118,6 +119,24 @@ module StreamStats.Services {
 
             this.regionList.push(selectedRegion);
             return true;
+        }
+        public loadMapLayersByRegion(regionid: string): any {
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo("/arcgis/rest/services/{0}_ss/MapServer?f=pjson".format(regionid.toLowerCase()), WiM.Services.Helpers.methodType.GET, 'json');
+            var layerArray = [];
+
+            this.Execute(request).then(
+                (response: any) => {
+                    angular.forEach(response.data.layers, function (value, key) {
+                        if (value.name.toLowerCase().indexOf('streamgages') != -1 || value.name.toLowerCase().indexOf('study area bndys') != -1) {
+                            console.log(value);
+                            layerArray.push(value.id);
+                        };
+                    });
+                    return layerArray;
+                       
+                },(error) => {
+                    return this.$q.reject(error.data)
+                });
         }
         //HelperMethods
         //-+-+-+-+-+-+-+-+-+-+-+-
