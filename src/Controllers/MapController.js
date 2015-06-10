@@ -164,7 +164,7 @@ var StreamStats;
             MapController.prototype.addRegionOverlayLayers = function (regionId) {
                 this.layers.overlays[regionId + "_region"] = new Layer(regionId + " Region", configuration.baseurls['StreamStats'] + "/arcgis/rest/services/{0}_ss/MapServer".format(regionId.toLowerCase()), "dynamic", true, {
                     "opacity": 0.5,
-                    "layers": [1, 2, 3, 4, 5, 6]
+                    "layers": this.regionServices.loadMapLayersByRegion(regionId)
                 });
                 //get any other layers specified in config
                 var layers = configuration.customMapServices[regionId];

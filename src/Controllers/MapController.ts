@@ -31,7 +31,7 @@ module StreamStats.Controllers {
     interface ICenter {
         lat: number;
         lng: number;
-        zoom: number;    
+        zoom: number;
     }
     interface IBounds {
         southWest: IMapPoint;
@@ -69,13 +69,13 @@ module StreamStats.Controllers {
     interface IMapControllerScope extends ng.IScope {
         vm: MapController;
     }
-    
-    class MapPoint implements IMapPoint{
+
+    class MapPoint implements IMapPoint {
         lat: number;
         lng: number;
         constructor() {
             this.lat = 0;
-            this.lng = 0;    
+            this.lng = 0;
         }
     }
     class Center implements ICenter {
@@ -112,8 +112,8 @@ module StreamStats.Controllers {
         public maxZoom: number;
         public zoomControl: boolean;
         public minZoom: number;
-        
-        constructor(mxZm: number = null, mnZm: number = null, zmCtrl:boolean = true) {
+
+        constructor(mxZm: number = null, mnZm: number = null, zmCtrl: boolean = true) {
             this.maxZoom = mxZm;
             this.minZoom = mnZm;
             this.zoomControl = zmCtrl;
@@ -145,11 +145,11 @@ module StreamStats.Controllers {
         public regionLayer: Object = null;
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$location','$stateParams','leafletBoundsHelpers','leafletData','WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService'];
-        constructor($scope:IMapControllerScope, $location:ng.ILocationService,$stateParams, leafletBoundsHelper:any,leafletData:any, search:WiM.Services.ISearchAPIService, region:Services.IRegionService) {
+        static $inject = ['$scope', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService'];
+        constructor($scope: IMapControllerScope, $location: ng.ILocationService, $stateParams, leafletBoundsHelper: any, leafletData: any, search: WiM.Services.ISearchAPIService, region: Services.IRegionService) {
             $scope.vm = this;
-            this.init(); 
-           
+            this.init();
+
             this.searchService = search;
             this.$locationService = $location;
             this.regionServices = region;
@@ -169,7 +169,7 @@ module StreamStats.Controllers {
             $scope.$on('$locationChangeStart',() => this.updateRegion());
 
             // check if region was explicitly set.
-            if ($stateParams.region) this.setBoundsByRegion($stateParams.region);                       
+            if ($stateParams.region) this.setBoundsByRegion($stateParams.region);
         }
 
         //Methods
@@ -192,29 +192,29 @@ module StreamStats.Controllers {
                 baselayers: configuration.basemaps,
                 overlays: configuration.overlayedLayers,
                 markers: this.markers
-            }             
-            this.mapDefaults = new MapDefault(null, 3, false);   
-            this.markers = {};   
+            }
+            this.mapDefaults = new MapDefault(null, 3, false);
+            this.markers = {};
             this.regionLayer = {};     
             //add custom controls
             this.controls = {
                 scale: true,
-                zoomControl:false,
+                zoomControl: false,
                 custom: new Array(
                     //zoom home button control
                     (<any>L.Control).zoomHome({ homeCoordinates: [39, -100], homeZoom: 4 }),
                     //location control
-                    (<any>L.control).locate({ follow: true })       
+                    (<any>L.control).locate({ follow: true })
                     )
             };
-            this.events= { 
+            this.events = {
                 map: {
                     enable: ['mousemove']
                 }
             }
-            this.mapPoint = new MapPoint();          
+            this.mapPoint = new MapPoint();
         }
-        private onSelectedAreaOfInterestChanged(sender:any, e: WiM.Services.SearchAPIEventArgs) {
+        private onSelectedAreaOfInterestChanged(sender: any, e: WiM.Services.SearchAPIEventArgs) {
             var AOI = e.selectedAreaOfInterest;
 
             this.markers['AOI'] = {
@@ -222,41 +222,42 @@ module StreamStats.Controllers {
                 lng: AOI.Longitude,
                 message: AOI.Name,
                 focus: true,
-                draggable:false
+                draggable: false
             }
 
             this.center = new Center(AOI.Latitude, AOI.Longitude, 14);
         }
         private onSelectedRegionChanged() {
-            this.removeOverlayLayers("_region", true)            
-            this.addRegionOverlayLayers(this.regionServices.selectedRegion.RegionID);                       
+            this.removeOverlayLayers("_region", true)
+            this.addRegionOverlayLayers(this.regionServices.selectedRegion.RegionID);  
+
         }
         private setRegionsByBounds(oldValue, newValue) {
 
             if (this.center.zoom >= 14 && oldValue !== newValue) {
                 this.regionServices.loadRegionListByExtent(this.bounds.northEast.lng, this.bounds.southWest.lng,
-                                                this.bounds.southWest.lat, this.bounds.northEast.lat);
+                    this.bounds.southWest.lat, this.bounds.northEast.lat);
             }
         }
         private updateRegion() {
             //get regionkey
-            var key: string= (this.$locationService.search()).region
+            var key: string = (this.$locationService.search()).region
             this.setBoundsByRegion(key);
 
         }
-        private setBoundsByRegion(key:string) {           
+        private setBoundsByRegion(key: string) {
             if (key && this.regionServices.loadRegionListByRegion(key)) {
                 this.regionServices.selectedRegion = this.regionServices.regionList[0];
-                this.bounds = this.leafletBoundsHelperService.createBoundsFromArray(this.regionServices.selectedRegion.Bounds);      
-                this.center = <ICenter>{};         
+                this.bounds = this.leafletBoundsHelperService.createBoundsFromArray(this.regionServices.selectedRegion.Bounds);
+                this.center = <ICenter>{};
             }
 
         }
         private addRegionOverlayLayers(regionId: string) {
-            this.layers.overlays[regionId+"_region"] = new Layer(regionId + " Region", configuration.baseurls['StreamStats'] + "/arcgis/rest/services/{0}_ss/MapServer".format(regionId.toLowerCase()),
+            this.layers.overlays[regionId + "_region"] = new Layer(regionId + " Region", configuration.baseurls['StreamStats'] + "/arcgis/rest/services/{0}_ss/MapServer".format(regionId.toLowerCase()),
                 "dynamic", true, {
                     "opacity": 0.5,
-                    "layers": [1, 2, 3, 4, 5, 6]
+                    "layers": this.regionServices.loadMapLayersByRegion(regionId)
                 });
 
             //get any other layers specified in config
@@ -273,8 +274,8 @@ module StreamStats.Controllers {
             layeridList = this.getLayerIdsByID(name, this.layers.overlays, isPartial);
             layeridList.forEach((item) => { delete this.layers.overlays[item] });
         }
-        private getLayerIdsByName(name: string, layerObj: Object, isPartial: boolean):Array<string> {
-            var layeridList: Array<string>=[];
+        private getLayerIdsByName(name: string, layerObj: Object, isPartial: boolean): Array<string> {
+            var layeridList: Array<string> = [];
 
             for (var variable in layerObj) {
                 if (layerObj[variable].hasOwnProperty("name") && (isPartial ? (layerObj[variable].name.indexOf(name) > -1) : (layerObj[variable].name === name))) {

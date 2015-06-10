@@ -83,7 +83,7 @@ var StreamStats;
                     sr: sr,
                     layers: "all: 4"
                 };
-                var request = new WiM.Services.Helpers.RequestInfo(configuration.queryparams['regionService'], 0 /* GET */, 'json');
+                var request = new WiM.Services.Helpers.RequestInfo(configuration.queryparams['regionService'], WiM.Services.Helpers.methodType.GET, 'json');
                 request.params = input;
                 this.Execute(request).then(function (response) {
                     response.data.results.map(function (item) {
@@ -107,6 +107,23 @@ var StreamStats;
                     return false;
                 this.regionList.push(selectedRegion);
                 return true;
+            };
+            RegionService.prototype.loadMapLayersByRegion = function (regionid) {
+                var _this = this;
+                var request = new WiM.Services.Helpers.RequestInfo("/arcgis/rest/services/{0}_ss/MapServer?f=pjson".format(regionid.toLowerCase()), WiM.Services.Helpers.methodType.GET, 'json');
+                var layerArray = [];
+                this.Execute(request).then(function (response) {
+                    angular.forEach(response.data.layers, function (value, key) {
+                        if (value.name.toLowerCase().indexOf('streamgages') != -1 || value.name.toLowerCase().indexOf('study area bndys') != -1) {
+                            console.log(value);
+                            layerArray.push(value.id);
+                        }
+                        ;
+                    });
+                    return layerArray;
+                }, function (error) {
+                    return _this.$q.reject(error.data);
+                });
             };
             //HelperMethods
             //-+-+-+-+-+-+-+-+-+-+-+-
