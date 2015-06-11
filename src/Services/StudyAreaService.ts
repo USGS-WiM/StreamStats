@@ -88,12 +88,9 @@ module StreamStats.Services {
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url);
 
             this.Execute(request).then(
-                (response: any) => {
-                    
+                (response: any) => {  
                     this.selectedStudyArea.Basin = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"][0].feature : null;
                     this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
-
-                    console.log(this.selectedStudyArea.Basin);
                     //sm when complete
                 },(error) => {
                     //sm when error

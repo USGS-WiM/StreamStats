@@ -176,6 +176,7 @@ var StreamStats;
                         fillOpacity: 0.7
                     }
                 };
+                console.log('geojson', this.geojson['delineatedBasin']);
             };
             MapController.prototype.setRegionsByBounds = function (oldValue, newValue) {
                 if (this.center.zoom >= 14 && oldValue !== newValue) {

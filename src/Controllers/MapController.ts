@@ -45,6 +45,7 @@ module StreamStats.Controllers {
         baselayers: Object;
         overlays: ILayer;
         markers: Object;
+        geojson: Object;
     }
     interface ILayer {
         name: string;
@@ -63,6 +64,7 @@ module StreamStats.Controllers {
         layers: IMapLayers;
         controls: Object;
         markers: Object;
+        geojson: Object;
         bounds: Object;
 
     }
@@ -276,6 +278,7 @@ module StreamStats.Controllers {
                     fillOpacity: 0.7
                 }
             }
+            console.log('geojson',this.geojson['delineatedBasin']);
         }
        
         private setRegionsByBounds(oldValue, newValue) {
