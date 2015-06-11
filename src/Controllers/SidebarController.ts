@@ -34,6 +34,7 @@ module StreamStats.Controllers {
 
         setProcedureType(pType: ProcedureType): void;
         toggleSideBar(): void;
+        setDelineateFlag(): void;
     }
     
     class SidebarController implements ISidebarController {
@@ -45,18 +46,20 @@ module StreamStats.Controllers {
         public regionList: Array<Services.IRegion>;
         private searchService: WiM.Services.ISearchAPIService;
         private regionService: Services.IRegionService;
+        private studyAreaService: Services.IStudyAreaService;
         
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', 'WiM.Services.SearchAPIService','StreamStats.Services.RegionService'];
-        constructor($scope: ISidebarControllerScope, service:WiM.Services.ISearchAPIService, region:Services.IRegionService) {
+        static $inject = ['$scope', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService'];
+        constructor($scope: ISidebarControllerScope, service: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService) {
             $scope.vm = this;
             this.searchService = service;
             this.sideBarCollapsed = false;
             this.selectedProcedure = ProcedureType.INIT;
             this.regionService = region;
             this.regionList = region.regionList;    
+            this.studyAreaService = studyArea;
         }
 
         //Methods
@@ -79,6 +82,9 @@ module StreamStats.Controllers {
             if (this.regionService.selectedRegion == undefined || this.regionService.selectedRegion.RegionID !== region.RegionID)
                 this.regionService.selectedRegion = region;
             this.setProcedureType(ProcedureType.IDENTIFY);
+        }
+        public setDelineateFlag(): void {
+            this.studyAreaService.doDelineateFlag = !this.studyAreaService.doDelineateFlag;
         }
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-

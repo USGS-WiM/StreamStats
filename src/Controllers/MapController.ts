@@ -126,13 +126,17 @@ module StreamStats.Controllers {
         //-+-+-+-+-+-+-+-+-+-+-+-
         private _onSelectedAreaOfInterestHandler: WiM.Event.EventHandler<WiM.Event.EventArgs>;
         private _onSelectedRegionHandler: WiM.Event.EventHandler<WiM.Event.EventArgs>;
+        private _onSelectedStudyAreaHandler: WiM.Event.EventHandler<WiM.Event.EventArgs>;
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
         private regionServices: Services.IRegionService;
         private searchService: WiM.Services.ISearchAPIService;
         private leafletBoundsHelperService: any;
         private $locationService: ng.ILocationService;
+        private leafletData: ILeafletData;
+        private studyArea: Services.IStudyAreaService;
 
+        public cursorStyle: string;
         public center: ICenter = null;
         public layers: IMapLayers = null;
         public mapDefaults: IMapDefault = null;
@@ -141,12 +145,15 @@ module StreamStats.Controllers {
 
         public controls: Object = null;
         public markers: Object = null;
+        public geojson: Object = null;
         public events: Object = null;
         public regionLayer: Object = null;
+        
+
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService'];
-        constructor($scope: IMapControllerScope, $location: ng.ILocationService, $stateParams, leafletBoundsHelper: any, leafletData: any, search: WiM.Services.ISearchAPIService, region: Services.IRegionService) {
+        static $inject = ['$scope', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService'];
+        constructor($scope: IMapControllerScope, $location: ng.ILocationService, $stateParams, leafletBoundsHelper: any, leafletData: ILeafletData, search: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService) {
             $scope.vm = this;
             this.init();
 
@@ -154,19 +161,37 @@ module StreamStats.Controllers {
             this.$locationService = $location;
             this.regionServices = region;
             this.leafletBoundsHelperService = leafletBoundsHelper;
+            this.leafletData = leafletData;
+            this.studyArea = studyArea;
 
             //subscribe to Events
             search.onSelectedAreaOfInterestChanged.subscribe(this._onSelectedAreaOfInterestHandler);
             region.onSelectedRegionChanged.subscribe(this._onSelectedRegionHandler);
-
+            studyArea.onSelectedStudyAreaChanged.subscribe(this._onSelectedStudyAreaHandler);
 
             $scope.$on('leafletDirectiveMap.mousemove',(event, args) => {
                 var latlng = args.leafletEvent.latlng;
                 this.mapPoint.lat = latlng.lat;
                 this.mapPoint.lng = latlng.lng;
             });
+
+            $scope.$on('leafletDirectiveMap.click',(event, args) => {
+                console.log('click', event);
+
+                if (!studyArea.doDelineateFlag) return;
+                console.log('delineate flag true');
+
+                var latlng = args.leafletEvent.latlng;
+                this.startDelineate(latlng);
+
+                studyArea.doDelineateFlag = false;
+
+            });
+
             $scope.$watch(() => this.bounds,(newval, oldval) => this.setRegionsByBounds(oldval, newval));
             $scope.$on('$locationChangeStart',() => this.updateRegion());
+
+            $scope.$watch(() => studyArea.doDelineateFlag,(newval, oldval) => newval ? this.cursorStyle = 'crosshair' : this.cursorStyle = 'hand');
 
             // check if region was explicitly set.
             if ($stateParams.region) this.setBoundsByRegion($stateParams.region);
@@ -185,16 +210,21 @@ module StreamStats.Controllers {
             this._onSelectedRegionHandler = new WiM.Event.EventHandler<WiM.Event.EventArgs>(() => {
                 this.onSelectedRegionChanged();
             });
+            this._onSelectedStudyAreaHandler = new WiM.Event.EventHandler<WiM.Event.EventArgs>(() => {
+                this.onSelectedStudyAreaChanged();
+            });
 
             //init map           
             this.center = new Center(39, -100, 4);
             this.layers = {
                 baselayers: configuration.basemaps,
                 overlays: configuration.overlayedLayers,
-                markers: this.markers
+                markers: this.markers,
+                geojson: this.geojson
             }
             this.mapDefaults = new MapDefault(null, 3, false);
             this.markers = {};
+            this.geojson = {};
             this.regionLayer = {};     
             //add custom controls
             this.controls = {
@@ -232,6 +262,22 @@ module StreamStats.Controllers {
             this.addRegionOverlayLayers(this.regionServices.selectedRegion.RegionID);  
 
         }
+        private onSelectedStudyAreaChanged() {
+            //delete this.geojson['delineatedBasin'] ;
+
+            this.geojson['delineatedBasin'] = {
+                data: this.studyArea.selectedStudyArea.Basin,
+                style: {
+                    fillColor: "green",
+                    weight: 2,
+                    opacity: 1,
+                    color: 'white',
+                    dashArray: '3',
+                    fillOpacity: 0.7
+                }
+            }
+        }
+       
         private setRegionsByBounds(oldValue, newValue) {
 
             if (this.center.zoom >= 14 && oldValue !== newValue) {
@@ -293,6 +339,23 @@ module StreamStats.Controllers {
                 }
             }//next variable
             return layeridList;
+        }
+
+        private startDelineate(latlng: any) {
+            console.log('in startDelineate', latlng);
+
+            this.markers['pourpoint'] = {
+                lat: latlng.lat,
+                lng: latlng.lng,
+                message: 'new pourpoint',
+                focus: true,
+                draggable: true
+            }
+
+            var studyArea: Models.IStudyArea = new Models.StudyArea(this.regionServices.selectedRegion.RegionID, new WiM.Models.Point(latlng.lat, latlng.lng, '4326'));
+
+            this.studyArea.AddStudyArea(studyArea);
+            this.studyArea.loadStudyBoundary() 
         }
     }//end class
 

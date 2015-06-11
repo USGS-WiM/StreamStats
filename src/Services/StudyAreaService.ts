@@ -26,7 +26,12 @@ module StreamStats.Services {
     'use strict'
     export interface IStudyAreaService {
         onSelectedStudyAreaChanged: WiM.Event.Delegate<WiM.Event.EventArgs>;
-        loadStudyBoundary(sa: Models.IStudyArea);
+        selectedStudyArea: Models.IStudyArea;
+        loadStudyBoundary();
+        AddStudyArea(sa: Models.IStudyArea);
+        RemoveStudyArea();
+        doDelineateFlag: boolean;
+        canUpdate: boolean;
     }
     class StudyAreaService extends WiM.Services.HTTPServiceBase implements IStudyAreaService {
         //Events
@@ -37,11 +42,12 @@ module StreamStats.Services {
         
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
-        private canUpdate: boolean;
+        public canUpdate: boolean;
         private _studyAreaList: Array<Models.IStudyArea>;
         public get StudyAreaList(): Array<Models.IStudyArea> {
             return this._studyAreaList;
         }
+        public doDelineateFlag: boolean;
 
         private _selectedStudyArea: Models.IStudyArea;
         public set selectedStudyArea(val: Models.IStudyArea) {
@@ -58,34 +64,43 @@ module StreamStats.Services {
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         constructor($http: ng.IHttpService, private $q: ng.IQService) {
-            super($http, configuration['StreamStats'])
+            super($http, configuration.baseurls['StreamStats'])
             this._onSelectedStudyAreaChanged = new WiM.Event.Delegate<WiM.Event.EventArgs>();
             this._studyAreaList = []; 
             this.canUpdate = true;
+            this.doDelineateFlag = false;
         }
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
-        public AddStudyArea() {
+        public AddStudyArea(sa: Models.IStudyArea) {
             //add the study area to studyAreaList
+            this.StudyAreaList.push(sa);
+            this.selectedStudyArea = sa;
         }
         public RemoveStudyArea() {
-            //add the study area to studyAreaList
+            //remove the study area to studyAreaList
         }
 
         public loadStudyBoundary() {
             this.canUpdate = false;
-            var url = configuration.requests['SSdelineation'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(),
+            var url = configuration.queryparams['SSdelineation'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(),
                 this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString(), false)
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url);
 
             this.Execute(request).then(
-                (response) => {
-                    this.selectedStudyArea.Basin = response.hasOwnProperty("delineatedbasin") ? response["delineatedbasin"].features[0] : null;
-                    this.selectedStudyArea.WorkspaceID = response.hasOwnProperty("workspaceID") ? response["workspaceID"] : null;
+                (response: any) => {
+                    
+                    this.selectedStudyArea.Basin = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"][0].feature : null;
+                    this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
+
+                    console.log(this.selectedStudyArea.Basin);
                     //sm when complete
                 },(error) => {
                     //sm when error
-                }).finally(() => {  this.canUpdate = true; });
+                }).finally(() => {
+                    this.canUpdate = true;
+                    this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
+            });
         }
         public loadParameters(params: Array<WiM.Models.IParameter> = []) {
             this.canUpdate = false;

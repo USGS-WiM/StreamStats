@@ -21,13 +21,14 @@ var StreamStats;
     (function (Controllers) {
         'use strinct';
         var SidebarController = (function () {
-            function SidebarController($scope, service, region) {
+            function SidebarController($scope, service, region, studyArea) {
                 $scope.vm = this;
                 this.searchService = service;
                 this.sideBarCollapsed = false;
                 this.selectedProcedure = 1 /* INIT */;
                 this.regionService = region;
                 this.regionList = region.regionList;
+                this.studyAreaService = studyArea;
             }
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
@@ -52,6 +53,9 @@ var StreamStats;
                 if (this.regionService.selectedRegion == undefined || this.regionService.selectedRegion.RegionID !== region.RegionID)
                     this.regionService.selectedRegion = region;
                 this.setProcedureType(2 /* IDENTIFY */);
+            };
+            SidebarController.prototype.setDelineateFlag = function () {
+                this.studyAreaService.doDelineateFlag = !this.studyAreaService.doDelineateFlag;
             };
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
@@ -88,7 +92,7 @@ var StreamStats;
             };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
-            SidebarController.$inject = ['$scope', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService'];
+            SidebarController.$inject = ['$scope', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService'];
             return SidebarController;
         })(); //end class
         var ProcedureType;

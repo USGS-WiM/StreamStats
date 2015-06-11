@@ -86,7 +86,7 @@ a {
 }
 
 .selectize-control {
-       Align Selectize with input-group-btn 
+      /* Align Selectize with input-group-btn */
       top: 2px;
     }
 .selectize-control > .selectize-dropdown {
