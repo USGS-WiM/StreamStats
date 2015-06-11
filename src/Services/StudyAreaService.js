@@ -87,7 +87,6 @@ var StreamStats;
                 this.Execute(request).then(function (response) {
                     _this.selectedStudyArea.Basin = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"][0].feature : null;
                     _this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
-                    console.log(_this.selectedStudyArea.Basin);
                     //sm when complete
                 }, function (error) {
                     //sm when error
