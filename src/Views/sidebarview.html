@@ -4,7 +4,7 @@
     <thead>
         <tr ng-click="vm.toggleSideBar()">
             <th><a href="" role="tab"><i id="chevron" ng-class="vm.sideBarCollapsed ? 'glyphicon glyphicon-chevron-right': 'glyphicon glyphicon-chevron-left'"></i></a></th>
-            <th style="min-width:18em;"><i class="fa fa-leaf"></i></span>&nbsp;&nbspStreamStats <small>a great new app</small></th>
+            <th style="min-width:18em;"><i class="fa fa-leaf"></i><span>&nbsp;&nbspStreamStats <small>a great new app</small></span></th>
         </tr>
     </thead>
 
@@ -43,21 +43,17 @@
         <!-- step 2 Identify a Study Area -->
         <tr ng-click="vm.setProcedureType(2)" ng-class="vm.selectedProcedure == 2 ? 'activeitemheader accordion-toggle': 'accordion-toggle'">
             <td><a href="#"><span class="label label-default">2</span></a></td>
-            <td><a href="#"><span class="step-label">&nbsp;Identify a Study Area</span></td>
+            <td><a href="#"><span class="step-label">&nbsp;Identify a Study Area</span></a></td>
         </tr>
         <tr ng-hide="vm.selectedProcedure != 2 || vm.sideBarCollapsed" class="activeitem">
             <td></td>
             <td colspan="6">
                 <div class="accordion-body">
                     <p>To identify a study area, zoom to at least a zoom level of 15 and select a blue stream cell</p>
-                    <h4>OR</h4>
-                    <!--<button id="PRMSmodel" class='btn btn-primary'<span>Use Iowa PRMS Model</span></button></br>-->
+                     
+                    <button id="delineateButton" type="button" class="btn btn-sm btn-info" ng-click="vm.setDelineateFlag()" ng-class="vm.studyAreaService.doDelineateFlag ? 'btn-warning' : 'btn-info'"><span class="glyphicon glyphicon-edit"></span>Delineate</button>
+                    <i id="loadingSpinner" class="fa fa-spinner fa-5x fa-spin" ng-show="!vm.studyAreaService.canUpdate"></i>  
 
-                    <div id="PRMSeditToolBar" class="btn-group" style="display:none;">
-                        <button id="drawPolyline" type="button" class="btn btn-sm btn-default"><span class="leaflet-draw-draw-polyline"></span> Polyline</button>
-                        <button id="drawPolygon" type="button" class="btn btn-sm btn-default"><span class="leaflet-draw-toolbar leaflet-draw-draw-polygon"></span> Polygon</button>
-                        <button id="drawRectangle" type="button" class="btn btn-sm btn-default"><span class="leaflet-draw-toolbar leaflet-draw-draw-rectangle"></span> Rectangle</button>
-                    </div>
                     <div id="verifyStudyArea" style="display:none;">
                         <br><p> Does the study area look correct?</p>
                         <div class="btn-group">

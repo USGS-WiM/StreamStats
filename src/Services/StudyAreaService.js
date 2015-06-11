@@ -33,11 +33,12 @@ var StreamStats;
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
             function StudyAreaService($http, $q) {
-                _super.call(this, $http, configuration['StreamStats']);
+                _super.call(this, $http, configuration.baseurls['StreamStats']);
                 this.$q = $q;
                 this._onSelectedStudyAreaChanged = new WiM.Event.Delegate();
                 this._studyAreaList = [];
                 this.canUpdate = true;
+                this.doDelineateFlag = false;
             }
             Object.defineProperty(StudyAreaService.prototype, "onSelectedStudyAreaChanged", {
                 get: function () {
@@ -70,25 +71,29 @@ var StreamStats;
             });
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
-            StudyAreaService.prototype.AddStudyArea = function () {
+            StudyAreaService.prototype.AddStudyArea = function (sa) {
                 //add the study area to studyAreaList
+                this.StudyAreaList.push(sa);
+                this.selectedStudyArea = sa;
             };
             StudyAreaService.prototype.RemoveStudyArea = function () {
-                //add the study area to studyAreaList
+                //remove the study area to studyAreaList
             };
             StudyAreaService.prototype.loadStudyBoundary = function () {
                 var _this = this;
                 this.canUpdate = false;
-                var url = configuration.requests['SSdelineation'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString(), false);
+                var url = configuration.queryparams['SSdelineation'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString(), false);
                 var request = new WiM.Services.Helpers.RequestInfo(url);
                 this.Execute(request).then(function (response) {
-                    _this.selectedStudyArea.Basin = response.hasOwnProperty("delineatedbasin") ? response["delineatedbasin"].features[0] : null;
-                    _this.selectedStudyArea.WorkspaceID = response.hasOwnProperty("workspaceID") ? response["workspaceID"] : null;
+                    _this.selectedStudyArea.Basin = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"][0].feature : null;
+                    _this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
+                    console.log(_this.selectedStudyArea.Basin);
                     //sm when complete
                 }, function (error) {
                     //sm when error
                 }).finally(function () {
                     _this.canUpdate = true;
+                    _this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
                 });
             };
             StudyAreaService.prototype.loadParameters = function (params) {

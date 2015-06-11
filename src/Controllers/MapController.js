@@ -62,7 +62,7 @@ var StreamStats;
         //examples/access-leaflet-object-example.html
         //http://www.codeitive.com/0JiejWjjXg/two-or-multiple-geojson-layers-in-angular-leaflet-directive.html
         var MapController = (function () {
-            function MapController($scope, $location, $stateParams, leafletBoundsHelper, leafletData, search, region) {
+            function MapController($scope, $location, $stateParams, leafletBoundsHelper, leafletData, search, region, studyArea) {
                 var _this = this;
                 this.center = null;
                 this.layers = null;
@@ -71,6 +71,7 @@ var StreamStats;
                 this.bounds = null;
                 this.controls = null;
                 this.markers = null;
+                this.geojson = null;
                 this.events = null;
                 this.regionLayer = null;
                 $scope.vm = this;
@@ -79,16 +80,29 @@ var StreamStats;
                 this.$locationService = $location;
                 this.regionServices = region;
                 this.leafletBoundsHelperService = leafletBoundsHelper;
+                this.leafletData = leafletData;
+                this.studyArea = studyArea;
                 //subscribe to Events
                 search.onSelectedAreaOfInterestChanged.subscribe(this._onSelectedAreaOfInterestHandler);
                 region.onSelectedRegionChanged.subscribe(this._onSelectedRegionHandler);
+                studyArea.onSelectedStudyAreaChanged.subscribe(this._onSelectedStudyAreaHandler);
                 $scope.$on('leafletDirectiveMap.mousemove', function (event, args) {
                     var latlng = args.leafletEvent.latlng;
                     _this.mapPoint.lat = latlng.lat;
                     _this.mapPoint.lng = latlng.lng;
                 });
+                $scope.$on('leafletDirectiveMap.click', function (event, args) {
+                    console.log('click', event);
+                    if (!studyArea.doDelineateFlag)
+                        return;
+                    console.log('delineate flag true');
+                    var latlng = args.leafletEvent.latlng;
+                    _this.startDelineate(latlng);
+                    studyArea.doDelineateFlag = false;
+                });
                 $scope.$watch(function () { return _this.bounds; }, function (newval, oldval) { return _this.setRegionsByBounds(oldval, newval); });
                 $scope.$on('$locationChangeStart', function () { return _this.updateRegion(); });
+                $scope.$watch(function () { return studyArea.doDelineateFlag; }, function (newval, oldval) { return newval ? _this.cursorStyle = 'crosshair' : _this.cursorStyle = 'hand'; });
                 // check if region was explicitly set.
                 if ($stateParams.region)
                     this.setBoundsByRegion($stateParams.region);
@@ -106,15 +120,20 @@ var StreamStats;
                 this._onSelectedRegionHandler = new WiM.Event.EventHandler(function () {
                     _this.onSelectedRegionChanged();
                 });
+                this._onSelectedStudyAreaHandler = new WiM.Event.EventHandler(function () {
+                    _this.onSelectedStudyAreaChanged();
+                });
                 //init map           
                 this.center = new Center(39, -100, 4);
                 this.layers = {
                     baselayers: configuration.basemaps,
                     overlays: configuration.overlayedLayers,
-                    markers: this.markers
+                    markers: this.markers,
+                    geojson: this.geojson
                 };
                 this.mapDefaults = new MapDefault(null, 3, false);
                 this.markers = {};
+                this.geojson = {};
                 this.regionLayer = {};
                 //add custom controls
                 this.controls = {
@@ -143,6 +162,20 @@ var StreamStats;
             MapController.prototype.onSelectedRegionChanged = function () {
                 this.removeOverlayLayers("_region", true);
                 this.addRegionOverlayLayers(this.regionServices.selectedRegion.RegionID);
+            };
+            MapController.prototype.onSelectedStudyAreaChanged = function () {
+                //delete this.geojson['delineatedBasin'] ;
+                this.geojson['delineatedBasin'] = {
+                    data: this.studyArea.selectedStudyArea.Basin,
+                    style: {
+                        fillColor: "green",
+                        weight: 2,
+                        opacity: 1,
+                        color: 'white',
+                        dashArray: '3',
+                        fillOpacity: 0.7
+                    }
+                };
             };
             MapController.prototype.setRegionsByBounds = function (oldValue, newValue) {
                 if (this.center.zoom >= 14 && oldValue !== newValue) {
@@ -201,9 +234,22 @@ var StreamStats;
                 }
                 return layeridList;
             };
+            MapController.prototype.startDelineate = function (latlng) {
+                console.log('in startDelineate', latlng);
+                this.markers['pourpoint'] = {
+                    lat: latlng.lat,
+                    lng: latlng.lng,
+                    message: 'new pourpoint',
+                    focus: true,
+                    draggable: true
+                };
+                var studyArea = new StreamStats.Models.StudyArea(this.regionServices.selectedRegion.RegionID, new WiM.Models.Point(latlng.lat, latlng.lng, '4326'));
+                this.studyArea.AddStudyArea(studyArea);
+                this.studyArea.loadStudyBoundary();
+            };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
-            MapController.$inject = ['$scope', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService'];
+            MapController.$inject = ['$scope', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService'];
             return MapController;
         })(); //end class
         angular.module('StreamStats.Controllers').controller('StreamStats.Controllers.MapController', MapController);
