@@ -265,7 +265,7 @@ module StreamStats.Controllers {
 
         }
         private onSelectedStudyAreaChanged() {
-            //delete this.geojson['delineatedBasin'] ;
+            delete this.geojson['delineatedBasin'] ;
 
             this.geojson['delineatedBasin'] = {
                 data: this.studyArea.selectedStudyArea.Basin,
@@ -278,7 +278,9 @@ module StreamStats.Controllers {
                     fillOpacity: 0.7
                 }
             }
-            console.log('geojson',this.geojson['delineatedBasin']);
+            console.log(this.geojson['delineatedBasin']);
+            var test = JSON.stringify(this.geojson['delineatedBasin']);
+            console.log(test);
         }
        
         private setRegionsByBounds(oldValue, newValue) {
