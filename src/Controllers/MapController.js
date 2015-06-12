@@ -164,7 +164,8 @@ var StreamStats;
                 this.addRegionOverlayLayers(this.regionServices.selectedRegion.RegionID);
             };
             MapController.prototype.onSelectedStudyAreaChanged = function () {
-                delete this.geojson['delineatedBasin'];
+                if (!this.studyArea.selectedStudyArea.Basin)
+                    return;
                 this.geojson['delineatedBasin'] = {
                     data: this.studyArea.selectedStudyArea.Basin,
                     style: {
@@ -176,9 +177,10 @@ var StreamStats;
                         fillOpacity: 0.7
                     }
                 };
-                console.log(this.geojson['delineatedBasin']);
-                var test = JSON.stringify(this.geojson['delineatedBasin']);
-                console.log(test);
+                //console.log('basin',this.geojson['delineatedBasin']);    
+                var bbox = this.geojson['delineatedBasin'].data.features[0].bbox;
+                this.bounds = this.leafletBoundsHelperService.createBoundsFromArray([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
+                //this.leafletData.getMap().then((map: any) => { map.fitBounds(this.geojson['delineatedBasin']); });
             };
             MapController.prototype.setRegionsByBounds = function (oldValue, newValue) {
                 if (this.center.zoom >= 14 && oldValue !== newValue) {
