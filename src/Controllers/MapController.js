@@ -177,7 +177,7 @@ var StreamStats;
                         fillOpacity: 0.7
                     }
                 };
-                //console.log('basin',this.geojson['delineatedBasin']);    
+                console.log('basin', this.geojson);
                 var bbox = this.geojson['delineatedBasin'].data.features[0].bbox;
                 this.bounds = this.leafletBoundsHelperService.createBoundsFromArray([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
                 //this.leafletData.getMap().then((map: any) => { map.fitBounds(this.geojson['delineatedBasin']); });
