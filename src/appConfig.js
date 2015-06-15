@@ -24,19 +24,40 @@ configuration.queryparams =
 
 configuration.basemaps = 
 {
-    "mapquestOSM": {
-        "name": "Mapquest Streets",
-        "url": "http://{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png",
-        "type":'xyz',
+    "tnmBaseMap": {
+        "name": "USGS National Map",
+        "visible": true,
+        "type": 'group',
         "layerOptions": {
-            "maxZoom": 19, 
-            "subdomains": ['otile1', 'otile2', 'otile3', 'otile4'],
-            "attribution": "Tiles courtesy of <a href='http://www.mapquest.com/' target='_blank'>MapQuest</a> <img src='http://developer.mapquest.com/content/osm/mq_logo.png'>. Map data (c) <a href='http://www.openstreetmap.org/' target='_blank'>OpenStreetMap</a> contributors, CC-BY-SA."
+            "layers": [
+                {
+                    "name": "tiles",
+                    "url": "http://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}",
+                    "type": 'xyz',
+                    "layerOptions": {
+                        "minZoom": 0,
+                        "maxZoom": 15,
+                        "attribution": "<a href='http://www.doi.gov'>U.S. Department of the Interior</a> | <a href='http://www.usgs.gov'>U.S. Geological Survey</a> | <a href='http://www.usgs.gov/laws/policies_notices.html'>Policies</a>"
+                    }
+                },
+                {
+                    "name": "roads",
+                    "url": "http://services.nationalmap.gov/arcgis/rest/services/USGSTopoLarge/MapServer",
+                    "type": 'dynamic',
+                    "layerOptions": {
+                        "minZoom": 16,
+                        "maxZoom": 20,
+                        "attribution": "<a href='http://www.doi.gov'>U.S. Department of the Interior</a> | <a href='http://www.usgs.gov'>U.S. Geological Survey</a> | <a href='http://www.usgs.gov/laws/policies_notices.html'>Policies</a>"
+                    }
+                }
+            ],
+           
         }
     },
     "MapquestOAM": {
         "name": "Mapquest Areal",
         "url": "http://{s}.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.png",
+        "visible": false,
         "type":'xyz',
         "layerOptions": {
             "maxZoom": 19, 
@@ -47,6 +68,7 @@ configuration.basemaps =
     "MapquestHYB": {
         "name": "Mapquest Hybrid",
         "type": 'group',
+        "visible": false,
         "layerOptions": {
             "maxZoom": 19,
             "layers": [
@@ -72,13 +94,15 @@ configuration.basemaps =
             ],
         }
     },
-    "tnmBaseMap": {
-        "name": "USGS National Map",
-        "url": "http://navigator.er.usgs.gov/tiles/tcr.cgi/{z}/{x}/{y}.png",
+    "mapquestOSM": {
+        "name": "Mapquest Streets",
+        "url": "http://{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png",
+        "visible": false,
         "type": 'xyz',
         "layerOptions": {
-            "maxZoom": 20,
-            "attribution": "<a href='http://www.doi.gov'>U.S. Department of the Interior</a> | <a href='http://www.usgs.gov'>U.S. Geological Survey</a> | <a href='http://www.usgs.gov/laws/policies_notices.html'>Policies</a>"
+            "maxZoom": 19,
+            "subdomains": ['otile1', 'otile2', 'otile3', 'otile4'],
+            "attribution": "Tiles courtesy of <a href='http://www.mapquest.com/' target='_blank'>MapQuest</a> <img src='http://developer.mapquest.com/content/osm/mq_logo.png'>. Map data (c) <a href='http://www.openstreetmap.org/' target='_blank'>OpenStreetMap</a> contributors, CC-BY-SA."
         }
     }
 }// end baselayer
