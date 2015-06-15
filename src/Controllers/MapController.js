@@ -186,8 +186,11 @@ var StreamStats;
                 this.geojson['pourpoint'] = {
                     data: this.studyArea.selectedStudyArea.Pourpoint,
                     onEachFeature: function (feature, layer) {
-                        console.log(feature);
-                        layer.bindPopup(JSON.stringify(feature.properties)).openPopup();
+                        var popupContent = '';
+                        angular.forEach(feature.properties, function (value, key) {
+                            popupContent += '<strong>' + key + ': </strong>' + value + '</br>';
+                        });
+                        layer.bindPopup(popupContent).openPopup();
                     }
                 };
                 //clear out this.markers
