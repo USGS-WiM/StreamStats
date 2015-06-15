@@ -179,8 +179,12 @@ var StreamStats;
                 };
                 console.log('basin', this.geojson);
                 var bbox = this.geojson['delineatedBasin'].data.features[0].bbox;
-                this.bounds = this.leafletBoundsHelperService.createBoundsFromArray([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
-                //this.leafletData.getMap().then((map: any) => { map.fitBounds(this.geojson['delineatedBasin']); });
+                //this.bounds = this.leafletBoundsHelperService.createBoundsFromArray([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
+                this.leafletData.getMap().then(function (map) {
+                    map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]], {
+                        paddingTopLeft: [document.getElementById("sidebar").offsetWidth, 0]
+                    });
+                });
             };
             MapController.prototype.setRegionsByBounds = function (oldValue, newValue) {
                 if (this.center.zoom >= 14 && oldValue !== newValue) {
