@@ -86,16 +86,23 @@ var StreamStats;
                 search.onSelectedAreaOfInterestChanged.subscribe(this._onSelectedAreaOfInterestHandler);
                 region.onSelectedRegionChanged.subscribe(this._onSelectedRegionHandler);
                 studyArea.onSelectedStudyAreaChanged.subscribe(this._onSelectedStudyAreaHandler);
+                $scope.$on('leafletDirectiveMap.overlayadd', function (event, args) {
+                    console.log('overlay added');
+                    //pan by sidebar width after region overlay add
+                    _this.leafletData.getMap().then(function (map) {
+                        console.log('in add regionoverlays');
+                        //map.panBy([-document.getElementById("sidebar").offsetWidth, 0]);
+                        map.panBy([-200, 0]);
+                    });
+                });
                 $scope.$on('leafletDirectiveMap.mousemove', function (event, args) {
                     var latlng = args.leafletEvent.latlng;
                     _this.mapPoint.lat = latlng.lat;
                     _this.mapPoint.lng = latlng.lng;
                 });
                 $scope.$on('leafletDirectiveMap.click', function (event, args) {
-                    console.log('click', event);
                     if (!studyArea.doDelineateFlag)
                         return;
-                    console.log('delineate flag true');
                     var latlng = args.leafletEvent.latlng;
                     _this.startDelineate(latlng);
                     studyArea.doDelineateFlag = false;
@@ -169,19 +176,24 @@ var StreamStats;
                 this.geojson['delineatedBasin'] = {
                     data: this.studyArea.selectedStudyArea.Basin,
                     style: {
-                        fillColor: "green",
+                        fillColor: "yellow",
                         weight: 2,
                         opacity: 1,
                         color: 'white',
-                        dashArray: '3',
-                        fillOpacity: 0.7
+                        fillOpacity: 0.5
                     }
                 };
-                console.log('basin', this.geojson);
+                this.geojson['pourpoint'] = {
+                    data: this.studyArea.selectedStudyArea.Pourpoint
+                };
+                //clear out this.markers
+                this.markers = null;
+                console.log(JSON.stringify(this.geojson));
                 var bbox = this.geojson['delineatedBasin'].data.features[0].bbox;
                 //this.bounds = this.leafletBoundsHelperService.createBoundsFromArray([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
                 this.leafletData.getMap().then(function (map) {
                     map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]], {
+                        //offset width of sidebar from left, 50px from top
                         paddingTopLeft: [document.getElementById("sidebar").offsetWidth, 50]
                     });
                 });

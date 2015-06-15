@@ -26,12 +26,32 @@ configuration.basemaps =
 {
     "tnmBaseMap": {
         "name": "USGS National Map",
-        "url": "http://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}",
         "visible": true,
-        "type": 'xyz',
+        "type": 'group',
         "layerOptions": {
-            "maxZoom": 20,
-            "attribution": "<a href='http://www.doi.gov'>U.S. Department of the Interior</a> | <a href='http://www.usgs.gov'>U.S. Geological Survey</a> | <a href='http://www.usgs.gov/laws/policies_notices.html'>Policies</a>"
+            "layers": [
+                {
+                    "name": "tiles",
+                    "url": "http://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}",
+                    "type": 'xyz',
+                    "layerOptions": {
+                        "minZoom": 0,
+                        "maxZoom": 15,
+                        "attribution": "<a href='http://www.doi.gov'>U.S. Department of the Interior</a> | <a href='http://www.usgs.gov'>U.S. Geological Survey</a> | <a href='http://www.usgs.gov/laws/policies_notices.html'>Policies</a>"
+                    }
+                },
+                {
+                    "name": "roads",
+                    "url": "http://services.nationalmap.gov/arcgis/rest/services/USGSTopoLarge/MapServer",
+                    "type": 'dynamic',
+                    "layerOptions": {
+                        "minZoom": 16,
+                        "maxZoom": 20,
+                        "attribution": "<a href='http://www.doi.gov'>U.S. Department of the Interior</a> | <a href='http://www.usgs.gov'>U.S. Geological Survey</a> | <a href='http://www.usgs.gov/laws/policies_notices.html'>Policies</a>"
+                    }
+                }
+            ],
+           
         }
     },
     "MapquestOAM": {
