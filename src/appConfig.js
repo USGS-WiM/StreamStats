@@ -26,7 +26,7 @@ configuration.basemaps =
 {
     "tnmBaseMap": {
         "name": "USGS National Map",
-        "url": "http://navigator.er.usgs.gov/tiles/tcr.cgi/{z}/{x}/{y}.png",
+        "url": "http://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}",
         "visible": true,
         "type": 'xyz',
         "layerOptions": {

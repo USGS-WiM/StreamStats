@@ -285,7 +285,7 @@ module StreamStats.Controllers {
             //this.bounds = this.leafletBoundsHelperService.createBoundsFromArray([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
             this.leafletData.getMap().then((map: any) => {              
                 map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]], {
-                    paddingTopLeft: [document.getElementById("sidebar").offsetWidth,0]
+                    paddingTopLeft: [document.getElementById("sidebar").offsetWidth,50]
                 });          
             });
         }
