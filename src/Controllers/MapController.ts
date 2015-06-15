@@ -285,13 +285,20 @@ module StreamStats.Controllers {
             }
 
             this.geojson['pourpoint'] = {
-                data: this.studyArea.selectedStudyArea.Pourpoint
+                data: this.studyArea.selectedStudyArea.Pourpoint,
+                onEachFeature: function (feature, layer) {
+                    var popupContent = '';
+                    angular.forEach(feature.properties, function (value, key) {
+                        popupContent += '<strong>' + key + ': </strong>' + value + '</br>';
+                    });
+                    layer.bindPopup(popupContent).openPopup();
+                }
             }
 
             //clear out this.markers
-            this.markers = null;
+            this.markers = {};
 
-            console.log(JSON.stringify(this.geojson));    
+            //console.log(JSON.stringify(this.geojson));    
             var bbox = this.geojson['delineatedBasin'].data.features[0].bbox;
             //this.bounds = this.leafletBoundsHelperService.createBoundsFromArray([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
             this.leafletData.getMap().then((map: any) => {              
