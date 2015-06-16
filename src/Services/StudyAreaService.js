@@ -99,6 +99,7 @@ var StreamStats;
             StudyAreaService.prototype.loadParameters = function (params) {
                 var _this = this;
                 if (params === void 0) { params = []; }
+                console.log('in load parameters');
                 this.canUpdate = false;
                 if (!this.selectedStudyArea.WorkspaceID || !this.selectedStudyArea.RegionID)
                     return; //sm study area is incomplete

@@ -28,6 +28,7 @@ module StreamStats.Services {
         onSelectedStudyAreaChanged: WiM.Event.Delegate<WiM.Event.EventArgs>;
         selectedStudyArea: Models.IStudyArea;
         loadStudyBoundary();
+        loadParameters();
         AddStudyArea(sa: Models.IStudyArea);
         RemoveStudyArea();
         doDelineateFlag: boolean;
@@ -101,6 +102,7 @@ module StreamStats.Services {
             });
         }
         public loadParameters(params: Array<WiM.Models.IParameter> = []) {
+            console.log('in load parameters');
             this.canUpdate = false;
             if (!this.selectedStudyArea.WorkspaceID || !this.selectedStudyArea.RegionID) return;//sm study area is incomplete
             var paramsToCalc: Array<WiM.Models.IParameter> = params.length < 1 ? this.selectedStudyArea.Parameters : params;

@@ -267,7 +267,6 @@ module StreamStats.Controllers {
         private onSelectedRegionChanged() {
             this.removeOverlayLayers("_region", true)
             this.addRegionOverlayLayers(this.regionServices.selectedRegion.RegionID);  
-
         }
         private onSelectedStudyAreaChanged() {
 
@@ -387,7 +386,7 @@ module StreamStats.Controllers {
             var studyArea: Models.IStudyArea = new Models.StudyArea(this.regionServices.selectedRegion.RegionID, new WiM.Models.Point(latlng.lat, latlng.lng, '4326'));
 
             this.studyArea.AddStudyArea(studyArea);
-            this.studyArea.loadStudyBoundary() 
+            this.studyArea.loadStudyBoundary();
         }
     }//end class
 

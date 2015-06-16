@@ -62,6 +62,7 @@
                             <button id="saveChangesButton" type="button" class="btn btn-sm btn-success"><span class="glyphicon glyphicon-ok"></span> Accept</button>
                         </div>
                     </div>
+
                 </div>
 
             </td>
@@ -76,14 +77,21 @@
             <td colspan="6">
 
                 <div class="accordion-body">
-                    <p>Available Scenarios</p>
-                    <!--<div data-bind="foreach: ModelList" id="modelSelector">
-                    <button data-bind="attr:{'class': $root.SelectedScenario() === ModelType? 'btn btn-primary btn-group-justified':'btn btn-default btn-group-justified'},  click: function() { $root.SelectedScenario(ModelType); $root.SelectModel($data); }"><span data-bind="text: Description"> </span></button>
-                </div>-->
-                    <p>Available Parameters</p>
-                    <!--<div data-bind="foreach: ModelList" id="modelSelector">
-                    <button data-bind="attr:{'class': $root.SelectedScenario() === ModelType? 'btn btn-primary btn-group-justified':'btn btn-default btn-group-justified'},  click: function() { $root.SelectedScenario(ModelType); $root.SelectModel($data); }"><span data-bind="text: Description"> </span></button>
-                </div>-->
+                    <h4>Available Scenarios</h4>
+                        <pre ng-bind="vm.selectedScenario | json"></pre> 
+                        <button ng-repeat="scenario in vm.scenarioList" type="button" class="btn btn-sm btn-primary" ng-model="vm.selectedScenario[scenario]" btn-radio="scenario">{{scenario.Description}}</button>
+
+                    <h4>Available Parameters</h4>
+
+                        <pre ng-bind="vm.parameterSelection | json"></pre> 
+
+                        <div class="checkbox" ng-repeat="parameter in vm.parameterList">
+                            <label class="checkbox" for="{{parameter.name}}">
+                                <input type="checkbox" ng-model="vm.parameterSelection.name[parameter.name]" name="group" id="{{parameter.name}}" />
+                                {{parameter.name}}
+                            </label>
+                        </div>
+                    
 
                 </div>
             </td>
