@@ -28,16 +28,24 @@ module StreamStats.Services {
     export interface IRegionService {
         onSelectedRegionChanged: WiM.Event.Delegate<WiM.Event.EventArgs>;
         regionList: Array<IRegion>;
+        parameterList: Array<IParameter>;
         selectedRegion: IRegion;
 
         loadRegionListByExtent(xmin: number, xmax: number, ymin: number, ymax: number, sr?: number):boolean;
         loadRegionListByRegion(region: string): boolean;
         loadMapLayersByRegion(region: string): boolean;
+        loadParametersByRegion();
     }
     export interface IRegion {
         RegionID: string;
         Name: string;
         Bounds: Array<Array<number>>;
+    }
+    export interface IParameter {
+        code: string;
+        description: string;
+        name: string;
+        unit: string;
     }
 
     export class Region implements IRegion {
@@ -45,6 +53,15 @@ module StreamStats.Services {
         public RegionID: string;
         public Name: string;
         public Bounds: Array<Array<number>>;
+
+    }//end class
+
+    export class Parameter implements IParameter {
+        //properties
+        public code: string;
+        public description: string;
+        public name: string;
+        public unit: string;
 
     }//end class
 
@@ -58,6 +75,7 @@ module StreamStats.Services {
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
         public regionList: Array<IRegion>;
+        public parameterList: Array<IParameter>;
         private _selectedRegion: IRegion;
         public get selectedRegion(): IRegion {
             return this._selectedRegion;
@@ -75,6 +93,7 @@ module StreamStats.Services {
             super($http, configuration.baseurls['StreamStats']);
             this._onSelectedRegionChanged = new WiM.Event.Delegate<WiM.Event.EventArgs>(); 
             this.regionList = [];
+            this.parameterList = [];
         }
 
         //Methods
@@ -138,6 +157,26 @@ module StreamStats.Services {
                     return this.$q.reject(error.data)
                 });
         }
+        public loadParametersByRegion() {
+            console.log('in load parameters', this.selectedRegion);
+            if (!this.selectedRegion) return;
+
+            var url = configuration.queryparams['SSparams'].format(this.selectedRegion.RegionID);
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url);
+
+            this.Execute(request).then(
+                (response: any) => {     
+                    //console.log(response.data.parameters);      
+                    var parameterList = this.parameterList;
+                    angular.forEach(response.data.parameters, function (value, key) {
+                        parameterList.push(value);
+                    });
+                    //sm when complete
+                },(error) => {
+                    //sm when complete
+                }).finally(() => { });
+        }
+
         //HelperMethods
         //-+-+-+-+-+-+-+-+-+-+-+-
         private getRegion(lookupID: string): IRegion {

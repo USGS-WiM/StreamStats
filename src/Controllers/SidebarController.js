@@ -21,13 +21,16 @@ var StreamStats;
     (function (Controllers) {
         'use strinct';
         var SidebarController = (function () {
-            function SidebarController($scope, service, region, studyArea) {
+            function SidebarController($scope, service, region, studyArea, scenario) {
                 $scope.vm = this;
                 this.searchService = service;
                 this.sideBarCollapsed = false;
                 this.selectedProcedure = 1 /* INIT */;
                 this.regionService = region;
                 this.regionList = region.regionList;
+                this.parameterList = region.parameterList;
+                this.nssService = scenario;
+                this.scenarioList = scenario.scenarioList;
                 this.studyAreaService = studyArea;
             }
             //Methods
@@ -53,6 +56,10 @@ var StreamStats;
                 if (this.regionService.selectedRegion == undefined || this.regionService.selectedRegion.RegionID !== region.RegionID)
                     this.regionService.selectedRegion = region;
                 this.setProcedureType(2 /* IDENTIFY */);
+                //get available parameters
+                this.regionService.loadParametersByRegion();
+                //get available scenarios
+                this.nssService.loadScenariosByRegion(this.regionService.selectedRegion.RegionID);
             };
             SidebarController.prototype.setDelineateFlag = function () {
                 this.studyAreaService.doDelineateFlag = !this.studyAreaService.doDelineateFlag;
@@ -92,7 +99,7 @@ var StreamStats;
             };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
-            SidebarController.$inject = ['$scope', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService'];
+            SidebarController.$inject = ['$scope', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService'];
             return SidebarController;
         })(); //end class
         var ProcedureType;

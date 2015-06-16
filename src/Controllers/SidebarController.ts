@@ -31,7 +31,6 @@ module StreamStats.Controllers {
     interface ISidebarController {
         sideBarCollapsed: boolean;
         selectedProcedure: ProcedureType;
-
         setProcedureType(pType: ProcedureType): void;
         toggleSideBar(): void;
         setDelineateFlag(): void;
@@ -44,21 +43,27 @@ module StreamStats.Controllers {
         public selectedProcedure: ProcedureType;
 
         public regionList: Array<Services.IRegion>;
+        public parameterList: Array<Services.IParameter>;
+        public scenarioList: Array<Services.IScenario>;
         private searchService: WiM.Services.ISearchAPIService;
         private regionService: Services.IRegionService;
+        private nssService: Services.InssService;
         private studyAreaService: Services.IStudyAreaService;
         
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService'];
-        constructor($scope: ISidebarControllerScope, service: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService) {
+        static $inject = ['$scope', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService'];
+        constructor($scope: ISidebarControllerScope, service: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, scenario: Services.InssService) {
             $scope.vm = this;
             this.searchService = service;
             this.sideBarCollapsed = false;
             this.selectedProcedure = ProcedureType.INIT;
             this.regionService = region;
-            this.regionList = region.regionList;    
+            this.regionList = region.regionList; 
+            this.parameterList = region.parameterList;    
+            this.nssService = scenario;
+            this.scenarioList = scenario.scenarioList;
             this.studyAreaService = studyArea;
         }
 
@@ -82,6 +87,12 @@ module StreamStats.Controllers {
             if (this.regionService.selectedRegion == undefined || this.regionService.selectedRegion.RegionID !== region.RegionID)
                 this.regionService.selectedRegion = region;
             this.setProcedureType(ProcedureType.IDENTIFY);
+
+            //get available parameters
+            this.regionService.loadParametersByRegion();
+
+            //get available scenarios
+            this.nssService.loadScenariosByRegion(this.regionService.selectedRegion.RegionID);
         }
         public setDelineateFlag(): void {
             this.studyAreaService.doDelineateFlag = !this.studyAreaService.doDelineateFlag;

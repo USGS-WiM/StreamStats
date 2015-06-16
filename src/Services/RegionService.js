@@ -35,6 +35,12 @@ var StreamStats;
             return Region;
         })();
         Services.Region = Region; //end class
+        var Parameter = (function () {
+            function Parameter() {
+            }
+            return Parameter;
+        })();
+        Services.Parameter = Parameter; //end class
         var RegionService = (function (_super) {
             __extends(RegionService, _super);
             //Constructor
@@ -44,6 +50,7 @@ var StreamStats;
                 this.$q = $q;
                 this._onSelectedRegionChanged = new WiM.Event.Delegate();
                 this.regionList = [];
+                this.parameterList = [];
             }
             Object.defineProperty(RegionService.prototype, "onSelectedRegionChanged", {
                 get: function () {
@@ -83,7 +90,7 @@ var StreamStats;
                     sr: sr,
                     layers: "all: 4"
                 };
-                var request = new WiM.Services.Helpers.RequestInfo(configuration.queryparams['regionService'], 0 /* GET */, 'json');
+                var request = new WiM.Services.Helpers.RequestInfo(configuration.queryparams['regionService'], WiM.Services.Helpers.methodType.GET, 'json');
                 request.params = input;
                 this.Execute(request).then(function (response) {
                     response.data.results.map(function (item) {
@@ -110,7 +117,7 @@ var StreamStats;
             };
             RegionService.prototype.loadMapLayersByRegion = function (regionid) {
                 var _this = this;
-                var request = new WiM.Services.Helpers.RequestInfo("/arcgis/rest/services/{0}_ss/MapServer?f=pjson".format(regionid.toLowerCase()), 0 /* GET */, 'json');
+                var request = new WiM.Services.Helpers.RequestInfo("/arcgis/rest/services/{0}_ss/MapServer?f=pjson".format(regionid.toLowerCase()), WiM.Services.Helpers.methodType.GET, 'json');
                 var layerArray = [];
                 this.Execute(request).then(function (response) {
                     angular.forEach(response.data.layers, function (value, key) {
@@ -123,6 +130,25 @@ var StreamStats;
                     return layerArray;
                 }, function (error) {
                     return _this.$q.reject(error.data);
+                });
+            };
+            RegionService.prototype.loadParametersByRegion = function () {
+                var _this = this;
+                console.log('in load parameters', this.selectedRegion);
+                if (!this.selectedRegion)
+                    return;
+                var url = configuration.queryparams['SSparams'].format(this.selectedRegion.RegionID);
+                var request = new WiM.Services.Helpers.RequestInfo(url);
+                this.Execute(request).then(function (response) {
+                    //console.log(response.data.parameters);      
+                    var parameterList = _this.parameterList;
+                    angular.forEach(response.data.parameters, function (value, key) {
+                        parameterList.push(value);
+                    });
+                    //sm when complete
+                }, function (error) {
+                    //sm when complete
+                }).finally(function () {
                 });
             };
             //HelperMethods
