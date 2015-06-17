@@ -4,7 +4,8 @@
 <head>
     <meta charset="utf-8" />
     <title>StreamStats 4.0</title>
-    
+    <base href="http://54.164.126.49/streamstats/dist/" />
+
     <link rel="stylesheet" href="styles/vendor.min.css">
     <link rel="stylesheet" href="styles/custom.min.css">
     <script src="scripts/vendor.min.js"></script>
@@ -12,7 +13,7 @@
 </head>
 <body>
     <div ui-view="navbar" class="navbar navbar-gray navbar-fixed-top" role="navigation"></div>      
-    <div ui-view="sidebar" ng-class="{'collapsed':vm.sideBarCollapsed}" class="sidebar sidebar-content" ></div> 
-    <div ui-view="map" class="fullsized sidebar-map"></div>   
+    <div ui-view="sidebar" ng-class="{'collapsed':vm.sideBarCollapsed}" class="sidebar sidebar-content" id="sidebar" ></div> 
+    <div ui-view="map" class="fullsized sidebar-map"></div>       
 </body>
 </html>
