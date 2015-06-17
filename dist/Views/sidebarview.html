@@ -4,7 +4,7 @@
     <thead>
         <tr ng-click="vm.toggleSideBar()">
             <th><a href="" role="tab"><i id="chevron" ng-class="vm.sideBarCollapsed ? 'glyphicon glyphicon-chevron-right': 'glyphicon glyphicon-chevron-left'"></i></a></th>
-            <th><i class="fa fa-leaf"></i></span>&nbsp;&nbspStreamStats <small>a great new app</small></th>
+            <th style="min-width:18em;"><i class="fa fa-leaf"></i><span>&nbsp;&nbspStreamStats <small>a great new app</small></span></th>
         </tr>
     </thead>
 
@@ -14,50 +14,46 @@
             <td><a href="" role="tab"><span class="label label-default">1</span></a></td>
             <td><a href="#"><span class="step-label">&nbsp;Select a State / Region</span></a></td>
         </tr>
-        <tr ng-class="vm.selectedProcedure != 1 ? 'collapse activeitem': 'activeitem'">
+        <tr ng-hide="vm.selectedProcedure != 1 || vm.sideBarCollapsed" class="activeitem">
             <td></td>
             <td colspan="12" class="activeitem">
-                <div class="accordian-body">
+                <div class="accordion-body">
                     <p>To begin, search or use the map to select an area of interest, then select a region</p>
-                                      
+
                     <input type="text" class="form-control"
                            ng-model="selection"
-                           typeahead="loc as loc.Name +'(' + loc.State +')' for loc in vm.GetLocations($viewValue)"
+                           typeahead="loc as loc.Name +'(' + loc.State +')' for loc in vm.getLocations($viewValue)"
                            typeahead-loading="loadingLocations"
                            typeahead-wait-ms="100"
                            typeahead-min-length="4"
                            typeahead-on-select="vm.onAOISelect($item); selection=''"
                            placeholder="Enter an area of interest" />
                     <i ng-show="loadingLocations" class="glyphicon glyphicon-refresh"></i>
-                        
+
                     <div class="form-group" ng-show="vm.regionList.length > 0">
                         <label> Select a Region</label>
-                        <div ng-repeat="region in vm.regionList">
-                            <button ng-class="region.Name === vm.sessionService.selectedRegion.Name ? 'btn btn-primary btn-group-justified':'btn btn-group-justified'" ng-click="vm.setRegion(region)"><span>{{region.Name}} </span></button>
+                        <div ng-repeat="region in vm.regionList track by $index">
+                            <button ng-class="region.Name === vm.regionService.selectedRegion.Name ? 'btn btn-primary btn-group-justified':'btn btn-group-justified'" ng-click="vm.setRegion(region)"><span>{{region.Name}} </span></button>
                         </div>
-                    </div> 
-                              
+                    </div>
+
                 </div>
             </td>
         </tr>
         <!-- step 2 Identify a Study Area -->
         <tr ng-click="vm.setProcedureType(2)" ng-class="vm.selectedProcedure == 2 ? 'activeitemheader accordion-toggle': 'accordion-toggle'">
             <td><a href="#"><span class="label label-default">2</span></a></td>
-            <td><a href="#"><span class="step-label">&nbsp;Identify a Study Area</span></td>
+            <td><a href="#"><span class="step-label">&nbsp;Identify a Study Area</span></a></td>
         </tr>
-        <tr ng-class="vm.selectedProcedure != 2 ? 'collapse activeitem': 'activeitem'">
+        <tr ng-hide="vm.selectedProcedure != 2 || vm.sideBarCollapsed" class="activeitem">
             <td></td>
             <td colspan="6">
-                <div class="accordian-body">
+                <div class="accordion-body">
                     <p>To identify a study area, zoom to at least a zoom level of 15 and select a blue stream cell</p>
-                    <h4>OR</h4>
-                    <!--<button id="PRMSmodel" class='btn btn-primary'<span>Use Iowa PRMS Model</span></button></br>-->
+                     
+                    <button id="delineateButton" type="button" class="btn btn-sm btn-info" ng-click="vm.setDelineateFlag()" ng-class="vm.studyAreaService.doDelineateFlag ? 'btn-warning' : 'btn-info'"><span class="glyphicon glyphicon-edit"></span>Delineate</button>
+                    <i id="loadingSpinner" class="fa fa-spinner fa-5x fa-spin" ng-show="!vm.studyAreaService.canUpdate"></i>  
 
-                    <div id="PRMSeditToolBar" class="btn-group" style="display:none;">
-                        <button id="drawPolyline" type="button" class="btn btn-sm btn-default"><span class="leaflet-draw-draw-polyline"></span> Polyline</button>
-                        <button id="drawPolygon" type="button" class="btn btn-sm btn-default"><span class="leaflet-draw-toolbar leaflet-draw-draw-polygon"></span> Polygon</button>
-                        <button id="drawRectangle" type="button" class="btn btn-sm btn-default"><span class="leaflet-draw-toolbar leaflet-draw-draw-rectangle"></span> Rectangle</button>
-                    </div>
                     <div id="verifyStudyArea" style="display:none;">
                         <br><p> Does the study area look correct?</p>
                         <div class="btn-group">
@@ -66,6 +62,7 @@
                             <button id="saveChangesButton" type="button" class="btn btn-sm btn-success"><span class="glyphicon glyphicon-ok"></span> Accept</button>
                         </div>
                     </div>
+
                 </div>
 
             </td>
@@ -73,17 +70,25 @@
         <!--  step 3 Select a Scenario -->
         <tr ng-click="vm.setProcedureType(3)" ng-class="vm.selectedProcedure == 3 ? 'activeitemheader accordion-toggle': 'accordion-toggle'">
             <td><a href="#"><span class="label label-default">3</span></a></td>
-            <td><a href="#"><span class="step-label">&nbsp;Select a Scenario</span></a></td>
+            <td><a href="#"><span class="step-label">&nbsp;Select Scenarios</span></a></td>
         </tr>
-        <tr ng-class="vm.selectedProcedure != 3 ? 'collapse activeitem': 'activeitem'">
+        <tr ng-hide="vm.selectedProcedure != 3 || vm.sideBarCollapsed" class="activeitem">
             <td></td>
             <td colspan="6">
 
-                <div class="accordian-body">
-                    <p>List of Scenarios</p>
-                    <!--<div data-bind="foreach: ModelList" id="modelSelector">
-                        <button data-bind="attr:{'class': $root.SelectedScenario() === ModelType? 'btn btn-primary btn-group-justified':'btn btn-default btn-group-justified'},  click: function() { $root.SelectedScenario(ModelType); $root.SelectModel($data); }"><span data-bind="text: Description"> </span></button>
-                    </div>-->
+                <div class="accordion-body">
+                    <h4>Available Scenarios</h4>
+                        <button ng-repeat="scenario in vm.nssService.scenarioList" type="button" class="btn btn-sm btn-primary" ng-click="vm.setScenario(scenario)">{{scenario.Description}}</button>
+                        <h5>selected scenario</h5>
+                        <pre style="width:300px;" ng-bind="vm.nssService.selectedScenario.ModelType | json"></pre>
+
+                    <h4>Available Parameters</h4>
+                        <label ng-repeat="parameter in vm.regionService.parameterList">
+                            <input type="checkbox" value="{{parameter.name}}" ng-checked="vm.studyAreaService.studyAreaParameterList.indexOf(parameter) > -1 " ng-click="vm.updateStudyAreaParameterList(parameter)"/>
+                            {{parameter.name}}
+                        </label>
+                        <h5>selected parameters</h5>
+                        <pre style="width:300px;" ng-bind="vm.studyAreaService.studyAreaParameterList | json"></pre>
                 </div>
             </td>
         </tr>
@@ -92,10 +97,10 @@
             <td><a href="#" role="tab"><span class="label label-default">4</span></a></td>
             <td><a href="#"><span class="step-label">&nbsp;Select a Scenario</span></a></td>
         </tr>
-        <tr ng-class="vm.selectedProcedure != 4 ? 'collapse activeitem': 'activeitem'">
+        <tr ng-hide="vm.selectedProcedure != 4 || vm.sideBarCollapsed" class="activeitem">
             <td></td>
             <td colspan="6">
-                <div class="accordian-body">
+                <div class="accordion-body">
                     <div id="regions" data-bind="visible:SelectedModel().HasRegions">
                         <p>Select a region.</p>
                         <!-- Split button -->
@@ -130,10 +135,10 @@
             <td><a href="#"><span class="label label-default">5</span></a></td>
             <td><a href="#"><span class="step-label">&nbsp;Build a Flow Report</span></a></td>
         </tr>
-        <tr ng-class="vm.selectedProcedure != 5 ? 'collapse activeitem': 'activeitem'">
+        <tr ng-hide="vm.selectedProcedure != 5 || vm.sideBarCollapsed" class="activeitem">
             <td></td>
             <td colspan="6">
-                <div class="accordian-body">
+                <div class="accordion-body">
                     <p>Select/Enter a start date and end date then select compute to generate flow report</p>
                     <hr class="headerUnderline" />
                     <!-- Split button -->
