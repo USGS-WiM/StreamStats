@@ -78,21 +78,17 @@
 
                 <div class="accordion-body">
                     <h4>Available Scenarios</h4>
-                        <pre ng-bind="vm.selectedScenario | json"></pre> 
-                        <button ng-repeat="scenario in vm.scenarioList" type="button" class="btn btn-sm btn-primary" ng-model="vm.selectedScenario[scenario]" btn-radio="scenario">{{scenario.Description}}</button>
+                        <button ng-repeat="scenario in vm.nssService.scenarioList" type="button" class="btn btn-sm btn-primary" ng-click="vm.setScenario(scenario)">{{scenario.Description}}</button>
+                        <h5>selected scenario</h5>
+                        <pre style="width:300px;" ng-bind="vm.nssService.selectedScenario.ModelType | json"></pre>
 
                     <h4>Available Parameters</h4>
-
-                        <pre ng-bind="vm.parameterSelection | json"></pre> 
-
-                        <div class="checkbox" ng-repeat="parameter in vm.parameterList">
-                            <label class="checkbox" for="{{parameter.name}}">
-                                <input type="checkbox" ng-model="vm.parameterSelection.name[parameter.name]" name="group" id="{{parameter.name}}" />
-                                {{parameter.name}}
-                            </label>
-                        </div>
-                    
-
+                        <label ng-repeat="parameter in vm.regionService.parameterList">
+                            <input type="checkbox" value="{{parameter.name}}" ng-checked="vm.studyAreaService.studyAreaParameterList.indexOf(parameter) > -1 " ng-click="vm.updateStudyAreaParameterList(parameter)"/>
+                            {{parameter.name}}
+                        </label>
+                        <h5>selected parameters</h5>
+                        <pre style="width:300px;" ng-bind="vm.studyAreaService.studyAreaParameterList | json"></pre>
                 </div>
             </td>
         </tr>

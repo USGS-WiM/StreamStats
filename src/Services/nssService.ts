@@ -28,7 +28,10 @@ module StreamStats.Services {
     export interface InssService {
         onSelectedScenarioChanged: WiM.Event.Delegate<WiM.Event.EventArgs>;
         scenarioList: Array<IScenario>;
-        loadScenariosByRegion(regionid:string);
+        selectedScenarioParameterList: Array<IParameter>;
+        selectedScenario: IScenario;
+        loadScenariosByRegion(regionid: string);
+        loadParametersByScenario(scenario: any, regionid: string);
     }
     export interface IScenario {
         StateCode: string;
@@ -59,6 +62,8 @@ module StreamStats.Services {
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
         public scenarioList: Array<IScenario>;
+        public selectedScenarioParameterList: Array<IParameter>;
+        public selectedScenario: IScenario;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -66,6 +71,7 @@ module StreamStats.Services {
             super($http, configuration.baseurls['NSS']);
             this._onSelectedScenarioChanged = new WiM.Event.Delegate<WiM.Event.EventArgs>();
             this.scenarioList = [];
+            this.selectedScenarioParameterList = [];
         }
 
         //Methods
@@ -74,7 +80,7 @@ module StreamStats.Services {
             console.log('in load scenarios', regionid);
             if (!regionid) return;
 
-            var url = configuration.queryparams['scenarioService'].format(regionid);
+            var url = configuration.queryparams['scenarioLookup'].format(regionid);
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url);
 
             this.Execute(request).then(
@@ -84,11 +90,51 @@ module StreamStats.Services {
                     angular.forEach(response.data, function (value, key) {
                         scenarioList.push(value);
                     });
-                    console.log(scenarioList);
+                    //console.log(scenarioList);
                     //sm when complete
                 },(error) => {
                     //sm when complete
                 }).finally(() => { });
+        }
+
+        public loadParametersByScenario(modeltype: string, regionid: string) {
+            //var deferred = ng.IQService.defer();
+            console.log('in load scenario parameters', regionid);
+            if (!regionid && !modeltype) return;
+
+            var url = configuration.queryparams['scenarioService'].format(modeltype,regionid);
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url);
+
+            this.selectedScenarioParameterList = [];
+            this.Execute(request).then(
+                (response: any) => {
+                    if (response.data.Parameters && response.data.Parameters.length > 0) {
+                        response.data.Parameters.map((item) => {
+                            try {
+                                //console.log(item);
+                                this.selectedScenarioParameterList.push(item);
+                            }
+                            catch (e) {
+                                alert(e);
+                            }
+                            
+                            //return this.selectedScenarioParameterList;
+                        });
+                        //console.log(this.selectedScenarioParameterList);
+                    }
+
+                       
+                    /*
+                        angular.forEach(response.data.Parameters, function (value, key) {
+                            value.selected = true;
+                            this.selectedScenarioParameterList.push(value);
+                        });
+                        */
+                      
+                    //sm when complete
+                },(error) => {
+                    //sm when complete
+                }).finally(() => {  });
         }
         //HelperMethods
         //-+-+-+-+-+-+-+-+-+-+-+-

@@ -44,6 +44,7 @@ var StreamStats;
                 this.$q = $q;
                 this._onSelectedScenarioChanged = new WiM.Event.Delegate();
                 this.scenarioList = [];
+                this.selectedScenarioParameterList = [];
             }
             Object.defineProperty(nssService.prototype, "onSelectedScenarioChanged", {
                 get: function () {
@@ -59,7 +60,7 @@ var StreamStats;
                 console.log('in load scenarios', regionid);
                 if (!regionid)
                     return;
-                var url = configuration.queryparams['scenarioService'].format(regionid);
+                var url = configuration.queryparams['scenarioLookup'].format(regionid);
                 var request = new WiM.Services.Helpers.RequestInfo(url);
                 this.Execute(request).then(function (response) {
                     //console.log(response.data);
@@ -67,7 +68,41 @@ var StreamStats;
                     angular.forEach(response.data, function (value, key) {
                         scenarioList.push(value);
                     });
-                    console.log(scenarioList);
+                    //console.log(scenarioList);
+                    //sm when complete
+                }, function (error) {
+                    //sm when complete
+                }).finally(function () {
+                });
+            };
+            nssService.prototype.loadParametersByScenario = function (modeltype, regionid) {
+                var _this = this;
+                //var deferred = ng.IQService.defer();
+                console.log('in load scenario parameters', regionid);
+                if (!regionid && !modeltype)
+                    return;
+                var url = configuration.queryparams['scenarioService'].format(modeltype, regionid);
+                var request = new WiM.Services.Helpers.RequestInfo(url);
+                this.selectedScenarioParameterList = [];
+                this.Execute(request).then(function (response) {
+                    if (response.data.Parameters && response.data.Parameters.length > 0) {
+                        response.data.Parameters.map(function (item) {
+                            try {
+                                //console.log(item);
+                                _this.selectedScenarioParameterList.push(item);
+                            }
+                            catch (e) {
+                                alert(e);
+                            }
+                            //return this.selectedScenarioParameterList;
+                        });
+                    }
+                    /*
+                        angular.forEach(response.data.Parameters, function (value, key) {
+                            value.selected = true;
+                            this.selectedScenarioParameterList.push(value);
+                        });
+                        */
                     //sm when complete
                 }, function (error) {
                     //sm when complete

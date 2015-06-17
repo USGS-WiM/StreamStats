@@ -33,6 +33,7 @@ module StreamStats.Services {
         RemoveStudyArea();
         doDelineateFlag: boolean;
         canUpdate: boolean;
+        studyAreaParameterList: Array<IParameter>;
     }
     class StudyAreaService extends WiM.Services.HTTPServiceBase implements IStudyAreaService {
         //Events
@@ -61,6 +62,7 @@ module StreamStats.Services {
         public get selectedStudyArea(): Models.IStudyArea {
             return this._selectedStudyArea
         }
+        public studyAreaParameterList: Array<IParameter>;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -70,6 +72,7 @@ module StreamStats.Services {
             this._studyAreaList = []; 
             this.canUpdate = true;
             this.doDelineateFlag = false;
+            this.studyAreaParameterList = [];
         }
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
