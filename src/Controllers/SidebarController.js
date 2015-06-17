@@ -22,16 +22,30 @@ var StreamStats;
         'use strinct';
         var SidebarController = (function () {
             function SidebarController($scope, service, region, studyArea, scenario) {
+                var _this = this;
                 $scope.vm = this;
                 this.searchService = service;
                 this.sideBarCollapsed = false;
                 this.selectedProcedure = 1 /* INIT */;
                 this.regionService = region;
                 this.regionList = region.regionList;
-                this.parameterList = region.parameterList;
+                //this.parameterList = region.parameterList;    
                 this.nssService = scenario;
-                this.scenarioList = scenario.scenarioList;
+                //this.scenarioList = scenario.scenarioList;
                 this.studyAreaService = studyArea;
+                //subscribe to Events
+                $scope.$watchCollection(function () { return _this.nssService.selectedScenarioParameterList; }, function (newval, oldval) {
+                    //console.log('scenario param list changed.  loaded ', newval.length, ' parameters from scenario');
+                    _this.studyAreaService.studyAreaParameterList = [];
+                    _this.regionService.parameterList.map(function (val) {
+                        angular.forEach(scenario.selectedScenarioParameterList, function (value, index) {
+                            if (val.code.toLowerCase() == value.code.toLowerCase()) {
+                                //console.log('match found', val.code);
+                                studyArea.studyAreaParameterList.push(val);
+                            }
+                        });
+                    });
+                });
             }
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
@@ -39,7 +53,7 @@ var StreamStats;
                 return this.searchService.getLocations(term);
             };
             SidebarController.prototype.setProcedureType = function (pType) {
-                if (this.selectedProcedure == pType || !this.canUpdateProceedure(pType))
+                if (this.selectedProcedure == pType || !this.canUpdateProcedure(pType))
                     return;
                 this.selectedProcedure = pType;
             };
@@ -64,9 +78,32 @@ var StreamStats;
             SidebarController.prototype.setDelineateFlag = function () {
                 this.studyAreaService.doDelineateFlag = !this.studyAreaService.doDelineateFlag;
             };
+            SidebarController.prototype.setScenario = function (scenario) {
+                if (this.nssService.selectedScenario == scenario)
+                    return;
+                this.nssService.selectedScenario = scenario;
+                console.log(scenario.ModelType, ' clicked');
+                //clear studyareaParameterList
+                this.studyAreaService.studyAreaParameterList = [];
+                //get list of params for selected scenario
+                this.nssService.loadParametersByScenario(this.nssService.selectedScenario.ModelType, this.regionService.selectedRegion.RegionID);
+            };
+            SidebarController.prototype.updateStudyAreaParameterList = function (parameter) {
+                //console.log('studyareaparamList length: ', this.studyAreaService.studyAreaParameterList.length);
+                var index = this.studyAreaService.studyAreaParameterList.indexOf(parameter);
+                if (index > -1) {
+                    //remove it
+                    this.studyAreaService.studyAreaParameterList.splice(index, 1);
+                }
+                else {
+                    //add it
+                    this.studyAreaService.studyAreaParameterList.push(parameter);
+                }
+                //console.log('studyareaparamList length: ', this.studyAreaService.studyAreaParameterList.length);
+            };
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
-            SidebarController.prototype.canUpdateProceedure = function (pType) {
+            SidebarController.prototype.canUpdateProcedure = function (pType) {
                 //Project flow:
                 var msg;
                 try {

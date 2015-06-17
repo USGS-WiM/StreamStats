@@ -46,6 +46,7 @@ module StreamStats.Services {
         description: string;
         name: string;
         unit: string;
+        selected: boolean;
     }
 
     export class Region implements IRegion {
@@ -62,6 +63,7 @@ module StreamStats.Services {
         public description: string;
         public name: string;
         public unit: string;
+        public selected: boolean;
 
     }//end class
 
@@ -166,11 +168,20 @@ module StreamStats.Services {
 
             this.Execute(request).then(
                 (response: any) => {     
-                    //console.log(response.data.parameters);      
-                    var parameterList = this.parameterList;
-                    angular.forEach(response.data.parameters, function (value, key) {
-                        parameterList.push(value);
-                    });
+                    if (response.data.parameters && response.data.parameters.length > 0) {
+                        response.data.parameters.map((item) => {
+                            try {
+                                //console.log(item);
+                                this.parameterList.push(item);
+                            }
+                            catch (e) {
+                                alert(e);
+                            }
+                            
+                            //return this.selectedScenarioParameterList;
+                        });
+                        //console.log(this.selectedScenarioParameterList);
+                    }
                     //sm when complete
                 },(error) => {
                     //sm when complete

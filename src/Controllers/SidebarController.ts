@@ -31,6 +31,7 @@ module StreamStats.Controllers {
     interface ISidebarController {
         sideBarCollapsed: boolean;
         selectedProcedure: ProcedureType;
+        selectedScenario: Services.IScenario;
         setProcedureType(pType: ProcedureType): void;
         toggleSideBar(): void;
         setDelineateFlag(): void;
@@ -43,8 +44,9 @@ module StreamStats.Controllers {
         public selectedProcedure: ProcedureType;
 
         public regionList: Array<Services.IRegion>;
-        public parameterList: Array<Services.IParameter>;
-        public scenarioList: Array<Services.IScenario>;
+        //public parameterList: Array<Services.IParameter>;
+        //public scenarioList: Array<Services.IScenario>;
+        public selectedScenario: Services.IScenario;
         private searchService: WiM.Services.ISearchAPIService;
         private regionService: Services.IRegionService;
         private nssService: Services.InssService;
@@ -61,10 +63,27 @@ module StreamStats.Controllers {
             this.selectedProcedure = ProcedureType.INIT;
             this.regionService = region;
             this.regionList = region.regionList; 
-            this.parameterList = region.parameterList;    
+            //this.parameterList = region.parameterList;    
             this.nssService = scenario;
-            this.scenarioList = scenario.scenarioList;
+            //this.scenarioList = scenario.scenarioList;
             this.studyAreaService = studyArea;
+
+            //subscribe to Events
+            $scope.$watchCollection(() => this.nssService.selectedScenarioParameterList,(newval, oldval) => {
+                //console.log('scenario param list changed.  loaded ', newval.length, ' parameters from scenario');
+
+                this.studyAreaService.studyAreaParameterList = [];
+                this.regionService.parameterList.map(function (val) {
+
+                    angular.forEach(scenario.selectedScenarioParameterList, function (value, index) {
+                        if (val.code.toLowerCase() == value.code.toLowerCase()) {
+                            //console.log('match found', val.code);
+                            studyArea.studyAreaParameterList.push(val);
+                        }
+                    });
+                });
+            });
+                
         }
 
         //Methods
@@ -73,7 +92,7 @@ module StreamStats.Controllers {
             return this.searchService.getLocations(term);
         }
         public setProcedureType(pType: ProcedureType) {           
-            if (this.selectedProcedure == pType || !this.canUpdateProceedure(pType)) return;
+            if (this.selectedProcedure == pType || !this.canUpdateProcedure(pType)) return;
             this.selectedProcedure = pType;
         }
         public toggleSideBar(): void {
@@ -97,9 +116,36 @@ module StreamStats.Controllers {
         public setDelineateFlag(): void {
             this.studyAreaService.doDelineateFlag = !this.studyAreaService.doDelineateFlag;
         }
+        public setScenario(scenario: Services.IScenario) {
+            if (this.nssService.selectedScenario == scenario) return;
+            this.nssService.selectedScenario = scenario;
+
+            console.log(scenario.ModelType, ' clicked');
+
+            //clear studyareaParameterList
+            this.studyAreaService.studyAreaParameterList = [];
+
+            //get list of params for selected scenario
+            this.nssService.loadParametersByScenario(this.nssService.selectedScenario.ModelType, this.regionService.selectedRegion.RegionID)
+        }
+
+        public updateStudyAreaParameterList(parameter: any) {
+            //console.log('studyareaparamList length: ', this.studyAreaService.studyAreaParameterList.length);
+            var index = this.studyAreaService.studyAreaParameterList.indexOf(parameter);
+            if (index > -1) {
+                //remove it
+                this.studyAreaService.studyAreaParameterList.splice(index,1);
+            }
+            else {
+                //add it
+                this.studyAreaService.studyAreaParameterList.push(parameter);
+            }
+            //console.log('studyareaparamList length: ', this.studyAreaService.studyAreaParameterList.length);
+        }
+
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
-        private canUpdateProceedure(pType: ProcedureType): boolean {
+        private canUpdateProcedure(pType: ProcedureType): boolean {
             //Project flow:
             var msg: string;
             try {               

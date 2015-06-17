@@ -140,11 +140,18 @@ var StreamStats;
                 var url = configuration.queryparams['SSparams'].format(this.selectedRegion.RegionID);
                 var request = new WiM.Services.Helpers.RequestInfo(url);
                 this.Execute(request).then(function (response) {
-                    //console.log(response.data.parameters);      
-                    var parameterList = _this.parameterList;
-                    angular.forEach(response.data.parameters, function (value, key) {
-                        parameterList.push(value);
-                    });
+                    if (response.data.parameters && response.data.parameters.length > 0) {
+                        response.data.parameters.map(function (item) {
+                            try {
+                                //console.log(item);
+                                _this.parameterList.push(item);
+                            }
+                            catch (e) {
+                                alert(e);
+                            }
+                            //return this.selectedScenarioParameterList;
+                        });
+                    }
                     //sm when complete
                 }, function (error) {
                     //sm when complete

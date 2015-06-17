@@ -39,6 +39,7 @@ var StreamStats;
                 this._studyAreaList = [];
                 this.canUpdate = true;
                 this.doDelineateFlag = false;
+                this.studyAreaParameterList = [];
             }
             Object.defineProperty(StudyAreaService.prototype, "onSelectedStudyAreaChanged", {
                 get: function () {
