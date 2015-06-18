@@ -77,18 +77,18 @@
             <td colspan="6">
 
                 <div class="accordion-body">
-                    <h4>Available Scenarios</h4>
+                    <h4>Scenarios</h4>
                         <button ng-repeat="scenario in vm.nssService.scenarioList" type="button" class="btn btn-sm btn-primary" ng-click="vm.setScenario(scenario)">{{scenario.Description}}</button>
-                        <h5>selected scenario</h5>
+                        <h5>Selected scenario</h5>
                         <pre style="width:300px;" ng-bind="vm.nssService.selectedScenario.ModelType | json"></pre>
 
-                    <h4>Available Parameters</h4>
-                        <label ng-repeat="parameter in vm.regionService.parameterList">
+                    <h4>Parameters</h4>
+                        <span ng-repeat="parameter in vm.regionService.parameterList">
                             <input type="checkbox" value="{{parameter.name}}" ng-checked="vm.studyAreaService.studyAreaParameterList.indexOf(parameter) > -1 " ng-click="vm.updateStudyAreaParameterList(parameter)"/>
-                            {{parameter.name}}
-                        </label>
+                            {{parameter.name}}<a class="glyphicon glyphicon-question-sign" aria-hidden="true" href="#" tooltip="{{parameter.description}}"></a>
+                        </span>
                         <div><button type="button" class="btn btn-sm btn-primary" ng-click="vm.studyAreaService.loadParameters()">Calculate Parameters</button></div>
-                        <h5>selected parameters</h5>
+                        <h5>Selected parameters</h5>
                         <pre style="width:300px;" ng-bind="vm.studyAreaService.studyAreaParameterList | json"></pre>
                 </div>
             </td>
