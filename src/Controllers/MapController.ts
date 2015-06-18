@@ -24,7 +24,7 @@
 
 //Imports"
 module StreamStats.Controllers {
-    'use strinct';
+    //'use strict';
     interface ILeafletData {
         getMap(): ng.IPromise<any>;
     }
@@ -250,6 +250,8 @@ module StreamStats.Controllers {
                 }
             }
             this.mapPoint = new MapPoint();
+
+            L.Icon.Default.imagePath = 'images';
         }
         private onSelectedAreaOfInterestChanged(sender: any, e: WiM.Services.SearchAPIEventArgs) {
             var AOI = e.selectedAreaOfInterest;
@@ -269,36 +271,41 @@ module StreamStats.Controllers {
             this.addRegionOverlayLayers(this.regionServices.selectedRegion.RegionID);  
         }
         private onSelectedStudyAreaChanged() {
+            
+            if (!this.studyArea.selectedStudyArea.Features) return;
 
-            if (!this.studyArea.selectedStudyArea.Basin) return;
-
-            this.geojson['delineatedBasin'] = {
-                data: this.studyArea.selectedStudyArea.Basin,
-                style: {
-                    fillColor: "yellow",
-                    weight: 2,
-                    opacity: 1,
-                    color: 'white',
-                    fillOpacity: 0.5
+            this.studyArea.selectedStudyArea.Features.forEach((item) => {
+                this.geojson[item.name] = {
+                    data: item.feature
                 }
-            }
 
-            this.geojson['pourpoint'] = {
-                data: this.studyArea.selectedStudyArea.Pourpoint,
-                onEachFeature: function (feature, layer) {
-                    var popupContent = '';
-                    angular.forEach(feature.properties, function (value, key) {
-                        popupContent += '<strong>' + key + ': </strong>' + value + '</br>';
-                    });
-                    layer.bindPopup(popupContent).openPopup();
+                //do layer styling or labelling here
+                if (item.name == 'delineatedbasin(simplified)') {
+                    this.geojson[item.name].style = {
+                        fillColor: "yellow",
+                        weight: 2,
+                        opacity: 1,
+                        color: 'white',
+                        fillOpacity: 0.5
+                    }
                 }
-            }
+
+                else if (item.name == 'pourpoint') {
+                    this.geojson[item.name].onEachFeature = function (feature, layer) {
+                        var popupContent = '';
+                        angular.forEach(feature.properties, function (value, key) {
+                            popupContent += '<strong>' + key + ': </strong>' + value + '</br>';
+                        });
+                        layer.bindPopup(popupContent);
+                    }
+                }
+            });
 
             //clear out this.markers
             this.markers = {};
 
             //console.log(JSON.stringify(this.geojson));    
-            var bbox = this.geojson['delineatedBasin'].data.features[0].bbox;
+            var bbox = this.geojson['delineatedbasin(simplified)'].data.features[0].bbox;
             //this.bounds = this.leafletBoundsHelperService.createBoundsFromArray([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
             this.leafletData.getMap().then((map: any) => {              
                 map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]], {
