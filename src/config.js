@@ -3,7 +3,7 @@
 ///<reference path="../typings/angular-ui-router/angular-ui-router.d.ts" />
 var StreamStats;
 (function (StreamStats) {
-    'use strinct';
+    'use strict';
     var config = (function () {
         function config($stateProvider, $urlRouterProvider, $locationProvider) {
             this.$stateProvider = $stateProvider;

@@ -14,7 +14,6 @@ var gulp = require('gulp'),
     filter = require('gulp-filter'),
     del= require('del'),
     open = require('open'),
-    wiredep = require('wiredep').stream,
     semver = require('semver');
 
 //get current app version
@@ -40,12 +39,6 @@ function inc(importance) {
         }));
 }
 
-//copy to dist folder
-gulp.task('dist', function () {
-    return gulp.src('test/**/*')
-        .pipe(gulp.dest('dist'));
-});
-
 //tasks for version tags
 gulp.task('patch', ['dist'], function () { return inc('patch'); })
 gulp.task('feature', ['dist'], function () { return inc('minor'); })
@@ -67,21 +60,21 @@ gulp.task('push', function () {
 //copy to views folder
 gulp.task('views', function () {
     return gulp.src('src/Views/**/*')
-        .pipe(gulp.dest('test/Views'));
+        .pipe(gulp.dest('dist/Views'));
 });
 
 // Styles
 gulp.task('styles', function () {
     return gulp.src(['src/styles/main.css'])
         .pipe(autoprefixer('last 1 version'))
-        .pipe(gulp.dest('test/styles'))
+        .pipe(gulp.dest('dist/styles'))
         .pipe(size());
 });
 
 // Icons
 gulp.task('icons', function () {
     return gulp.src(['bower_components/bootstrap/dist/fonts/*.*', 'bower_components/font-awesome/fonts/*.*'])
-        .pipe(gulp.dest('test/fonts'));
+        .pipe(gulp.dest('dist/fonts'));
 });
 
 // Scripts
@@ -107,21 +100,21 @@ gulp.task('html', ['styles', 'scripts', 'icons', 'views'], function () {
         .pipe(cssFilter.restore())
         .pipe(useref.restore())
         .pipe(useref())
-        .pipe(gulp.dest('test'))
+        .pipe(gulp.dest('dist'))
         .pipe(size());
 });
 
 // Leaflet
 gulp.task('leaflet', function () {
     return gulp.src('bower_components/leaflet/dist/images/**/*')
-        .pipe(gulp.dest('test/styles/images'))
+        .pipe(gulp.dest('dist/styles/images'))
         .pipe(size());
 });
 
 // Images
 gulp.task('images', function () {
     return gulp.src('src/images/**/*')
-        .pipe(gulp.dest('test/images'))
+        .pipe(gulp.dest('dist/images'))
         .pipe(size());
 });
 
@@ -134,12 +127,12 @@ gulp.task('clean', function (cb) {
     ], cb);
 });
 
-// build test
-gulp.task('test', ['html', 'images', 'leaflet']);
+// build dist
+gulp.task('dist', ['html', 'images', 'leaflet']);
 
 // Default task
 gulp.task('default', ['clean'], function () {
-    gulp.start('test');
+    gulp.start('dist');
 });
 
 // Watch
@@ -150,7 +143,7 @@ gulp.task('watch', ['connect', 'serve'], function () {
 // Connect
 gulp.task('connect', function () {
     connect.server({
-        root: 'test',
+        root: 'dist',
         port: 9000
     });
 });
@@ -159,22 +152,3 @@ gulp.task('connect', function () {
 gulp.task('serve', ['connect'], function () {
     open("http://localhost:9000");
 });
-
-// Inject Bower components
-/*
-gulp.task('wiredep', function () {
-    gulp.src('src/styles/*.css')
-        .pipe(wiredep({
-            directory: 'src/bower_components',
-            ignorePath: 'src/bower_components/'
-        }))
-        .pipe(gulp.dest('src/styles'));
-
-    gulp.src('src/*.html')
-        .pipe(wiredep({
-            directory: 'src/bower_components',
-            ignorePath: 'src/'
-        }))
-        .pipe(gulp.dest('src'));
-});
-*/
