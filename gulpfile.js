@@ -104,13 +104,6 @@ gulp.task('html', ['styles', 'scripts', 'icons', 'views'], function () {
         .pipe(size());
 });
 
-// Leaflet
-gulp.task('leaflet', function () {
-    return gulp.src('bower_components/leaflet/dist/images/**/*')
-        .pipe(gulp.dest('dist/styles/images'))
-        .pipe(size());
-});
-
 // Images
 gulp.task('images', function () {
     return gulp.src('src/images/**/*')
@@ -128,7 +121,7 @@ gulp.task('clean', function (cb) {
 });
 
 // build dist
-gulp.task('dist', ['html', 'images', 'leaflet']);
+gulp.task('dist', ['html', 'images']);
 
 // Default task
 gulp.task('default', ['clean'], function () {

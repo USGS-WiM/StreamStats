@@ -153,6 +153,7 @@ var StreamStats;
                     }
                 };
                 this.mapPoint = new MapPoint();
+                L.Icon.Default.imagePath = 'images';
             };
             MapController.prototype.onSelectedAreaOfInterestChanged = function (sender, e) {
                 var AOI = e.selectedAreaOfInterest;
@@ -170,41 +171,33 @@ var StreamStats;
                 this.addRegionOverlayLayers(this.regionServices.selectedRegion.RegionID);
             };
             MapController.prototype.onSelectedStudyAreaChanged = function () {
+                var _this = this;
                 if (!this.studyArea.selectedStudyArea.Features)
                     return;
-                var geoJson = this.geojson;
-                angular.forEach(this.studyArea.selectedStudyArea.Features, function (value, index) {
-                    geoJson[value.name] = {
-                        data: value.feature
+                this.studyArea.selectedStudyArea.Features.forEach(function (item) {
+                    _this.geojson[item.name] = {
+                        data: item.feature
                     };
-                    //this.geojson = this.studyArea.selectedStudyArea.Features;
+                    //do layer styling or labelling here
+                    if (item.name == 'delineatedbasin(simplified)') {
+                        _this.geojson[item.name].style = {
+                            fillColor: "yellow",
+                            weight: 2,
+                            opacity: 1,
+                            color: 'white',
+                            fillOpacity: 0.5
+                        };
+                    }
+                    else if (item.name == 'pourpoint') {
+                        _this.geojson[item.name].onEachFeature = function (feature, layer) {
+                            var popupContent = '';
+                            angular.forEach(feature.properties, function (value, key) {
+                                popupContent += '<strong>' + key + ': </strong>' + value + '</br>';
+                            });
+                            layer.bindPopup(popupContent);
+                        };
+                    }
                 });
-                console.log(this.geojson);
-                /*
-                if (!this.studyArea.selectedStudyArea.Basin) return;
-    
-                this.geojson['delineatedBasin'] = {
-                    data: this.studyArea.selectedStudyArea.Basin,
-                    style: {
-                        fillColor: "yellow",
-                        weight: 2,
-                        opacity: 1,
-                        color: 'white',
-                        fillOpacity: 0.5
-                    }
-                }
-    
-                this.geojson['pourpoint'] = {
-                    data: this.studyArea.selectedStudyArea.Pourpoint,
-                    onEachFeature: function (feature, layer) {
-                        var popupContent = '';
-                        angular.forEach(feature.properties, function (value, key) {
-                            popupContent += '<strong>' + key + ': </strong>' + value + '</br>';
-                        });
-                        layer.bindPopup(popupContent).openPopup();
-                    }
-                }
-                */
                 //clear out this.markers
                 this.markers = {};
                 //console.log(JSON.stringify(this.geojson));    
