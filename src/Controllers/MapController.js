@@ -19,7 +19,6 @@ var StreamStats;
 (function (StreamStats) {
     var Controllers;
     (function (Controllers) {
-        'use strinct';
         var MapPoint = (function () {
             function MapPoint() {
                 this.lat = 0;
@@ -171,8 +170,19 @@ var StreamStats;
                 this.addRegionOverlayLayers(this.regionServices.selectedRegion.RegionID);
             };
             MapController.prototype.onSelectedStudyAreaChanged = function () {
-                if (!this.studyArea.selectedStudyArea.Basin)
+                if (!this.studyArea.selectedStudyArea.Features)
                     return;
+                var geoJson = this.geojson;
+                angular.forEach(this.studyArea.selectedStudyArea.Features, function (value, index) {
+                    geoJson[value.name] = {
+                        data: value.feature
+                    };
+                    //this.geojson = this.studyArea.selectedStudyArea.Features;
+                });
+                console.log(this.geojson);
+                /*
+                if (!this.studyArea.selectedStudyArea.Basin) return;
+    
                 this.geojson['delineatedBasin'] = {
                     data: this.studyArea.selectedStudyArea.Basin,
                     style: {
@@ -182,7 +192,8 @@ var StreamStats;
                         color: 'white',
                         fillOpacity: 0.5
                     }
-                };
+                }
+    
                 this.geojson['pourpoint'] = {
                     data: this.studyArea.selectedStudyArea.Pourpoint,
                     onEachFeature: function (feature, layer) {
@@ -192,11 +203,12 @@ var StreamStats;
                         });
                         layer.bindPopup(popupContent).openPopup();
                     }
-                };
+                }
+                */
                 //clear out this.markers
                 this.markers = {};
                 //console.log(JSON.stringify(this.geojson));    
-                var bbox = this.geojson['delineatedBasin'].data.features[0].bbox;
+                var bbox = this.geojson['delineatedbasin(simplified)'].data.features[0].bbox;
                 //this.bounds = this.leafletBoundsHelperService.createBoundsFromArray([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
                 this.leafletData.getMap().then(function (map) {
                     map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]], {

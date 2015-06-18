@@ -28,6 +28,7 @@ module StreamStats.Models {
         Pourpoint: WiM.Models.IPoint;
         Description: string;
         Basin: Object;
+        Features: Object;
         WorkspaceID: string;
         Parameters: Array<WiM.Models.IParameter>;
     }
@@ -38,6 +39,7 @@ module StreamStats.Models {
         public Pourpoint: WiM.Models.IPoint;
         public Description: string;
         public Basin: Object;
+        public Features: Object;
         public WorkspaceID: string;
         public Parameters: Array<WiM.Models.IParameter>;
         //public Scenarios: Array<WiM.Models.IScenario>;

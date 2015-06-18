@@ -24,7 +24,7 @@
 
 //Imports"
 module StreamStats.Controllers {
-    'use strinct';
+    //'use strict';
     interface ILeafletData {
         getMap(): ng.IPromise<any>;
     }
@@ -269,7 +269,21 @@ module StreamStats.Controllers {
             this.addRegionOverlayLayers(this.regionServices.selectedRegion.RegionID);  
         }
         private onSelectedStudyAreaChanged() {
+            
+            if (!this.studyArea.selectedStudyArea.Features) return;
 
+            var geoJson = this.geojson;
+            angular.forEach(this.studyArea.selectedStudyArea.Features, function (value, index) {
+                geoJson[value.name] = {
+                    data: value.feature
+                }
+                //this.geojson = this.studyArea.selectedStudyArea.Features;
+            });
+
+            
+            
+            console.log(this.geojson);
+            /*
             if (!this.studyArea.selectedStudyArea.Basin) return;
 
             this.geojson['delineatedBasin'] = {
@@ -293,12 +307,14 @@ module StreamStats.Controllers {
                     layer.bindPopup(popupContent).openPopup();
                 }
             }
+            */
+            
 
             //clear out this.markers
             this.markers = {};
 
             //console.log(JSON.stringify(this.geojson));    
-            var bbox = this.geojson['delineatedBasin'].data.features[0].bbox;
+            var bbox = this.geojson['delineatedbasin(simplified)'].data.features[0].bbox;
             //this.bounds = this.leafletBoundsHelperService.createBoundsFromArray([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
             this.leafletData.getMap().then((map: any) => {              
                 map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]], {
