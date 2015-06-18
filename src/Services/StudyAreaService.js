@@ -98,23 +98,22 @@ var StreamStats;
                     _this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
                 });
             };
-            StudyAreaService.prototype.loadParameters = function (params) {
+            StudyAreaService.prototype.loadParameters = function () {
                 var _this = this;
-                if (params === void 0) { params = []; }
                 console.log('in load parameters');
                 this.canUpdate = false;
                 if (!this.selectedStudyArea.WorkspaceID || !this.selectedStudyArea.RegionID)
                     return; //sm study area is incomplete
-                var paramsToCalc = params.length < 1 ? this.selectedStudyArea.Parameters : params;
-                if (paramsToCalc.length < 1)
-                    return;
-                var url = configuration.requests['SSparams'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID, paramsToCalc.map(function (param) {
-                    param.code;
-                }).join(';'));
+                var requestParameterList = [];
+                this.studyAreaParameterList.map(function (param) {
+                    requestParameterList.push(param.code);
+                });
+                var url = configuration.queryparams['SSComputeParams'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID, requestParameterList.join(','));
                 var request = new WiM.Services.Helpers.RequestInfo(url);
                 this.Execute(request).then(function (response) {
-                    var msg;
-                    response.hasOwnProperty("parameters") ? _this.loadParameterResults(response["parameters"]) : [];
+                    if (response.data.parameters && response.data.parameters.length > 0) {
+                        _this.loadParameterResults(response.data.parameters);
+                    }
                     //sm when complete
                 }, function (error) {
                     //sm when complete
@@ -125,14 +124,16 @@ var StreamStats;
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+-       
             StudyAreaService.prototype.loadParameterResults = function (results) {
+                console.log('in load parameter results');
                 for (var i = 0; i < results.length; i++) {
-                    for (var j = 0; j < this.selectedStudyArea.Parameters.length; j++) {
-                        if (results[i].code.toUpperCase().trim() === this.selectedStudyArea.Parameters[j].code.toUpperCase().trim()) {
-                            this.selectedStudyArea.Parameters[j].value = results[i].value;
+                    for (var j = 0; j < this.studyAreaParameterList.length; j++) {
+                        if (results[i].code.toUpperCase().trim() === this.studyAreaParameterList[j].code.toUpperCase().trim()) {
+                            this.studyAreaParameterList[j].value = results[i].value;
                             break;
                         } //endif
                     }
                 }
+                console.log('params', this.studyAreaParameterList);
             };
             return StudyAreaService;
         })(WiM.Services.HTTPServiceBase); //end class

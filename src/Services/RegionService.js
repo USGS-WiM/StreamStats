@@ -90,7 +90,7 @@ var StreamStats;
                     sr: sr,
                     layers: "all: 4"
                 };
-                var request = new WiM.Services.Helpers.RequestInfo(configuration.queryparams['regionService'], 0 /* GET */, 'json');
+                var request = new WiM.Services.Helpers.RequestInfo(configuration.queryparams['regionService'], WiM.Services.Helpers.methodType.GET, 'json');
                 request.params = input;
                 this.Execute(request).then(function (response) {
                     response.data.results.map(function (item) {
@@ -117,7 +117,7 @@ var StreamStats;
             };
             RegionService.prototype.loadMapLayersByRegion = function (regionid) {
                 var _this = this;
-                var request = new WiM.Services.Helpers.RequestInfo("/arcgis/rest/services/{0}_ss/MapServer?f=pjson".format(regionid.toLowerCase()), 0 /* GET */, 'json');
+                var request = new WiM.Services.Helpers.RequestInfo("/arcgis/rest/services/{0}_ss/MapServer?f=pjson".format(regionid.toLowerCase()), WiM.Services.Helpers.methodType.GET, 'json');
                 var layerArray = [];
                 this.Execute(request).then(function (response) {
                     angular.forEach(response.data.layers, function (value, key) {
@@ -137,7 +137,7 @@ var StreamStats;
                 console.log('in load parameters', this.selectedRegion);
                 if (!this.selectedRegion)
                     return;
-                var url = configuration.queryparams['SSparams'].format(this.selectedRegion.RegionID);
+                var url = configuration.queryparams['SSAvailableParams'].format(this.selectedRegion.RegionID);
                 var request = new WiM.Services.Helpers.RequestInfo(url);
                 this.Execute(request).then(function (response) {
                     if (response.data.parameters && response.data.parameters.length > 0) {

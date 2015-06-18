@@ -47,6 +47,7 @@ module StreamStats.Services {
         name: string;
         unit: string;
         selected: boolean;
+        value: number;
     }
 
     export class Region implements IRegion {
@@ -64,6 +65,7 @@ module StreamStats.Services {
         public name: string;
         public unit: string;
         public selected: boolean;
+        public value: number;
 
     }//end class
 
@@ -163,7 +165,7 @@ module StreamStats.Services {
             console.log('in load parameters', this.selectedRegion);
             if (!this.selectedRegion) return;
 
-            var url = configuration.queryparams['SSparams'].format(this.selectedRegion.RegionID);
+            var url = configuration.queryparams['SSAvailableParams'].format(this.selectedRegion.RegionID);
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url);
 
             this.Execute(request).then(
