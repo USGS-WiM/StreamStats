@@ -5,7 +5,7 @@
 ///<reference path="../typings/angular-ui-router/angular-ui-router.d.ts" />
 declare var configuration: any;
 module StreamStats {
-    'use strict';
+    //'use strict';
 
     class config {
         static $inject = ['$stateProvider', '$urlRouterProvider', '$locationProvider'];
