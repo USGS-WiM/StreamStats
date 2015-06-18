@@ -108,7 +108,10 @@ module StreamStats.Services {
         public loadParameters() {
             console.log('in load parameters');
             this.canUpdate = false;
-            if (!this.selectedStudyArea.WorkspaceID || !this.selectedStudyArea.RegionID) return;//sm study area is incomplete
+            if (!this.selectedStudyArea || !this.selectedStudyArea.WorkspaceID || !this.selectedStudyArea.RegionID) {
+                alert('No Study Area');
+                return;//sm study area is incomplete
+            }
 
             var requestParameterList = [];
             this.studyAreaParameterList.map((param) => { requestParameterList.push(param.code); })
