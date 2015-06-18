@@ -87,6 +87,7 @@
                             <input type="checkbox" value="{{parameter.name}}" ng-checked="vm.studyAreaService.studyAreaParameterList.indexOf(parameter) > -1 " ng-click="vm.updateStudyAreaParameterList(parameter)"/>
                             {{parameter.name}}
                         </label>
+                        <div><button type="button" class="btn btn-sm btn-primary" ng-click="vm.studyAreaService.loadParameters()">Calculate Parameters</button></div>
                         <h5>selected parameters</h5>
                         <pre style="width:300px;" ng-bind="vm.studyAreaService.studyAreaParameterList | json"></pre>
                 </div>
@@ -95,7 +96,7 @@
         <!-- step 4 Refine Parameters -->
         <tr ng-click="vm.setProcedureType(4)" ng-class="vm.selectedProcedure == 4 ? 'activeitemheader accordion-toggle': 'accordion-toggle'">
             <td><a href="#" role="tab"><span class="label label-default">4</span></a></td>
-            <td><a href="#"><span class="step-label">&nbsp;Select a Scenario</span></a></td>
+            <td><a href="#"><span class="step-label">&nbsp;Refine Parameters</span></a></td>
         </tr>
         <tr ng-hide="vm.selectedProcedure != 4 || vm.sideBarCollapsed" class="activeitem">
             <td></td>

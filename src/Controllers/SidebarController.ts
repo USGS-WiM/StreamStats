@@ -69,6 +69,8 @@ module StreamStats.Controllers {
             this.studyAreaService = studyArea;
 
             //subscribe to Events
+
+            //watches for changes to selected scenario param list and updates studyareaParamList with them
             $scope.$watchCollection(() => this.nssService.selectedScenarioParameterList,(newval, oldval) => {
                 //console.log('scenario param list changed.  loaded ', newval.length, ' parameters from scenario');
 

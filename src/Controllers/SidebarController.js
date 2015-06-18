@@ -34,6 +34,7 @@ var StreamStats;
                 //this.scenarioList = scenario.scenarioList;
                 this.studyAreaService = studyArea;
                 //subscribe to Events
+                //watches for changes to selected scenario param list and updates studyareaParamList with them
                 $scope.$watchCollection(function () { return _this.nssService.selectedScenarioParameterList; }, function (newval, oldval) {
                     //console.log('scenario param list changed.  loaded ', newval.length, ' parameters from scenario');
                     _this.studyAreaService.studyAreaParameterList = [];

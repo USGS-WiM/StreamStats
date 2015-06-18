@@ -28,7 +28,7 @@ module StreamStats.Services {
         onSelectedStudyAreaChanged: WiM.Event.Delegate<WiM.Event.EventArgs>;
         selectedStudyArea: Models.IStudyArea;
         loadStudyBoundary();
-        loadParameters();
+        //loadParameters();
         AddStudyArea(sa: Models.IStudyArea);
         RemoveStudyArea();
         doDelineateFlag: boolean;
@@ -105,23 +105,25 @@ module StreamStats.Services {
                     this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
             });
         }
-        public loadParameters(params: Array<WiM.Models.IParameter> = []) {
+        public loadParameters() {
             console.log('in load parameters');
             this.canUpdate = false;
             if (!this.selectedStudyArea.WorkspaceID || !this.selectedStudyArea.RegionID) return;//sm study area is incomplete
-            var paramsToCalc: Array<WiM.Models.IParameter> = params.length < 1 ? this.selectedStudyArea.Parameters : params;
-            if (paramsToCalc.length < 1) return;
 
-            var url = configuration.requests['SSparams'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID,
-                paramsToCalc.map((param: WiM.Models.IParameter) => { param.code }).join(';'));
+            var requestParameterList = [];
+            this.studyAreaParameterList.map((param) => { requestParameterList.push(param.code); })
 
+            var url = configuration.queryparams['SSComputeParams'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID,
+                requestParameterList.join(','));
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url);
 
             this.Execute(request).then(
-                (response) => {
-                    var msg: string;
-                    response.hasOwnProperty("parameters") ? this.loadParameterResults(response["parameters"]) : [];
-                   //sm when complete
+                (response: any) => {
+                    if (response.data.parameters && response.data.parameters.length > 0) {
+                        this.loadParameterResults(response.data.parameters);
+                        //this.selectedStudyArea.Parameters = response.data.parameters;
+                    }
+                    //sm when complete
                 },(error) => {
                     //sm when complete
                 }).finally(() => { this.canUpdate = true; });
@@ -129,15 +131,17 @@ module StreamStats.Services {
 
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-       
-        private loadParameterResults(results:Array<WiM.Models.IParameter>) {
+        private loadParameterResults(results: Array<WiM.Models.IParameter>) {
+            console.log('in load parameter results');
             for (var i: number = 0; i < results.length; i++) {
-                for (var j: number = 0; j < this.selectedStudyArea.Parameters.length; j++) {
-                    if (results[i].code.toUpperCase().trim() === this.selectedStudyArea.Parameters[j].code.toUpperCase().trim()) {
-                        this.selectedStudyArea.Parameters[j].value = results[i].value;
+                for (var j: number = 0; j < this.studyAreaParameterList.length; j++) {
+                    if (results[i].code.toUpperCase().trim() === this.studyAreaParameterList[j].code.toUpperCase().trim()) {
+                        this.studyAreaParameterList[j].value = results[i].value;
                         break;//exit loop
                     }//endif
                 }//next sa Parameter
             }//next result
+            console.log('params', this.studyAreaParameterList);
         }
 
     }//end class
