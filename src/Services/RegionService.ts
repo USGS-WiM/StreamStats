@@ -122,10 +122,10 @@ module StreamStats.Services {
 
             this.Execute(request).then(
                 (response: any) => {
-                    response.data.results.map((item) => {
+                    response.data.results.map((item) => {          
                         try {
                             var region = this.getRegion(item.attributes.st_abbr);
-                            if (region != null) this.regionList.push(region);
+                            if (region != null && this.regionList.indexOf(region) == -1) this.regionList.push(region);
                         }
                         catch (e) {
                             alert(e);

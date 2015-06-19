@@ -96,7 +96,7 @@ var StreamStats;
                     response.data.results.map(function (item) {
                         try {
                             var region = _this.getRegion(item.attributes.st_abbr);
-                            if (region != null)
+                            if (region != null && _this.regionList.indexOf(region) == -1)
                                 _this.regionList.push(region);
                         }
                         catch (e) {
