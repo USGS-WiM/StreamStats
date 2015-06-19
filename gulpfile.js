@@ -114,9 +114,11 @@ gulp.task('images', function () {
 // Clean
 gulp.task('clean', function (cb) {
     del([
-      'test/styles/**',
-      'test/scripts/**',
-      'test/images/**',
+      'dist/Views/**',
+      'dist/fonts/**',
+      'dist/styles/**',
+      'dist/scripts/**',
+      'dist/images/**'
     ], cb);
 });
 

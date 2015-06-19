@@ -1,9 +1,6 @@
 ﻿# streamstats
 
-> This is the pre-alpha version of StreamStats v4.  It is an angular that is styled with bootstrap and uses leaflet as its mapping API
-
-> Build environment: Visual Studio 2013 with TypeScript 1.4
-
+> alpha version of StreamStats v4.  Mapping application using angular, leaflet, bootstrap
 
 ## Project setup
 
