@@ -39,11 +39,11 @@ module StreamStats {
     }//end class
 
     angular.module('StreamStats',[
-        "ui.router", 'ui.bootstrap',
-        "ngAnimate",
-        "leaflet-directive",
-        "StreamStats.Services",
-        "StreamStats.Controllers",
+        'ui.router', 'ui.bootstrap',
+        'toaster', 'ngAnimate',
+        'leaflet-directive',
+        'StreamStats.Services',
+        'StreamStats.Controllers',
         'WiM.Services'
         ])
         .config(config);

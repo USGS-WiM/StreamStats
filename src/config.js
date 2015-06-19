@@ -35,12 +35,13 @@ var StreamStats;
         return config;
     })(); //end class
     angular.module('StreamStats', [
-        "ui.router",
+        'ui.router',
         'ui.bootstrap',
-        "ngAnimate",
-        "leaflet-directive",
-        "StreamStats.Services",
-        "StreamStats.Controllers",
+        'toaster',
+        'ngAnimate',
+        'leaflet-directive',
+        'StreamStats.Services',
+        'StreamStats.Controllers',
         'WiM.Services'
     ]).config(config);
 })(StreamStats || (StreamStats = {})); //end module 

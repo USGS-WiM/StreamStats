@@ -164,7 +164,6 @@ module StreamStats.Controllers {
                         return this.studyAreaService.studyAreaParameterList.length > 0;
                     case ProcedureType.BUILD:
                         return false;
-
                     default:
                         return false;
                 }//end switch          
