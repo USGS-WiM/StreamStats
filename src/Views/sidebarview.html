@@ -110,8 +110,10 @@
         <tr ng-hide="vm.selectedProcedure != 4 || vm.sideBarCollapsed" class="activeitem">
             <td></td>
             <td colspan="6">
-                <input type="checkbox" ng-model="vm.upstreamRegulation"/>  
-                <label>Modify by upstream regulation</label>
+                <div ng-show="vm.regionService.selectedRegion.RegionID == 'CO'">
+                    <input type="checkbox" ng-model="vm.upstreamRegulation"/>  
+                    <label>Modify by upstream regulation</label>
+                </div>
      
                     <table class="table table-condensed">
                       <thead class="param-table">
