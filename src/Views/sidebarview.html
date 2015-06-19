@@ -4,7 +4,7 @@
     <thead>
         <tr ng-click="vm.toggleSideBar()">
             <th><a href="" role="tab"><i id="chevron" ng-class="vm.sideBarCollapsed ? 'glyphicon glyphicon-chevron-right': 'glyphicon glyphicon-chevron-left'"></i></a></th>
-            <th style="min-width:18em;"><i class="fa fa-leaf"></i><span>&nbsp;&nbspStreamStats <small>a great new app</small></span></th>
+            <th style="min-width:18em;"><i class="glyphicon glyphicon-thumbs-up"></i><span>&nbsp;&nbspStreamStats <small></small></span></th>
         </tr>
     </thead>
 
@@ -18,7 +18,7 @@
             <td></td>
             <td colspan="12" class="activeitem">
                 <div class="accordion-body">
-                    <p>To begin, search or use the map to select an area of interest, then select a region</p>
+                    <p>To begin: use the map zoom to and select a region, or use the location search.</p>
 
                     <input type="text" class="form-control"
                            ng-model="selection"
@@ -27,7 +27,7 @@
                            typeahead-wait-ms="100"
                            typeahead-min-length="4"
                            typeahead-on-select="vm.onAOISelect($item); selection=''"
-                           placeholder="Enter an area of interest" />
+                           placeholder="Location search" />
                     <i ng-show="loadingLocations" class="glyphicon glyphicon-refresh"></i>
 
                     <div class="form-group" ng-show="vm.regionList.length > 0">
@@ -36,7 +36,6 @@
                             <button ng-class="region.Name === vm.regionService.selectedRegion.Name ? 'btn btn-primary btn-group-justified':'btn btn-group-justified'" ng-click="vm.setRegion(region)"><span>{{region.Name}} </span></button>
                         </div>
                     </div>
-
                 </div>
             </td>
         </tr>
@@ -49,7 +48,7 @@
             <td></td>
             <td colspan="6">
                 <div class="accordion-body">
-                    <p>To identify a study area, zoom to at least a zoom level of 15 and select a blue stream cell</p>
+                    <p>Zoom to at least a zoom level of 15, click the 'delineate' button, then select a blue stream cell</p>
                      
                     <button id="delineateButton" type="button" class="btn btn-sm btn-info" ng-click="vm.setDelineateFlag()" ng-class="vm.studyAreaService.doDelineateFlag ? 'btn-warning' : 'btn-info'"><span class="glyphicon glyphicon-edit"></span>Delineate</button>
                     <i id="loadingSpinner" class="fa fa-spinner fa-5x fa-spin" ng-show="!vm.studyAreaService.canUpdate"></i>  
@@ -62,9 +61,7 @@
                             <button id="saveChangesButton" type="button" class="btn btn-sm btn-success"><span class="glyphicon glyphicon-ok"></span> Accept</button>
                         </div>
                     </div>
-
                 </div>
-
             </td>
         </tr>
         <!--  step 3 Select a Scenario -->
@@ -77,57 +74,54 @@
             <td colspan="6">
 
                 <div class="accordion-body">
-                    <h4>Scenarios</h4>
-                        <button ng-repeat="scenario in vm.nssService.scenarioList" type="button" class="btn btn-sm btn-primary" ng-click="vm.setScenario(scenario)">{{scenario.Description}}</button>
+                    
+                    <div class="btn-group" dropdown is-open="status.isopen">
+                      <button type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle ng-disabled="disabled">
+                        Select a Scenario <span class="caret"></span>
+                      </button>
+                      <ul class="dropdown-menu">
+                        <li ng-repeat="scenario in vm.nssService.scenarioList" ng-click="vm.setScenario(scenario)" ng-class="vm.nssService.selectedScenario == scenario ? 'active': ''">
+                          <a href="#">{{scenario.Description}}</a>
+                        </li>
+                      </ul>
+                    </div>
+                        <!--<button ng-repeat="scenario in vm.nssService.scenarioList" type="button" class="btn btn-sm btn-primary" ng-click="vm.setScenario(scenario)">{{scenario.Description}}</button>
                         <h5>Selected scenario</h5>
-                        <pre style="width:300px;" ng-bind="vm.nssService.selectedScenario.ModelType | json"></pre>
+                        <pre style="width:300px;" ng-bind="vm.nssService.selectedScenario.ModelType | json"></pre>-->
 
                     <h4>Parameters</h4>
-                        <span ng-repeat="parameter in vm.regionService.parameterList">
-                            <input type="checkbox" value="{{parameter.name}}" ng-checked="vm.studyAreaService.studyAreaParameterList.indexOf(parameter) > -1 " ng-click="vm.updateStudyAreaParameterList(parameter)"/>
-                            {{parameter.name}}<a class="glyphicon glyphicon-question-sign" aria-hidden="true" href="#" tooltip="{{parameter.description}}"></a>
-                        </span>
-                        <div><button type="button" class="btn btn-sm btn-primary" ng-click="vm.studyAreaService.loadParameters()">Calculate Parameters</button></div>
-                        <h5>Selected parameters</h5>
+
+                    <div class="checkboxList">
+                        <div ng-repeat="parameter in vm.regionService.parameterList">
+                            <input type="checkbox" ng-checked="vm.studyAreaService.studyAreaParameterList.indexOf(parameter) > -1 " ng-click="vm.updateStudyAreaParameterList(parameter)"/>  
+                            <label tooltip="{{parameter.description}}">{{parameter.name}}</label>
+                        </div>
+                    </div>
+                    <div ng-show="vm.studyAreaService.studyAreaParameterList.length > 0">
+                        <button type="button" class="btn btn-sm btn-primary" ng-click="vm.studyAreaService.loadParameters()">Calculate Parameters</button>   
                         <pre style="width:300px;" ng-bind="vm.studyAreaService.studyAreaParameterList | json"></pre>
+                    </div>
                 </div>
             </td>
         </tr>
         <!-- step 4 Refine Parameters -->
-        <tr ng-click="vm.setProcedureType(4)" ng-class="vm.selectedProcedure == 4 ? 'activeitemheader accordion-toggle': 'accordion-toggle'">
+        <tr ng-click="vm.setProcedureType(4)" ng-class="vm.selectedProcedure == '4' ? 'activeitemheader accordion-toggle': 'accordion-toggle'">
             <td><a href="#" role="tab"><span class="label label-default">4</span></a></td>
             <td><a href="#"><span class="step-label">&nbsp;Refine Parameters</span></a></td>
         </tr>
         <tr ng-hide="vm.selectedProcedure != 4 || vm.sideBarCollapsed" class="activeitem">
             <td></td>
             <td colspan="6">
-                <div class="accordion-body">
-                    <div id="regions" data-bind="visible:SelectedModel().HasRegions">
-                        <p>Select a region.</p>
-                        <!-- Split button -->
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-sm btn-primary" data-bind="text:SelectedModel().SelectedRegion"></button>
-                            <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown">
-                                <span class="caret"></span>
-                                <span class="sr-only">Toggle Dropdown</span>
-                            </button>
-                            <ul class="dropdown-menu" role="menu" data-bind="foreach: SelectedModel().RegionList">
-                                <li><a href="#" data-bind="event:{click: $root.SelectedModel().SelectedRegion($data)},text:$data"></a></li>
-                            </ul>
-                        </div>
+                <p>Refine parameters by editing fields.</p>
+                <div ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList">
+                    <div class="input-group">
+                        <span class="input-group-addon btn-group-justified" ng-bind="parameter.name"></span>
+                        <input class="form-control" ng-model="parameter.value" type="text"/>
                     </div>
-                    <p>Refine parameters by editing fields.</p>
-                    <div data-bind="foreach: SelectedModel().Parameters">
-                        <div data-bind="attr: { 'class' : value.hasWarning() ? 'input-group warning' :'input-group' }">
-                            <span class="input-group-addon btn-group-justified" data-bind="text: name, event: {hover: value}"></span>
-                            <input class="form-control" data-bind="numeric, value: value" type="text">
-                        </div>
-                        <!--<span class="glyphicon glyphicon-warning-sign" style="color: red" data-bind='fadeVisible: value.hasWarning(), text: value.validationMessage()'></span>-->
-                        <div class="alert alert-danger" style="padding:6px;font-size:10px;" role="alert" data-bind="fadeVisible: value.hasWarning()">
-                            <i class="glyphicon glyphicon-warning-sign"></i><span data-bind='text: value.validationMessage()'></span>
-                        </div>
-
-                    </div>
+                    <!--<span class="glyphicon glyphicon-warning-sign" style="color: red" data-bind='fadeVisible: value.hasWarning(), text: value.validationMessage()'></span>
+                    <div class="alert alert-danger" style="padding:6px;font-size:10px;" role="alert" ng-bind="fadeVisible: value.hasWarning()">
+                        <i class="glyphicon glyphicon-warning-sign"></i><span ng-bind='text: value.validationMessage()'></span>
+                    </div>-->
                 </div>
             </td>
         </tr>
@@ -149,7 +143,7 @@
                             <span class="caret"></span>
                             <span class="sr-only">Toggle Dropdown</span>
                         </button>
-                        <a style="padding:0.5em" target="_blank" data-bind="text: SelectedModel().SelectedReferenceGage().Name, attr:{href:SelectedModel().SelectedReferenceGage().URL }"></a>
+                        <a style="padding:0.5em" data-bind="text: SelectedModel().SelectedReferenceGage().Name, attr:{href:SelectedModel().SelectedReferenceGage().URL }"></a>
                         <ul class="dropdown-menu" role="menu" data-bind="foreach: SelectedModel().ReferenceGageList">
                             <li><a href="#" data-bind="event:{click: $root.SelectedModel().SetReferenceGage($data)},text: Name"></a></li>
                         </ul>
