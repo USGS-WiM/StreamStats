@@ -68,10 +68,19 @@ a {
 }
 
 .activeitem {
-    background-color:#F8F8F8 ;
+    background-color:#E6E6E6;
 }
 .nav-list {
     padding:12px;
+}
+
+.checkboxList {
+    background-color:#fff; 
+    color:#000;
+    height: 100px; 
+    padding:5px;
+    margin-bottom:8px;
+    overflow-y: scroll;
 }
 
 .fa-spinner {

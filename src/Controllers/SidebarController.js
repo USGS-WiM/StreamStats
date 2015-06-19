@@ -54,6 +54,7 @@ var StreamStats;
                 return this.searchService.getLocations(term);
             };
             SidebarController.prototype.setProcedureType = function (pType) {
+                console.log('in setProcedureType', this.selectedProcedure, pType, !this.canUpdateProcedure(pType));
                 if (this.selectedProcedure == pType || !this.canUpdateProcedure(pType))
                     return;
                 this.selectedProcedure = pType;
@@ -105,6 +106,7 @@ var StreamStats;
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             SidebarController.prototype.canUpdateProcedure = function (pType) {
+                console.log('in canUpdateProcedure');
                 //Project flow:
                 var msg;
                 try {
@@ -116,8 +118,7 @@ var StreamStats;
                         case 3 /* SELECT */:
                             return this.regionService.selectedRegion != null;
                         case 4 /* REFINE */:
-                            //if (!this.fileLoaded) this.sm(new MSG.NotificationArgs("Import a valid lab document", MSG.NotificationType.WARNING));
-                            return false;
+                            return this.studyAreaService.studyAreaParameterList.length > 0;
                         case 5 /* BUILD */:
                             return false;
                         default:

@@ -93,7 +93,8 @@ module StreamStats.Controllers {
         public getLocations(term: string):ng.IPromise<Array<WiM.Services.ISearchAPIOutput>> {
             return this.searchService.getLocations(term);
         }
-        public setProcedureType(pType: ProcedureType) {           
+        public setProcedureType(pType: ProcedureType) {    
+            console.log('in setProcedureType', this.selectedProcedure, pType, !this.canUpdateProcedure(pType));     
             if (this.selectedProcedure == pType || !this.canUpdateProcedure(pType)) return;
             this.selectedProcedure = pType;
         }
@@ -148,6 +149,7 @@ module StreamStats.Controllers {
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         private canUpdateProcedure(pType: ProcedureType): boolean {
+            console.log('in canUpdateProcedure');
             //Project flow:
             var msg: string;
             try {               
@@ -155,16 +157,11 @@ module StreamStats.Controllers {
                     case ProcedureType.INIT:
                         return true;
                     case ProcedureType.IDENTIFY:
-
                         return this.regionService.selectedRegion != null;
                     case ProcedureType.SELECT:
-
                         return this.regionService.selectedRegion != null;
-
                     case ProcedureType.REFINE:
-                        //if (!this.fileLoaded) this.sm(new MSG.NotificationArgs("Import a valid lab document", MSG.NotificationType.WARNING));
-
-                        return false
+                        return this.studyAreaService.studyAreaParameterList.length > 0;
                     case ProcedureType.BUILD:
                         return false;
 
