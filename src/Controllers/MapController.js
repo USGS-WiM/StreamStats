@@ -85,11 +85,10 @@ var StreamStats;
                 search.onSelectedAreaOfInterestChanged.subscribe(this._onSelectedAreaOfInterestHandler);
                 region.onSelectedRegionChanged.subscribe(this._onSelectedRegionHandler);
                 studyArea.onSelectedStudyAreaChanged.subscribe(this._onSelectedStudyAreaHandler);
-                $scope.$on('leafletDirectiveMap.overlayadd', function (event, args) {
-                    console.log('overlay added');
+                $scope.$on('leafletDirectiveMap.load', function (event, args) {
                     //pan by sidebar width after region overlay add
                     _this.leafletData.getMap().then(function (map) {
-                        console.log('in add regionoverlays');
+                        console.log('map load', map);
                         //map.panBy([-document.getElementById("sidebar").offsetWidth, 0]);
                         map.panBy([-200, 0]);
                     });

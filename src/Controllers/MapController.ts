@@ -171,12 +171,10 @@ module StreamStats.Controllers {
             region.onSelectedRegionChanged.subscribe(this._onSelectedRegionHandler);
             studyArea.onSelectedStudyAreaChanged.subscribe(this._onSelectedStudyAreaHandler);
 
-            $scope.$on('leafletDirectiveMap.overlayadd',(event, args) => {
-                console.log('overlay added');
-
+            $scope.$on('leafletDirectiveMap.load',(event, args) => {
                 //pan by sidebar width after region overlay add
                 this.leafletData.getMap().then((map: any) => {
-                    console.log('in add regionoverlays');
+                    console.log('map load', map);
                     //map.panBy([-document.getElementById("sidebar").offsetWidth, 0]);
                     map.panBy([-200, 0]);
                 });
