@@ -4,7 +4,7 @@
     <thead>
         <tr ng-click="vm.toggleSideBar()">
             <th><a href="" role="tab"><i id="chevron" ng-class="vm.sideBarCollapsed ? 'glyphicon glyphicon-chevron-right': 'glyphicon glyphicon-chevron-left'"></i></a></th>
-            <th style="min-width:18em;"><i class="glyphicon glyphicon-thumbs-up"></i><span>&nbsp;&nbspStreamStats <small></small></span></th>
+            <th style="min-width:18em;"><i class="glyphicon glyphicon-thumbs-up"></i><span>&nbsp;&nbspStreamStats <small>{{vm.regionService.selectedRegion.Name}}</small></span></th>
         </tr>
     </thead>
 
@@ -75,31 +75,29 @@
 
                 <div class="accordion-body">
                     
-                    <div class="btn-group" dropdown is-open="status.isopen">
-                      <button type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle ng-disabled="disabled">
-                        Select a Scenario <span class="caret"></span>
-                      </button>
-                      <ul class="dropdown-menu">
-                        <li ng-repeat="scenario in vm.nssService.scenarioList" ng-click="vm.setScenario(scenario)" ng-class="vm.nssService.selectedScenario == scenario ? 'active': ''">
-                          <a href="#">{{scenario.Description}}</a>
-                        </li>
-                      </ul>
-                    </div>
-                        <!--<button ng-repeat="scenario in vm.nssService.scenarioList" type="button" class="btn btn-sm btn-primary" ng-click="vm.setScenario(scenario)">{{scenario.Description}}</button>
-                        <h5>Selected scenario</h5>
-                        <pre style="width:300px;" ng-bind="vm.nssService.selectedScenario.ModelType | json"></pre>-->
-
-                    <h4>Parameters</h4>
-
-                    <div class="checkboxList">
-                        <div ng-repeat="parameter in vm.regionService.parameterList">
-                            <input type="checkbox" ng-checked="vm.studyAreaService.studyAreaParameterList.indexOf(parameter) > -1 " ng-click="vm.updateStudyAreaParameterList(parameter)"/>  
-                            <label tooltip="{{parameter.description}}">{{parameter.name}}</label>
+                    <div class="well well-sm" ng-show="vm.nssService.scenarioLists.length > 0">
+                        <h4>Scenarios</h4>
+                        <div class="btn-group" dropdown is-open="status.isopen">
+                          <button type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle ng-disabled="disabled">
+                            Select a Scenario <span class="caret"></span>
+                          </button>
+                          <ul class="dropdown-menu">
+                            <li ng-repeat="scenario in vm.nssService.scenarioList" ng-click="vm.setScenario(scenario)" ng-class="vm.nssService.selectedScenario == scenario ? 'active': ''">
+                              <a href="#">{{scenario.Description}}</a>
+                            </li>
+                          </ul>
                         </div>
                     </div>
-                    <div ng-show="vm.studyAreaService.studyAreaParameterList.length > 0">
-                        <button type="button" class="btn btn-sm btn-primary" ng-click="vm.studyAreaService.loadParameters()">Calculate Parameters</button>   
-                        <pre style="width:300px;" ng-bind="vm.studyAreaService.studyAreaParameterList | json"></pre>
+
+                    <div class="well well-sm">
+                        <h4>Parameters</h4>
+                        <div class="list-group">
+                            <a href="#" class="list-group-item" ng-class="vm.studyAreaService.studyAreaParameterList.indexOf(parameter) > -1 ? 'list-group-item-success' : ''" ng-click="vm.updateStudyAreaParameterList(parameter)" ng-repeat="parameter in vm.regionService.parameterList">{{parameter.name}}</a>
+                        </div>
+                        <div ng-show="vm.studyAreaService.studyAreaParameterList.length > 0">
+                            <button type="button" class="btn btn-sm btn-primary" ng-click="vm.studyAreaService.loadParameters()">Calculate Parameters</button>   
+                            <p><pre style="width:300px;" ng-bind="vm.studyAreaService.studyAreaParameterList | json"></pre></p>
+                        </div>
                     </div>
                 </div>
             </td>
@@ -112,18 +110,39 @@
         <tr ng-hide="vm.selectedProcedure != 4 || vm.sideBarCollapsed" class="activeitem">
             <td></td>
             <td colspan="6">
-                <p>Refine parameters by editing fields.</p>
-                <div ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList">
+                <input type="checkbox" ng-model="vm.upstreamRegulation"/>  
+                <label>Modify by upstream regulation</label>
+     
+                    <table class="table table-condensed">
+                      <thead class="param-table">
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Value</th> 
+                            <th ng-show="vm.upstreamRegulation">Unregulated</th>
+                            <th ng-show="vm.upstreamRegulation">Regulated</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                          <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList">
+                            <td ng-bind="parameter.name"></td>
+                            <td><input class="form-control" ng-model="parameter.value" type="text"/></td> 
+                            <td ng-show="vm.upstreamRegulation"><input class="form-control" type="text"/></td>
+                            <td ng-show="vm.upstreamRegulation"><input class="form-control" type="text"/></td>
+                          </tr>
+                        </tbody>
+                    </table>
+                    <!--
                     <div class="input-group">
                         <span class="input-group-addon btn-group-justified" ng-bind="parameter.name"></span>
                         <input class="form-control" ng-model="parameter.value" type="text"/>
+                        <input class="form-control" ng-show="vm.upstreamRegulation" type="text"/>
+                        <input class="form-control" ng-show="vm.upstreamRegulation" type="text"/>
                     </div>
-                    <!--<span class="glyphicon glyphicon-warning-sign" style="color: red" data-bind='fadeVisible: value.hasWarning(), text: value.validationMessage()'></span>
+                    <span class="glyphicon glyphicon-warning-sign" style="color: red" data-bind='fadeVisible: value.hasWarning(), text: value.validationMessage()'></span>
                     <div class="alert alert-danger" style="padding:6px;font-size:10px;" role="alert" ng-bind="fadeVisible: value.hasWarning()">
                         <i class="glyphicon glyphicon-warning-sign"></i><span ng-bind='text: value.validationMessage()'></span>
                     </div>-->
 
-                </div>
             </td>
         </tr>
         <!-- step 5 Build a Flow Report -->

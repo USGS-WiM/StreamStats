@@ -74,13 +74,13 @@ a {
     padding:12px;
 }
 
-.checkboxList {
-    background-color:#fff; 
-    color:#000;
-    height: 100px; 
-    padding:5px;
-    margin-bottom:8px;
-    overflow-y: scroll;
+label {
+    font-weight:normal;
+}
+
+.param-table {
+    font-size:14px !important;
+    font-weight:bold;
 }
 
 .fa-spinner {
