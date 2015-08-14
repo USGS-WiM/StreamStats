@@ -3,11 +3,11 @@ configuration.baseurls =
 {
     'MercuryService': 'http://54.174.81.42/mercuryservices',
     'MercuryAuth': 'http://54.174.81.42/mercuryauth',
-    'RegressionService': 'http://50.17.205.92/regressionservice/models',
-    'KrigService': 'http://50.17.205.92/krigservice',
+    'RegressionService': 'http://commons.wim.usgs.gov/regressionservice/models',
+    'KrigService': 'http://commons.wim.usgs.gov/krigservice',
     "NWISurl": 'http://waterservices.usgs.gov/nwis',
     'StreamStats': 'http://ssdev.cr.usgs.gov',
-    'NSS': 'http://50.17.205.92',
+    'NSS': 'http://commons.wim.usgs.gov',
     'SearchAPI': 'http://txpub.usgs.gov/DSS/search_api/1.0/dataService/dataService.ashx',
     'FARefGage': 'http://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowAnywhere/MapServer'
 }
@@ -47,7 +47,7 @@ configuration.basemaps =
                 {
                     "name": "dynamic",
                     "url": "http://services.nationalmap.gov/arcgis/rest/services/USGSTopoLarge/MapServer",
-                    "type": 'dynamic',
+                    "type": 'agsDynamic',
                     "layerOptions": {
                         "minZoom": 16,
                         "maxZoom": 20,
@@ -127,7 +127,7 @@ configuration.overlayedLayers = {
     "SSLayer": {
         "name": "Implementated Regions",
         "url": configuration.baseurls['StreamStats'] + "/arcgis/rest/services/ss_studyAreas_prod/MapServer",
-        "type": 'dynamic',
+        "type": 'agsDynamic',
         "visible": true,
         "layerOptions": {
             "opacity": 0.5,
@@ -143,7 +143,7 @@ configuration.customMapServices =
             'FLA': {
                 "name": "Flow Anywhere Model",
                 "url":'http://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowAnywhere/MapServer',
-                "type": 'dynamic',
+                "type": 'agsDynamic',
                 "visible": true,
                 "layerOptions": {
                     "opacity": 0.5
@@ -152,7 +152,7 @@ configuration.customMapServices =
             'FDCTM': {
                 "name":"Flow Duration Curve Transfer Model",
                 "url": 'http://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowDuration2/MapServer',
-                "type": 'dynamic',
+                "type": 'agsDynamic',
                 "visible": true,
                 "layerOptions": {
                     "opacity": 0.5
@@ -161,7 +161,7 @@ configuration.customMapServices =
             'PRMS': {
                 "name": "PRMS",
                 "url": 'http://wim.usgs.gov/arcgis/rest/services/IowaPRMSMapper/IOWA_PRMS/MapServer',
-                "type": 'dynamic',
+                "type": 'agsDdynamic',
                 "visible": false,
                 "layerOptions": {
                     "opacity": 0.5
