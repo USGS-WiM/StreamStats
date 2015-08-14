@@ -142,9 +142,14 @@ var StreamStats;
                 this.regionLayer = {};
                 //add custom controls
                 this.controls = {
-                    scale: true,
-                    zoomControl: false,
-                    custom: new Array(L.Control.zoomHome({ homeCoordinates: [39, -100], homeZoom: 4 }), L.control.locate({ follow: true }))
+                    scale: true /*,
+                    zoom: false,
+                    custom: new Array(
+                        //zoom home button control
+                        (<any>L.Control).zoomHome({ homeCoordinates: [39, -100], homeZoom: 4 }),
+                        //location control
+                        (<any>L.control).locate({ follow: true })
+                        )*/
                 };
                 this.events = {
                     map: {
@@ -227,7 +232,7 @@ var StreamStats;
                 }
             };
             MapController.prototype.addRegionOverlayLayers = function (regionId) {
-                this.layers.overlays[regionId + "_region"] = new Layer(regionId + " Region", configuration.baseurls['StreamStats'] + "/arcgis/rest/services/{0}_ss/MapServer".format(regionId.toLowerCase()), "dynamic", true, {
+                this.layers.overlays[regionId + "_region"] = new Layer(regionId + " Region", configuration.baseurls['StreamStats'] + "/arcgis/rest/services/{0}_ss/MapServer".format(regionId.toLowerCase()), "agsDynamic", true, {
                     "opacity": 0.5,
                     "layers": this.regionServices.loadMapLayersByRegion(regionId)
                 });

@@ -33,7 +33,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>55481</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:55481/</IISUrl>
+          <IISUrl>http://localhost:55482/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
@@ -53,6 +53,7 @@
     <TypeScriptSourceMap>false</TypeScriptSourceMap>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="gulpfile.js" />
     <Content Include="src\appConfig.js" />
     <Content Include="src\Assets\images\Animatedkayakers.gif" />
     <Content Include="src\Assets\images\arrows.gif" />
