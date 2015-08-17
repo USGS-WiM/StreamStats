@@ -6,7 +6,7 @@ configuration.baseurls =
     'RegressionService': 'http://commons.wim.usgs.gov/regressionservice/models',
     'KrigService': 'http://commons.wim.usgs.gov/krigservice',
     "NWISurl": 'http://waterservices.usgs.gov/nwis',
-    'StreamStats': 'http://ssdev.cr.usgs.gov',
+    'StreamStats': 'http://streamstats09.cr.usgs.gov',
     'NSS': 'http://commons.wim.usgs.gov',
     'SearchAPI': 'http://txpub.usgs.gov/DSS/search_api/1.0/dataService/dataService.ashx',
     'FARefGage': 'http://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowAnywhere/MapServer'

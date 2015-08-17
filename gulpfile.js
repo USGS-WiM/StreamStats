@@ -111,6 +111,13 @@ gulp.task('images', function () {
         .pipe(size());
 });
 
+// Leaflet
+gulp.task('leaflet', function () {
+    return gulp.src('bower_components/leaflet/dist/images/**/*')
+        .pipe(gulp.dest('dist/styles/images'))
+        .pipe(size());
+});
+
 // Clean
 gulp.task('clean', function (cb) {
     del([
@@ -123,7 +130,7 @@ gulp.task('clean', function (cb) {
 });
 
 // build dist
-gulp.task('dist', ['html', 'images']);
+gulp.task('dist', ['html', 'images', 'leaflet']);
 
 // Default task
 gulp.task('default', ['clean'], function () {
