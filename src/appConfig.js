@@ -26,7 +26,7 @@ configuration.queryparams =
     'regionService': '/arcgis/rest/services/ss_studyAreas_prod/MapServer/identify'
 }
 
-configuration.basemaps = 
+configuration.basemaps =
 {
     "tnmBaseMap": {
         "name": "USGS National Map",
@@ -55,16 +55,16 @@ configuration.basemaps =
                     }
                 }
             ],
-           
+
         }
     },
     "MapquestOAM": {
         "name": "Mapquest Areal",
         "url": "http://{s}.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.png",
         "visible": false,
-        "type":'xyz',
+        "type": 'xyz',
         "layerOptions": {
-            "maxZoom": 19, 
+            "maxZoom": 19,
             "subdomains": ['oatile1', 'oatile2', 'oatile3', 'oatile4'],
             "attribution": 'Tiles courtesy of <a href="http://www.mapquest.com/" target="_blank">MapQuest</a>. Portions Courtesy NASA/JPL-Caltech and U.S. Depart. of Agriculture, Farm Service Agency'
         }
@@ -112,18 +112,18 @@ configuration.basemaps =
 }// end baselayer
 
 configuration.overlayedLayers = {
-//"StateLayer": {
-//    "name": "States",
-//    "url": "http://services.arcgis.com/BG6nSlhZSAWtExvp/ArcGIS/rest/services/states/FeatureServer/0",
-//    "type": 'feature',
-//    "visible": false,
-//    "layerOptions": {
-//        "simplifyFactor": 0.75,
-//        "style": function (feature) {
-//            return { color: 'gray', weight: 2 };
-//        }
-//    }
-//},
+    //"StateLayer": {
+    //    "name": "States",
+    //    "url": "http://services.arcgis.com/BG6nSlhZSAWtExvp/ArcGIS/rest/services/states/FeatureServer/0",
+    //    "type": 'feature',
+    //    "visible": false,
+    //    "layerOptions": {
+    //        "simplifyFactor": 0.75,
+    //        "style": function (feature) {
+    //            return { color: 'gray', weight: 2 };
+    //        }
+    //    }
+    //},
     "SSLayer": {
         "name": "Implementated Regions",
         "url": configuration.baseurls['StreamStats'] + "/arcgis/rest/services/ss_studyAreas_prod/MapServer",
@@ -133,7 +133,7 @@ configuration.overlayedLayers = {
             "opacity": 0.5,
             "style": function (feature) {
                 return { color: 'gray', weight: 2 };
-            }                 
+            }
         }
     }//end ssLayer    
 }//end overlayedLayers
@@ -142,15 +142,15 @@ configuration.customMapServices =
         'IA': {
             'FLA': {
                 "name": "Flow Anywhere Model",
-                "url":'http://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowAnywhere/MapServer',
+                "url": 'http://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowAnywhere/MapServer',
                 "type": 'agsDynamic',
                 "visible": true,
                 "layerOptions": {
                     "opacity": 0.5
-                }            
+                }
             },
             'FDCTM': {
-                "name":"Flow Duration Curve Transfer Model",
+                "name": "Flow Duration Curve Transfer Model",
                 "url": 'http://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowDuration2/MapServer',
                 "type": 'agsDynamic',
                 "visible": true,
@@ -227,7 +227,7 @@ configuration.regions = [
     { "RegionID": "WV", "Name": "West Virginia", "Bounds": [[37.202762, -82.640777], [40.638553, -77.719734]] },
     { "RegionID": "WI", "Name": "Wisconsin", "Bounds": [[42.494701, -92.885391], [47.302532, -86.249565]] },
     { "RegionID": "WY", "Name": "Wyoming", "Bounds": [[40.996269, -111.055137], [45.004203, -104.051986]] },
-    { "RegionID": "CRB", "Name": "Connecticut River Basin", "Bounds": [[43, -70.5], [44, -74.5]]},
+    { "RegionID": "CRB", "Name": "Connecticut River Basin", "Bounds": [[43, -70.5], [44, -74.5]] },
     { "RegionID": "DRB", "Name": "Delaware River Basin", "Bounds": [[38.5, -73], [42.5, -77]] },
     { "RegionID": "RRB", "Name": "Rainy River Basin", "Bounds": [[47.3, -89.5], [50, -96]] }
 
