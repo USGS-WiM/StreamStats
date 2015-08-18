@@ -60,8 +60,8 @@ var StreamStats;
                 console.log('in load scenarios', regionid);
                 if (!regionid)
                     return;
-                var url = configuration.queryparams['scenarioLookup'].format(regionid);
-                var request = new WiM.Services.Helpers.RequestInfo(url);
+                var url = configuration.baseurls['NSS'] + configuration.queryparams['scenarioLookup'].format(regionid);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     //console.log(response.data);
                     var scenarioList = _this.scenarioList;
@@ -81,8 +81,8 @@ var StreamStats;
                 console.log('in load scenario parameters', regionid);
                 if (!regionid && !modeltype)
                     return;
-                var url = configuration.queryparams['scenarioService'].format(modeltype, regionid);
-                var request = new WiM.Services.Helpers.RequestInfo(url);
+                var url = configuration.baseurls['NSS'] + configuration.queryparams['scenarioService'].format(modeltype, regionid);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.selectedScenarioParameterList = [];
                 this.Execute(request).then(function (response) {
                     if (response.data.Parameters && response.data.Parameters.length > 0) {

@@ -279,10 +279,7 @@ module StreamStats.Controllers {
 
             this.studyArea.selectedStudyArea.Features.forEach((item) => {
 
-
-                //do layer styling or labelling here
                 if (item.name == 'globalwatershed') {
-
                     this.geojson[item.name] = {
                         data: item.feature,
                         style: {
@@ -294,9 +291,7 @@ module StreamStats.Controllers {
                         }
                     }
                 }
-
                 else if (item.name == 'globalwatershedpoint') {
-
                     this.geojson[item.name] = {
                         data: item.feature,
                         onEachFeature: function (feature, layer) {

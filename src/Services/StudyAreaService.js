@@ -108,7 +108,7 @@ var StreamStats;
                 this.studyAreaParameterList.map(function (param) {
                     requestParameterList.push(param.code);
                 });
-                var url = configuration.queryparams['SSComputeParams'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID, requestParameterList.join(','));
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSComputeParams'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID, requestParameterList.join(','));
                 var request = new WiM.Services.Helpers.RequestInfo(url);
                 this.Execute(request).then(function (response) {
                     if (response.data.parameters && response.data.parameters.length > 0) {

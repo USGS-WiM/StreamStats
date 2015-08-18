@@ -90,7 +90,8 @@ var StreamStats;
                     sr: sr,
                     layers: "all: 4"
                 };
-                var request = new WiM.Services.Helpers.RequestInfo(configuration.baseurls['StreamStats'] + configuration.queryparams['regionService'], true, WiM.Services.Helpers.methodType.GET, 'json');
+                var url = configuration.baseurls['StreamStats'] + configuration.queryparams['regionService'];
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 request.params = input;
                 this.Execute(request).then(function (response) {
                     response.data.results.map(function (item) {
@@ -117,7 +118,8 @@ var StreamStats;
             };
             RegionService.prototype.loadMapLayersByRegion = function (regionid) {
                 var _this = this;
-                var request = new WiM.Services.Helpers.RequestInfo(configuration.baseurls['StreamStats'] + configuration.queryparams['SSStateLayers'].format(regionid.toLowerCase()), true, WiM.Services.Helpers.methodType.GET, 'json');
+                var url = configuration.baseurls['StreamStats'] + configuration.queryparams['SSStateLayers'].format(regionid.toLowerCase());
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 var layerArray = [];
                 this.Execute(request).then(function (response) {
                     angular.forEach(response.data.layers, function (value, key) {
@@ -138,7 +140,8 @@ var StreamStats;
                 console.log('in load parameters', this.selectedRegion);
                 if (!this.selectedRegion)
                     return;
-                var request = new WiM.Services.Helpers.RequestInfo(configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSAvailableParams'].format(this.selectedRegion.RegionID), true);
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSAvailableParams'].format(this.selectedRegion.RegionID);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     if (response.data.parameters && response.data.parameters.length > 0) {
                         response.data.parameters.map(function (item) {

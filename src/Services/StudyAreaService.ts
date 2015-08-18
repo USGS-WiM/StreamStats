@@ -114,7 +114,7 @@ module StreamStats.Services {
             var requestParameterList = [];
             this.studyAreaParameterList.map((param) => { requestParameterList.push(param.code); })
 
-            var url = configuration.queryparams['SSComputeParams'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID,
+            var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSComputeParams'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID,
                 requestParameterList.join(','));
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url);
 
