@@ -183,7 +183,6 @@ var StreamStats;
                 var rcode = this.studyArea.selectedStudyArea.RegionID;
                 var workspaceID = this.studyArea.selectedStudyArea.WorkspaceID;
                 this.studyArea.selectedStudyArea.Features.forEach(function (item) {
-                    //do layer styling or labelling here
                     if (item.name == 'globalwatershed') {
                         _this.geojson[item.name] = {
                             data: item.feature,
