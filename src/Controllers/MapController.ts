@@ -272,30 +272,41 @@ module StreamStats.Controllers {
             
             if (!this.studyArea.selectedStudyArea.Features) return;
 
+            var lat = this.studyArea.selectedStudyArea.Pourpoint.Latitude;
+            var lng = this.studyArea.selectedStudyArea.Pourpoint.Longitude;
+            var rcode = this.studyArea.selectedStudyArea.RegionID;
+            var workspaceID = this.studyArea.selectedStudyArea.WorkspaceID;
+
             this.studyArea.selectedStudyArea.Features.forEach((item) => {
-                this.geojson[item.name] = {
-                    data: item.feature
-                }
+
 
                 //do layer styling or labelling here
-                if (item.name == 'delineatedbasin(simplified)') {
-                    this.geojson[item.name].style = {
-                        fillColor: "yellow",
-                        weight: 2,
-                        opacity: 1,
-                        color: 'white',
-                        fillOpacity: 0.5
+                if (item.name == 'globalwatershed') {
+
+                    this.geojson[item.name] = {
+                        data: item.feature,
+                        style: {
+                            fillColor: "yellow",
+                            weight: 2,
+                            opacity: 1,
+                            color: 'white',
+                            fillOpacity: 0.5
+                        }
                     }
                 }
 
-                else if (item.name == 'pourpoint') {
-                    this.geojson[item.name].onEachFeature = function (feature, layer) {
-                        var popupContent = '';
-                        angular.forEach(feature.properties, function (value, key) {
-                            popupContent += '<strong>' + key + ': </strong>' + value + '</br>';
-                        });
-                        layer.bindPopup(popupContent);
-                    }
+                else if (item.name == 'globalwatershedpoint') {
+
+                    this.geojson[item.name] = {
+                        data: item.feature,
+                        onEachFeature: function (feature, layer) {
+                            var popupContent = '<strong>Latitude: </strong>' + lat + '</br><strong>Longitude: </strong>' + lng + '</br><strong>Region: </strong>' + rcode + '</br><strong>WorkspaceID: </strong>' + workspaceID + '</br>';
+                            angular.forEach(feature.properties, function (value, key) {
+                                popupContent += '<strong>' + key + ': </strong>' + value + '</br>';
+                            });
+                            layer.bindPopup(popupContent);
+                        }
+                    }                   
                 }
             });
 
@@ -303,7 +314,7 @@ module StreamStats.Controllers {
             this.markers = {};
 
             //console.log(JSON.stringify(this.geojson));    
-            var bbox = this.geojson['delineatedbasin(simplified)'].data.features[0].bbox;
+            var bbox = this.geojson['globalwatershed'].data.features[0].bbox;
             //this.bounds = this.leafletBoundsHelperService.createBoundsFromArray([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
             this.leafletData.getMap().then((map: any) => {              
                 map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]], {

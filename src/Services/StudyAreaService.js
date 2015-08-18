@@ -83,12 +83,10 @@ var StreamStats;
             StudyAreaService.prototype.loadStudyBoundary = function () {
                 var _this = this;
                 this.canUpdate = false;
-                var url = configuration.queryparams['SSdelineation'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString(), false);
-                var request = new WiM.Services.Helpers.RequestInfo(url);
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString(), false);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     _this.selectedStudyArea.Features = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"] : null;
-                    //this.selectedStudyArea.Basin = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"][0].feature : null;
-                    //this.selectedStudyArea.Pourpoint = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"][1].feature : null;
                     _this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
                     //sm when complete
                 }, function (error) {
