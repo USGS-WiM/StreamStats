@@ -117,7 +117,7 @@ module StreamStats.Services {
                 layers:"all: 4"
             }
 
-            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(configuration.queryparams['regionService'],WiM.Services.Helpers.methodType.GET,'json');
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(configuration.baseurls['StreamStats'] + configuration.queryparams['regionService'],true, WiM.Services.Helpers.methodType.GET, 'json');
             request.params = input;
 
             this.Execute(request).then(
@@ -144,7 +144,7 @@ module StreamStats.Services {
             return true;
         }
         public loadMapLayersByRegion(regionid: string): any {
-            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo("/arcgis/rest/services/{0}_ss/MapServer?f=pjson".format(regionid.toLowerCase()), WiM.Services.Helpers.methodType.GET, 'json');
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(configuration.baseurls['StreamStats'] + configuration.queryparams['SSStateLayers'].format(regionid.toLowerCase()), true, WiM.Services.Helpers.methodType.GET, 'json');
             var layerArray = [];
 
             this.Execute(request).then(
@@ -158,6 +158,7 @@ module StreamStats.Services {
                     return layerArray;
                        
                 },(error) => {
+                    console.log('No region map layers found');
                     return this.$q.reject(error.data)
                 });
         }
@@ -165,15 +166,14 @@ module StreamStats.Services {
             console.log('in load parameters', this.selectedRegion);
             if (!this.selectedRegion) return;
 
-            var url = configuration.queryparams['SSAvailableParams'].format(this.selectedRegion.RegionID);
-            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url);
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSAvailableParams'].format(this.selectedRegion.RegionID), true);
 
             this.Execute(request).then(
                 (response: any) => {     
+
                     if (response.data.parameters && response.data.parameters.length > 0) {
                         response.data.parameters.map((item) => {
                             try {
-                                //console.log(item);
                                 this.parameterList.push(item);
                             }
                             catch (e) {
@@ -186,6 +186,7 @@ module StreamStats.Services {
                     }
                     //sm when complete
                 },(error) => {
+                    console.log('Bad response from the regression service');
                     //sm when complete
                 }).finally(() => { });
         }

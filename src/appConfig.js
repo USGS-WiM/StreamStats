@@ -7,6 +7,7 @@ configuration.baseurls =
     'KrigService': 'http://commons.wim.usgs.gov/krigservice',
     "NWISurl": 'http://waterservices.usgs.gov/nwis',
     'StreamStats': 'http://streamstats09.cr.usgs.gov',
+    'StreamStatsServices': 'http://ssdev.cr.usgs.gov',
     'NSS': 'http://commons.wim.usgs.gov',
     'SearchAPI': 'http://txpub.usgs.gov/DSS/search_api/1.0/dataService/dataService.ashx',
     'FARefGage': 'http://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowAnywhere/MapServer'
@@ -22,6 +23,7 @@ configuration.queryparams =
     'SSdelineation': '/streamstatsservices/watershed.geojson?rcode={0}&xlocation={1}&ylocation={2}&crs={3}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
     'SSAvailableParams': '/streamstatsservices/parameters.json?rcode={0}&group={1}',
     'SSComputeParams': '/streamstatsservices/parameters.json?rcode={0}&workspaceID={1}&includeparameters={2}',
+    'SSStateLayers': '/arcgis/rest/services/{0}_ss/MapServer?f=pjson',
     'FARefGage': '/2/query?geometry={0}&geometryType=esriGeometryPoint&inSR={1}&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
     'regionService': '/arcgis/rest/services/ss_studyAreas_prod/MapServer/identify'
 }
@@ -161,7 +163,7 @@ configuration.customMapServices =
             'PRMS': {
                 "name": "PRMS",
                 "url": 'http://wim.usgs.gov/arcgis/rest/services/IowaPRMSMapper/IOWA_PRMS/MapServer',
-                "type": 'agsDdynamic',
+                "type": 'agsDynamic',
                 "visible": false,
                 "layerOptions": {
                     "opacity": 0.5

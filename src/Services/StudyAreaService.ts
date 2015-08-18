@@ -87,15 +87,13 @@ module StreamStats.Services {
 
         public loadStudyBoundary() {
             this.canUpdate = false;
-            var url = configuration.queryparams['SSdelineation'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(),
+            var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(),
                 this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString(), false)
-            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url);
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
 
             this.Execute(request).then(
                 (response: any) => {  
                     this.selectedStudyArea.Features = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"] : null;
-                    //this.selectedStudyArea.Basin = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"][0].feature : null;
-                    //this.selectedStudyArea.Pourpoint = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"][1].feature : null;
                     this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
                     //sm when complete
                 },(error) => {
