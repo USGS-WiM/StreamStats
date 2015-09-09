@@ -183,6 +183,7 @@ var StreamStats;
                 var rcode = this.studyArea.selectedStudyArea.RegionID;
                 var workspaceID = this.studyArea.selectedStudyArea.WorkspaceID;
                 this.studyArea.selectedStudyArea.Features.forEach(function (item) {
+                    console.log('in onselectedstudyarea changed', item.name);
                     if (item.name == 'globalwatershed') {
                         _this.geojson[item.name] = {
                             data: item.feature,
@@ -195,7 +196,7 @@ var StreamStats;
                             }
                         };
                     }
-                    else if (item.name == 'globalwatershedpoint') {
+                    if (item.name == 'globalwatershedpoint') {
                         _this.geojson[item.name] = {
                             data: item.feature,
                             onEachFeature: function (feature, layer) {
@@ -207,7 +208,21 @@ var StreamStats;
                             }
                         };
                     }
+                    if (item.name == 'regulatedWatershed') {
+                        console.log('showing regulated watershed');
+                        _this.geojson[item.name] = {
+                            data: item.feature,
+                            style: {
+                                fillColor: "red",
+                                weight: 2,
+                                opacity: 1,
+                                color: 'white',
+                                fillOpacity: 0.5
+                            }
+                        };
+                    }
                 });
+                console.log('geojson', this.geojson);
                 //clear out this.markers
                 this.markers = {};
                 //console.log(JSON.stringify(this.geojson));    

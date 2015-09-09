@@ -83,7 +83,7 @@ var StreamStats;
             StudyAreaService.prototype.loadStudyBoundary = function () {
                 var _this = this;
                 this.canUpdate = false;
-                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString(), false);
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString(), false);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     _this.selectedStudyArea.Features = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"] : null;
@@ -121,6 +121,28 @@ var StreamStats;
                     _this.canUpdate = true;
                 });
             };
+            StudyAreaService.prototype.upstreamRegulation = function () {
+                var _this = this;
+                this.isRegulated = false;
+                this.canUpdate = false;
+                var watershed = JSON.stringify(this.selectedStudyArea.Features[1].feature, null);
+                var url = configuration.baseurls['RegulationServices'] + configuration.queryparams['COregulationService'].format('', 'CO20150629082308341000', '4326', 'geojson');
+                var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                this.Execute(request).then(function (response) {
+                    console.log(response);
+                    if (response.data.hasOwnProperty("percentarearegulated")) {
+                        _this.selectedStudyArea.Features.push(response.data["featurecollection"][0]);
+                        _this.loadRegulatedParameterResults(response.data.parameters);
+                        _this.isRegulated = true;
+                    }
+                    //sm when complete
+                }, function (error) {
+                    //sm when error
+                }).finally(function () {
+                    _this.canUpdate = true;
+                    _this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
+                });
+            };
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+-       
             StudyAreaService.prototype.loadParameterResults = function (results) {
@@ -134,6 +156,18 @@ var StreamStats;
                     }
                 }
                 console.log('params', this.studyAreaParameterList);
+            };
+            StudyAreaService.prototype.loadRegulatedParameterResults = function (results) {
+                console.log('in load regulated parameter results');
+                for (var i = 0; i < results.length; i++) {
+                    for (var j = 0; j < this.studyAreaParameterList.length; j++) {
+                        if (results[i].code.toUpperCase().trim() === this.studyAreaParameterList[j].code.toUpperCase().trim()) {
+                            this.studyAreaParameterList[j].regulatedValue = results[i].value;
+                            break;
+                        } //endif
+                    }
+                }
+                console.log('regulated params', this.studyAreaParameterList);
             };
             return StudyAreaService;
         })(WiM.Services.HTTPServiceBase); //end class

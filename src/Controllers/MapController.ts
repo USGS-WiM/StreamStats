@@ -279,6 +279,8 @@ module StreamStats.Controllers {
 
             this.studyArea.selectedStudyArea.Features.forEach((item) => {
 
+                console.log('in onselectedstudyarea changed', item.name);
+
                 if (item.name == 'globalwatershed') {
                     this.geojson[item.name] = {
                         data: item.feature,
@@ -291,7 +293,7 @@ module StreamStats.Controllers {
                         }
                     }
                 }
-                else if (item.name == 'globalwatershedpoint') {
+                if (item.name == 'globalwatershedpoint') {
                     this.geojson[item.name] = {
                         data: item.feature,
                         onEachFeature: function (feature, layer) {
@@ -303,7 +305,23 @@ module StreamStats.Controllers {
                         }
                     }                   
                 }
+
+                if (item.name == 'regulatedWatershed') {
+                    console.log('showing regulated watershed');
+                    this.geojson[item.name] = {
+                        data: item.feature,
+                        style: {
+                            fillColor: "red",
+                            weight: 2,
+                            opacity: 1,
+                            color: 'white',
+                            fillOpacity: 0.5
+                        }
+                    }
+                }
             });
+
+            console.log('geojson', this.geojson);
 
             //clear out this.markers
             this.markers = {};
