@@ -19,15 +19,14 @@
             min-height:550px
         }
     }
-    
     </style>
+
     <!-- Modal -->
     <div class="modal-header hidden-print">
         <button type="button" class="close" ng-click="vm.close()"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title">Print</h4>
     </div>
     <div class="modal-body">
-
         <div class="form-group hidden-print">
             <label >Enter report title:</label>
             <input type="text" class="form-control" ng-model="vm.reportTitle" placeholder="Title">
@@ -36,7 +35,6 @@
             <label>Enter comments:</label>
             <textarea rows="3" class="form-control" ng-model="vm.reportComments" placeholder="Comments"></textarea>
         </div>
- 
         <div id="printArea">
             <h4 class="hidden-print">Print Preview</h4>
             <hr class="hidden-print">
@@ -46,9 +44,6 @@
             </div>
             <br/><p>{{vm.reportComments}}</p>
         </div>
-
-        
-
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-default hidden-print" ng-click="vm.close()">Close</button>
