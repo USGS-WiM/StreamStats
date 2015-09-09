@@ -10,7 +10,8 @@ configuration.baseurls =
     'StreamStatsServices': 'http://ssdev.cr.usgs.gov',
     'NSS': 'http://commons.wim.usgs.gov',
     'SearchAPI': 'http://txpub.usgs.gov/DSS/search_api/1.0/dataService/dataService.ashx',
-    'FARefGage': 'http://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowAnywhere/MapServer'
+    'FARefGage': 'http://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowAnywhere/MapServer',
+    'RegulationServices': 'http://52.3.175.97:6080'
 }
 
 configuration.queryparams =
@@ -20,12 +21,13 @@ configuration.queryparams =
     'RegressionMScenarios': '/{0}/estimate?state={1}',
     'scenarioLookup': '/regressionservice/models/?state={0}',
     'scenarioService': '/regressionservice/models/{0}/def?state={1}',
-    'SSdelineation': '/streamstatsservices/watershed.geojson?rcode={0}&xlocation={1}&ylocation={2}&crs={3}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
+    'SSdelineation': '/streamstatsservices/watershed.{0}?rcode={1}&xlocation={2}&ylocation={3}&crs={4}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
     'SSAvailableParams': '/streamstatsservices/parameters.json?rcode={0}&group={1}',
     'SSComputeParams': '/streamstatsservices/parameters.json?rcode={0}&workspaceID={1}&includeparameters={2}',
     'SSStateLayers': '/arcgis/rest/services/{0}_ss/MapServer?f=pjson',
     'FARefGage': '/2/query?geometry={0}&geometryType=esriGeometryPoint&inSR={1}&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
-    'regionService': '/arcgis/rest/services/ss_studyAreas_prod/MapServer/identify'
+    'regionService': '/arcgis/rest/services/ss_studyAreas_prod/MapServer/identify',
+    'COregulationService': '/arcgis/rest/services/Regulation/CORegulationSites/MapServer/exts/RegulationRESTSOE/Regulation?watershed={0}&workspaceId={1}&outputcrs={2}&f={3}'
 }
 
 configuration.basemaps =

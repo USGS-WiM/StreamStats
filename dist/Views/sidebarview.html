@@ -110,26 +110,28 @@
         <tr ng-hide="vm.selectedProcedure != 4 || vm.sideBarCollapsed" class="activeitem">
             <td></td>
             <td colspan="6">
+                <!--
                 <div ng-show="vm.regionService.selectedRegion.RegionID == 'CO'">
                     <input type="checkbox" ng-model="vm.upstreamRegulation"/>  
                     <label>Modify by upstream regulation</label>
                 </div>
+                -->
+                <p><button ng-show="vm.regionService.selectedRegion.RegionID == 'CO'" ng-click="vm.studyAreaService.upstreamRegulation()" type="button" class="btn btn-primary btn-sm"><i class="fa fa-refresh" ></i>&nbsp;&nbsp;Check for upstream regulation</button><i id="loadingSpinner" class="fa fa-spinner fa-5x fa-spin" ng-show="!vm.studyAreaService.canUpdate"></i>  </p>
      
                     <table class="table table-condensed">
                       <thead class="param-table">
                         <tr>
                             <th>Parameter</th>
-                            <th>Value</th> 
-                            <th ng-show="vm.upstreamRegulation">Unregulated</th>
-                            <th ng-show="vm.upstreamRegulation">Regulated</th>
+                            <th ng-hide="vm.studyAreaService.isRegulated">Value</th> 
+                            <th ng-show="vm.studyAreaService.isRegulated">Unregulated</th>
+                            <th ng-show="vm.studyAreaService.isRegulated">Regulated</th>
                         </tr>
                       </thead>
                       <tbody>
                           <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList">
                             <td ng-bind="parameter.name"></td>
-                            <td><input class="form-control" ng-model="parameter.value" type="text"/></td> 
-                            <td ng-show="vm.upstreamRegulation"><input class="form-control" type="text"/></td>
-                            <td ng-show="vm.upstreamRegulation"><input class="form-control" type="text"/></td>
+                            <td><input class="form-control" ng-model="parameter.value" type="text"/></td>
+                            <td ng-show="vm.studyAreaService.isRegulated"><input class="form-control" ng-model="parameter.regulatedValue.toFixed(2)" type="text"/></td>
                           </tr>
                         </tbody>
                     </table>

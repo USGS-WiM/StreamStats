@@ -24,7 +24,12 @@ var StreamStats;
                         controller: "StreamStats.Controllers.SidebarController"
                     },
                     'navbar': {
-                        templateUrl: "Views/navigationview.html"
+                        templateUrl: "Views/navigationview.html",
+                        controller: "StreamStats.Controllers.NavbarController"
+                    },
+                    'report': {
+                        templateUrl: "Views/reportview.html",
+                        controller: "StreamStats.Controllers.ReportController"
                     }
                 }
             }); //end main state 

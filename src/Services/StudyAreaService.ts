@@ -28,10 +28,11 @@ module StreamStats.Services {
         onSelectedStudyAreaChanged: WiM.Event.Delegate<WiM.Event.EventArgs>;
         selectedStudyArea: Models.IStudyArea;
         loadStudyBoundary();
-        //loadParameters();
+        upstreamRegulation();
         AddStudyArea(sa: Models.IStudyArea);
         RemoveStudyArea();
         doDelineateFlag: boolean;
+        isRegulated: boolean;
         canUpdate: boolean;
         studyAreaParameterList: Array<IParameter>;
     }
@@ -50,6 +51,7 @@ module StreamStats.Services {
             return this._studyAreaList;
         }
         public doDelineateFlag: boolean;
+        public isRegulated: boolean;
 
         private _selectedStudyArea: Models.IStudyArea;
         public set selectedStudyArea(val: Models.IStudyArea) {
@@ -87,7 +89,7 @@ module StreamStats.Services {
 
         public loadStudyBoundary() {
             this.canUpdate = false;
-            var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(),
+            var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(),
                 this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString(), false)
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
 
@@ -130,6 +132,34 @@ module StreamStats.Services {
                 }).finally(() => { this.canUpdate = true; });
         }
 
+        public upstreamRegulation() {
+
+            this.isRegulated = false;
+            this.canUpdate = false;
+
+            var watershed = JSON.stringify(this.selectedStudyArea.Features[1].feature, null);
+            var url = configuration.baseurls['RegulationServices'] + configuration.queryparams['COregulationService'].format('', 'CO20150629082308341000','4326',
+                'geojson')
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
+
+            this.Execute(request).then(
+                (response: any) => {
+                    console.log(response);
+                    if (response.data.hasOwnProperty("percentarearegulated")) {
+                        this.selectedStudyArea.Features.push(response.data["featurecollection"][0]);
+                        this.loadRegulatedParameterResults(response.data.parameters);
+                        this.isRegulated = true;
+                    }
+                    //sm when complete
+                },(error) => {
+                    //sm when error
+                }).finally(() => {
+                    this.canUpdate = true;
+                    this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
+
+            });
+        }
+
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-       
         private loadParameterResults(results: Array<WiM.Models.IParameter>) {
@@ -143,6 +173,19 @@ module StreamStats.Services {
                 }//next sa Parameter
             }//next result
             console.log('params', this.studyAreaParameterList);
+        }
+
+        private loadRegulatedParameterResults(results: Array<WiM.Models.IParameter>) {
+            console.log('in load regulated parameter results');
+            for (var i: number = 0; i < results.length; i++) {
+                for (var j: number = 0; j < this.studyAreaParameterList.length; j++) {
+                    if (results[i].code.toUpperCase().trim() === this.studyAreaParameterList[j].code.toUpperCase().trim()) {
+                        this.studyAreaParameterList[j].regulatedValue = results[i].value;
+                        break;//exit loop
+                    }//endif
+                }//next sa Parameter
+            }//next result
+            console.log('regulated params', this.studyAreaParameterList);
         }
 
     }//end class

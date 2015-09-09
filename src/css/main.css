@@ -9,6 +9,15 @@ body {
     padding-top: 50px;
 }
 
+.modal-backdrop.backdropZ {
+    z-index: 9998 !important;
+}
+
+.modal.windowZ {
+    z-index: 9999 !important;
+}
+
+
 a {
     color: #222222;    
 }
