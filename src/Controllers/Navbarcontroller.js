@@ -21,8 +21,9 @@ var StreamStats;
     (function (Controllers) {
         'use strinct';
         var NavbarController = (function () {
-            function NavbarController($scope, $modal) {
+            function NavbarController($scope, $modal, studyArea) {
                 $scope.vm = this;
+                console.log('sa1', studyArea);
                 this.open = function () {
                     this.modalInstance = $modal.open({
                         templateUrl: 'Views/reportview.html',
@@ -35,7 +36,7 @@ var StreamStats;
             }
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
-            NavbarController.$inject = ['$scope', '$modal'];
+            NavbarController.$inject = ['$scope', '$modal', 'StreamStats.Services.StudyAreaService'];
             return NavbarController;
         })(); //end class
         angular.module('StreamStats.Controllers').controller('StreamStats.Controllers.NavbarController', NavbarController);

@@ -39,9 +39,16 @@
             <h4 class="hidden-print">Print Preview</h4>
             <hr class="hidden-print">
             <h2>{{vm.reportTitle}}</h2>
-            <div id="previewMap">
-                <leaflet width="100%" height="400px"></leaflet>
-            </div>
+            <!--ng-if="vm.studyAreaService.selectedStudyArea"-->
+            <div ng-if="vm.studyAreaService.selectedStudyArea">
+                <dl class="dl-horizontal">
+                    <dt>Region ID:</dt><dd>{{vm.studyAreaService.selectedStudyArea.RegionID}}</dd>
+                    <dt>Workspace ID:</dt><dd>{{vm.studyAreaService.selectedStudyArea.WorkspaceID}}</dd>
+                    <dt>Pourpoint:</dt><dd>{{vm.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(3)}},{{vm.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(3)}}</dd>
+                </dl>
+
+                <leaflet height="400px" layers="vm.layers" center="vm.center" geojson="vm.geojson" geojson-nested="true"></leaflet>
+              </div>
             <br/><p>{{vm.reportComments}}</p>
         </div>
     </div>
