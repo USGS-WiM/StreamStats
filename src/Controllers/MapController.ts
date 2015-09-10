@@ -233,14 +233,13 @@ module StreamStats.Controllers {
             this.regionLayer = {};     
             //add custom controls
             this.controls = {
-                scale: true/*,
-                zoom: false,
+                scale: true,
                 custom: new Array(
                     //zoom home button control
                     (<any>L.Control).zoomHome({ homeCoordinates: [39, -100], homeZoom: 4 }),
                     //location control
                     (<any>L.control).locate({ follow: true })
-                    )*/
+                    )
             };
             this.events = {
                 map: {

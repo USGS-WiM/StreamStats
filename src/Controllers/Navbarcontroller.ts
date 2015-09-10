@@ -39,9 +39,11 @@ module StreamStats.Controllers {
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$modal'];
-        constructor($scope: INavbarControllerScope, $modal: ng.ui.bootstrap.IModalService) {
+        static $inject = ['$scope', '$modal', 'StreamStats.Services.StudyAreaService'];
+        constructor($scope: INavbarControllerScope, $modal: ng.ui.bootstrap.IModalService, studyArea: Services.IStudyAreaService) {
             $scope.vm = this;
+
+            console.log('sa1', studyArea);
   
             this.open = function () {
 
