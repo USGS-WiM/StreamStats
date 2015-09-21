@@ -39,7 +39,6 @@
             <h4 class="hidden-print">Print Preview</h4>
             <hr class="hidden-print">
             <h2>{{vm.reportTitle}}</h2>
-            <!--ng-if="vm.studyAreaService.selectedStudyArea"-->
             <div ng-if="vm.studyAreaService.selectedStudyArea">
                 <dl class="dl-horizontal">
                     <dt>Region ID:</dt><dd>{{vm.studyAreaService.selectedStudyArea.RegionID}}</dd>
@@ -48,7 +47,7 @@
                 </dl>
 
                 <leaflet height="400px" layers="vm.layers" center="vm.center" geojson="vm.geojson" geojson-nested="true"></leaflet>
-              </div>
+            </div>
             <br/><p>{{vm.reportComments}}</p>
         </div>
     </div>

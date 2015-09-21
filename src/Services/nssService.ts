@@ -26,108 +26,106 @@
 module StreamStats.Services {
     'use strict'
     export interface InssService {
-        onSelectedScenarioChanged: WiM.Event.Delegate<WiM.Event.EventArgs>;
-        scenarioList: Array<IScenario>;
-        selectedScenarioParameterList: Array<IParameter>;
-        selectedScenario: IScenario;
-        loadScenariosByRegion(regionid: string);
-        loadParametersByScenario(scenario: any, regionid: string);
+        onselectedStatisticsGroupChanged: WiM.Event.Delegate<WiM.Event.EventArgs>;
+        statisticsGroupList: Array<IStatisticsGroup>;
+        selectedStatisticsGroupParameterList: Array<IParameter>;
+        selectedStatisticsGroup: IStatisticsGroup;
+        loadStatisticsGroupTypes(rcode: string, regressionregion: string);
+        loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregion: string);
     }
-    export interface IScenario {
-        StateCode: string;
-        ModelType: string;
-        Description: string;
-        Warnings: string;
-        LINKS: any;
+    export interface IStatisticsGroup {
+        ID: string;
+        Name: string;
+        Code: string;
     }
 
-    export class Scenario implements IScenario {
+    export class StatisticsGroup implements IStatisticsGroup {
         //properties
-        public StateCode: string;
-        public ModelType: string;
-        public Description: string;
-        public Warnings: string;
-        public LINKS: any;
+        public ID: string;
+        public Name: string;
+        public Code: string;
 
     }//end class
 
 
     class nssService extends WiM.Services.HTTPServiceBase {       
         //Events
-        private _onSelectedScenarioChanged: WiM.Event.Delegate<WiM.Event.EventArgs>;
-        public get onSelectedScenarioChanged(): WiM.Event.Delegate<WiM.Event.EventArgs> {
-            return this._onSelectedScenarioChanged;
+        private _onselectedStatisticsGroupChanged: WiM.Event.Delegate<WiM.Event.EventArgs>;
+        public get onselectedStatisticsGroupChanged(): WiM.Event.Delegate<WiM.Event.EventArgs> {
+            return this._onselectedStatisticsGroupChanged;
         }
 
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
-        public scenarioList: Array<IScenario>;
-        public selectedScenarioParameterList: Array<IParameter>;
-        public selectedScenario: IScenario;
+        public statisticsGroupList: Array<IStatisticsGroup>;
+        public selectedStatisticsGroupParameterList: Array<IParameter>;
+        public selectedStatisticsGroup: IStatisticsGroup;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         constructor($http: ng.IHttpService, private $q: ng.IQService) {
             super($http, configuration.baseurls['NSS']);
-            this._onSelectedScenarioChanged = new WiM.Event.Delegate<WiM.Event.EventArgs>();
-            this.scenarioList = [];
-            this.selectedScenarioParameterList = [];
+            this._onselectedStatisticsGroupChanged = new WiM.Event.Delegate<WiM.Event.EventArgs>();
+            this.statisticsGroupList = [];
+            this.selectedStatisticsGroupParameterList = [];
         }
 
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
-        public loadScenariosByRegion(regionid: string) {
-            console.log('in load scenarios', regionid);
-            if (!regionid) return;
+        public loadStatisticsGroupTypes(rcode: string, regressionregion: string) {
+            console.log('in load StatisticsGroups', rcode);
+            if (!rcode) return;
 
-            var url = configuration.baseurls['NSS'] + configuration.queryparams['scenarioLookup'].format(regionid);
+            var url = configuration.baseurls['NSS'] + configuration.queryparams['statisticsGroupLookup'].format(rcode, regressionregion);
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
 
             this.Execute(request).then(
                 (response: any) => {
                     //console.log(response.data);
-                    var scenarioList = this.scenarioList;
+                    var statisticsGroupList = this.statisticsGroupList;
                     angular.forEach(response.data, function (value, key) {
-                        scenarioList.push(value);
+                        statisticsGroupList.push(value);
                     });
-                    //console.log(scenarioList);
+                    //console.log(statisticsGroupList);
                     //sm when complete
                 },(error) => {
                     //sm when complete
                 }).finally(() => { });
         }
 
-        public loadParametersByScenario(modeltype: string, regionid: string) {
+        public loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregion: string) {
             //var deferred = ng.IQService.defer();
-            console.log('in load scenario parameters', regionid);
-            if (!regionid && !modeltype) return;
+            console.log('in load StatisticsGroup parameters', rcode, statisticsGroupID,regressionregion);
+            if (!rcode && !statisticsGroupID && !regressionregion) return;
 
-            var url = configuration.baseurls['NSS'] + configuration.queryparams['scenarioService'].format(modeltype,regionid);
+            var url = configuration.baseurls['NSS'] + configuration.queryparams['statisticsGroupParameterLookup'].format(rcode,statisticsGroupID,regressionregion);
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
 
-            this.selectedScenarioParameterList = [];
+            this.selectedStatisticsGroupParameterList = [];
             this.Execute(request).then(
                 (response: any) => {
-                    if (response.data.Parameters && response.data.Parameters.length > 0) {
-                        response.data.Parameters.map((item) => {
+                    console.log('here', response);
+                    if (response.data[0].RegressionRegions[0].Parameters && response.data[0].RegressionRegions[0].Parameters.length > 0) {
+                        console.log('test1');
+                        response.data[0].RegressionRegions[0].Parameters.map((item) => {
                             try {
                                 //console.log(item);
-                                this.selectedScenarioParameterList.push(item);
+                                this.selectedStatisticsGroupParameterList.push(item);
                             }
                             catch (e) {
                                 alert(e);
                             }
                             
-                            //return this.selectedScenarioParameterList;
+                            //return this.selectedStatisticsGroupParameterList;
                         });
-                        //console.log(this.selectedScenarioParameterList);
+                        //console.log(this.selectedStatisticsGroupParameterList);
                     }
 
                        
                     /*
                         angular.forEach(response.data.Parameters, function (value, key) {
                             value.selected = true;
-                            this.selectedScenarioParameterList.push(value);
+                            this.selectedStatisticsGroupParameterList.push(value);
                         });
                         */
                       

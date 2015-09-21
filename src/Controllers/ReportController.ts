@@ -121,9 +121,7 @@ module StreamStats.Controllers {
         private showFeatures(): void { 
 
             if (!this.studyAreaService.selectedStudyArea) return;
-
             this.geojson = {};
-            this.bounds = [];
             this.studyAreaService.selectedStudyArea.Features.forEach((item) => {
 
                 console.log('in each loop', item.name);
@@ -142,8 +140,11 @@ module StreamStats.Controllers {
 
                     var bbox = this.geojson['globalwatershed'].data.features[0].bbox;
                     this.leafletData.getMap().then((map: any) => {
+                        //method to reset the map for modal weirdness
+                        map.invalidateSize();
                         console.log('in getmap: ', bbox);
                         map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
+
                     });
                 }
                 if (item.name == 'globalwatershedpoint') {

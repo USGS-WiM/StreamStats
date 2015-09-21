@@ -186,9 +186,9 @@ module StreamStats.Services {
                                 alert(e);
                             }
                             
-                            //return this.selectedScenarioParameterList;
+                            //return this.selectedStatisticsGroupParameterList;
                         });
-                        //console.log(this.selectedScenarioParameterList);
+                        //console.log(this.selectedStatisticsGroupParameterList);
                     }
                     //sm when complete
                 },(error) => {
