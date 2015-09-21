@@ -29,12 +29,12 @@ var StreamStats;
     var Services;
     (function (Services) {
         'use strict';
-        var Scenario = (function () {
-            function Scenario() {
+        var StatisticsGroup = (function () {
+            function StatisticsGroup() {
             }
-            return Scenario;
+            return StatisticsGroup;
         })();
-        Services.Scenario = Scenario; //end class
+        Services.StatisticsGroup = StatisticsGroup; //end class
         var nssService = (function (_super) {
             __extends(nssService, _super);
             //Constructor
@@ -42,65 +42,67 @@ var StreamStats;
             function nssService($http, $q) {
                 _super.call(this, $http, configuration.baseurls['NSS']);
                 this.$q = $q;
-                this._onSelectedScenarioChanged = new WiM.Event.Delegate();
-                this.scenarioList = [];
-                this.selectedScenarioParameterList = [];
+                this._onselectedStatisticsGroupChanged = new WiM.Event.Delegate();
+                this.statisticsGroupList = [];
+                this.selectedStatisticsGroupParameterList = [];
             }
-            Object.defineProperty(nssService.prototype, "onSelectedScenarioChanged", {
+            Object.defineProperty(nssService.prototype, "onselectedStatisticsGroupChanged", {
                 get: function () {
-                    return this._onSelectedScenarioChanged;
+                    return this._onselectedStatisticsGroupChanged;
                 },
                 enumerable: true,
                 configurable: true
             });
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
-            nssService.prototype.loadScenariosByRegion = function (regionid) {
+            nssService.prototype.loadStatisticsGroupTypes = function (rcode, regressionregion) {
                 var _this = this;
-                console.log('in load scenarios', regionid);
-                if (!regionid)
+                console.log('in load StatisticsGroups', rcode);
+                if (!rcode)
                     return;
-                var url = configuration.baseurls['NSS'] + configuration.queryparams['scenarioLookup'].format(regionid);
+                var url = configuration.baseurls['NSS'] + configuration.queryparams['statisticsGroupLookup'].format(rcode, regressionregion);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     //console.log(response.data);
-                    var scenarioList = _this.scenarioList;
+                    var statisticsGroupList = _this.statisticsGroupList;
                     angular.forEach(response.data, function (value, key) {
-                        scenarioList.push(value);
+                        statisticsGroupList.push(value);
                     });
-                    //console.log(scenarioList);
+                    //console.log(statisticsGroupList);
                     //sm when complete
                 }, function (error) {
                     //sm when complete
                 }).finally(function () {
                 });
             };
-            nssService.prototype.loadParametersByScenario = function (modeltype, regionid) {
+            nssService.prototype.loadParametersByStatisticsGroup = function (rcode, statisticsGroupID, regressionregion) {
                 var _this = this;
                 //var deferred = ng.IQService.defer();
-                console.log('in load scenario parameters', regionid);
-                if (!regionid && !modeltype)
+                console.log('in load StatisticsGroup parameters', rcode, statisticsGroupID, regressionregion);
+                if (!rcode && !statisticsGroupID && !regressionregion)
                     return;
-                var url = configuration.baseurls['NSS'] + configuration.queryparams['scenarioService'].format(modeltype, regionid);
+                var url = configuration.baseurls['NSS'] + configuration.queryparams['statisticsGroupParameterLookup'].format(rcode, statisticsGroupID, regressionregion);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
-                this.selectedScenarioParameterList = [];
+                this.selectedStatisticsGroupParameterList = [];
                 this.Execute(request).then(function (response) {
-                    if (response.data.Parameters && response.data.Parameters.length > 0) {
-                        response.data.Parameters.map(function (item) {
+                    console.log('here', response);
+                    if (response.data[0].RegressionRegions[0].Parameters && response.data[0].RegressionRegions[0].Parameters.length > 0) {
+                        console.log('test1');
+                        response.data[0].RegressionRegions[0].Parameters.map(function (item) {
                             try {
                                 //console.log(item);
-                                _this.selectedScenarioParameterList.push(item);
+                                _this.selectedStatisticsGroupParameterList.push(item);
                             }
                             catch (e) {
                                 alert(e);
                             }
-                            //return this.selectedScenarioParameterList;
+                            //return this.selectedStatisticsGroupParameterList;
                         });
                     }
                     /*
                         angular.forEach(response.data.Parameters, function (value, key) {
                             value.selected = true;
-                            this.selectedScenarioParameterList.push(value);
+                            this.selectedStatisticsGroupParameterList.push(value);
                         });
                         */
                     //sm when complete

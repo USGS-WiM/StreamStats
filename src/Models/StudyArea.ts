@@ -29,6 +29,7 @@ module StreamStats.Models {
         Description: string;
         Basin: Object;
         Features: Array<any>;
+        RegressionRegions: Array<any>;
         WorkspaceID: string;
         Parameters: Array<WiM.Models.IParameter>;
     }
@@ -40,6 +41,7 @@ module StreamStats.Models {
         public Description: string;
         public Basin: Object;
         public Features: Array<any>;
+        public RegressionRegions: Array<any>;
         public WorkspaceID: string;
         public Parameters: Array<WiM.Models.IParameter>;
         //public Scenarios: Array<WiM.Models.IScenario>;

@@ -21,7 +21,7 @@ var StreamStats;
     (function (Controllers) {
         'use strinct';
         var SidebarController = (function () {
-            function SidebarController($scope, service, region, studyArea, scenario) {
+            function SidebarController($scope, service, region, studyArea, StatisticsGroup) {
                 var _this = this;
                 $scope.vm = this;
                 this.searchService = service;
@@ -30,17 +30,17 @@ var StreamStats;
                 this.regionService = region;
                 this.regionList = region.regionList;
                 //this.parameterList = region.parameterList;    
-                this.nssService = scenario;
-                //this.scenarioList = scenario.scenarioList;
+                this.nssService = StatisticsGroup;
+                //this.statisticsGroupList = StatisticsGroup.statisticsGroupList;
                 this.studyAreaService = studyArea;
                 //subscribe to Events
-                //watches for changes to selected scenario param list and updates studyareaParamList with them
-                $scope.$watchCollection(function () { return _this.nssService.selectedScenarioParameterList; }, function (newval, oldval) {
-                    //console.log('scenario param list changed.  loaded ', newval.length, ' parameters from scenario');
+                //watches for changes to selected StatisticsGroup param list and updates studyareaParamList with them
+                $scope.$watchCollection(function () { return _this.nssService.selectedStatisticsGroupParameterList; }, function (newval, oldval) {
+                    console.log('StatisticsGroup param list changed.  loaded ', newval.length, ' parameters from StatisticsGroup');
                     _this.studyAreaService.studyAreaParameterList = [];
                     _this.regionService.parameterList.map(function (val) {
-                        angular.forEach(scenario.selectedScenarioParameterList, function (value, index) {
-                            if (val.code.toLowerCase() == value.code.toLowerCase()) {
+                        angular.forEach(StatisticsGroup.selectedStatisticsGroupParameterList, function (value, index) {
+                            if (val.code.toLowerCase() == value['Code'].toLowerCase()) {
                                 //console.log('match found', val.code);
                                 studyArea.studyAreaParameterList.push(val);
                             }
@@ -74,21 +74,21 @@ var StreamStats;
                 this.setProcedureType(2 /* IDENTIFY */);
                 //get available parameters
                 this.regionService.loadParametersByRegion();
-                //get available scenarios
-                this.nssService.loadScenariosByRegion(this.regionService.selectedRegion.RegionID);
             };
             SidebarController.prototype.setDelineateFlag = function () {
                 this.studyAreaService.doDelineateFlag = !this.studyAreaService.doDelineateFlag;
             };
-            SidebarController.prototype.setScenario = function (scenario) {
-                if (this.nssService.selectedScenario == scenario)
+            SidebarController.prototype.setStatisticsGroup = function (statisticsGroup) {
+                if (this.nssService.selectedStatisticsGroup == statisticsGroup)
                     return;
-                this.nssService.selectedScenario = scenario;
-                console.log(scenario.ModelType, ' clicked');
+                this.nssService.selectedStatisticsGroup = statisticsGroup;
+                console.log(statisticsGroup.Name, ' clicked');
                 //clear studyareaParameterList
                 this.studyAreaService.studyAreaParameterList = [];
-                //get list of params for selected scenario
-                this.nssService.loadParametersByScenario(this.nssService.selectedScenario.ModelType, this.regionService.selectedRegion.RegionID);
+                //get list of params for selected StatisticsGroup
+                this.nssService.loadParametersByStatisticsGroup(this.regionService.selectedRegion.RegionID, this.nssService.selectedStatisticsGroup.ID, this.studyAreaService.selectedStudyArea.RegressionRegions[0]);
+                //select subset of parameters from list
+                this.nssService.selectedStatisticsGroupParameterList;
             };
             SidebarController.prototype.updateStudyAreaParameterList = function (parameter) {
                 //console.log('studyareaparamList length: ', this.studyAreaService.studyAreaParameterList.length);
@@ -102,6 +102,20 @@ var StreamStats;
                     this.studyAreaService.studyAreaParameterList.push(parameter);
                 }
                 //console.log('studyareaparamList length: ', this.studyAreaService.studyAreaParameterList.length);
+            };
+            SidebarController.prototype.queryRegressionRegions = function () {
+                console.log('in Query Regression Regions');
+                this.setProcedureType(3 /* SELECT */);
+                //send watershed to map service query that returns list of regression regions that overlap the watershed
+                //DO MAP SERVICE REQUEST HERE
+                //region placeholder
+                this.studyAreaService.selectedStudyArea.RegressionRegions = ['290'];
+                this.queryStatisticGroups();
+            };
+            SidebarController.prototype.queryStatisticGroups = function () {
+                console.log('in Query Statistics Groups');
+                //hardcoded to first entry for now
+                this.nssService.loadStatisticsGroupTypes(this.regionService.selectedRegion.RegionID, this.studyAreaService.selectedStudyArea.RegressionRegions[0]);
             };
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+-

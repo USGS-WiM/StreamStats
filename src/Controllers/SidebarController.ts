@@ -31,7 +31,7 @@ module StreamStats.Controllers {
     interface ISidebarController {
         sideBarCollapsed: boolean;
         selectedProcedure: ProcedureType;
-        selectedScenario: Services.IScenario;
+        selectedStatisticsGroup: Services.IStatisticsGroup;
         setProcedureType(pType: ProcedureType): void;
         toggleSideBar(): void;
         setDelineateFlag(): void;
@@ -45,8 +45,8 @@ module StreamStats.Controllers {
 
         public regionList: Array<Services.IRegion>;
         //public parameterList: Array<Services.IParameter>;
-        //public scenarioList: Array<Services.IScenario>;
-        public selectedScenario: Services.IScenario;
+        //public statisticsGroupList: Array<Services.IStatisticsGroup>;
+        public selectedStatisticsGroup: Services.IStatisticsGroup;
         private searchService: WiM.Services.ISearchAPIService;
         private regionService: Services.IRegionService;
         private nssService: Services.InssService;
@@ -56,7 +56,7 @@ module StreamStats.Controllers {
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService'];
-        constructor($scope: ISidebarControllerScope, service: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, scenario: Services.InssService) {
+        constructor($scope: ISidebarControllerScope, service: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService) {
             $scope.vm = this;
             this.searchService = service;
             this.sideBarCollapsed = false;
@@ -64,21 +64,21 @@ module StreamStats.Controllers {
             this.regionService = region;
             this.regionList = region.regionList; 
             //this.parameterList = region.parameterList;    
-            this.nssService = scenario;
-            //this.scenarioList = scenario.scenarioList;
+            this.nssService = StatisticsGroup;
+            //this.statisticsGroupList = StatisticsGroup.statisticsGroupList;
             this.studyAreaService = studyArea;
 
             //subscribe to Events
 
-            //watches for changes to selected scenario param list and updates studyareaParamList with them
-            $scope.$watchCollection(() => this.nssService.selectedScenarioParameterList,(newval, oldval) => {
-                //console.log('scenario param list changed.  loaded ', newval.length, ' parameters from scenario');
+            //watches for changes to selected StatisticsGroup param list and updates studyareaParamList with them
+            $scope.$watchCollection(() => this.nssService.selectedStatisticsGroupParameterList,(newval, oldval) => {
+                console.log('StatisticsGroup param list changed.  loaded ', newval.length, ' parameters from StatisticsGroup');
 
                 this.studyAreaService.studyAreaParameterList = [];
                 this.regionService.parameterList.map(function (val) {
 
-                    angular.forEach(scenario.selectedScenarioParameterList, function (value, index) {
-                        if (val.code.toLowerCase() == value.code.toLowerCase()) {
+                    angular.forEach(StatisticsGroup.selectedStatisticsGroupParameterList, function (value, index) {
+                        if (val.code.toLowerCase() == value['Code'].toLowerCase()) {
                             //console.log('match found', val.code);
                             studyArea.studyAreaParameterList.push(val);
                         }
@@ -113,23 +113,24 @@ module StreamStats.Controllers {
             //get available parameters
             this.regionService.loadParametersByRegion();
 
-            //get available scenarios
-            this.nssService.loadScenariosByRegion(this.regionService.selectedRegion.RegionID);
         }
         public setDelineateFlag(): void {
             this.studyAreaService.doDelineateFlag = !this.studyAreaService.doDelineateFlag;
         }
-        public setScenario(scenario: Services.IScenario) {
-            if (this.nssService.selectedScenario == scenario) return;
-            this.nssService.selectedScenario = scenario;
+        public setStatisticsGroup(statisticsGroup: Services.IStatisticsGroup) {
+            if (this.nssService.selectedStatisticsGroup == statisticsGroup) return;
+            this.nssService.selectedStatisticsGroup = statisticsGroup;
 
-            console.log(scenario.ModelType, ' clicked');
+            console.log(statisticsGroup.Name, ' clicked');
 
             //clear studyareaParameterList
             this.studyAreaService.studyAreaParameterList = [];
 
-            //get list of params for selected scenario
-            this.nssService.loadParametersByScenario(this.nssService.selectedScenario.ModelType, this.regionService.selectedRegion.RegionID)
+            //get list of params for selected StatisticsGroup
+            this.nssService.loadParametersByStatisticsGroup(this.regionService.selectedRegion.RegionID, this.nssService.selectedStatisticsGroup.ID, this.studyAreaService.selectedStudyArea.RegressionRegions[0])
+
+            //select subset of parameters from list
+            this.nssService.selectedStatisticsGroupParameterList
         }
 
         public updateStudyAreaParameterList(parameter: any) {
@@ -144,6 +145,32 @@ module StreamStats.Controllers {
                 this.studyAreaService.studyAreaParameterList.push(parameter);
             }
             //console.log('studyareaparamList length: ', this.studyAreaService.studyAreaParameterList.length);
+        }
+
+        public queryRegressionRegions() {
+
+            console.log('in Query Regression Regions');
+
+            this.setProcedureType(ProcedureType.SELECT);
+
+            //send watershed to map service query that returns list of regression regions that overlap the watershed
+            //DO MAP SERVICE REQUEST HERE
+            
+            //region placeholder
+            this.studyAreaService.selectedStudyArea.RegressionRegions = ['290'];
+
+            this.queryStatisticGroups();
+
+        }
+
+        public queryStatisticGroups() {
+
+            console.log('in Query Statistics Groups');
+
+            //hardcoded to first entry for now
+            this.nssService.loadStatisticsGroupTypes(this.regionService.selectedRegion.RegionID,this.studyAreaService.selectedStudyArea.RegressionRegions[0]);
+            
+            
         }
 
         //Helper Methods

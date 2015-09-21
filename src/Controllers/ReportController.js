@@ -70,7 +70,6 @@ var StreamStats;
                 if (!this.studyAreaService.selectedStudyArea)
                     return;
                 this.geojson = {};
-                this.bounds = [];
                 this.studyAreaService.selectedStudyArea.Features.forEach(function (item) {
                     console.log('in each loop', item.name);
                     if (item.name == 'globalwatershed') {
@@ -86,6 +85,8 @@ var StreamStats;
                         };
                         var bbox = _this.geojson['globalwatershed'].data.features[0].bbox;
                         _this.leafletData.getMap().then(function (map) {
+                            //method to reset the map for modal weirdness
+                            map.invalidateSize();
                             console.log('in getmap: ', bbox);
                             map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
                         });

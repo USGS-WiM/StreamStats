@@ -103,8 +103,10 @@ module StreamStats.Services {
                 }).finally(() => {
                     this.canUpdate = true;
                     this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
+                   
             });
         }
+
         public loadParameters() {
             console.log('in load parameters');
             this.canUpdate = false;
