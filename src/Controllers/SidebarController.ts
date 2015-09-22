@@ -50,8 +50,7 @@ module StreamStats.Controllers {
         private searchService: WiM.Services.ISearchAPIService;
         private regionService: Services.IRegionService;
         private nssService: Services.InssService;
-        private studyAreaService: Services.IStudyAreaService;
-        
+        private studyAreaService: Services.IStudyAreaService;        
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -147,6 +146,13 @@ module StreamStats.Controllers {
             //console.log('studyareaparamList length: ', this.studyAreaService.studyAreaParameterList.length);
         }
 
+        public calculateParameters() {
+
+            this.studyAreaService.loadParameters();
+
+            //this.setProcedureType(ProcedureType.REFINE);
+        }
+
         public queryRegressionRegions() {
 
             console.log('in Query Regression Regions');
@@ -169,8 +175,15 @@ module StreamStats.Controllers {
 
             //hardcoded to first entry for now
             this.nssService.loadStatisticsGroupTypes(this.regionService.selectedRegion.RegionID,this.studyAreaService.selectedStudyArea.RegressionRegions[0]);
-            
-            
+        }
+
+        public estimateFlows(studyAreaParameterList: any) {
+
+            console.log('in estimateFlows');
+
+            //hardcoded to first entry for now
+            this.nssService.estimateFlows(studyAreaParameterList, this.regionService.selectedRegion.RegionID, this.nssService.selectedStatisticsGroup.ID, this.studyAreaService.selectedStudyArea.RegressionRegions[0]);
+
         }
 
         //Helper Methods
@@ -190,7 +203,7 @@ module StreamStats.Controllers {
                     case ProcedureType.REFINE:
                         return this.studyAreaService.studyAreaParameterList.length > 0;
                     case ProcedureType.BUILD:
-                        return false;
+                        return this.nssService.selectedStatisticsGroupParameterList.length > 0;
                     default:
                         return false;
                 }//end switch          

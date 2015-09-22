@@ -50,15 +50,14 @@
                 <div class="accordion-body">
                     <p>Zoom to at least a zoom level of 15, click the 'delineate' button, then select a blue stream cell</p>
                      
-                    <button id="delineateButton" type="button" class="btn btn-sm btn-info" ng-click="vm.setDelineateFlag()" ng-class="vm.studyAreaService.doDelineateFlag ? 'btn-warning' : 'btn-info'"><span class="glyphicon glyphicon-edit"></span>Delineate</button>
-                    <i id="loadingSpinner" class="fa fa-spinner fa-5x fa-spin" ng-show="!vm.studyAreaService.canUpdate"></i>  
+                    <button id="delineateButton" type="button" class="btn btn-sm btn-info" ng-click="vm.setDelineateFlag()" ng-class="vm.studyAreaService.doDelineateFlag ? 'btn-warning' : 'btn-info'"><i class="fa fa-refresh" ng-class="vm.studyAreaService.canUpdate ? '' : 'fa-spin'"></i>&nbsp;&nbsp;Delineate</button>
 
                     <div id="verifyStudyArea" ng-show="vm.studyAreaService.selectedStudyArea.Features">
                         <br><p> Does the study area look correct?</p>
                         <div class="btn-group">
-                            <button id="editButton" type="button" class="btn btn-sm btn-info"><span class="glyphicon glyphicon-edit"></span> Edit</button>
-                            <button id="undoButton" type="button" class="btn btn-sm btn-warning"><span class="glyphicon glyphicon-trash"></span> Clear</button>
-                            <button id="saveChangesButton" type="button" class="btn btn-sm btn-success" ng-click="vm.queryRegressionRegions()"><span class="glyphicon glyphicon-ok"></span> Continue</button>
+                            <button id="editButton" type="button" class="btn btn-sm btn-info"><span class="glyphicon glyphicon-edit"></span>&nbsp;&nbsp;Edit</button>
+                            <button id="undoButton" type="button" class="btn btn-sm btn-warning"><span class="glyphicon glyphicon-trash"></span>&nbsp;&nbsp;Clear</button>
+                            <button id="saveChangesButton" type="button" class="btn btn-sm btn-success" ng-click="vm.queryRegressionRegions()"><span class="glyphicon glyphicon-ok"></span>&nbsp;&nbsp;Continue</button>
                         </div>
                     </div>
                 </div>
@@ -75,9 +74,9 @@
 
                 <div class="accordion-body">
                     
-                    <div class="well well-sm" ng-show="vm.nssService.statisticsGroupList.length > 0">
+                    <div class="well well-sm">
                         <h4>Scenarios</h4>
-                        <div class="btn-group" dropdown is-open="status.isopen">
+                        <div class="btn-group" dropdown is-open="status.isopen" ng-show="vm.nssService.statisticsGroupList.length > 0">
                           <button type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle ng-disabled="disabled">
                             Select a Scenario <span class="caret"></span>
                           </button>
@@ -95,13 +94,14 @@
                             <a href="#" class="list-group-item" ng-class="vm.studyAreaService.studyAreaParameterList.indexOf(parameter) > -1 ? 'list-group-item-success' : ''" ng-click="vm.updateStudyAreaParameterList(parameter)" ng-repeat="parameter in vm.regionService.parameterList">{{parameter.name}}</a>
                         </div>
                         <div ng-show="vm.studyAreaService.studyAreaParameterList.length > 0">
-                            <button type="button" class="btn btn-sm btn-primary" ng-click="vm.studyAreaService.loadParameters()">Calculate Parameters</button>   
-                            <p><pre style="width:300px;" ng-bind="vm.studyAreaService.studyAreaParameterList | json"></pre></p>
+                            <button type="button" class="btn btn-sm btn-primary" ng-click="vm.calculateParameters()"><i class="fa fa-refresh" ng-class="vm.studyAreaService.canUpdate ? '' : 'fa-spin'"></i>&nbsp;&nbsp;Calculate Selected Parameters</button>   
+                            <!--<p><pre style="width:300px;" ng-bind="vm.studyAreaService.studyAreaParameterList | json"></pre></p>-->
                         </div>
                     </div>
                 </div>
             </td>
         </tr>
+
         <!-- step 4 Refine Parameters -->
         <tr ng-click="vm.setProcedureType(4)" ng-class="vm.selectedProcedure == '4' ? 'activeitemheader accordion-toggle': 'accordion-toggle'">
             <td><a href="#" role="tab"><span class="label label-default">4</span></a></td>
@@ -110,15 +110,10 @@
         <tr ng-hide="vm.selectedProcedure != 4 || vm.sideBarCollapsed" class="activeitem">
             <td></td>
             <td colspan="6">
-                <!--
-                <div ng-show="vm.regionService.selectedRegion.RegionID == 'CO'">
-                    <input type="checkbox" ng-model="vm.upstreamRegulation"/>  
-                    <label>Modify by upstream regulation</label>
+                <div class="form-group">
+                    <button ng-show="vm.regionService.selectedRegion.RegionID == 'CO'" ng-click="vm.studyAreaService.upstreamRegulation()" type="button" class="btn btn-primary btn-sm"><i class="fa fa-refresh" ng-class="vm.studyAreaService.canUpdate ? '' : 'fa-spin'"></i>&nbsp;&nbsp;Check for upstream regulation</button>
                 </div>
-                -->
-                <p><button ng-show="vm.regionService.selectedRegion.RegionID == 'CO'" ng-click="vm.studyAreaService.upstreamRegulation()" type="button" class="btn btn-primary btn-sm"><i class="fa fa-refresh" ></i>&nbsp;&nbsp;Check for upstream regulation</button><i id="loadingSpinner" class="fa fa-spinner fa-5x fa-spin" ng-show="!vm.studyAreaService.canUpdate"></i>  </p>
-     
-                    <table class="table table-condensed">
+                <table class="table table-condensed">
                       <thead class="param-table">
                         <tr>
                             <th>Parameter</th>
@@ -135,18 +130,6 @@
                           </tr>
                         </tbody>
                     </table>
-                    <!--
-                    <div class="input-group">
-                        <span class="input-group-addon btn-group-justified" ng-bind="parameter.name"></span>
-                        <input class="form-control" ng-model="parameter.value" type="text"/>
-                        <input class="form-control" ng-show="vm.upstreamRegulation" type="text"/>
-                        <input class="form-control" ng-show="vm.upstreamRegulation" type="text"/>
-                    </div>
-                    <span class="glyphicon glyphicon-warning-sign" style="color: red" data-bind='fadeVisible: value.hasWarning(), text: value.validationMessage()'></span>
-                    <div class="alert alert-danger" style="padding:6px;font-size:10px;" role="alert" ng-bind="fadeVisible: value.hasWarning()">
-                        <i class="glyphicon glyphicon-warning-sign"></i><span ng-bind='text: value.validationMessage()'></span>
-                    </div>-->
-
             </td>
         </tr>
         <!-- step 5 Build a Flow Report -->
@@ -158,9 +141,9 @@
             <td></td>
             <td colspan="6">
                 <div class="accordion-body">
+                <!--
                     <p>Select/Enter a start date and end date then select compute to generate flow report</p>
                     <hr class="headerUnderline" />
-                    <!-- Split button -->
                     <div class="btn-group">
                         <button type="button" class="btn btn-sm btn-primary" data-bind="text:SelectedModel().SelectedReferenceGage().StationID"></button>
                         <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown">
@@ -177,7 +160,58 @@
                     <input class="form-control" placeholder="Select a Start Date" type="text" name="start" data-bind="datepicker: SelectedModel().StartDate, datepickerOptions: { startDate: SelectedModel().MinDateRange(), autoclose: true, todayHighlight:true, endDate: SelectedModel().MaxDateRange()}" />
                     <input class="form-control" placeholder="Select a End Date" type="text" name="end" data-bind="datepicker: SelectedModel().EndDate, datepickerOptions: { startDate: SelectedModel().MinDateRange(), autoclose: true, todayHighlight:true, endDate: SelectedModel().MaxDateRange()}" />
                     <br>
+
                     <button id="computeFlowButton" type="button" class="btn btn-sm btn-success" data-bind="event: {click: Compute()}"><span class="glyphicon glyphicon-ok"></span> Compute Flow</button>
+                 -->
+                    
+                    <div class="form-group">
+                        <button ng-click="vm.estimateFlows(vm.studyAreaService.studyAreaParameterList)" type="button" class="btn btn-success btn-sm"><i class="fa fa-refresh" ng-class="vm.nssService.canUpdate ? '' : 'fa-spin'"></i>&nbsp;&nbsp;Estimate Flows</button>
+                    </div>
+
+                    <div class="well well-sm" ng-show="vm.nssService.selectedStatisticsGroupScenarioResults.length > 0">
+                        <h4>Study Area</h4>
+                        <table class="table table-condensed">
+                          <thead class="param-table">
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Value</th> 
+                                <th>Min Limit</th>
+                                <th>Max Limit</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                              <tr ng-repeat="parameter in vm.nssService.selectedStatisticsGroupParameterList">
+                                <td ng-bind="parameter.Name"></td>
+                                <td ng-bind="parameter.Value"></td>
+                                <td ng-bind="parameter.Limits.Min.toFixed(2)"></td>
+                                <td ng-bind="parameter.Limits.Max.toFixed(2)"></td>
+                              </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="well well-sm" ng-show="vm.nssService.selectedStatisticsGroupScenarioResults.length > 0">
+                        <h4>Flow Report</h4>
+                        <table class="table table-condensed">
+                          <thead class="param-table">
+                            <tr>
+                                <th>Statistic</th>
+                                <th>Value</th> 
+                                <th>Unit</th>
+                                <th>Prediction Error</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                              <tr ng-repeat="parameter in vm.nssService.selectedStatisticsGroupScenarioResults">
+                                <td ng-bind="parameter.Name"></td>
+                                <td ng-bind="parameter.Value.toFixed(0)"></td>
+                                <td ng-bind="parameter.Unit.Abbr"></td>
+                                <td ng-bind="parameter.Errors[0].Value"></td>
+                              </tr>
+                            </tbody>
+                        </table>
+                    </div>
+ 
 
                 </div>
             </td>
