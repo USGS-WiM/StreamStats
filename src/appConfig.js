@@ -11,7 +11,8 @@ configuration.baseurls =
     'NSS': 'http://commons.wim.usgs.gov/nssservices',
     'SearchAPI': 'http://txpub.usgs.gov/DSS/search_api/1.0/dataService/dataService.ashx',
     'FARefGage': 'http://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowAnywhere/MapServer',
-    'RegulationServices': 'http://52.3.175.97:6080'
+    //'RegulationServices': 'http://52.3.175.97:6080'
+    'RegulationServices': 'http://54.174.111.123:6080'
 }
 
 configuration.queryparams =
@@ -20,7 +21,8 @@ configuration.queryparams =
     'KrigService': '/krig?state={0}&xlocation={1}&ylocation={2}&sr={3}',
     'RegressionMScenarios': '/{0}/estimate?state={1}',
     'statisticsGroupLookup': '/statisticgroups.json?region={0}&regressionregions={1}',
-    'statisticsGroupParameterLookup': '/scenarios.json?region={0}&statisticgroups={1}&&regressionregions={2}',
+    'statisticsGroupParameterLookup': '/scenarios.json?region={0}&statisticgroups={1}&regressionregions={2}',
+    'estimateFlows': '/scenarios/estimate.json?region={0}&statisticgroups={1}&regressionregions={2}',
     'SSdelineation': '/streamstatsservices/watershed.{0}?rcode={1}&xlocation={2}&ylocation={3}&crs={4}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
     'SSAvailableParams': '/streamstatsservices/parameters.json?rcode={0}&group={1}',
     'SSComputeParams': '/streamstatsservices/parameters.json?rcode={0}&workspaceID={1}&includeparameters={2}',
@@ -34,7 +36,7 @@ configuration.basemaps =
 {
     "tnmBaseMap": {
         "name": "USGS National Map",
-        "visible": true,
+        "visible": false,
         "type": 'group',
         "layerOptions": {
             "layers": [
@@ -105,7 +107,7 @@ configuration.basemaps =
     "mapquestOSM": {
         "name": "Mapquest Streets",
         "url": "http://{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png",
-        "visible": false,
+        "visible": true,
         "type": 'xyz',
         "layerOptions": {
             "maxZoom": 19,

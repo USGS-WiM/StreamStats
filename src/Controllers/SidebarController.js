@@ -103,6 +103,10 @@ var StreamStats;
                 }
                 //console.log('studyareaparamList length: ', this.studyAreaService.studyAreaParameterList.length);
             };
+            SidebarController.prototype.calculateParameters = function () {
+                this.studyAreaService.loadParameters();
+                //this.setProcedureType(ProcedureType.REFINE);
+            };
             SidebarController.prototype.queryRegressionRegions = function () {
                 console.log('in Query Regression Regions');
                 this.setProcedureType(3 /* SELECT */);
@@ -116,6 +120,11 @@ var StreamStats;
                 console.log('in Query Statistics Groups');
                 //hardcoded to first entry for now
                 this.nssService.loadStatisticsGroupTypes(this.regionService.selectedRegion.RegionID, this.studyAreaService.selectedStudyArea.RegressionRegions[0]);
+            };
+            SidebarController.prototype.estimateFlows = function (studyAreaParameterList) {
+                console.log('in estimateFlows');
+                //hardcoded to first entry for now
+                this.nssService.estimateFlows(studyAreaParameterList, this.regionService.selectedRegion.RegionID, this.nssService.selectedStatisticsGroup.ID, this.studyAreaService.selectedStudyArea.RegressionRegions[0]);
             };
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
@@ -134,7 +143,7 @@ var StreamStats;
                         case 4 /* REFINE */:
                             return this.studyAreaService.studyAreaParameterList.length > 0;
                         case 5 /* BUILD */:
-                            return false;
+                            return this.nssService.selectedStatisticsGroupParameterList.length > 0;
                         default:
                             return false;
                     }

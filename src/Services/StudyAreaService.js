@@ -100,6 +100,7 @@ var StreamStats;
                 var _this = this;
                 console.log('in load parameters');
                 this.canUpdate = false;
+                this.parametersLoaded = false;
                 if (!this.selectedStudyArea || !this.selectedStudyArea.WorkspaceID || !this.selectedStudyArea.RegionID) {
                     alert('No Study Area');
                     return; //sm study area is incomplete
@@ -119,6 +120,7 @@ var StreamStats;
                     //sm when complete
                 }).finally(function () {
                     _this.canUpdate = true;
+                    _this.parametersLoaded = true;
                 });
             };
             StudyAreaService.prototype.upstreamRegulation = function () {

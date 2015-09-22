@@ -45,6 +45,8 @@ var StreamStats;
                 this._onselectedStatisticsGroupChanged = new WiM.Event.Delegate();
                 this.statisticsGroupList = [];
                 this.selectedStatisticsGroupParameterList = [];
+                this.selectedStatisticsGroupScenarioResults = [];
+                this.canUpdate = true;
             }
             Object.defineProperty(nssService.prototype, "onselectedStatisticsGroupChanged", {
                 get: function () {
@@ -85,9 +87,8 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.selectedStatisticsGroupParameterList = [];
                 this.Execute(request).then(function (response) {
-                    console.log('here', response);
                     if (response.data[0].RegressionRegions[0].Parameters && response.data[0].RegressionRegions[0].Parameters.length > 0) {
-                        console.log('test1');
+                        _this.selectedStatisticsGroupScenario = response.data;
                         response.data[0].RegressionRegions[0].Parameters.map(function (item) {
                             try {
                                 //console.log(item);
@@ -96,19 +97,52 @@ var StreamStats;
                             catch (e) {
                                 alert(e);
                             }
-                            //return this.selectedStatisticsGroupParameterList;
                         });
                     }
-                    /*
-                        angular.forEach(response.data.Parameters, function (value, key) {
-                            value.selected = true;
-                            this.selectedStatisticsGroupParameterList.push(value);
-                        });
-                        */
                     //sm when complete
                 }, function (error) {
                     //sm when complete
                 }).finally(function () {
+                });
+            };
+            nssService.prototype.estimateFlows = function (studyAreaParameterList, rcode, statisticsGroupID, regressionregion) {
+                var _this = this;
+                this.canUpdate = false;
+                if (!rcode && !statisticsGroupID && !regressionregion)
+                    return;
+                console.log('in estimate flows', studyAreaParameterList, this.selectedStatisticsGroupScenario);
+                //swap out computed values in object
+                this.selectedStatisticsGroupScenario[0].RegressionRegions[0].Parameters.map(function (val) {
+                    angular.forEach(studyAreaParameterList, function (value, index) {
+                        if (val.Code.toLowerCase() == value.code.toLowerCase()) {
+                            console.log('match found', val.Code, val.Value, value.value);
+                            val.Value = value.value;
+                        }
+                    });
+                });
+                var updatedScenarioObject = this.selectedStatisticsGroupScenario;
+                console.log('results', updatedScenarioObject);
+                //do request
+                var url = configuration.baseurls['NSS'] + configuration.queryparams['estimateFlows'].format(rcode, statisticsGroupID, regressionregion);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, 1, 'json', updatedScenarioObject);
+                this.selectedStatisticsGroupScenarioResults = [];
+                console.log('sending request now');
+                this.Execute(request).then(function (response) {
+                    if (response.data[0].RegressionRegions[0].Results && response.data[0].RegressionRegions[0].Results.length > 0) {
+                        response.data[0].RegressionRegions[0].Results.map(function (item) {
+                            try {
+                                _this.selectedStatisticsGroupScenarioResults.push(item);
+                            }
+                            catch (e) {
+                                alert(e);
+                            }
+                        });
+                    }
+                    //sm when complete
+                }, function (error) {
+                    //sm when complete
+                }).finally(function () {
+                    _this.canUpdate = true;
                 });
             };
             return nssService;

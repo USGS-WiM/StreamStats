@@ -27,6 +27,7 @@ module StreamStats.Services {
     export interface IStudyAreaService {
         onSelectedStudyAreaChanged: WiM.Event.Delegate<WiM.Event.EventArgs>;
         selectedStudyArea: Models.IStudyArea;
+        loadParameters();
         loadStudyBoundary();
         upstreamRegulation();
         AddStudyArea(sa: Models.IStudyArea);
@@ -46,6 +47,7 @@ module StreamStats.Services {
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
         public canUpdate: boolean;
+        public parametersLoaded: boolean;
         private _studyAreaList: Array<Models.IStudyArea>;
         public get StudyAreaList(): Array<Models.IStudyArea> {
             return this._studyAreaList;
@@ -108,8 +110,11 @@ module StreamStats.Services {
         }
 
         public loadParameters() {
+
             console.log('in load parameters');
             this.canUpdate = false;
+            this.parametersLoaded = false;
+
             if (!this.selectedStudyArea || !this.selectedStudyArea.WorkspaceID || !this.selectedStudyArea.RegionID) {
                 alert('No Study Area');
                 return;//sm study area is incomplete
@@ -131,7 +136,10 @@ module StreamStats.Services {
                     //sm when complete
                 },(error) => {
                     //sm when complete
-                }).finally(() => { this.canUpdate = true; });
+                }).finally(() => {
+                    this.canUpdate = true;
+                    this.parametersLoaded = true;
+                });
         }
 
         public upstreamRegulation() {
