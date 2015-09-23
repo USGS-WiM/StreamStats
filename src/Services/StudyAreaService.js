@@ -132,7 +132,7 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', { watershed: watershed, outputcrs: 4326, f: 'geojson' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
                 this.Execute(request).then(function (response) {
                     console.log(response);
-                    if (response.data.hasOwnProperty("percentarearegulated")) {
+                    if (response.data.percentarearegulated > 0) {
                         _this.selectedStudyArea.Features.push(response.data["featurecollection"][0]);
                         _this.loadRegulatedParameterResults(response.data.parameters);
                         _this.isRegulated = true;

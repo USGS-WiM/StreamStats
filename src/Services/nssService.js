@@ -64,6 +64,7 @@ var StreamStats;
                     return;
                 var url = configuration.baseurls['NSS'] + configuration.queryparams['statisticsGroupLookup'].format(rcode, regressionregion);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                this.statisticsGroupList = [];
                 this.Execute(request).then(function (response) {
                     //console.log(response.data);
                     var statisticsGroupList = _this.statisticsGroupList;
@@ -120,7 +121,7 @@ var StreamStats;
                         }
                     });
                 });
-                var updatedScenarioObject = this.selectedStatisticsGroupScenario;
+                var updatedScenarioObject = JSON.stringify(this.selectedStatisticsGroupScenario, null);
                 console.log('results', updatedScenarioObject);
                 //do request
                 var url = configuration.baseurls['NSS'] + configuration.queryparams['estimateFlows'].format(rcode, statisticsGroupID, regressionregion);

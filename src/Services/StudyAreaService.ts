@@ -158,7 +158,7 @@ module StreamStats.Services {
             this.Execute(request).then(
                 (response: any) => {
                     console.log(response);
-                    if (response.data.hasOwnProperty("percentarearegulated")) {
+                    if (response.data.percentarearegulated > 0) {
                         this.selectedStudyArea.Features.push(response.data["featurecollection"][0]);
                         this.loadRegulatedParameterResults(response.data.parameters);
                         this.isRegulated = true;

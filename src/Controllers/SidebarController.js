@@ -79,8 +79,12 @@ var StreamStats;
                 this.studyAreaService.doDelineateFlag = !this.studyAreaService.doDelineateFlag;
             };
             SidebarController.prototype.setStatisticsGroup = function (statisticsGroup) {
-                if (this.nssService.selectedStatisticsGroup == statisticsGroup)
+                //if toggled remove selected parameter set
+                if (this.nssService.selectedStatisticsGroup == statisticsGroup) {
+                    this.nssService.selectedStatisticsGroup = null;
+                    this.studyAreaService.studyAreaParameterList = [];
                     return;
+                }
                 this.nssService.selectedStatisticsGroup = statisticsGroup;
                 console.log(statisticsGroup.Name, ' clicked');
                 //clear studyareaParameterList
