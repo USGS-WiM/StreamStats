@@ -42,12 +42,14 @@ var StreamStats;
     angular.module('StreamStats', [
         'ui.router',
         'ui.bootstrap',
+        'mobile-angular-ui',
         'toaster',
         'ngAnimate',
         'leaflet-directive',
         'StreamStats.Services',
         'StreamStats.Controllers',
-        'WiM.Services'
+        'WiM.Services',
+        'wim_angular'
     ]).config(config);
 })(StreamStats || (StreamStats = {})); //end module 
 //# sourceMappingURL=config.js.map

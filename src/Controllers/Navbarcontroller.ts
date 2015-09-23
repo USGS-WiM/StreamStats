@@ -54,7 +54,8 @@ module StreamStats.Controllers {
                     backdropClass: 'backdropZ',
                     windowClass: 'windowZ'
                 });
-            }           
+            }    
+            
             
         }
 

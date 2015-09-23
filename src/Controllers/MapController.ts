@@ -176,7 +176,7 @@ module StreamStats.Controllers {
                 this.leafletData.getMap().then((map: any) => {
                     console.log('map load', map);
                     //map.panBy([-document.getElementById("sidebar").offsetWidth, 0]);
-                    map.panBy([-200, 0]);
+                    //map.panBy([-200, 0]);
                 });
             });
 
@@ -331,7 +331,7 @@ module StreamStats.Controllers {
             this.leafletData.getMap().then((map: any) => {              
                 map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]], {
                     //offset width of sidebar from left, 50px from top
-                    paddingTopLeft: [document.getElementById("sidebar").offsetWidth,50]
+                    //paddingTopLeft: [document.getElementById("sidebar").offsetWidth,50]
                 });          
             });
         }

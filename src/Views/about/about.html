@@ -1,0 +1,83 @@
+﻿<button id="aboutButton" class="btn btn-default navbar-btn pull-right" ng-click="vm.toggleSelected()">
+    <i class="fa fa-question-circle"></i><span class="hidden-xs">&nbsp;&nbsp;About</span>
+</button>
+<div class="modal" ng-if='vm.selected'>
+    <div class="modal-backdrop in"></div>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close"
+                        ng-click="vm.toggleSelected()">
+                    &times;
+                </button>
+                <h4 class="modal-title">StreamStats 4.0</h4>
+            </div>
+            <div class="modal-body">
+                <div class="modal-body">
+                    <ul id="aboutTabs" class="nav nav-tabs">
+                        <li ng-class="{'active':vm.selectedTabName==='about'}"><a ng-click="vm.selectTab('about')"><i class="fa fa-question-circle"></i>&nbsp;About the project</a></li>
+                        <li ng-class="{'active':vm.selectedTabName==='disclaimer'}"><a ng-click="vm.selectTab('disclaimer')"><i class="fa fa-exclamation-circle"></i>&nbsp;Disclaimer</a></li>
+                        <li ng-class="{'active':vm.selectedTabName==='contact'}"><a ng-click="vm.selectTab('contact')"><i class="fa fa-envelope"></i>&nbsp;Contact us</a></li>
+
+                    </ul>
+                    <div style="padding-top: 10px;">
+                        <div id="about" ng-if="vm.selectedTabName==='about'">
+
+                            <p style="color:black;">
+                                The StreamStats 4.0 interface is developed by the Wisconsin Internet Mapping (WiM) group in collaboration with the Office of Surface Water StreamStats team working with USGS Water Science Centers across the nation.
+                            </p>
+
+                        </div>
+                        <div id="disclaimer" ng-show="vm.selectedTabName==='disclaimer'" class="text-danger">
+                            <h3>Limitations</h3>
+                            <p>
+                                Some about text here
+                            </p>
+
+                            <p>Absolutely no accuracy or completeness guarantee is implied or intended. The U.S. Geological Survey expressly disclaims responsibility for damages or liability that may arise from use of these data.</p>
+                        </div>
+                        <div id="contact" ng-show="vm.selectedTabName === 'contact'">
+                            <form id="contact-form">
+                                <div class="well well-sm">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="first-name">First Name:</label>
+                                                <input type="text" class="form-control" id="first-name">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="last-name">Last Name:</label>
+                                                <input type="text" class="form-control" id="last-email">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="email">Email:</label>
+                                                <input type="text" class="form-control" id="email">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <label for="message">Message:</label>
+                                            <textarea class="form-control" rows="8" id="message"></textarea>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <p>
+                                                <button type="submit" class="btn btn-primary pull-right" ng-click="vm.toggleSelected()">Submit</button>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <p style="color:black; margin-left:35px;text-align:left">
+                    For more information about StreamStats 4.0 please contact <a href="http://wim.usgs.gov/" target="_blank"><img src="images/wimvectorxs.png" id="wim_logo"></a>
+                    or select the 'contact us' tab to submit a message.
+                </p>
+                <button ng-click="vm.toggleSelected()" class="btn btn-default">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
