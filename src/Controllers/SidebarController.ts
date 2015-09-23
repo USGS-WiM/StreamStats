@@ -117,7 +117,13 @@ module StreamStats.Controllers {
             this.studyAreaService.doDelineateFlag = !this.studyAreaService.doDelineateFlag;
         }
         public setStatisticsGroup(statisticsGroup: Services.IStatisticsGroup) {
-            if (this.nssService.selectedStatisticsGroup == statisticsGroup) return;
+
+            //if toggled remove selected parameter set
+            if (this.nssService.selectedStatisticsGroup == statisticsGroup) {
+                this.nssService.selectedStatisticsGroup = null;
+                this.studyAreaService.studyAreaParameterList = [];
+                return;
+            }
             this.nssService.selectedStatisticsGroup = statisticsGroup;
 
             console.log(statisticsGroup.Name, ' clicked');

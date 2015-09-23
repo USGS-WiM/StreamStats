@@ -85,6 +85,8 @@ module StreamStats.Services {
             var url = configuration.baseurls['NSS'] + configuration.queryparams['statisticsGroupLookup'].format(rcode, regressionregion);
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
 
+            this.statisticsGroupList = [];
+
             this.Execute(request).then(
                 (response: any) => {
                     //console.log(response.data);
@@ -146,7 +148,7 @@ module StreamStats.Services {
                 });
             });
 
-            var updatedScenarioObject = this.selectedStatisticsGroupScenario;
+            var updatedScenarioObject = JSON.stringify(this.selectedStatisticsGroupScenario, null);
             console.log('results', updatedScenarioObject);
 
             //do request

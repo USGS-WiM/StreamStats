@@ -30,8 +30,10 @@
 
                 <div class="list-group-body" ng-show="vm.selectedProcedure == 2">
                     <p>Zoom to at least a zoom level of 15, click the 'delineate' button, then select a blue stream cell</p>
-                     
-                    <button id="delineateButton" type="button" class="btn btn-sm btn-info" ng-click="vm.setDelineateFlag()" ng-class="vm.studyAreaService.doDelineateFlag ? 'btn-warning' : 'btn-info'"><i class="fa fa-refresh" ng-class="vm.studyAreaService.canUpdate ? '' : 'fa-spin'"></i>&nbsp;&nbsp;Delineate</button>
+                    
+                    <div class="form-group"> 
+                        <button id="delineateButton" type="button" class="btn btn-sm btn-info" ng-click="vm.setDelineateFlag()" ng-class="vm.studyAreaService.doDelineateFlag ? 'btn-warning' : 'btn-info'"><i  ng-class="vm.studyAreaService.canUpdate ? 'fa fa-map-pin' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Delineate</button>
+                    </div>
 
                     <div id="verifyStudyArea" ng-show="vm.studyAreaService.selectedStudyArea.Features">
                         <br><p> Does the study area look correct?</p>
@@ -49,25 +51,32 @@
                 <div class="list-group-body" ng-show="vm.selectedProcedure == 3">
                     <div class="well well-sm">
                         <h4>Scenarios</h4>
-                        <div class="btn-group" dropdown is-open="status.isopen" ng-show="vm.nssService.statisticsGroupList.length > 0">
-                          <button type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle ng-disabled="disabled">
-                            Select a Scenario <span class="caret"></span>
+
+                        <button class="btn btn-sm btn-default" ng-class="vm.nssService.selectedStatisticsGroup == statisticsGroup ? 'btn-success': ''" ng-click="vm.setStatisticsGroup(statisticsGroup)" ng-repeat="statisticsGroup in vm.nssService.statisticsGroupList"><span>{{statisticsGroup.Name}} </span></button>
+                    <!--                       
+                        <div class="btn-group" dropdown ng-show="vm.nssService.statisticsGroupList.length > 0">
+                          <button type="button" class="btn btn-sm btn-primary" dropdown-toggle>
+                            Select a Scenario &nbsp;&nbsp;<i class="fa fa-caret-down"></i>
                           </button>
-                          <ul class="dropdown-menu">
-                            <li ng-repeat="statisticsGroup in vm.nssService.statisticsGroupList" ng-click="vm.setStatisticsGroup(statisticsGroup)" ng-class="vm.nssService.selectedStatisticsGroup == statisticsGroup ? 'active': ''">
+                          <ul class="dropdown-menu" role="menu" aria-labelledby="single-button">
+                            <li role="menuitem" ng-repeat="statisticsGroup in vm.nssService.statisticsGroupList" ng-click="vm.setStatisticsGroup(statisticsGroup)" ng-class="vm.nssService.selectedStatisticsGroup == statisticsGroup ? 'active': ''">
                               <a href="#">{{statisticsGroup.Name}}</a>
                             </li>
                           </ul>
                         </div>
+                    --> 
+                         
                     </div>
 
                     <div class="well well-sm">
                         <h4>Parameters</h4>
                         <div class="list-group">
-                            <a href="#" class="list-group-item" ng-class="vm.studyAreaService.studyAreaParameterList.indexOf(parameter) > -1 ? 'list-group-item-success' : ''" ng-click="vm.updateStudyAreaParameterList(parameter)" ng-repeat="parameter in vm.regionService.parameterList">{{parameter.name}}</a>
+                            <button class="btn btn-sm btn-default" ng-class="vm.studyAreaService.studyAreaParameterList.indexOf(parameter) > -1 ? 'btn-success' : ''" ng-click="vm.updateStudyAreaParameterList(parameter)" ng-repeat="parameter in vm.regionService.parameterList"><span>{{parameter.name}} </span></button>
+                            <!--
+                            <a href="#" class="list-group-item" ng-class="vm.studyAreaService.studyAreaParameterList.indexOf(parameter) > -1 ? 'list-group-item-success' : ''" ng-click="vm.updateStudyAreaParameterList(parameter)" ng-repeat="parameter in vm.regionService.parameterList">{{parameter.name}}</a>-->
                         </div>
                         <div ng-show="vm.studyAreaService.studyAreaParameterList.length > 0">
-                            <button type="button" class="btn btn-sm btn-primary" ng-click="vm.calculateParameters()"><i class="fa fa-refresh" ng-class="vm.studyAreaService.canUpdate ? '' : 'fa-spin'"></i>&nbsp;&nbsp;Calculate Selected Parameters</button>   
+                            <button type="button" class="btn btn-sm btn-primary" ng-click="vm.calculateParameters()"><i class="fa fa-refresh" ng-class="vm.studyAreaService.canUpdate ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Calculate Selected Parameters</button>   
 
                         </div>
                     </div>                          
@@ -78,7 +87,7 @@
 
                 <div class="list-group-body" ng-show="vm.selectedProcedure == 4">
                     <div class="form-group">
-                        <button ng-show="vm.regionService.selectedRegion.RegionID == 'CO'" ng-click="vm.studyAreaService.upstreamRegulation()" type="button" class="btn btn-primary btn-sm"><i class="fa fa-refresh" ng-class="vm.studyAreaService.canUpdate ? '' : 'fa-spin'"></i>&nbsp;&nbsp;Check for upstream regulation</button>
+                        <button ng-show="vm.regionService.selectedRegion.RegionID == 'CO'" ng-click="vm.studyAreaService.upstreamRegulation()" type="button" class="btn btn-sm btn-primary"><i ng-class="vm.studyAreaService.canUpdate ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Check for upstream regulation</button>
                     </div>
                     <table class="table table-condensed">
                       <thead class="param-table">
@@ -104,7 +113,7 @@
 
                 <div class="list-group-body" ng-show="vm.selectedProcedure == 5">
                     <div class="form-group">
-                        <button ng-click="vm.estimateFlows(vm.studyAreaService.studyAreaParameterList)" type="button" class="btn btn-success btn-sm"><i class="fa fa-refresh" ng-class="vm.nssService.canUpdate ? '' : 'fa-spin'"></i>&nbsp;&nbsp;Estimate Flows</button>
+                        <button ng-click="vm.estimateFlows(vm.studyAreaService.studyAreaParameterList)" type="button" class="btn btn-sm btn-primary"><i ng-class="vm.nssService.canUpdate ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Estimate Flows</button>
                     </div>
 
                     <div class="well well-sm" ng-show="vm.nssService.selectedStatisticsGroupScenarioResults.length > 0">
@@ -157,76 +166,3 @@
         <div class="identification pull-right">powered by <a href="http://wim.usgs.gov/" target="_blank">WiM</a></div>
     </div>
 </div>
-
-<!--
-
-
-
-        <tr ng-click="vm.setProcedureType(5)" ng-class="vm.selectedProcedure == 5 ? 'activeitemheader accordion-toggle': 'accordion-toggle'">
-            <td><a href="#"><span class="label label-default">5</span></a></td>
-            <td><a href="#"><span class="step-label">&nbsp;Build a Flow Report</span></a></td>
-        </tr>
-        <tr ng-hide="vm.selectedProcedure != 5 || vm.sideBarCollapsed" class="activeitem">
-            <td></td>
-            <td colspan="6">
-                <div class="accordion-body">
-                   
-                    <div class="form-group">
-                        <button ng-click="vm.estimateFlows(vm.studyAreaService.studyAreaParameterList)" type="button" class="btn btn-success btn-sm"><i class="fa fa-refresh" ng-class="vm.nssService.canUpdate ? '' : 'fa-spin'"></i>&nbsp;&nbsp;Estimate Flows</button>
-                    </div>
-
-                    <div class="well well-sm" ng-show="vm.nssService.selectedStatisticsGroupScenarioResults.length > 0">
-                        <h4>Study Area</h4>
-                        <table class="table table-condensed">
-                          <thead class="param-table">
-                            <tr>
-                                <th>Parameter</th>
-                                <th>Value</th> 
-                                <th>Min Limit</th>
-                                <th>Max Limit</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                              <tr ng-repeat="parameter in vm.nssService.selectedStatisticsGroupParameterList">
-                                <td ng-bind="parameter.Name"></td>
-                                <td ng-bind="parameter.Value"></td>
-                                <td ng-bind="parameter.Limits.Min.toFixed(2)"></td>
-                                <td ng-bind="parameter.Limits.Max.toFixed(2)"></td>
-                              </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="well well-sm" ng-show="vm.nssService.selectedStatisticsGroupScenarioResults.length > 0">
-                        <h4>Flow Report</h4>
-                        <table class="table table-condensed">
-                          <thead class="param-table">
-                            <tr>
-                                <th>Statistic</th>
-                                <th>Value</th> 
-                                <th>Unit</th>
-                                <th>Prediction Error</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                              <tr ng-repeat="parameter in vm.nssService.selectedStatisticsGroupScenarioResults">
-                                <td ng-bind="parameter.Name"></td>
-                                <td ng-bind="parameter.Value.toFixed(0)"></td>
-                                <td ng-bind="parameter.Unit.Abbr"></td>
-                                <td ng-bind="parameter.Errors[0].Value"></td>
-                              </tr>
-                            </tbody>
-                        </table>
-                    </div>
- 
-
-                </div>
-            </td>
-        </tr>
-    </tbody>
-</table>
-
-
-
-
--->
