@@ -128,8 +128,8 @@ var StreamStats;
                 this.isRegulated = false;
                 this.canUpdate = false;
                 var watershed = JSON.stringify(this.selectedStudyArea.Features[1].feature, null);
-                var url = configuration.baseurls['RegulationServices'] + configuration.queryparams['COregulationService'].format('', 'CO20150629082308341000', '4326', 'geojson');
-                var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                var url = configuration.baseurls['RegulationServices'] + configuration.queryparams['COregulationService'];
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', { watershed: watershed, outputcrs: 4326, f: 'geojson' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
                 this.Execute(request).then(function (response) {
                     console.log(response);
                     if (response.data.hasOwnProperty("percentarearegulated")) {

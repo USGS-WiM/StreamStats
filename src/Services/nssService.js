@@ -60,7 +60,7 @@ var StreamStats;
             nssService.prototype.loadStatisticsGroupTypes = function (rcode, regressionregion) {
                 var _this = this;
                 console.log('in load StatisticsGroups', rcode);
-                if (!rcode)
+                if (!rcode && !regressionregion)
                     return;
                 var url = configuration.baseurls['NSS'] + configuration.queryparams['statisticsGroupLookup'].format(rcode, regressionregion);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
@@ -108,7 +108,7 @@ var StreamStats;
             nssService.prototype.estimateFlows = function (studyAreaParameterList, rcode, statisticsGroupID, regressionregion) {
                 var _this = this;
                 this.canUpdate = false;
-                if (!rcode && !statisticsGroupID && !regressionregion)
+                if (!studyAreaParameterList && !rcode && !statisticsGroupID && !regressionregion)
                     return;
                 console.log('in estimate flows', studyAreaParameterList, this.selectedStatisticsGroupScenario);
                 //swap out computed values in object

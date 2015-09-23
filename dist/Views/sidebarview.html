@@ -1,33 +1,20 @@
+<div class="scrollable sidebar-content">
+    <div class="scrollable-content">
+        <div class="list-group">
+            <div class="sidebar-item">
+                <a ng-class="vm.selectedProcedure == 1  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(1)" >Select a State / Region<i ng-class="vm.selectedProcedure == 1 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
 
-<table class="table borderless">
-
-    <thead>
-        <tr ng-click="vm.toggleSideBar()">
-            <th><a href="" role="tab"><i id="chevron" ng-class="vm.sideBarCollapsed ? 'glyphicon glyphicon-chevron-right': 'glyphicon glyphicon-chevron-left'"></i></a></th>
-            <th style="min-width:18em;"><i class="glyphicon glyphicon-thumbs-up"></i><span>&nbsp;&nbspStreamStats <small>{{vm.regionService.selectedRegion.Name}}</small></span></th>
-        </tr>
-    </thead>
-
-    <tbody>
-        <!--  step 1 Select a State/Region -->
-        <tr ng-click="vm.setProcedureType(1)" ng-class="vm.selectedProcedure == 1 ? 'activeitemheader accordion-toggle': 'accordion-toggle'">
-            <td><a href="" role="tab"><span class="label label-default">1</span></a></td>
-            <td><a href="#"><span class="step-label">&nbsp;Select a State / Region</span></a></td>
-        </tr>
-        <tr ng-hide="vm.selectedProcedure != 1 || vm.sideBarCollapsed" class="activeitem">
-            <td></td>
-            <td colspan="12" class="activeitem">
-                <div class="accordion-body">
+                <div class="list-group-body" ng-hide="vm.selectedProcedure != 1">
                     <p>To begin: use the map zoom to and select a region, or use the location search.</p>
 
                     <input type="text" class="form-control"
-                           ng-model="selection"
-                           typeahead="loc as loc.Name +'(' + loc.State +')' for loc in vm.getLocations($viewValue)"
-                           typeahead-loading="loadingLocations"
-                           typeahead-wait-ms="100"
-                           typeahead-min-length="4"
-                           typeahead-on-select="vm.onAOISelect($item); selection=''"
-                           placeholder="Location search" />
+                            ng-model="selection"
+                            typeahead="loc as loc.Name +'(' + loc.State +')' for loc in vm.getLocations($viewValue)"
+                            typeahead-loading="loadingLocations"
+                            typeahead-wait-ms="100"
+                            typeahead-min-length="4"
+                            typeahead-on-select="vm.onAOISelect($item); selection=''"
+                            placeholder="Location search" />
                     <i ng-show="loadingLocations" class="glyphicon glyphicon-refresh"></i>
 
                     <div class="form-group" ng-show="vm.regionList.length > 0">
@@ -35,19 +22,13 @@
                         <div ng-repeat="region in vm.regionList track by $index">
                             <button ng-class="region.Name === vm.regionService.selectedRegion.Name ? 'btn btn-primary btn-group-justified':'btn btn-group-justified'" ng-click="vm.setRegion(region)"><span>{{region.Name}} </span></button>
                         </div>
-                    </div>
-                </div>
-            </td>
-        </tr>
-        <!-- step 2 Identify a Study Area -->
-        <tr ng-click="vm.setProcedureType(2)" ng-class="vm.selectedProcedure == 2 ? 'activeitemheader accordion-toggle': 'accordion-toggle'">
-            <td><a href="#"><span class="label label-default">2</span></a></td>
-            <td><a href="#"><span class="step-label">&nbsp;Identify a Study Area</span></a></td>
-        </tr>
-        <tr ng-hide="vm.selectedProcedure != 2 || vm.sideBarCollapsed" class="activeitem">
-            <td></td>
-            <td colspan="6">
-                <div class="accordion-body">
+                    </div>                          
+                </div>    
+            </div>   
+            <div class="sidebar-item">
+                <a ng-class="vm.selectedProcedure == 2  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(2)" >Identify a Study Area<i ng-class="vm.selectedProcedure == 2 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
+
+                <div class="list-group-body" ng-show="vm.selectedProcedure == 2">
                     <p>Zoom to at least a zoom level of 15, click the 'delineate' button, then select a blue stream cell</p>
                      
                     <button id="delineateButton" type="button" class="btn btn-sm btn-info" ng-click="vm.setDelineateFlag()" ng-class="vm.studyAreaService.doDelineateFlag ? 'btn-warning' : 'btn-info'"><i class="fa fa-refresh" ng-class="vm.studyAreaService.canUpdate ? '' : 'fa-spin'"></i>&nbsp;&nbsp;Delineate</button>
@@ -55,25 +36,17 @@
                     <div id="verifyStudyArea" ng-show="vm.studyAreaService.selectedStudyArea.Features">
                         <br><p> Does the study area look correct?</p>
                         <div class="btn-group">
-                            <button id="editButton" type="button" class="btn btn-sm btn-info"><span class="glyphicon glyphicon-edit"></span>&nbsp;&nbsp;Edit</button>
-                            <button id="undoButton" type="button" class="btn btn-sm btn-warning"><span class="glyphicon glyphicon-trash"></span>&nbsp;&nbsp;Clear</button>
-                            <button id="saveChangesButton" type="button" class="btn btn-sm btn-success" ng-click="vm.queryRegressionRegions()"><span class="glyphicon glyphicon-ok"></span>&nbsp;&nbsp;Continue</button>
+                            <button id="editButton" type="button" class="btn btn-sm btn-info"><span class="fa fa-edit"></span>&nbsp;&nbsp;Edit</button>
+                            <button id="undoButton" type="button" class="btn btn-sm btn-warning"><span class="fa fa-trash"></span>&nbsp;&nbsp;Clear</button>
+                            <button id="saveChangesButton" type="button" class="btn btn-sm btn-success" ng-click="vm.queryRegressionRegions()"><span class="fa fa-check-circle"></span>&nbsp;&nbsp;Continue</button>
                         </div>
-                    </div>
-                </div>
-            </td>
-        </tr>
-        <!--  step 3 Select a StatisticsGroup -->
-        <tr ng-click="vm.setProcedureType(3)" ng-class="vm.selectedProcedure == 3 ? 'activeitemheader accordion-toggle': 'accordion-toggle'">
-            <td><a href="#"><span class="label label-default">3</span></a></td>
-            <td><a href="#"><span class="step-label">&nbsp;Select Scenarios</span></a></td>
-        </tr>
-        <tr ng-hide="vm.selectedProcedure != 3 || vm.sideBarCollapsed" class="activeitem">
-            <td></td>
-            <td colspan="6">
+                    </div>                            
+                </div>    
+            </div> 
+            <div class="sidebar-item">
+                <a ng-class="vm.selectedProcedure == 3  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(3)" >Select Scenarios<i ng-class="vm.selectedProcedure == 3 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
 
-                <div class="accordion-body">
-                    
+                <div class="list-group-body" ng-show="vm.selectedProcedure == 3">
                     <div class="well well-sm">
                         <h4>Scenarios</h4>
                         <div class="btn-group" dropdown is-open="status.isopen" ng-show="vm.nssService.statisticsGroupList.length > 0">
@@ -95,25 +68,19 @@
                         </div>
                         <div ng-show="vm.studyAreaService.studyAreaParameterList.length > 0">
                             <button type="button" class="btn btn-sm btn-primary" ng-click="vm.calculateParameters()"><i class="fa fa-refresh" ng-class="vm.studyAreaService.canUpdate ? '' : 'fa-spin'"></i>&nbsp;&nbsp;Calculate Selected Parameters</button>   
-                            <!--<p><pre style="width:300px;" ng-bind="vm.studyAreaService.studyAreaParameterList | json"></pre></p>-->
-                        </div>
-                    </div>
-                </div>
-            </td>
-        </tr>
 
-        <!-- step 4 Refine Parameters -->
-        <tr ng-click="vm.setProcedureType(4)" ng-class="vm.selectedProcedure == '4' ? 'activeitemheader accordion-toggle': 'accordion-toggle'">
-            <td><a href="#" role="tab"><span class="label label-default">4</span></a></td>
-            <td><a href="#"><span class="step-label">&nbsp;Refine Parameters</span></a></td>
-        </tr>
-        <tr ng-hide="vm.selectedProcedure != 4 || vm.sideBarCollapsed" class="activeitem">
-            <td></td>
-            <td colspan="6">
-                <div class="form-group">
-                    <button ng-show="vm.regionService.selectedRegion.RegionID == 'CO'" ng-click="vm.studyAreaService.upstreamRegulation()" type="button" class="btn btn-primary btn-sm"><i class="fa fa-refresh" ng-class="vm.studyAreaService.canUpdate ? '' : 'fa-spin'"></i>&nbsp;&nbsp;Check for upstream regulation</button>
-                </div>
-                <table class="table table-condensed">
+                        </div>
+                    </div>                          
+                </div>    
+            </div>    
+            <div class="sidebar-item">
+                <a ng-class="vm.selectedProcedure == 4  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(4)" >Refine Parameters<i ng-class="vm.selectedProcedure == 4 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
+
+                <div class="list-group-body" ng-show="vm.selectedProcedure == 4">
+                    <div class="form-group">
+                        <button ng-show="vm.regionService.selectedRegion.RegionID == 'CO'" ng-click="vm.studyAreaService.upstreamRegulation()" type="button" class="btn btn-primary btn-sm"><i class="fa fa-refresh" ng-class="vm.studyAreaService.canUpdate ? '' : 'fa-spin'"></i>&nbsp;&nbsp;Check for upstream regulation</button>
+                    </div>
+                    <table class="table table-condensed">
                       <thead class="param-table">
                         <tr>
                             <th>Parameter</th>
@@ -129,10 +96,72 @@
                             <td ng-show="vm.studyAreaService.isRegulated"><input class="form-control" ng-model="parameter.regulatedValue" type="text"/></td>
                           </tr>
                         </tbody>
-                    </table>
-            </td>
-        </tr>
-        <!-- step 5 Build a Flow Report -->
+                    </table>                       
+                </div>    
+            </div>  
+            <div class="sidebar-item">
+                <a ng-class="vm.selectedProcedure == 5  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(5)" >Build a Flow Report<i ng-class="vm.selectedProcedure == 5 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
+
+                <div class="list-group-body" ng-show="vm.selectedProcedure == 5">
+                    <div class="form-group">
+                        <button ng-click="vm.estimateFlows(vm.studyAreaService.studyAreaParameterList)" type="button" class="btn btn-success btn-sm"><i class="fa fa-refresh" ng-class="vm.nssService.canUpdate ? '' : 'fa-spin'"></i>&nbsp;&nbsp;Estimate Flows</button>
+                    </div>
+
+                    <div class="well well-sm" ng-show="vm.nssService.selectedStatisticsGroupScenarioResults.length > 0">
+                        <h4>Study Area</h4>
+                        <table class="table table-condensed">
+                          <thead class="param-table">
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Value</th> 
+                                <th>Min Limit</th>
+                                <th>Max Limit</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                              <tr ng-repeat="parameter in vm.nssService.selectedStatisticsGroupParameterList">
+                                <td ng-bind="parameter.Name"></td>
+                                <td ng-bind="parameter.Value"></td>
+                                <td ng-bind="parameter.Limits.Min.toFixed(2)"></td>
+                                <td ng-bind="parameter.Limits.Max.toFixed(2)"></td>
+                              </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="well well-sm" ng-show="vm.nssService.selectedStatisticsGroupScenarioResults.length > 0">
+                        <h4>Flow Report</h4>
+                        <table class="table table-condensed">
+                          <thead class="param-table">
+                            <tr>
+                                <th>Statistic</th>
+                                <th>Value</th> 
+                                <th>Unit</th>
+                                <th>Prediction Error</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                              <tr ng-repeat="parameter in vm.nssService.selectedStatisticsGroupScenarioResults">
+                                <td ng-bind="parameter.Name"></td>
+                                <td ng-bind="parameter.Value.toFixed(0)"></td>
+                                <td ng-bind="parameter.Unit.Abbr"></td>
+                                <td ng-bind="parameter.Errors[0].Value"></td>
+                              </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>    
+            </div>       
+        </div>
+
+        <div class="identification pull-right">powered by <a href="http://wim.usgs.gov/" target="_blank">WiM</a></div>
+    </div>
+</div>
+
+<!--
+
+
+
         <tr ng-click="vm.setProcedureType(5)" ng-class="vm.selectedProcedure == 5 ? 'activeitemheader accordion-toggle': 'accordion-toggle'">
             <td><a href="#"><span class="label label-default">5</span></a></td>
             <td><a href="#"><span class="step-label">&nbsp;Build a Flow Report</span></a></td>
@@ -141,29 +170,7 @@
             <td></td>
             <td colspan="6">
                 <div class="accordion-body">
-                <!--
-                    <p>Select/Enter a start date and end date then select compute to generate flow report</p>
-                    <hr class="headerUnderline" />
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-sm btn-primary" data-bind="text:SelectedModel().SelectedReferenceGage().StationID"></button>
-                        <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown">
-                            <span class="caret"></span>
-                            <span class="sr-only">Toggle Dropdown</span>
-                        </button>
-                        <a style="padding:0.5em" data-bind="text: SelectedModel().SelectedReferenceGage().Name, attr:{href:SelectedModel().SelectedReferenceGage().URL }"></a>
-                        <ul class="dropdown-menu" role="menu" data-bind="foreach: SelectedModel().ReferenceGageList">
-                            <li><a href="#" data-bind="event:{click: $root.SelectedModel().SetReferenceGage($data)},text: Name"></a></li>
-                        </ul>
-                    </div>
-                    <br />
-                    <br />
-                    <input class="form-control" placeholder="Select a Start Date" type="text" name="start" data-bind="datepicker: SelectedModel().StartDate, datepickerOptions: { startDate: SelectedModel().MinDateRange(), autoclose: true, todayHighlight:true, endDate: SelectedModel().MaxDateRange()}" />
-                    <input class="form-control" placeholder="Select a End Date" type="text" name="end" data-bind="datepicker: SelectedModel().EndDate, datepickerOptions: { startDate: SelectedModel().MinDateRange(), autoclose: true, todayHighlight:true, endDate: SelectedModel().MaxDateRange()}" />
-                    <br>
-
-                    <button id="computeFlowButton" type="button" class="btn btn-sm btn-success" data-bind="event: {click: Compute()}"><span class="glyphicon glyphicon-ok"></span> Compute Flow</button>
-                 -->
-                    
+                   
                     <div class="form-group">
                         <button ng-click="vm.estimateFlows(vm.studyAreaService.studyAreaParameterList)" type="button" class="btn btn-success btn-sm"><i class="fa fa-refresh" ng-class="vm.nssService.canUpdate ? '' : 'fa-spin'"></i>&nbsp;&nbsp;Estimate Flows</button>
                     </div>
@@ -222,3 +229,4 @@
 
 
 
+-->

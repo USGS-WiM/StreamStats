@@ -90,7 +90,7 @@ var StreamStats;
                     _this.leafletData.getMap().then(function (map) {
                         console.log('map load', map);
                         //map.panBy([-document.getElementById("sidebar").offsetWidth, 0]);
-                        map.panBy([-200, 0]);
+                        //map.panBy([-200, 0]);
                     });
                 });
                 $scope.$on('leafletDirectiveMap.mousemove', function (event, args) {
@@ -223,10 +223,7 @@ var StreamStats;
                 var bbox = this.geojson['globalwatershed'].data.features[0].bbox;
                 //this.bounds = this.leafletBoundsHelperService.createBoundsFromArray([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
                 this.leafletData.getMap().then(function (map) {
-                    map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]], {
-                        //offset width of sidebar from left, 50px from top
-                        paddingTopLeft: [document.getElementById("sidebar").offsetWidth, 50]
-                    });
+                    map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]], {});
                 });
             };
             MapController.prototype.setRegionsByBounds = function (oldValue, newValue) {

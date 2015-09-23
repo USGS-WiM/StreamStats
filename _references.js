@@ -7,5 +7,6 @@
 /// <reference path="bower_components/wim_angular/dist/src/Services/SearchAPIService.d.ts" />
 /// <reference path="bower_components/wim_angular/dist/src/Events/Delegate.d.ts" />
 /// <reference path="bower_components/wim_angular/dist/src/Events/EventArgs.d.ts" />
-/// <reference path="bower_components/wim_angular/dist/src/Events/EventHandler.d.ts" /> 
+/// <reference path="bower_components/wim_angular/dist/src/Events/EventHandler.d.ts" />
+/// <reference path="bower_components/wim_angular/dist/src/Services/Helpers/RequestTransform.d.ts" /> 
 //# sourceMappingURL=_references.js.map

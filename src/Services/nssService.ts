@@ -96,7 +96,7 @@ module StreamStats.Services {
                     //sm when complete
                 },(error) => {
                     //sm when complete
-                }).finally(() => { return: });
+                }).finally(() => {  });
         }
 
         public loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregion: string) {

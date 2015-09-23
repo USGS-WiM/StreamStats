@@ -11,8 +11,8 @@
     <script src="scripts/custom.min.js"></script>
 </head>
 <body>
-    <div ui-view="navbar" class="navbar navbar-gray navbar-fixed-top" role="navigation"></div>      
-    <div ui-view="sidebar" ng-class="{'collapsed':vm.sideBarCollapsed}" class="sidebar sidebar-content" id="sidebar" ></div> 
-    <div ui-view="map" class="fullsized sidebar-map"></div>       
+    <div ui-view="navbar" class="navbar-app navbar-absolute-top"></div>
+    <div ui-view="sidebar" class="sidebar sidebar-left"></div>  
+    <div ui-view="map" class="app app-body"></div>       
 </body>
 </html>

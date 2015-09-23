@@ -29,7 +29,7 @@ configuration.queryparams =
     'SSStateLayers': '/arcgis/rest/services/{0}_ss/MapServer?f=pjson',
     'FARefGage': '/2/query?geometry={0}&geometryType=esriGeometryPoint&inSR={1}&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
     'regionService': '/arcgis/rest/services/ss_studyAreas_prod/MapServer/identify',
-    'COregulationService': '/arcgis/rest/services/Regulation/CORegulationSites/MapServer/exts/RegulationRESTSOE/Regulation?watershed={0}&workspaceId={1}&outputcrs={2}&f={3}'
+    'COregulationService': '/arcgis/rest/services/Regulation/CORegulationSites/MapServer/exts/RegulationRESTSOE/Regulation'
 }
 
 configuration.basemaps =

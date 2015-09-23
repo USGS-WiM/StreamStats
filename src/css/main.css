@@ -1,55 +1,27 @@
-﻿html, body, .fullsized, .angular-leaflet-map {
+﻿html, body, .angular-leaflet-map {
    padding: 0; 
-    margin: 0;
+   margin: 0;
    height: 100%;
-    width: 100%;
-    overflow-y:hidden;
+   width: 100%;
+   overflow-y:hidden;
 }
 body {
-    padding-top: 50px;
+    padding-top: 18px;
 }
-
 .modal-backdrop.backdropZ {
     z-index: 9998 !important;
 }
-
 .modal.windowZ {
     z-index: 9999 !important;
 }
-
-
-a {
-    color: #222222;    
-}
-.accordion-toggle a {
-    pointer-events:none;
-}
-.accordion-toggle:hover a {
-    text-decoration:none;
-    color:#6f84aa;    
-}
-
-.accordion-toggle:hover td {
-  background-color:#F8F8F8;
-  cursor:pointer;
-}
-
-.sidebar {
-    top:60px !important;
-}
-
 .sidebar-content {
-    left:10px !important;
-    bottom: 10px !important;
-    
+    margin-top:70px;
 }
-.accordion-body {
-    min-width:18em;
-    margin-right:2em;
+.navbar-brand {
+  padding:15px 20px;
 }
-
-.sidebar thead{
-    font-size:18px;
+.navbar-absolute-top {
+    min-width: 700px;
 }
 
 .navbar{
@@ -59,66 +31,34 @@ a {
     margin-bottom:0px;
     
 }
-
-.navbar-blue {
-    background-color:#6f84aa;
+.list-group-body {
+    background-color:white;
+    border-radius:0 0 5px 5px;
+    padding-bottom:25px;
+    padding-top: 10px;
+    padding-left:10px;
+    margin-bottom:3px;
+    border:1px thin;
 }
-
-.navbar-gray {
-    background-color:#707070 ;
-}
-
-.navbar-brand {
-  padding:7px 4px;
-}
-
-.activeitemheader {
-    background-color:#6f84aa;
-}
-
-.activeitem {
-    background-color:#E6E6E6;
-}
-.nav-list {
-    padding:12px;
-}
-
-label {
-    font-weight:normal;
-}
-
-.param-table {
-    font-size:14px !important;
-    font-weight:bold;
+.list-group-body a {
+    padding-left:10px;
+    float:left;    
+    height: 25px;
+    width:100%;
+    padding-right: 10px;
+    overflow:hidden;
+    text-overflow: ellipsis; 
+    white-space: nowrap;
 }
 
 .fa-spinner {
 	position: fixed;
-	height: 31px;
-	width: 60px;
-	left: 55%;
-	top: 40%;
+	height: 15px;
+	width: 30px;
+	left: 50%;
+	top: 50%;
 }
-
-.borderless tbody tr td, .borderless tbody tr, .borderless thead tr {
-    border: none;
-}
-
-.selectize-control {
-      /* Align Selectize with input-group-btn */
-      top: 2px;
-    }
-.selectize-control > .selectize-dropdown {
-    top: 34px;
-}
-/*Reset right rounded corners, see Bootstrap input-groups.less*/
-.input-group > .selectize-control > .selectize-input {
-    border-bottom-right-radius: 0;
-    border-top-right-radius: 0;
-}
-
 .map-position {
-    left:50%;
     padding: 0px 4px;
     font-size:small;
     background-color: rgba(255, 255, 255, 0.75);
@@ -126,4 +66,14 @@ label {
     margin-left:9px;
     border-radius:5px;
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.65);
+}
+#wim_logo {
+    background: black none repeat scroll 0 0;
+    border-radius: 5px;
+    width: 45px;
+}
+#wim_logo:hover{
+    background: blue none repeat scroll 0 0;
+	opacity: 0.8;
+	cursor: pointer;
 }
