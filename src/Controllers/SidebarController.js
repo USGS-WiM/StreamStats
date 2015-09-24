@@ -75,7 +75,15 @@ var StreamStats;
                 //get available parameters
                 this.regionService.loadParametersByRegion();
             };
-            SidebarController.prototype.setDelineateFlag = function () {
+            SidebarController.prototype.startDelineate = function () {
+                //clear out parameter list, flow report, etc
+                this.studyAreaService.studyAreaParameterList = [];
+                this.studyAreaService.parametersLoaded = false;
+                this.nssService.statisticsGroupList = [];
+                this.nssService.selectedStatisticsGroup = null;
+                this.nssService.selectedStatisticsGroupParameterList = [];
+                this.nssService.selectedStatisticsGroupScenario = [];
+                this.nssService.selectedStatisticsGroupScenarioResults = [];
                 this.studyAreaService.doDelineateFlag = !this.studyAreaService.doDelineateFlag;
             };
             SidebarController.prototype.setStatisticsGroup = function (statisticsGroup) {

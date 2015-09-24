@@ -2,7 +2,7 @@
     <div class="scrollable-content">
         <div class="list-group">
             <div class="sidebar-item">
-                <a ng-class="vm.selectedProcedure == 1  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(1)" >Select a State / Region<i ng-class="vm.selectedProcedure == 1 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
+                <a ng-class="vm.selectedProcedure == 1  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(1)" >Select a State / Region<h5 ng-show="vm.regionService.selectedRegion.Name"><i class="fa fa-check-square-o"></i><strong>{{vm.regionService.selectedRegion.Name}}</strong></h5><i ng-class="vm.selectedProcedure == 1 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
 
                 <div class="list-group-body" ng-hide="vm.selectedProcedure != 1">
                     <p>To begin: use the map zoom to and select a region, or use the location search.</p>
@@ -26,13 +26,13 @@
                 </div>    
             </div>   
             <div class="sidebar-item">
-                <a ng-class="vm.selectedProcedure == 2  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(2)" >Identify a Study Area<i ng-class="vm.selectedProcedure == 2 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
+                <a ng-class="vm.selectedProcedure == 2  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(2)" >Identify a Study Area<h5 ng-show="vm.studyAreaService.selectedStudyArea.Features"><i class="fa fa-check-square-o"></i><strong>Basin Delineated</strong></h5><i ng-class="vm.selectedProcedure == 2 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
 
                 <div class="list-group-body" ng-show="vm.selectedProcedure == 2">
                     <p>Zoom to at least a zoom level of 15, click the 'delineate' button, then select a blue stream cell</p>
                     
                     <div class="form-group"> 
-                        <button id="delineateButton" type="button" class="btn btn-sm btn-info" ng-click="vm.setDelineateFlag()" ng-class="vm.studyAreaService.doDelineateFlag ? 'btn-warning' : 'btn-info'"><i  ng-class="vm.studyAreaService.canUpdate ? 'fa fa-map-pin' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Delineate</button>
+                        <button id="delineateButton" type="button" class="btn btn-sm btn-info" ng-click="vm.startDelineate()" ng-class="vm.studyAreaService.doDelineateFlag ? 'btn-warning' : 'btn-info'"><i  ng-class="vm.studyAreaService.canUpdate ? 'fa fa-map-pin' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Delineate</button>
                     </div>
 
                     <div id="verifyStudyArea" ng-show="vm.studyAreaService.selectedStudyArea.Features">
@@ -46,13 +46,24 @@
                 </div>    
             </div> 
             <div class="sidebar-item">
-                <a ng-class="vm.selectedProcedure == 3  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(3)" >Select Scenarios<i ng-class="vm.selectedProcedure == 3 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
+                <a ng-class="vm.selectedProcedure == 3  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(3)" >Select Scenarios<h5 ng-show="vm.studyAreaService.parametersLoaded"><i class="fa fa-check-square-o"></i><strong>Parameters Loaded</strong></h5><i ng-class="vm.selectedProcedure == 3 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
 
                 <div class="list-group-body" ng-show="vm.selectedProcedure == 3">
+
+                    <div class="well well-sm">
+                        <h4>State/Region Specific Functions</h4>
+                        <p>Items shown here are available for {{vm.regionService.selectedRegion.Name}}</p>
+                        <div class="form-group">
+                            <button ng-show="vm.regionService.selectedRegion.RegionID == 'CO'" ng-click="vm.studyAreaService.upstreamRegulation()" type="button" class="btn btn-sm btn-primary"><i ng-class="vm.studyAreaService.canUpdate ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Check for upstream regulation</button>
+                        </div>
+                    </div>
+
                     <div class="well well-sm">
                         <h4>Scenarios</h4>
-
-                        <button class="btn btn-sm btn-default" ng-class="vm.nssService.selectedStatisticsGroup == statisticsGroup ? 'btn-success': ''" ng-click="vm.setStatisticsGroup(statisticsGroup)" ng-repeat="statisticsGroup in vm.nssService.statisticsGroupList"><span>{{statisticsGroup.Name}} </span></button>
+                        <p>Choosing a scenario below will select the associated parameters necessary to calculate that scenario</p>
+                        <div class="form-group">
+                            <button class="btn btn-sm btn-default" ng-class="vm.nssService.selectedStatisticsGroup == statisticsGroup ? 'btn-success': ''" ng-click="vm.setStatisticsGroup(statisticsGroup)" ng-repeat="statisticsGroup in vm.nssService.statisticsGroupList"><span>{{statisticsGroup.Name}} </span></button>
+                        </div>
                     <!--                       
                         <div class="btn-group" dropdown ng-show="vm.nssService.statisticsGroupList.length > 0">
                           <button type="button" class="btn btn-sm btn-primary" dropdown-toggle>
@@ -70,14 +81,17 @@
 
                     <div class="well well-sm">
                         <h4>Parameters</h4>
+                        <p>Parameters can be selected individually or are selected based on the chosen scenario</p>
                         <div class="list-group">
                             <button class="btn btn-sm btn-default" ng-class="vm.studyAreaService.studyAreaParameterList.indexOf(parameter) > -1 ? 'btn-success' : ''" ng-click="vm.updateStudyAreaParameterList(parameter)" ng-repeat="parameter in vm.regionService.parameterList"><span>{{parameter.name}} </span></button>
                             <!--
                             <a href="#" class="list-group-item" ng-class="vm.studyAreaService.studyAreaParameterList.indexOf(parameter) > -1 ? 'list-group-item-success' : ''" ng-click="vm.updateStudyAreaParameterList(parameter)" ng-repeat="parameter in vm.regionService.parameterList">{{parameter.name}}</a>-->
                         </div>
                         <div ng-show="vm.studyAreaService.studyAreaParameterList.length > 0">
-                            <button type="button" class="btn btn-sm btn-primary" ng-click="vm.calculateParameters()"><i class="fa fa-refresh" ng-class="vm.studyAreaService.canUpdate ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Calculate Selected Parameters</button>   
-
+                            <div class="form-group">
+                                <button type="button" class="btn btn-sm btn-primary" ng-click="vm.calculateParameters()"><i class="fa fa-refresh" ng-class="vm.studyAreaService.canUpdate ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Calculate Selected Parameters</button>
+                            </div>
+                            <div class="alert alert-success" role="alert" ng-show="vm.studyAreaService.parametersLoaded">Your parameters have been loaded, you can choose "<strong>Refine Parameters</strong>" or go straight to "<strong>Build a Flow Report</strong>"</div>
                         </div>
                     </div>                          
                 </div>    
@@ -86,9 +100,7 @@
                 <a ng-class="vm.selectedProcedure == 4  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(4)" >Refine Parameters<i ng-class="vm.selectedProcedure == 4 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
 
                 <div class="list-group-body" ng-show="vm.selectedProcedure == 4">
-                    <div class="form-group">
-                        <button ng-show="vm.regionService.selectedRegion.RegionID == 'CO'" ng-click="vm.studyAreaService.upstreamRegulation()" type="button" class="btn btn-sm btn-primary"><i ng-class="vm.studyAreaService.canUpdate ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Check for upstream regulation</button>
-                    </div>
+                    <p>Parameters can be edited here</p>
                     <table class="table table-condensed">
                       <thead class="param-table">
                         <tr>
@@ -109,15 +121,18 @@
                 </div>    
             </div>  
             <div class="sidebar-item">
-                <a ng-class="vm.selectedProcedure == 5  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(5)" >Build a Flow Report<i ng-class="vm.selectedProcedure == 5 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
+                <a ng-class="vm.selectedProcedure == 5  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(5)" >Build a Flow Report<h5 ng-show="vm.nssService.selectedStatisticsGroupScenarioResults.length > 0"><i class="fa fa-check-square-o"></i><strong>Report Built</strong></h5><i ng-class="vm.selectedProcedure == 5 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
 
                 <div class="list-group-body" ng-show="vm.selectedProcedure == 5">
-                    <div class="form-group">
+                    <p>Click the button below to calculate flows for your selected scenario: {{vm.nssService.selectedStatisticsGroup.Name}}</p>
+                    <div class="form-group" ng-show="vm.nssService.selectedStatisticsGroup">
                         <button ng-click="vm.estimateFlows(vm.studyAreaService.studyAreaParameterList)" type="button" class="btn btn-sm btn-primary"><i ng-class="vm.nssService.canUpdate ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Estimate Flows</button>
                     </div>
 
                     <div class="well well-sm" ng-show="vm.nssService.selectedStatisticsGroupScenarioResults.length > 0">
                         <h4>Study Area</h4>
+                        <p><strong>Latitude: </strong>{{vm.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(4)}}</p>
+                        <p><strong>Longitude: </strong>{{vm.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(4)}}</p>
                         <table class="table table-condensed">
                           <thead class="param-table">
                             <tr>

@@ -34,7 +34,7 @@ module StreamStats.Controllers {
         selectedStatisticsGroup: Services.IStatisticsGroup;
         setProcedureType(pType: ProcedureType): void;
         toggleSideBar(): void;
-        setDelineateFlag(): void;
+        //setDelineateFlag(): void;
     }
     
     class SidebarController implements ISidebarController {
@@ -113,9 +113,19 @@ module StreamStats.Controllers {
             this.regionService.loadParametersByRegion();
 
         }
-        public setDelineateFlag(): void {
+        public startDelineate() {
+            //clear out parameter list, flow report, etc
+            this.studyAreaService.studyAreaParameterList = [];
+            this.studyAreaService.parametersLoaded = false;
+            this.nssService.statisticsGroupList = [];
+            this.nssService.selectedStatisticsGroup = null;
+            this.nssService.selectedStatisticsGroupParameterList = [];
+            this.nssService.selectedStatisticsGroupScenario = [];
+            this.nssService.selectedStatisticsGroupScenarioResults = [];
+
             this.studyAreaService.doDelineateFlag = !this.studyAreaService.doDelineateFlag;
         }
+
         public setStatisticsGroup(statisticsGroup: Services.IStatisticsGroup) {
 
             //if toggled remove selected parameter set

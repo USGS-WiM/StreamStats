@@ -34,6 +34,12 @@ configuration.queryparams =
 
 configuration.basemaps =
 {
+    "gray": {
+        "name": "ESRI Gray",
+        "type": "agsBase",
+        "layer": "Gray",
+        "visible": true
+    },
     "tnmBaseMap": {
         "name": "USGS National Map",
         "visible": false,
@@ -107,7 +113,7 @@ configuration.basemaps =
     "mapquestOSM": {
         "name": "Mapquest Streets",
         "url": "http://{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png",
-        "visible": true,
+        "visible": false,
         "type": 'xyz',
         "layerOptions": {
             "maxZoom": 19,

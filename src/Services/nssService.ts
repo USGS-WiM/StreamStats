@@ -30,6 +30,8 @@ module StreamStats.Services {
         statisticsGroupList: Array<IStatisticsGroup>;
         selectedStatisticsGroupParameterList: Array<IParameter>;
         selectedStatisticsGroup: IStatisticsGroup;
+        selectedStatisticsGroupScenario: any;
+        selectedStatisticsGroupScenarioResults: any;
         loadStatisticsGroupTypes(rcode: string, regressionregion: string);
         loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregion: string);
         estimateFlows(studyAreaParameterList: any, rcode: string, statisticsGroupID: string, regressionregion: string)

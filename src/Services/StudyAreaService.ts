@@ -34,6 +34,7 @@ module StreamStats.Services {
         RemoveStudyArea();
         doDelineateFlag: boolean;
         isRegulated: boolean;
+        parametersLoaded: boolean;
         canUpdate: boolean;
         studyAreaParameterList: Array<IParameter>;
     }
@@ -162,6 +163,9 @@ module StreamStats.Services {
                         this.selectedStudyArea.Features.push(response.data["featurecollection"][0]);
                         this.loadRegulatedParameterResults(response.data.parameters);
                         this.isRegulated = true;
+                    }
+                    else {
+                        alert("No regulation found");
                     }
                     //sm when complete
                 },(error) => {

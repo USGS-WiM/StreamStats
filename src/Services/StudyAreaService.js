@@ -137,6 +137,9 @@ var StreamStats;
                         _this.loadRegulatedParameterResults(response.data.parameters);
                         _this.isRegulated = true;
                     }
+                    else {
+                        alert("No regulation found");
+                    }
                     //sm when complete
                 }, function (error) {
                     //sm when error

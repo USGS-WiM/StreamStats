@@ -34,8 +34,7 @@ module StreamStats.Controllers {
     class NavbarController implements INavbarController {
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
-        public open: any;
-
+        public openReport: any;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -43,9 +42,10 @@ module StreamStats.Controllers {
         constructor($scope: INavbarControllerScope, $modal: ng.ui.bootstrap.IModalService, studyArea: Services.IStudyAreaService) {
             $scope.vm = this;
 
-            console.log('sa1', studyArea);
+            //console.log('sa1', studyArea);
   
-            this.open = function () {
+            this.openReport = function () {
+                console.log('in report open function');
 
                 this.modalInstance = $modal.open({
                     templateUrl: 'Views/reportview.html',
