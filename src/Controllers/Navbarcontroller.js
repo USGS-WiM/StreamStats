@@ -23,8 +23,9 @@ var StreamStats;
         var NavbarController = (function () {
             function NavbarController($scope, $modal, studyArea) {
                 $scope.vm = this;
-                console.log('sa1', studyArea);
-                this.open = function () {
+                //console.log('sa1', studyArea);
+                this.openReport = function () {
+                    console.log('in report open function');
                     this.modalInstance = $modal.open({
                         templateUrl: 'Views/reportview.html',
                         controller: 'StreamStats.Controllers.ReportController',
