@@ -138,6 +138,11 @@ var StreamStats;
                 //hardcoded to first entry for now
                 this.nssService.estimateFlows(studyAreaParameterList, this.regionService.selectedRegion.RegionID, this.nssService.selectedStatisticsGroup.ID, this.studyAreaService.selectedStudyArea.RegressionRegions[0]);
             };
+            SidebarController.prototype.checkRegulation = function () {
+                if (!this.studyAreaService.parametersLoaded)
+                    this.calculateParameters();
+                this.studyAreaService.upstreamRegulation();
+            };
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             SidebarController.prototype.canUpdateProcedure = function (pType) {
