@@ -202,6 +202,15 @@ module StreamStats.Controllers {
 
         }
 
+        public checkRegulation() {
+
+            if (!this.studyAreaService.parametersLoaded) this.calculateParameters();
+
+            this.studyAreaService.upstreamRegulation();
+        }
+
+
+
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         private canUpdateProcedure(pType: ProcedureType): boolean {
