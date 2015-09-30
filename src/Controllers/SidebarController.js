@@ -78,7 +78,7 @@ var StreamStats;
             SidebarController.prototype.startDelineate = function () {
                 //clear out parameter list, flow report, etc
                 this.studyAreaService.studyAreaParameterList = [];
-                this.studyAreaService.parametersLoaded = false;
+                this.studyAreaService.parametersLoading = false;
                 this.nssService.statisticsGroupList = [];
                 this.nssService.selectedStatisticsGroup = null;
                 this.nssService.selectedStatisticsGroupParameterList = [];
@@ -139,8 +139,11 @@ var StreamStats;
                 this.nssService.estimateFlows(studyAreaParameterList, this.regionService.selectedRegion.RegionID, this.nssService.selectedStatisticsGroup.ID, this.studyAreaService.selectedStudyArea.RegressionRegions[0]);
             };
             SidebarController.prototype.checkRegulation = function () {
-                if (!this.studyAreaService.parametersLoaded)
-                    this.calculateParameters();
+                console.log('berp', this.studyAreaService.studyAreaParameterList.length, this.studyAreaService.parametersLoaded);
+                if (this.studyAreaService.studyAreaParameterList.length < 1 || !this.studyAreaService.parametersLoaded) {
+                    alert('Select some parameters and make sure they are calcuated');
+                    return;
+                }
                 this.studyAreaService.upstreamRegulation();
             };
             //Helper Methods
