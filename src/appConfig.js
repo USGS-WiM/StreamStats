@@ -12,7 +12,7 @@ configuration.baseurls =
     'SearchAPI': 'http://txpub.usgs.gov/DSS/search_api/1.0/dataService/dataService.ashx',
     'FARefGage': 'http://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowAnywhere/MapServer',
     //'RegulationServices': 'http://52.3.175.97:6080'
-    'RegulationServices': 'http://54.174.111.123:6080'
+    'RegulationServices': 'http://54.164.188.167:6080'
 }
 
 configuration.queryparams =
@@ -136,13 +136,33 @@ configuration.overlayedLayers = {
     //        }
     //    }
     //},
+    "str900co_utm": {
+        "name": "str900 (co) utm",
+        "url": "http://54.164.188.167:6080/arcgis/rest/services/streamstats/str900_co/ImageServer",
+        "type": 'agsImage',
+        "visible": true,
+        "layerOptions": {
+            "minZoom": 15,
+            "maxZoom": 17,
+            "opacity": 0.5,
+            "renderingRule":  {
+              "rasterFunction" : "Colormap",
+                        "rasterFunctionArguments" : {
+                            "Colormap" : [
+                              [1, 0, 0, 255]
+                            ]
+                        },
+                        "variableName" : "Value"
+            }
+        }
+    },//end str900  
     "SSLayer": {
         "name": "Implementated Regions",
         "url": configuration.baseurls['StreamStats'] + "/arcgis/rest/services/ss_studyAreas_prod/MapServer",
         "type": 'agsDynamic',
         "visible": true,
         "layerOptions": {
-            "opacity": 0.5,
+            "opacity": 0.6,
             "style": function (feature) {
                 return { color: 'gray', weight: 2 };
             }

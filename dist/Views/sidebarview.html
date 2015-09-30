@@ -46,7 +46,7 @@
                 </div>    
             </div> 
             <div class="sidebar-item">
-                <a ng-class="vm.selectedProcedure == 3  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(3)" >Select Scenarios<h5 ng-show="vm.studyAreaService.parametersLoaded"><i class="fa fa-check-square-o"></i><strong>Parameters Loaded</strong></h5><i ng-class="vm.selectedProcedure == 3 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
+                <a ng-class="vm.selectedProcedure == 3  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(3)" >Select Scenarios<h5 ng-show="vm.studyAreaService.parametersLoading"><i class="fa fa-check-square-o"></i><strong>Parameters Loaded</strong></h5><i ng-class="vm.selectedProcedure == 3 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
 
                 <div class="list-group-body" ng-show="vm.selectedProcedure == 3">
 
@@ -81,7 +81,7 @@
                         </div>
                         <div ng-show="vm.studyAreaService.studyAreaParameterList.length > 0">
                             <div class="form-group">
-                                <button type="button" class="btn btn-sm btn-primary" ng-click="vm.calculateParameters()"><i class="fa fa-refresh" ng-class="vm.studyAreaService.parametersLoaded ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Calculate Selected Parameters</button>
+                                <button type="button" class="btn btn-sm btn-primary" ng-click="vm.calculateParameters()"><i class="fa fa-refresh" ng-class="vm.studyAreaService.parametersLoading ? 'fa fa-refresh fa-spin' : 'fa fa-flash'"></i>&nbsp;&nbsp;Calculate Selected Parameters</button>
                             </div>
                             <div class="alert alert-success" role="alert" ng-show="vm.studyAreaService.parametersLoaded">Your parameters have been loaded, you can choose "<strong>Refine Parameters</strong>" or go straight to "<strong>Build a Flow Report</strong>"</div>
                         </div>
@@ -93,6 +93,7 @@
                         <div class="form-group">
                             <button ng-show="vm.regionService.selectedRegion.RegionID == 'CO'" ng-click="vm.checkRegulation()" type="button" class="btn btn-sm btn-primary"><i ng-class="vm.studyAreaService.canUpdate ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Check for upstream regulation</button>
                         </div>
+                        <div class="alert alert-success" role="alert" ng-show="!vm.studyAreaService.isRegulated == null">Upstream Regulation check has been completed.  There is <strong ng-show="!vm.studyAreaService.isRegulated">NO</strong> regulation in this watershed. You can choose "<strong>Refine Parameters</strong>" or go straight to "<strong>Build a Flow Report</strong>"</div>
                     </div>                        
                 </div>    
             </div>    

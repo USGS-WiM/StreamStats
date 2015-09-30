@@ -38,6 +38,8 @@ var StreamStats;
                 this._onSelectedStudyAreaChanged = new WiM.Event.Delegate();
                 this._studyAreaList = [];
                 this.canUpdate = true;
+                this.parametersLoaded = false;
+                this.parametersLoading = false;
                 this.doDelineateFlag = false;
                 this.studyAreaParameterList = [];
             }
@@ -99,7 +101,8 @@ var StreamStats;
             StudyAreaService.prototype.loadParameters = function () {
                 var _this = this;
                 console.log('in load parameters');
-                this.canUpdate = false;
+                //this.canUpdate = false;
+                this.parametersLoading = true;
                 this.parametersLoaded = false;
                 if (!this.selectedStudyArea || !this.selectedStudyArea.WorkspaceID || !this.selectedStudyArea.RegionID) {
                     alert('No Study Area');
@@ -113,14 +116,16 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     if (response.data.parameters && response.data.parameters.length > 0) {
-                        _this.loadParameterResults(response.data.parameters);
+                        var results = response.data.parameters;
+                        _this.loadParameterResults(results);
+                        _this.parametersLoaded = true;
                     }
                     //sm when complete
                 }, function (error) {
                     //sm when complete
                 }).finally(function () {
-                    _this.canUpdate = true;
-                    _this.parametersLoaded = true;
+                    //this.canUpdate = true;
+                    _this.parametersLoading = false;
                 });
             };
             StudyAreaService.prototype.upstreamRegulation = function () {
@@ -129,12 +134,13 @@ var StreamStats;
                 this.canUpdate = false;
                 var watershed = JSON.stringify(this.selectedStudyArea.Features[1].feature, null);
                 var url = configuration.baseurls['RegulationServices'] + configuration.queryparams['COregulationService'];
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, 1 /* POST */, 'json', { watershed: watershed, outputcrs: 4326, f: 'geojson' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', { watershed: watershed, outputcrs: 4326, f: 'geojson' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
                 this.Execute(request).then(function (response) {
                     console.log(response);
                     if (response.data.percentarearegulated > 0) {
                         _this.selectedStudyArea.Features.push(response.data["featurecollection"][0]);
-                        _this.loadRegulatedParameterResults(response.data.parameters);
+                        var regulatedResults = response.data.parameters;
+                        _this.loadRegulatedParameterResults(regulatedResults);
                         _this.isRegulated = true;
                     }
                     else {
@@ -152,26 +158,48 @@ var StreamStats;
             //-+-+-+-+-+-+-+-+-+-+-+-       
             StudyAreaService.prototype.loadParameterResults = function (results) {
                 console.log('in load parameter results');
-                for (var i = 0; i < results.length; i++) {
-                    for (var j = 0; j < this.studyAreaParameterList.length; j++) {
+                var paramList = this.studyAreaParameterList;
+                results.map(function (val) {
+                    angular.forEach(paramList, function (value, index) {
+                        if (val.code.toUpperCase().trim() === value.code.toUpperCase().trim()) {
+                            value.value = val.value;
+                            return; //exit loop
+                        } //endif
+                    });
+                });
+                /*
+                for (var i: number = 0; i < results.length; i++) {
+                    for (var j: number = 0; j < this.studyAreaParameterList.length; j++) {
                         if (results[i].code.toUpperCase().trim() === this.studyAreaParameterList[j].code.toUpperCase().trim()) {
                             this.studyAreaParameterList[j].value = results[i].value;
-                            break;
-                        } //endif
-                    }
-                }
+                            break;//exit loop
+                        }//endif
+                    }//next sa Parameter
+                }//next result
+                */
                 console.log('params', this.studyAreaParameterList);
             };
             StudyAreaService.prototype.loadRegulatedParameterResults = function (results) {
                 console.log('in load regulated parameter results');
-                for (var i = 0; i < results.length; i++) {
-                    for (var j = 0; j < this.studyAreaParameterList.length; j++) {
+                var paramList = this.studyAreaParameterList;
+                results.map(function (val) {
+                    angular.forEach(paramList, function (value, index) {
+                        if (val.code.toUpperCase().trim() === value.code.toUpperCase().trim()) {
+                            value.regulatedValue = val.value;
+                            return; //exit loop
+                        } //endif
+                    });
+                });
+                /*
+                for (var i: number = 0; i < results.length; i++) {
+                    for (var j: number = 0; j < this.studyAreaParameterList.length; j++) {
                         if (results[i].code.toUpperCase().trim() === this.studyAreaParameterList[j].code.toUpperCase().trim()) {
                             this.studyAreaParameterList[j].regulatedValue = results[i].value;
-                            break;
-                        } //endif
-                    }
-                }
+                            break;//exit loop
+                        }//endif
+                    }//next sa Parameter
+                }//next result
+                */
                 console.log('regulated params', this.studyAreaParameterList);
             };
             return StudyAreaService;

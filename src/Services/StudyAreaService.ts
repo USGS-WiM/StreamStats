@@ -34,6 +34,7 @@ module StreamStats.Services {
         RemoveStudyArea();
         doDelineateFlag: boolean;
         isRegulated: boolean;
+        parametersLoading: boolean;
         parametersLoaded: boolean;
         canUpdate: boolean;
         studyAreaParameterList: Array<IParameter>;
@@ -49,6 +50,7 @@ module StreamStats.Services {
         //-+-+-+-+-+-+-+-+-+-+-+-
         public canUpdate: boolean;
         public parametersLoaded: boolean;
+        public parametersLoading: boolean;
         private _studyAreaList: Array<Models.IStudyArea>;
         public get StudyAreaList(): Array<Models.IStudyArea> {
             return this._studyAreaList;
@@ -76,6 +78,8 @@ module StreamStats.Services {
             this._onSelectedStudyAreaChanged = new WiM.Event.Delegate<WiM.Event.EventArgs>();
             this._studyAreaList = []; 
             this.canUpdate = true;
+            this.parametersLoaded = false;
+            this.parametersLoading = false;
             this.doDelineateFlag = false;
             this.studyAreaParameterList = [];
         }
@@ -113,7 +117,8 @@ module StreamStats.Services {
         public loadParameters() {
 
             console.log('in load parameters');
-            this.canUpdate = false;
+            //this.canUpdate = false;
+            this.parametersLoading = true;
             this.parametersLoaded = false;
 
             if (!this.selectedStudyArea || !this.selectedStudyArea.WorkspaceID || !this.selectedStudyArea.RegionID) {
@@ -131,15 +136,17 @@ module StreamStats.Services {
             this.Execute(request).then(
                 (response: any) => {
                     if (response.data.parameters && response.data.parameters.length > 0) {
-                        this.loadParameterResults(response.data.parameters);
+                        var results = response.data.parameters;
+                        this.loadParameterResults(results);
+                        this.parametersLoaded = true;
                         //this.selectedStudyArea.Parameters = response.data.parameters;
                     }
                     //sm when complete
                 },(error) => {
                     //sm when complete
                 }).finally(() => {
-                    this.canUpdate = true;
-                    this.parametersLoaded = true;
+                    //this.canUpdate = true;
+                    this.parametersLoading = false;
                 });
         }
 
@@ -161,7 +168,8 @@ module StreamStats.Services {
                     console.log(response);
                     if (response.data.percentarearegulated > 0) {
                         this.selectedStudyArea.Features.push(response.data["featurecollection"][0]);
-                        this.loadRegulatedParameterResults(response.data.parameters);
+                        var regulatedResults = response.data.parameters;
+                        this.loadRegulatedParameterResults(regulatedResults);
                         this.isRegulated = true;
                     }
                     else {
@@ -181,6 +189,18 @@ module StreamStats.Services {
         //-+-+-+-+-+-+-+-+-+-+-+-       
         private loadParameterResults(results: Array<WiM.Models.IParameter>) {
             console.log('in load parameter results');
+
+            var paramList = this.studyAreaParameterList;
+            results.map(function (val) {
+                angular.forEach(paramList, function (value, index) {
+                    if (val.code.toUpperCase().trim() === value.code.toUpperCase().trim()) {
+                        value.value = val.value;
+                        return;//exit loop
+                    }//endif
+                });
+            });
+
+            /*
             for (var i: number = 0; i < results.length; i++) {
                 for (var j: number = 0; j < this.studyAreaParameterList.length; j++) {
                     if (results[i].code.toUpperCase().trim() === this.studyAreaParameterList[j].code.toUpperCase().trim()) {
@@ -189,11 +209,24 @@ module StreamStats.Services {
                     }//endif
                 }//next sa Parameter
             }//next result
+            */
             console.log('params', this.studyAreaParameterList);
         }
 
         private loadRegulatedParameterResults(results: Array<WiM.Models.IParameter>) {
             console.log('in load regulated parameter results');
+
+            var paramList = this.studyAreaParameterList;
+            results.map(function (val) {
+                angular.forEach(paramList, function (value, index) {
+                    if (val.code.toUpperCase().trim() === value.code.toUpperCase().trim()) {
+                        value.regulatedValue = val.value;
+                        return;//exit loop
+                    }//endif
+                });
+            });
+
+            /*
             for (var i: number = 0; i < results.length; i++) {
                 for (var j: number = 0; j < this.studyAreaParameterList.length; j++) {
                     if (results[i].code.toUpperCase().trim() === this.studyAreaParameterList[j].code.toUpperCase().trim()) {
@@ -202,6 +235,7 @@ module StreamStats.Services {
                     }//endif
                 }//next sa Parameter
             }//next result
+            */
             console.log('regulated params', this.studyAreaParameterList);
         }
 

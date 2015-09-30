@@ -116,7 +116,7 @@ module StreamStats.Controllers {
         public startDelineate() {
             //clear out parameter list, flow report, etc
             this.studyAreaService.studyAreaParameterList = [];
-            this.studyAreaService.parametersLoaded = false;
+            this.studyAreaService.parametersLoading = false;
             this.nssService.statisticsGroupList = [];
             this.nssService.selectedStatisticsGroup = null;
             this.nssService.selectedStatisticsGroupParameterList = [];
@@ -204,9 +204,15 @@ module StreamStats.Controllers {
 
         public checkRegulation() {
 
-            if (!this.studyAreaService.parametersLoaded) this.calculateParameters();
+            console.log('berp', this.studyAreaService.studyAreaParameterList.length, this.studyAreaService.parametersLoaded);
+            if (this.studyAreaService.studyAreaParameterList.length < 1 || !this.studyAreaService.parametersLoaded) {
+                alert('Select some parameters and make sure they are calcuated');
+                return;
+            }
+
 
             this.studyAreaService.upstreamRegulation();
+
         }
 
 
