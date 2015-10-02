@@ -31,7 +31,7 @@ var StreamStats;
             return Center;
         })();
         var ReportController = (function () {
-            function ReportController($scope, $modalInstance, studyArea, leafletData) {
+            function ReportController($scope, $modalInstance, studyArea, StatisticsGroup, leafletData) {
                 var _this = this;
                 this.markers = null;
                 this.geojson = null;
@@ -43,6 +43,7 @@ var StreamStats;
                 this.reportTitle = 'Report Title';
                 this.reportComments = 'Some comments here';
                 this.initMap();
+                console.log('testtest');
                 $scope.$on('leafletDirectiveMap.load', function (event, args) {
                     console.log('report map load');
                     _this.showFeatures();
@@ -113,7 +114,7 @@ var StreamStats;
             };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
-            ReportController.$inject = ['$scope', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'leafletData'];
+            ReportController.$inject = ['$scope', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData'];
             return ReportController;
         })(); //end class
         angular.module('StreamStats.Controllers').controller('StreamStats.Controllers.ReportController', ReportController);

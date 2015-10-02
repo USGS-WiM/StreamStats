@@ -220,7 +220,7 @@ module StreamStats.Controllers {
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         private canUpdateProcedure(pType: ProcedureType): boolean {
-            console.log('in canUpdateProcedure');
+            //console.log('in canUpdateProcedure');
             //Project flow:
             var msg: string;
             try {               

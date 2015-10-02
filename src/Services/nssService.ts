@@ -138,27 +138,26 @@ module StreamStats.Services {
 
             if (!studyAreaParameterList && !rcode && !statisticsGroupID && !regressionregion) return;
 
-            console.log('in estimate flows', studyAreaParameterList, this.selectedStatisticsGroupScenario);
+            console.log('in estimate flows method');
 
             //swap out computed values in object
             this.selectedStatisticsGroupScenario[0].RegressionRegions[0].Parameters.map(function (val) {
                 angular.forEach(studyAreaParameterList, function (value, index) {
                     if (val.Code.toLowerCase() == value.code.toLowerCase()) {
-                        console.log('match found', val.Code, val.Value, value.value);
+                        console.log('updating parameter in scenario object for: ', val.Code, ' from: ', val.Value, ' to: ', value.value);
                         val.Value = value.value;
                     }
                 });
             });
 
             var updatedScenarioObject = JSON.stringify(this.selectedStatisticsGroupScenario, null);
-            console.log('results', updatedScenarioObject);
+            console.log('updated scenario object: ', updatedScenarioObject);
 
             //do request
             var url = configuration.baseurls['NSS'] + configuration.queryparams['estimateFlows'].format(rcode, statisticsGroupID, regressionregion);
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, 1, 'json', updatedScenarioObject);
 
             this.selectedStatisticsGroupScenarioResults = [];
-            console.log('sending request now');
             this.Execute(request).then(
                 (response: any) => {    
                     if (response.data[0].RegressionRegions[0].Results && response.data[0].RegressionRegions[0].Results.length > 0) {
