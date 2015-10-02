@@ -278,7 +278,7 @@ module StreamStats.Controllers {
 
             this.studyArea.selectedStudyArea.Features.forEach((item) => {
 
-                console.log('in onselectedstudyarea changed', item.name);
+                //console.log('in onselectedstudyarea changed', item.name);
 
                 if (item.name == 'globalwatershed') {
                     this.geojson[item.name] = {

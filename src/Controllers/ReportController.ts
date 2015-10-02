@@ -81,8 +81,8 @@ module StreamStats.Controllers {
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'leafletData'];
-        constructor($scope: IReportControllerScope, $modalInstance: ng.ui.bootstrap.IModalServiceInstance, studyArea: Services.IStudyAreaService, leafletData: ILeafletData) {
+        static $inject = ['$scope', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData'];
+        constructor($scope: IReportControllerScope, $modalInstance: ng.ui.bootstrap.IModalServiceInstance, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, leafletData: ILeafletData) {
             $scope.vm = this;
             this.studyAreaService = studyArea;
             this.leafletData = leafletData;
@@ -90,6 +90,7 @@ module StreamStats.Controllers {
             this.reportComments = 'Some comments here';
 
             this.initMap();
+            console.log('testtest');
 
             $scope.$on('leafletDirectiveMap.load',(event, args) => {
                 console.log('report map load');

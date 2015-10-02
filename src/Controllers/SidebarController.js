@@ -149,7 +149,7 @@ var StreamStats;
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             SidebarController.prototype.canUpdateProcedure = function (pType) {
-                console.log('in canUpdateProcedure');
+                //console.log('in canUpdateProcedure');
                 //Project flow:
                 var msg;
                 try {
