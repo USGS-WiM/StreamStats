@@ -117,6 +117,7 @@ module StreamStats.Controllers {
             //clear out parameter list, flow report, etc
             this.studyAreaService.studyAreaParameterList = [];
             this.studyAreaService.parametersLoading = false;
+            this.studyAreaService.parametersLoaded = false;
             this.nssService.statisticsGroupList = [];
             this.nssService.selectedStatisticsGroup = null;
             this.nssService.selectedStatisticsGroupParameterList = [];
