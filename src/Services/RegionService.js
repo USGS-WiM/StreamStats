@@ -51,6 +51,7 @@ var StreamStats;
                 this._onSelectedRegionChanged = new WiM.Event.Delegate();
                 this.regionList = [];
                 this.parameterList = [];
+                this.masterRegionList = configuration.regions;
             }
             Object.defineProperty(RegionService.prototype, "onSelectedRegionChanged", {
                 get: function () {

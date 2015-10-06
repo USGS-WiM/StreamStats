@@ -42,30 +42,37 @@ module StreamStats.Controllers {
         //-+-+-+-+-+-+-+-+-+-+-+-
         public sideBarCollapsed: boolean;
         public selectedProcedure: ProcedureType;
+        public toaster: any;
 
         public regionList: Array<Services.IRegion>;
+        public masterRegionList: Array<Services.IRegion>;
         //public parameterList: Array<Services.IParameter>;
         //public statisticsGroupList: Array<Services.IStatisticsGroup>;
         public selectedStatisticsGroup: Services.IStatisticsGroup;
         private searchService: WiM.Services.ISearchAPIService;
         private regionService: Services.IRegionService;
         private nssService: Services.InssService;
-        private studyAreaService: Services.IStudyAreaService;        
+        private studyAreaService: Services.IStudyAreaService;       
+        private reportService: Services.IreportService;    
+
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService'];
-        constructor($scope: ISidebarControllerScope, service: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService) {
+        static $inject = ['$scope', 'toaster', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ReportService'];
+        constructor($scope: ISidebarControllerScope, toaster, service: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, report: Services.IreportService) {
             $scope.vm = this;
+            this.toaster = toaster;
             this.searchService = service;
             this.sideBarCollapsed = false;
             this.selectedProcedure = ProcedureType.INIT;
             this.regionService = region;
             this.regionList = region.regionList; 
+            this.masterRegionList = region.masterRegionList; 
             //this.parameterList = region.parameterList;    
             this.nssService = StatisticsGroup;
             //this.statisticsGroupList = StatisticsGroup.statisticsGroupList;
             this.studyAreaService = studyArea;
+            this.reportService = report;
 
             //subscribe to Events
 
@@ -104,7 +111,13 @@ module StreamStats.Controllers {
         public onAOISelect(item: WiM.Services.ISearchAPIOutput) {
             this.searchService.onSelectedAreaOfInterestChanged.raise(this, new WiM.Services.SearchAPIEventArgs(item));
         }
+        public zoomRegion(inRegion: string) {
+            var region = JSON.parse(inRegion);
+            console.log('here1', region);
+            
+        }
         public setRegion(region: Services.IRegion) {
+            console.log('here1', region);
             if (this.regionService.selectedRegion == undefined || this.regionService.selectedRegion.RegionID !== region.RegionID)
                 this.regionService.selectedRegion = region;
             this.setProcedureType(ProcedureType.IDENTIFY);
@@ -114,7 +127,10 @@ module StreamStats.Controllers {
 
         }
         public startDelineate() {
+            this.toaster.pop('success', "Delineate", "Click on a blue stream cell to start delineation");
+
             //clear out parameter list, flow report, etc
+            this.studyAreaService.selectedStudyArea = null;
             this.studyAreaService.studyAreaParameterList = [];
             this.studyAreaService.parametersLoading = false;
             this.studyAreaService.parametersLoaded = false;
@@ -200,6 +216,8 @@ module StreamStats.Controllers {
 
             //hardcoded to first entry for now
             this.nssService.estimateFlows(studyAreaParameterList, this.regionService.selectedRegion.RegionID, this.nssService.selectedStatisticsGroup.ID, this.studyAreaService.selectedStudyArea.RegressionRegions[0]);
+
+            this.reportService.openReport();
 
         }
 

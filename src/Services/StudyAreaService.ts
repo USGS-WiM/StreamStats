@@ -48,6 +48,7 @@ module StreamStats.Services {
         
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
+        public toaster: any;
         public canUpdate: boolean;
         public parametersLoaded: boolean;
         public parametersLoading: boolean;
@@ -73,9 +74,10 @@ module StreamStats.Services {
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        constructor($http: ng.IHttpService, private $q: ng.IQService) {
+        constructor($http: ng.IHttpService, private $q: ng.IQService, toaster) {
             super($http, configuration.baseurls['StreamStats'])
             this._onSelectedStudyAreaChanged = new WiM.Event.Delegate<WiM.Event.EventArgs>();
+            this.toaster = toaster;
             this._studyAreaList = []; 
             this.canUpdate = true;
             this.parametersLoaded = false;
@@ -95,7 +97,10 @@ module StreamStats.Services {
         }
 
         public loadStudyBoundary() {
+
+            this.toaster.pop("info", "Delineating Basin", "Please wait...", 999999);
             this.canUpdate = false;
+            
             var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(),
                 this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString(), false)
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
@@ -108,6 +113,7 @@ module StreamStats.Services {
                 },(error) => {
                     //sm when error
                 }).finally(() => {
+                    this.toaster.clear()
                     this.canUpdate = true;
                     this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
                    
@@ -116,6 +122,7 @@ module StreamStats.Services {
 
         public loadParameters() {
 
+            this.toaster.pop('info', "Calculating Selected Parameters", "Please wait...", 999999);
             console.log('in load parameters');
             //this.canUpdate = false;
             this.parametersLoading = true;
@@ -145,12 +152,15 @@ module StreamStats.Services {
                 },(error) => {
                     //sm when complete
                 }).finally(() => {
+                    this.toaster.clear();
                     //this.canUpdate = true;
                     this.parametersLoading = false;
                 });
         }
 
         public upstreamRegulation() {
+
+            this.toaster.pop('info', "Checking for Upstream Regulation", "Please wait...");
 
             this.isRegulated = false;
             this.canUpdate = false;
@@ -171,14 +181,17 @@ module StreamStats.Services {
                         var regulatedResults = response.data.parameters;
                         this.loadRegulatedParameterResults(regulatedResults);
                         this.isRegulated = true;
+                        this.toaster.pop('success', "Regulation was found", "Continue to 'Modify Parameters' to see area-weighted parameters");
                     }
                     else {
-                        alert("No regulation found");
+                        //alert("No regulation found");
+                        this.toaster.pop('warning', "No regulation found", "Please continue");
                     }
                     //sm when complete
                 },(error) => {
                     //sm when error
                 }).finally(() => {
+                    //this.toaster.clear();
                     this.canUpdate = true;
                     this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
 
@@ -188,6 +201,9 @@ module StreamStats.Services {
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-       
         private loadParameterResults(results: Array<WiM.Models.IParameter>) {
+
+            this.toaster.pop('info', "Loading Parameters", "Please wait...");
+
             console.log('in load parameter results');
 
             var paramList = this.studyAreaParameterList;
@@ -214,6 +230,9 @@ module StreamStats.Services {
         }
 
         private loadRegulatedParameterResults(results: Array<WiM.Models.IParameter>) {
+
+            this.toaster.pop('info', "Loading Regulated Parameters", "Please wait...");
+
             console.log('in load regulated parameter results');
 
             var paramList = this.studyAreaParameterList;
@@ -241,9 +260,9 @@ module StreamStats.Services {
 
     }//end class
 
-    factory.$inject = ['$http', '$q'];
-    function factory($http: ng.IHttpService, $q: ng.IQService) {
-        return new StudyAreaService($http,$q)
+    factory.$inject = ['$http', '$q', 'toaster'];
+    function factory($http: ng.IHttpService, $q: ng.IQService, toaster:any) {
+        return new StudyAreaService($http,$q, toaster)
     }
     angular.module('StreamStats.Services')
         .factory('StreamStats.Services.StudyAreaService', factory)

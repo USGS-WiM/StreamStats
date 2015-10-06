@@ -177,7 +177,7 @@ var StreamStats;
                 var rcode = this.studyArea.selectedStudyArea.RegionID;
                 var workspaceID = this.studyArea.selectedStudyArea.WorkspaceID;
                 this.studyArea.selectedStudyArea.Features.forEach(function (item) {
-                    //console.log('in onselectedstudyarea changed', item.name);
+                    console.log('in onselectedstudyarea changed', item.name);
                     if (item.name == 'globalwatershed') {
                         _this.geojson[item.name] = {
                             data: item.feature,
@@ -288,9 +288,9 @@ var StreamStats;
                 this.markers['pourpoint'] = {
                     lat: latlng.lat,
                     lng: latlng.lng,
-                    message: 'new pourpoint',
-                    focus: true,
-                    draggable: true
+                    message: 'New Pourpoint</br><strong>Latitude: </strong>' + latlng.lat + '</br><strong>Longitude: </strong>' + latlng.lng,
+                    focus: false,
+                    draggable: false
                 };
                 var studyArea = new StreamStats.Models.StudyArea(this.regionServices.selectedRegion.RegionID, new WiM.Models.Point(latlng.lat, latlng.lng, '4326'));
                 this.studyArea.AddStudyArea(studyArea);

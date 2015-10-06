@@ -21,18 +21,21 @@ var StreamStats;
     (function (Controllers) {
         'use strinct';
         var SidebarController = (function () {
-            function SidebarController($scope, service, region, studyArea, StatisticsGroup) {
+            function SidebarController($scope, toaster, service, region, studyArea, StatisticsGroup, report) {
                 var _this = this;
                 $scope.vm = this;
+                this.toaster = toaster;
                 this.searchService = service;
                 this.sideBarCollapsed = false;
                 this.selectedProcedure = 1 /* INIT */;
                 this.regionService = region;
                 this.regionList = region.regionList;
+                this.masterRegionList = region.masterRegionList;
                 //this.parameterList = region.parameterList;    
                 this.nssService = StatisticsGroup;
                 //this.statisticsGroupList = StatisticsGroup.statisticsGroupList;
                 this.studyAreaService = studyArea;
+                this.reportService = report;
                 //subscribe to Events
                 //watches for changes to selected StatisticsGroup param list and updates studyareaParamList with them
                 $scope.$watchCollection(function () { return _this.nssService.selectedStatisticsGroupParameterList; }, function (newval, oldval) {
@@ -68,7 +71,12 @@ var StreamStats;
             SidebarController.prototype.onAOISelect = function (item) {
                 this.searchService.onSelectedAreaOfInterestChanged.raise(this, new WiM.Services.SearchAPIEventArgs(item));
             };
+            SidebarController.prototype.zoomRegion = function (inRegion) {
+                var region = JSON.parse(inRegion);
+                console.log('here1', region);
+            };
             SidebarController.prototype.setRegion = function (region) {
+                console.log('here1', region);
                 if (this.regionService.selectedRegion == undefined || this.regionService.selectedRegion.RegionID !== region.RegionID)
                     this.regionService.selectedRegion = region;
                 this.setProcedureType(2 /* IDENTIFY */);
@@ -76,7 +84,9 @@ var StreamStats;
                 this.regionService.loadParametersByRegion();
             };
             SidebarController.prototype.startDelineate = function () {
+                this.toaster.pop('success', "Delineate", "Click on a blue stream cell to start delineation");
                 //clear out parameter list, flow report, etc
+                this.studyAreaService.selectedStudyArea = null;
                 this.studyAreaService.studyAreaParameterList = [];
                 this.studyAreaService.parametersLoading = false;
                 this.studyAreaService.parametersLoaded = false;
@@ -138,6 +148,7 @@ var StreamStats;
                 console.log('in estimateFlows');
                 //hardcoded to first entry for now
                 this.nssService.estimateFlows(studyAreaParameterList, this.regionService.selectedRegion.RegionID, this.nssService.selectedStatisticsGroup.ID, this.studyAreaService.selectedStudyArea.RegressionRegions[0]);
+                this.reportService.openReport();
             };
             SidebarController.prototype.checkRegulation = function () {
                 console.log('berp', this.studyAreaService.studyAreaParameterList.length, this.studyAreaService.parametersLoaded);
@@ -182,7 +193,7 @@ var StreamStats;
             };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
-            SidebarController.$inject = ['$scope', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService'];
+            SidebarController.$inject = ['$scope', 'toaster', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ReportService'];
             return SidebarController;
         })(); //end class
         var ProcedureType;

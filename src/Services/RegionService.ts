@@ -28,6 +28,7 @@ module StreamStats.Services {
     export interface IRegionService {
         onSelectedRegionChanged: WiM.Event.Delegate<WiM.Event.EventArgs>;
         regionList: Array<IRegion>;
+        masterRegionList: Array<IRegion>;
         parameterList: Array<IParameter>;
         selectedRegion: IRegion;
 
@@ -81,6 +82,7 @@ module StreamStats.Services {
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
         public regionList: Array<IRegion>;
+        public masterRegionList: Array<IRegion>;
         public parameterList: Array<IParameter>;
         private _selectedRegion: IRegion;
         public get selectedRegion(): IRegion {
@@ -100,6 +102,7 @@ module StreamStats.Services {
             this._onSelectedRegionChanged = new WiM.Event.Delegate<WiM.Event.EventArgs>(); 
             this.regionList = [];
             this.parameterList = [];
+            this.masterRegionList = configuration.regions;
         }
 
         //Methods

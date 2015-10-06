@@ -19,25 +19,21 @@ var StreamStats;
 (function (StreamStats) {
     var Controllers;
     (function (Controllers) {
-        'use strinct';
+        'use strict';
         var NavbarController = (function () {
-            function NavbarController($scope, $modal, studyArea) {
+            function NavbarController($scope, report, studyArea) {
                 $scope.vm = this;
-                //console.log('sa1', studyArea);
-                this.openReport = function () {
-                    console.log('in report open function');
-                    this.modalInstance = $modal.open({
-                        templateUrl: 'Views/reportview.html',
-                        controller: 'StreamStats.Controllers.ReportController',
-                        size: 'lg',
-                        backdropClass: 'backdropZ',
-                        windowClass: 'windowZ'
-                    });
-                };
+                this.reportService = report;
             }
+            //Methods
+            //-+-+-+-+-+-+-+-+-+-+-+-
+            NavbarController.prototype.openReport = function () {
+                console.log('here');
+                this.reportService.openReport();
+            };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
-            NavbarController.$inject = ['$scope', '$modal', 'StreamStats.Services.StudyAreaService'];
+            NavbarController.$inject = ['$scope', 'StreamStats.Services.ReportService', 'StreamStats.Services.StudyAreaService'];
             return NavbarController;
         })(); //end class
         angular.module('StreamStats.Controllers').controller('StreamStats.Controllers.NavbarController', NavbarController);

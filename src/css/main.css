@@ -24,6 +24,10 @@ body {
     min-width: 700px;
 }
 
+#toast-container > div {
+   opacity: 1 !important; 
+}
+
 .navbar{
     margin-top:-50px;
     width:100%;
