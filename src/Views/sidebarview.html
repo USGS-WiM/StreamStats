@@ -7,6 +7,14 @@
                 <div class="list-group-body" ng-hide="vm.selectedProcedure != 1">
                     <p>To begin: use the map zoom to and select a region, or use the location search.</p>
 
+                    <!--
+                    <div class="form-group"> 
+                        <select name="repeatSelect" id="repeatSelect" ng-model="vm.selectedRegion" ng-change="vm.zoomRegion(vm.selectedRegion)">
+                            <option ng-repeat="region in vm.masterRegionList" value="{{region}}">{{region.Name}}</option>
+                        </select>
+                    </div>
+                    -->
+
                     <input type="text" class="form-control"
                             ng-model="selection"
                             typeahead="loc as loc.Name +'(' + loc.State +')' for loc in vm.getLocations($viewValue)"
@@ -76,7 +84,7 @@
                         <h4>Parameters</h4>
                         <p>Parameters can be selected individually or are selected based on the chosen scenario</p>
                         <div class="list-group">
-                            <button class="btn btn-sm btn-default" ng-class="vm.studyAreaService.studyAreaParameterList.indexOf(parameter) > -1 ? 'btn-success' : ''" ng-click="vm.updateStudyAreaParameterList(parameter)" ng-repeat="parameter in vm.regionService.parameterList"><span>{{parameter.name}} </span></button>
+                            <button class="btn btn-sm btn-default" ng-class="vm.studyAreaService.studyAreaParameterList.indexOf(parameter) > -1 ? 'btn-success' : ''" ng-click="vm.updateStudyAreaParameterList(parameter)" ng-repeat="parameter in vm.regionService.parameterList" tooltip="{{parameter.description}}"><span>{{parameter.name}} </span></button>
                             <!--
                             <a href="#" class="list-group-item" ng-class="vm.studyAreaService.studyAreaParameterList.indexOf(parameter) > -1 ? 'list-group-item-success' : ''" ng-click="vm.updateStudyAreaParameterList(parameter)" ng-repeat="parameter in vm.regionService.parameterList">{{parameter.name}}</a>-->
                         </div>
@@ -129,52 +137,6 @@
                     <p>Click the button below to calculate flows for your selected scenario: {{vm.nssService.selectedStatisticsGroup.Name}}</p>
                     <div class="form-group" ng-show="vm.nssService.selectedStatisticsGroup">
                         <button ng-click="vm.estimateFlows(vm.studyAreaService.studyAreaParameterList)" type="button" class="btn btn-sm btn-primary"><i ng-class="vm.nssService.canUpdate ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Estimate Flows</button>
-                    </div>
-
-                    <div class="well well-sm" ng-show="vm.nssService.selectedStatisticsGroupScenarioResults.length > 0">
-                        <h4>Study Area</h4>
-                        <p><strong>Latitude: </strong>{{vm.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(4)}}</p>
-                        <p><strong>Longitude: </strong>{{vm.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(4)}}</p>
-                        <table class="table table-condensed">
-                          <thead class="param-table">
-                            <tr>
-                                <th>Parameter</th>
-                                <th>Value</th> 
-                                <th>Min Limit</th>
-                                <th>Max Limit</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                              <tr ng-repeat="parameter in vm.nssService.selectedStatisticsGroupParameterList">
-                                <td ng-bind="parameter.Name"></td>
-                                <td ng-bind="parameter.Value"></td>
-                                <td ng-bind="parameter.Limits.Min.toFixed(2)"></td>
-                                <td ng-bind="parameter.Limits.Max.toFixed(2)"></td>
-                              </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="well well-sm" ng-show="vm.nssService.selectedStatisticsGroupScenarioResults.length > 0">
-                        <h4>Flow Report</h4>
-                        <table class="table table-condensed">
-                          <thead class="param-table">
-                            <tr>
-                                <th>Statistic</th>
-                                <th>Value</th> 
-                                <th>Unit</th>
-                                <th>Prediction Error</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                              <tr ng-repeat="parameter in vm.nssService.selectedStatisticsGroupScenarioResults">
-                                <td ng-bind="parameter.Name"></td>
-                                <td ng-bind="parameter.Value.toFixed(0)"></td>
-                                <td ng-bind="parameter.Unit.Abbr"></td>
-                                <td ng-bind="parameter.Errors[0].Value"></td>
-                              </tr>
-                            </tbody>
-                        </table>
                     </div>
                 </div>    
             </div>       

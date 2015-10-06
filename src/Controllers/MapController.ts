@@ -278,7 +278,7 @@ module StreamStats.Controllers {
 
             this.studyArea.selectedStudyArea.Features.forEach((item) => {
 
-                //console.log('in onselectedstudyarea changed', item.name);
+                console.log('in onselectedstudyarea changed', item.name);
 
                 if (item.name == 'globalwatershed') {
                     this.geojson[item.name] = {
@@ -406,9 +406,9 @@ module StreamStats.Controllers {
             this.markers['pourpoint'] = {
                 lat: latlng.lat,
                 lng: latlng.lng,
-                message: 'new pourpoint',
-                focus: true,
-                draggable: true
+                message: 'New Pourpoint</br><strong>Latitude: </strong>' + latlng.lat + '</br><strong>Longitude: </strong>' + latlng.lng,
+                focus: false,
+                draggable: false
             }
 
             var studyArea: Models.IStudyArea = new Models.StudyArea(this.regionServices.selectedRegion.RegionID, new WiM.Models.Point(latlng.lat, latlng.lng, '4326'));

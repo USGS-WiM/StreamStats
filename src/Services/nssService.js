@@ -39,9 +39,10 @@ var StreamStats;
             __extends(nssService, _super);
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
-            function nssService($http, $q) {
+            function nssService($http, $q, toaster) {
                 _super.call(this, $http, configuration.baseurls['NSS']);
                 this.$q = $q;
+                this.toaster = toaster;
                 this._onselectedStatisticsGroupChanged = new WiM.Event.Delegate();
                 this.statisticsGroupList = [];
                 this.selectedStatisticsGroupParameterList = [];
@@ -59,6 +60,7 @@ var StreamStats;
             //-+-+-+-+-+-+-+-+-+-+-+-
             nssService.prototype.loadStatisticsGroupTypes = function (rcode, regressionregion) {
                 var _this = this;
+                this.toaster.pop('info', "Loading Available Scenarios", "Please wait...", 999999);
                 console.log('in load StatisticsGroups', rcode);
                 if (!rcode && !regressionregion)
                     return;
@@ -76,10 +78,12 @@ var StreamStats;
                 }, function (error) {
                     //sm when complete
                 }).finally(function () {
+                    _this.toaster.clear();
                 });
             };
             nssService.prototype.loadParametersByStatisticsGroup = function (rcode, statisticsGroupID, regressionregion) {
                 var _this = this;
+                this.toaster.pop('info', "Load Parameters by Scenario", "Please wait...", 999999);
                 //var deferred = ng.IQService.defer();
                 console.log('in load StatisticsGroup parameters', rcode, statisticsGroupID, regressionregion);
                 if (!rcode && !statisticsGroupID && !regressionregion)
@@ -104,10 +108,12 @@ var StreamStats;
                 }, function (error) {
                     //sm when complete
                 }).finally(function () {
+                    _this.toaster.clear();
                 });
             };
             nssService.prototype.estimateFlows = function (studyAreaParameterList, rcode, statisticsGroupID, regressionregion) {
                 var _this = this;
+                this.toaster.pop('info', "Estimating Flows", "Please wait...", 999999);
                 this.canUpdate = false;
                 if (!studyAreaParameterList && !rcode && !statisticsGroupID && !regressionregion)
                     return;
@@ -142,14 +148,15 @@ var StreamStats;
                 }, function (error) {
                     //sm when complete
                 }).finally(function () {
+                    _this.toaster.clear();
                     _this.canUpdate = true;
                 });
             };
             return nssService;
         })(WiM.Services.HTTPServiceBase); //end class
-        factory.$inject = ['$http', '$q'];
-        function factory($http, $q) {
-            return new nssService($http, $q);
+        factory.$inject = ['$http', '$q', 'toaster'];
+        function factory($http, $q, toaster) {
+            return new nssService($http, $q, toaster);
         }
         angular.module('StreamStats.Services').factory('StreamStats.Services.nssService', factory);
     })(Services = StreamStats.Services || (StreamStats.Services = {}));

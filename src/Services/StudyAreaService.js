@@ -32,10 +32,11 @@ var StreamStats;
             __extends(StudyAreaService, _super);
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
-            function StudyAreaService($http, $q) {
+            function StudyAreaService($http, $q, toaster) {
                 _super.call(this, $http, configuration.baseurls['StreamStats']);
                 this.$q = $q;
                 this._onSelectedStudyAreaChanged = new WiM.Event.Delegate();
+                this.toaster = toaster;
                 this._studyAreaList = [];
                 this.canUpdate = true;
                 this.parametersLoaded = false;
@@ -84,6 +85,7 @@ var StreamStats;
             };
             StudyAreaService.prototype.loadStudyBoundary = function () {
                 var _this = this;
+                this.toaster.pop("info", "Delineating Basin", "Please wait...", 999999);
                 this.canUpdate = false;
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString(), false);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
@@ -94,12 +96,14 @@ var StreamStats;
                 }, function (error) {
                     //sm when error
                 }).finally(function () {
+                    _this.toaster.clear();
                     _this.canUpdate = true;
                     _this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
                 });
             };
             StudyAreaService.prototype.loadParameters = function () {
                 var _this = this;
+                this.toaster.pop('info', "Calculating Selected Parameters", "Please wait...", 999999);
                 console.log('in load parameters');
                 //this.canUpdate = false;
                 this.parametersLoading = true;
@@ -124,17 +128,19 @@ var StreamStats;
                 }, function (error) {
                     //sm when complete
                 }).finally(function () {
+                    _this.toaster.clear();
                     //this.canUpdate = true;
                     _this.parametersLoading = false;
                 });
             };
             StudyAreaService.prototype.upstreamRegulation = function () {
                 var _this = this;
+                this.toaster.pop('info', "Checking for Upstream Regulation", "Please wait...");
                 this.isRegulated = false;
                 this.canUpdate = false;
                 var watershed = JSON.stringify(this.selectedStudyArea.Features[1].feature, null);
                 var url = configuration.baseurls['RegulationServices'] + configuration.queryparams['COregulationService'];
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, 1 /* POST */, 'json', { watershed: watershed, outputcrs: 4326, f: 'geojson' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', { watershed: watershed, outputcrs: 4326, f: 'geojson' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
                 this.Execute(request).then(function (response) {
                     console.log(response);
                     if (response.data.percentarearegulated > 0) {
@@ -142,14 +148,17 @@ var StreamStats;
                         var regulatedResults = response.data.parameters;
                         _this.loadRegulatedParameterResults(regulatedResults);
                         _this.isRegulated = true;
+                        _this.toaster.pop('success', "Regulation was found", "Continue to 'Modify Parameters' to see area-weighted parameters");
                     }
                     else {
-                        alert("No regulation found");
+                        //alert("No regulation found");
+                        _this.toaster.pop('warning', "No regulation found", "Please continue");
                     }
                     //sm when complete
                 }, function (error) {
                     //sm when error
                 }).finally(function () {
+                    //this.toaster.clear();
                     _this.canUpdate = true;
                     _this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
                 });
@@ -157,6 +166,7 @@ var StreamStats;
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+-       
             StudyAreaService.prototype.loadParameterResults = function (results) {
+                this.toaster.pop('info', "Loading Parameters", "Please wait...");
                 console.log('in load parameter results');
                 var paramList = this.studyAreaParameterList;
                 results.map(function (val) {
@@ -180,6 +190,7 @@ var StreamStats;
                 console.log('params', this.studyAreaParameterList);
             };
             StudyAreaService.prototype.loadRegulatedParameterResults = function (results) {
+                this.toaster.pop('info', "Loading Regulated Parameters", "Please wait...");
                 console.log('in load regulated parameter results');
                 var paramList = this.studyAreaParameterList;
                 results.map(function (val) {
@@ -204,9 +215,9 @@ var StreamStats;
             };
             return StudyAreaService;
         })(WiM.Services.HTTPServiceBase); //end class
-        factory.$inject = ['$http', '$q'];
-        function factory($http, $q) {
-            return new StudyAreaService($http, $q);
+        factory.$inject = ['$http', '$q', 'toaster'];
+        function factory($http, $q, toaster) {
+            return new StudyAreaService($http, $q, toaster);
         }
         angular.module('StreamStats.Services').factory('StreamStats.Services.StudyAreaService', factory);
     })(Services = StreamStats.Services || (StreamStats.Services = {}));

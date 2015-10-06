@@ -24,7 +24,7 @@
 
 //Imports"
 module StreamStats.Controllers {
-    'use strinct';
+    'use strict';
     interface INavbarControllerScope extends ng.IScope {
         vm: NavbarController;
     }
@@ -34,38 +34,27 @@ module StreamStats.Controllers {
     class NavbarController implements INavbarController {
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
-        public openReport: any;
+        private reportService: Services.IreportService;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$modal', 'StreamStats.Services.StudyAreaService'];
-        constructor($scope: INavbarControllerScope, $modal: ng.ui.bootstrap.IModalService, studyArea: Services.IStudyAreaService) {
+        static $inject = ['$scope', 'StreamStats.Services.ReportService', 'StreamStats.Services.StudyAreaService'];
+        constructor($scope: INavbarControllerScope, report: Services.IreportService, studyArea: Services.IStudyAreaService) {
             $scope.vm = this;
+            this.reportService = report;
 
-            //console.log('sa1', studyArea);
-  
-            this.openReport = function () {
-                console.log('in report open function');
-
-                this.modalInstance = $modal.open({
-                    templateUrl: 'Views/reportview.html',
-                    controller: 'StreamStats.Controllers.ReportController',
-                    size: 'lg',
-                    backdropClass: 'backdropZ',
-                    windowClass: 'windowZ'
-                });
-            }    
-            
-            
         }
 
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
+        public openReport(): void {
+            console.log('here');
+            this.reportService.openReport();
 
+        }
 
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
-
 
     }//end class
     angular.module('StreamStats.Controllers')

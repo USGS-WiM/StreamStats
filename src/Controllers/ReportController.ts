@@ -70,6 +70,7 @@ module StreamStats.Controllers {
         public close: any;
         public print: any;
         private studyAreaService: Services.IStudyAreaService;
+        private nssService: Services.InssService;
         public markers: Object = null;
         public geojson: Object = null;
         public center: ICenter = null;
@@ -85,6 +86,7 @@ module StreamStats.Controllers {
         constructor($scope: IReportControllerScope, $modalInstance: ng.ui.bootstrap.IModalServiceInstance, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, leafletData: ILeafletData) {
             $scope.vm = this;
             this.studyAreaService = studyArea;
+            this.nssService = StatisticsGroup;
             this.leafletData = leafletData;
             this.reportTitle = 'Report Title';
             this.reportComments = 'Some comments here';
@@ -145,6 +147,15 @@ module StreamStats.Controllers {
                         map.invalidateSize();
                         console.log('in getmap: ', bbox);
                         map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
+
+                        //map.dragging.disable();
+                        map.touchZoom.disable();
+                        map.doubleClickZoom.disable();
+                        map.scrollWheelZoom.disable();
+                        map.boxZoom.disable();
+                        map.keyboard.disable();
+                        if (map.tap) map.tap.disable();
+                        document.getElementById('map').style.cursor = 'default';
 
                     });
                 }
