@@ -54,14 +54,22 @@
                                                 <label for="email">Email:</label>
                                                 <input type="email" class="form-control" id="email" ng-model="vm.gitHubIssueData.email">
                                             </div>
+
                                         </div>
                                         <div class="col-md-8">
                                             <div class="form-group">
                                                 <label for="title">Title:</label>
                                                 <input class="form-control" id="title" ng-model="vm.gitHubIssueData.title" required>
                                             </div>
-                                            <label for="message">Description</label>
-                                            <textarea class="form-control" rows="8" id="description" ng-model="vm.gitHubIssueData.description"></textarea>
+                                            <div class="form-group">
+                                                <label for="message">Description:</label>
+                                                <textarea class="form-control" rows="6" id="description" ng-model="vm.gitHubIssueData.description"></textarea>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="email">Issue Type: </label>
+                                                <input type="radio" ng-model="vm.gitHubIssueData.type" value="Bug" /><label for="Bug">Bug</label>
+                                                <input type="radio" ng-model="vm.gitHubIssueData.type" value="Enhancement" /><label for="Enhancement">Enhancement</label>
+                                            </div>
                                         </div>
                                         <div class="col-md-12">
                                             <p>
