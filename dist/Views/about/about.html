@@ -36,6 +36,7 @@
 
                             <p>Absolutely no accuracy or completeness guarantee is implied or intended. The U.S. Geological Survey expressly disclaims responsibility for damages or liability that may arise from use of these data.</p>
                         </div>
+                        <h4>Submit an issue</h4>
                         <div id="contact" ng-show="vm.selectedTabName === 'contact'">
                             <form id="contact-form">
                                 <div class="well well-sm">
@@ -43,24 +44,28 @@
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label for="first-name">First Name:</label>
-                                                <input type="text" class="form-control" id="first-name">
+                                                <input type="text" class="form-control" id="first-name" ng-model="vm.gitHubIssueData.firstName">
                                             </div>
                                             <div class="form-group">
                                                 <label for="last-name">Last Name:</label>
-                                                <input type="text" class="form-control" id="last-email">
+                                                <input type="text" class="form-control" id="last-name" ng-model="vm.gitHubIssueData.lastName">
                                             </div>
                                             <div class="form-group">
                                                 <label for="email">Email:</label>
-                                                <input type="text" class="form-control" id="email">
+                                                <input type="email" class="form-control" id="email" ng-model="vm.gitHubIssueData.email">
                                             </div>
                                         </div>
                                         <div class="col-md-8">
-                                            <label for="message">Message:</label>
-                                            <textarea class="form-control" rows="8" id="message"></textarea>
+                                            <div class="form-group">
+                                                <label for="title">Title:</label>
+                                                <input class="form-control" id="title" ng-model="vm.gitHubIssueData.title" required>
+                                            </div>
+                                            <label for="message">Description</label>
+                                            <textarea class="form-control" rows="8" id="description" ng-model="vm.gitHubIssueData.description"></textarea>
                                         </div>
                                         <div class="col-md-12">
                                             <p>
-                                                <button type="submit" class="btn btn-primary pull-right" ng-click="vm.toggleSelected()">Submit</button>
+                                                <button type="submit" class="btn btn-primary pull-right" ng-click="vm.submitIssue()">Submit</button>
                                             </p>
                                         </div>
                                     </div>

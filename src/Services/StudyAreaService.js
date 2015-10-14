@@ -140,19 +140,19 @@ var StreamStats;
                 this.canUpdate = false;
                 var watershed = JSON.stringify(this.selectedStudyArea.Features[1].feature, null);
                 var url = configuration.baseurls['RegulationServices'] + configuration.queryparams['COregulationService'];
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', { watershed: watershed, outputcrs: 4326, f: 'geojson' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, 1 /* POST */, 'json', { watershed: watershed, outputcrs: 4326, f: 'geojson' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
                 this.Execute(request).then(function (response) {
                     console.log(response);
                     if (response.data.percentarearegulated > 0) {
+                        _this.toaster.pop('success', "Regulation was found", "Continue to 'Modify Parameters' to see area-weighted parameters", 5000);
                         _this.selectedStudyArea.Features.push(response.data["featurecollection"][0]);
                         var regulatedResults = response.data.parameters;
                         _this.loadRegulatedParameterResults(regulatedResults);
                         _this.isRegulated = true;
-                        _this.toaster.pop('success', "Regulation was found", "Continue to 'Modify Parameters' to see area-weighted parameters");
                     }
                     else {
                         //alert("No regulation found");
-                        _this.toaster.pop('warning', "No regulation found", "Please continue");
+                        _this.toaster.pop('warning', "No regulation found", "Please continue", 5000);
                     }
                     //sm when complete
                 }, function (error) {

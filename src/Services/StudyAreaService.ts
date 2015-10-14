@@ -177,15 +177,15 @@ module StreamStats.Services {
                 (response: any) => {
                     console.log(response);
                     if (response.data.percentarearegulated > 0) {
+                        this.toaster.pop('success', "Regulation was found", "Continue to 'Modify Parameters' to see area-weighted parameters", 5000);
                         this.selectedStudyArea.Features.push(response.data["featurecollection"][0]);
                         var regulatedResults = response.data.parameters;
                         this.loadRegulatedParameterResults(regulatedResults);
-                        this.isRegulated = true;
-                        this.toaster.pop('success', "Regulation was found", "Continue to 'Modify Parameters' to see area-weighted parameters");
+                        this.isRegulated = true;                      
                     }
                     else {
                         //alert("No regulation found");
-                        this.toaster.pop('warning', "No regulation found", "Please continue");
+                        this.toaster.pop('warning', "No regulation found", "Please continue", 5000);
                     }
                     //sm when complete
                 },(error) => {
