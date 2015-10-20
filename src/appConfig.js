@@ -1,6 +1,6 @@
 ﻿var configuration = {}
 configuration.baseurls =
-{
+{   
     'MercuryService': 'http://54.174.81.42/mercuryservices',
     'MercuryAuth': 'http://54.174.81.42/mercuryauth',
     'RegressionService': 'http://commons.wim.usgs.gov/regressionservice/models',
@@ -19,7 +19,7 @@ configuration.queryparams =
 {
     "NWISsite": '/site/?format=mapper,1.0&stateCd={0}&siteType=GL,OC,OC-CO,ES,LK,ST,ST-CA,ST-DCH,ST-TS&hasDataTypeCd=iv',
     'KrigService': '/krig?state={0}&xlocation={1}&ylocation={2}&sr={3}',
-    'RegressionMScenarios': '/{0}/estimate?state={1}',
+    'RegressionScenarios': '/{0}/estimate?state={1}',
     'statisticsGroupLookup': '/statisticgroups.json?region={0}&regressionregions={1}',
     'statisticsGroupParameterLookup': '/scenarios.json?region={0}&statisticgroups={1}&regressionregions={2}',
     'estimateFlows': '/scenarios/estimate.json?region={0}&statisticgroups={1}&regressionregions={2}',
