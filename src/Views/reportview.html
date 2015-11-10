@@ -1,11 +1,11 @@
 ﻿<div id="print-content">   
     <style>
-    @media print {
+    @media print{
         body * {
             visibility: hidden;
         }
         .hidden-print {
-            visibility: hidden;
+            display: none !important;
         }
         #print-content * {
             visibility: visible;
@@ -16,9 +16,29 @@
             top: 0;
             margin: 0;
             padding: 0;
-            min-height:550px
+            min-height:550px;
+            isibility: visible;
+            /**Remove scrollbar for printing.**/
+            overflow: visible !important;
+        }
+        .modal-dialog {
+            
+            width: 100%;
+            padding: 0;
+            margin:20px;
+                
+            visibility: visible !important;
+            /**Remove scrollbar for printing.**/
+            overflow: visible !important;
+        }
+        .modal-footer {
+            border-top:0;
+        }
+        .leaflet-control-container{
+            display: none!important;
         }
     }
+
     </style>
 
     <!-- Modal -->
@@ -37,7 +57,6 @@
         </div>
         <div id="printArea">
             <h4 class="hidden-print">Print Preview</h4>
-            <hr class="hidden-print">
             <h2>{{vm.reportTitle}}</h2>
             <div ng-if="vm.studyAreaService.selectedStudyArea">
                 <dl class="dl-horizontal">
@@ -96,7 +115,9 @@
         </div>
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-default hidden-print" ng-click="vm.close()">Close</button>
-        <button type="button" class="btn btn-primary hidden-print" ng-click="vm.print()">Print</button>
+        <div class="btn-group">
+            <button type="button" class="btn btn-default hidden-print" ng-click="vm.close()">Close</button>
+            <button type="button" class="btn btn-default hidden-print" ng-click="vm.print()">Print</button>
+        </div>
     </div>
 </div>
