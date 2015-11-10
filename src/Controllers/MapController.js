@@ -143,8 +143,7 @@ var StreamStats;
                 //add custom controls
                 this.controls = {
                     scale: true,
-                    custom: new Array(L.Control.zoomHome({ homeCoordinates: [39, -100], homeZoom: 4 }), L.control.locate({ follow: true })),
-                    draw: {}
+                    custom: new Array(L.Control.zoomHome({ homeCoordinates: [39, -100], homeZoom: 4 }), L.control.locate({ follow: true })) //,
                 };
                 this.events = {
                     map: {
