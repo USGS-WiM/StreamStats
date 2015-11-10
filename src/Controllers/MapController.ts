@@ -239,8 +239,8 @@ module StreamStats.Controllers {
                     (<any>L.Control).zoomHome({ homeCoordinates: [39, -100], homeZoom: 4 }),
                     //location control
                     (<any>L.control).locate({ follow: true })
-                    ),
-                draw: {}
+                    )//,
+                //draw: {}
             };
             this.events = {
                 map: {
