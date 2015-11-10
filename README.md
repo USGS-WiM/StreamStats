@@ -62,3 +62,52 @@ To run, use the appropriate versioning text above, then use "gulp push" to push 
 ```bash
 gulp push
 ```
+
+------
+
+## Special steps for making lato fonts work
+
+####  (optional) Update web config to allow for woff2 mime type
+Add the following to the webconfig (this also fixes some issues with font-awesome and bootstrap console errors)
+
+```bash
+  <system.webServer>
+    <staticContent>
+      <mimeMap fileExtension=".woff2" mimeType="application/font-woff2" />
+    </staticContent>
+  </system.webServer>
+```
+
+####1.  Install lessc compiler
+Add compiler globally for lessc
+
+```bash
+npm install -g less
+```
+
+####2.  Edit font paths
+open variables.less in "/bower_components/lato/less/"
+
+```bash
+@lato-font-path: '../fonts';
+```
+
+####3.  Compile new lato.css
+open console in "/bower_components/lato/less/"
+
+```bash
+lessc lato.less lato.css
+```
+
+####4.  Copy lato.css
+copy the new lato.css up to "/bower_components/lato/css/"
+
+```bash
+lessc lato.less lato.css
+```
+
+####5.  Rename font folder
+rename "/bower_components/lato/font/'"to "/bower_components/lato/fonts/"
+
+####NOTES
+step was added to gulpfile.js that copies the whole "/bower_components/lato/fonts/" folder to the dist output location

@@ -28,7 +28,6 @@ var StreamStats;
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             NavbarController.prototype.openReport = function () {
-                console.log('here');
                 this.reportService.openReport();
             };
             //Constructor

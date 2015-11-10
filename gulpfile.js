@@ -73,7 +73,7 @@ gulp.task('styles', function () {
 
 // Icons
 gulp.task('icons', function () {
-    return gulp.src(['bower_components/bootstrap/dist/fonts/*.*', 'bower_components/font-awesome/fonts/*.*'])
+    return gulp.src(['bower_components/bootstrap/dist/fonts/*.*', 'bower_components/font-awesome/fonts/*.*', 'bower_components/lato/fonts/**/*'])
         .pipe(gulp.dest('dist/fonts'));
 });
 
