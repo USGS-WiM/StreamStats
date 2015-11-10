@@ -48,9 +48,7 @@ module StreamStats.Controllers {
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         public openReport(): void {
-            console.log('here');
             this.reportService.openReport();
-
         }
 
         //Helper Methods

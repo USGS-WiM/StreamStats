@@ -92,7 +92,6 @@ module StreamStats.Controllers {
             this.reportComments = 'Some comments here';
 
             this.initMap();
-            console.log('testtest');
 
             $scope.$on('leafletDirectiveMap.load',(event, args) => {
                 console.log('report map load');
@@ -155,8 +154,6 @@ module StreamStats.Controllers {
                         map.boxZoom.disable();
                         map.keyboard.disable();
                         if (map.tap) map.tap.disable();
-                        document.getElementById('map').style.cursor = 'default';
-
                     });
                 }
                 if (item.name == 'globalwatershedpoint') {
