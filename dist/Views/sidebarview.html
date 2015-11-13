@@ -137,7 +137,7 @@
                 <div class="list-group-body" ng-show="vm.selectedProcedure == 5">
                     <p>Click the button below to generate a report: {{vm.nssService.selectedStatisticsGroup.Name}}</p>
                     <div class="form-group" ng-show="vm.studyAreaService.parametersLoaded">
-                        <button ng-click="vm.estimateFlows(vm.studyAreaService.studyAreaParameterList)" type="button" class="btn btn-sm btn-primary"><i ng-class="vm.nssService.canUpdate ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Generate report</button>
+                        <button ng-click="vm.estimateFlows(vm.studyAreaService.studyAreaParameterList)" type="button" class="btn btn-sm btn-primary"><i ng-class="vm.nssService.canUpdate ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Generate Basin Characteristics Report</button>
                     </div>
                     <div class="form-group" ng-show="vm.nssService.selectedStatisticsGroup">
                         <button ng-click="vm.estimateFlows(vm.studyAreaService.studyAreaParameterList)" type="button" class="btn btn-sm btn-primary"><i ng-class="vm.nssService.canUpdate ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Estimate Flows and Generate Report</button>

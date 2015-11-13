@@ -98,9 +98,10 @@ module StreamStats.Services {
 
             this.Execute(request).then(
                 (response: any) => {
-                    if (response.length > 0) {
+                    console.log(response.data);
+                    if (response.data.length > 0) {
                         this.loadingStatisticsGroup = false;
-                        //console.log(response.data);
+                        
                         var statisticsGroupList = this.statisticsGroupList;
                         angular.forEach(response.data, function (value, key) {
                             statisticsGroupList.push(value);

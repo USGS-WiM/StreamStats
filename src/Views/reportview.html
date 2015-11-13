@@ -80,18 +80,20 @@
 
             <!--Parameter Table if just basin chars-->
             <div class="well well-sm" ng-show="vm.studyAreaService.parametersLoaded">
-                <h4>Parameters</h4>
+                <h4>Basin Characteristics</h4>
                 <table class="table table-condensed">
                     <thead class="param-table">
                     <tr>
                         <th>Parameter</th>
-                        <th>Value</th> 
+                        <th>Value</th>
+                        <th>Unit</th>
                     </tr>
                     </thead>
                     <tbody>
                         <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList">
                         <td ng-bind="parameter.name"></td>
                         <td ng-bind="parameter.value"></td>
+                        <td ng-bind="parameter.unit"></td>
                         </tr>
                     </tbody>
                 </table>
@@ -99,7 +101,7 @@
             
             <!--Parameter Table for Flow Report-->
             <div class="well well-sm" ng-show="vm.nssService.selectedStatisticsGroupScenarioResults.length > 0">
-                <h4>Parameters</h4>
+                <h4>Scenario Parameters</h4>
                 <table class="table table-condensed">
                     <thead class="param-table">
                     <tr>
@@ -121,7 +123,7 @@
             </div>
 
             <div class="well well-sm" ng-show="vm.nssService.selectedStatisticsGroupScenarioResults.length > 0">
-                <h4>Flow Report</h4>
+                <h4>Scenario Flow Report</h4>
                 <table class="table table-condensed">
                     <thead class="param-table">
                     <tr>
