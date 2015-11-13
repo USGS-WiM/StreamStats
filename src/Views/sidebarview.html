@@ -135,7 +135,7 @@
                 <a ng-class="vm.selectedProcedure == 5  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(5)" >Build a Report<h5 ng-show="vm.nssService.selectedStatisticsGroupScenarioResults.length > 0"><i class="fa fa-check-square-o"></i><strong>Report Built</strong></h5><i ng-class="vm.selectedProcedure == 5 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
 
                 <div class="list-group-body" ng-show="vm.selectedProcedure == 5">
-                    <p>Click the button below to calculate flows for your selected scenario: {{vm.nssService.selectedStatisticsGroup.Name}}</p>
+                    <p>Click the button below to generate a report: {{vm.nssService.selectedStatisticsGroup.Name}}</p>
                     <div class="form-group" ng-show="vm.studyAreaService.parametersLoaded">
                         <button ng-click="vm.estimateFlows(vm.studyAreaService.studyAreaParameterList)" type="button" class="btn btn-sm btn-primary"><i ng-class="vm.nssService.canUpdate ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Generate report</button>
                     </div>
