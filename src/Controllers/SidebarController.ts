@@ -181,9 +181,10 @@ module StreamStats.Controllers {
 
         public calculateParameters() {
 
+            console.log('in Calculate Parameters');
+
             this.studyAreaService.loadParameters();
 
-            //this.setProcedureType(ProcedureType.REFINE);
         }
 
         public queryRegressionRegions() {
@@ -215,7 +216,9 @@ module StreamStats.Controllers {
             console.log('in estimateFlows');
 
             //hardcoded to first entry for now
-            this.nssService.estimateFlows(studyAreaParameterList, this.regionService.selectedRegion.RegionID, this.nssService.selectedStatisticsGroup.ID, this.studyAreaService.selectedStudyArea.RegressionRegions[0]);
+            if (this.nssService.selectedStatisticsGroup) {
+                this.nssService.estimateFlows(studyAreaParameterList, this.regionService.selectedRegion.RegionID, this.nssService.selectedStatisticsGroup.ID, this.studyAreaService.selectedStudyArea.RegressionRegions[0]);
+            }
 
             this.reportService.openReport();
 
@@ -251,9 +254,10 @@ module StreamStats.Controllers {
                     case ProcedureType.SELECT:
                         return this.regionService.selectedRegion != null;
                     case ProcedureType.REFINE:
-                        return this.studyAreaService.studyAreaParameterList.length > 0;
+                        return this.studyAreaService.parametersLoaded;
                     case ProcedureType.BUILD:
-                        return this.nssService.selectedStatisticsGroupParameterList.length > 0;
+                        //return this.nssService.selectedStatisticsGroupParameterList.length > 0;
+                        return this.studyAreaService.parametersLoaded;
                     default:
                         return false;
                 }//end switch          

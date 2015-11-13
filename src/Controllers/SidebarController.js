@@ -127,8 +127,8 @@ var StreamStats;
                 //console.log('studyareaparamList length: ', this.studyAreaService.studyAreaParameterList.length);
             };
             SidebarController.prototype.calculateParameters = function () {
+                console.log('in Calculate Parameters');
                 this.studyAreaService.loadParameters();
-                //this.setProcedureType(ProcedureType.REFINE);
             };
             SidebarController.prototype.queryRegressionRegions = function () {
                 console.log('in Query Regression Regions');
@@ -147,7 +147,9 @@ var StreamStats;
             SidebarController.prototype.estimateFlows = function (studyAreaParameterList) {
                 console.log('in estimateFlows');
                 //hardcoded to first entry for now
-                this.nssService.estimateFlows(studyAreaParameterList, this.regionService.selectedRegion.RegionID, this.nssService.selectedStatisticsGroup.ID, this.studyAreaService.selectedStudyArea.RegressionRegions[0]);
+                if (this.nssService.selectedStatisticsGroup) {
+                    this.nssService.estimateFlows(studyAreaParameterList, this.regionService.selectedRegion.RegionID, this.nssService.selectedStatisticsGroup.ID, this.studyAreaService.selectedStudyArea.RegressionRegions[0]);
+                }
                 this.reportService.openReport();
             };
             SidebarController.prototype.checkRegulation = function () {
@@ -173,9 +175,10 @@ var StreamStats;
                         case 3 /* SELECT */:
                             return this.regionService.selectedRegion != null;
                         case 4 /* REFINE */:
-                            return this.studyAreaService.studyAreaParameterList.length > 0;
+                            return this.studyAreaService.parametersLoaded;
                         case 5 /* BUILD */:
-                            return this.nssService.selectedStatisticsGroupParameterList.length > 0;
+                            //return this.nssService.selectedStatisticsGroupParameterList.length > 0;
+                            return this.studyAreaService.parametersLoaded;
                         default:
                             return false;
                     }

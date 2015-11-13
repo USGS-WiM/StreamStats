@@ -61,6 +61,7 @@ module StreamStats.Services {
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
         public statisticsGroupList: Array<IStatisticsGroup>;
+        public loadingStatisticsGroup: boolean;
         public selectedStatisticsGroupParameterList: Array<IParameter>;
         public selectedStatisticsGroup: IStatisticsGroup;
         public selectedStatisticsGroupScenario: any;
@@ -93,19 +94,26 @@ module StreamStats.Services {
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
 
             this.statisticsGroupList = [];
+            this.loadingStatisticsGroup = true;
 
             this.Execute(request).then(
                 (response: any) => {
-                    //console.log(response.data);
-                    var statisticsGroupList = this.statisticsGroupList;
-                    angular.forEach(response.data, function (value, key) {
-                        statisticsGroupList.push(value);
-                    });
+                    if (response.length > 0) {
+                        this.loadingStatisticsGroup = false;
+                        //console.log(response.data);
+                        var statisticsGroupList = this.statisticsGroupList;
+                        angular.forEach(response.data, function (value, key) {
+                            statisticsGroupList.push(value);
+                        });
+                    }
                     //console.log(statisticsGroupList);
                     //sm when complete
                 },(error) => {
                     //sm when complete
-                }).finally(() => { this.toaster.clear(); });
+                }).finally(() => {
+                    this.toaster.clear();
+                    this.loadingStatisticsGroup = false;
+                });
         }
 
         public loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregion: string) {

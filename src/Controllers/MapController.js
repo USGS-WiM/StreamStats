@@ -143,7 +143,15 @@ var StreamStats;
                 //add custom controls
                 this.controls = {
                     scale: true,
-                    custom: new Array(L.Control.zoomHome({ homeCoordinates: [39, -100], homeZoom: 4 }), L.control.locate({ follow: true })) //,
+                    custom: new Array(L.Control.zoomHome({ homeCoordinates: [39, -100], homeZoom: 4 }), L.control.locate({ follow: true })) /*,
+                draw: {
+                    position: 'topleft',
+                    polygon: false,
+                    polyline: false,
+                    rectangle: false,
+                    circle: false
+
+                }*/
                 };
                 this.events = {
                     map: {
@@ -153,6 +161,27 @@ var StreamStats;
                 this.mapPoint = new MapPoint();
                 L.Icon.Default.imagePath = 'images';
             };
+            /*
+            
+            //keep these edit toolbar buttons simple
+            $('#editButton').on('click', function () {
+                editLayer.editing.enable();
+            });
+    
+            $('#undoButton').on('click', function () {
+                    //re-add original geoJSON
+                    map.removeLayer(basinLayer);
+                    basinLayer.addTo(map);
+            });
+    
+            $('#saveChangesButton').on('click', function () {
+                editLayer.editing.disable();
+    
+                //set active panel to step 4
+                vm.SetProcedureType(4);
+    
+                });
+            */
             MapController.prototype.onSelectedAreaOfInterestChanged = function (sender, e) {
                 var AOI = e.selectedAreaOfInterest;
                 this.markers['AOI'] = {
