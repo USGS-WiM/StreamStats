@@ -67,18 +67,23 @@ var StreamStats;
                 var url = configuration.baseurls['NSS'] + configuration.queryparams['statisticsGroupLookup'].format(rcode, regressionregion);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.statisticsGroupList = [];
+                this.loadingStatisticsGroup = true;
                 this.Execute(request).then(function (response) {
-                    //console.log(response.data);
-                    var statisticsGroupList = _this.statisticsGroupList;
-                    angular.forEach(response.data, function (value, key) {
-                        statisticsGroupList.push(value);
-                    });
+                    if (response.length > 0) {
+                        _this.loadingStatisticsGroup = false;
+                        //console.log(response.data);
+                        var statisticsGroupList = _this.statisticsGroupList;
+                        angular.forEach(response.data, function (value, key) {
+                            statisticsGroupList.push(value);
+                        });
+                    }
                     //console.log(statisticsGroupList);
                     //sm when complete
                 }, function (error) {
                     //sm when complete
                 }).finally(function () {
                     _this.toaster.clear();
+                    _this.loadingStatisticsGroup = false;
                 });
             };
             nssService.prototype.loadParametersByStatisticsGroup = function (rcode, statisticsGroupID, regressionregion) {

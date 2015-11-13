@@ -239,8 +239,15 @@ module StreamStats.Controllers {
                     (<any>L.Control).zoomHome({ homeCoordinates: [39, -100], homeZoom: 4 }),
                     //location control
                     (<any>L.control).locate({ follow: true })
-                    )//,
-                //draw: {}
+                    )/*,
+                draw: {
+                    position: 'topleft',
+                    polygon: false,
+                    polyline: false,
+                    rectangle: false,
+                    circle: false
+
+                }*/
             };
             this.events = {
                 map: {
@@ -251,6 +258,29 @@ module StreamStats.Controllers {
 
             L.Icon.Default.imagePath = 'images';
         }
+
+        /*
+        
+        //keep these edit toolbar buttons simple
+        $('#editButton').on('click', function () {
+            editLayer.editing.enable();
+        });
+
+        $('#undoButton').on('click', function () {
+                //re-add original geoJSON
+                map.removeLayer(basinLayer);
+                basinLayer.addTo(map);
+        });
+
+        $('#saveChangesButton').on('click', function () {
+            editLayer.editing.disable();
+
+            //set active panel to step 4
+            vm.SetProcedureType(4);
+
+            });
+        */
+
         private onSelectedAreaOfInterestChanged(sender: any, e: WiM.Services.SearchAPIEventArgs) {
             var AOI = e.selectedAreaOfInterest;
 
