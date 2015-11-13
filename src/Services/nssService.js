@@ -69,9 +69,9 @@ var StreamStats;
                 this.statisticsGroupList = [];
                 this.loadingStatisticsGroup = true;
                 this.Execute(request).then(function (response) {
-                    if (response.length > 0) {
+                    console.log(response.data);
+                    if (response.data.length > 0) {
                         _this.loadingStatisticsGroup = false;
-                        //console.log(response.data);
                         var statisticsGroupList = _this.statisticsGroupList;
                         angular.forEach(response.data, function (value, key) {
                             statisticsGroupList.push(value);
