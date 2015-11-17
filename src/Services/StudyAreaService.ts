@@ -26,6 +26,7 @@ module StreamStats.Services {
     'use strict'
     export interface IStudyAreaService {
         onSelectedStudyAreaChanged: WiM.Event.Delegate<WiM.Event.EventArgs>;
+        onEditClick: WiM.Event.Delegate<WiM.Event.EventArgs>;
         selectedStudyArea: Models.IStudyArea;
         loadParameters();
         loadStudyBoundary();
@@ -38,12 +39,20 @@ module StreamStats.Services {
         parametersLoaded: boolean;
         canUpdate: boolean;
         studyAreaParameterList: Array<IParameter>;
+        drawControl: any;
+        drawControlOption: any;
+        originalStudyArea: any;
+        editedAreas: any;
     }
     class StudyAreaService extends WiM.Services.HTTPServiceBase implements IStudyAreaService {
         //Events
         private _onSelectedStudyAreaChanged: WiM.Event.Delegate<WiM.Event.EventArgs>;
         public get onSelectedStudyAreaChanged(): WiM.Event.Delegate<WiM.Event.EventArgs> {
             return this._onSelectedStudyAreaChanged;
+        }
+        private _onEditClick: WiM.Event.Delegate<WiM.Event.EventArgs>;
+        public get onEditClick(): WiM.Event.Delegate<WiM.Event.EventArgs> {
+            return this._onEditClick;
         }
         
         //Properties
@@ -71,12 +80,18 @@ module StreamStats.Services {
             return this._selectedStudyArea
         }
         public studyAreaParameterList: Array<IParameter>;
+        public drawControl: any;
+        public showAddRemoveButtons: boolean;
+        public drawControlOption: any;
+        public originalStudyArea: any;
+        public editedAreas: any;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         constructor($http: ng.IHttpService, private $q: ng.IQService, toaster) {
             super($http, configuration.baseurls['StreamStats'])
             this._onSelectedStudyAreaChanged = new WiM.Event.Delegate<WiM.Event.EventArgs>();
+            this._onEditClick = new WiM.Event.Delegate<WiM.Event.EventArgs>();
             this.toaster = toaster;
             this._studyAreaList = []; 
             this.canUpdate = true;
@@ -84,9 +99,30 @@ module StreamStats.Services {
             this.parametersLoading = false;
             this.doDelineateFlag = false;
             this.studyAreaParameterList = [];
+            this.showAddRemoveButtons = false;
+            this.editedAreas = {
+                "added": [],
+                "removed": []
+            };
         }
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
+        public editBasin(selection) {
+            this.drawControlOption = selection;
+
+            this.originalStudyArea = JSON.parse(JSON.stringify(this.selectedStudyArea));
+
+            this._onEditClick.raise(null, WiM.Event.EventArgs.Empty);
+        }
+
+        public undoEdit() {
+            console.log('undo edit');
+
+            this.selectedStudyArea = this.originalStudyArea;
+
+            this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
+        }
+
         public AddStudyArea(sa: Models.IStudyArea) {
             //add the study area to studyAreaList
             this.StudyAreaList.push(sa);
@@ -215,17 +251,6 @@ module StreamStats.Services {
                     }//endif
                 });
             });
-
-            /*
-            for (var i: number = 0; i < results.length; i++) {
-                for (var j: number = 0; j < this.studyAreaParameterList.length; j++) {
-                    if (results[i].code.toUpperCase().trim() === this.studyAreaParameterList[j].code.toUpperCase().trim()) {
-                        this.studyAreaParameterList[j].value = results[i].value;
-                        break;//exit loop
-                    }//endif
-                }//next sa Parameter
-            }//next result
-            */
             console.log('params', this.studyAreaParameterList);
         }
 
@@ -244,17 +269,6 @@ module StreamStats.Services {
                     }//endif
                 });
             });
-
-            /*
-            for (var i: number = 0; i < results.length; i++) {
-                for (var j: number = 0; j < this.studyAreaParameterList.length; j++) {
-                    if (results[i].code.toUpperCase().trim() === this.studyAreaParameterList[j].code.toUpperCase().trim()) {
-                        this.studyAreaParameterList[j].regulatedValue = results[i].value;
-                        break;//exit loop
-                    }//endif
-                }//next sa Parameter
-            }//next result
-            */
             console.log('regulated params', this.studyAreaParameterList);
         }
 

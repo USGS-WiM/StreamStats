@@ -24,9 +24,13 @@
 
 //Imports"
 module StreamStats.Controllers {
+
+    declare var greinerHormann;
+
     //'use strict';
     interface ILeafletData {
         getMap(): ng.IPromise<any>;
+        getLayers(): ng.IPromise<any>;
     }
     interface ICenter {
         lat: number;
@@ -129,6 +133,7 @@ module StreamStats.Controllers {
         private _onSelectedAreaOfInterestHandler: WiM.Event.EventHandler<WiM.Event.EventArgs>;
         private _onSelectedRegionHandler: WiM.Event.EventHandler<WiM.Event.EventArgs>;
         private _onSelectedStudyAreaHandler: WiM.Event.EventHandler<WiM.Event.EventArgs>;
+        private _onEditClickHandler: WiM.Event.EventHandler<WiM.Event.EventArgs>;
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
         private regionServices: Services.IRegionService;
@@ -150,7 +155,7 @@ module StreamStats.Controllers {
         public geojson: Object = null;
         public events: Object = null;
         public regionLayer: Object = null;
-        
+        public drawControl: any;       
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -170,15 +175,7 @@ module StreamStats.Controllers {
             search.onSelectedAreaOfInterestChanged.subscribe(this._onSelectedAreaOfInterestHandler);
             region.onSelectedRegionChanged.subscribe(this._onSelectedRegionHandler);
             studyArea.onSelectedStudyAreaChanged.subscribe(this._onSelectedStudyAreaHandler);
-
-            $scope.$on('leafletDirectiveMap.load',(event, args) => {
-                //pan by sidebar width after region overlay add
-                this.leafletData.getMap().then((map: any) => {
-                    console.log('map load', map);
-                    //map.panBy([-document.getElementById("sidebar").offsetWidth, 0]);
-                    //map.panBy([-200, 0]);
-                });
-            });
+            studyArea.onEditClick.subscribe(this._onEditClickHandler);
 
             $scope.$on('leafletDirectiveMap.mousemove',(event, args) => {
                 var latlng = args.leafletEvent.latlng;
@@ -190,7 +187,7 @@ module StreamStats.Controllers {
                 if (!studyArea.doDelineateFlag) return;
                 var latlng = args.leafletEvent.latlng;
                 this.startDelineate(latlng);
-                studyArea.doDelineateFlag = false;
+                studyArea.doDelineateFlag = false;                
             });
 
             $scope.$watch(() => this.bounds,(newval, oldval) => this.setRegionsByBounds(oldval, newval));
@@ -219,6 +216,10 @@ module StreamStats.Controllers {
                 this.onSelectedStudyAreaChanged();
             });
 
+            this._onEditClickHandler = new WiM.Event.EventHandler<WiM.Event.EventArgs>(() => {
+                this.basinEditor();
+            });
+
             //init map           
             this.center = new Center(39, -100, 4);
             this.layers = {
@@ -234,20 +235,22 @@ module StreamStats.Controllers {
             //add custom controls
             this.controls = {
                 scale: true,
+                draw: {
+                    draw: {
+                        polygon: false,
+                        polyline: false,
+                        rectangle: false,
+                        circle: false,
+                        marker: false
+                    }
+
+                },
                 custom: new Array(
                     //zoom home button control
                     (<any>L.Control).zoomHome({ homeCoordinates: [39, -100], homeZoom: 4 }),
                     //location control
                     (<any>L.control).locate({ follow: true })
-                    )/*,
-                draw: {
-                    position: 'topleft',
-                    polygon: false,
-                    polyline: false,
-                    rectangle: false,
-                    circle: false
-
-                }*/
+                    )
             };
             this.events = {
                 map: {
@@ -259,27 +262,83 @@ module StreamStats.Controllers {
             L.Icon.Default.imagePath = 'images';
         }
 
-        /*
-        
-        //keep these edit toolbar buttons simple
-        $('#editButton').on('click', function () {
-            editLayer.editing.enable();
-        });
+        private basinEditor() {
 
-        $('#undoButton').on('click', function () {
-                //re-add original geoJSON
-                map.removeLayer(basinLayer);
-                basinLayer.addTo(map);
-        });
+            console.log('in basinEditor funciton', this.studyArea.selectedStudyArea);
 
-        $('#saveChangesButton').on('click', function () {
-            editLayer.editing.disable();
+            //convert basin polygon coords
+            var basin = this.studyArea.selectedStudyArea.Features[1].feature.features[0];
+            var basinConverted = [];
+            basin.geometry.coordinates[0].forEach((item) => { basinConverted.push([item[1], item[0]]) });
 
-            //set active panel to step 4
-            vm.SetProcedureType(4);
+            var drawOption = this.studyArea.drawControlOption; 
+            var geoJSONbasin = this.geojson['globalwatershed'];
+            var editedAreas = this.studyArea.editedAreas;
 
+            this.leafletData.getMap().then((map: any) => {
+                this.leafletData.getLayers().then((maplayers: any) => {
+
+                    console.log('maplayers', maplayers);
+
+                    //clear any existing editBasin
+                    var editLayers = maplayers.overlays.editBasin;
+                    editLayers.clearLayers();
+
+                    //create draw control
+                    var drawnItems = maplayers.overlays.draw;
+                    drawnItems.clearLayers();
+                    var drawControl = new (<any>L).Draw.Polygon(map, drawnItems);
+                    drawControl.enable();
+             
+                    map.on('draw:created', function (e) {
+
+                        console.log('updating editedStudyArea');
+                        drawControl.disable();
+
+                        var layer = e.layer;
+                        //drawnItems.addLayer(layer);
+
+                        //convert edit polygon coords
+                        var editArea = layer.toGeoJSON().geometry.coordinates[0];
+                        var editAreaConverted = [];
+                        editArea.forEach((item) => { editAreaConverted.push([item[1],item[0]])});
+
+                        var sourcePolygon = L.polygon(basinConverted)//.addTo(diffMap),
+                        var clipPolygon = L.polygon(editAreaConverted)//.addTo(diffMap);
+
+                        if (drawOption == 'add') {
+                            var editPolygon = greinerHormann.union(sourcePolygon, clipPolygon);
+                            editedAreas.added.push(layer.toGeoJSON());
+                        }
+
+                        if (drawOption == 'remove') {
+                            var editPolygon = greinerHormann.diff(sourcePolygon, clipPolygon);
+                            editedAreas.removed.push(layer.toGeoJSON());
+                        }
+
+                        //set studyArea basin to new edited polygon
+                        basin.geometry.coordinates[0] = [];
+                        editPolygon.forEach((item) => { basin.geometry.coordinates[0].push([item[1], item[0]]) });
+                        
+                        //reset display basin
+                        geoJSONbasin = {
+                            data: basin,
+                            style: {
+                                fillColor: "orange",
+                                weight: 2,
+                                opacity: 1,
+                                color: 'white',
+                                fillOpacity: 0.5
+                            }
+                        }
+
+                        console.log('editedAreas', editedAreas, JSON.stringify(editedAreas));
+
+                        
+                    });
+                });
             });
-        */
+        }
 
         private onSelectedAreaOfInterestChanged(sender: any, e: WiM.Services.SearchAPIEventArgs) {
             var AOI = e.selectedAreaOfInterest;
@@ -299,6 +358,10 @@ module StreamStats.Controllers {
             this.addRegionOverlayLayers(this.regionServices.selectedRegion.RegionID);  
         }
         private onSelectedStudyAreaChanged() {
+
+            console.log('study area changed');
+            this.geojson = {};
+            this.layers.overlays['draw'] = {};
             
             if (!this.studyArea.selectedStudyArea.Features) return;
 
@@ -369,7 +432,7 @@ module StreamStats.Controllers {
        
         private setRegionsByBounds(oldValue, newValue) {
 
-            if (this.center.zoom >= 14 && oldValue !== newValue) {
+            if (this.center.zoom >= 15 && oldValue !== newValue) {
                 this.regionServices.loadRegionListByExtent(this.bounds.northEast.lng, this.bounds.southWest.lng,
                     this.bounds.southWest.lat, this.bounds.northEast.lat);
             }
