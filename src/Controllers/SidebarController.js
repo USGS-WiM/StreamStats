@@ -132,9 +132,10 @@ var StreamStats;
             };
             SidebarController.prototype.checkEdits = function () {
                 if (this.studyAreaService.editedAreas) {
+                    this.queryRegressionRegions();
                 }
                 else {
-                    queryRegressionRegions();
+                    this.queryRegressionRegions();
                 }
             };
             SidebarController.prototype.queryRegressionRegions = function () {

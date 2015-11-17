@@ -45,10 +45,7 @@ var StreamStats;
                 this.doDelineateFlag = false;
                 this.studyAreaParameterList = [];
                 this.showAddRemoveButtons = false;
-                this.editedAreas = {
-                    "added": [],
-                    "removed": []
-                };
+                this.editedAreas = { "added": [], "removed": [] };
             }
             Object.defineProperty(StudyAreaService.prototype, "onSelectedStudyAreaChanged", {
                 get: function () {
@@ -96,6 +93,7 @@ var StreamStats;
             StudyAreaService.prototype.undoEdit = function () {
                 console.log('undo edit');
                 this.selectedStudyArea = this.originalStudyArea;
+                this.editedAreas = { "added": [], "removed": [] };
                 this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
             };
             StudyAreaService.prototype.AddStudyArea = function (sa) {

@@ -54,6 +54,7 @@ module StreamStats.Controllers {
         private nssService: Services.InssService;
         private studyAreaService: Services.IStudyAreaService;       
         private reportService: Services.IreportService;    
+    
 
 
         //Constructor
@@ -189,10 +190,10 @@ module StreamStats.Controllers {
 
         public checkEdits() {
             if (this.studyAreaService.editedAreas) {
-
+                this.queryRegressionRegions();
             }
             else {
-                queryRegressionRegions();
+                this.queryRegressionRegions();
             }
         }
 

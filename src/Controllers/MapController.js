@@ -173,9 +173,6 @@ var StreamStats;
                 this.leafletData.getMap().then(function (map) {
                     _this.leafletData.getLayers().then(function (maplayers) {
                         console.log('maplayers', maplayers);
-                        //clear any existing editBasin
-                        var editLayers = maplayers.overlays.editBasin;
-                        editLayers.clearLayers();
                         //create draw control
                         var drawnItems = maplayers.overlays.draw;
                         drawnItems.clearLayers();
@@ -185,7 +182,7 @@ var StreamStats;
                             console.log('updating editedStudyArea');
                             drawControl.disable();
                             var layer = e.layer;
-                            //drawnItems.addLayer(layer);
+                            drawnItems.addLayer(layer);
                             //convert edit polygon coords
                             var editArea = layer.toGeoJSON().geometry.coordinates[0];
                             var editAreaConverted = [];
@@ -242,7 +239,7 @@ var StreamStats;
                 var _this = this;
                 console.log('study area changed');
                 this.geojson = {};
-                this.layers.overlays['draw'] = {};
+                //this.layers.overlays['draw'] = {};
                 if (!this.studyArea.selectedStudyArea.Features)
                     return;
                 var lat = this.studyArea.selectedStudyArea.Pourpoint.Latitude;
