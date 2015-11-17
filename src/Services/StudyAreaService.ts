@@ -100,10 +100,7 @@ module StreamStats.Services {
             this.doDelineateFlag = false;
             this.studyAreaParameterList = [];
             this.showAddRemoveButtons = false;
-            this.editedAreas = {
-                "added": [],
-                "removed": []
-            };
+            this.editedAreas = {"added": [],"removed": []};
         }
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -120,6 +117,7 @@ module StreamStats.Services {
 
             this.selectedStudyArea = this.originalStudyArea;
 
+            this.editedAreas = { "added": [], "removed": [] };
             this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
         }
 

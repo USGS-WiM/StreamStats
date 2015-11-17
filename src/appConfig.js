@@ -172,11 +172,6 @@ configuration.overlayedLayers = {
         "name": 'draw',
         "type": 'group',
         "visible": true
-    },//end ssLayer    
-    "editBasin": {
-        "name": 'editBasin',
-        "type": 'group',
-        "visible": true
     }
 }//end overlayedLayers
 configuration.customMapServices =
