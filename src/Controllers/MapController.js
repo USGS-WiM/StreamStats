@@ -85,14 +85,7 @@ var StreamStats;
                 search.onSelectedAreaOfInterestChanged.subscribe(this._onSelectedAreaOfInterestHandler);
                 region.onSelectedRegionChanged.subscribe(this._onSelectedRegionHandler);
                 studyArea.onSelectedStudyAreaChanged.subscribe(this._onSelectedStudyAreaHandler);
-                $scope.$on('leafletDirectiveMap.load', function (event, args) {
-                    //pan by sidebar width after region overlay add
-                    _this.leafletData.getMap().then(function (map) {
-                        console.log('map load', map);
-                        //map.panBy([-document.getElementById("sidebar").offsetWidth, 0]);
-                        //map.panBy([-200, 0]);
-                    });
-                });
+                studyArea.onEditClick.subscribe(this._onEditClickHandler);
                 $scope.$on('leafletDirectiveMap.mousemove', function (event, args) {
                     var latlng = args.leafletEvent.latlng;
                     _this.mapPoint.lat = latlng.lat;
@@ -128,6 +121,9 @@ var StreamStats;
                 this._onSelectedStudyAreaHandler = new WiM.Event.EventHandler(function () {
                     _this.onSelectedStudyAreaChanged();
                 });
+                this._onEditClickHandler = new WiM.Event.EventHandler(function () {
+                    _this.basinEditor();
+                });
                 //init map           
                 this.center = new Center(39, -100, 4);
                 this.layers = {
@@ -143,15 +139,16 @@ var StreamStats;
                 //add custom controls
                 this.controls = {
                     scale: true,
-                    custom: new Array(L.Control.zoomHome({ homeCoordinates: [39, -100], homeZoom: 4 }), L.control.locate({ follow: true })) /*,
-                draw: {
-                    position: 'topleft',
-                    polygon: false,
-                    polyline: false,
-                    rectangle: false,
-                    circle: false
-
-                }*/
+                    draw: {
+                        draw: {
+                            polygon: false,
+                            polyline: false,
+                            rectangle: false,
+                            circle: false,
+                            marker: false
+                        }
+                    },
+                    custom: new Array(L.Control.zoomHome({ homeCoordinates: [39, -100], homeZoom: 4 }), L.control.locate({ follow: true }))
                 };
                 this.events = {
                     map: {
@@ -161,27 +158,71 @@ var StreamStats;
                 this.mapPoint = new MapPoint();
                 L.Icon.Default.imagePath = 'images';
             };
-            /*
-            
-            //keep these edit toolbar buttons simple
-            $('#editButton').on('click', function () {
-                editLayer.editing.enable();
-            });
-    
-            $('#undoButton').on('click', function () {
-                    //re-add original geoJSON
-                    map.removeLayer(basinLayer);
-                    basinLayer.addTo(map);
-            });
-    
-            $('#saveChangesButton').on('click', function () {
-                editLayer.editing.disable();
-    
-                //set active panel to step 4
-                vm.SetProcedureType(4);
-    
+            MapController.prototype.basinEditor = function () {
+                var _this = this;
+                console.log('in basinEditor funciton', this.studyArea.selectedStudyArea);
+                //convert basin polygon coords
+                var basin = this.studyArea.selectedStudyArea.Features[1].feature.features[0];
+                var basinConverted = [];
+                basin.geometry.coordinates[0].forEach(function (item) {
+                    basinConverted.push([item[1], item[0]]);
                 });
-            */
+                var drawOption = this.studyArea.drawControlOption;
+                var geoJSONbasin = this.geojson['globalwatershed'];
+                var editedAreas = this.studyArea.editedAreas;
+                this.leafletData.getMap().then(function (map) {
+                    _this.leafletData.getLayers().then(function (maplayers) {
+                        console.log('maplayers', maplayers);
+                        //clear any existing editBasin
+                        var editLayers = maplayers.overlays.editBasin;
+                        editLayers.clearLayers();
+                        //create draw control
+                        var drawnItems = maplayers.overlays.draw;
+                        drawnItems.clearLayers();
+                        var drawControl = new L.Draw.Polygon(map, drawnItems);
+                        drawControl.enable();
+                        map.on('draw:created', function (e) {
+                            console.log('updating editedStudyArea');
+                            drawControl.disable();
+                            var layer = e.layer;
+                            //drawnItems.addLayer(layer);
+                            //convert edit polygon coords
+                            var editArea = layer.toGeoJSON().geometry.coordinates[0];
+                            var editAreaConverted = [];
+                            editArea.forEach(function (item) {
+                                editAreaConverted.push([item[1], item[0]]);
+                            });
+                            var sourcePolygon = L.polygon(basinConverted); //.addTo(diffMap),
+                            var clipPolygon = L.polygon(editAreaConverted); //.addTo(diffMap);
+                            if (drawOption == 'add') {
+                                var editPolygon = greinerHormann.union(sourcePolygon, clipPolygon);
+                                editedAreas.added.push(layer.toGeoJSON());
+                            }
+                            if (drawOption == 'remove') {
+                                var editPolygon = greinerHormann.diff(sourcePolygon, clipPolygon);
+                                editedAreas.removed.push(layer.toGeoJSON());
+                            }
+                            //set studyArea basin to new edited polygon
+                            basin.geometry.coordinates[0] = [];
+                            editPolygon.forEach(function (item) {
+                                basin.geometry.coordinates[0].push([item[1], item[0]]);
+                            });
+                            //reset display basin
+                            geoJSONbasin = {
+                                data: basin,
+                                style: {
+                                    fillColor: "orange",
+                                    weight: 2,
+                                    opacity: 1,
+                                    color: 'white',
+                                    fillOpacity: 0.5
+                                }
+                            };
+                            console.log('editedAreas', editedAreas, JSON.stringify(editedAreas));
+                        });
+                    });
+                });
+            };
             MapController.prototype.onSelectedAreaOfInterestChanged = function (sender, e) {
                 var AOI = e.selectedAreaOfInterest;
                 this.markers['AOI'] = {
@@ -199,6 +240,9 @@ var StreamStats;
             };
             MapController.prototype.onSelectedStudyAreaChanged = function () {
                 var _this = this;
+                console.log('study area changed');
+                this.geojson = {};
+                this.layers.overlays['draw'] = {};
                 if (!this.studyArea.selectedStudyArea.Features)
                     return;
                 var lat = this.studyArea.selectedStudyArea.Pourpoint.Latitude;
@@ -256,7 +300,7 @@ var StreamStats;
                 });
             };
             MapController.prototype.setRegionsByBounds = function (oldValue, newValue) {
-                if (this.center.zoom >= 14 && oldValue !== newValue) {
+                if (this.center.zoom >= 15 && oldValue !== newValue) {
                     this.regionServices.loadRegionListByExtent(this.bounds.northEast.lng, this.bounds.southWest.lng, this.bounds.southWest.lat, this.bounds.northEast.lat);
                 }
             };

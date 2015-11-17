@@ -187,6 +187,15 @@ module StreamStats.Controllers {
 
         }
 
+        public checkEdits() {
+            if (this.studyAreaService.editedAreas) {
+
+            }
+            else {
+                queryRegressionRegions();
+            }
+        }
+
         public queryRegressionRegions() {
 
             console.log('in Query Regression Regions');

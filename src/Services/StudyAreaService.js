@@ -36,6 +36,7 @@ var StreamStats;
                 _super.call(this, $http, configuration.baseurls['StreamStats']);
                 this.$q = $q;
                 this._onSelectedStudyAreaChanged = new WiM.Event.Delegate();
+                this._onEditClick = new WiM.Event.Delegate();
                 this.toaster = toaster;
                 this._studyAreaList = [];
                 this.canUpdate = true;
@@ -43,10 +44,22 @@ var StreamStats;
                 this.parametersLoading = false;
                 this.doDelineateFlag = false;
                 this.studyAreaParameterList = [];
+                this.showAddRemoveButtons = false;
+                this.editedAreas = {
+                    "added": [],
+                    "removed": []
+                };
             }
             Object.defineProperty(StudyAreaService.prototype, "onSelectedStudyAreaChanged", {
                 get: function () {
                     return this._onSelectedStudyAreaChanged;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(StudyAreaService.prototype, "onEditClick", {
+                get: function () {
+                    return this._onEditClick;
                 },
                 enumerable: true,
                 configurable: true
@@ -75,6 +88,16 @@ var StreamStats;
             });
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
+            StudyAreaService.prototype.editBasin = function (selection) {
+                this.drawControlOption = selection;
+                this.originalStudyArea = JSON.parse(JSON.stringify(this.selectedStudyArea));
+                this._onEditClick.raise(null, WiM.Event.EventArgs.Empty);
+            };
+            StudyAreaService.prototype.undoEdit = function () {
+                console.log('undo edit');
+                this.selectedStudyArea = this.originalStudyArea;
+                this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
+            };
             StudyAreaService.prototype.AddStudyArea = function (sa) {
                 //add the study area to studyAreaList
                 this.StudyAreaList.push(sa);
@@ -140,7 +163,7 @@ var StreamStats;
                 this.canUpdate = false;
                 var watershed = JSON.stringify(this.selectedStudyArea.Features[1].feature, null);
                 var url = configuration.baseurls['RegulationServices'] + configuration.queryparams['COregulationService'];
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, 1 /* POST */, 'json', { watershed: watershed, outputcrs: 4326, f: 'geojson' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', { watershed: watershed, outputcrs: 4326, f: 'geojson' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
                 this.Execute(request).then(function (response) {
                     console.log(response);
                     if (response.data.percentarearegulated > 0) {
@@ -177,16 +200,6 @@ var StreamStats;
                         } //endif
                     });
                 });
-                /*
-                for (var i: number = 0; i < results.length; i++) {
-                    for (var j: number = 0; j < this.studyAreaParameterList.length; j++) {
-                        if (results[i].code.toUpperCase().trim() === this.studyAreaParameterList[j].code.toUpperCase().trim()) {
-                            this.studyAreaParameterList[j].value = results[i].value;
-                            break;//exit loop
-                        }//endif
-                    }//next sa Parameter
-                }//next result
-                */
                 console.log('params', this.studyAreaParameterList);
             };
             StudyAreaService.prototype.loadRegulatedParameterResults = function (results) {
@@ -201,16 +214,6 @@ var StreamStats;
                         } //endif
                     });
                 });
-                /*
-                for (var i: number = 0; i < results.length; i++) {
-                    for (var j: number = 0; j < this.studyAreaParameterList.length; j++) {
-                        if (results[i].code.toUpperCase().trim() === this.studyAreaParameterList[j].code.toUpperCase().trim()) {
-                            this.studyAreaParameterList[j].regulatedValue = results[i].value;
-                            break;//exit loop
-                        }//endif
-                    }//next sa Parameter
-                }//next result
-                */
                 console.log('regulated params', this.studyAreaParameterList);
             };
             return StudyAreaService;

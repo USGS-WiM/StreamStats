@@ -130,6 +130,13 @@ var StreamStats;
                 console.log('in Calculate Parameters');
                 this.studyAreaService.loadParameters();
             };
+            SidebarController.prototype.checkEdits = function () {
+                if (this.studyAreaService.editedAreas) {
+                }
+                else {
+                    queryRegressionRegions();
+                }
+            };
             SidebarController.prototype.queryRegressionRegions = function () {
                 console.log('in Query Regression Regions');
                 this.setProcedureType(3 /* SELECT */);

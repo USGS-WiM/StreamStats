@@ -102,12 +102,16 @@ lessc lato.less lato.css
 ####4.  Copy lato.css
 copy the new lato.css up to "/bower_components/lato/css/"
 
-```bash
-lessc lato.less lato.css
-```
-
 ####5.  Rename font folder
 rename "/bower_components/lato/font/'"to "/bower_components/lato/fonts/"
 
 ####NOTES
 step was added to gulpfile.js that copies the whole "/bower_components/lato/fonts/" folder to the dist output location
+
+```bash
+// Icons
+gulp.task('icons', function () {
+    return gulp.src(['bower_components/bootstrap/dist/fonts/*.*', 'bower_components/font-awesome/fonts/*.*', 'bower_components/lato/fonts/**/*'])
+        .pipe(gulp.dest('dist/fonts'));
+});
+```

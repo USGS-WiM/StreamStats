@@ -167,7 +167,17 @@ configuration.overlayedLayers = {
                 return { color: 'gray', weight: 2 };
             }
         }
-    }//end ssLayer    
+    },//end ssLayer    
+    "draw": {
+        "name": 'draw',
+        "type": 'group',
+        "visible": true
+    },//end ssLayer    
+    "editBasin": {
+        "name": 'editBasin',
+        "type": 'group',
+        "visible": true
+    }
 }//end overlayedLayers
 configuration.customMapServices =
     {
