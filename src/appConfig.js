@@ -34,11 +34,19 @@ configuration.queryparams =
 
 configuration.basemaps =
 {
+
+    "gray": {
+        "name": "ESRI Gray",
+        "type": "agsBase",
+        "layer": "Gray",
+        "visible": true
+    },
     "tnmBaseMap": {
         "name": "USGS National Map",
-        "visible": true,
+        "visible": false,
         "type": 'group',
         "layerOptions": {
+            "zIndex": 0,
             "layers": [
                 {
                     "name": "tiles",
@@ -60,15 +68,8 @@ configuration.basemaps =
                         "attribution": "<a href='http://www.doi.gov'>U.S. Department of the Interior</a> | <a href='http://www.usgs.gov'>U.S. Geological Survey</a> | <a href='http://www.usgs.gov/laws/policies_notices.html'>Policies</a>"
                     }
                 }
-            ],
-
+            ]
         }
-    },
-    "gray": {
-        "name": "ESRI Gray",
-        "type": "agsBase",
-        "layer": "Gray",
-        "visible": false
     },
 
     "MapquestOAM": {
@@ -125,18 +126,6 @@ configuration.basemaps =
 }// end baselayer
 
 configuration.overlayedLayers = {
-    //"StateLayer": {
-    //    "name": "States",
-    //    "url": "http://services.arcgis.com/BG6nSlhZSAWtExvp/ArcGIS/rest/services/states/FeatureServer/0",
-    //    "type": 'feature',
-    //    "visible": false,
-    //    "layerOptions": {
-    //        "simplifyFactor": 0.75,
-    //        "style": function (feature) {
-    //            return { color: 'gray', weight: 2 };
-    //        }
-    //    }
-    //},
     "str900co_utm": {
         "name": "str900 (co) utm",
         "url": "http://54.164.188.167:6080/arcgis/rest/services/streamstats/str900_co/ImageServer",
