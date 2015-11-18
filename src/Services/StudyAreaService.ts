@@ -41,7 +41,6 @@ module StreamStats.Services {
         studyAreaParameterList: Array<IParameter>;
         drawControl: any;
         drawControlOption: any;
-        originalStudyArea: any;
         editedAreas: any;
     }
     class StudyAreaService extends WiM.Services.HTTPServiceBase implements IStudyAreaService {
@@ -83,7 +82,6 @@ module StreamStats.Services {
         public drawControl: any;
         public showAddRemoveButtons: boolean;
         public drawControlOption: any;
-        public originalStudyArea: any;
         public editedAreas: any;
 
         //Constructor
@@ -106,17 +104,11 @@ module StreamStats.Services {
         //-+-+-+-+-+-+-+-+-+-+-+-
         public editBasin(selection) {
             this.drawControlOption = selection;
-
-            this.originalStudyArea = JSON.parse(JSON.stringify(this.selectedStudyArea));
-
             this._onEditClick.raise(null, WiM.Event.EventArgs.Empty);
         }
 
         public undoEdit() {
             console.log('undo edit');
-
-            this.selectedStudyArea = this.originalStudyArea;
-
             this.editedAreas = { "added": [], "removed": [] };
             this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
         }

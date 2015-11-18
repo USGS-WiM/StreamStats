@@ -125,7 +125,8 @@ var StreamStats;
                     _this.basinEditor();
                 });
                 //init map           
-                this.center = new Center(39, -100, 4);
+                //this.center = new Center(39, -100, 4);
+                this.center = new Center(39, -106, 16);
                 this.layers = {
                     baselayers: configuration.basemaps,
                     overlays: configuration.overlayedLayers,
@@ -160,27 +161,22 @@ var StreamStats;
             };
             MapController.prototype.basinEditor = function () {
                 var _this = this;
-                console.log('in basinEditor funciton', this.studyArea.selectedStudyArea);
-                //convert basin polygon coords
-                var basin = this.studyArea.selectedStudyArea.Features[1].feature.features[0];
+                var basin = JSON.parse(JSON.stringify(this.geojson['globalwatershed'].data.features[0]));
                 var basinConverted = [];
                 basin.geometry.coordinates[0].forEach(function (item) {
                     basinConverted.push([item[1], item[0]]);
                 });
-                var drawOption = this.studyArea.drawControlOption;
-                var geoJSONbasin = this.geojson['globalwatershed'];
-                var editedAreas = this.studyArea.editedAreas;
                 this.leafletData.getMap().then(function (map) {
                     _this.leafletData.getLayers().then(function (maplayers) {
-                        console.log('maplayers', maplayers);
+                        console.log('maplayers', map, maplayers);
                         //create draw control
                         var drawnItems = maplayers.overlays.draw;
                         drawnItems.clearLayers();
                         var drawControl = new L.Draw.Polygon(map, drawnItems);
                         drawControl.enable();
+                        //listen for end of draw
                         map.on('draw:created', function (e) {
-                            console.log('updating editedStudyArea');
-                            drawControl.disable();
+                            map.removeEventListener('draw:created');
                             var layer = e.layer;
                             drawnItems.addLayer(layer);
                             //convert edit polygon coords
@@ -189,33 +185,28 @@ var StreamStats;
                             editArea.forEach(function (item) {
                                 editAreaConverted.push([item[1], item[0]]);
                             });
-                            var sourcePolygon = L.polygon(basinConverted); //.addTo(diffMap),
-                            var clipPolygon = L.polygon(editAreaConverted); //.addTo(diffMap);
-                            if (drawOption == 'add') {
+                            var sourcePolygon = L.polygon(basinConverted);
+                            var clipPolygon = L.polygon(editAreaConverted);
+                            if (_this.studyArea.drawControlOption == 'add') {
+                                console.log('add layer', layer.toGeoJSON());
                                 var editPolygon = greinerHormann.union(sourcePolygon, clipPolygon);
-                                editedAreas.added.push(layer.toGeoJSON());
+                                _this.studyArea.editedAreas.added.push(layer.toGeoJSON());
                             }
-                            if (drawOption == 'remove') {
+                            if (_this.studyArea.drawControlOption == 'remove') {
+                                console.log('remove layer', layer.toGeoJSON());
                                 var editPolygon = greinerHormann.diff(sourcePolygon, clipPolygon);
-                                editedAreas.removed.push(layer.toGeoJSON());
+                                _this.studyArea.editedAreas.removed.push(layer.toGeoJSON());
                             }
                             //set studyArea basin to new edited polygon
                             basin.geometry.coordinates[0] = [];
                             editPolygon.forEach(function (item) {
                                 basin.geometry.coordinates[0].push([item[1], item[0]]);
                             });
+                            console.log('edited basin', basin);
                             //reset display basin
-                            geoJSONbasin = {
-                                data: basin,
-                                style: {
-                                    fillColor: "orange",
-                                    weight: 2,
-                                    opacity: 1,
-                                    color: 'white',
-                                    fillOpacity: 0.5
-                                }
-                            };
-                            console.log('editedAreas', editedAreas, JSON.stringify(editedAreas));
+                            _this.geojson['globalwatershed'].data.features[0] = basin;
+                            drawnItems.clearLayers();
+                            console.log('editedAreas', _this.studyArea.editedAreas);
                         });
                     });
                 });
@@ -239,14 +230,14 @@ var StreamStats;
                 var _this = this;
                 console.log('study area changed');
                 this.geojson = {};
-                //this.layers.overlays['draw'] = {};
                 if (!this.studyArea.selectedStudyArea.Features)
                     return;
                 var lat = this.studyArea.selectedStudyArea.Pourpoint.Latitude;
                 var lng = this.studyArea.selectedStudyArea.Pourpoint.Longitude;
                 var rcode = this.studyArea.selectedStudyArea.RegionID;
                 var workspaceID = this.studyArea.selectedStudyArea.WorkspaceID;
-                this.studyArea.selectedStudyArea.Features.forEach(function (item) {
+                this.studyArea.selectedStudyArea.Features.forEach(function (layer) {
+                    var item = JSON.parse(JSON.stringify(layer));
                     console.log('in onselectedstudyarea changed', item.name);
                     if (item.name == 'globalwatershed') {
                         _this.geojson[item.name] = {

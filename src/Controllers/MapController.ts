@@ -221,7 +221,8 @@ module StreamStats.Controllers {
             });
 
             //init map           
-            this.center = new Center(39, -100, 4);
+            //this.center = new Center(39, -100, 4);
+            this.center = new Center(39, -106, 16);
             this.layers = {
                 baselayers: configuration.basemaps,
                 overlays: configuration.overlayedLayers,
@@ -264,33 +265,26 @@ module StreamStats.Controllers {
 
         private basinEditor() {
 
-            console.log('in basinEditor funciton', this.studyArea.selectedStudyArea);
-
-            //convert basin polygon coords
-            var basin = this.studyArea.selectedStudyArea.Features[1].feature.features[0];
+            var basin = JSON.parse(JSON.stringify(this.geojson['globalwatershed'].data.features[0]));
             var basinConverted = [];
             basin.geometry.coordinates[0].forEach((item) => { basinConverted.push([item[1], item[0]]) });
-
-            var drawOption = this.studyArea.drawControlOption; 
-            var geoJSONbasin = this.geojson['globalwatershed'];
-            var editedAreas = this.studyArea.editedAreas;
 
             this.leafletData.getMap().then((map: any) => {
                 this.leafletData.getLayers().then((maplayers: any) => {
 
-                    console.log('maplayers', maplayers);
+                    console.log('maplayers', map, maplayers);
 
                     //create draw control
                     var drawnItems = maplayers.overlays.draw;
                     drawnItems.clearLayers();
                     var drawControl = new (<any>L).Draw.Polygon(map, drawnItems);
                     drawControl.enable();
-             
-                    map.on('draw:created', function (e) {
 
-                        console.log('updating editedStudyArea');
-                        drawControl.disable();
+                    //listen for end of draw
+                    map.on('draw:created',(e) => {
 
+                        map.removeEventListener('draw:created');
+                        
                         var layer = e.layer;
                         drawnItems.addLayer(layer);
 
@@ -299,37 +293,33 @@ module StreamStats.Controllers {
                         var editAreaConverted = [];
                         editArea.forEach((item) => { editAreaConverted.push([item[1],item[0]])});
 
-                        var sourcePolygon = L.polygon(basinConverted)//.addTo(diffMap),
-                        var clipPolygon = L.polygon(editAreaConverted)//.addTo(diffMap);
+                        var sourcePolygon = L.polygon(basinConverted);
+                        var clipPolygon = L.polygon(editAreaConverted);
 
-                        if (drawOption == 'add') {
+                        if (this.studyArea.drawControlOption == 'add') {
+                            console.log('add layer', layer.toGeoJSON());
                             var editPolygon = greinerHormann.union(sourcePolygon, clipPolygon);
-                            editedAreas.added.push(layer.toGeoJSON());
+                            this.studyArea.editedAreas.added.push(layer.toGeoJSON());
                         }
 
-                        if (drawOption == 'remove') {
+                        if (this.studyArea.drawControlOption == 'remove') {
+                            console.log('remove layer', layer.toGeoJSON());
                             var editPolygon = greinerHormann.diff(sourcePolygon, clipPolygon);
-                            editedAreas.removed.push(layer.toGeoJSON());
+                            this.studyArea.editedAreas.removed.push(layer.toGeoJSON());
                         }
 
                         //set studyArea basin to new edited polygon
                         basin.geometry.coordinates[0] = [];
                         editPolygon.forEach((item) => { basin.geometry.coordinates[0].push([item[1], item[0]]) });
+                        console.log('edited basin', basin);
                         
                         //reset display basin
-                        geoJSONbasin = {
-                            data: basin,
-                            style: {
-                                fillColor: "orange",
-                                weight: 2,
-                                opacity: 1,
-                                color: 'white',
-                                fillOpacity: 0.5
-                            }
-                        }
 
-                        console.log('editedAreas', editedAreas, JSON.stringify(editedAreas));
+                        this.geojson['globalwatershed'].data.features[0] = basin;
 
+                        drawnItems.clearLayers();
+                        console.log('editedAreas', this.studyArea.editedAreas);
+                        
                         
                     });
                 });
@@ -357,7 +347,6 @@ module StreamStats.Controllers {
 
             console.log('study area changed');
             this.geojson = {};
-            //this.layers.overlays['draw'] = {};
             
             if (!this.studyArea.selectedStudyArea.Features) return;
 
@@ -366,7 +355,9 @@ module StreamStats.Controllers {
             var rcode = this.studyArea.selectedStudyArea.RegionID;
             var workspaceID = this.studyArea.selectedStudyArea.WorkspaceID;
 
-            this.studyArea.selectedStudyArea.Features.forEach((item) => {
+            this.studyArea.selectedStudyArea.Features.forEach((layer) => {
+
+                var item = JSON.parse(JSON.stringify(layer));
 
                 console.log('in onselectedstudyarea changed', item.name);
 
