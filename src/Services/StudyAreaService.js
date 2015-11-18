@@ -87,12 +87,10 @@ var StreamStats;
             //-+-+-+-+-+-+-+-+-+-+-+-
             StudyAreaService.prototype.editBasin = function (selection) {
                 this.drawControlOption = selection;
-                this.originalStudyArea = JSON.parse(JSON.stringify(this.selectedStudyArea));
                 this._onEditClick.raise(null, WiM.Event.EventArgs.Empty);
             };
             StudyAreaService.prototype.undoEdit = function () {
                 console.log('undo edit');
-                this.selectedStudyArea = this.originalStudyArea;
                 this.editedAreas = { "added": [], "removed": [] };
                 this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
             };
@@ -106,7 +104,7 @@ var StreamStats;
             };
             StudyAreaService.prototype.loadStudyBoundary = function () {
                 var _this = this;
-                this.toaster.pop("info", "Delineating Basin", "Please wait...", 999999);
+                this.toaster.pop("info", "Delineating Basin", "Please wait...", 1500);
                 this.canUpdate = false;
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString(), false);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
@@ -116,6 +114,7 @@ var StreamStats;
                     //sm when complete
                 }, function (error) {
                     //sm when error
+                    _this.toaster.pop("error", "Error Delineating Basin", "Please retry", 1500);
                 }).finally(function () {
                     _this.toaster.clear();
                     _this.canUpdate = true;

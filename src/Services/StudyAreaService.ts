@@ -41,7 +41,6 @@ module StreamStats.Services {
         studyAreaParameterList: Array<IParameter>;
         drawControl: any;
         drawControlOption: any;
-        originalStudyArea: any;
         editedAreas: any;
     }
     class StudyAreaService extends WiM.Services.HTTPServiceBase implements IStudyAreaService {
@@ -83,7 +82,6 @@ module StreamStats.Services {
         public drawControl: any;
         public showAddRemoveButtons: boolean;
         public drawControlOption: any;
-        public originalStudyArea: any;
         public editedAreas: any;
 
         //Constructor
@@ -101,22 +99,16 @@ module StreamStats.Services {
             this.studyAreaParameterList = [];
             this.showAddRemoveButtons = false;
             this.editedAreas = {"added": [],"removed": []};
-        }
+        }s
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         public editBasin(selection) {
             this.drawControlOption = selection;
-
-            this.originalStudyArea = JSON.parse(JSON.stringify(this.selectedStudyArea));
-
             this._onEditClick.raise(null, WiM.Event.EventArgs.Empty);
         }
 
         public undoEdit() {
             console.log('undo edit');
-
-            this.selectedStudyArea = this.originalStudyArea;
-
             this.editedAreas = { "added": [], "removed": [] };
             this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
         }
@@ -132,7 +124,7 @@ module StreamStats.Services {
 
         public loadStudyBoundary() {
 
-            this.toaster.pop("info", "Delineating Basin", "Please wait...", 999999);
+            this.toaster.pop("info", "Delineating Basin", "Please wait...", 1500);
             this.canUpdate = false;
             
             var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(),
@@ -146,6 +138,7 @@ module StreamStats.Services {
                     //sm when complete
                 },(error) => {
                     //sm when error
+                    this.toaster.pop("error", "Error Delineating Basin", "Please retry", 1500);
                 }).finally(() => {
                     this.toaster.clear()
                     this.canUpdate = true;

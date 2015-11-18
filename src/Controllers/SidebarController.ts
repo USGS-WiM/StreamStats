@@ -114,11 +114,11 @@ module StreamStats.Controllers {
         }
         public zoomRegion(inRegion: string) {
             var region = JSON.parse(inRegion);
-            console.log('here1', region);
+            console.log('zooming to region: ', region);
             
         }
         public setRegion(region: Services.IRegion) {
-            console.log('here1', region);
+            console.log('setting region: ', region);
             if (this.regionService.selectedRegion == undefined || this.regionService.selectedRegion.RegionID !== region.RegionID)
                 this.regionService.selectedRegion = region;
             this.setProcedureType(ProcedureType.IDENTIFY);
