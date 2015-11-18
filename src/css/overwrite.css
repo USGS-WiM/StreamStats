@@ -248,7 +248,7 @@ a{
 .leaflet-left,
 .leaflet-top,
 .leaflet-right{
-    background-color: transparent !important
+    /*background-color: transparent !important*/
 }
 .leaflet-control-container{
     background-color: red !important
