@@ -34,15 +34,9 @@ configuration.queryparams =
 
 configuration.basemaps =
 {
-    "gray": {
-        "name": "ESRI Gray",
-        "type": "agsBase",
-        "layer": "Gray",
-        "visible": true
-    },
     "tnmBaseMap": {
         "name": "USGS National Map",
-        "visible": false,
+        "visible": true,
         "type": 'group',
         "layerOptions": {
             "layers": [
@@ -70,6 +64,13 @@ configuration.basemaps =
 
         }
     },
+    "gray": {
+        "name": "ESRI Gray",
+        "type": "agsBase",
+        "layer": "Gray",
+        "visible": false
+    },
+
     "MapquestOAM": {
         "name": "Mapquest Areal",
         "url": "http://{s}.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.png",

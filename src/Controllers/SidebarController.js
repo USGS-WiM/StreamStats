@@ -73,10 +73,10 @@ var StreamStats;
             };
             SidebarController.prototype.zoomRegion = function (inRegion) {
                 var region = JSON.parse(inRegion);
-                console.log('here1', region);
+                console.log('zooming to region: ', region);
             };
             SidebarController.prototype.setRegion = function (region) {
-                console.log('here1', region);
+                console.log('setting region: ', region);
                 if (this.regionService.selectedRegion == undefined || this.regionService.selectedRegion.RegionID !== region.RegionID)
                     this.regionService.selectedRegion = region;
                 this.setProcedureType(2 /* IDENTIFY */);

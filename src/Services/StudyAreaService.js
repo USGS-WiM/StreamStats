@@ -104,7 +104,7 @@ var StreamStats;
             };
             StudyAreaService.prototype.loadStudyBoundary = function () {
                 var _this = this;
-                this.toaster.pop("info", "Delineating Basin", "Please wait...", 999999);
+                this.toaster.pop("info", "Delineating Basin", "Please wait...", 1500);
                 this.canUpdate = false;
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString(), false);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
@@ -114,6 +114,7 @@ var StreamStats;
                     //sm when complete
                 }, function (error) {
                     //sm when error
+                    _this.toaster.pop("error", "Error Delineating Basin", "Please retry", 1500);
                 }).finally(function () {
                     _this.toaster.clear();
                     _this.canUpdate = true;
@@ -159,7 +160,7 @@ var StreamStats;
                 this.canUpdate = false;
                 var watershed = JSON.stringify(this.selectedStudyArea.Features[1].feature, null);
                 var url = configuration.baseurls['RegulationServices'] + configuration.queryparams['COregulationService'];
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, 1 /* POST */, 'json', { watershed: watershed, outputcrs: 4326, f: 'geojson' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', { watershed: watershed, outputcrs: 4326, f: 'geojson' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
                 this.Execute(request).then(function (response) {
                     console.log(response);
                     if (response.data.percentarearegulated > 0) {

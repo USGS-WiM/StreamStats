@@ -125,8 +125,8 @@ var StreamStats;
                     _this.basinEditor();
                 });
                 //init map           
-                //this.center = new Center(39, -100, 4);
-                this.center = new Center(39, -106, 16);
+                this.center = new Center(39, -100, 4);
+                //this.center = new Center(39, -106, 16);
                 this.layers = {
                     baselayers: configuration.basemaps,
                     overlays: configuration.overlayedLayers,
@@ -203,7 +203,7 @@ var StreamStats;
                                 basin.geometry.coordinates[0].push([item[1], item[0]]);
                             });
                             console.log('edited basin', basin);
-                            //reset display basin
+                            //show new polygon
                             _this.geojson['globalwatershed'].data.features[0] = basin;
                             drawnItems.clearLayers();
                             console.log('editedAreas', _this.studyArea.editedAreas);

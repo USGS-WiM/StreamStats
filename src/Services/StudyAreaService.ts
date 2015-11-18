@@ -99,7 +99,7 @@ module StreamStats.Services {
             this.studyAreaParameterList = [];
             this.showAddRemoveButtons = false;
             this.editedAreas = {"added": [],"removed": []};
-        }
+        }s
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         public editBasin(selection) {
@@ -124,7 +124,7 @@ module StreamStats.Services {
 
         public loadStudyBoundary() {
 
-            this.toaster.pop("info", "Delineating Basin", "Please wait...", 999999);
+            this.toaster.pop("info", "Delineating Basin", "Please wait...", 1500);
             this.canUpdate = false;
             
             var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(),
@@ -138,6 +138,7 @@ module StreamStats.Services {
                     //sm when complete
                 },(error) => {
                     //sm when error
+                    this.toaster.pop("error", "Error Delineating Basin", "Please retry", 1500);
                 }).finally(() => {
                     this.toaster.clear()
                     this.canUpdate = true;
