@@ -28,6 +28,9 @@ module StreamStats.Controllers {
     interface ISidebarControllerScope extends ng.IScope {
         vm: SidebarController;
     }
+    interface ILeafletData {
+        getMap(): ng.IPromise<any>;
+    }
     interface ISidebarController {
         sideBarCollapsed: boolean;
         selectedProcedure: ProcedureType;
@@ -54,13 +57,14 @@ module StreamStats.Controllers {
         private nssService: Services.InssService;
         private studyAreaService: Services.IStudyAreaService;       
         private reportService: Services.IreportService;    
+        private leafletData: ILeafletData;
     
 
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', 'toaster', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ReportService'];
-        constructor($scope: ISidebarControllerScope, toaster, service: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, report: Services.IreportService) {
+        static $inject = ['$scope', 'toaster', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ReportService', 'leafletData'];
+        constructor($scope: ISidebarControllerScope, toaster, service: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, report: Services.IreportService, leafletData: ILeafletData) {
             $scope.vm = this;
             this.toaster = toaster;
             this.searchService = service;
@@ -74,6 +78,7 @@ module StreamStats.Controllers {
             //this.statisticsGroupList = StatisticsGroup.statisticsGroupList;
             this.studyAreaService = studyArea;
             this.reportService = report;
+            this.leafletData = leafletData;
 
             //subscribe to Events
 
@@ -128,20 +133,33 @@ module StreamStats.Controllers {
 
         }
         public startDelineate() {
-            this.toaster.pop('success', "Delineate", "Click on a blue stream cell to start delineation");
 
-            //clear out parameter list, flow report, etc
-            this.studyAreaService.selectedStudyArea = null;
-            this.studyAreaService.studyAreaParameterList = [];
-            this.studyAreaService.parametersLoading = false;
-            this.studyAreaService.parametersLoaded = false;
-            this.nssService.statisticsGroupList = [];
-            this.nssService.selectedStatisticsGroup = null;
-            this.nssService.selectedStatisticsGroupParameterList = [];
-            this.nssService.selectedStatisticsGroupScenario = [];
-            this.nssService.selectedStatisticsGroupScenarioResults = [];
+            this.leafletData.getMap().then((map: any) => {
+                console.log('mapzoom', map.getZoom());
+                if (map.getZoom() < 15) {
+                    this.toaster.pop('error', "Delineate", "You must be at or above zoom level 15 to delineate.");
+                    return;
+                }
 
-            this.studyAreaService.doDelineateFlag = !this.studyAreaService.doDelineateFlag;
+                else {
+
+                    this.toaster.pop('success', "Delineate", "Click on a blue stream cell to start delineation");
+
+                    //clear out parameter list, flow report, etc
+                    this.studyAreaService.selectedStudyArea = null;
+                    this.studyAreaService.studyAreaParameterList = [];
+                    this.studyAreaService.parametersLoading = false;
+                    this.studyAreaService.parametersLoaded = false;
+                    this.nssService.statisticsGroupList = [];
+                    this.nssService.selectedStatisticsGroup = null;
+                    this.nssService.selectedStatisticsGroupParameterList = [];
+                    this.nssService.selectedStatisticsGroupScenario = [];
+                    this.nssService.selectedStatisticsGroupScenarioResults = [];
+
+                    this.studyAreaService.doDelineateFlag = !this.studyAreaService.doDelineateFlag;
+
+                }
+            });
         }
 
         public setStatisticsGroup(statisticsGroup: Services.IStatisticsGroup) {

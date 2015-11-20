@@ -21,7 +21,7 @@ var StreamStats;
     (function (Controllers) {
         'use strinct';
         var SidebarController = (function () {
-            function SidebarController($scope, toaster, service, region, studyArea, StatisticsGroup, report) {
+            function SidebarController($scope, toaster, service, region, studyArea, StatisticsGroup, report, leafletData) {
                 var _this = this;
                 $scope.vm = this;
                 this.toaster = toaster;
@@ -36,6 +36,7 @@ var StreamStats;
                 //this.statisticsGroupList = StatisticsGroup.statisticsGroupList;
                 this.studyAreaService = studyArea;
                 this.reportService = report;
+                this.leafletData = leafletData;
                 //subscribe to Events
                 //watches for changes to selected StatisticsGroup param list and updates studyareaParamList with them
                 $scope.$watchCollection(function () { return _this.nssService.selectedStatisticsGroupParameterList; }, function (newval, oldval) {
@@ -84,18 +85,28 @@ var StreamStats;
                 this.regionService.loadParametersByRegion();
             };
             SidebarController.prototype.startDelineate = function () {
-                this.toaster.pop('success', "Delineate", "Click on a blue stream cell to start delineation");
-                //clear out parameter list, flow report, etc
-                this.studyAreaService.selectedStudyArea = null;
-                this.studyAreaService.studyAreaParameterList = [];
-                this.studyAreaService.parametersLoading = false;
-                this.studyAreaService.parametersLoaded = false;
-                this.nssService.statisticsGroupList = [];
-                this.nssService.selectedStatisticsGroup = null;
-                this.nssService.selectedStatisticsGroupParameterList = [];
-                this.nssService.selectedStatisticsGroupScenario = [];
-                this.nssService.selectedStatisticsGroupScenarioResults = [];
-                this.studyAreaService.doDelineateFlag = !this.studyAreaService.doDelineateFlag;
+                var _this = this;
+                this.leafletData.getMap().then(function (map) {
+                    console.log('mapzoom', map.getZoom());
+                    if (map.getZoom() < 15) {
+                        _this.toaster.pop('error', "Delineate", "You must be at or above zoom level 15 to delineate.");
+                        return;
+                    }
+                    else {
+                        _this.toaster.pop('success', "Delineate", "Click on a blue stream cell to start delineation");
+                        //clear out parameter list, flow report, etc
+                        _this.studyAreaService.selectedStudyArea = null;
+                        _this.studyAreaService.studyAreaParameterList = [];
+                        _this.studyAreaService.parametersLoading = false;
+                        _this.studyAreaService.parametersLoaded = false;
+                        _this.nssService.statisticsGroupList = [];
+                        _this.nssService.selectedStatisticsGroup = null;
+                        _this.nssService.selectedStatisticsGroupParameterList = [];
+                        _this.nssService.selectedStatisticsGroupScenario = [];
+                        _this.nssService.selectedStatisticsGroupScenarioResults = [];
+                        _this.studyAreaService.doDelineateFlag = !_this.studyAreaService.doDelineateFlag;
+                    }
+                });
             };
             SidebarController.prototype.setStatisticsGroup = function (statisticsGroup) {
                 //if toggled remove selected parameter set
@@ -204,7 +215,7 @@ var StreamStats;
             };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
-            SidebarController.$inject = ['$scope', 'toaster', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ReportService'];
+            SidebarController.$inject = ['$scope', 'toaster', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ReportService', 'leafletData'];
             return SidebarController;
         })(); //end class
         var ProcedureType;

@@ -190,7 +190,6 @@ var StreamStats;
                             if (_this.studyArea.drawControlOption == 'add') {
                                 console.log('add layer', layer.toGeoJSON());
                                 var editPolygon = greinerHormann.union(sourcePolygon, clipPolygon);
-                                console.log('editpolygon', editPolygon);
                                 _this.studyArea.editedAreas.added.push(layer.toGeoJSON());
                             }
                             if (_this.studyArea.drawControlOption == 'remove') {
