@@ -299,7 +299,6 @@ module StreamStats.Controllers {
                         if (this.studyArea.drawControlOption == 'add') {
                             console.log('add layer', layer.toGeoJSON());
                             var editPolygon = greinerHormann.union(sourcePolygon, clipPolygon);
-                            console.log('editpolygon', editPolygon);
                             this.studyArea.editedAreas.added.push(layer.toGeoJSON());
                         }
 
