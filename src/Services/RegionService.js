@@ -125,7 +125,7 @@ var StreamStats;
                 this.Execute(request).then(function (response) {
                     angular.forEach(response.data.layers, function (value, key) {
                         if (value.name.toLowerCase().indexOf('stream grid') != -1 || value.name.toLowerCase().indexOf('study area bndys') != -1 || value.name.toLowerCase().indexOf('str')) {
-                            console.log(value);
+                            console.log("Adding layer: ", value);
                             layerArray.push(value.id);
                         }
                         ;

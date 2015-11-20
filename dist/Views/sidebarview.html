@@ -14,7 +14,6 @@
                         </select>
                     </div>
                     -->
-
                     <input type="text" class="form-control"
                             ng-model="selection"
                             typeahead="loc as loc.Name +'(' + loc.State +')' for loc in vm.getLocations($viewValue)"
@@ -25,9 +24,9 @@
                             placeholder="Location search" />
                     <i ng-show="loadingLocations" class="glyphicon glyphicon-refresh"></i>
 
-                    <div class="form-group" ng-show="vm.regionList.length > 0">
+                    <div class="form-group" ng-show="vm.regionService.regionList.length > 0">
                         <label> Select a Region</label>
-                        <div ng-repeat="region in vm.regionList track by $index">
+                        <div ng-repeat="region in vm.regionService.regionList track by $index">
                             <button ng-class="region.Name === vm.regionService.selectedRegion.Name ? 'btn btn-primary btn-group-justified':'btn btn-group-justified'" ng-click="vm.setRegion(region)"><span>{{region.Name}} </span></button>
                         </div>
                     </div>                          
