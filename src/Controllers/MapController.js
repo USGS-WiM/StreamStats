@@ -230,6 +230,9 @@ var StreamStats;
                 this.center = new Center(AOI.Latitude, AOI.Longitude, 14);
             };
             MapController.prototype.onSelectedRegionChanged = function () {
+                console.log('in onselected region changed', this.regionServices.regionList, this.regionServices.selectedRegion);
+                if (!this.regionServices.selectedRegion)
+                    return;
                 this.removeOverlayLayers("_region", true);
                 this.addRegionOverlayLayers(this.regionServices.selectedRegion.RegionID);
             };
@@ -296,7 +299,17 @@ var StreamStats;
             };
             MapController.prototype.setRegionsByBounds = function (oldValue, newValue) {
                 if (this.center.zoom >= 9 && oldValue !== newValue) {
+                    console.log('requesting region list');
                     this.regionServices.loadRegionListByExtent(this.bounds.northEast.lng, this.bounds.southWest.lng, this.bounds.southWest.lat, this.bounds.northEast.lat);
+                }
+                //if a region was selected, and then user zooms back out
+                if (this.center.zoom <= 6 && oldValue !== newValue && this.regionServices.selectedRegion) {
+                    console.log('removing region layers', this.layers.overlays);
+                    this.regionServices.regionList = [];
+                    this.regionServices.selectedRegion = null;
+                    //THIS IS JUST THROWING AN ANGULAR LEAFLET ERROR EVEN THOUGH SAME AS DOCS
+                    // http://tombatossals.github.io/angular-leaflet-directive/examples/0000-viewer.html#/layers/dynamic-addition-example
+                    this.removeOverlayLayers("_region", true);
                 }
             };
             MapController.prototype.updateRegion = function () {

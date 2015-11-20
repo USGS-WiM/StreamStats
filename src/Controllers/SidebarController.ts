@@ -37,7 +37,6 @@ module StreamStats.Controllers {
         selectedStatisticsGroup: Services.IStatisticsGroup;
         setProcedureType(pType: ProcedureType): void;
         toggleSideBar(): void;
-        //setDelineateFlag(): void;
     }
     
     class SidebarController implements ISidebarController {
@@ -46,11 +45,6 @@ module StreamStats.Controllers {
         public sideBarCollapsed: boolean;
         public selectedProcedure: ProcedureType;
         public toaster: any;
-
-        public regionList: Array<Services.IRegion>;
-        public masterRegionList: Array<Services.IRegion>;
-        //public parameterList: Array<Services.IParameter>;
-        //public statisticsGroupList: Array<Services.IStatisticsGroup>;
         public selectedStatisticsGroup: Services.IStatisticsGroup;
         private searchService: WiM.Services.ISearchAPIService;
         private regionService: Services.IRegionService;
@@ -58,8 +52,6 @@ module StreamStats.Controllers {
         private studyAreaService: Services.IStudyAreaService;       
         private reportService: Services.IreportService;    
         private leafletData: ILeafletData;
-    
-
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -70,17 +62,11 @@ module StreamStats.Controllers {
             this.searchService = service;
             this.sideBarCollapsed = false;
             this.selectedProcedure = ProcedureType.INIT;
-            this.regionService = region;
-            this.regionList = region.regionList; 
-            this.masterRegionList = region.masterRegionList; 
-            //this.parameterList = region.parameterList;    
+            this.regionService = region; 
             this.nssService = StatisticsGroup;
-            //this.statisticsGroupList = StatisticsGroup.statisticsGroupList;
             this.studyAreaService = studyArea;
             this.reportService = report;
             this.leafletData = leafletData;
-
-            //subscribe to Events
 
             //watches for changes to selected StatisticsGroup param list and updates studyareaParamList with them
             $scope.$watchCollection(() => this.nssService.selectedStatisticsGroupParameterList,(newval, oldval) => {

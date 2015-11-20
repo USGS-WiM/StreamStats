@@ -29,15 +29,10 @@ var StreamStats;
                 this.sideBarCollapsed = false;
                 this.selectedProcedure = 1 /* INIT */;
                 this.regionService = region;
-                this.regionList = region.regionList;
-                this.masterRegionList = region.masterRegionList;
-                //this.parameterList = region.parameterList;    
                 this.nssService = StatisticsGroup;
-                //this.statisticsGroupList = StatisticsGroup.statisticsGroupList;
                 this.studyAreaService = studyArea;
                 this.reportService = report;
                 this.leafletData = leafletData;
-                //subscribe to Events
                 //watches for changes to selected StatisticsGroup param list and updates studyareaParamList with them
                 $scope.$watchCollection(function () { return _this.nssService.selectedStatisticsGroupParameterList; }, function (newval, oldval) {
                     console.log('StatisticsGroup param list changed.  loaded ', newval.length, ' parameters from StatisticsGroup');
