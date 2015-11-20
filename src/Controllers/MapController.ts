@@ -299,12 +299,22 @@ module StreamStats.Controllers {
                         if (this.studyArea.drawControlOption == 'add') {
                             console.log('add layer', layer.toGeoJSON());
                             var editPolygon = greinerHormann.union(sourcePolygon, clipPolygon);
+                            console.log('editpolygon', editPolygon);
                             this.studyArea.editedAreas.added.push(layer.toGeoJSON());
                         }
 
                         if (this.studyArea.drawControlOption == 'remove') {
                             console.log('remove layer', layer.toGeoJSON());
                             var editPolygon = greinerHormann.diff(sourcePolygon, clipPolygon);
+
+                            //check for split polygon
+                            console.log('editPoly',editPolygon.length);
+                            if (editPolygon.length == 2) {
+                                alert('Splitting polygons is not permitted');
+                                drawnItems.clearLayers();
+                                return;
+                            }
+                            
                             this.studyArea.editedAreas.removed.push(layer.toGeoJSON());
                         }
 
@@ -415,7 +425,7 @@ module StreamStats.Controllers {
        
         private setRegionsByBounds(oldValue, newValue) {
 
-            if (this.center.zoom >= 15 && oldValue !== newValue) {
+            if (this.center.zoom >= 9 && oldValue !== newValue) {
                 this.regionServices.loadRegionListByExtent(this.bounds.northEast.lng, this.bounds.southWest.lng,
                     this.bounds.southWest.lat, this.bounds.northEast.lat);
             }
