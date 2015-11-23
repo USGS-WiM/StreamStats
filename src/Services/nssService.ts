@@ -35,6 +35,8 @@ module StreamStats.Services {
         loadStatisticsGroupTypes(rcode: string, regressionregion: string);
         loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregion: string);
         estimateFlows(studyAreaParameterList: any, rcode: string, statisticsGroupID: string, regressionregion: string)
+        showBasinCharacteristicsTable: boolean;
+        showFlowsTable: boolean;
     }
     export interface IStatisticsGroup {
         ID: string;
@@ -68,6 +70,8 @@ module StreamStats.Services {
         public selectedStatisticsGroupScenarioResults: any;
         public canUpdate: boolean;
         public toaster: any;
+        public showBasinCharacteristicsTable: boolean;
+        public showFlowsTable: boolean;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-

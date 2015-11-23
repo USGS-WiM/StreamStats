@@ -213,7 +213,7 @@ var StreamStats;
                             //show new polygon
                             _this.geojson['globalwatershed'].data.features[0] = basin;
                             drawnItems.clearLayers();
-                            console.log('editedAreas', _this.studyArea.editedAreas);
+                            console.log('editedAreas', JSON.stringify(_this.studyArea.editedAreas));
                         });
                     });
                 });

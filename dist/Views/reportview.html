@@ -79,7 +79,7 @@
             </div>
 
             <!--Parameter Table if just basin chars-->
-            <div class="well well-sm" ng-show="vm.studyAreaService.parametersLoaded">
+            <div class="well well-sm" ng-show="vm.nssService.showBasinCharacteristicsTable">
                 <h4>Basin Characteristics</h4>
                 <table class="table table-condensed">
                     <thead class="param-table">
@@ -100,7 +100,7 @@
             </div>
             
             <!--Parameter Table for Flow Report-->
-            <div class="well well-sm" ng-show="vm.nssService.selectedStatisticsGroupScenarioResults.length > 0">
+            <div class="well well-sm" ng-show="vm.nssService.showFlowsTable">
                 <h4>Scenario Parameters</h4>
                 <table class="table table-condensed">
                     <thead class="param-table">
@@ -149,8 +149,8 @@
     <div class="modal-footer">
         
         <div class="btn-group">
-            <button type="button" class="btn btn-default hidden-print" ng-click="vm.close()">Close</button>
-            <button type="button" class="btn btn-default hidden-print" ng-click="vm.print()">Print</button>
+            <button type="button" class="btn btn-default hidden-print" ng-click="vm.close()"><i class="fa fa-close"></i>&nbsp;&nbsp;Close</button>
+            <button type="button" class="btn btn-default hidden-print" ng-click="vm.print()"><i class="fa fa-print"></i>&nbsp;&nbsp;Print</button>
         </div>
     </div>
     

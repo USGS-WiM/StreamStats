@@ -158,11 +158,10 @@ var StreamStats;
                 //hardcoded to first entry for now
                 this.nssService.loadStatisticsGroupTypes(this.regionService.selectedRegion.RegionID, this.studyAreaService.selectedStudyArea.RegressionRegions[0]);
             };
-            SidebarController.prototype.estimateFlows = function (studyAreaParameterList) {
+            SidebarController.prototype.generateReport = function () {
                 console.log('in estimateFlows');
-                //hardcoded to first entry for now
-                if (this.nssService.selectedStatisticsGroup) {
-                    this.nssService.estimateFlows(studyAreaParameterList, this.regionService.selectedRegion.RegionID, this.nssService.selectedStatisticsGroup.ID, this.studyAreaService.selectedStudyArea.RegressionRegions[0]);
+                if (this.nssService.selectedStatisticsGroup && this.nssService.showFlowsTable) {
+                    this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList, this.regionService.selectedRegion.RegionID, this.nssService.selectedStatisticsGroup.ID, this.studyAreaService.selectedStudyArea.RegressionRegions[0]);
                 }
                 this.reportService.openReport();
             };

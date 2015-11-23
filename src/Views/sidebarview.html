@@ -39,7 +39,7 @@
                     <p>Zoom to at least a zoom level of 15, click the 'delineate' button, then select a blue stream cell</p>
                     
                     <div class="form-group"> 
-                        <button id="delineateButton" type="button" class="btn btn-sm btn-info" ng-click="vm.startDelineate()" ng-class="vm.studyAreaService.doDelineateFlag ? 'btn-warning' : 'btn-info'"><i  ng-class="vm.studyAreaService.canUpdate ? 'fa fa-map-marker' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Delineate</button>
+                        <button id="delineateButton" type="button" class="btn btn-sm btn-info" ng-click="vm.startDelineate()" ng-class="vm.studyAreaService.doDelineateFlag ? 'btn-warning' : 'btn-info'"><i  ng-class="vm.studyAreaService.canUpdate ? 'fa fa-map-marker' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;<span ng-show="vm.studyAreaService.canUpdate">Delineate</span><span ng-show="!vm.studyAreaService.canUpdate">Delineating Basin, please wait...</span></button>
                     </div>
 
                     <div id="verifyStudyArea" ng-show="vm.studyAreaService.selectedStudyArea.Features">
@@ -146,12 +146,19 @@
 
                 <div class="list-group-body" ng-show="vm.selectedProcedure == 5">
                     <p>Click the button below to generate a report: {{vm.nssService.selectedStatisticsGroup.Name}}</p>
-                    <div class="form-group" ng-show="vm.studyAreaService.parametersLoaded">
-                        <button ng-click="vm.estimateFlows(vm.studyAreaService.studyAreaParameterList)" type="button" class="btn btn-sm btn-primary"><i ng-class="vm.nssService.canUpdate ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Generate Basin Characteristics Report</button>
+
+
+                    <div class="form-group" ng-show="vm.studyAreaService.parametersLoaded" ng-click="vm.nssService.showBasinCharacteristicsTable = !vm.nssService.showBasinCharacteristicsTable">
+                        <button type="button" class="btn btn-sm" ng-class="vm.nssService.showBasinCharacteristicsTable ? 'btn-primary' : 'btn-default'"><i></i>Show Basin Characteristics</button>
                     </div>
-                    <div class="form-group" ng-show="vm.nssService.selectedStatisticsGroup">
-                        <button ng-click="vm.estimateFlows(vm.studyAreaService.studyAreaParameterList)" type="button" class="btn btn-sm btn-primary"><i ng-class="vm.nssService.canUpdate ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Estimate Flows and Generate Report</button>
+                    <div class="form-group" ng-show="vm.nssService.selectedStatisticsGroup" ng-click="vm.nssService.showFlowsTable = !vm.nssService.showFlowsTable">
+                        <button type="button" class="btn btn-sm" ng-class="vm.nssService.showFlowsTable ? 'btn-primary' : 'btn-default'"><i></i>Estimate Flows</button>
                     </div>
+                    <div class="form-group" ng-show="vm.nssService.showBasinCharacteristicsTable || vm.nssService.showFlowsTable">
+                        <button ng-click="vm.generateReport()" type="button" class="btn btn-sm btn-success"><i ng-class="vm.nssService.canUpdate ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Generate Report</button>
+                    </div>
+
+
                 </div>    
             </div>       
         </div>
