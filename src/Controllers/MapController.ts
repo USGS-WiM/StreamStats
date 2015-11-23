@@ -325,7 +325,7 @@ module StreamStats.Controllers {
                         //show new polygon
                         this.geojson['globalwatershed'].data.features[0] = basin;
                         drawnItems.clearLayers();
-                        console.log('editedAreas', this.studyArea.editedAreas); 
+                        console.log('editedAreas', JSON.stringify(this.studyArea.editedAreas)); 
                     });
                 });
             });

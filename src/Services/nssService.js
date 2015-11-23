@@ -139,6 +139,7 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, 1, 'json', updatedScenarioObject);
                 this.selectedStatisticsGroupScenarioResults = [];
                 this.Execute(request).then(function (response) {
+                    console.log(response);
                     if (response.data[0].RegressionRegions[0].Results && response.data[0].RegressionRegions[0].Results.length > 0) {
                         response.data[0].RegressionRegions[0].Results.map(function (item) {
                             try {
