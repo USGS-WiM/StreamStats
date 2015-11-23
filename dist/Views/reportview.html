@@ -114,7 +114,7 @@
                     <tbody>
                         <tr ng-repeat="parameter in vm.nssService.selectedStatisticsGroupParameterList">
                         <td ng-bind="parameter.Name"></td>
-                        <td ng-bind="parameter.Value"></td>
+                        <td ng-bind="parameter.Value" ng-class="(parameter.Value < parameter.Limits.Min) || (parameter.Value > parameter.Limits.Max) ? 'danger' : ''"></td>
                         <td ng-bind="parameter.Limits.Min.toFixed(2)"></td>
                         <td ng-bind="parameter.Limits.Max.toFixed(2)"></td>
                         </tr>
