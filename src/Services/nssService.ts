@@ -183,6 +183,7 @@ module StreamStats.Services {
             this.selectedStatisticsGroupScenarioResults = [];
             this.Execute(request).then(
                 (response: any) => {    
+                    console.log(response);
                     if (response.data[0].RegressionRegions[0].Results && response.data[0].RegressionRegions[0].Results.length > 0) {
                         response.data[0].RegressionRegions[0].Results.map((item) => {
                             try {

@@ -91,9 +91,9 @@
                     </thead>
                     <tbody>
                         <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList">
-                        <td ng-bind="parameter.name"></td>
-                        <td ng-bind="parameter.value"></td>
-                        <td ng-bind="parameter.unit"></td>
+                            <td ng-bind="parameter.name"></td>
+                            <td ng-bind="parameter.value"></td>
+                            <td ng-bind="parameter.unit"></td>
                         </tr>
                     </tbody>
                 </table>
@@ -113,13 +113,16 @@
                     </thead>
                     <tbody>
                         <tr ng-repeat="parameter in vm.nssService.selectedStatisticsGroupParameterList">
-                        <td ng-bind="parameter.Name"></td>
-                        <td ng-bind="parameter.Value" ng-class="(parameter.Value < parameter.Limits.Min) || (parameter.Value > parameter.Limits.Max) ? 'danger' : ''"></td>
-                        <td ng-bind="parameter.Limits.Min.toFixed(2)"></td>
-                        <td ng-bind="parameter.Limits.Max.toFixed(2)"></td>
+                            <td ng-bind="parameter.Name"></td>
+                            <td ng-bind="parameter.Value" ng-class="(parameter.Value < parameter.Limits.Min) || (parameter.Value > parameter.Limits.Max) ? 'danger' : ''"></td>
+                            <td ng-bind="parameter.Limits.Min.toFixed(2)"></td>
+                            <td ng-bind="parameter.Limits.Max.toFixed(2)"></td>
                         </tr>
                     </tbody>
                 </table>
+                <!-- SHOW WARNING EXPLANATION HERE FROM WIM HEADER THAT ONE OR MORE PARAMETER VALUES WERE OUT OF RANGE.  NEED TO MODIFY WIM SERVICES REQUEST TO RETURN HEADERS
+                <span ng-show="(parameter.Value < parameter.Limits.Min) || (parameter.Value > parameter.Limits.Max)"></span>
+                -->
             </div>
 
             <div class="well well-sm" ng-show="vm.nssService.selectedStatisticsGroupScenarioResults.length > 0">
@@ -135,10 +138,10 @@
                     </thead>
                     <tbody>
                         <tr ng-repeat="parameter in vm.nssService.selectedStatisticsGroupScenarioResults">
-                        <td ng-bind="parameter.Name"></td>
-                        <td ng-bind="parameter.Value.toFixed(0)"></td>
-                        <td ng-bind="parameter.Unit.Abbr"></td>
-                        <td ng-bind="parameter.Errors[0].Value"></td>
+                            <td ng-bind="parameter.Name"></td>
+                            <td ng-bind="parameter.Value.toFixed(0)"></td>
+                            <td ng-bind="parameter.Unit.Abbr"></td>
+                            <td ng-bind="parameter.Errors[0].Value"></td>
                         </tr>
                     </tbody>
                 </table>
