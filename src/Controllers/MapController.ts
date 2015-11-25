@@ -187,7 +187,7 @@ module StreamStats.Controllers {
                 if (!studyArea.doDelineateFlag) return;
                 var latlng = args.leafletEvent.latlng;
                 this.startDelineate(latlng);
-                studyArea.doDelineateFlag = false;                
+                studyArea.doDelineateFlag = false;
             });
 
             $scope.$watch(() => this.bounds,(newval, oldval) => this.setRegionsByBounds(oldval, newval));
@@ -284,14 +284,14 @@ module StreamStats.Controllers {
                     map.on('draw:created',(e) => {
 
                         map.removeEventListener('draw:created');
-                        
+
                         var layer = e.layer;
                         drawnItems.addLayer(layer);
 
                         //convert edit polygon coords
                         var editArea = layer.toGeoJSON().geometry.coordinates[0];
                         var editAreaConverted = [];
-                        editArea.forEach((item) => { editAreaConverted.push([item[1],item[0]])});
+                        editArea.forEach((item) => { editAreaConverted.push([item[1], item[0]]) });
 
                         var sourcePolygon = L.polygon(basinConverted);
                         var clipPolygon = L.polygon(editAreaConverted);
@@ -307,13 +307,13 @@ module StreamStats.Controllers {
                             var editPolygon = greinerHormann.diff(sourcePolygon, clipPolygon);
 
                             //check for split polygon
-                            console.log('editPoly',editPolygon.length);
+                            console.log('editPoly', editPolygon.length);
                             if (editPolygon.length == 2) {
                                 alert('Splitting polygons is not permitted');
                                 drawnItems.clearLayers();
                                 return;
                             }
-                            
+
                             this.studyArea.editedAreas.removed.push(layer.toGeoJSON());
                         }
 
@@ -325,7 +325,7 @@ module StreamStats.Controllers {
                         //show new polygon
                         this.geojson['globalwatershed'].data.features[0] = basin;
                         drawnItems.clearLayers();
-                        console.log('editedAreas', JSON.stringify(this.studyArea.editedAreas)); 
+                        console.log('editedAreas', JSON.stringify(this.studyArea.editedAreas));
                     });
                 });
             });
@@ -348,13 +348,13 @@ module StreamStats.Controllers {
             console.log('in onselected region changed', this.regionServices.regionList, this.regionServices.selectedRegion);
             if (!this.regionServices.selectedRegion) return;
             this.removeOverlayLayers("_region", true);
-            this.addRegionOverlayLayers(this.regionServices.selectedRegion.RegionID);  
+            this.addRegionOverlayLayers(this.regionServices.selectedRegion.RegionID);
         }
         private onSelectedStudyAreaChanged() {
 
             console.log('study area changed');
             this.geojson = {};
-            
+
             if (!this.studyArea.selectedStudyArea.Features) return;
 
             var lat = this.studyArea.selectedStudyArea.Pourpoint.Latitude;
@@ -390,7 +390,7 @@ module StreamStats.Controllers {
                             });
                             layer.bindPopup(popupContent);
                         }
-                    }                   
+                    }
                 }
 
                 if (item.name == 'regulatedWatershed') {
@@ -416,14 +416,14 @@ module StreamStats.Controllers {
             //console.log(JSON.stringify(this.geojson));    
             var bbox = this.geojson['globalwatershed'].data.features[0].bbox;
             //this.bounds = this.leafletBoundsHelperService.createBoundsFromArray([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
-            this.leafletData.getMap().then((map: any) => {              
+            this.leafletData.getMap().then((map: any) => {
                 map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]], {
                     //offset width of sidebar from left, 50px from top
                     //paddingTopLeft: [document.getElementById("sidebar").offsetWidth,50]
-                });          
+                });
             });
         }
-       
+
         private setRegionsByBounds(oldValue, newValue) {
 
             if (this.center.zoom >= 9 && oldValue !== newValue) {
@@ -479,7 +479,7 @@ module StreamStats.Controllers {
             var layeridList: Array<string>;
 
             layeridList = this.getLayerIdsByID(name, this.layers.overlays, isPartial);
-            
+
             layeridList.forEach((item) => {
                 delete this.layers.overlays[item];
             });
