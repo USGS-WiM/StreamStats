@@ -34,25 +34,21 @@ configuration.queryparams =
 
 configuration.basemaps =
 {
-
-    "gray": {
-        "name": "ESRI Gray",
-        "type": "agsBase",
-        "layer": "Gray",
-        "visible": true
-    },
     "tnmBaseMap": {
         "name": "USGS National Map",
-        "visible": false,
+        "visible": true,
         "type": 'group',
         "layerOptions": {
-            "zIndex": 0,
+            "zIndex": -100,
+            "z-index": -100,
             "layers": [
                 {
                     "name": "tiles",
-                    "url": "http://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}",
-                    "type": 'xyz',
+                    "url": "http://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer",
+                    "type": 'agsTiled',
                     "layerOptions": {
+                        "zIndex": -100,
+                        "z-index": -100,
                         "minZoom": 0,
                         "maxZoom": 15,
                         "attribution": "<a href='http://www.doi.gov'>U.S. Department of the Interior</a> | <a href='http://www.usgs.gov'>U.S. Geological Survey</a> | <a href='http://www.usgs.gov/laws/policies_notices.html'>Policies</a>"
@@ -63,6 +59,10 @@ configuration.basemaps =
                     "url": "http://services.nationalmap.gov/arcgis/rest/services/USGSTopoLarge/MapServer",
                     "type": 'agsDynamic',
                     "layerOptions": {
+                        "format": "png8",
+                        "f": "image",
+                        "position": "back",
+                        "zIndex": -100,
                         "minZoom": 16,
                         "maxZoom": 20,
                         "attribution": "<a href='http://www.doi.gov'>U.S. Department of the Interior</a> | <a href='http://www.usgs.gov'>U.S. Geological Survey</a> | <a href='http://www.usgs.gov/laws/policies_notices.html'>Policies</a>"
@@ -71,7 +71,60 @@ configuration.basemaps =
             ]
         }
     },
-
+    streets: {
+        name: "Streets",
+        type: "agsBase",
+        layer: "Streets",
+        visible: true
+    },
+    topo: {
+        name: "World Topographic",
+        type: "agsBase",
+        layer: "Topographic",
+        visible: false
+    },
+    national: {
+        name: "National Geographic",
+        type: "agsBase",
+        layer: "NationalGeographic",
+        visible: false
+    },
+    oceans: {
+        name: "Oceans",
+        type: "agsBase",
+        layer: "Oceans",
+        visible: false
+    },
+    gray: {
+        name: "Gray",
+        type: "agsBase",
+        layer: "Gray",
+        visible: false
+    },
+    darkgray: {
+        name: "DarkGray",
+        type: "agsBase",
+        layer: "DarkGray",
+        visible: false
+    },
+    imagery: {
+        name: "Imagery",
+        type: "agsBase",
+        layer: "Imagery",
+        visible: false
+    },
+    shadedrelief: {
+        name: "ShadedRelief",
+        type: "agsBase",
+        layer: "ShadedRelief",
+        visible: false
+    },
+    terrain: {
+        name: "Terrain",
+        type: "agsBase",
+        layer: "Terrain",
+        visible: false
+    },
     "MapquestOAM": {
         "name": "Mapquest Areal",
         "url": "http://{s}.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.png",
@@ -126,6 +179,7 @@ configuration.basemaps =
 }// end baselayer
 
 configuration.overlayedLayers = {
+    /*
     "str900co_utm": {
         "name": "str900 (co) utm",
         "url": "http://54.164.188.167:6080/arcgis/rest/services/streamstats/str900_co/ImageServer",
@@ -145,13 +199,14 @@ configuration.overlayedLayers = {
                         "variableName" : "Value"
             }
         }
-    },//end str900  
+    },*/
     "SSLayer": {
-        "name": "Implementated Regions",
+        "name": "National map service",
         "url": configuration.baseurls['StreamStats'] + "/arcgis/rest/services/ss_studyAreas_prod/MapServer",
         "type": 'agsDynamic',
         "visible": true,
         "layerOptions": {
+            "zIndex": 1,
             "opacity": 0.6,
             "style": function (feature) {
                 return { color: 'gray', weight: 2 };
@@ -161,7 +216,10 @@ configuration.overlayedLayers = {
     "draw": {
         "name": 'draw',
         "type": 'group',
-        "visible": true
+        "visible": true,
+        "layerParams": {
+            "showOnSelector": false,
+        },
     }
 }//end overlayedLayers
 configuration.customMapServices =

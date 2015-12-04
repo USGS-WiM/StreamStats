@@ -221,7 +221,7 @@ module StreamStats.Controllers {
             });
 
             //init map           
-            this.center = new Center(39, -100, 4);
+            this.center = new Center(39, -100, 3);
             //this.center = new Center(39, -106, 16);
             this.layers = {
                 baselayers: configuration.basemaps,
@@ -250,7 +250,7 @@ module StreamStats.Controllers {
                     //zoom home button control
                     (<any>L.Control).zoomHome({ homeCoordinates: [39, -100], homeZoom: 4 }),
                     //location control
-                    (<any>L.control).locate({ follow: true })
+                    (<any>L.control).locate({ follow: false })
                     )
             };
             this.events = {
@@ -460,12 +460,16 @@ module StreamStats.Controllers {
 
         }
         private addRegionOverlayLayers(regionId: string) {
-            this.layers.overlays[regionId + "_region"] = new Layer(regionId + " Region", configuration.baseurls['StreamStats'] + "/arcgis/rest/services/{0}_ss/MapServer".format(regionId.toLowerCase()),
+            var layerlist =this.regionServices.loadMapLayersByRegion(regionId)
+            this.layers.overlays[regionId + "_region"] = new Layer(regionId + " Map layers", configuration.baseurls['StreamStats'] + "/arcgis/rest/services/{0}_ss/MapServer".format(regionId.toLowerCase()),
                 "agsDynamic", true, {
                     "opacity": 0.5,
-                    "layers": this.regionServices.loadMapLayersByRegion(regionId)
+                    "layers": layerlist,
+                    "zIndex": 999,
+                    "format": "png8",
+                    "f":"image"
                 });
-
+            
             //get any other layers specified in config
             var layers = configuration.customMapServices[regionId];
             if (layers == undefined) return;

@@ -403,12 +403,12 @@ a{
     line-height: 1em;
   }
 
-  .modal-footer .btn-default,
+  .modal .btn-default,
   #contact-form .btn-primary{
     background-color: #3C6DD1;
     transition: 0.2s;
     color:#fff;
-    border-radius: 25px;
+    /*border-radius: 25px;*/
     letter-spacing: 2px;
     box-sizing: border-box;
     padding: 0px 35px 0px 35px;
@@ -418,8 +418,9 @@ a{
     margin-top: 10px;
     margin-bottom: 10px;
     line-height: 40px;
+    margin-right:20px;
   }
-    .modal-footer .btn-default:hover,
+    .modal .btn-default:hover,
     #contact-form .btn-primary:hover{
       background-color: #2b5ab9;
       transition: 0.2s;
