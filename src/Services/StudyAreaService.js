@@ -46,6 +46,7 @@ var StreamStats;
                 this.studyAreaParameterList = [];
                 this.showAddRemoveButtons = false;
                 this.editedAreas = { "added": [], "removed": [] };
+                this.isRegulated = null;
             }
             Object.defineProperty(StudyAreaService.prototype, "onSelectedStudyAreaChanged", {
                 get: function () {
@@ -156,23 +157,24 @@ var StreamStats;
             };
             StudyAreaService.prototype.upstreamRegulation = function () {
                 var _this = this;
+                console.log('upstream regulation');
                 this.toaster.pop('info', "Checking for Upstream Regulation", "Please wait...");
-                this.isRegulated = false;
                 this.canUpdate = false;
                 var watershed = JSON.stringify(this.selectedStudyArea.Features[1].feature, null);
                 var url = configuration.baseurls['RegulationServices'] + configuration.queryparams['COregulationService'];
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, 1 /* POST */, 'json', { watershed: watershed, outputcrs: 4326, f: 'geojson' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', { watershed: watershed, outputcrs: 4326, f: 'geojson' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
                 this.Execute(request).then(function (response) {
                     console.log(response);
                     if (response.data.percentarearegulated > 0) {
                         _this.toaster.pop('success', "Regulation was found", "Continue to 'Modify Parameters' to see area-weighted parameters", 5000);
                         _this.selectedStudyArea.Features.push(response.data["featurecollection"][0]);
-                        var regulatedResults = response.data.parameters;
-                        _this.loadRegulatedParameterResults(regulatedResults);
+                        _this.regulationCheckResults = response.data;
+                        _this.loadRegulatedParameterResults(_this.regulationCheckResults.parameters);
                         _this.isRegulated = true;
                     }
                     else {
                         //alert("No regulation found");
+                        _this.isRegulated = false;
                         _this.toaster.pop('warning', "No regulation found", "Please continue", 5000);
                     }
                     //sm when complete
@@ -208,6 +210,7 @@ var StreamStats;
                     angular.forEach(paramList, function (value, index) {
                         if (val.code.toUpperCase().trim() === value.code.toUpperCase().trim()) {
                             value.regulatedValue = val.value;
+                            //value.unRegulatedValue = param.value - val.value;
                             return; //exit loop
                         } //endif
                     });

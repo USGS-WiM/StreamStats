@@ -83,6 +83,7 @@ module StreamStats.Services {
         public showAddRemoveButtons: boolean;
         public drawControlOption: any;
         public editedAreas: any;
+        public regulationCheckResults: any;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -98,8 +99,9 @@ module StreamStats.Services {
             this.doDelineateFlag = false;
             this.studyAreaParameterList = [];
             this.showAddRemoveButtons = false;
-            this.editedAreas = {"added": [],"removed": []};
-        }s
+            this.editedAreas = { "added": [], "removed": [] };
+            this.isRegulated = null;
+        }
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         public editBasin(selection) {
@@ -188,9 +190,9 @@ module StreamStats.Services {
 
         public upstreamRegulation() {
 
+            console.log('upstream regulation');
             this.toaster.pop('info', "Checking for Upstream Regulation", "Please wait...");
 
-            this.isRegulated = false;
             this.canUpdate = false;
 
             var watershed = JSON.stringify(this.selectedStudyArea.Features[1].feature, null);
@@ -207,13 +209,15 @@ module StreamStats.Services {
                     if (response.data.percentarearegulated > 0) {
                         this.toaster.pop('success', "Regulation was found", "Continue to 'Modify Parameters' to see area-weighted parameters", 5000);
                         this.selectedStudyArea.Features.push(response.data["featurecollection"][0]);
-                        var regulatedResults = response.data.parameters;
-                        this.loadRegulatedParameterResults(regulatedResults);
+                        this.regulationCheckResults = response.data;
+                        this.loadRegulatedParameterResults(this.regulationCheckResults.parameters);
                         this.isRegulated = true;                      
                     }
                     else {
                         //alert("No regulation found");
+                        this.isRegulated = false;
                         this.toaster.pop('warning', "No regulation found", "Please continue", 5000);
+                        
                     }
                     //sm when complete
                 },(error) => {
@@ -257,6 +261,7 @@ module StreamStats.Services {
                 angular.forEach(paramList, function (value, index) {
                     if (val.code.toUpperCase().trim() === value.code.toUpperCase().trim()) {
                         value.regulatedValue = val.value;
+                        //value.unRegulatedValue = param.value - val.value;
                         return;//exit loop
                     }//endif
                 });

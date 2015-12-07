@@ -240,11 +240,13 @@ module StreamStats.Controllers {
 
         public checkRegulation() {
 
-            console.log('berp', this.studyAreaService.studyAreaParameterList.length, this.studyAreaService.parametersLoaded);
+            /* comment this out apparently don't need params calculated
             if (this.studyAreaService.studyAreaParameterList.length < 1 || !this.studyAreaService.parametersLoaded) {
                 alert('Select some parameters and make sure they are calcuated');
                 return;
             }
+
+           */
 
 
             this.studyAreaService.upstreamRegulation();
