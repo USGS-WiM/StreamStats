@@ -135,6 +135,7 @@ module StreamStats.Services {
                 (response: any) => {  
                     this.selectedStudyArea.Features = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"] : null;
                     this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
+                    this.selectedStudyArea.Date = new Date();
                     //sm when complete
                 },(error) => {
                     //sm when error

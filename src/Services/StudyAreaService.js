@@ -111,6 +111,7 @@ var StreamStats;
                 this.Execute(request).then(function (response) {
                     _this.selectedStudyArea.Features = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"] : null;
                     _this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
+                    _this.selectedStudyArea.Date = new Date();
                     //sm when complete
                 }, function (error) {
                     //sm when error
