@@ -58,6 +58,7 @@ module StreamStats.Services {
         //-+-+-+-+-+-+-+-+-+-+-+-
         public toaster: any;
         public canUpdate: boolean;
+        public regulationCheckComplete: boolean
         public parametersLoaded: boolean;
         public parametersLoading: boolean;
         private _studyAreaList: Array<Models.IStudyArea>;
@@ -94,6 +95,7 @@ module StreamStats.Services {
             this.toaster = toaster;
             this._studyAreaList = []; 
             this.canUpdate = true;
+            this.regulationCheckComplete = true;
             this.parametersLoaded = false;
             this.parametersLoading = false;
             this.doDelineateFlag = false;
@@ -176,7 +178,12 @@ module StreamStats.Services {
                         var results = response.data.parameters;
                         this.loadParameterResults(results);
                         this.parametersLoaded = true;
-                        //this.selectedStudyArea.Parameters = response.data.parameters;
+                        
+                        //do regulation parameter update if needed
+                        if (this.isRegulated) {
+                            this.loadRegulatedParameterResults(this.regulationCheckResults.parameters);
+                        }
+
                     }
                     //sm when complete
                 },(error) => {
@@ -193,7 +200,7 @@ module StreamStats.Services {
             console.log('upstream regulation');
             this.toaster.pop('info', "Checking for Upstream Regulation", "Please wait...");
 
-            this.canUpdate = false;
+            this.regulationCheckComplete = false;
 
             var watershed = JSON.stringify(this.selectedStudyArea.Features[1].feature, null);
             var url = configuration.baseurls['RegulationServices'] + configuration.queryparams['COregulationService'];
@@ -210,7 +217,7 @@ module StreamStats.Services {
                         this.toaster.pop('success', "Regulation was found", "Continue to 'Modify Parameters' to see area-weighted parameters", 5000);
                         this.selectedStudyArea.Features.push(response.data["featurecollection"][0]);
                         this.regulationCheckResults = response.data;
-                        this.loadRegulatedParameterResults(this.regulationCheckResults.parameters);
+                        //this.loadRegulatedParameterResults(this.regulationCheckResults.parameters);
                         this.isRegulated = true;                      
                     }
                     else {
@@ -224,7 +231,7 @@ module StreamStats.Services {
                     //sm when error
                 }).finally(() => {
                     //this.toaster.clear();
-                    this.canUpdate = true;
+                    this.regulationCheckComplete = true;
                     this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
 
             });

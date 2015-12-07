@@ -189,7 +189,6 @@ module StreamStats.Controllers {
             console.log('in Calculate Parameters');
 
             this.studyAreaService.loadParameters();
-
         }
 
         public checkEdits() {

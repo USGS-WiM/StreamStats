@@ -40,6 +40,7 @@ var StreamStats;
                 this.toaster = toaster;
                 this._studyAreaList = [];
                 this.canUpdate = true;
+                this.regulationCheckComplete = true;
                 this.parametersLoaded = false;
                 this.parametersLoading = false;
                 this.doDelineateFlag = false;
@@ -145,6 +146,10 @@ var StreamStats;
                         var results = response.data.parameters;
                         _this.loadParameterResults(results);
                         _this.parametersLoaded = true;
+                        //do regulation parameter update if needed
+                        if (_this.isRegulated) {
+                            _this.loadRegulatedParameterResults(_this.regulationCheckResults.parameters);
+                        }
                     }
                     //sm when complete
                 }, function (error) {
@@ -159,7 +164,7 @@ var StreamStats;
                 var _this = this;
                 console.log('upstream regulation');
                 this.toaster.pop('info', "Checking for Upstream Regulation", "Please wait...");
-                this.canUpdate = false;
+                this.regulationCheckComplete = false;
                 var watershed = JSON.stringify(this.selectedStudyArea.Features[1].feature, null);
                 var url = configuration.baseurls['RegulationServices'] + configuration.queryparams['COregulationService'];
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', { watershed: watershed, outputcrs: 4326, f: 'geojson' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
@@ -169,7 +174,7 @@ var StreamStats;
                         _this.toaster.pop('success', "Regulation was found", "Continue to 'Modify Parameters' to see area-weighted parameters", 5000);
                         _this.selectedStudyArea.Features.push(response.data["featurecollection"][0]);
                         _this.regulationCheckResults = response.data;
-                        _this.loadRegulatedParameterResults(_this.regulationCheckResults.parameters);
+                        //this.loadRegulatedParameterResults(this.regulationCheckResults.parameters);
                         _this.isRegulated = true;
                     }
                     else {
@@ -182,7 +187,7 @@ var StreamStats;
                     //sm when error
                 }).finally(function () {
                     //this.toaster.clear();
-                    _this.canUpdate = true;
+                    _this.regulationCheckComplete = true;
                     _this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
                 });
             };

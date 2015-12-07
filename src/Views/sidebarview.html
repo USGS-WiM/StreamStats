@@ -64,17 +64,10 @@
                             <h4>State/Region Specific Functions</h4>
                             <p>Functions for {{vm.regionService.selectedRegion.Name}}</p>
                             <div class="form-group">
-                                <button ng-show="vm.regionService.selectedRegion.RegionID == 'CO'" ng-click="vm.checkRegulation()" type="button" class="btn btn-sm btn-primary"><i ng-class="vm.studyAreaService.canUpdate ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Check for upstream regulation</button>
+                                <button ng-show="vm.regionService.selectedRegion.RegionID == 'CO'" ng-click="vm.checkRegulation()" type="button" class="btn btn-sm btn-primary"><i ng-class="vm.studyAreaService.regulationCheckComplete ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Check for upstream regulation</button>
                             </div>
 
                             <div class="alert alert-success" role="alert" ng-show="vm.studyAreaService.isRegulated !== null">Upstream Regulation check has been completed.  There is <strong ng-show="vm.studyAreaService.isRegulated" >{{vm.studyAreaService.regulationCheckResults.percentarearegulated.toFixed(2)}} percent</strong><strong ng-show="!vm.studyAreaService.isRegulated">NO</strong> regulation in this watershed.</div>
-
-
-                            <!--add something here to show regulation percentage-->
-
-
-                            
-
 
                         </div> 
                         
