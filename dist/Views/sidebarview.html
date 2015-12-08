@@ -106,8 +106,8 @@
                     </div>
 
                     <div class="well well-sm">
-                        <h4>Parameters</h4>
-                        <p>Parameters can be selected individually or are selected based on the chosen scenario</p>
+                        <h4>Basin Characteristics</h4>
+                        <p>Basin Characteristics can be selected individually or are selected based on the chosen scenario</p>
                         <div class="list-group">
                             <button class="btn btn-sm btn-default" ng-class="vm.studyAreaService.studyAreaParameterList.indexOf(parameter) > -1 ? 'btn-success' : ''" ng-click="vm.updateStudyAreaParameterList(parameter)" ng-repeat="parameter in vm.regionService.parameterList" tooltip="{{parameter.description}}"><span>{{parameter.name}} </span></button>
                             <!--
@@ -115,18 +115,18 @@
                         </div>
                         <div ng-show="vm.studyAreaService.studyAreaParameterList.length > 0">
                             <div class="form-group">
-                                <button type="button" class="btn btn-sm btn-primary" ng-click="vm.calculateParameters()"><i class="fa fa-refresh" ng-class="vm.studyAreaService.parametersLoading ? 'fa fa-refresh fa-spin' : 'fa fa-flash'"></i>&nbsp;&nbsp;Calculate Selected Parameters</button>
+                                <button type="button" class="btn btn-sm btn-primary" ng-click="vm.calculateParameters()"><i class="fa fa-refresh" ng-class="vm.studyAreaService.parametersLoading ? 'fa fa-refresh fa-spin' : 'fa fa-flash'"></i>&nbsp;&nbsp;Calculate Selected Basin Characteristics</button>
                             </div>
-                            <div class="alert alert-success" role="alert" ng-show="vm.studyAreaService.parametersLoaded">Your parameters have been loaded, you can choose "<strong>Modify Parameters</strong>" or go straight to "<strong>Build a Flow Report</strong>"</div>
+                            <div class="alert alert-success" role="alert" ng-show="vm.studyAreaService.parametersLoaded">Your basin characteristics have been loaded, you can choose "<strong>Modify Basin Characteristics</strong>" or go straight to "<strong>Build a Flow Report</strong>"</div>
                         </div>
                     </div>                       
                 </div>    
             </div>    
             <div class="sidebar-item">
-                <a ng-class="vm.selectedProcedure == 4  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(4)" >Modify Parameters<i ng-class="vm.selectedProcedure == 4 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
+                <a ng-class="vm.selectedProcedure == 4  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(4)" >Modify Basin Characteristics<i ng-class="vm.selectedProcedure == 4 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
 
                 <div class="list-group-body" ng-show="vm.selectedProcedure == 4">
-                    <p>Parameters can be edited here</p>
+                    <p>Basin Characteristics can be edited here</p>
                     <table class="table table-condensed">
                       <thead class="param-table">
                         <tr>
