@@ -89,8 +89,7 @@ module StreamStats.Services {
         //-+-+-+-+-+-+-+-+-+-+-+-
         public loadStatisticsGroupTypes(rcode: string, regressionregion: string) {
 
-            this.toaster.pop('info', "Loading Available Scenarios", "Please wait...", 999999);
-
+            this.toaster.pop('info', "Loading Available Scenarios", "Please wait...", 0);
             console.log('in load StatisticsGroups', rcode);
             if (!rcode && !regressionregion) return;
 
@@ -111,19 +110,19 @@ module StreamStats.Services {
                             statisticsGroupList.push(value);
                         });
                     }
-                    //console.log(statisticsGroupList);
-                    //sm when complete
+                    this.toaster.clear();
                 },(error) => {
                     //sm when complete
-                }).finally(() => {
                     this.toaster.clear();
+                    this.toaster.pop('error', "There was an error Loading Available Scenarios", "Please retry", 5000);
+                }).finally(() => {
                     this.loadingStatisticsGroup = false;
                 });
         }
 
         public loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregion: string) {
 
-            this.toaster.pop('info', "Load Parameters by Scenario", "Please wait...", 999999);
+            this.toaster.pop('info', "Load Parameters by Scenario", "Please wait...", 0);
 
             //var deferred = ng.IQService.defer();
             console.log('in load StatisticsGroup parameters', rcode, statisticsGroupID,regressionregion);
@@ -147,20 +146,22 @@ module StreamStats.Services {
                             }
                         });
                     }
+                    this.toaster.clear();
                     //sm when complete
                 },(error) => {
-                    //sm when complete
-                }).finally(() => { this.toaster.clear(); });
+                    //sm when error
+                    this.toaster.clear();
+                    this.toaster.pop('error', "There was an error Loading Parameters by Statistics Group", "Please retry", 5000);
+                }).finally(() => {
+
+                });
         }
 
         public estimateFlows(studyAreaParameterList: any, rcode: string, statisticsGroupID: string, regressionregion: string) {
 
-            this.toaster.pop('info', "Estimating Flows", "Please wait...", 999999);
-
+            this.toaster.pop('info', "Estimating Flows", "Please wait...", 0);
             this.canUpdate = false;
-
             if (!studyAreaParameterList && !rcode && !statisticsGroupID && !regressionregion) return;
-
             console.log('in estimate flows method');
 
             //swap out computed values in object
@@ -195,11 +196,13 @@ module StreamStats.Services {
                         });
                         
                     }
+                    this.toaster.clear();
                     //sm when complete
                 },(error) => {
-                    //sm when complete
-                }).finally(() => {
+                    //sm when error
                     this.toaster.clear();
+                    this.toaster.pop('error', "There was an error Estimating Flows", "Please retry", 5000);
+                }).finally(() => {
                     this.canUpdate = true;
             });
 

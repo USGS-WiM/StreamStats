@@ -128,7 +128,8 @@ module StreamStats.Services {
 
         public loadStudyBoundary() {
 
-            this.toaster.pop("info", "Delineating Basin", "Please wait...",1500);
+            this.toaster.pop("info", "Delineating Basin", "Please wait...", 0);
+            console.log('toast', this.toaster);
             this.canUpdate = false;
             
             var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(),
@@ -140,12 +141,14 @@ module StreamStats.Services {
                     this.selectedStudyArea.Features = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"] : null;
                     this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
                     this.selectedStudyArea.Date = new Date();
+
+                    this.toaster.clear();
                     //sm when complete
                 },(error) => {
                     //sm when error
-                    this.toaster.pop("error", "Error Delineating Basin", "Please retry", 1500);
+                    this.toaster.clear();
+                    this.toaster.pop("error", "Error Delineating Basin", "Please retry", 5000);
                 }).finally(() => {
-                    this.toaster.clear()
                     this.canUpdate = true;
                     this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
                    
@@ -154,7 +157,7 @@ module StreamStats.Services {
 
         public loadParameters() {
 
-            this.toaster.pop('info', "Calculating Selected Parameters", "Please wait...", 999999);
+            this.toaster.pop('info', "Calculating Selected Parameters", "Please wait...", 0);
             console.log('in load parameters');
             //this.canUpdate = false;
             this.parametersLoading = true;
@@ -185,11 +188,14 @@ module StreamStats.Services {
                         }
 
                     }
+
+                    this.toaster.clear();
                     //sm when complete
                 },(error) => {
-                    //sm when complete
-                }).finally(() => {
+                    //sm when error
                     this.toaster.clear();
+                    this.toaster.pop("error", "Error Calculating Basin Characteristics", "Please retry", 5000);
+                }).finally(() => {
                     //this.canUpdate = true;
                     this.parametersLoading = false;
                 });
@@ -198,7 +204,7 @@ module StreamStats.Services {
         public upstreamRegulation() {
 
             console.log('upstream regulation');
-            this.toaster.pop('info', "Checking for Upstream Regulation", "Please wait...");
+            this.toaster.pop('info', "Checking for Upstream Regulation", "Please wait...",0);
 
             this.regulationCheckComplete = false;
 
@@ -214,6 +220,7 @@ module StreamStats.Services {
                 (response: any) => {
                     console.log(response);
                     if (response.data.percentarearegulated > 0) {
+                        this.toaster.clear();
                         this.toaster.pop('success', "Regulation was found", "Continue to 'Modify Parameters' to see area-weighted parameters", 5000);
                         this.selectedStudyArea.Features.push(response.data["featurecollection"][0]);
                         this.regulationCheckResults = response.data;
@@ -223,12 +230,15 @@ module StreamStats.Services {
                     else {
                         //alert("No regulation found");
                         this.isRegulated = false;
+                        this.toaster.clear();
                         this.toaster.pop('warning', "No regulation found", "Please continue", 5000);
                         
                     }
                     //sm when complete
                 },(error) => {
                     //sm when error
+                    this.toaster.clear();
+                    this.toaster.pop('error', "Error Checking for Upstream Regulation", "Please retry", 5000);
                 }).finally(() => {
                     //this.toaster.clear();
                     this.regulationCheckComplete = true;
