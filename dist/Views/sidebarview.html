@@ -2,7 +2,7 @@
     <div class="scrollable-content">
         <div class="list-group">
             <div class="sidebar-item">
-                <a ng-class="vm.selectedProcedure == 1  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(1)" >Select a State / Region<h5 ng-show="vm.regionService.selectedRegion.Name"><i class="fa fa-check-square-o"></i><strong>{{vm.regionService.selectedRegion.Name}}</strong></h5><i ng-class="vm.selectedProcedure == 1 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
+                <a ng-class="vm.selectedProcedure == 1  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(1)" >Select a State / Region<h5 ng-show="vm.regionService.selectedRegion.Name"><strong>{{vm.regionService.selectedRegion.Name}}</strong></h5><i ng-class="vm.selectedProcedure == 1 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
 
                 <div class="list-group-body" ng-hide="vm.selectedProcedure != 1">
                     <p>To begin: use the map zoom to and select a region, or use the location search.</p>
@@ -33,7 +33,7 @@
                 </div>    
             </div>   
             <div class="sidebar-item">
-                <a ng-class="vm.selectedProcedure == 2  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(2)" >Identify a Study Area<h5 ng-show="vm.studyAreaService.selectedStudyArea.Features"><i class="fa fa-check-square-o"></i><strong>Basin Delineated</strong></h5><i ng-class="vm.selectedProcedure == 2 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
+                <a ng-class="vm.selectedProcedure == 2  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(2)" >Identify a Study Area<h5 ng-show="vm.studyAreaService.selectedStudyArea.Features"><strong>Basin Delineated</strong></h5><i ng-class="vm.selectedProcedure == 2 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
 
                 <div class="list-group-body" ng-show="vm.selectedProcedure == 2">
                     <p>Zoom to at least a zoom level of 15, click the 'delineate' button, then select a blue stream cell</p>
@@ -64,17 +64,10 @@
                             <h4>State/Region Specific Functions</h4>
                             <p>Functions for {{vm.regionService.selectedRegion.Name}}</p>
                             <div class="form-group">
-                                <button ng-show="vm.regionService.selectedRegion.RegionID == 'CO'" ng-click="vm.checkRegulation()" type="button" class="btn btn-sm btn-primary"><i ng-class="vm.studyAreaService.canUpdate ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Check for upstream regulation</button>
+                                <button ng-show="vm.regionService.selectedRegion.RegionID == 'CO'" ng-click="vm.checkRegulation()" type="button" class="btn btn-sm btn-primary"><i ng-class="vm.studyAreaService.regulationCheckComplete ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Check for upstream regulation</button>
                             </div>
 
                             <div class="alert alert-success" role="alert" ng-show="vm.studyAreaService.isRegulated !== null">Upstream Regulation check has been completed.  There is <strong ng-show="vm.studyAreaService.isRegulated" >{{vm.studyAreaService.regulationCheckResults.percentarearegulated.toFixed(2)}} percent</strong><strong ng-show="!vm.studyAreaService.isRegulated">NO</strong> regulation in this watershed.</div>
-
-
-                            <!--add something here to show regulation percentage-->
-
-
-                            
-
 
                         </div> 
                         
@@ -85,7 +78,7 @@
                 </div>    
             </div> 
             <div class="sidebar-item">
-                <a ng-class="vm.selectedProcedure == 3  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(3)" >Select Scenarios<h5 ng-show="vm.studyAreaService.parametersLoading"><i class="fa fa-check-square-o"></i><strong>Parameters Loaded</strong></h5><i ng-class="vm.selectedProcedure == 3 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
+                <a ng-class="vm.selectedProcedure == 3  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(3)" >Select Scenarios<h5 ng-show="vm.studyAreaService.parametersLoading"><strong>Parameters Loaded</strong></h5><i ng-class="vm.selectedProcedure == 3 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
 
                 <div class="list-group-body" ng-show="vm.selectedProcedure == 3">
 
@@ -146,7 +139,8 @@
                       <tbody>
                           <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList">
                             <td ng-bind="parameter.name"></td>
-                            <td><input class="form-control" ng-model="parameter.value" type="text"/></td>
+                            <td ng-hide="vm.studyAreaService.isRegulated"><input class="form-control" ng-model="parameter.value" type="text"/></td>
+                            <td ng-show="vm.studyAreaService.isRegulated"><input class="form-control" ng-model="parameter.unRegulatedValue" type="text"/></td>
                             <td ng-show="vm.studyAreaService.isRegulated"><input class="form-control" ng-model="parameter.regulatedValue" type="text"/></td>
                           </tr>
                         </tbody>
@@ -154,7 +148,7 @@
                 </div>    
             </div>  
             <div class="sidebar-item">
-                <a ng-class="vm.selectedProcedure == 5  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(5)" >Build a Report<h5 ng-show="vm.nssService.selectedStatisticsGroupScenarioResults.length > 0"><i class="fa fa-check-square-o"></i><strong>Report Built</strong></h5><i ng-class="vm.selectedProcedure == 5 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
+                <a ng-class="vm.selectedProcedure == 5  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(5)" >Build a Report<h5 ng-show="vm.nssService.selectedStatisticsGroupScenarioResults.length > 0"><strong>Report Built</strong></h5><i ng-class="vm.selectedProcedure == 5 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
 
                 <div class="list-group-body" ng-show="vm.selectedProcedure == 5">
                     <p>Click the button below to generate a report: {{vm.nssService.selectedStatisticsGroup.Name}}</p>

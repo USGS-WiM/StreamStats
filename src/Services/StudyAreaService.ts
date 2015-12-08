@@ -257,18 +257,46 @@ module StreamStats.Services {
             console.log('params', this.studyAreaParameterList);
         }
 
-        private loadRegulatedParameterResults(results: Array<WiM.Models.IParameter>) {
+        private loadRegulatedParameterResults(regulatedResults: Array<WiM.Models.IParameter>) {
 
             this.toaster.pop('info', "Loading Regulated Parameters", "Please wait...");
 
             console.log('in load regulated parameter results');
 
             var paramList = this.studyAreaParameterList;
-            results.map(function (val) {
-                angular.forEach(paramList, function (value, index) {
-                    if (val.code.toUpperCase().trim() === value.code.toUpperCase().trim()) {
-                        value.regulatedValue = val.value;
-                        //value.unRegulatedValue = param.value - val.value;
+            regulatedResults.map(function (regulatedParam) {
+                angular.forEach(paramList, function (param, index) {
+                    if (regulatedParam.code.toUpperCase().trim() === param.code.toUpperCase().trim()) {
+
+                        //calculate unregulated values
+                        switch (regulatedParam.operation) {
+
+                            case "Sum":
+                                param.unRegulatedValue = param.value - regulatedParam.value;
+                                break;
+                            case "WeightedAverage":
+                                /*
+                                //asume area is the first value in the array
+                                var totalArea = this.studyAreaParameterList[0].value;
+                                var regulatedArea = regulatedResults[0].value;
+
+
+
+                                var weightValSum = param.value + regulatedParam.value;
+
+                                var weightval1 = val1 * (weightField.Value / weightValSum);
+                                var weightval2 = val1 * (weightField2.Value / weightValSum);
+
+                                result = weightval1 + weightval2;
+
+                                param.unRegulatedValue = param.value - regulatedParam.value;
+                                break;
+                                */
+                        }
+
+                        //pass through regulated value
+                        param.regulatedValue = regulatedParam.value;
+
                         return;//exit loop
                     }//endif
                 });

@@ -207,15 +207,21 @@ var StreamStats;
                 });
                 console.log('params', this.studyAreaParameterList);
             };
-            StudyAreaService.prototype.loadRegulatedParameterResults = function (results) {
+            StudyAreaService.prototype.loadRegulatedParameterResults = function (regulatedResults) {
                 this.toaster.pop('info', "Loading Regulated Parameters", "Please wait...");
                 console.log('in load regulated parameter results');
                 var paramList = this.studyAreaParameterList;
-                results.map(function (val) {
-                    angular.forEach(paramList, function (value, index) {
-                        if (val.code.toUpperCase().trim() === value.code.toUpperCase().trim()) {
-                            value.regulatedValue = val.value;
-                            //value.unRegulatedValue = param.value - val.value;
+                regulatedResults.map(function (regulatedParam) {
+                    angular.forEach(paramList, function (param, index) {
+                        if (regulatedParam.code.toUpperCase().trim() === param.code.toUpperCase().trim()) {
+                            switch (regulatedParam.operation) {
+                                case "Sum":
+                                    param.unRegulatedValue = param.value - regulatedParam.value;
+                                    break;
+                                case "WeightedAverage":
+                            }
+                            //pass through regulated value
+                            param.regulatedValue = regulatedParam.value;
                             return; //exit loop
                         } //endif
                     });
