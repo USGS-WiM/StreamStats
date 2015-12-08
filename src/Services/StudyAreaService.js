@@ -106,7 +106,8 @@ var StreamStats;
             };
             StudyAreaService.prototype.loadStudyBoundary = function () {
                 var _this = this;
-                this.toaster.pop("info", "Delineating Basin", "Please wait...", 1500);
+                this.toaster.pop("info", "Delineating Basin", "Please wait...", 0);
+                console.log('toast', this.toaster);
                 this.canUpdate = false;
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString(), false);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
@@ -114,19 +115,20 @@ var StreamStats;
                     _this.selectedStudyArea.Features = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"] : null;
                     _this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
                     _this.selectedStudyArea.Date = new Date();
+                    _this.toaster.clear();
                     //sm when complete
                 }, function (error) {
                     //sm when error
-                    _this.toaster.pop("error", "Error Delineating Basin", "Please retry", 1500);
-                }).finally(function () {
                     _this.toaster.clear();
+                    _this.toaster.pop("error", "Error Delineating Basin", "Please retry", 5000);
+                }).finally(function () {
                     _this.canUpdate = true;
                     _this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
                 });
             };
             StudyAreaService.prototype.loadParameters = function () {
                 var _this = this;
-                this.toaster.pop('info', "Calculating Selected Parameters", "Please wait...", 999999);
+                this.toaster.pop('info', "Calculating Selected Parameters", "Please wait...", 0);
                 console.log('in load parameters');
                 //this.canUpdate = false;
                 this.parametersLoading = true;
@@ -151,11 +153,13 @@ var StreamStats;
                             _this.loadRegulatedParameterResults(_this.regulationCheckResults.parameters);
                         }
                     }
+                    _this.toaster.clear();
                     //sm when complete
                 }, function (error) {
-                    //sm when complete
-                }).finally(function () {
+                    //sm when error
                     _this.toaster.clear();
+                    _this.toaster.pop("error", "Error Calculating Basin Characteristics", "Please retry", 5000);
+                }).finally(function () {
                     //this.canUpdate = true;
                     _this.parametersLoading = false;
                 });
@@ -163,7 +167,7 @@ var StreamStats;
             StudyAreaService.prototype.upstreamRegulation = function () {
                 var _this = this;
                 console.log('upstream regulation');
-                this.toaster.pop('info', "Checking for Upstream Regulation", "Please wait...");
+                this.toaster.pop('info', "Checking for Upstream Regulation", "Please wait...", 0);
                 this.regulationCheckComplete = false;
                 var watershed = JSON.stringify(this.selectedStudyArea.Features[1].feature, null);
                 var url = configuration.baseurls['RegulationServices'] + configuration.queryparams['COregulationService'];
@@ -171,6 +175,7 @@ var StreamStats;
                 this.Execute(request).then(function (response) {
                     console.log(response);
                     if (response.data.percentarearegulated > 0) {
+                        _this.toaster.clear();
                         _this.toaster.pop('success', "Regulation was found", "Continue to 'Modify Parameters' to see area-weighted parameters", 5000);
                         _this.selectedStudyArea.Features.push(response.data["featurecollection"][0]);
                         _this.regulationCheckResults = response.data;
@@ -180,11 +185,14 @@ var StreamStats;
                     else {
                         //alert("No regulation found");
                         _this.isRegulated = false;
+                        _this.toaster.clear();
                         _this.toaster.pop('warning', "No regulation found", "Please continue", 5000);
                     }
                     //sm when complete
                 }, function (error) {
                     //sm when error
+                    _this.toaster.clear();
+                    _this.toaster.pop('error', "Error Checking for Upstream Regulation", "Please retry", 5000);
                 }).finally(function () {
                     //this.toaster.clear();
                     _this.regulationCheckComplete = true;

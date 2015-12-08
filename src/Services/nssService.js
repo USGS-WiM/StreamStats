@@ -60,7 +60,7 @@ var StreamStats;
             //-+-+-+-+-+-+-+-+-+-+-+-
             nssService.prototype.loadStatisticsGroupTypes = function (rcode, regressionregion) {
                 var _this = this;
-                this.toaster.pop('info', "Loading Available Scenarios", "Please wait...", 999999);
+                this.toaster.pop('info', "Loading Available Scenarios", "Please wait...", 0);
                 console.log('in load StatisticsGroups', rcode);
                 if (!rcode && !regressionregion)
                     return;
@@ -77,18 +77,18 @@ var StreamStats;
                             statisticsGroupList.push(value);
                         });
                     }
-                    //console.log(statisticsGroupList);
-                    //sm when complete
+                    _this.toaster.clear();
                 }, function (error) {
                     //sm when complete
-                }).finally(function () {
                     _this.toaster.clear();
+                    _this.toaster.pop('error', "There was an error Loading Available Scenarios", "Please retry", 5000);
+                }).finally(function () {
                     _this.loadingStatisticsGroup = false;
                 });
             };
             nssService.prototype.loadParametersByStatisticsGroup = function (rcode, statisticsGroupID, regressionregion) {
                 var _this = this;
-                this.toaster.pop('info', "Load Parameters by Scenario", "Please wait...", 999999);
+                this.toaster.pop('info', "Load Parameters by Scenario", "Please wait...", 0);
                 //var deferred = ng.IQService.defer();
                 console.log('in load StatisticsGroup parameters', rcode, statisticsGroupID, regressionregion);
                 if (!rcode && !statisticsGroupID && !regressionregion)
@@ -109,16 +109,18 @@ var StreamStats;
                             }
                         });
                     }
+                    _this.toaster.clear();
                     //sm when complete
                 }, function (error) {
-                    //sm when complete
-                }).finally(function () {
+                    //sm when error
                     _this.toaster.clear();
+                    _this.toaster.pop('error', "There was an error Loading Parameters by Statistics Group", "Please retry", 5000);
+                }).finally(function () {
                 });
             };
             nssService.prototype.estimateFlows = function (studyAreaParameterList, rcode, statisticsGroupID, regressionregion) {
                 var _this = this;
-                this.toaster.pop('info', "Estimating Flows", "Please wait...", 999999);
+                this.toaster.pop('info', "Estimating Flows", "Please wait...", 0);
                 this.canUpdate = false;
                 if (!studyAreaParameterList && !rcode && !statisticsGroupID && !regressionregion)
                     return;
@@ -150,11 +152,13 @@ var StreamStats;
                             }
                         });
                     }
+                    _this.toaster.clear();
                     //sm when complete
                 }, function (error) {
-                    //sm when complete
-                }).finally(function () {
+                    //sm when error
                     _this.toaster.clear();
+                    _this.toaster.pop('error', "There was an error Estimating Flows", "Please retry", 5000);
+                }).finally(function () {
                     _this.canUpdate = true;
                 });
             };
