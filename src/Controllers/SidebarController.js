@@ -79,6 +79,10 @@ var StreamStats;
                 //get available parameters
                 this.regionService.loadParametersByRegion();
             };
+            SidebarController.prototype.resetWorkSpace = function () {
+                this.studyAreaService.clearStudyArea();
+                this.nssService.clearNSSdata();
+            };
             SidebarController.prototype.startDelineate = function () {
                 var _this = this;
                 this.leafletData.getMap().then(function (map) {
@@ -89,16 +93,6 @@ var StreamStats;
                     }
                     else {
                         _this.toaster.pop('success', "Delineate", "Click on a blue stream cell to start delineation");
-                        //clear out parameter list, flow report, etc
-                        _this.studyAreaService.selectedStudyArea = null;
-                        _this.studyAreaService.studyAreaParameterList = [];
-                        _this.studyAreaService.parametersLoading = false;
-                        _this.studyAreaService.parametersLoaded = false;
-                        _this.nssService.statisticsGroupList = [];
-                        _this.nssService.selectedStatisticsGroup = null;
-                        _this.nssService.selectedStatisticsGroupParameterList = [];
-                        _this.nssService.selectedStatisticsGroupScenario = [];
-                        _this.nssService.selectedStatisticsGroupScenarioResults = [];
                         _this.studyAreaService.doDelineateFlag = !_this.studyAreaService.doDelineateFlag;
                     }
                 });

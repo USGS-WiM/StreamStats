@@ -42,6 +42,7 @@ module StreamStats.Services {
         drawControl: any;
         drawControlOption: any;
         editedAreas: any;
+        clearStudyArea();
     }
     class StudyAreaService extends WiM.Services.HTTPServiceBase implements IStudyAreaService {
         //Events
@@ -93,16 +94,7 @@ module StreamStats.Services {
             this._onSelectedStudyAreaChanged = new WiM.Event.Delegate<WiM.Event.EventArgs>();
             this._onEditClick = new WiM.Event.Delegate<WiM.Event.EventArgs>();
             this.toaster = toaster;
-            this._studyAreaList = []; 
-            this.canUpdate = true;
-            this.regulationCheckComplete = true;
-            this.parametersLoaded = false;
-            this.parametersLoading = false;
-            this.doDelineateFlag = false;
-            this.studyAreaParameterList = [];
-            this.showAddRemoveButtons = false;
-            this.editedAreas = { "added": [], "removed": [] };
-            this.isRegulated = null;
+            this.clearStudyArea();
         }
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -122,8 +114,25 @@ module StreamStats.Services {
             this.StudyAreaList.push(sa);
             this.selectedStudyArea = sa;
         }
+
         public RemoveStudyArea() {
             //remove the study area to studyAreaList
+        }
+
+        public clearStudyArea() {
+            console.log('in clear study area');
+            this._studyAreaList = [];
+            this.canUpdate = true;
+            this.regulationCheckComplete = true;
+            this.parametersLoaded = false;
+            this.parametersLoading = false;
+            this.doDelineateFlag = false;
+            this.studyAreaParameterList = [];
+            this.regulationCheckResults = [];
+            this.showAddRemoveButtons = false;
+            this.editedAreas = { "added": [], "removed": [] };
+            this.isRegulated = null;
+            this.selectedStudyArea = null;
         }
 
         public loadStudyBoundary() {
@@ -151,7 +160,6 @@ module StreamStats.Services {
                 }).finally(() => {
                     this.canUpdate = true;
                     this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
-                   
             });
         }
 
@@ -186,7 +194,6 @@ module StreamStats.Services {
                         if (this.isRegulated) {
                             this.loadRegulatedParameterResults(this.regulationCheckResults.parameters);
                         }
-
                     }
 
                     this.toaster.clear();

@@ -38,16 +38,7 @@ var StreamStats;
                 this._onSelectedStudyAreaChanged = new WiM.Event.Delegate();
                 this._onEditClick = new WiM.Event.Delegate();
                 this.toaster = toaster;
-                this._studyAreaList = [];
-                this.canUpdate = true;
-                this.regulationCheckComplete = true;
-                this.parametersLoaded = false;
-                this.parametersLoading = false;
-                this.doDelineateFlag = false;
-                this.studyAreaParameterList = [];
-                this.showAddRemoveButtons = false;
-                this.editedAreas = { "added": [], "removed": [] };
-                this.isRegulated = null;
+                this.clearStudyArea();
             }
             Object.defineProperty(StudyAreaService.prototype, "onSelectedStudyAreaChanged", {
                 get: function () {
@@ -103,6 +94,21 @@ var StreamStats;
             };
             StudyAreaService.prototype.RemoveStudyArea = function () {
                 //remove the study area to studyAreaList
+            };
+            StudyAreaService.prototype.clearStudyArea = function () {
+                console.log('in clear study area');
+                this._studyAreaList = [];
+                this.canUpdate = true;
+                this.regulationCheckComplete = true;
+                this.parametersLoaded = false;
+                this.parametersLoading = false;
+                this.doDelineateFlag = false;
+                this.studyAreaParameterList = [];
+                this.regulationCheckResults = [];
+                this.showAddRemoveButtons = false;
+                this.editedAreas = { "added": [], "removed": [] };
+                this.isRegulated = null;
+                this.selectedStudyArea = null;
             };
             StudyAreaService.prototype.loadStudyBoundary = function () {
                 var _this = this;
