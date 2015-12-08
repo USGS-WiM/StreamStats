@@ -44,10 +44,7 @@ var StreamStats;
                 this.$q = $q;
                 this.toaster = toaster;
                 this._onselectedStatisticsGroupChanged = new WiM.Event.Delegate();
-                this.statisticsGroupList = [];
-                this.selectedStatisticsGroupParameterList = [];
-                this.selectedStatisticsGroupScenarioResults = [];
-                this.canUpdate = true;
+                this.clearNSSdata();
             }
             Object.defineProperty(nssService.prototype, "onselectedStatisticsGroupChanged", {
                 get: function () {
@@ -58,6 +55,15 @@ var StreamStats;
             });
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
+            nssService.prototype.clearNSSdata = function () {
+                console.log('in clear nss data');
+                this.statisticsGroupList = [];
+                this.selectedStatisticsGroup = null;
+                this.selectedStatisticsGroupParameterList = [];
+                this.selectedStatisticsGroupScenario = [];
+                this.selectedStatisticsGroupScenarioResults = [];
+                this.canUpdate = true;
+            };
             nssService.prototype.loadStatisticsGroupTypes = function (rcode, regressionregion) {
                 var _this = this;
                 this.toaster.pop('info', "Loading Available Scenarios", "Please wait...", 0);

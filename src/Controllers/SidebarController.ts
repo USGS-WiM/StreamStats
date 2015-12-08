@@ -118,6 +118,12 @@ module StreamStats.Controllers {
             this.regionService.loadParametersByRegion();
 
         }
+
+        public resetWorkSpace() {
+            this.studyAreaService.clearStudyArea();
+            this.nssService.clearNSSdata();
+        }
+
         public startDelineate() {
 
             this.leafletData.getMap().then((map: any) => {
@@ -126,24 +132,9 @@ module StreamStats.Controllers {
                     this.toaster.pop('error', "Delineate", "You must be at or above zoom level 15 to delineate.");
                     return;
                 }
-
                 else {
-
                     this.toaster.pop('success', "Delineate", "Click on a blue stream cell to start delineation");
-
-                    //clear out parameter list, flow report, etc
-                    this.studyAreaService.selectedStudyArea = null;
-                    this.studyAreaService.studyAreaParameterList = [];
-                    this.studyAreaService.parametersLoading = false;
-                    this.studyAreaService.parametersLoaded = false;
-                    this.nssService.statisticsGroupList = [];
-                    this.nssService.selectedStatisticsGroup = null;
-                    this.nssService.selectedStatisticsGroupParameterList = [];
-                    this.nssService.selectedStatisticsGroupScenario = [];
-                    this.nssService.selectedStatisticsGroupScenarioResults = [];
-
                     this.studyAreaService.doDelineateFlag = !this.studyAreaService.doDelineateFlag;
-
                 }
             });
         }

@@ -240,7 +240,7 @@ var StreamStats;
                 var _this = this;
                 console.log('study area changed');
                 this.geojson = {};
-                if (!this.studyArea.selectedStudyArea.Features)
+                if (!this.studyArea.selectedStudyArea || !this.studyArea.selectedStudyArea.Features)
                     return;
                 var lat = this.studyArea.selectedStudyArea.Pourpoint.Latitude;
                 var lng = this.studyArea.selectedStudyArea.Pourpoint.Longitude;

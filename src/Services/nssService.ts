@@ -37,6 +37,7 @@ module StreamStats.Services {
         estimateFlows(studyAreaParameterList: any, rcode: string, statisticsGroupID: string, regressionregion: string)
         showBasinCharacteristicsTable: boolean;
         showFlowsTable: boolean;
+        clearNSSdata();
     }
     export interface IStatisticsGroup {
         ID: string;
@@ -79,14 +80,21 @@ module StreamStats.Services {
             super($http, configuration.baseurls['NSS']);
             this.toaster = toaster
             this._onselectedStatisticsGroupChanged = new WiM.Event.Delegate<WiM.Event.EventArgs>();
-            this.statisticsGroupList = [];
-            this.selectedStatisticsGroupParameterList = [];
-            this.selectedStatisticsGroupScenarioResults = [];
-            this.canUpdate = true;
+            this.clearNSSdata();
         }
 
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
+        public clearNSSdata() {
+            console.log('in clear nss data');
+            this.statisticsGroupList = [];
+            this.selectedStatisticsGroup = null;
+            this.selectedStatisticsGroupParameterList = [];
+            this.selectedStatisticsGroupScenario = [];
+            this.selectedStatisticsGroupScenarioResults = [];
+            this.canUpdate = true;
+        }
+
         public loadStatisticsGroupTypes(rcode: string, regressionregion: string) {
 
             this.toaster.pop('info', "Loading Available Scenarios", "Please wait...", 0);
