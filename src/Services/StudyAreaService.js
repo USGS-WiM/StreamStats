@@ -219,6 +219,26 @@ var StreamStats;
                                     param.unRegulatedValue = param.value - regulatedParam.value;
                                     break;
                                 case "WeightedAverage":
+                                    var totalSum, regulatedSum, regulatedValue, totalValue;
+                                    //get the value for the weight field, need to find it from parameter list
+                                    angular.forEach(paramList, function (checkParam, index) {
+                                        if (checkParam.code == regulatedParam.operationField) {
+                                            totalSum = checkParam.value;
+                                        }
+                                    });
+                                    //get the value for the weight field, need to find it from regulated parameter list
+                                    angular.forEach(regulatedResults, function (checkRegulatedParam, index) {
+                                        if (checkRegulatedParam.code == regulatedParam.operationField) {
+                                            regulatedSum = checkRegulatedParam.value;
+                                        }
+                                    });
+                                    regulatedValue = regulatedParam.value;
+                                    totalValue = param.value;
+                                    var tempVal1 = regulatedSum * (regulatedValue / totalSum);
+                                    var tempVal2 = totalValue - tempVal1;
+                                    var tempVal3 = totalSum - regulatedSum;
+                                    var tempVal4 = tempVal2 * (totalSum / tempVal3);
+                                    param.unRegulatedValue = tempVal4;
                             }
                             //pass through regulated value
                             param.regulatedValue = regulatedParam.value;

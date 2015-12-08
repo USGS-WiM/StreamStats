@@ -128,7 +128,7 @@ module StreamStats.Services {
 
         public loadStudyBoundary() {
 
-            this.toaster.pop("info", "Delineating Basin", "Please wait...", 1500);
+            this.toaster.pop("info", "Delineating Basin", "Please wait...",1500);
             this.canUpdate = false;
             
             var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(),
@@ -275,23 +275,31 @@ module StreamStats.Services {
                                 param.unRegulatedValue = param.value - regulatedParam.value;
                                 break;
                             case "WeightedAverage":
-                                /*
-                                //asume area is the first value in the array
-                                var totalArea = this.studyAreaParameterList[0].value;
-                                var regulatedArea = regulatedResults[0].value;
 
+                                var totalSum, regulatedSum, regulatedValue, totalValue;
 
+                                //get the value for the weight field, need to find it from parameter list
+                                angular.forEach(paramList, function (checkParam, index) {
+                                     if (checkParam.code == regulatedParam.operationField) {
+                                        totalSum = checkParam.value;
+                                    }
+                                });
 
-                                var weightValSum = param.value + regulatedParam.value;
+                                //get the value for the weight field, need to find it from regulated parameter list
+                                angular.forEach(regulatedResults, function (checkRegulatedParam, index) {
+                                    if (checkRegulatedParam.code == regulatedParam.operationField) {
+                                        regulatedSum = checkRegulatedParam.value;
+                                    }
+                                });
 
-                                var weightval1 = val1 * (weightField.Value / weightValSum);
-                                var weightval2 = val1 * (weightField2.Value / weightValSum);
-
-                                result = weightval1 + weightval2;
-
-                                param.unRegulatedValue = param.value - regulatedParam.value;
-                                break;
-                                */
+                                regulatedValue = regulatedParam.value;
+                                totalValue = param.value;
+                                
+                                var tempVal1 = regulatedSum * (regulatedValue / totalSum);
+                                var tempVal2 = totalValue - tempVal1;
+                                var tempVal3 = totalSum - regulatedSum;
+                                var tempVal4 = tempVal2 * (totalSum / tempVal3);
+                                param.unRegulatedValue = tempVal4;                                
                         }
 
                         //pass through regulated value

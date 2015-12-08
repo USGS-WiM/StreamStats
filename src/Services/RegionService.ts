@@ -70,6 +70,7 @@ module StreamStats.Services {
         public selected: boolean;
         public value: number;
         public regulatedValue: number;
+        public unRegulatedValue: number;
 
     }//end class
 
