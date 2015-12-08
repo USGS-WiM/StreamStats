@@ -40,12 +40,14 @@ var StreamStats;
                 this.toaster = toaster;
                 this._studyAreaList = [];
                 this.canUpdate = true;
+                this.regulationCheckComplete = true;
                 this.parametersLoaded = false;
                 this.parametersLoading = false;
                 this.doDelineateFlag = false;
                 this.studyAreaParameterList = [];
                 this.showAddRemoveButtons = false;
                 this.editedAreas = { "added": [], "removed": [] };
+                this.isRegulated = null;
             }
             Object.defineProperty(StudyAreaService.prototype, "onSelectedStudyAreaChanged", {
                 get: function () {
@@ -111,6 +113,7 @@ var StreamStats;
                 this.Execute(request).then(function (response) {
                     _this.selectedStudyArea.Features = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"] : null;
                     _this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
+                    _this.selectedStudyArea.Date = new Date();
                     //sm when complete
                 }, function (error) {
                     //sm when error
@@ -143,6 +146,10 @@ var StreamStats;
                         var results = response.data.parameters;
                         _this.loadParameterResults(results);
                         _this.parametersLoaded = true;
+                        //do regulation parameter update if needed
+                        if (_this.isRegulated) {
+                            _this.loadRegulatedParameterResults(_this.regulationCheckResults.parameters);
+                        }
                     }
                     //sm when complete
                 }, function (error) {
@@ -155,23 +162,24 @@ var StreamStats;
             };
             StudyAreaService.prototype.upstreamRegulation = function () {
                 var _this = this;
+                console.log('upstream regulation');
                 this.toaster.pop('info', "Checking for Upstream Regulation", "Please wait...");
-                this.isRegulated = false;
-                this.canUpdate = false;
+                this.regulationCheckComplete = false;
                 var watershed = JSON.stringify(this.selectedStudyArea.Features[1].feature, null);
                 var url = configuration.baseurls['RegulationServices'] + configuration.queryparams['COregulationService'];
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, 1 /* POST */, 'json', { watershed: watershed, outputcrs: 4326, f: 'geojson' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', { watershed: watershed, outputcrs: 4326, f: 'geojson' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
                 this.Execute(request).then(function (response) {
                     console.log(response);
                     if (response.data.percentarearegulated > 0) {
                         _this.toaster.pop('success', "Regulation was found", "Continue to 'Modify Parameters' to see area-weighted parameters", 5000);
                         _this.selectedStudyArea.Features.push(response.data["featurecollection"][0]);
-                        var regulatedResults = response.data.parameters;
-                        _this.loadRegulatedParameterResults(regulatedResults);
+                        _this.regulationCheckResults = response.data;
+                        //this.loadRegulatedParameterResults(this.regulationCheckResults.parameters);
                         _this.isRegulated = true;
                     }
                     else {
                         //alert("No regulation found");
+                        _this.isRegulated = false;
                         _this.toaster.pop('warning', "No regulation found", "Please continue", 5000);
                     }
                     //sm when complete
@@ -179,7 +187,7 @@ var StreamStats;
                     //sm when error
                 }).finally(function () {
                     //this.toaster.clear();
-                    _this.canUpdate = true;
+                    _this.regulationCheckComplete = true;
                     _this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
                 });
             };
@@ -199,14 +207,41 @@ var StreamStats;
                 });
                 console.log('params', this.studyAreaParameterList);
             };
-            StudyAreaService.prototype.loadRegulatedParameterResults = function (results) {
+            StudyAreaService.prototype.loadRegulatedParameterResults = function (regulatedResults) {
                 this.toaster.pop('info', "Loading Regulated Parameters", "Please wait...");
                 console.log('in load regulated parameter results');
                 var paramList = this.studyAreaParameterList;
-                results.map(function (val) {
-                    angular.forEach(paramList, function (value, index) {
-                        if (val.code.toUpperCase().trim() === value.code.toUpperCase().trim()) {
-                            value.regulatedValue = val.value;
+                regulatedResults.map(function (regulatedParam) {
+                    angular.forEach(paramList, function (param, index) {
+                        if (regulatedParam.code.toUpperCase().trim() === param.code.toUpperCase().trim()) {
+                            switch (regulatedParam.operation) {
+                                case "Sum":
+                                    param.unRegulatedValue = param.value - regulatedParam.value;
+                                    break;
+                                case "WeightedAverage":
+                                    var totalSum, regulatedSum, regulatedValue, totalValue;
+                                    //get the value for the weight field, need to find it from parameter list
+                                    angular.forEach(paramList, function (checkParam, index) {
+                                        if (checkParam.code == regulatedParam.operationField) {
+                                            totalSum = checkParam.value;
+                                        }
+                                    });
+                                    //get the value for the weight field, need to find it from regulated parameter list
+                                    angular.forEach(regulatedResults, function (checkRegulatedParam, index) {
+                                        if (checkRegulatedParam.code == regulatedParam.operationField) {
+                                            regulatedSum = checkRegulatedParam.value;
+                                        }
+                                    });
+                                    regulatedValue = regulatedParam.value;
+                                    totalValue = param.value;
+                                    var tempVal1 = regulatedSum * (regulatedValue / totalSum);
+                                    var tempVal2 = totalValue - tempVal1;
+                                    var tempVal3 = totalSum - regulatedSum;
+                                    var tempVal4 = tempVal2 * (totalSum / tempVal3);
+                                    param.unRegulatedValue = tempVal4;
+                            }
+                            //pass through regulated value
+                            param.regulatedValue = regulatedParam.value;
                             return; //exit loop
                         } //endif
                     });

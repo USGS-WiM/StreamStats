@@ -50,6 +50,7 @@ module StreamStats.Services {
         selected: boolean;
         value: number;
         regulatedValue: number;
+        unRegulatedValue: number;
     }
 
     export class Region implements IRegion {
@@ -69,6 +70,7 @@ module StreamStats.Services {
         public selected: boolean;
         public value: number;
         public regulatedValue: number;
+        public unRegulatedValue: number;
 
     }//end class
 
