@@ -43,6 +43,7 @@ module StreamStats.Services {
         drawControlOption: any;
         editedAreas: any;
         clearStudyArea();
+        selectInitialParameters(paramList:Array<IParameter>);
     }
     class StudyAreaService extends WiM.Services.HTTPServiceBase implements IStudyAreaService {
         //Events
@@ -128,6 +129,7 @@ module StreamStats.Services {
             this.parametersLoading = false;
             this.doDelineateFlag = false;
             this.studyAreaParameterList = [];
+            this.studyAreaParameterList.push(<IParameter>{ "name": "DRNAREA", "description": "Area that drains to a point on a stream", "code": "DRNAREA", "unit": "square miles"});
             this.regulationCheckResults = [];
             this.showAddRemoveButtons = false;
             this.editedAreas = { "added": [], "removed": [] };
@@ -160,6 +162,17 @@ module StreamStats.Services {
                 }).finally(() => {
                     this.canUpdate = true;
                     this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
+            });
+        }
+
+        public selectInitialParameters(paramList: Array<any>) {
+            console.log('test211');
+            //make inital DRNAREA area selection
+            angular.forEach(paramList, function (value, index) {
+                if (value.code = "DRNAREA") {
+                    
+                    this.studyAreaService.studyAreaParameterList.push(item);
+                }
             });
         }
 

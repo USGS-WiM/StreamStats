@@ -92,26 +92,22 @@
                         <div class="form-group" ng-if="vm.nssService.statisticsGroupList.length > 0">
                             <button class="btn btn-sm btn-default" ng-class="vm.nssService.selectedStatisticsGroup == statisticsGroup ? 'btn-success': ''" ng-click="vm.setStatisticsGroup(statisticsGroup)" ng-repeat="statisticsGroup in vm.nssService.statisticsGroupList"><span>{{statisticsGroup.Name}} </span></button>
                         </div>
-                    <!--                       
-                        <div class="btn-group" dropdown ng-show="vm.nssService.statisticsGroupList.length > 0">
-                          <button type="button" class="btn btn-sm btn-primary" dropdown-toggle>
-                            Select a Scenario &nbsp;&nbsp;<i class="fa fa-caret-down"></i>
-                          </button>
-                          <ul class="dropdown-menu" role="menu" aria-labelledby="single-button">
-                            <li role="menuitem" ng-repeat="statisticsGroup in vm.nssService.statisticsGroupList" ng-click="vm.setStatisticsGroup(statisticsGroup)" ng-class="vm.nssService.selectedStatisticsGroup == statisticsGroup ? 'active': ''">
-                              <a href="#">{{statisticsGroup.Name}}</a>
-                            </li>
-                          </ul>
-                        </div>
-                    --> 
-                         
                     </div>
 
                     <div class="well well-sm">
                         <h4>Basin Characteristics</h4>
-                        <p>Basin Characteristics can be selected individually or are selected based on the chosen scenario</p>
+                        <p>Basin Characteristics can be selected individually or are selected based on the chosen scenario.  Some characteristics are calculated by default and cannot be unselected.</p>
                         <div class="list-group">
-                            <button class="btn btn-sm btn-default" ng-class="vm.studyAreaService.studyAreaParameterList.indexOf(parameter) > -1 ? 'btn-success' : ''" ng-click="vm.updateStudyAreaParameterList(parameter)" ng-repeat="parameter in vm.regionService.parameterList" tooltip="{{parameter.description}}"><span>{{parameter.name}} </span></button>
+                            
+                            <button class="btn btn-sm btn-default" ng-class="vm.checkParamList(vm.studyAreaService.studyAreaParameterList, parameter) > -1 ? 'btn-success' : ''" ng-click="vm.updateStudyAreaParameterList(parameter)" ng-repeat="parameter in vm.regionService.parameterList"><span>{{parameter.name}} </span></button>
+                            
+                            <!--  PLAY AROUND WITH CHECKBOXES BOOTSTRAPIFIED
+                            <div class="checkbox" ng-repeat="parameter in vm.regionService.parameterList" >
+                                <label>
+                                  <input type="checkbox"> {{parameter.description}}
+                                </label>
+                              </div>
+                            -->
                         </div>
                         <div ng-show="vm.studyAreaService.studyAreaParameterList.length > 0">
                             <div class="form-group">

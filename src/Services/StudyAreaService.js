@@ -104,6 +104,7 @@ var StreamStats;
                 this.parametersLoading = false;
                 this.doDelineateFlag = false;
                 this.studyAreaParameterList = [];
+                this.studyAreaParameterList.push({ "name": "DRNAREA", "description": "Area that drains to a point on a stream", "code": "DRNAREA", "unit": "square miles" });
                 this.regulationCheckResults = [];
                 this.showAddRemoveButtons = false;
                 this.editedAreas = { "added": [], "removed": [] };
@@ -130,6 +131,15 @@ var StreamStats;
                 }).finally(function () {
                     _this.canUpdate = true;
                     _this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
+                });
+            };
+            StudyAreaService.prototype.selectInitialParameters = function (paramList) {
+                console.log('test211');
+                //make inital DRNAREA area selection
+                angular.forEach(paramList, function (value, index) {
+                    if (value.code = "DRNAREA") {
+                        this.studyAreaService.studyAreaParameterList.push(item);
+                    }
                 });
             };
             StudyAreaService.prototype.loadParameters = function () {

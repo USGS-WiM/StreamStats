@@ -75,6 +75,12 @@ var StreamStats;
             });
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
+            RegionService.prototype.clearRegion = function () {
+                console.log('in clear region');
+                this.regionList = [];
+                this.parameterList = [];
+                this.selectedRegion = null;
+            };
             RegionService.prototype.loadRegionListByExtent = function (xmin, xmax, ymin, ymax, sr) {
                 var _this = this;
                 if (sr === void 0) { sr = 4326; }
