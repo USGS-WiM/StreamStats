@@ -140,7 +140,6 @@ module StreamStats.Services {
         public loadStudyBoundary() {
 
             this.toaster.pop("info", "Delineating Basin", "Please wait...", 0);
-            console.log('toast', this.toaster);
             this.canUpdate = false;
             
             var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(),
@@ -228,7 +227,7 @@ module StreamStats.Services {
 
             this.regulationCheckComplete = false;
 
-            var watershed = JSON.stringify(this.selectedStudyArea.Features[1].feature, null);
+            var watershed = angular.toJson(this.selectedStudyArea.Features[1].feature, null);
             var url = configuration.baseurls['RegulationServices'] + configuration.queryparams['COregulationService'];
             var request: WiM.Services.Helpers.RequestInfo =
                 new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST,

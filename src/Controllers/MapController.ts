@@ -289,20 +289,16 @@ module StreamStats.Controllers {
                     maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).layers([3]).run((error: any, results: any) => {
                         console.log('map query', error, results);
 
+                        if (!results.features[0]) return;
                         var rcode = results.features[0].properties.ST_ABBR;
 
                         this.regionServices.masterRegionList.forEach((item) => {
                             if (item.RegionID == rcode) {
                                 this.setBoundsByRegion(rcode);
                                 this.regionServices.loadParametersByRegion();
-                                //this.studyArea.selectInitialParameters(this.regionServices.parameterList);
                             }
-                            
                         });
-
-
                     });
-
                 });
             });
 
@@ -310,7 +306,7 @@ module StreamStats.Controllers {
 
         private basinEditor() {
 
-            var basin = JSON.parse(JSON.stringify(this.geojson['globalwatershed'].data.features[0]));
+            var basin = angular.fromJson(angular.toJson(this.geojson['globalwatershed'].data.features[0]));
             var basinConverted = [];
             basin.geometry.coordinates[0].forEach((item) => { basinConverted.push([item[1], item[0]]) });
 
@@ -370,7 +366,7 @@ module StreamStats.Controllers {
                         //show new polygon
                         this.geojson['globalwatershed'].data.features[0] = basin;
                         drawnItems.clearLayers();
-                        console.log('editedAreas', JSON.stringify(this.studyArea.editedAreas));
+                        console.log('editedAreas', angular.toJson(this.studyArea.editedAreas));
                     });
                 });
             });
@@ -409,7 +405,7 @@ module StreamStats.Controllers {
 
             this.studyArea.selectedStudyArea.Features.forEach((layer) => {
 
-                var item = JSON.parse(JSON.stringify(layer));
+                var item = angular.fromJson(angular.toJson(layer));
 
                 console.log('in onselectedstudyarea changed', item.name);
 
@@ -458,7 +454,7 @@ module StreamStats.Controllers {
             //clear out this.markers
             this.markers = {};
 
-            //console.log(JSON.stringify(this.geojson));    
+            //console.log(angular.toJson(this.geojson));    
             var bbox = this.geojson['globalwatershed'].data.features[0].bbox;
             //this.bounds = this.leafletBoundsHelperService.createBoundsFromArray([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
             this.leafletData.getMap().then((map: any) => {

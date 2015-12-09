@@ -63,8 +63,14 @@ var StreamStats;
             };
             SidebarController.prototype.setProcedureType = function (pType) {
                 console.log('in setProcedureType', this.selectedProcedure, pType, !this.canUpdateProcedure(pType));
-                if (this.selectedProcedure == pType || !this.canUpdateProcedure(pType))
+                if (this.selectedProcedure == pType || !this.canUpdateProcedure(pType)) {
+                    //capture issues and send notifications here
+                    if (this.selectedProcedure == 3 && (pType == 4 || pType == 5))
+                        this.toaster.pop("warning", "Warning", "Make sure you calculate selected basin characteristics before continuing", 5000);
+                    if (this.selectedProcedure == 2 && (pType == 3 || pType == 4 || pType == 5))
+                        this.toaster.pop("warning", "Warning", "Make sure you click continue", 5000);
                     return;
+                }
                 this.selectedProcedure = pType;
             };
             SidebarController.prototype.toggleSideBar = function () {
@@ -77,7 +83,7 @@ var StreamStats;
                 this.searchService.onSelectedAreaOfInterestChanged.raise(this, new WiM.Services.SearchAPIEventArgs(item));
             };
             SidebarController.prototype.zoomRegion = function (inRegion) {
-                var region = JSON.parse(inRegion);
+                var region = angular.fromJson(inRegion);
                 console.log('zooming to region: ', region);
             };
             SidebarController.prototype.setRegion = function (region) {
@@ -144,7 +150,7 @@ var StreamStats;
                 }
                 else {
                     //add it
-                    console.log(JSON.stringify(parameter));
+                    console.log(angular.toJson(parameter));
                     this.studyAreaService.studyAreaParameterList.push(parameter);
                 }
                 //console.log('studyareaparamList length: ', this.studyAreaService.studyAreaParameterList.length);
@@ -153,22 +159,15 @@ var StreamStats;
                 console.log('in Calculate Parameters');
                 this.studyAreaService.loadParameters();
             };
-            SidebarController.prototype.checkEdits = function () {
-                if (this.studyAreaService.editedAreas) {
-                    this.queryRegressionRegions();
-                }
-                else {
-                    this.queryRegressionRegions();
-                }
-            };
             SidebarController.prototype.queryRegressionRegions = function () {
                 console.log('in Query Regression Regions');
-                this.setProcedureType(3 /* SELECT */);
+                this.nssService.queriedRegions = true;
                 //send watershed to map service query that returns list of regression regions that overlap the watershed
                 //DO MAP SERVICE REQUEST HERE
                 //region placeholder
                 this.studyAreaService.selectedStudyArea.RegressionRegions = ['290'];
                 this.queryStatisticGroups();
+                this.setProcedureType(3);
             };
             SidebarController.prototype.queryStatisticGroups = function () {
                 console.log('in Query Statistics Groups');
@@ -205,11 +204,11 @@ var StreamStats;
                         case 2 /* IDENTIFY */:
                             return this.regionService.selectedRegion != null;
                         case 3 /* SELECT */:
-                            return this.regionService.selectedRegion != null;
+                            //proceed if there is a regression re
+                            return this.nssService.queriedRegions;
                         case 4 /* REFINE */:
                             return this.studyAreaService.parametersLoaded;
                         case 5 /* BUILD */:
-                            //return this.nssService.selectedStatisticsGroupParameterList.length > 0;
                             return this.studyAreaService.parametersLoaded;
                         default:
                             return false;
