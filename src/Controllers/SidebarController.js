@@ -46,6 +46,14 @@ var StreamStats;
                         });
                     });
                 });
+                //watch for cleared region
+                $scope.$watch(function () { return _this.regionService.selectedRegion; }, function (newval, oldval) {
+                    console.log('region change', oldval, newval);
+                    if (newval == null)
+                        _this.setProcedureType(1);
+                    else
+                        _this.setProcedureType(2);
+                });
             }
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
@@ -78,6 +86,17 @@ var StreamStats;
                 this.setProcedureType(2 /* IDENTIFY */);
                 //get available parameters
                 this.regionService.loadParametersByRegion();
+                //make initial selection
+                this.selectInitialParameters();
+            };
+            SidebarController.prototype.selectInitialParameters = function () {
+                //make inital DRNAREA area selection
+                angular.forEach(this.regionService.parameterList, function (value, index) {
+                    if (value.code = "DRNAREA") {
+                        console.log('test211');
+                        this.studyAreaService.studyAreaParameterList.push(item);
+                    }
+                });
             };
             SidebarController.prototype.resetWorkSpace = function () {
                 this.studyAreaService.clearStudyArea();
@@ -114,6 +133,9 @@ var StreamStats;
                 this.nssService.selectedStatisticsGroupParameterList;
             };
             SidebarController.prototype.updateStudyAreaParameterList = function (parameter) {
+                //don't mess with DRNAREA
+                if (parameter.code == "DRNAREA")
+                    return;
                 //console.log('studyareaparamList length: ', this.studyAreaService.studyAreaParameterList.length);
                 var index = this.studyAreaService.studyAreaParameterList.indexOf(parameter);
                 if (index > -1) {

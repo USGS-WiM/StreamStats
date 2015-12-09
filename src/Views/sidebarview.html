@@ -105,8 +105,6 @@
                         <p>Basin Characteristics can be selected individually or are selected based on the chosen scenario</p>
                         <div class="list-group">
                             <button class="btn btn-sm btn-default" ng-class="vm.studyAreaService.studyAreaParameterList.indexOf(parameter) > -1 ? 'btn-success' : ''" ng-click="vm.updateStudyAreaParameterList(parameter)" ng-repeat="parameter in vm.regionService.parameterList" tooltip="{{parameter.description}}"><span>{{parameter.name}} </span></button>
-                            <!--
-                            <a href="#" class="list-group-item" ng-class="vm.studyAreaService.studyAreaParameterList.indexOf(parameter) > -1 ? 'list-group-item-success' : ''" ng-click="vm.updateStudyAreaParameterList(parameter)" ng-repeat="parameter in vm.regionService.parameterList">{{parameter.name}}</a>-->
                         </div>
                         <div ng-show="vm.studyAreaService.studyAreaParameterList.length > 0">
                             <div class="form-group">

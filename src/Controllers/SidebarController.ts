@@ -62,7 +62,7 @@ module StreamStats.Controllers {
             this.searchService = service;
             this.sideBarCollapsed = false;
             this.selectedProcedure = ProcedureType.INIT;
-            this.regionService = region; 
+            this.regionService = region;
             this.nssService = StatisticsGroup;
             this.studyAreaService = studyArea;
             this.reportService = report;
@@ -82,6 +82,13 @@ module StreamStats.Controllers {
                         }
                     });
                 });
+            });
+
+            //watch for cleared region
+            $scope.$watch(() => this.regionService.selectedRegion,(newval, oldval) => {
+                console.log('region change', oldval, newval);
+                if (newval == null) this.setProcedureType(1);
+                else this.setProcedureType(2);
             });
                 
         }
@@ -117,6 +124,20 @@ module StreamStats.Controllers {
             //get available parameters
             this.regionService.loadParametersByRegion();
 
+            //make initial selection
+            this.selectInitialParameters();
+
+        }
+
+        public selectInitialParameters() {
+
+            //make inital DRNAREA area selection
+            angular.forEach(this.regionService.parameterList, function (value, index) {
+                if (value.code = "DRNAREA") {
+                    console.log('test211');
+                    this.studyAreaService.studyAreaParameterList.push(item);
+                }
+            });
         }
 
         public resetWorkSpace() {
@@ -155,13 +176,17 @@ module StreamStats.Controllers {
             this.studyAreaService.studyAreaParameterList = [];
 
             //get list of params for selected StatisticsGroup
-            this.nssService.loadParametersByStatisticsGroup(this.regionService.selectedRegion.RegionID, this.nssService.selectedStatisticsGroup.ID, this.studyAreaService.selectedStudyArea.RegressionRegions[0])
+            this.nssService.loadParametersByStatisticsGroup(this.regionService.selectedRegion.RegionID, this.nssService.selectedStatisticsGroup.ID, this.studyAreaService.selectedStudyArea.RegressionRegions[0]);
 
             //select subset of parameters from list
-            this.nssService.selectedStatisticsGroupParameterList
+            this.nssService.selectedStatisticsGroupParameterList;
         }
 
         public updateStudyAreaParameterList(parameter: any) {
+
+            //don't mess with DRNAREA
+            if (parameter.code == "DRNAREA") return;
+
             //console.log('studyareaparamList length: ', this.studyAreaService.studyAreaParameterList.length);
             var index = this.studyAreaService.studyAreaParameterList.indexOf(parameter);
             if (index > -1) {
