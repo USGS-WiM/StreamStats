@@ -61,7 +61,7 @@ var StreamStats;
         //examples/access-leaflet-object-example.html
         //http://www.codeitive.com/0JiejWjjXg/two-or-multiple-geojson-layers-in-angular-leaflet-directive.html
         var MapController = (function () {
-            function MapController($scope, $location, $stateParams, leafletBoundsHelper, leafletData, search, region, studyArea) {
+            function MapController($scope, $location, $stateParams, leafletBoundsHelper, leafletData, search, region, studyArea, StatisticsGroup) {
                 var _this = this;
                 this.center = null;
                 this.layers = null;
@@ -81,6 +81,7 @@ var StreamStats;
                 this.leafletBoundsHelperService = leafletBoundsHelper;
                 this.leafletData = leafletData;
                 this.studyArea = studyArea;
+                this.nssService = StatisticsGroup;
                 //subscribe to Events
                 search.onSelectedAreaOfInterestChanged.subscribe(this._onSelectedAreaOfInterestHandler);
                 region.onSelectedRegionChanged.subscribe(this._onSelectedRegionHandler);
@@ -92,11 +93,16 @@ var StreamStats;
                     _this.mapPoint.lng = latlng.lng;
                 });
                 $scope.$on('leafletDirectiveMap.click', function (event, args) {
-                    if (!studyArea.doDelineateFlag)
-                        return;
-                    var latlng = args.leafletEvent.latlng;
-                    _this.startDelineate(latlng);
-                    studyArea.doDelineateFlag = false;
+                    console.log('caputred map click');
+                    //otherwise listen for delineate click
+                    if (studyArea.doDelineateFlag) {
+                        var latlng = args.leafletEvent.latlng;
+                        _this.startDelineate(latlng);
+                        studyArea.doDelineateFlag = false;
+                    }
+                    else {
+                        _this.queryStates(args.leafletEvent);
+                    }
                 });
                 $scope.$watch(function () { return _this.bounds; }, function (newval, oldval) { return _this.setRegionsByBounds(oldval, newval); });
                 $scope.$on('$locationChangeStart', function () { return _this.updateRegion(); });
@@ -158,6 +164,27 @@ var StreamStats;
                 };
                 this.mapPoint = new MapPoint();
                 L.Icon.Default.imagePath = 'images';
+            };
+            MapController.prototype.queryStates = function (evt) {
+                var _this = this;
+                console.log('in querystates');
+                //show msg
+                //vm.Notification(new Notification("Querying region... please wait.", NotificationType.ALERT, 0.2, ActionType.SHOW));
+                //do query
+                this.leafletData.getMap().then(function (map) {
+                    _this.leafletData.getLayers().then(function (maplayers) {
+                        maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).layers([3]).run(function (error, results) {
+                            console.log('map query', error, results);
+                            var rcode = results.features[0].properties.ST_ABBR;
+                            _this.regionServices.masterRegionList.forEach(function (item) {
+                                if (item.RegionID == rcode) {
+                                    _this.regionServices.selectedRegion = item;
+                                    map.fitBounds(item.Bounds);
+                                }
+                            });
+                        });
+                    });
+                });
             };
             MapController.prototype.basinEditor = function () {
                 var _this = this;
@@ -302,11 +329,13 @@ var StreamStats;
                     console.log('requesting region list');
                     this.regionServices.loadRegionListByExtent(this.bounds.northEast.lng, this.bounds.southWest.lng, this.bounds.southWest.lat, this.bounds.northEast.lat);
                 }
-                //if a region was selected, and then user zooms back out
+                //if a region was selected, and then user zooms back out, clear and start over
                 if (this.center.zoom <= 6 && oldValue !== newValue && this.regionServices.selectedRegion) {
                     console.log('removing region layers', this.layers.overlays);
                     this.regionServices.regionList = [];
                     this.regionServices.selectedRegion = null;
+                    this.studyArea.clearStudyArea();
+                    this.nssService.clearNSSdata();
                     //THIS IS JUST THROWING AN ANGULAR LEAFLET ERROR EVEN THOUGH SAME AS DOCS
                     // http://tombatossals.github.io/angular-leaflet-directive/examples/0000-viewer.html#/layers/dynamic-addition-example
                     this.removeOverlayLayers("_region", true);
@@ -347,6 +376,7 @@ var StreamStats;
                 var layeridList;
                 layeridList = this.getLayerIdsByID(name, this.layers.overlays, isPartial);
                 layeridList.forEach(function (item) {
+                    console.log('removing map overlay layer: ', item);
                     delete _this.layers.overlays[item];
                 });
             };
@@ -383,7 +413,7 @@ var StreamStats;
             };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
-            MapController.$inject = ['$scope', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService'];
+            MapController.$inject = ['$scope', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService'];
             return MapController;
         })(); //end class
         angular.module('StreamStats.Controllers').controller('StreamStats.Controllers.MapController', MapController);

@@ -142,6 +142,7 @@ module StreamStats.Controllers {
         private $locationService: ng.ILocationService;
         private leafletData: ILeafletData;
         private studyArea: Services.IStudyAreaService;
+        private nssService: Services.InssService;
 
         public cursorStyle: string;
         public center: ICenter = null;
@@ -159,8 +160,8 @@ module StreamStats.Controllers {
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService'];
-        constructor($scope: IMapControllerScope, $location: ng.ILocationService, $stateParams, leafletBoundsHelper: any, leafletData: ILeafletData, search: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService) {
+        static $inject = ['$scope', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService'];
+        constructor($scope: IMapControllerScope, $location: ng.ILocationService, $stateParams, leafletBoundsHelper: any, leafletData: ILeafletData, search: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService) {
             $scope.vm = this;
             this.init();
 
@@ -170,6 +171,7 @@ module StreamStats.Controllers {
             this.leafletBoundsHelperService = leafletBoundsHelper;
             this.leafletData = leafletData;
             this.studyArea = studyArea;
+            this.nssService = StatisticsGroup;
 
             //subscribe to Events
             search.onSelectedAreaOfInterestChanged.subscribe(this._onSelectedAreaOfInterestHandler);
@@ -184,10 +186,19 @@ module StreamStats.Controllers {
             });
 
             $scope.$on('leafletDirectiveMap.click',(event, args) => {
-                if (!studyArea.doDelineateFlag) return;
-                var latlng = args.leafletEvent.latlng;
-                this.startDelineate(latlng);
-                studyArea.doDelineateFlag = false;
+                console.log('caputred map click');
+                
+                //otherwise listen for delineate click
+                if (studyArea.doDelineateFlag) {
+                    var latlng = args.leafletEvent.latlng;
+                    this.startDelineate(latlng);
+                    studyArea.doDelineateFlag = false;
+                }
+
+                //query map layers
+                else {
+                    this.queryStates(args.leafletEvent);
+                }
             });
 
             $scope.$watch(() => this.bounds,(newval, oldval) => this.setRegionsByBounds(oldval, newval));
@@ -261,6 +272,39 @@ module StreamStats.Controllers {
             this.mapPoint = new MapPoint();
 
             L.Icon.Default.imagePath = 'images';
+        }
+
+        private queryStates(evt) {
+
+            console.log('in querystates');
+
+            //show msg
+            //vm.Notification(new Notification("Querying region... please wait.", NotificationType.ALERT, 0.2, ActionType.SHOW));
+
+            //do query
+
+            this.leafletData.getMap().then((map: any) => {
+                this.leafletData.getLayers().then((maplayers: any) => {
+
+                    maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).layers([3]).run((error: any, results: any) => {
+                        console.log('map query', error, results);
+
+                        var rcode = results.features[0].properties.ST_ABBR;
+
+                        this.regionServices.masterRegionList.forEach((item) => {
+                            if (item.RegionID == rcode) {
+                                this.regionServices.selectedRegion = item;
+                                map.fitBounds(item.Bounds);
+                            }
+                            
+                        });
+
+
+                    });
+
+                });
+            });
+
         }
 
         private basinEditor() {
@@ -432,16 +476,19 @@ module StreamStats.Controllers {
                     this.bounds.southWest.lat, this.bounds.northEast.lat);
             }
             
-            //if a region was selected, and then user zooms back out
+            //if a region was selected, and then user zooms back out, clear and start over
             if (this.center.zoom <= 6 && oldValue !== newValue && this.regionServices.selectedRegion) {
                 console.log('removing region layers', this.layers.overlays);
 
                 this.regionServices.regionList = [];
                 this.regionServices.selectedRegion = null;
+                this.studyArea.clearStudyArea();
+                this.nssService.clearNSSdata();
 
                 //THIS IS JUST THROWING AN ANGULAR LEAFLET ERROR EVEN THOUGH SAME AS DOCS
                 // http://tombatossals.github.io/angular-leaflet-directive/examples/0000-viewer.html#/layers/dynamic-addition-example
                 this.removeOverlayLayers("_region", true)
+                //this.onSelectedRegionChanged();
             }
 
         }
@@ -485,6 +532,7 @@ module StreamStats.Controllers {
             layeridList = this.getLayerIdsByID(name, this.layers.overlays, isPartial);
 
             layeridList.forEach((item) => {
+                console.log('removing map overlay layer: ', item);
                 delete this.layers.overlays[item];
             });
         }

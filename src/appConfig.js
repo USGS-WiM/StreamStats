@@ -201,16 +201,15 @@ configuration.overlayedLayers = {
         }
     },*/
     "SSLayer": {
-        "name": "National map service",
+        "name": "StreamStats National Layers",
         "url": configuration.baseurls['StreamStats'] + "/arcgis/rest/services/ss_studyAreas_prod/MapServer",
         "type": 'agsDynamic',
         "visible": true,
         "layerOptions": {
             "zIndex": 1,
             "opacity": 0.6,
-            "style": function (feature) {
-                return { color: 'gray', weight: 2 };
-            }
+            "format": "png8",
+            "f": "image"
         }
     },//end ssLayer    
     "draw": {
