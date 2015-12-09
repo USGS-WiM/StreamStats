@@ -5,7 +5,14 @@
                 <a ng-class="vm.selectedProcedure == 1  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(1)" >Select a State / Region<h5 ng-show="vm.regionService.selectedRegion.Name"><strong>{{vm.regionService.selectedRegion.Name}}</strong></h5><i ng-class="vm.selectedProcedure == 1 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
 
                 <div class="list-group-body" ng-hide="vm.selectedProcedure != 1">
-                    <p>To begin: use the map zoom to and select a region, or use the location search.</p>
+                    <p><strong>Start Here</strong><p>
+                    <p>To begin, a state or region needs to be selected.  This can be accomplished in the following ways:</p>
+                    <ul>
+                        <li>Click a state or region on the map</li>
+                        <li>Zoom using the map until state region selection options appear below</li>
+                        <li>Use the search box to zoom to an area of interest, then use the state selection buttons that will appear below</li>
+                    </ul>
+                    
 
                     <input type="text" class="form-control"
                             ng-model="selection"
