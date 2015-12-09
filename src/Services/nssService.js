@@ -63,6 +63,7 @@ var StreamStats;
                 this.selectedStatisticsGroupScenario = [];
                 this.selectedStatisticsGroupScenarioResults = [];
                 this.canUpdate = true;
+                this.queriedRegions = false;
             };
             nssService.prototype.loadStatisticsGroupTypes = function (rcode, regressionregion) {
                 var _this = this;
@@ -140,7 +141,7 @@ var StreamStats;
                         }
                     });
                 });
-                var updatedScenarioObject = JSON.stringify(this.selectedStatisticsGroupScenario, null);
+                var updatedScenarioObject = angular.toJson(this.selectedStatisticsGroupScenario, null);
                 console.log('updated scenario object: ', updatedScenarioObject);
                 //do request
                 var url = configuration.baseurls['NSS'] + configuration.queryparams['estimateFlows'].format(rcode, statisticsGroupID, regressionregion);

@@ -100,7 +100,13 @@ module StreamStats.Controllers {
         }
         public setProcedureType(pType: ProcedureType) {    
             console.log('in setProcedureType', this.selectedProcedure, pType, !this.canUpdateProcedure(pType));     
-            if (this.selectedProcedure == pType || !this.canUpdateProcedure(pType)) return;
+
+            if (this.selectedProcedure == pType || !this.canUpdateProcedure(pType)) {
+                //capture issues and send notifications here
+                if (this.selectedProcedure == 3 && (pType == 4 || pType == 5)) this.toaster.pop("warning", "Warning", "Make sure you calculate selected basin characteristics before continuing", 5000);
+                if (this.selectedProcedure == 2 && (pType == 3 || pType == 4 || pType == 5)) this.toaster.pop("warning", "Warning", "Make sure you click continue", 5000);
+                return;
+            }
             this.selectedProcedure = pType;
         }
         public toggleSideBar(): void {
@@ -111,7 +117,7 @@ module StreamStats.Controllers {
             this.searchService.onSelectedAreaOfInterestChanged.raise(this, new WiM.Services.SearchAPIEventArgs(item));
         }
         public zoomRegion(inRegion: string) {
-            var region = JSON.parse(inRegion);
+            var region = angular.fromJson(inRegion);
             console.log('zooming to region: ', region);
             
         }
@@ -191,7 +197,7 @@ module StreamStats.Controllers {
             }
             else {
                 //add it
-                console.log(JSON.stringify(parameter));
+                console.log(angular.toJson(parameter));
                 this.studyAreaService.studyAreaParameterList.push(parameter);
             }
             //console.log('studyareaparamList length: ', this.studyAreaService.studyAreaParameterList.length);
@@ -204,20 +210,11 @@ module StreamStats.Controllers {
             this.studyAreaService.loadParameters();
         }
 
-        public checkEdits() {
-            if (this.studyAreaService.editedAreas) {
-                this.queryRegressionRegions();
-            }
-            else {
-                this.queryRegressionRegions();
-            }
-        }
-
         public queryRegressionRegions() {
 
             console.log('in Query Regression Regions');
 
-            this.setProcedureType(ProcedureType.SELECT);
+            this.nssService.queriedRegions = true;
 
             //send watershed to map service query that returns list of regression regions that overlap the watershed
             //DO MAP SERVICE REQUEST HERE
@@ -227,6 +224,7 @@ module StreamStats.Controllers {
 
             this.queryStatisticGroups();
 
+            this.setProcedureType(3);
         }
 
         public queryStatisticGroups() {
@@ -280,11 +278,11 @@ module StreamStats.Controllers {
                     case ProcedureType.IDENTIFY:
                         return this.regionService.selectedRegion != null;
                     case ProcedureType.SELECT:
-                        return this.regionService.selectedRegion != null;
+                        //proceed if there is a regression re
+                        return this.nssService.queriedRegions;
                     case ProcedureType.REFINE:
                         return this.studyAreaService.parametersLoaded;
                     case ProcedureType.BUILD:
-                        //return this.nssService.selectedStatisticsGroupParameterList.length > 0;
                         return this.studyAreaService.parametersLoaded;
                     default:
                         return false;

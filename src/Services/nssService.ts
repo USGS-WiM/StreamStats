@@ -38,6 +38,7 @@ module StreamStats.Services {
         showBasinCharacteristicsTable: boolean;
         showFlowsTable: boolean;
         clearNSSdata();
+        queriedRegions: boolean;
     }
     export interface IStatisticsGroup {
         ID: string;
@@ -73,6 +74,7 @@ module StreamStats.Services {
         public toaster: any;
         public showBasinCharacteristicsTable: boolean;
         public showFlowsTable: boolean;
+        public queriedRegions: boolean;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -93,6 +95,7 @@ module StreamStats.Services {
             this.selectedStatisticsGroupScenario = [];
             this.selectedStatisticsGroupScenarioResults = [];
             this.canUpdate = true;
+            this.queriedRegions = false;
         }
 
         public loadStatisticsGroupTypes(rcode: string, regressionregion: string) {
@@ -182,7 +185,7 @@ module StreamStats.Services {
                 });
             });
 
-            var updatedScenarioObject = JSON.stringify(this.selectedStatisticsGroupScenario, null);
+            var updatedScenarioObject = angular.toJson(this.selectedStatisticsGroupScenario, null);
             console.log('updated scenario object: ', updatedScenarioObject);
 
             //do request

@@ -114,7 +114,6 @@ var StreamStats;
             StudyAreaService.prototype.loadStudyBoundary = function () {
                 var _this = this;
                 this.toaster.pop("info", "Delineating Basin", "Please wait...", 0);
-                console.log('toast', this.toaster);
                 this.canUpdate = false;
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString(), false);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
@@ -185,7 +184,7 @@ var StreamStats;
                 console.log('upstream regulation');
                 this.toaster.pop('info', "Checking for Upstream Regulation", "Please wait...", 0);
                 this.regulationCheckComplete = false;
-                var watershed = JSON.stringify(this.selectedStudyArea.Features[1].feature, null);
+                var watershed = angular.toJson(this.selectedStudyArea.Features[1].feature, null);
                 var url = configuration.baseurls['RegulationServices'] + configuration.queryparams['COregulationService'];
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', { watershed: watershed, outputcrs: 4326, f: 'geojson' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
                 this.Execute(request).then(function (response) {

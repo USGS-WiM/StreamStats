@@ -175,6 +175,8 @@ var StreamStats;
                     _this.leafletData.getLayers().then(function (maplayers) {
                         maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).layers([3]).run(function (error, results) {
                             console.log('map query', error, results);
+                            if (!results.features[0])
+                                return;
                             var rcode = results.features[0].properties.ST_ABBR;
                             _this.regionServices.masterRegionList.forEach(function (item) {
                                 if (item.RegionID == rcode) {
@@ -188,7 +190,7 @@ var StreamStats;
             };
             MapController.prototype.basinEditor = function () {
                 var _this = this;
-                var basin = JSON.parse(JSON.stringify(this.geojson['globalwatershed'].data.features[0]));
+                var basin = angular.fromJson(angular.toJson(this.geojson['globalwatershed'].data.features[0]));
                 var basinConverted = [];
                 basin.geometry.coordinates[0].forEach(function (item) {
                     basinConverted.push([item[1], item[0]]);
@@ -240,7 +242,7 @@ var StreamStats;
                             //show new polygon
                             _this.geojson['globalwatershed'].data.features[0] = basin;
                             drawnItems.clearLayers();
-                            console.log('editedAreas', JSON.stringify(_this.studyArea.editedAreas));
+                            console.log('editedAreas', angular.toJson(_this.studyArea.editedAreas));
                         });
                     });
                 });
@@ -274,7 +276,7 @@ var StreamStats;
                 var rcode = this.studyArea.selectedStudyArea.RegionID;
                 var workspaceID = this.studyArea.selectedStudyArea.WorkspaceID;
                 this.studyArea.selectedStudyArea.Features.forEach(function (layer) {
-                    var item = JSON.parse(JSON.stringify(layer));
+                    var item = angular.fromJson(angular.toJson(layer));
                     console.log('in onselectedstudyarea changed', item.name);
                     if (item.name == 'globalwatershed') {
                         _this.geojson[item.name] = {
@@ -317,7 +319,7 @@ var StreamStats;
                 console.log('geojson', this.geojson);
                 //clear out this.markers
                 this.markers = {};
-                //console.log(JSON.stringify(this.geojson));    
+                //console.log(angular.toJson(this.geojson));    
                 var bbox = this.geojson['globalwatershed'].data.features[0].bbox;
                 //this.bounds = this.leafletBoundsHelperService.createBoundsFromArray([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
                 this.leafletData.getMap().then(function (map) {
