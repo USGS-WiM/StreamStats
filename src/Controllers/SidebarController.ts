@@ -72,25 +72,25 @@ module StreamStats.Controllers {
             $scope.$watchCollection(() => this.nssService.selectedStatisticsGroupParameterList,(newval, oldval) => {
                 console.log('StatisticsGroup param list changed.  loaded ', newval.length, ' parameters from StatisticsGroup');
 
-                this.studyAreaService.studyAreaParameterList = [];
-                this.regionService.parameterList.map(function (val) {
+                //this.studyAreaService.studyAreaParameterList = [];
+                this.regionService.parameterList.map((val) => {
 
-                    angular.forEach(StatisticsGroup.selectedStatisticsGroupParameterList, function (value, index) {
+                    this.nssService.selectedStatisticsGroupParameterList.forEach((value,index) => {
                         if (val.code.toLowerCase() == value['Code'].toLowerCase()) {
-                            //console.log('match found', val.code);
-                            studyArea.studyAreaParameterList.push(val);
+                            //make sure new object isn't already in the list
+                            if (this.checkParamList(studyArea.studyAreaParameterList, val) == -1) studyArea.studyAreaParameterList.push(val);                 
                         }
                     });
                 });
             });
 
-            //watch for cleared region
+            //watch for map based region changes here
             $scope.$watch(() => this.regionService.selectedRegion,(newval, oldval) => {
                 console.log('region change', oldval, newval);
                 if (newval == null) this.setProcedureType(1);
                 else this.setProcedureType(2);
             });
-                
+      
         }
 
         //Methods
@@ -123,24 +123,10 @@ module StreamStats.Controllers {
 
             //get available parameters
             this.regionService.loadParametersByRegion();
-
-            //make initial selection
-            this.selectInitialParameters();
-
-        }
-
-        public selectInitialParameters() {
-
-            //make inital DRNAREA area selection
-            angular.forEach(this.regionService.parameterList, function (value, index) {
-                if (value.code = "DRNAREA") {
-                    console.log('test211');
-                    this.studyAreaService.studyAreaParameterList.push(item);
-                }
-            });
         }
 
         public resetWorkSpace() {
+            this.regionService.clearRegion();
             this.studyAreaService.clearStudyArea();
             this.nssService.clearNSSdata();
         }
@@ -165,7 +151,7 @@ module StreamStats.Controllers {
             //if toggled remove selected parameter set
             if (this.nssService.selectedStatisticsGroup == statisticsGroup) {
                 this.nssService.selectedStatisticsGroup = null;
-                this.studyAreaService.studyAreaParameterList = [];
+                //this.studyAreaService.studyAreaParameterList = [];
                 return;
             }
             this.nssService.selectedStatisticsGroup = statisticsGroup;
@@ -173,13 +159,23 @@ module StreamStats.Controllers {
             console.log(statisticsGroup.Name, ' clicked');
 
             //clear studyareaParameterList
-            this.studyAreaService.studyAreaParameterList = [];
+            //this.studyAreaService.studyAreaParameterList = [];
 
             //get list of params for selected StatisticsGroup
             this.nssService.loadParametersByStatisticsGroup(this.regionService.selectedRegion.RegionID, this.nssService.selectedStatisticsGroup.ID, this.studyAreaService.selectedStudyArea.RegressionRegions[0]);
 
             //select subset of parameters from list
             this.nssService.selectedStatisticsGroupParameterList;
+        }
+
+
+        public checkParamList(arr, obj) {
+            for (var i = 0; i < arr.length; i++) {
+                if (angular.equals(arr[i], obj)) {
+                    return i;
+                }
+            };
+            return -1;
         }
 
         public updateStudyAreaParameterList(parameter: any) {
@@ -195,6 +191,7 @@ module StreamStats.Controllers {
             }
             else {
                 //add it
+                console.log(JSON.stringify(parameter));
                 this.studyAreaService.studyAreaParameterList.push(parameter);
             }
             //console.log('studyareaparamList length: ', this.studyAreaService.studyAreaParameterList.length);

@@ -36,17 +36,18 @@ var StreamStats;
                 //watches for changes to selected StatisticsGroup param list and updates studyareaParamList with them
                 $scope.$watchCollection(function () { return _this.nssService.selectedStatisticsGroupParameterList; }, function (newval, oldval) {
                     console.log('StatisticsGroup param list changed.  loaded ', newval.length, ' parameters from StatisticsGroup');
-                    _this.studyAreaService.studyAreaParameterList = [];
+                    //this.studyAreaService.studyAreaParameterList = [];
                     _this.regionService.parameterList.map(function (val) {
-                        angular.forEach(StatisticsGroup.selectedStatisticsGroupParameterList, function (value, index) {
+                        _this.nssService.selectedStatisticsGroupParameterList.forEach(function (value, index) {
                             if (val.code.toLowerCase() == value['Code'].toLowerCase()) {
-                                //console.log('match found', val.code);
-                                studyArea.studyAreaParameterList.push(val);
+                                //make sure new object isn't already in the list
+                                if (_this.checkParamList(studyArea.studyAreaParameterList, val) == -1)
+                                    studyArea.studyAreaParameterList.push(val);
                             }
                         });
                     });
                 });
-                //watch for cleared region
+                //watch for map based region changes here
                 $scope.$watch(function () { return _this.regionService.selectedRegion; }, function (newval, oldval) {
                     console.log('region change', oldval, newval);
                     if (newval == null)
@@ -86,19 +87,9 @@ var StreamStats;
                 this.setProcedureType(2 /* IDENTIFY */);
                 //get available parameters
                 this.regionService.loadParametersByRegion();
-                //make initial selection
-                this.selectInitialParameters();
-            };
-            SidebarController.prototype.selectInitialParameters = function () {
-                //make inital DRNAREA area selection
-                angular.forEach(this.regionService.parameterList, function (value, index) {
-                    if (value.code = "DRNAREA") {
-                        console.log('test211');
-                        this.studyAreaService.studyAreaParameterList.push(item);
-                    }
-                });
             };
             SidebarController.prototype.resetWorkSpace = function () {
+                this.regionService.clearRegion();
                 this.studyAreaService.clearStudyArea();
                 this.nssService.clearNSSdata();
             };
@@ -120,17 +111,26 @@ var StreamStats;
                 //if toggled remove selected parameter set
                 if (this.nssService.selectedStatisticsGroup == statisticsGroup) {
                     this.nssService.selectedStatisticsGroup = null;
-                    this.studyAreaService.studyAreaParameterList = [];
+                    //this.studyAreaService.studyAreaParameterList = [];
                     return;
                 }
                 this.nssService.selectedStatisticsGroup = statisticsGroup;
                 console.log(statisticsGroup.Name, ' clicked');
                 //clear studyareaParameterList
-                this.studyAreaService.studyAreaParameterList = [];
+                //this.studyAreaService.studyAreaParameterList = [];
                 //get list of params for selected StatisticsGroup
                 this.nssService.loadParametersByStatisticsGroup(this.regionService.selectedRegion.RegionID, this.nssService.selectedStatisticsGroup.ID, this.studyAreaService.selectedStudyArea.RegressionRegions[0]);
                 //select subset of parameters from list
                 this.nssService.selectedStatisticsGroupParameterList;
+            };
+            SidebarController.prototype.checkParamList = function (arr, obj) {
+                for (var i = 0; i < arr.length; i++) {
+                    if (angular.equals(arr[i], obj)) {
+                        return i;
+                    }
+                }
+                ;
+                return -1;
             };
             SidebarController.prototype.updateStudyAreaParameterList = function (parameter) {
                 //don't mess with DRNAREA
@@ -144,6 +144,7 @@ var StreamStats;
                 }
                 else {
                     //add it
+                    console.log(JSON.stringify(parameter));
                     this.studyAreaService.studyAreaParameterList.push(parameter);
                 }
                 //console.log('studyareaparamList length: ', this.studyAreaService.studyAreaParameterList.length);

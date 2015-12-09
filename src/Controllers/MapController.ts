@@ -293,8 +293,9 @@ module StreamStats.Controllers {
 
                         this.regionServices.masterRegionList.forEach((item) => {
                             if (item.RegionID == rcode) {
-                                this.regionServices.selectedRegion = item;
-                                map.fitBounds(item.Bounds);
+                                this.setBoundsByRegion(rcode);
+                                this.regionServices.loadParametersByRegion();
+                                //this.studyArea.selectInitialParameters(this.regionServices.parameterList);
                             }
                             
                         });
@@ -480,8 +481,7 @@ module StreamStats.Controllers {
             if (this.center.zoom <= 6 && oldValue !== newValue && this.regionServices.selectedRegion) {
                 console.log('removing region layers', this.layers.overlays);
 
-                this.regionServices.regionList = [];
-                this.regionServices.selectedRegion = null;
+                this.regionServices.clearRegion();
                 this.studyArea.clearStudyArea();
                 this.nssService.clearNSSdata();
 

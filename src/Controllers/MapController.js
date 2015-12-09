@@ -178,8 +178,8 @@ var StreamStats;
                             var rcode = results.features[0].properties.ST_ABBR;
                             _this.regionServices.masterRegionList.forEach(function (item) {
                                 if (item.RegionID == rcode) {
-                                    _this.regionServices.selectedRegion = item;
-                                    map.fitBounds(item.Bounds);
+                                    _this.setBoundsByRegion(rcode);
+                                    _this.regionServices.loadParametersByRegion();
                                 }
                             });
                         });
@@ -332,8 +332,7 @@ var StreamStats;
                 //if a region was selected, and then user zooms back out, clear and start over
                 if (this.center.zoom <= 6 && oldValue !== newValue && this.regionServices.selectedRegion) {
                     console.log('removing region layers', this.layers.overlays);
-                    this.regionServices.regionList = [];
-                    this.regionServices.selectedRegion = null;
+                    this.regionServices.clearRegion();
                     this.studyArea.clearStudyArea();
                     this.nssService.clearNSSdata();
                     //THIS IS JUST THROWING AN ANGULAR LEAFLET ERROR EVEN THOUGH SAME AS DOCS

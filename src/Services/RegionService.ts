@@ -36,6 +36,7 @@ module StreamStats.Services {
         loadRegionListByRegion(region: string): boolean;
         loadMapLayersByRegion(region: string): boolean;
         loadParametersByRegion();
+        clearRegion();
     }
     export interface IRegion {
         RegionID: string;
@@ -109,6 +110,12 @@ module StreamStats.Services {
 
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
+        public clearRegion() {
+            console.log('in clear region');
+            this.regionList = [];
+            this.parameterList = [];
+            this.selectedRegion = null;
+        }
         public loadRegionListByExtent(xmin:number,xmax:number,ymin:number,ymax:number, sr:number=4326) {
         //    clear List
             this.regionList.length = 0;//clear array

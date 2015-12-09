@@ -47,8 +47,7 @@ configuration.basemaps =
                     "url": "http://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer",
                     "type": 'agsTiled',
                     "layerOptions": {
-                        "zIndex": -100,
-                        "z-index": -100,
+                        "opacity": 0.7,
                         "minZoom": 0,
                         "maxZoom": 15,
                         "attribution": "<a href='http://www.doi.gov'>U.S. Department of the Interior</a> | <a href='http://www.usgs.gov'>U.S. Geological Survey</a> | <a href='http://www.usgs.gov/laws/policies_notices.html'>Policies</a>"
@@ -62,7 +61,7 @@ configuration.basemaps =
                         "format": "png8",
                         "f": "image",
                         "position": "back",
-                        "zIndex": -100,
+                        "opacity": 0.7,
                         "minZoom": 16,
                         "maxZoom": 20,
                         "attribution": "<a href='http://www.doi.gov'>U.S. Department of the Interior</a> | <a href='http://www.usgs.gov'>U.S. Geological Survey</a> | <a href='http://www.usgs.gov/laws/policies_notices.html'>Policies</a>"
