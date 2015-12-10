@@ -42,6 +42,7 @@ var StreamStats;
     angular.module('StreamStats', [
         'ui.router',
         'ui.bootstrap',
+        'ui.checkbox',
         'mobile-angular-ui',
         'toaster',
         'ngAnimate',

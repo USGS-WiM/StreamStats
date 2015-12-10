@@ -43,6 +43,7 @@ var StreamStats;
                                 //make sure new object isn't already in the list
                                 if (_this.checkParamList(studyArea.studyAreaParameterList, val) == -1)
                                     studyArea.studyAreaParameterList.push(val);
+                                val['checked'] = true;
                             }
                         });
                     });
@@ -138,11 +139,30 @@ var StreamStats;
                 ;
                 return -1;
             };
+            SidebarController.prototype.multipleParameterSelector = function (selection) {
+                this.regionService.parameterList.forEach(function (value, index) {
+                    if (value.code == "DRNAREA")
+                        return;
+                    if (selection == "all") {
+                        value['checked'] = true;
+                    }
+                    if (selection == "none") {
+                        value['checked'] = false;
+                    }
+                });
+            };
             SidebarController.prototype.updateStudyAreaParameterList = function (parameter) {
                 //don't mess with DRNAREA
-                if (parameter.code == "DRNAREA")
+                if (parameter.code == "DRNAREA") {
+                    this.toaster.pop("info", "Information", "DRNAREA cannot be unselected");
+                    //keep it checked in regionservice parameterlist
+                    this.regionService.parameterList.forEach(function (value, index) {
+                        if (value.code == parameter.code) {
+                            value['checked'] = true;
+                        }
+                    });
                     return;
-                //console.log('studyareaparamList length: ', this.studyAreaService.studyAreaParameterList.length);
+                }
                 var index = this.studyAreaService.studyAreaParameterList.indexOf(parameter);
                 if (index > -1) {
                     //remove it
@@ -150,10 +170,9 @@ var StreamStats;
                 }
                 else {
                     //add it
-                    console.log(angular.toJson(parameter));
+                    //console.log(angular.toJson(parameter));
                     this.studyAreaService.studyAreaParameterList.push(parameter);
                 }
-                //console.log('studyareaparamList length: ', this.studyAreaService.studyAreaParameterList.length);
             };
             SidebarController.prototype.calculateParameters = function () {
                 console.log('in Calculate Parameters');

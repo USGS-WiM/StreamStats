@@ -12,7 +12,6 @@
                         <li>Zoom using the map until state region selection options appear below</li>
                         <li>Use the search box to zoom to an area of interest, then use the state selection buttons that will appear below</li>
                     </ul>
-                    
 
                     <input type="text" class="form-control"
                             ng-model="selection"
@@ -99,15 +98,19 @@
                         <p>Basin Characteristics can be selected individually or are selected based on the chosen scenario.  Some characteristics are calculated by default and cannot be unselected.</p>
                         <div class="list-group">
                             
+                            <!--
                             <button class="btn btn-sm btn-default" ng-class="vm.checkParamList(vm.studyAreaService.studyAreaParameterList, parameter) > -1 ? 'btn-success' : ''" ng-click="vm.updateStudyAreaParameterList(parameter)" ng-repeat="parameter in vm.regionService.parameterList"><span>{{parameter.name}} </span></button>
-                            
-                            <!--  PLAY AROUND WITH CHECKBOXES BOOTSTRAPIFIED
-                            <div class="checkbox" ng-repeat="parameter in vm.regionService.parameterList" >
-                                <label>
-                                  <input type="checkbox"> {{parameter.description}}
-                                </label>
-                              </div>
                             -->
+
+                            <div class="btn-toolbar">
+                                <button class="btn btn-sm btn-default" ng-click="vm.multipleParameterSelector('all')"><span><i class="fa fa-check-square-o"></i>&nbsp;&nbsp;Select All</span></button>
+                                <button class="btn btn-sm btn-default" ng-click="vm.multipleParameterSelector('none')"><span><i class="fa fa-square-o"></i>&nbsp;&nbsp;Deselect All</span></button>
+                            </div>
+
+                            <form ng-repeat="parameter in vm.regionService.parameterList">
+                                <checkbox large ng-model="parameter.checked" ng-change="vm.updateStudyAreaParameterList(parameter)"></checkbox><span>&nbsp;&nbsp;{{parameter.description}}</span>
+                            </form>
+                            
                         </div>
                         <div ng-show="vm.studyAreaService.studyAreaParameterList.length > 0">
                             <div class="form-group">

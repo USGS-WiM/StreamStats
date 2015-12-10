@@ -192,6 +192,8 @@ module StreamStats.Services {
                     if (response.data.parameters && response.data.parameters.length > 0) {
                         response.data.parameters.map((item) => {
                             try {
+                                if (item.code == "DRNAREA") item['checked'] = true;
+                                else item['checked'] = false;
                                 this.parameterList.push(item);
                             }
                             catch (e) {
