@@ -69,7 +69,7 @@ var StreamStats;
                     if (this.selectedProcedure == 3 && (pType == 4 || pType == 5))
                         this.toaster.pop("warning", "Warning", "Make sure you calculate selected basin characteristics before continuing", 5000);
                     if (this.selectedProcedure == 2 && (pType == 3 || pType == 4 || pType == 5))
-                        this.toaster.pop("warning", "Warning", "Make sure you click continue", 5000);
+                        this.toaster.pop("warning", "Warning", "Make sure you have delineated a basin and clicked continue", 5000);
                     return;
                 }
                 this.selectedProcedure = pType;
@@ -96,7 +96,7 @@ var StreamStats;
                 this.regionService.loadParametersByRegion();
             };
             SidebarController.prototype.resetWorkSpace = function () {
-                this.regionService.clearRegion();
+                //this.regionService.clearRegion();
                 this.studyAreaService.clearStudyArea();
                 this.nssService.clearNSSdata();
             };
@@ -140,18 +140,27 @@ var StreamStats;
                 return -1;
             };
             SidebarController.prototype.multipleParameterSelector = function (selection) {
+                var _this = this;
                 this.regionService.parameterList.forEach(function (value, index) {
                     if (value.code == "DRNAREA")
                         return;
+                    var index = _this.studyAreaService.studyAreaParameterList.indexOf(value);
                     if (selection == "all") {
+                        //if its not there add it
+                        if (index == -1)
+                            _this.studyAreaService.studyAreaParameterList.push(value);
                         value['checked'] = true;
                     }
                     if (selection == "none") {
+                        //remove it
+                        if (index > -1)
+                            _this.studyAreaService.studyAreaParameterList.splice(index, 1);
                         value['checked'] = false;
                     }
                 });
             };
             SidebarController.prototype.updateStudyAreaParameterList = function (parameter) {
+                console.log('in updatestudyarea parameter', parameter);
                 //don't mess with DRNAREA
                 if (parameter.code == "DRNAREA") {
                     this.toaster.pop("info", "Information", "DRNAREA cannot be unselected");
