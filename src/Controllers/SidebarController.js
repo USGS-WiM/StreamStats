@@ -187,20 +187,8 @@ var StreamStats;
                 console.log('in Calculate Parameters');
                 this.studyAreaService.loadParameters();
             };
-            SidebarController.prototype.queryRegressionRegions = function () {
-                console.log('in Query Regression Regions');
-                this.nssService.queriedRegions = true;
-                //send watershed to map service query that returns list of regression regions that overlap the watershed
-                //DO MAP SERVICE REQUEST HERE
-                //region placeholder
-                this.studyAreaService.selectedStudyArea.RegressionRegions = ['290'];
-                this.queryStatisticGroups();
+            SidebarController.prototype.selectScenarios = function () {
                 this.setProcedureType(3);
-            };
-            SidebarController.prototype.queryStatisticGroups = function () {
-                console.log('in Query Statistics Groups');
-                //hardcoded to first entry for now
-                this.nssService.loadStatisticsGroupTypes(this.regionService.selectedRegion.RegionID, this.studyAreaService.selectedStudyArea.RegressionRegions[0]);
             };
             SidebarController.prototype.generateReport = function () {
                 console.log('in estimateFlows');
@@ -210,13 +198,6 @@ var StreamStats;
                 this.reportService.openReport();
             };
             SidebarController.prototype.checkRegulation = function () {
-                /* comment this out apparently don't need params calculated
-                if (this.studyAreaService.studyAreaParameterList.length < 1 || !this.studyAreaService.parametersLoaded) {
-                    alert('Select some parameters and make sure they are calcuated');
-                    return;
-                }
-    
-               */
                 this.studyAreaService.upstreamRegulation();
             };
             //Helper Methods

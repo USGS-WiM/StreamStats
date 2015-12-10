@@ -243,29 +243,9 @@ module StreamStats.Controllers {
             this.studyAreaService.loadParameters();
         }
 
-        public queryRegressionRegions() {
-
-            console.log('in Query Regression Regions');
-
-            this.nssService.queriedRegions = true;
-
-            //send watershed to map service query that returns list of regression regions that overlap the watershed
-            //DO MAP SERVICE REQUEST HERE
-            
-            //region placeholder
-            this.studyAreaService.selectedStudyArea.RegressionRegions = ['290'];
-
-            this.queryStatisticGroups();
+        public selectScenarios() {
 
             this.setProcedureType(3);
-        }
-
-        public queryStatisticGroups() {
-
-            console.log('in Query Statistics Groups');
-
-            //hardcoded to first entry for now
-            this.nssService.loadStatisticsGroupTypes(this.regionService.selectedRegion.RegionID,this.studyAreaService.selectedStudyArea.RegressionRegions[0]);
         }
 
         public generateReport() {
@@ -283,17 +263,7 @@ module StreamStats.Controllers {
 
         public checkRegulation() {
 
-            /* comment this out apparently don't need params calculated
-            if (this.studyAreaService.studyAreaParameterList.length < 1 || !this.studyAreaService.parametersLoaded) {
-                alert('Select some parameters and make sure they are calcuated');
-                return;
-            }
-
-           */
-
-
             this.studyAreaService.upstreamRegulation();
-
         }
 
 
