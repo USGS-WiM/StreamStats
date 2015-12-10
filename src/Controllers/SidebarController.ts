@@ -105,7 +105,7 @@ module StreamStats.Controllers {
             if (this.selectedProcedure == pType || !this.canUpdateProcedure(pType)) {
                 //capture issues and send notifications here
                 if (this.selectedProcedure == 3 && (pType == 4 || pType == 5)) this.toaster.pop("warning", "Warning", "Make sure you calculate selected basin characteristics before continuing", 5000);
-                if (this.selectedProcedure == 2 && (pType == 3 || pType == 4 || pType == 5)) this.toaster.pop("warning", "Warning", "Make sure you click continue", 5000);
+                if (this.selectedProcedure == 2 && (pType == 3 || pType == 4 || pType == 5)) this.toaster.pop("warning", "Warning", "Make sure you have delineated a basin and clicked continue", 5000);
                 return;
             }
             this.selectedProcedure = pType;
@@ -133,7 +133,7 @@ module StreamStats.Controllers {
         }
 
         public resetWorkSpace() {
-            this.regionService.clearRegion();
+            //this.regionService.clearRegion();
             this.studyAreaService.clearStudyArea();
             this.nssService.clearNSSdata();
         }
@@ -190,16 +190,26 @@ module StreamStats.Controllers {
             this.regionService.parameterList.forEach((value, index) => {
                 if (value.code == "DRNAREA") return;
 
+                var index = this.studyAreaService.studyAreaParameterList.indexOf(value);
+
                 if (selection == "all") {
+
+                    //if its not there add it
+                    if (index == -1) this.studyAreaService.studyAreaParameterList.push(value);
                     value['checked'] = true;
                 }
                 if (selection == "none") {
+
+                    //remove it
+                    if (index > -1) this.studyAreaService.studyAreaParameterList.splice(index, 1);
                     value['checked'] = false;
                 }
             });
         }
 
         public updateStudyAreaParameterList(parameter: any) {
+
+            console.log('in updatestudyarea parameter', parameter);
 
             //don't mess with DRNAREA
             if (parameter.code == "DRNAREA") {

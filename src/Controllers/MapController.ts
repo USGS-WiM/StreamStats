@@ -559,6 +559,15 @@ module StreamStats.Controllers {
 
             console.log('in check delineate point');
 
+            //put pourpoint on the map
+            this.markers['pourpoint'] = {
+                lat: latlng.lat,
+                lng: latlng.lng,
+                message: '<strong>Your clicked point</strong></br></br><strong>Latitude: </strong>' + latlng.lat.toFixed(5) + '</br><strong>Longitude: </strong>' + latlng.lng.toFixed(5),
+                focus: true,
+                draggable: false
+            }
+
             //turn off delineate flag
             this.studyArea.doDelineateFlag = false;
 
@@ -594,33 +603,14 @@ module StreamStats.Controllers {
                             if (excludeCode == 2) popupMsg += '.  You cannot delineate here.  Please try another location';
                             this.toaster.pop("warning", "Your clicked point is invalid", popupMsg, 0);
                             this.toaster.pop("info", "Information", "Try selecting another point", 5000);
-                        }
-
-                        //put pourpoint on the map
-                        this.markers['pourpoint'] = {
-                            lat: latlng.lat,
-                            lng: latlng.lng,
-                            message: '<strong>Your clicked point</strong></br></br><strong>Latitude: </strong>' + latlng.lat.toFixed(5) + '</br><strong>Longitude: </strong>' + latlng.lng.toFixed(5),
-                            focus: true,
-                            draggable: false
-                        }
-                        
+                        } 
                     });
                 });
             });
-
         }
 
         private startDelineate(latlng: any) {
             console.log('in startDelineate', latlng);
-
-            //this.markers['pourpoint'] = {
-            //    lat: latlng.lat,
-            //    lng: latlng.lng,
-            //    message: 'New Pourpoint</br><strong>Latitude: </strong>' + latlng.lat + '</br><strong>Longitude: </strong>' + latlng.lng,
-            //    focus: false,
-            //    draggable: false
-            //}
 
             var studyArea: Models.IStudyArea = new Models.StudyArea(this.regionServices.selectedRegion.RegionID, new WiM.Models.Point(latlng.lat, latlng.lng, '4326'));
 
