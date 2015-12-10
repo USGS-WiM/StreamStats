@@ -401,6 +401,10 @@ var StreamStats;
             MapController.prototype.checkDelineatePoint = function (latlng) {
                 var _this = this;
                 console.log('in check delineate point');
+                //turn off delineate flag
+                this.studyArea.doDelineateFlag = false;
+                //clear toasts
+                this.toaster.clear();
                 //build list of layers to query before delineate
                 var queryString = 'visible:';
                 this.regionServices.regionMapLayerList.forEach(function (item) {
@@ -417,15 +421,13 @@ var StreamStats;
                             if (results.features.length == 0) {
                                 _this.toaster.pop("success", "Success", "Your clicked point is valid, delineating your basin now...", 5000);
                                 _this.startDelineate(latlng);
-                                _this.studyArea.doDelineateFlag = false;
                             }
                             else {
                                 var excludeCode = results.features[0].properties.ExcludeCode;
                                 var popupMsg = results.features[0].properties.ExcludeReason;
                                 if (excludeCode == 2)
-                                    popupMsg += '.  You cannot delineate here.';
-                                _this.studyArea.doDelineateFlag = false;
-                                _this.toaster.pop("warning", "Your clicked point is invalid", popupMsg, 20000);
+                                    popupMsg += '.  You cannot delineate here.  Please try another location';
+                                _this.toaster.pop("warning", "Your clicked point is invalid", popupMsg, 0);
                                 _this.toaster.pop("info", "Information", "Try selecting another point", 5000);
                             }
                             //put pourpoint on the map
@@ -433,7 +435,7 @@ var StreamStats;
                                 lat: latlng.lat,
                                 lng: latlng.lng,
                                 message: '<strong>Your clicked point</strong></br></br><strong>Latitude: </strong>' + latlng.lat.toFixed(5) + '</br><strong>Longitude: </strong>' + latlng.lng.toFixed(5),
-                                focus: false,
+                                focus: true,
                                 draggable: false
                             };
                         });
