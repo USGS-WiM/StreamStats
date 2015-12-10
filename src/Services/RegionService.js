@@ -153,6 +153,10 @@ var StreamStats;
                     if (response.data.parameters && response.data.parameters.length > 0) {
                         response.data.parameters.map(function (item) {
                             try {
+                                if (item.code == "DRNAREA")
+                                    item['checked'] = true;
+                                else
+                                    item['checked'] = false;
                                 _this.parameterList.push(item);
                             }
                             catch (e) {

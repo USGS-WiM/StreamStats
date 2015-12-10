@@ -44,7 +44,7 @@ module StreamStats {
     }//end class
 
     angular.module('StreamStats',[
-        'ui.router', 'ui.bootstrap',
+        'ui.router', 'ui.bootstrap', 'ui.checkbox',
         'mobile-angular-ui',
         'toaster', 'ngAnimate',
         'leaflet-directive',
