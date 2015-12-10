@@ -104,7 +104,7 @@ var StreamStats;
                         _this.queryStates(args.leafletEvent);
                     }
                 });
-                $scope.$watch(function () { return _this.bounds; }, function (newval, oldval) { return _this.setRegionsByBounds(oldval, newval); });
+                this.unbindBoundaryWatch = $scope.$watch(function () { return _this.bounds; }, function (newval, oldval) { return _this.setRegionsByBounds(oldval, newval); });
                 $scope.$on('$locationChangeStart', function () { return _this.updateRegion(); });
                 $scope.$watch(function () { return studyArea.doDelineateFlag; }, function (newval, oldval) { return newval ? _this.cursorStyle = 'crosshair' : _this.cursorStyle = 'hand'; });
                 // check if region was explicitly set.
@@ -168,9 +168,6 @@ var StreamStats;
             MapController.prototype.queryStates = function (evt) {
                 var _this = this;
                 console.log('in querystates');
-                //show msg
-                //vm.Notification(new Notification("Querying region... please wait.", NotificationType.ALERT, 0.2, ActionType.SHOW));
-                //do query
                 this.leafletData.getMap().then(function (map) {
                     _this.leafletData.getLayers().then(function (maplayers) {
                         maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).layers([3]).run(function (error, results) {

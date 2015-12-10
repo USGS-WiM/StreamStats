@@ -156,7 +156,8 @@ module StreamStats.Controllers {
         public geojson: Object = null;
         public events: Object = null;
         public regionLayer: Object = null;
-        public drawControl: any;       
+        public drawControl: any;    
+        public unbindBoundaryWatch: any;   
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -201,7 +202,7 @@ module StreamStats.Controllers {
                 }
             });
 
-            $scope.$watch(() => this.bounds,(newval, oldval) => this.setRegionsByBounds(oldval, newval));
+            this.unbindBoundaryWatch = $scope.$watch(() => this.bounds,(newval, oldval) => this.setRegionsByBounds(oldval, newval));
             $scope.$on('$locationChangeStart',() => this.updateRegion());
 
             $scope.$watch(() => studyArea.doDelineateFlag,(newval, oldval) => newval ? this.cursorStyle = 'crosshair' : this.cursorStyle = 'hand');
@@ -277,11 +278,6 @@ module StreamStats.Controllers {
         private queryStates(evt) {
 
             console.log('in querystates');
-
-            //show msg
-            //vm.Notification(new Notification("Querying region... please wait.", NotificationType.ALERT, 0.2, ActionType.SHOW));
-
-            //do query
 
             this.leafletData.getMap().then((map: any) => {
                 this.leafletData.getLayers().then((maplayers: any) => {
