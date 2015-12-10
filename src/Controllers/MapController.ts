@@ -575,14 +575,11 @@ module StreamStats.Controllers {
 
                     maplayers.overlays[selectedRegionLayerName].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run((error: any, results: any) => {
 
-                        var popupMsg;
-
                         //if there are no exclusion area hits
                         if (results.features.length == 0) {
                             this.toaster.pop("success", "Success", "Your clicked point is valid, delineating your basin now...", 5000)
                             this.startDelineate(latlng);
                             this.studyArea.doDelineateFlag = false;
-                            popupMsg = 'Your Clicked Point';
                         }
 
                         //otherwise don't allow delineation

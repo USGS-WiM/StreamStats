@@ -413,13 +413,11 @@ var StreamStats;
                     _this.leafletData.getLayers().then(function (maplayers) {
                         var selectedRegionLayerName = _this.regionServices.selectedRegion.RegionID + "_region";
                         maplayers.overlays[selectedRegionLayerName].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run(function (error, results) {
-                            var popupMsg;
                             //if there are no exclusion area hits
                             if (results.features.length == 0) {
                                 _this.toaster.pop("success", "Success", "Your clicked point is valid, delineating your basin now...", 5000);
                                 _this.startDelineate(latlng);
                                 _this.studyArea.doDelineateFlag = false;
-                                popupMsg = 'Your Clicked Point';
                             }
                             else {
                                 var excludeCode = results.features[0].properties.ExcludeCode;
