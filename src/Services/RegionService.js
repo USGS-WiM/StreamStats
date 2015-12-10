@@ -99,7 +99,7 @@ var StreamStats;
                     layers: "all: 4"
                 };
                 var url = configuration.baseurls['StreamStats'] + configuration.queryparams['regionService'];
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, 0 /* GET */, 'json');
                 request.params = input;
                 this.Execute(request).then(function (response) {
                     response.data.results.map(function (item) {
@@ -128,7 +128,7 @@ var StreamStats;
                 var _this = this;
                 console.log('in loadMapLayersByRegion');
                 var url = configuration.baseurls['StreamStats'] + configuration.queryparams['SSStateLayers'].format(regionid.toLowerCase());
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, 0 /* GET */, 'json');
                 this.regionMapLayerList = [];
                 this.Execute(request).then(function (response) {
                     response.data.layers.forEach(function (value, key) {

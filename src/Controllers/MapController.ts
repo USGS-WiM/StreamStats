@@ -587,19 +587,20 @@ module StreamStats.Controllers {
 
                         //otherwise don't allow delineation
                         else {
-                            this.toaster.pop("error", "Warning", "Your clicked point is invalid", 5000)
-                            this.toaster.pop("info", "Information", "Try selecting another point", 5000)
                             var excludeCode = results.features[0].properties.ExcludeCode;
                             var popupMsg = results.features[0].properties.ExcludeReason;
-                            if (excludeCode == 2) popupMsg += '</br></br>You cannot delineate here';
+                            if (excludeCode == 2) popupMsg += '.  You cannot delineate here.';
+                            this.studyArea.doDelineateFlag = false;
+                            this.toaster.pop("warning", "Your clicked point is invalid", popupMsg, 20000)
+                            this.toaster.pop("info", "Information", "Try selecting another point", 5000)
                         }
 
                         //put pourpoint on the map
                         this.markers['pourpoint'] = {
                             lat: latlng.lat,
                             lng: latlng.lng,
-                            message: '<strong>' + popupMsg + '</strong></br></br><strong>Latitude: </strong>' + latlng.lat.toFixed(5) + '</br><strong>Longitude: </strong>' + latlng.lng.toFixed(5),
-                            focus: true,
+                            message: '<strong>Your clicked point</strong></br></br><strong>Latitude: </strong>' + latlng.lat.toFixed(5) + '</br><strong>Longitude: </strong>' + latlng.lng.toFixed(5),
+                            focus: false,
                             draggable: false
                         }
                         

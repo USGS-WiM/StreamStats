@@ -422,19 +422,20 @@ var StreamStats;
                                 popupMsg = 'Your Clicked Point';
                             }
                             else {
-                                _this.toaster.pop("error", "Warning", "Your clicked point is invalid", 5000);
-                                _this.toaster.pop("info", "Information", "Try selecting another point", 5000);
                                 var excludeCode = results.features[0].properties.ExcludeCode;
                                 var popupMsg = results.features[0].properties.ExcludeReason;
                                 if (excludeCode == 2)
-                                    popupMsg += '</br></br>You cannot delineate here';
+                                    popupMsg += '.  You cannot delineate here.';
+                                _this.studyArea.doDelineateFlag = false;
+                                _this.toaster.pop("warning", "Your clicked point is invalid", popupMsg, 20000);
+                                _this.toaster.pop("info", "Information", "Try selecting another point", 5000);
                             }
                             //put pourpoint on the map
                             _this.markers['pourpoint'] = {
                                 lat: latlng.lat,
                                 lng: latlng.lng,
-                                message: '<strong>' + popupMsg + '</strong></br></br><strong>Latitude: </strong>' + latlng.lat.toFixed(5) + '</br><strong>Longitude: </strong>' + latlng.lng.toFixed(5),
-                                focus: true,
+                                message: '<strong>Your clicked point</strong></br></br><strong>Latitude: </strong>' + latlng.lat.toFixed(5) + '</br><strong>Longitude: </strong>' + latlng.lng.toFixed(5),
+                                focus: false,
                                 draggable: false
                             };
                         });
