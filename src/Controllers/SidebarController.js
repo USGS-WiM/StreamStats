@@ -139,6 +139,18 @@ var StreamStats;
                 ;
                 return -1;
             };
+            SidebarController.prototype.multipleParameterSelector = function (selection) {
+                this.regionService.parameterList.forEach(function (value, index) {
+                    if (value.code == "DRNAREA")
+                        return;
+                    if (selection == "all") {
+                        value['checked'] = true;
+                    }
+                    if (selection == "none") {
+                        value['checked'] = false;
+                    }
+                });
+            };
             SidebarController.prototype.updateStudyAreaParameterList = function (parameter) {
                 //don't mess with DRNAREA
                 if (parameter.code == "DRNAREA") {

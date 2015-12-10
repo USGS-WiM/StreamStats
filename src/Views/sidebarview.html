@@ -102,6 +102,11 @@
                             <button class="btn btn-sm btn-default" ng-class="vm.checkParamList(vm.studyAreaService.studyAreaParameterList, parameter) > -1 ? 'btn-success' : ''" ng-click="vm.updateStudyAreaParameterList(parameter)" ng-repeat="parameter in vm.regionService.parameterList"><span>{{parameter.name}} </span></button>
                             -->
 
+                            <div class="btn-toolbar">
+                                <button class="btn btn-sm btn-default" ng-click="vm.multipleParameterSelector('all')"><span><i class="fa fa-check-square-o"></i>&nbsp;&nbsp;Select All</span></button>
+                                <button class="btn btn-sm btn-default" ng-click="vm.multipleParameterSelector('none')"><span><i class="fa fa-square-o"></i>&nbsp;&nbsp;Deselect All</span></button>
+                            </div>
+
                             <form ng-repeat="parameter in vm.regionService.parameterList">
                                 <checkbox large ng-model="parameter.checked" ng-change="vm.updateStudyAreaParameterList(parameter)"></checkbox><span>&nbsp;&nbsp;{{parameter.description}}</span>
                             </form>

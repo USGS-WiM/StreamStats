@@ -185,6 +185,20 @@ module StreamStats.Controllers {
             return -1;
         }
 
+        public multipleParameterSelector(selection: string) {
+
+            this.regionService.parameterList.forEach((value, index) => {
+                if (value.code == "DRNAREA") return;
+
+                if (selection == "all") {
+                    value['checked'] = true;
+                }
+                if (selection == "none") {
+                    value['checked'] = false;
+                }
+            });
+        }
+
         public updateStudyAreaParameterList(parameter: any) {
 
             //don't mess with DRNAREA
