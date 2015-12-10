@@ -79,6 +79,7 @@ var StreamStats;
                 console.log('in clear region');
                 this.regionList = [];
                 this.parameterList = [];
+                this.regionMapLayerList = [];
                 this.selectedRegion = null;
             };
             RegionService.prototype.loadRegionListByExtent = function (xmin, xmax, ymin, ymax, sr) {
@@ -125,18 +126,17 @@ var StreamStats;
             };
             RegionService.prototype.loadMapLayersByRegion = function (regionid) {
                 var _this = this;
+                console.log('in loadMapLayersByRegion');
                 var url = configuration.baseurls['StreamStats'] + configuration.queryparams['SSStateLayers'].format(regionid.toLowerCase());
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
-                var layerArray = [];
+                this.regionMapLayerList = [];
                 this.Execute(request).then(function (response) {
-                    angular.forEach(response.data.layers, function (value, key) {
-                        if (value.name.toLowerCase().indexOf('stream grid') != -1 || value.name.toLowerCase().indexOf('study area bndys') != -1 || value.name.toLowerCase().indexOf('str')) {
-                            console.log("Adding layer: ", value);
-                            layerArray.push(value.id);
-                        }
-                        ;
+                    response.data.layers.forEach(function (value, key) {
+                        console.log("Adding layer: ", value);
+                        _this.regionMapLayerList.push([value.name, value.id]);
                     });
-                    return layerArray;
+                    console.log('list of layers', _this.regionMapLayerList);
+                    //return layerArray;
                 }, function (error) {
                     console.log('No region map layers found');
                     return _this.$q.reject(error.data);

@@ -61,7 +61,7 @@ var StreamStats;
         //examples/access-leaflet-object-example.html
         //http://www.codeitive.com/0JiejWjjXg/two-or-multiple-geojson-layers-in-angular-leaflet-directive.html
         var MapController = (function () {
-            function MapController($scope, $location, $stateParams, leafletBoundsHelper, leafletData, search, region, studyArea, StatisticsGroup) {
+            function MapController($scope, toaster, $location, $stateParams, leafletBoundsHelper, leafletData, search, region, studyArea, StatisticsGroup) {
                 var _this = this;
                 this.center = null;
                 this.layers = null;
@@ -75,6 +75,7 @@ var StreamStats;
                 this.regionLayer = null;
                 $scope.vm = this;
                 this.init();
+                this.toaster = toaster;
                 this.searchService = search;
                 this.$locationService = $location;
                 this.regionServices = region;
@@ -94,11 +95,10 @@ var StreamStats;
                 });
                 $scope.$on('leafletDirectiveMap.click', function (event, args) {
                     console.log('caputred map click');
-                    //otherwise listen for delineate click
+                    //listen for delineate click if ready
                     if (studyArea.doDelineateFlag) {
                         var latlng = args.leafletEvent.latlng;
-                        _this.startDelineate(latlng);
-                        studyArea.doDelineateFlag = false;
+                        _this.checkDelineatePoint(latlng);
                     }
                     else {
                         _this.queryStates(args.leafletEvent);
@@ -352,11 +352,13 @@ var StreamStats;
                 }
             };
             MapController.prototype.addRegionOverlayLayers = function (regionId) {
-                var layerlist = this.regionServices.loadMapLayersByRegion(regionId);
+                this.regionServices.loadMapLayersByRegion(regionId);
+                //refine list here if needed
+                //if ((value.name.toLowerCase().indexOf('stream grid') > -1) || (value.name.toLowerCase().indexOf('study area bndys') > -1) || (value.name.toLowerCase().indexOf('str') > -1)) {   };
+                console.log('adding layers to map');
                 this.layers.overlays[regionId + "_region"] = new Layer(regionId + " Map layers", configuration.baseurls['StreamStats'] + "/arcgis/rest/services/{0}_ss/MapServer".format(regionId.toLowerCase()), "agsDynamic", true, {
                     "opacity": 0.5,
-                    "layers": layerlist,
-                    "zIndex": 999,
+                    "layers": this.regionServices.regionMapLayerList,
                     "format": "png8",
                     "f": "image"
                 });
@@ -396,22 +398,65 @@ var StreamStats;
                 }
                 return layeridList;
             };
+            MapController.prototype.checkDelineatePoint = function (latlng) {
+                var _this = this;
+                console.log('in check delineate point');
+                //build list of layers to query before delineate
+                var queryString = 'visible:';
+                this.regionServices.regionMapLayerList.forEach(function (item) {
+                    if (item[0] == "Area of limited functionality")
+                        queryString += String(item[1]);
+                });
+                console.log('queryList', queryString);
+                this.toaster.pop("info", "Information", "Validating your clicked point...", 5000);
+                this.leafletData.getMap().then(function (map) {
+                    _this.leafletData.getLayers().then(function (maplayers) {
+                        var selectedRegionLayerName = _this.regionServices.selectedRegion.RegionID + "_region";
+                        maplayers.overlays[selectedRegionLayerName].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run(function (error, results) {
+                            var popupMsg;
+                            //if there are no exclusion area hits
+                            if (results.features.length == 0) {
+                                _this.toaster.pop("success", "Success", "Your clicked point is valid, delineating your basin now...", 5000);
+                                _this.startDelineate(latlng);
+                                _this.studyArea.doDelineateFlag = false;
+                                popupMsg = 'Your Clicked Point';
+                            }
+                            else {
+                                _this.toaster.pop("error", "Warning", "Your clicked point is invalid", 5000);
+                                _this.toaster.pop("info", "Information", "Try selecting another point", 5000);
+                                var excludeCode = results.features[0].properties.ExcludeCode;
+                                var popupMsg = results.features[0].properties.ExcludeReason;
+                                if (excludeCode == 2)
+                                    popupMsg += '</br></br>You cannot delineate here';
+                            }
+                            //put pourpoint on the map
+                            _this.markers['pourpoint'] = {
+                                lat: latlng.lat,
+                                lng: latlng.lng,
+                                message: '<strong>' + popupMsg + '</strong></br></br><strong>Latitude: </strong>' + latlng.lat.toFixed(5) + '</br><strong>Longitude: </strong>' + latlng.lng.toFixed(5),
+                                focus: true,
+                                draggable: false
+                            };
+                        });
+                    });
+                });
+            };
             MapController.prototype.startDelineate = function (latlng) {
                 console.log('in startDelineate', latlng);
-                this.markers['pourpoint'] = {
-                    lat: latlng.lat,
-                    lng: latlng.lng,
-                    message: 'New Pourpoint</br><strong>Latitude: </strong>' + latlng.lat + '</br><strong>Longitude: </strong>' + latlng.lng,
-                    focus: false,
-                    draggable: false
-                };
+                //this.markers['pourpoint'] = {
+                //    lat: latlng.lat,
+                //    lng: latlng.lng,
+                //    message: 'New Pourpoint</br><strong>Latitude: </strong>' + latlng.lat + '</br><strong>Longitude: </strong>' + latlng.lng,
+                //    focus: false,
+                //    draggable: false
+                //}
                 var studyArea = new StreamStats.Models.StudyArea(this.regionServices.selectedRegion.RegionID, new WiM.Models.Point(latlng.lat, latlng.lng, '4326'));
                 this.studyArea.AddStudyArea(studyArea);
                 this.studyArea.loadStudyBoundary();
             };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
-            MapController.$inject = ['$scope', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService'];
+            MapController.$inject = ['$scope', 'toaster', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService'];
             return MapController;
         })(); //end class
         angular.module('StreamStats.Controllers').controller('StreamStats.Controllers.MapController', MapController);
