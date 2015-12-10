@@ -70,18 +70,18 @@ a{
     top:-2px;
   }
 
-  #aboutButton{
+  .navBarButton{
     letter-spacing: 2px;
     position: relative; top: 2px;
     transition: 0.2s;
     color: rgba(255,255,255,0.35);
   }
-    #aboutButton:hover{
+    .navBarButton:hover{
       cursor: pointer;
       color: rgba(255,255,255,1);
       transition: 0.2s;
     }
-    #aboutButton:focus{
+    .navBarButton:focus{
         outline: none;
     }
 
@@ -463,7 +463,7 @@ a{
         font-size: 14pt;
     }
 
-    #aboutButton{
+    .navBarButton{
       letter-spacing: 2px;
       transition: 0.2s;
       color: rgba(255,255,255,0.35);

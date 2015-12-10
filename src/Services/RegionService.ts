@@ -37,6 +37,7 @@ module StreamStats.Services {
         loadMapLayersByRegion(region: string): boolean;
         loadParametersByRegion();
         clearRegion();
+        regionMapLayerList: any;
     }
     export interface IRegion {
         RegionID: string;
@@ -97,6 +98,7 @@ module StreamStats.Services {
                 this._onSelectedRegionChanged.raise(null, WiM.Event.EventArgs.Empty);
             }
         }
+        public regionMapLayerList: any;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -114,6 +116,7 @@ module StreamStats.Services {
             console.log('in clear region');
             this.regionList = [];
             this.parameterList = [];
+            this.regionMapLayerList = [];
             this.selectedRegion = null;
         }
         public loadRegionListByExtent(xmin:number,xmax:number,ymin:number,ymax:number, sr:number=4326) {
@@ -159,20 +162,20 @@ module StreamStats.Services {
             return true;
         }
         public loadMapLayersByRegion(regionid: string): any {
+            console.log('in loadMapLayersByRegion');
 
             var url = configuration.baseurls['StreamStats'] + configuration.queryparams['SSStateLayers'].format(regionid.toLowerCase());
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
-            var layerArray = [];
+            this.regionMapLayerList= [];
 
             this.Execute(request).then(
                 (response: any) => {
-                    angular.forEach(response.data.layers, function (value, key) {
-                        if (value.name.toLowerCase().indexOf('stream grid') != -1 || value.name.toLowerCase().indexOf('study area bndys') != -1 || value.name.toLowerCase().indexOf('str')) {
-                            console.log("Adding layer: ",value);
-                            layerArray.push(value.id);
-                        };
+                    response.data.layers.forEach((value, key) => {
+                        console.log("Adding layer: ",value);
+                        this.regionMapLayerList.push([value.name,value.id]);
                     });
-                    return layerArray;
+                    console.log('list of layers', this.regionMapLayerList);
+                    //return layerArray;
                        
                 },(error) => {
                     console.log('No region map layers found');
