@@ -422,7 +422,7 @@ var StreamStats;
                 this.markers['pourpoint'] = {
                     lat: latlng.lat,
                     lng: latlng.lng,
-                    message: '<strong>Your clicked point</strong></br></br><strong>Latitude: </strong>' + latlng.lat.toFixed(5) + '</br><strong>Longitude: </strong>' + latlng.lng.toFixed(5),
+                    message: 'Your clicked point</br></br><strong>Latitude: </strong>' + latlng.lat.toFixed(5) + '</br><strong>Longitude: </strong>' + latlng.lng.toFixed(5),
                     focus: true,
                     draggable: false
                 };
@@ -444,16 +444,19 @@ var StreamStats;
                         maplayers.overlays[selectedRegionLayerName].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run(function (error, results) {
                             //if there are no exclusion area hits
                             if (results.features.length == 0) {
-                                _this.toaster.pop("success", "Success", "Your clicked point is valid, delineating your basin now...", 5000);
+                                _this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000);
                                 _this.startDelineate(latlng);
                             }
                             else {
                                 var excludeCode = results.features[0].properties.ExcludeCode;
                                 var popupMsg = results.features[0].properties.ExcludeReason;
-                                if (excludeCode == 2)
-                                    popupMsg += '.  You cannot delineate here.  Please try another location';
-                                _this.toaster.pop("warning", "Your clicked point is invalid", popupMsg, 0);
-                                _this.toaster.pop("info", "Information", "Try selecting another point", 5000);
+                                if (excludeCode == 1) {
+                                    _this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", popupMsg, 0);
+                                }
+                                else {
+                                    _this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", popupMsg, 5000);
+                                    _this.startDelineate(latlng);
+                                }
                             }
                         });
                     });
