@@ -33,6 +33,7 @@ var StreamStats;
                 this.studyAreaService = studyArea;
                 this.reportService = report;
                 this.leafletData = leafletData;
+                this.multipleParameterSelectorAdd = true;
                 //watches for changes to selected StatisticsGroup param list and updates studyareaParamList with them
                 $scope.$watchCollection(function () { return _this.nssService.selectedStatisticsGroupParameterList; }, function (newval, oldval) {
                     console.log('StatisticsGroup param list changed.  loaded ', newval.length, ' parameters from StatisticsGroup');
@@ -130,6 +131,7 @@ var StreamStats;
                 //select subset of parameters from list
                 this.nssService.selectedStatisticsGroupParameterList;
             };
+            //special function for searching arrays but ignoring angular hashkey
             SidebarController.prototype.checkParamList = function (arr, obj) {
                 for (var i = 0; i < arr.length; i++) {
                     if (angular.equals(arr[i], obj)) {
@@ -139,25 +141,27 @@ var StreamStats;
                 ;
                 return -1;
             };
-            SidebarController.prototype.multipleParameterSelector = function (selection) {
+            SidebarController.prototype.multipleParameterSelector = function () {
                 var _this = this;
                 this.regionService.parameterList.forEach(function (value, index) {
                     if (value.code == "DRNAREA")
                         return;
-                    var index = _this.studyAreaService.studyAreaParameterList.indexOf(value);
-                    if (selection == "all") {
+                    var paramCheck = _this.checkParamList(_this.studyAreaService.studyAreaParameterList, value);
+                    if (_this.multipleParameterSelectorAdd) {
                         //if its not there add it
-                        if (index == -1)
+                        if (paramCheck == -1)
                             _this.studyAreaService.studyAreaParameterList.push(value);
                         value['checked'] = true;
                     }
-                    if (selection == "none") {
+                    else {
                         //remove it
-                        if (index > -1)
-                            _this.studyAreaService.studyAreaParameterList.splice(index, 1);
+                        if (paramCheck > -1)
+                            _this.studyAreaService.studyAreaParameterList.splice(paramCheck, 1);
                         value['checked'] = false;
                     }
                 });
+                //flip toggle
+                this.multipleParameterSelectorAdd = !this.multipleParameterSelectorAdd;
             };
             SidebarController.prototype.updateStudyAreaParameterList = function (parameter) {
                 console.log('in updatestudyarea parameter', parameter);
@@ -187,20 +191,10 @@ var StreamStats;
                 console.log('in Calculate Parameters');
                 this.studyAreaService.loadParameters();
             };
-            SidebarController.prototype.queryRegressionRegions = function () {
-                console.log('in Query Regression Regions');
-                this.nssService.queriedRegions = true;
-                //send watershed to map service query that returns list of regression regions that overlap the watershed
-                //DO MAP SERVICE REQUEST HERE
-                //region placeholder
-                this.studyAreaService.selectedStudyArea.RegressionRegions = ['290'];
-                this.queryStatisticGroups();
+            SidebarController.prototype.checkForBasinEdits = function () {
+                //check if basin has been edited, if so we need to re-query regression regions
+                //if not, just continue
                 this.setProcedureType(3);
-            };
-            SidebarController.prototype.queryStatisticGroups = function () {
-                console.log('in Query Statistics Groups');
-                //hardcoded to first entry for now
-                this.nssService.loadStatisticsGroupTypes(this.regionService.selectedRegion.RegionID, this.studyAreaService.selectedStudyArea.RegressionRegions[0]);
             };
             SidebarController.prototype.generateReport = function () {
                 console.log('in estimateFlows');
@@ -210,13 +204,6 @@ var StreamStats;
                 this.reportService.openReport();
             };
             SidebarController.prototype.checkRegulation = function () {
-                /* comment this out apparently don't need params calculated
-                if (this.studyAreaService.studyAreaParameterList.length < 1 || !this.studyAreaService.parametersLoaded) {
-                    alert('Select some parameters and make sure they are calcuated');
-                    return;
-                }
-    
-               */
                 this.studyAreaService.upstreamRegulation();
             };
             //Helper Methods

@@ -52,6 +52,7 @@ module StreamStats.Controllers {
         private studyAreaService: Services.IStudyAreaService;       
         private reportService: Services.IreportService;    
         private leafletData: ILeafletData;
+        private multipleParameterSelectorAdd: boolean;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -67,6 +68,7 @@ module StreamStats.Controllers {
             this.studyAreaService = studyArea;
             this.reportService = report;
             this.leafletData = leafletData;
+            this.multipleParameterSelectorAdd = true;
 
             //watches for changes to selected StatisticsGroup param list and updates studyareaParamList with them
             $scope.$watchCollection(() => this.nssService.selectedStatisticsGroupParameterList,(newval, oldval) => {
@@ -175,7 +177,7 @@ module StreamStats.Controllers {
             this.nssService.selectedStatisticsGroupParameterList;
         }
 
-
+        //special function for searching arrays but ignoring angular hashkey
         public checkParamList(arr, obj) {
             for (var i = 0; i < arr.length; i++) {
                 if (angular.equals(arr[i], obj)) {
@@ -185,26 +187,29 @@ module StreamStats.Controllers {
             return -1;
         }
 
-        public multipleParameterSelector(selection: string) {
+        public multipleParameterSelector() {
 
             this.regionService.parameterList.forEach((value, index) => {
                 if (value.code == "DRNAREA") return;
 
-                var index = this.studyAreaService.studyAreaParameterList.indexOf(value);
+                var paramCheck = this.checkParamList(this.studyAreaService.studyAreaParameterList, value);
 
-                if (selection == "all") {
+                if (this.multipleParameterSelectorAdd) {
 
                     //if its not there add it
-                    if (index == -1) this.studyAreaService.studyAreaParameterList.push(value);
+                    if (paramCheck == -1) this.studyAreaService.studyAreaParameterList.push(value);
                     value['checked'] = true;
                 }
-                if (selection == "none") {
+                else {
 
                     //remove it
-                    if (index > -1) this.studyAreaService.studyAreaParameterList.splice(index, 1);
+                    if (paramCheck > -1) this.studyAreaService.studyAreaParameterList.splice(paramCheck, 1);
                     value['checked'] = false;
-                }
+                } 
             });
+
+            //flip toggle
+            this.multipleParameterSelectorAdd = !this.multipleParameterSelectorAdd;
         }
 
         public updateStudyAreaParameterList(parameter: any) {
@@ -243,29 +248,13 @@ module StreamStats.Controllers {
             this.studyAreaService.loadParameters();
         }
 
-        public queryRegressionRegions() {
+        public checkForBasinEdits() {
 
-            console.log('in Query Regression Regions');
+            //check if basin has been edited, if so we need to re-query regression regions
 
-            this.nssService.queriedRegions = true;
 
-            //send watershed to map service query that returns list of regression regions that overlap the watershed
-            //DO MAP SERVICE REQUEST HERE
-            
-            //region placeholder
-            this.studyAreaService.selectedStudyArea.RegressionRegions = ['290'];
-
-            this.queryStatisticGroups();
-
+            //if not, just continue
             this.setProcedureType(3);
-        }
-
-        public queryStatisticGroups() {
-
-            console.log('in Query Statistics Groups');
-
-            //hardcoded to first entry for now
-            this.nssService.loadStatisticsGroupTypes(this.regionService.selectedRegion.RegionID,this.studyAreaService.selectedStudyArea.RegressionRegions[0]);
         }
 
         public generateReport() {
@@ -283,17 +272,7 @@ module StreamStats.Controllers {
 
         public checkRegulation() {
 
-            /* comment this out apparently don't need params calculated
-            if (this.studyAreaService.studyAreaParameterList.length < 1 || !this.studyAreaService.parametersLoaded) {
-                alert('Select some parameters and make sure they are calcuated');
-                return;
-            }
-
-           */
-
-
             this.studyAreaService.upstreamRegulation();
-
         }
 
 
