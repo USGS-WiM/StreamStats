@@ -52,6 +52,7 @@ module StreamStats.Controllers {
         private studyAreaService: Services.IStudyAreaService;       
         private reportService: Services.IreportService;    
         private leafletData: ILeafletData;
+        private multipleParameterSelectorAdd: boolean;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -67,6 +68,7 @@ module StreamStats.Controllers {
             this.studyAreaService = studyArea;
             this.reportService = report;
             this.leafletData = leafletData;
+            this.multipleParameterSelectorAdd = true;
 
             //watches for changes to selected StatisticsGroup param list and updates studyareaParamList with them
             $scope.$watchCollection(() => this.nssService.selectedStatisticsGroupParameterList,(newval, oldval) => {
@@ -175,7 +177,7 @@ module StreamStats.Controllers {
             this.nssService.selectedStatisticsGroupParameterList;
         }
 
-
+        //special function for searching arrays but ignoring angular hashkey
         public checkParamList(arr, obj) {
             for (var i = 0; i < arr.length; i++) {
                 if (angular.equals(arr[i], obj)) {
@@ -185,26 +187,29 @@ module StreamStats.Controllers {
             return -1;
         }
 
-        public multipleParameterSelector(selection: string) {
+        public multipleParameterSelector() {
 
             this.regionService.parameterList.forEach((value, index) => {
                 if (value.code == "DRNAREA") return;
 
-                var index = this.studyAreaService.studyAreaParameterList.indexOf(value);
+                var paramCheck = this.checkParamList(this.studyAreaService.studyAreaParameterList, value);
 
-                if (selection == "all") {
+                if (this.multipleParameterSelectorAdd) {
 
                     //if its not there add it
-                    if (index == -1) this.studyAreaService.studyAreaParameterList.push(value);
+                    if (paramCheck == -1) this.studyAreaService.studyAreaParameterList.push(value);
                     value['checked'] = true;
                 }
-                if (selection == "none") {
+                else {
 
                     //remove it
-                    if (index > -1) this.studyAreaService.studyAreaParameterList.splice(index, 1);
+                    if (paramCheck > -1) this.studyAreaService.studyAreaParameterList.splice(paramCheck, 1);
                     value['checked'] = false;
-                }
+                } 
             });
+
+            //flip toggle
+            this.multipleParameterSelectorAdd = !this.multipleParameterSelectorAdd;
         }
 
         public updateStudyAreaParameterList(parameter: any) {
@@ -243,8 +248,12 @@ module StreamStats.Controllers {
             this.studyAreaService.loadParameters();
         }
 
-        public selectScenarios() {
+        public checkForBasinEdits() {
 
+            //check if basin has been edited, if so we need to re-query regression regions
+
+
+            //if not, just continue
             this.setProcedureType(3);
         }
 
