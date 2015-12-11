@@ -39,6 +39,7 @@ var StreamStats;
                 this._onEditClick = new WiM.Event.Delegate();
                 this.toaster = toaster;
                 this.clearStudyArea();
+                this.showDelineateButton = false;
             }
             Object.defineProperty(StudyAreaService.prototype, "onSelectedStudyAreaChanged", {
                 get: function () {
@@ -110,6 +111,7 @@ var StreamStats;
                 this.editedAreas = { "added": [], "removed": [] };
                 this.isRegulated = null;
                 this.selectedStudyArea = null;
+                this.showDelineateButton = false;
             };
             StudyAreaService.prototype.loadStudyBoundary = function () {
                 var _this = this;

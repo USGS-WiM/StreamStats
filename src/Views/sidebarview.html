@@ -6,11 +6,11 @@
 
                 <div class="list-group-body" ng-hide="vm.selectedProcedure != 1">
                     <p><strong>Start Here</strong><p>
-                    <p>To begin, a state or region needs to be selected.  This can be accomplished in the following ways:</p>
+                    <p>To begin, a state or regional study area needs to be selected.  This can be accomplished in the following ways:</p>
                     <ul>
                         <li>Click a state or region on the map</li>
-                        <li>Zoom using the map until state region selection options appear below</li>
-                        <li>Use the search box to zoom to an area of interest, then use the state selection buttons that will appear below</li>
+                        <li>Zoom using the map until state and regional study areas are displayed below</li>
+                        <li>Use the search box to zoom to an area of interest, then select a search option from the list</li>
                     </ul>
 
                     <input type="text" class="form-control"
@@ -20,11 +20,12 @@
                             typeahead-wait-ms="100"
                             typeahead-min-length="4"
                             typeahead-on-select="vm.onAOISelect($item); selection=''"
-                            placeholder="Location search" />
+                            placeholder="ie. 'Lakewood, CO'" />
                     <i ng-show="loadingLocations" class="glyphicon glyphicon-refresh"></i>
 
                     <div class="form-group" ng-show="vm.regionService.regionList.length > 0">
-                        <label> Select a Region</label>
+                        <label> Select a State or Regional Study Area</label>
+                        <p>You have zoomed in suffiently to select a state or regional study area.  Your selection will dictate the data used to perform basin delination and flow statistics calculation.</p>
                         <div ng-repeat="region in vm.regionService.regionList track by $index">
                             <button ng-class="region.Name === vm.regionService.selectedRegion.Name ? 'btn btn-primary btn-group-justified':'btn btn-group-justified'" ng-click="vm.setRegion(region)"><span>{{region.Name}} </span></button>
                         </div>
@@ -35,23 +36,29 @@
                 <a ng-class="vm.selectedProcedure == 2  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(2)" >Identify a Study Area<h5 ng-show="vm.studyAreaService.selectedStudyArea.Features"><strong>Basin Delineated</strong></h5><i ng-class="vm.selectedProcedure == 2 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
 
                 <div class="list-group-body" ng-show="vm.selectedProcedure == 2">
-                    <p>Zoom to at least a zoom level of 15, click the 'delineate' button, then select a blue stream cell</p>
-                    
-                    <div class="form-group"> 
-                        <button id="delineateButton" type="button" class="btn btn-sm btn-info" ng-click="vm.startDelineate()" ng-class="vm.studyAreaService.doDelineateFlag ? 'btn-warning' : 'btn-info'" ng-hide="vm.studyAreaService.selectedStudyArea.Features"><i  ng-class="vm.studyAreaService.canUpdate ? 'fa fa-map-marker' : 'fa fa-refresh fa-spin disabled'"></i>&nbsp;&nbsp;<span ng-show="vm.studyAreaService.canUpdate">Delineate</span><span ng-show="!vm.studyAreaService.canUpdate">Delineating Basin, please wait...</span></button>
 
-                         <button id="clearDelinationButton" type="button" class="btn btn-sm btn-info" ng-click="vm.resetWorkSpace()" ng-show="vm.studyAreaService.selectedStudyArea.Features"><span><i class="fa fa-trash-o"></i>&nbsp;&nbsp;Clear Delination</span></button>
+                    <div ng-hide="vm.studyAreaService.selectedStudyArea.Features">
+                        <p><strong>To identify a study area: </strong></p>
+                            <div class="alert alert-info" role="alert" ng-hide="vm.studyAreaService.showDelineateButton">Zoom to at least a zoom level of 15 (scale shown in lower left of map)</div>
+                            <div class="alert alert-info" role="alert" ng-show="vm.studyAreaService.showDelineateButton">Click the 'Delineate' button, then use your mouse or finger to click or tap a blue stream cell on the map</div>
+                        <p ng-show="vm.studyAreaService.selectedStudyArea.Features">Your delineation is complete.  You can now clear your basin, edit your basin, or choose a state or regional study specific funciton (if available).  Click <strong>continue </strong>when you are ready.</p>
                     </div>
-
-                    <div id="verifyStudyArea" ng-show="vm.studyAreaService.selectedStudyArea.Features">
-                        <br><p> Does the study area look correct?</p>
+              
+                    <div class="btn-toolbar" ng-show= "vm.studyAreaService.showDelineateButton"> 
+                        <button id="delineateButton" type="button" class="btn btn-sm btn-info" ng-click="vm.startDelineate()" ng-class="vm.studyAreaService.doDelineateFlag ? 'btn-warning' : 'btn-info'" ng-hide="vm.studyAreaService.selectedStudyArea.Features"><i  ng-class="vm.studyAreaService.canUpdate ? 'fa fa-map-marker' : 'fa fa-refresh fa-spin disabled'"></i>&nbsp;&nbsp;<span ng-show="vm.studyAreaService.canUpdate">Delineate</span><span ng-show="!vm.studyAreaService.canUpdate">Delineating Basin, please wait...</span></button>
+                     </div>   
+                    
+                    <div ng-show="vm.studyAreaService.selectedStudyArea.Features">
+                        <p>You can now clear or edit the study area, select a state or regional study specific funciton (if available).  Click <strong>continue </strong>when you are ready.</p>
                         
                         <div class="btn-toolbar">
+                            <button ng-show="vm.studyAreaService.selectedStudyArea.Features" id="clearDelinationButton" type="button" class="btn btn-sm btn-info" ng-click="vm.resetWorkSpace()" ng-show="vm.studyAreaService.selectedStudyArea.Features"><span><i class="fa fa-trash-o"></i>&nbsp;&nbsp;Clear Delination</span></button>
                             <button type="button" class="btn btn-sm btn-info" ng-click="vm.studyAreaService.showAddRemoveButtons = !vm.studyAreaService.showAddRemoveButtons"><span class="fa fa-edit"></span>&nbsp;&nbsp;Edit Study Area</button>
                         </div>
 
                         <div class="well well-sm" ng-show="vm.studyAreaService.showAddRemoveButtons">
                             <strong>Editing Tools</strong>
+                            <p>To edit your basin, first click the 'Add Area' or 'Remove Area' button below.  Use your mouse or finger to draw a polygon.</p><p>If adding an arean be sure your drawn polygon starts and ends within the yellow basin boundaries</p><p>If removing an area, be sure your drawn polygon starts and ends outside of the yellow basin.</p>
                             <div class="btn-toolbar">
                                 <button type="button" class="btn btn-sm btn-success" ng-click="vm.studyAreaService.editBasin('add')"><span class="fa fa-plus-square-o"></span>&nbsp;&nbsp;Add Area</button>
                                 <button type="button" class="btn btn-sm btn-warning" ng-click="vm.studyAreaService.editBasin('remove')"><span class="fa fa-minus-square-o"></span>&nbsp;&nbsp;Remove Area</button>
@@ -62,8 +69,8 @@
                         </div> 
 
                         <div class="well well-sm" style="margin-top:20px;">
-                            <h4>State/Region Specific Functions</h4>
-                            <p>Functions for {{vm.regionService.selectedRegion.Name}}</p>
+                            <strong>State/Region Specific Functions</strong>
+                            <p>The following additional functions area available for {{vm.regionService.selectedRegion.Name}}.</p>
                             <div class="form-group">
                                 <button ng-show="vm.regionService.selectedRegion.RegionID == 'CO'" ng-click="vm.checkRegulation()" type="button" class="btn btn-sm btn-primary"><i ng-class="vm.studyAreaService.regulationCheckComplete ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Check for upstream regulation</button>
                             </div>

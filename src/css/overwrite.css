@@ -217,6 +217,7 @@ a{
     ===========================
     ===========================
 */
+/*
 .ng-hide + div:nth-child(3){
     background-color: #3a7bd5;
     box-sizing: border-box;
@@ -226,7 +227,7 @@ a{
     color:#fff;
     border: 1px solid #d4e2f1;
     border:none;
-}
+}*/
     .ng-hide + div:nth-child(3) h4{
         text-transform: uppercase;
         letter-spacing: 3px;

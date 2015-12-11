@@ -43,7 +43,8 @@ module StreamStats.Services {
         drawControlOption: any;
         editedAreas: any;
         clearStudyArea();
-        selectInitialParameters(paramList:Array<IParameter>);
+        selectInitialParameters(paramList: Array<IParameter>);
+        showDelineateButton: boolean;
     }
     class StudyAreaService extends WiM.Services.HTTPServiceBase implements IStudyAreaService {
         //Events
@@ -87,6 +88,7 @@ module StreamStats.Services {
         public drawControlOption: any;
         public editedAreas: any;
         public regulationCheckResults: any;
+        public showDelineateButton: boolean;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -96,6 +98,7 @@ module StreamStats.Services {
             this._onEditClick = new WiM.Event.Delegate<WiM.Event.EventArgs>();
             this.toaster = toaster;
             this.clearStudyArea();
+            this.showDelineateButton = false;
         }
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -135,6 +138,7 @@ module StreamStats.Services {
             this.editedAreas = { "added": [], "removed": [] };
             this.isRegulated = null;
             this.selectedStudyArea = null;
+            this.showDelineateButton = false;
         }
 
         public loadStudyBoundary() {
