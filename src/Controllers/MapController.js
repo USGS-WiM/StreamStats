@@ -104,7 +104,7 @@ var StreamStats;
                         _this.queryStates(args.leafletEvent);
                     }
                 });
-                this.unbindBoundaryWatch = $scope.$watch(function () { return _this.bounds; }, function (newval, oldval) { return _this.setRegionsByBounds(oldval, newval); });
+                $scope.$watch(function () { return _this.bounds; }, function (newval, oldval) { return _this.mapBoundsChange(oldval, newval); });
                 $scope.$on('$locationChangeStart', function () { return _this.updateRegion(); });
                 $scope.$watch(function () { return studyArea.doDelineateFlag; }, function (newval, oldval) { return newval ? _this.cursorStyle = 'crosshair' : _this.cursorStyle = 'hand'; });
                 // check if region was explicitly set.
@@ -334,13 +334,13 @@ var StreamStats;
                 this.studyArea.selectedStudyArea.RegressionRegions = ['290'];
                 this.nssService.loadStatisticsGroupTypes(this.regionServices.selectedRegion.RegionID, this.studyArea.selectedStudyArea.RegressionRegions[0]);
             };
-            MapController.prototype.setRegionsByBounds = function (oldValue, newValue) {
+            MapController.prototype.mapBoundsChange = function (oldValue, newValue) {
                 if (this.center.zoom >= 9 && oldValue !== newValue) {
                     console.log('requesting region list');
                     this.regionServices.loadRegionListByExtent(this.bounds.northEast.lng, this.bounds.southWest.lng, this.bounds.southWest.lat, this.bounds.northEast.lat);
                 }
                 //if a region was selected, and then user zooms back out, clear and start over
-                if (this.center.zoom <= 6 && oldValue !== newValue && this.regionServices.selectedRegion) {
+                if (this.center.zoom <= 6 && oldValue !== newValue) {
                     console.log('removing region layers', this.layers.overlays);
                     this.regionServices.clearRegion();
                     this.studyArea.clearStudyArea();
@@ -348,6 +348,12 @@ var StreamStats;
                     //THIS IS JUST THROWING AN ANGULAR LEAFLET ERROR EVEN THOUGH SAME AS DOCS
                     // http://tombatossals.github.io/angular-leaflet-directive/examples/0000-viewer.html#/layers/dynamic-addition-example
                     this.removeOverlayLayers("_region", true);
+                }
+                if (this.center.zoom >= 15) {
+                    this.studyArea.showDelineateButton = true;
+                }
+                else {
+                    this.studyArea.showDelineateButton = false;
                 }
             };
             MapController.prototype.updateRegion = function () {

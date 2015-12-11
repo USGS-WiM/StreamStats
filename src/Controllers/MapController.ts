@@ -157,7 +157,6 @@ module StreamStats.Controllers {
         public events: Object = null;
         public regionLayer: Object = null;
         public drawControl: any;    
-        public unbindBoundaryWatch: any;  
         public toaster: any; 
 
         //Constructor
@@ -203,7 +202,7 @@ module StreamStats.Controllers {
                 }
             });
 
-            this.unbindBoundaryWatch = $scope.$watch(() => this.bounds,(newval, oldval) => this.setRegionsByBounds(oldval, newval));
+            $scope.$watch(() => this.bounds,(newval, oldval) => this.mapBoundsChange(oldval, newval));
             $scope.$on('$locationChangeStart',() => this.updateRegion());
 
             $scope.$watch(() => studyArea.doDelineateFlag,(newval, oldval) => newval ? this.cursorStyle = 'crosshair' : this.cursorStyle = 'hand');
@@ -481,7 +480,7 @@ module StreamStats.Controllers {
             this.nssService.loadStatisticsGroupTypes(this.regionServices.selectedRegion.RegionID, this.studyArea.selectedStudyArea.RegressionRegions[0]);
         }
 
-        private setRegionsByBounds(oldValue, newValue) {
+        private mapBoundsChange(oldValue, newValue) {
 
             if (this.center.zoom >= 9 && oldValue !== newValue) {
                 console.log('requesting region list');
@@ -490,7 +489,7 @@ module StreamStats.Controllers {
             }
             
             //if a region was selected, and then user zooms back out, clear and start over
-            if (this.center.zoom <= 6 && oldValue !== newValue && this.regionServices.selectedRegion) {
+            if (this.center.zoom <= 6 && oldValue !== newValue) {
                 console.log('removing region layers', this.layers.overlays);
 
                 this.regionServices.clearRegion();
@@ -501,6 +500,13 @@ module StreamStats.Controllers {
                 // http://tombatossals.github.io/angular-leaflet-directive/examples/0000-viewer.html#/layers/dynamic-addition-example
                 this.removeOverlayLayers("_region", true)
                 //this.onSelectedRegionChanged();
+            }
+
+            if (this.center.zoom >= 15) {
+                this.studyArea.showDelineateButton = true;
+            }
+            else {
+                this.studyArea.showDelineateButton = false;
             }
 
         }
