@@ -38,11 +38,13 @@ var StreamStats;
                 $scope.$watchCollection(function () { return _this.nssService.selectedStatisticsGroupParameterList; }, function (newval, oldval) {
                     console.log('StatisticsGroup param list changed.  loaded ', newval.length, ' parameters from StatisticsGroup');
                     //this.studyAreaService.studyAreaParameterList = [];
-                    _this.regionService.parameterList.map(function (val) {
+                    _this.regionService.parameterList.forEach(function (val, idx) {
                         _this.nssService.selectedStatisticsGroupParameterList.forEach(function (value, index) {
                             if (val.code.toLowerCase() == value['Code'].toLowerCase()) {
+                                if (val.code == "DRNAREA")
+                                    return;
                                 //make sure new object isn't already in the list
-                                if (_this.checkParamList(studyArea.studyAreaParameterList, val) == -1)
+                                if (_this.checkParamList(_this.studyAreaService.studyAreaParameterList, val) == -1)
                                     studyArea.studyAreaParameterList.push(val);
                                 val['checked'] = true;
                             }

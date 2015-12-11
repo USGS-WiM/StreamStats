@@ -75,12 +75,14 @@ module StreamStats.Controllers {
                 console.log('StatisticsGroup param list changed.  loaded ', newval.length, ' parameters from StatisticsGroup');
 
                 //this.studyAreaService.studyAreaParameterList = [];
-                this.regionService.parameterList.map((val) => {
+                this.regionService.parameterList.forEach((val,idx) => {
 
                     this.nssService.selectedStatisticsGroupParameterList.forEach((value,index) => {
                         if (val.code.toLowerCase() == value['Code'].toLowerCase()) {
+
+                            if (val.code == "DRNAREA") return;
                             //make sure new object isn't already in the list
-                            if (this.checkParamList(studyArea.studyAreaParameterList, val) == -1) studyArea.studyAreaParameterList.push(val);   
+                            if (this.checkParamList(this.studyAreaService.studyAreaParameterList, val) == -1) studyArea.studyAreaParameterList.push(val);
                             val['checked'] = true;           
                         }
                     });
