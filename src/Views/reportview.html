@@ -50,17 +50,19 @@
     <div class="modal-body">
         
         <div class="form-group hidden-print">
+
+            <p><strong>Instructions: </strong><p>
+            <div class="alert alert-info" role="alert">Enter a report title and/or comments here that will display on the printed report.  Use the print button below.</div>
+ 
             <label >Enter report title:</label>
             <input type="text" class="form-control" ng-model="vm.reportTitle" placeholder="Title">
-        </div>
-        <div class="form-group hidden-print">
+
             <label>Enter comments:</label>
             <textarea rows="3" class="form-control" ng-model="vm.reportComments" placeholder="Comments"></textarea>
+            
         </div>
         <div id="printArea">
             
-            <h4 class="hidden-print">Print Preview</h4>
-            <hr class="hidden-print"/>
             <h2>{{vm.reportTitle}}</h2>
             
             <div ng-if="vm.studyAreaService.selectedStudyArea">

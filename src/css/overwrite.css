@@ -227,7 +227,7 @@ a{
     color:#fff;
     border: 1px solid #d4e2f1;
     border:none;
-}*/
+}
     .ng-hide + div:nth-child(3) h4{
         text-transform: uppercase;
         letter-spacing: 3px;
@@ -243,7 +243,7 @@ a{
         margin-bottom: 0;
         font-size: 10pt;
     }
-
+*/
 /*Prevent blue on map*/
 .leaflet-bottom,
 .leaflet-left,

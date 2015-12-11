@@ -7,11 +7,14 @@
                 <div class="list-group-body" ng-hide="vm.selectedProcedure != 1">
                     <p><strong>Instructions: </strong><p>
                     <p>To begin, a state or regional study area needs to be selected.  This can be accomplished in the following ways:</p>
+
+                    <div class="alert alert-info" role="alert">
                     <ul>
                         <li>Click a state or region on the map</li>
                         <li>Zoom using the map until state and regional study areas are displayed below</li>
                         <li>Use the search box to zoom to an area of interest, then select a search option from the list</li>
                     </ul>
+                    </div>
 
                     <input type="text" class="form-control"
                             ng-model="selection"
