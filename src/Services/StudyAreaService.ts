@@ -244,7 +244,7 @@ module StreamStats.Services {
                     console.log(response);
                     if (response.data.percentarearegulated > 0) {
                         this.toaster.clear();
-                        this.toaster.pop('success', "Regulation was found", "Continue to 'Modify Parameters' to see area-weighted parameters", 5000);
+                        this.toaster.pop('success', "Map updated with Regulated Area", "Continue to 'Modify Parameters' to see area-weighted basin characteristics", 5000);
                         this.selectedStudyArea.Features.push(response.data["featurecollection"][0]);
                         this.regulationCheckResults = response.data;
                         //this.loadRegulatedParameterResults(this.regulationCheckResults.parameters);
