@@ -41,10 +41,11 @@ module StreamStats.Services {
         studyAreaParameterList: Array<IParameter>;
         drawControl: any;
         drawControlOption: any;
-        editedAreas: any;
+        WatershedEditDecisionList: Models.IEditDecisionList;
         clearStudyArea();
         selectInitialParameters(paramList: Array<IParameter>);
         showDelineateButton: boolean;
+        loadEditedStudyBoundary();
     }
     class StudyAreaService extends WiM.Services.HTTPServiceBase implements IStudyAreaService {
         //Events
@@ -86,7 +87,7 @@ module StreamStats.Services {
         public drawControl: any;
         public showAddRemoveButtons: boolean;
         public drawControlOption: any;
-        public editedAreas: any;
+        public WatershedEditDecisionList: Models.IEditDecisionList;
         public regulationCheckResults: any;
         public showDelineateButton: boolean;
 
@@ -109,7 +110,7 @@ module StreamStats.Services {
 
         public undoEdit() {
             console.log('undo edit');
-            this.editedAreas = { "added": [], "removed": [] };
+            this.WatershedEditDecisionList = new Models.WatershedEditDecisionList();
             this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
         }
 
@@ -135,7 +136,7 @@ module StreamStats.Services {
             this.studyAreaParameterList.push(<IParameter>{ "name": "DRNAREA", "description": "Area that drains to a point on a stream", "code": "DRNAREA", "unit": "square miles"});
             this.regulationCheckResults = [];
             this.showAddRemoveButtons = false;
-            this.editedAreas = { "added": [], "removed": [] };
+            this.WatershedEditDecisionList = new Models.WatershedEditDecisionList();
             this.isRegulated = null;
             this.selectedStudyArea = null;
             this.showDelineateButton = false;
@@ -168,8 +169,34 @@ module StreamStats.Services {
             });
         }
 
+        public loadEditedStudyBoundary() {
+
+            this.toaster.pop("info", "Loading Edited Basin", "Please wait...", 0);
+            this.canUpdate = false;
+
+            var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSeditBasin'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID, this.selectedStudyArea.Pourpoint.crs.toString())
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.PUT, 'json', this.WatershedEditDecisionList, {});
+
+            this.Execute(request).then(
+                (response: any) => {
+                    this.clearStudyArea();
+                    this.selectedStudyArea.Features = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"] : null;
+                    this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
+                    this.selectedStudyArea.Date = new Date();
+
+                    this.toaster.clear();
+                    //sm when complete
+                },(error) => {
+                    //sm when error
+                    this.toaster.clear();
+                    this.toaster.pop("error", "Error Delineating Basin", "Please retry", 5000);
+                }).finally(() => {
+                this.canUpdate = true;
+                this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
+            });
+        }
+
         public selectInitialParameters(paramList: Array<any>) {
-            console.log('test211');
             //make inital DRNAREA area selection
             angular.forEach(paramList, function (value, index) {
                 if (value.code = "DRNAREA") {

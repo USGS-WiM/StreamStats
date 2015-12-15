@@ -216,7 +216,7 @@ var StreamStats;
                             if (_this.studyArea.drawControlOption == 'add') {
                                 console.log('add layer', layer.toGeoJSON());
                                 var editPolygon = greinerHormann.union(sourcePolygon, clipPolygon);
-                                _this.studyArea.editedAreas.added.push(layer.toGeoJSON());
+                                _this.studyArea.WatershedEditDecisionList.append.push(layer.toGeoJSON());
                             }
                             if (_this.studyArea.drawControlOption == 'remove') {
                                 console.log('remove layer', layer.toGeoJSON());
@@ -228,7 +228,7 @@ var StreamStats;
                                     drawnItems.clearLayers();
                                     return;
                                 }
-                                _this.studyArea.editedAreas.removed.push(layer.toGeoJSON());
+                                _this.studyArea.WatershedEditDecisionList.remove.push(layer.toGeoJSON());
                             }
                             //set studyArea basin to new edited polygon
                             basin.geometry.coordinates[0] = [];
@@ -239,7 +239,7 @@ var StreamStats;
                             //show new polygon
                             _this.geojson['globalwatershed'].data.features[0] = basin;
                             drawnItems.clearLayers();
-                            console.log('editedAreas', angular.toJson(_this.studyArea.editedAreas));
+                            console.log('editedAreas', angular.toJson(_this.studyArea.WatershedEditDecisionList));
                         });
                     });
                 });
@@ -454,7 +454,7 @@ var StreamStats;
                                     _this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", popupMsg, 0);
                                 }
                                 else {
-                                    _this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", popupMsg, 5000);
+                                    _this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", popupMsg, true, 0);
                                     _this.startDelineate(latlng);
                                 }
                             }

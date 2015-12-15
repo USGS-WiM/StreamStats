@@ -85,7 +85,7 @@ var StreamStats;
             };
             StudyAreaService.prototype.undoEdit = function () {
                 console.log('undo edit');
-                this.editedAreas = { "added": [], "removed": [] };
+                this.WatershedEditDecisionList = new StreamStats.Models.WatershedEditDecisionList();
                 this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
             };
             StudyAreaService.prototype.AddStudyArea = function (sa) {
@@ -108,7 +108,7 @@ var StreamStats;
                 this.studyAreaParameterList.push({ "name": "DRNAREA", "description": "Area that drains to a point on a stream", "code": "DRNAREA", "unit": "square miles" });
                 this.regulationCheckResults = [];
                 this.showAddRemoveButtons = false;
-                this.editedAreas = { "added": [], "removed": [] };
+                this.WatershedEditDecisionList = new StreamStats.Models.WatershedEditDecisionList();
                 this.isRegulated = null;
                 this.selectedStudyArea = null;
                 this.showDelineateButton = false;
@@ -134,8 +134,29 @@ var StreamStats;
                     _this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
                 });
             };
+            StudyAreaService.prototype.loadEditedStudyBoundary = function () {
+                var _this = this;
+                this.toaster.pop("info", "Loading Edited Basin", "Please wait...", 0);
+                this.canUpdate = false;
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSeditBasin'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID, this.selectedStudyArea.Pourpoint.crs.toString());
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, 2 /* PUT */, 'json', this.WatershedEditDecisionList, {});
+                this.Execute(request).then(function (response) {
+                    _this.clearStudyArea();
+                    _this.selectedStudyArea.Features = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"] : null;
+                    _this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
+                    _this.selectedStudyArea.Date = new Date();
+                    _this.toaster.clear();
+                    //sm when complete
+                }, function (error) {
+                    //sm when error
+                    _this.toaster.clear();
+                    _this.toaster.pop("error", "Error Delineating Basin", "Please retry", 5000);
+                }).finally(function () {
+                    _this.canUpdate = true;
+                    _this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
+                });
+            };
             StudyAreaService.prototype.selectInitialParameters = function (paramList) {
-                console.log('test211');
                 //make inital DRNAREA area selection
                 angular.forEach(paramList, function (value, index) {
                     if (value.code = "DRNAREA") {
@@ -188,7 +209,7 @@ var StreamStats;
                 this.regulationCheckComplete = false;
                 var watershed = angular.toJson(this.selectedStudyArea.Features[1].feature, null);
                 var url = configuration.baseurls['RegulationServices'] + configuration.queryparams['COregulationService'];
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', { watershed: watershed, outputcrs: 4326, f: 'geojson' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, 1 /* POST */, 'json', { watershed: watershed, outputcrs: 4326, f: 'geojson' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
                 this.Execute(request).then(function (response) {
                     console.log(response);
                     if (response.data.percentarearegulated > 0) {
