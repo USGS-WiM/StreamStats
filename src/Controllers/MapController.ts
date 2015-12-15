@@ -336,7 +336,7 @@ module StreamStats.Controllers {
                         if (this.studyArea.drawControlOption == 'add') {
                             console.log('add layer', layer.toGeoJSON());
                             var editPolygon = greinerHormann.union(sourcePolygon, clipPolygon);
-                            this.studyArea.editedAreas.added.push(layer.toGeoJSON());
+                            this.studyArea.WatershedEditDecisionList.append.push(layer.toGeoJSON());
                         }
 
                         if (this.studyArea.drawControlOption == 'remove') {
@@ -351,7 +351,7 @@ module StreamStats.Controllers {
                                 return;
                             }
 
-                            this.studyArea.editedAreas.removed.push(layer.toGeoJSON());
+                            this.studyArea.WatershedEditDecisionList.remove.push(layer.toGeoJSON());
                         }
 
                         //set studyArea basin to new edited polygon
@@ -362,7 +362,7 @@ module StreamStats.Controllers {
                         //show new polygon
                         this.geojson['globalwatershed'].data.features[0] = basin;
                         drawnItems.clearLayers();
-                        console.log('editedAreas', angular.toJson(this.studyArea.editedAreas));
+                        console.log('editedAreas', angular.toJson(this.studyArea.WatershedEditDecisionList));
                     });
                 });
             });
@@ -629,7 +629,7 @@ module StreamStats.Controllers {
                                 this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", popupMsg, 0);
                             }
                             else {
-                                this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", popupMsg, 5000);
+                                this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", popupMsg, true, 0);
                                 this.startDelineate(latlng);
                             }
                         } 

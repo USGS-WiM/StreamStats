@@ -5,6 +5,7 @@
     ===========================
     ===========================
 */
+
 body,
 html{
   font-family: 'Lato', Helvetica, sans-serif;
@@ -45,7 +46,6 @@ a{
       padding-top: 0;
     }
 
-
 /*
     ===========================
     ===========================
@@ -85,8 +85,40 @@ a{
         outline: none;
     }
 
+/*
+    ===========================
+    ===========================
+     USGS Search API overrides
+    ===========================
+    ===========================
+*/
+#sapi-searchTextBox {
+    font-family: 'Lato', Helvetica, sans-serif !important;
+    width: 90% !important;
+    height: 35px !important;
+    padding: 6px 12px !important; 
+    border-radius: 4px !important;
+}
 
+.sapi .ui-autocomplete {
+    font-family: 'Lato', Helvetica, sans-serif !important;
+    border-radius: 4px !important;
+}
 
+.sapi-autocomplete-title {
+    background-color : #161C27 !important
+}
+
+.sapi-autocomplete-category {
+    background-color : #3A7BD5 !important
+}
+/*
+    ===========================
+    ===========================
+     USGS Search API overrides
+    ===========================
+    ===========================
+*/
 
 /*
     ===========================
@@ -122,6 +154,12 @@ a{
     transition: 0.2s;
   }
 
+    .dropdown-menu{
+    max-height: 150px;
+    width: 90%;
+    overflow-y:scroll; 
+  }
+/*
   .list-group-body{
     position: relative; top: 21px !important;
     background-color: #fff;
@@ -153,9 +191,10 @@ a{
         text-decoration: none;
         color: RGBA(34, 45, 57, 1);
       }
+      
       .list-group-body a:before{
         content: '\2022';
-      }
+      }*/
 
 /*Active sidebar item*/
 .list-group-item-active{

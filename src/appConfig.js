@@ -9,11 +9,14 @@ configuration.baseurls =
     'StreamStats': 'http://streamstats09.cr.usgs.gov',
     'StreamStatsServices': 'http://ssdev.cr.usgs.gov',
     'NSS': 'http://commons.wim.usgs.gov/nssservices',
-    'SearchAPI': 'http://txpub.usgs.gov/DSS/search_api/1.0/dataService/dataService.ashx',
+    'SearchAPI': 'http://txpub.usgs.gov/DSS/search_api/1.1/dataService/dataService.ashx',
     'FARefGage': 'http://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowAnywhere/MapServer',
     //'RegulationServices': 'http://52.3.175.97:6080'
     'RegulationServices': 'http://54.164.188.167:6080'
 }
+
+
+http://ssdev.cr.usgs.gov/streamstatsservices/watershed/edit.geojson?rcode=CO&workspaceID=CO20151214130113356000&includeparameters=false&includeflowtypes=false&includefeatures=true&crs=4326&simplify=true
 
 configuration.queryparams =
 {
@@ -24,6 +27,7 @@ configuration.queryparams =
     'statisticsGroupParameterLookup': '/scenarios.json?region={0}&statisticgroups={1}&regressionregions={2}&unitsystems=2',
     'estimateFlows': '/scenarios/estimate.json?region={0}&statisticgroups={1}&regressionregions={2}&unitsystems=2',
     'SSdelineation': '/streamstatsservices/watershed.{0}?rcode={1}&xlocation={2}&ylocation={3}&crs={4}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
+    'SSeditBasin': '/streamstatsservices/watershed/edit.{0}?rcode={1}&workspaceID={2}&crs={3}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
     'SSAvailableParams': '/streamstatsservices/parameters.json?rcode={0}&group={1}',
     'SSComputeParams': '/streamstatsservices/parameters.json?rcode={0}&workspaceID={1}&includeparameters={2}',
     'SSStateLayers': '/arcgis/rest/services/{0}_ss/MapServer?f=pjson',

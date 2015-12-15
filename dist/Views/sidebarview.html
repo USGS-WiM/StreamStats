@@ -16,6 +16,9 @@
                     </ul>
                     </div>
 
+                    <div id="sapi_searchTextBoxDiv"></div>
+
+                    <!--
                     <input type="text" class="form-control"
                             ng-model="selection"
                             typeahead="loc as loc.Name +'(' + loc.State +')' for loc in vm.getLocations($viewValue)"
@@ -25,6 +28,7 @@
                             typeahead-on-select="vm.onAOISelect($item); selection=''"
                             placeholder="ie. 'Lakewood, CO'" />
                     <i ng-show="loadingLocations" class="glyphicon glyphicon-refresh"></i>
+                        -->
 
                     <div class="form-group" ng-show="vm.regionService.regionList.length > 0">
                         <label> Select a State or Regional Study Area</label>
@@ -93,15 +97,25 @@
 
                     <div class="well well-sm">
                         <h4>Scenarios</h4>
-                        <p>Choosing a scenario below will select the associated parameters necessary to calculate that scenario</p>
+
+                        <p><strong>Instructions: </strong></p>
+                        <div class="alert alert-info" role="alert" ng-hide="vm.studyAreaService.showDelineateButton">Select a regression based scenario, or choose which basin characteristics to calculate</div>
+
                         <div class="alert alert-info" role="alert" ng-show="vm.nssService.loadingStatisticsGroup">Loading Scenarios...</div>
                         <div class="alert alert-info" role="alert" ng-show="vm.nssService.statisticsGroupList.length == 0 && !vm.nssService.loadingStatisticsGroup">No Statistic Groups Available</div>
-                        <div class="form-group" ng-if="vm.nssService.statisticsGroupList.length > 0">
+
+                        <h5>Regression Based Scenarios</h5>
+                        <div class="btn-toolbar" ng-if="vm.nssService.statisticsGroupList.length > 0">
                             <button class="btn btn-sm btn-default" ng-class="vm.nssService.selectedStatisticsGroup == statisticsGroup ? 'btn-success': ''" ng-click="vm.setStatisticsGroup(statisticsGroup)" ng-repeat="statisticsGroup in vm.nssService.statisticsGroupList"><span>{{statisticsGroup.Name}} </span></button>
+                        </div>
+                        <h5>Other Scenarios</h5>
+                        <div class="btn-toolbar">
+                            <button class="btn btn-sm btn-default" ng-click="vm.multipleParameterSelector()"><span><i class="fa fa-check-square-o"></i>&nbsp;&nbsp;Compute all Basin Characterstics</span></button>
+                            <button class="btn btn-sm btn-default"><span><i class="fa icon-chevron-down" ng-click="vm.isCollapsed = !vm.isCollapsed"></i>&nbsp;&nbsp;Show selected</span></button>
                         </div>
                     </div>
 
-                    <div class="well well-sm">
+                    <div class="well well-sm" uib-collapse="vm.isCollapsed">
                         <h4>Basin Characteristics</h4>
                         <p>Basin Characteristics can be selected individually or are selected based on the chosen scenario.  Some characteristics are calculated by default and cannot be unselected.</p>
                         <div class="list-group">
@@ -124,7 +138,7 @@
                     </div>                       
                 </div>    
             </div>    
-            <div class="sidebar-item">
+            <!--<div class="sidebar-item">
                 <a ng-class="vm.selectedProcedure == 4  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(4)" >Modify Basin Characteristics<i ng-class="vm.selectedProcedure == 4 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
 
                 <div class="list-group-body" ng-show="vm.selectedProcedure == 4">
@@ -148,7 +162,7 @@
                         </tbody>
                     </table>                       
                 </div>    
-            </div>  
+            </div>-->  
             <div class="sidebar-item">
                 <a ng-class="vm.selectedProcedure == 5  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(5)" >Build a Report<h5 ng-show="vm.nssService.selectedStatisticsGroupScenarioResults.length > 0"><strong>Report Built</strong></h5><i ng-class="vm.selectedProcedure == 5 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
 

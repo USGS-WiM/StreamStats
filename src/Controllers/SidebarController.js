@@ -59,9 +59,17 @@ var StreamStats;
                     else
                         _this.setProcedureType(2);
                 });
+                angular.element(document).ready(function () {
+                    //this.searchService.loadScript('../bower_components/usgs-search-api/search_api.min.js', 'text/javascript', 'utf-8');
+                    //var myScript = document.createElement('script');
+                    //myScript.src = '../bower_components/usgs-search-api/search_api.min.js';
+                    //myScript.onload = () => {
+                    //    console.log('search api loaded.');
+                    //    this.searchService.setSearchAPI();
+                    //};
+                    //document.body.appendChild(myScript);
+                });
             }
-            //Methods
-            //-+-+-+-+-+-+-+-+-+-+-+-
             SidebarController.prototype.getLocations = function (term) {
                 return this.searchService.getLocations(term);
             };
@@ -195,6 +203,8 @@ var StreamStats;
             };
             SidebarController.prototype.checkForBasinEdits = function () {
                 //check if basin has been edited, if so we need to re-query regression regions
+                if (this.studyAreaService.WatershedEditDecisionList.append.length > 0 || this.studyAreaService.WatershedEditDecisionList.remove.length > 0)
+                    this.studyAreaService.loadEditedStudyBoundary();
                 //if not, just continue
                 this.setProcedureType(3);
             };
