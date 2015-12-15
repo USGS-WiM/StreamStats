@@ -6,10 +6,6 @@
     ===========================
 */
 
-#sapi_searchTextBoxDiv {
-    top:200px;
-}
-
 body,
 html{
   font-family: 'Lato', Helvetica, sans-serif;
@@ -88,6 +84,41 @@ a{
     .navBarButton:focus{
         outline: none;
     }
+
+/*
+    ===========================
+    ===========================
+     USGS Search API overrides
+    ===========================
+    ===========================
+*/
+#sapi-searchTextBox {
+    font-family: 'Lato', Helvetica, sans-serif !important;
+    width: 90% !important;
+    height: 35px !important;
+    padding: 6px 12px !important; 
+    border-radius: 4px !important;
+}
+
+.sapi .ui-autocomplete {
+    font-family: 'Lato', Helvetica, sans-serif !important;
+    border-radius: 4px !important;
+}
+
+.sapi-autocomplete-title {
+    background-color : #161C27 !important
+}
+
+.sapi-autocomplete-category {
+    background-color : #3A7BD5 !important
+}
+/*
+    ===========================
+    ===========================
+     USGS Search API overrides
+    ===========================
+    ===========================
+*/
 
 /*
     ===========================
