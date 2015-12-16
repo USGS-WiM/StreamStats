@@ -56,6 +56,7 @@ module StreamStats.Controllers {
         private reportService: Services.IreportService;    
         private leafletData: ILeafletData;
         private multipleParameterSelectorAdd: boolean;
+        public reportGenerated: boolean;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -72,6 +73,7 @@ module StreamStats.Controllers {
             this.reportService = report;
             this.leafletData = leafletData;
             this.multipleParameterSelectorAdd = true;
+            this.reportGenerated = false;
 
             //watches for changes to selected StatisticsGroup param list and updates studyareaParamList with them
             $scope.$watchCollection(() => this.nssService.selectedStatisticsGroupParameterList,(newval, oldval) => {
@@ -99,19 +101,11 @@ module StreamStats.Controllers {
                 else this.setProcedureType(2);
             });
 
-            angular.element(document).ready(() => {
-                //this.searchService.loadScript('../bower_components/usgs-search-api/search_api.min.js', 'text/javascript', 'utf-8');
-
-                //var myScript = document.createElement('script');
-                //myScript.src = '../bower_components/usgs-search-api/search_api.min.js';
-                //myScript.onload = () => {
-                //    console.log('search api loaded.');
-                //    this.searchService.setSearchAPI();
-                //};
-
-                //document.body.appendChild(myScript);
-
-                
+            //watch for completion of load parameters
+            $scope.$watch(() => this.studyAreaService.parametersLoaded,(newval, oldval) => {
+                console.log('parameters loaded', oldval, newval);
+                if (newval == null) this.setProcedureType(3);
+                else this.setProcedureType(4);
             });
         }
 
@@ -123,8 +117,8 @@ module StreamStats.Controllers {
 
             if (this.selectedProcedure == pType || !this.canUpdateProcedure(pType)) {
                 //capture issues and send notifications here
-                if (this.selectedProcedure == 3 && (pType == 4 || pType == 5)) this.toaster.pop("warning", "Warning", "Make sure you calculate selected basin characteristics before continuing", 5000);
-                if (this.selectedProcedure == 2 && (pType == 3 || pType == 4 || pType == 5)) this.toaster.pop("warning", "Warning", "Make sure you have delineated a basin and clicked continue", 5000);
+                if (this.selectedProcedure == 3 && (pType == 4 )) this.toaster.pop("warning", "Warning", "Make sure you calculate selected basin characteristics before continuing", 5000);
+                if (this.selectedProcedure == 2 && (pType == 3 || pType == 4 )) this.toaster.pop("warning", "Warning", "Make sure you have delineated a basin and clicked continue", 5000);
                 return;
             }
             this.selectedProcedure = pType;
@@ -145,7 +139,7 @@ module StreamStats.Controllers {
             console.log('setting region: ', region);
             if (this.regionService.selectedRegion == undefined || this.regionService.selectedRegion.RegionID !== region.RegionID)
                 this.regionService.selectedRegion = region;
-            this.setProcedureType(ProcedureType.IDENTIFY);
+            this.setProcedureType(2);
 
             //get available parameters
             this.regionService.loadParametersByRegion();
@@ -282,8 +276,8 @@ module StreamStats.Controllers {
 
                 this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList, this.regionService.selectedRegion.RegionID, this.nssService.selectedStatisticsGroup.ID, this.studyAreaService.selectedStudyArea.RegressionRegions[0]);
             }
-
             this.reportService.openReport();
+            this.reportGenerated = true;
 
         }
 
@@ -309,8 +303,6 @@ module StreamStats.Controllers {
                     case ProcedureType.SELECT:
                         //proceed if there is a regression re
                         return this.nssService.queriedRegions;
-                    case ProcedureType.REFINE:
-                        return this.studyAreaService.parametersLoaded;
                     case ProcedureType.BUILD:
                         return this.studyAreaService.parametersLoaded;
                     default:
@@ -347,8 +339,7 @@ module StreamStats.Controllers {
         INIT = 1,
         IDENTIFY = 2,
         SELECT = 3,
-        REFINE = 4,
-        BUILD = 5
+        BUILD = 4
     }
 
     angular.module('StreamStats.Controllers')
