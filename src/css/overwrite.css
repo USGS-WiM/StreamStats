@@ -164,6 +164,7 @@ a{
 
 .well {
     margin-right:10px;
+    margin-top:10px;
 }
 
 .sidebar{
@@ -333,6 +334,9 @@ a{
     background-color: red !important
 }
 
+.leaflet-popup-content {
+    font-family: 'Lato', Helvetica, sans-serif !important;
+}
 
 /*Add padding to body (except blue top header box)*/
 .panel,

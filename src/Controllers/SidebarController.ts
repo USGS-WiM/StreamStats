@@ -56,7 +56,6 @@ module StreamStats.Controllers {
         private reportService: Services.IreportService;    
         private leafletData: ILeafletData;
         private multipleParameterSelectorAdd: boolean;
-        public reportGenerated: boolean;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -73,7 +72,6 @@ module StreamStats.Controllers {
             this.reportService = report;
             this.leafletData = leafletData;
             this.multipleParameterSelectorAdd = true;
-            this.reportGenerated = false;
 
             //watches for changes to selected StatisticsGroup param list and updates studyareaParamList with them
             $scope.$watchCollection(() => this.nssService.selectedStatisticsGroupParameterList,(newval, oldval) => {
@@ -277,7 +275,7 @@ module StreamStats.Controllers {
                 this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList, this.regionService.selectedRegion.RegionID, this.nssService.selectedStatisticsGroup.ID, this.studyAreaService.selectedStudyArea.RegressionRegions[0]);
             }
             this.reportService.openReport();
-            this.reportGenerated = true;
+            this.studyAreaService.reportGenerated = true;
 
         }
 

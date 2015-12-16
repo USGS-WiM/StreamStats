@@ -34,7 +34,6 @@ var StreamStats;
                 this.reportService = report;
                 this.leafletData = leafletData;
                 this.multipleParameterSelectorAdd = true;
-                this.reportGenerated = false;
                 //watches for changes to selected StatisticsGroup param list and updates studyareaParamList with them
                 $scope.$watchCollection(function () { return _this.nssService.selectedStatisticsGroupParameterList; }, function (newval, oldval) {
                     console.log('StatisticsGroup param list changed.  loaded ', newval.length, ' parameters from StatisticsGroup');
@@ -213,7 +212,7 @@ var StreamStats;
                     this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList, this.regionService.selectedRegion.RegionID, this.nssService.selectedStatisticsGroup.ID, this.studyAreaService.selectedStudyArea.RegressionRegions[0]);
                 }
                 this.reportService.openReport();
-                this.reportGenerated = true;
+                this.studyAreaService.reportGenerated = true;
             };
             SidebarController.prototype.checkRegulation = function () {
                 this.studyAreaService.upstreamRegulation();
