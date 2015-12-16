@@ -46,6 +46,7 @@ module StreamStats.Services {
         selectInitialParameters(paramList: Array<IParameter>);
         showDelineateButton: boolean;
         loadEditedStudyBoundary();
+        reportGenerated: boolean;
     }
     class StudyAreaService extends WiM.Services.HTTPServiceBase implements IStudyAreaService {
         //Events
@@ -90,6 +91,7 @@ module StreamStats.Services {
         public WatershedEditDecisionList: Models.IEditDecisionList;
         public regulationCheckResults: any;
         public showDelineateButton: boolean;
+        public reportGenerated: boolean;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -100,6 +102,7 @@ module StreamStats.Services {
             this.toaster = toaster;
             this.clearStudyArea();
             this.showDelineateButton = false;
+           
         }
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -140,6 +143,7 @@ module StreamStats.Services {
             this.isRegulated = null;
             this.selectedStudyArea = null;
             this.showDelineateButton = false;
+            this.reportGenerated = false;
         }
 
         public loadStudyBoundary() {
