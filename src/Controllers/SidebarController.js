@@ -34,6 +34,7 @@ var StreamStats;
                 this.reportService = report;
                 this.leafletData = leafletData;
                 this.multipleParameterSelectorAdd = true;
+                this.reportGenerated = false;
                 //watches for changes to selected StatisticsGroup param list and updates studyareaParamList with them
                 $scope.$watchCollection(function () { return _this.nssService.selectedStatisticsGroupParameterList; }, function (newval, oldval) {
                     console.log('StatisticsGroup param list changed.  loaded ', newval.length, ' parameters from StatisticsGroup');
@@ -59,15 +60,13 @@ var StreamStats;
                     else
                         _this.setProcedureType(2);
                 });
-                angular.element(document).ready(function () {
-                    //this.searchService.loadScript('../bower_components/usgs-search-api/search_api.min.js', 'text/javascript', 'utf-8');
-                    //var myScript = document.createElement('script');
-                    //myScript.src = '../bower_components/usgs-search-api/search_api.min.js';
-                    //myScript.onload = () => {
-                    //    console.log('search api loaded.');
-                    //    this.searchService.setSearchAPI();
-                    //};
-                    //document.body.appendChild(myScript);
+                //watch for completion of load parameters
+                $scope.$watch(function () { return _this.studyAreaService.parametersLoaded; }, function (newval, oldval) {
+                    console.log('parameters loaded', oldval, newval);
+                    if (newval == null)
+                        _this.setProcedureType(3);
+                    else
+                        _this.setProcedureType(4);
                 });
             }
             SidebarController.prototype.getLocations = function (term) {
@@ -77,9 +76,9 @@ var StreamStats;
                 console.log('in setProcedureType', this.selectedProcedure, pType, !this.canUpdateProcedure(pType));
                 if (this.selectedProcedure == pType || !this.canUpdateProcedure(pType)) {
                     //capture issues and send notifications here
-                    if (this.selectedProcedure == 3 && (pType == 4 || pType == 5))
+                    if (this.selectedProcedure == 3 && (pType == 4))
                         this.toaster.pop("warning", "Warning", "Make sure you calculate selected basin characteristics before continuing", 5000);
-                    if (this.selectedProcedure == 2 && (pType == 3 || pType == 4 || pType == 5))
+                    if (this.selectedProcedure == 2 && (pType == 3 || pType == 4))
                         this.toaster.pop("warning", "Warning", "Make sure you have delineated a basin and clicked continue", 5000);
                     return;
                 }
@@ -102,7 +101,7 @@ var StreamStats;
                 console.log('setting region: ', region);
                 if (this.regionService.selectedRegion == undefined || this.regionService.selectedRegion.RegionID !== region.RegionID)
                     this.regionService.selectedRegion = region;
-                this.setProcedureType(2 /* IDENTIFY */);
+                this.setProcedureType(2);
                 //get available parameters
                 this.regionService.loadParametersByRegion();
             };
@@ -214,6 +213,7 @@ var StreamStats;
                     this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList, this.regionService.selectedRegion.RegionID, this.nssService.selectedStatisticsGroup.ID, this.studyAreaService.selectedStudyArea.RegressionRegions[0]);
                 }
                 this.reportService.openReport();
+                this.reportGenerated = true;
             };
             SidebarController.prototype.checkRegulation = function () {
                 this.studyAreaService.upstreamRegulation();
@@ -233,9 +233,7 @@ var StreamStats;
                         case 3 /* SELECT */:
                             //proceed if there is a regression re
                             return this.nssService.queriedRegions;
-                        case 4 /* REFINE */:
-                            return this.studyAreaService.parametersLoaded;
-                        case 5 /* BUILD */:
+                        case 4 /* BUILD */:
                             return this.studyAreaService.parametersLoaded;
                         default:
                             return false;
@@ -262,8 +260,7 @@ var StreamStats;
             ProcedureType[ProcedureType["INIT"] = 1] = "INIT";
             ProcedureType[ProcedureType["IDENTIFY"] = 2] = "IDENTIFY";
             ProcedureType[ProcedureType["SELECT"] = 3] = "SELECT";
-            ProcedureType[ProcedureType["REFINE"] = 4] = "REFINE";
-            ProcedureType[ProcedureType["BUILD"] = 5] = "BUILD";
+            ProcedureType[ProcedureType["BUILD"] = 4] = "BUILD";
         })(ProcedureType || (ProcedureType = {}));
         angular.module('StreamStats.Controllers').controller('StreamStats.Controllers.SidebarController', SidebarController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));
