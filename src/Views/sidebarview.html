@@ -16,7 +16,28 @@
                     </ul>
                     </div>
 
-                    <div id="sapi_searchTextBoxDiv"></div>
+                    
+
+                    <div class="row search-bar">
+                      <div class="col-md-9 search-bar"><div id="sapi_searchTextBoxDiv"></div></div>
+                      <div class="col-md-2 search-bar"><button class="btn btn-primary" ng-click="vm.showSearchHelp = !vm.showSearchHelp"><i class="fa fa-question-circle" data-toggle="tooltip" title="Search Help" ></i></button></div>
+
+                    </div>
+
+                    <div ng-init="vm.showSearchHelp = false" ng-show="vm.showSearchHelp">
+                        <p><strong>Supported search strings: </strong><p>
+                        <div class="alert alert-info" role="alert">
+                            <ul>
+                                <li>GNIS locations</li>
+                                <li>USGS Sites</li>
+                                <li>Zip Codes</li>
+                                <li>Area Codes</li>
+                                <li>States</li>
+                                <li>Lat/Long (ie. '43.9,-72.1')</li>
+                                <li>Street Address</li>
+                            </ul>
+                        </div>
+                    </div>
 
                     <!--
                     <input type="text" class="form-control"
