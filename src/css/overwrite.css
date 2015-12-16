@@ -92,11 +92,19 @@ a{
     ===========================
     ===========================
 */
+
+
+.search-bar {
+    margin:0px;
+    padding-left:0px;
+}
+
 #sapi-searchTextBox {
     font-family: 'Lato', Helvetica, sans-serif !important;
-    width: 90% !important;
+    width: 100% !important;
     height: 35px !important;
     padding: 6px 12px !important; 
+    margin-left: 0px !important;
     border-radius: 4px !important;
 }
 
@@ -106,12 +114,35 @@ a{
 }
 
 .sapi-autocomplete-title {
+    font-family: 'Lato', Helvetica, sans-serif !important;
     background-color : #161C27 !important
 }
 
+.sapi-autocomplete-tip {
+    font-family: 'Lato', Helvetica, sans-serif !important;
+}
+
 .sapi-autocomplete-category {
+    font-family: 'Lato', Helvetica, sans-serif !important;
     background-color : #3A7BD5 !important
 }
+
+.sapi-autocomplete-item {
+    font-family: 'Lato', Helvetica, sans-serif !important;
+    font-weight: 200 !important;
+}
+
+.sapi-autocomplete-item {
+    font-family: 'Lato', Helvetica, sans-serif !important;
+    font-weight: 200 !important;
+}
+
+.sapi-autocomplete-itemAnnotation {
+    font-family: 'Lato', Helvetica, sans-serif !important;
+    font-weight: bold !important;
+}
+
+
 /*
     ===========================
     ===========================
@@ -127,6 +158,10 @@ a{
     ===========================
     ===========================
 */
+.alert {
+    margin-right:10px;
+}
+
 .sidebar{
   background-color: #ECEEF4;
 }
