@@ -158,35 +158,33 @@
                     </div>
 
                     <div class="well well-sm" ng-init="vm.showModifyBasinCharacterstics = false" ng-show="vm.showModifyBasinCharacterstics">
-                        <div class="list-group-body">
-                            <p>Basin Characteristics can be edited here</p>
-                            <table class="table table-condensed">
-                                <thead class="param-table">
-                                <tr>
-                                    <th>Parameter</th>
-                                    <th ng-hide="vm.studyAreaService.isRegulated">Value</th> 
-                                    <th ng-show="vm.studyAreaService.isRegulated">Unregulated</th>
-                                    <th ng-show="vm.studyAreaService.isRegulated">Regulated</th>
+                        <p>Basin Characteristics can be edited here</p>
+                        <table class="table table-condensed">
+                            <thead class="param-table">
+                            <tr>
+                                <th>Parameter</th>
+                                <th ng-hide="vm.studyAreaService.isRegulated">Value</th> 
+                                <th ng-show="vm.studyAreaService.isRegulated">Unregulated</th>
+                                <th ng-show="vm.studyAreaService.isRegulated">Regulated</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList">
+                                <td ng-bind="parameter.name"></td>
+                                <td ng-hide="vm.studyAreaService.isRegulated"><input class="form-control" ng-model="parameter.value" type="text"/></td>
+                                <td ng-show="vm.studyAreaService.isRegulated"><input class="form-control" ng-model="parameter.unRegulatedValue" type="text"/></td>
+                                <td ng-show="vm.studyAreaService.isRegulated"><input class="form-control" ng-model="parameter.regulatedValue" type="text"/></td>
                                 </tr>
-                                </thead>
-                                <tbody>
-                                    <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList">
-                                    <td ng-bind="parameter.name"></td>
-                                    <td ng-hide="vm.studyAreaService.isRegulated"><input class="form-control" ng-model="parameter.value" type="text"/></td>
-                                    <td ng-show="vm.studyAreaService.isRegulated"><input class="form-control" ng-model="parameter.unRegulatedValue" type="text"/></td>
-                                    <td ng-show="vm.studyAreaService.isRegulated"><input class="form-control" ng-model="parameter.regulatedValue" type="text"/></td>
-                                    </tr>
-                                </tbody>
-                            </table>                       
-                        </div>
+                            </tbody>
+                        </table>                       
                     </div>
 
                     <p>Select available reports to display:</p>
-                    <form >
-                        <checkbox large ng-model="vm.nssService.showBasinCharacteristicsTable" ng-init="vm.nssService.showBasinCharacteristicsTable = true" ng-show="vm.studyAreaService.parametersLoaded"></checkbox><span>&nbsp;&nbsp;Show Basin Characteristics</span>
+                    <form ng-init="vm.nssService.showBasinCharacteristicsTable = true" ng-show="vm.studyAreaService.parametersLoaded">
+                        <checkbox large ng-model="vm.nssService.showBasinCharacteristicsTable" ></checkbox><span>&nbsp;&nbsp;Show Basin Characteristics</span>
                     </form>
-                    <form>
-                        <checkbox large ng-model="vm.nssService.showFlowsTable" ng-init="vm.nssService.showFlowsTable = true" ng-show="vm.nssService.selectedStatisticsGroup"></checkbox><span>&nbsp;&nbsp;Estimate Flows</span>
+                    <form ng-init="vm.nssService.showFlowsTable = true" ng-show="vm.nssService.selectedStatisticsGroup">
+                        <checkbox large ng-model="vm.nssService.showFlowsTable" ></checkbox><span>&nbsp;&nbsp;Estimate Flows</span>
                     </form>
 
 
