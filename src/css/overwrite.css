@@ -158,17 +158,16 @@ a{
     ===========================
     ===========================
 */
-.alert {
-    margin-right:10px;
-}
-
 .well {
-    margin-right:10px;
     margin-top:10px;
 }
 
 .sidebar{
   background-color: #ECEEF4;
+}
+
+.list-group-body {
+    padding-right:10px;
 }
 
 .list-group-item{
@@ -335,6 +334,14 @@ a{
 }
 
 .leaflet-popup-content {
+    font-family: 'Lato', Helvetica, sans-serif !important;
+}
+
+.leaflet-control-layers-expanded  {
+     font-family: 'Lato', Helvetica, sans-serif !important;
+}
+
+.map-position {
     font-family: 'Lato', Helvetica, sans-serif !important;
 }
 
