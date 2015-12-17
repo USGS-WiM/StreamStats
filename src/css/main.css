@@ -73,7 +73,9 @@ body {
     margin-bottom:50px;
     margin-left:9px;
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.65);
+    z-index:99999;
 }
+
 #wim_logo {
     background: black none repeat scroll 0 0;
     border-radius: 5px;
