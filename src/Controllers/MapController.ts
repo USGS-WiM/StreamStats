@@ -210,7 +210,7 @@ module StreamStats.Controllers {
 
             // check if region was explicitly set.
             if ($stateParams.rcode) this.setBoundsByRegion($stateParams.rcode);
-            if ($stateParams.rcode && $stateParams.workspaceID) this.studyArea.loadWatershed($stateParams.rcode, $stateParams.workspaceID
+            if ($stateParams.rcode && $stateParams.workspaceID) this.studyArea.loadWatershed($stateParams.rcode, $stateParams.workspaceID);
 
             //watch for result of regressionregion query
             $scope.$watch(() => this.studyArea.regressionRegionQueryComplete,(newval, oldval) => {

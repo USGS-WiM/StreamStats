@@ -96,6 +96,7 @@ module StreamStats.Services {
         public showDelineateButton: boolean;
         public reportGenerated: boolean;
         public regressionRegionQueryComplete: boolean;
+        public regressionRegionQueryLoading: boolean;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -149,6 +150,7 @@ module StreamStats.Services {
             this.showDelineateButton = false;
             this.reportGenerated = false;
             this.regressionRegionQueryComplete = false;
+            this.regressionRegionQueryLoading = false;
         }
 
         public loadStudyBoundary() {
@@ -309,6 +311,7 @@ module StreamStats.Services {
             this.toaster.pop('info', "Querying regression regions with your Basin", "Please wait...", 0);
             console.log('in load query regression regions');
 
+            this.regressionRegionQueryLoading = true;
             this.regressionRegionQueryComplete = false;
 
             var watershed = angular.toJson(this.selectedStudyArea.Features[1].feature, null);
@@ -322,21 +325,28 @@ module StreamStats.Services {
             this.Execute(request).then(
                 (response: any) => {
                     console.log(response.data);
+
                     this.toaster.clear();
 
-                    if (response.data.length > 0) {
+                    if (response.data.error) {
+                        console.log('query error');
+                        this.toaster.pop('error', "There was an error querying regression regions", response.data.error.message, 5000);
+                        return;
+                    }
+
+                    else if (response.data.length > 0) {
+                        console.log('query success');
                         this.selectedStudyArea.RegressionRegions = response.data;
+                        this.regressionRegionQueryComplete = true;
                         this.toaster.pop('success', "Regression regions were succcessfully queries", "Please continue", 5000);
                     }
-                    else {
-                        this.toaster.pop('error', "There was an error querying regression regions", "Please retry", 5000);
-                    } 
+
                 },(error) => {
                     //sm when complete
                     this.toaster.clear();
                     
                 }).finally(() => {
-                this.regressionRegionQueryComplete = true;
+                    this.regressionRegionQueryLoading = false;
             });
         }
 

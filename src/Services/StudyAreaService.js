@@ -114,6 +114,7 @@ var StreamStats;
                 this.showDelineateButton = false;
                 this.reportGenerated = false;
                 this.regressionRegionQueryComplete = false;
+                this.regressionRegionQueryLoading = false;
             };
             StudyAreaService.prototype.loadStudyBoundary = function () {
                 var _this = this;
@@ -245,6 +246,7 @@ var StreamStats;
                 var _this = this;
                 this.toaster.pop('info', "Querying regression regions with your Basin", "Please wait...", 0);
                 console.log('in load query regression regions');
+                this.regressionRegionQueryLoading = true;
                 this.regressionRegionQueryComplete = false;
                 var watershed = angular.toJson(this.selectedStudyArea.Features[1].feature, null);
                 var url = configuration.baseurls['GISserver'] + configuration.queryparams['RegressionRegionQueryService'];
@@ -252,18 +254,22 @@ var StreamStats;
                 this.Execute(request).then(function (response) {
                     console.log(response.data);
                     _this.toaster.clear();
-                    if (response.data.length > 0) {
-                        _this.selectedStudyArea.RegressionRegions = response.data;
-                        _this.toaster.pop('success', "Regression regions were succcessfully queries", "Please continue", 5000);
+                    if (response.data.error) {
+                        console.log('query error');
+                        _this.toaster.pop('error', "There was an error querying regression regions", response.data.error.message, 5000);
+                        return;
                     }
-                    else {
-                        _this.toaster.pop('error', "There was an error querying regression regions", "Please retry", 5000);
+                    else if (response.data.length > 0) {
+                        console.log('query success');
+                        _this.selectedStudyArea.RegressionRegions = response.data;
+                        _this.regressionRegionQueryComplete = true;
+                        _this.toaster.pop('success', "Regression regions were succcessfully queries", "Please continue", 5000);
                     }
                 }, function (error) {
                     //sm when complete
                     _this.toaster.clear();
                 }).finally(function () {
-                    _this.regressionRegionQueryComplete = true;
+                    _this.regressionRegionQueryLoading = false;
                 });
             };
             StudyAreaService.prototype.upstreamRegulation = function () {

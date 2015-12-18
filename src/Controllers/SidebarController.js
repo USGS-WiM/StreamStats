@@ -236,8 +236,8 @@ var StreamStats;
                         case 2 /* IDENTIFY */:
                             return this.regionService.selectedRegion != null;
                         case 3 /* SELECT */:
-                            //proceed if there is a regression re
-                            return this.nssService.queriedRegions;
+                            //proceed if there is a regression region
+                            return this.studyAreaService.regressionRegionQueryComplete;
                         case 4 /* BUILD */:
                             return this.studyAreaService.parametersLoaded;
                         default:

@@ -1,7 +1,7 @@
 <leaflet layers="vm.layers" center="vm.center" controls="vm.controls" markers="vm.markers" geojson="vm.geojson" geojson-nested="true" defaults="vm.mapDefaults" bounds="vm.bounds" ng-style="{cursor:vm.cursorStyle}">
     <!--<i id="loadingSpinner" class="fa fa-spinner fa-5x fa-spin"></i>-->    
 </leaflet>
-<div ng-click="vm.scaleLookup(vm.center.zoom)" class="map-position leaflet-bottom leaflet-left">
+<div class="map-position leaflet-bottom leaflet-left">
     <span>Zoom Level: {{vm.center.zoom}}</span> <br/>
     <span id="mapscale">Map Scale: 1:{{vm.nomnimalZoomLevel}}</span> <br/>
     <span>Lat: {{(vm.mapPoint.lat).toFixed(4)}}, Lon: {{(vm.mapPoint.lng).toFixed(4)}}</span>

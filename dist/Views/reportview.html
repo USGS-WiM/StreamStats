@@ -103,7 +103,7 @@
             
             <!--Parameter Table for Flow Report-->
             <div class="well well-sm" ng-show="vm.nssService.showFlowsTable">
-                <h4>Scenario Parameters</h4>
+                <h4>{{vm.nssService.selectedStatisticsGroup.Name}} Parameters</h4>
                 <table class="table table-condensed">
                     <thead class="param-table">
                     <tr>
@@ -125,10 +125,8 @@
                 <!-- SHOW WARNING EXPLANATION HERE FROM WIM HEADER THAT ONE OR MORE PARAMETER VALUES WERE OUT OF RANGE.  NEED TO MODIFY WIM SERVICES REQUEST TO RETURN HEADERS
                 <span ng-show="(parameter.Value < parameter.Limits.Min) || (parameter.Value > parameter.Limits.Max)"></span>
                 -->
-            </div>
 
-            <div class="well well-sm" ng-show="vm.nssService.showFlowsTable">
-                <h4>Scenario Flow Report</h4>
+                <h4>{{vm.nssService.selectedStatisticsGroup.Name}} Flow Report</h4>
                 <table class="table table-condensed">
                     <thead class="param-table">
                     <tr>

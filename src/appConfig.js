@@ -8,19 +8,12 @@ configuration.baseurls =
     "NWISurl": 'http://waterservices.usgs.gov/nwis',
     'StreamStats': 'http://streamstats09.cr.usgs.gov',
     'StreamStatsServices': 'http://streamstatsags.cr.usgs.gov',
-<<<<<<< HEAD
-=======
     //'StreamStatsServices':'http://ssdev.cr.usgs.gov',
-
->>>>>>> 2366caf16ac621cb4ed1f0dd3eae8bfe05f8e2c8
     'NSS': 'http://commons.wim.usgs.gov/nssservices',
     'SearchAPI': 'http://txpub.usgs.gov/DSS/search_api/1.1/dataService/dataService.ashx',
     'FARefGage': 'http://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowAnywhere/MapServer',
     'GISserver': 'http://54.164.188.167:6080'
 }
-
-
-http://ssdev.cr.usgs.gov/streamstatsservices/watershed/edit.geojson?rcode=CO&workspaceID=CO20151214130113356000&includeparameters=false&includeflowtypes=false&includefeatures=true&crs=4326&simplify=true
 
 configuration.queryparams =
 {
