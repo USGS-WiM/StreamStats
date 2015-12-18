@@ -110,15 +110,6 @@ var StreamStats;
                 // check if region was explicitly set.
                 if ($stateParams.region)
                     this.setBoundsByRegion($stateParams.region);
-                //watch for result of regressionregion query
-                $scope.$watch(function () { return _this.studyArea.regressionRegionQueryComplete; }, function (newval, oldval) {
-                    console.log('in regression query watch', newval, oldval);
-                    //join codes from regression region object list and run query
-                    if (newval)
-                        _this.nssService.loadStatisticsGroupTypes(_this.regionServices.selectedRegion.RegionID, _this.studyArea.selectedStudyArea.RegressionRegions.map(function (elem) {
-                            return elem.code;
-                        }).join(","));
-                });
             }
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-

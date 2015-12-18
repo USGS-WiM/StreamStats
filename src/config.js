@@ -10,8 +10,8 @@ var StreamStats;
             this.$urlRouterProvider = $urlRouterProvider;
             this.$locationProvider = $locationProvider;
             this.$stateProvider.state("main", {
-                url: '/?region',
-                reloadOnSearch: true,
+                url: '/?rcode&workspaceID',
+                //reloadOnSearch:true,
                 template: '<ui-view/>',
                 views: {
                     'map': {
