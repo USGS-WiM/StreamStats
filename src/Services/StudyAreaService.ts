@@ -47,6 +47,8 @@ module StreamStats.Services {
         showDelineateButton: boolean;
         loadEditedStudyBoundary();
         reportGenerated: boolean;
+        queryRegressionRegions();
+        regressionRegionQueryComplete: boolean;
     }
     class StudyAreaService extends WiM.Services.HTTPServiceBase implements IStudyAreaService {
         //Events
@@ -92,6 +94,7 @@ module StreamStats.Services {
         public regulationCheckResults: any;
         public showDelineateButton: boolean;
         public reportGenerated: boolean;
+        public regressionRegionQueryComplete: boolean;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -144,6 +147,7 @@ module StreamStats.Services {
             this.selectedStudyArea = null;
             this.showDelineateButton = false;
             this.reportGenerated = false;
+            this.regressionRegionQueryComplete = false;
         }
 
         public loadStudyBoundary() {
@@ -255,6 +259,42 @@ module StreamStats.Services {
                 });
         }
 
+        public queryRegressionRegions() {
+
+            this.toaster.pop('info', "Querying regression regions with your Basin", "Please wait...", 0);
+            console.log('in load query regression regions');
+
+            this.regressionRegionQueryComplete = false;
+
+            var watershed = angular.toJson(this.selectedStudyArea.Features[1].feature, null);
+            var url = configuration.baseurls['GISserver'] + configuration.queryparams['RegressionRegionQueryService'];
+            var request: WiM.Services.Helpers.RequestInfo =
+                new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST,
+                    'json', { geometry: watershed, f: 'json' },
+                    { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+                    WiM.Services.Helpers.paramsTransform);
+
+            this.Execute(request).then(
+                (response: any) => {
+                    console.log(response.data);
+                    this.toaster.clear();
+
+                    if (response.data.length > 0) {
+                        this.selectedStudyArea.RegressionRegions = response.data;
+                        this.toaster.pop('success', "Regression regions were succcessfully queries", "Please continue", 5000);
+                    }
+                    else {
+                        this.toaster.pop('error', "There was an error querying regression regions", "Please retry", 5000);
+                    } 
+                },(error) => {
+                    //sm when complete
+                    this.toaster.clear();
+                    
+                }).finally(() => {
+                this.regressionRegionQueryComplete = true;
+            });
+        }
+
         public upstreamRegulation() {
 
             console.log('upstream regulation');
@@ -263,7 +303,7 @@ module StreamStats.Services {
             this.regulationCheckComplete = false;
 
             var watershed = angular.toJson(this.selectedStudyArea.Features[1].feature, null);
-            var url = configuration.baseurls['RegulationServices'] + configuration.queryparams['COregulationService'];
+            var url = configuration.baseurls['GISserver'] + configuration.queryparams['COregulationService'];
             var request: WiM.Services.Helpers.RequestInfo =
                 new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST,
                     'json', { watershed: watershed, outputcrs: 4326, f: 'geojson' },

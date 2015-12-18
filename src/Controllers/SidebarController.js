@@ -127,7 +127,9 @@ var StreamStats;
                 //if toggled remove selected parameter set
                 if (this.nssService.selectedStatisticsGroup == statisticsGroup) {
                     this.nssService.selectedStatisticsGroup = null;
-                    //this.studyAreaService.studyAreaParameterList = [];
+                    //reset list if toggled off
+                    this.multipleParameterSelectorAdd = false;
+                    this.multipleParameterSelector();
                     return;
                 }
                 this.nssService.selectedStatisticsGroup = statisticsGroup;
@@ -135,7 +137,9 @@ var StreamStats;
                 //clear studyareaParameterList
                 //this.studyAreaService.studyAreaParameterList = [];
                 //get list of params for selected StatisticsGroup
-                this.nssService.loadParametersByStatisticsGroup(this.regionService.selectedRegion.RegionID, this.nssService.selectedStatisticsGroup.ID, this.studyAreaService.selectedStudyArea.RegressionRegions[0]);
+                this.nssService.loadParametersByStatisticsGroup(this.regionService.selectedRegion.RegionID, this.nssService.selectedStatisticsGroup.ID, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) {
+                    return elem.code;
+                }).join(","), this.studyAreaService.selectedStudyArea.RegressionRegions);
                 //select subset of parameters from list
                 this.nssService.selectedStatisticsGroupParameterList;
             };
@@ -209,7 +213,9 @@ var StreamStats;
             SidebarController.prototype.generateReport = function () {
                 console.log('in estimateFlows');
                 if (this.nssService.selectedStatisticsGroup && this.nssService.showFlowsTable) {
-                    this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList, this.regionService.selectedRegion.RegionID, this.nssService.selectedStatisticsGroup.ID, this.studyAreaService.selectedStudyArea.RegressionRegions[0]);
+                    this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList, this.regionService.selectedRegion.RegionID, this.nssService.selectedStatisticsGroup.ID, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) {
+                        return elem.code;
+                    }).join(","));
                 }
                 this.reportService.openReport();
                 this.studyAreaService.reportGenerated = true;

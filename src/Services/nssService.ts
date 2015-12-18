@@ -33,7 +33,7 @@ module StreamStats.Services {
         selectedStatisticsGroupScenario: any;
         selectedStatisticsGroupScenarioResults: any;
         loadStatisticsGroupTypes(rcode: string, regressionregion: string);
-        loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregion: string);
+        loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregion: string, percentWeights: any);
         estimateFlows(studyAreaParameterList: any, rcode: string, statisticsGroupID: string, regressionregion: string)
         showBasinCharacteristicsTable: boolean;
         showFlowsTable: boolean;
@@ -98,13 +98,13 @@ module StreamStats.Services {
             this.queriedRegions = false;
         }
 
-        public loadStatisticsGroupTypes(rcode: string, regressionregion: string) {
+        public loadStatisticsGroupTypes(rcode: string, regressionregions: string) {
 
             this.toaster.pop('info', "Loading Available Scenarios", "Please wait...", 0);
-            console.log('in load StatisticsGroups', rcode);
-            if (!rcode && !regressionregion) return;
+            console.log('in load StatisticsGroups', rcode, regressionregions);
+            if (!rcode && !regressionregions) return;
 
-            var url = configuration.baseurls['NSS'] + configuration.queryparams['statisticsGroupLookup'].format(rcode, regressionregion);
+            var url = configuration.baseurls['NSS'] + configuration.queryparams['statisticsGroupLookup'].format(rcode, regressionregions);
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
 
             this.statisticsGroupList = [];
@@ -131,22 +131,31 @@ module StreamStats.Services {
                 });
         }
 
-        public loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregion: string) {
+        public loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregions: string, percentWeights:any) {
 
             this.toaster.pop('info', "Load Parameters by Scenario", "Please wait...", 0);
 
             //var deferred = ng.IQService.defer();
-            console.log('in load StatisticsGroup parameters', rcode, statisticsGroupID,regressionregion);
-            if (!rcode && !statisticsGroupID && !regressionregion) return;
+            console.log('in load StatisticsGroup parameters', rcode, statisticsGroupID,regressionregions);
+            if (!rcode && !statisticsGroupID && !regressionregions) return;
 
-            var url = configuration.baseurls['NSS'] + configuration.queryparams['statisticsGroupParameterLookup'].format(rcode,statisticsGroupID,regressionregion);
+            var url = configuration.baseurls['NSS'] + configuration.queryparams['statisticsGroupParameterLookup'].format(rcode,statisticsGroupID,regressionregions);
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
 
             this.selectedStatisticsGroupParameterList = [];
             this.Execute(request).then(
                 (response: any) => {
+                    console.log('loadParametersByStatisticsGroup response: ', response);
                     if (response.data[0].RegressionRegions[0].Parameters && response.data[0].RegressionRegions[0].Parameters.length > 0) {
                         this.selectedStatisticsGroupScenario = response.data;
+
+                        //add percentweights to regression regions
+                        this.selectedStatisticsGroupScenario[0].RegressionRegions.forEach((item) => {
+                            percentWeights.forEach((value) => {
+                                if (item.Name == value.name) item["PercentWeight"] = value.percent;
+                            })
+                        });
+
                         response.data[0].RegressionRegions[0].Parameters.map((item) => {
                             try {
                                 //console.log(item);

@@ -110,6 +110,15 @@ var StreamStats;
                 // check if region was explicitly set.
                 if ($stateParams.region)
                     this.setBoundsByRegion($stateParams.region);
+                //watch for result of regressionregion query
+                $scope.$watch(function () { return _this.studyArea.regressionRegionQueryComplete; }, function (newval, oldval) {
+                    console.log('in regression query watch', newval, oldval);
+                    //join codes from regression region object list and run query
+                    if (newval)
+                        _this.nssService.loadStatisticsGroupTypes(_this.regionServices.selectedRegion.RegionID, _this.studyArea.selectedStudyArea.RegressionRegions.map(function (elem) {
+                            return elem.code;
+                        }).join(","));
+                });
             }
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
@@ -166,7 +175,6 @@ var StreamStats;
                 L.Icon.Default.imagePath = 'images';
             };
             MapController.prototype.scaleLookup = function (mapZoom) {
-                console.log('in scale lookup', mapZoom);
                 switch (mapZoom) {
                     case 19: return '1,128';
                     case 18: return '2,256';
@@ -351,13 +359,12 @@ var StreamStats;
                 this.queryRegressionRegions();
             };
             MapController.prototype.queryRegressionRegions = function () {
-                this.toaster.pop('info', "Query regression regions with delineated basin", "Please wait...", 0);
                 this.nssService.queriedRegions = true;
                 //send watershed to map service query that returns list of regression regions that overlap the watershed
-                //DO MAP SERVICE REQUEST HERE
+                this.studyArea.queryRegressionRegions();
                 //region placeholder
-                this.studyArea.selectedStudyArea.RegressionRegions = ['290'];
-                this.nssService.loadStatisticsGroupTypes(this.regionServices.selectedRegion.RegionID, this.studyArea.selectedStudyArea.RegressionRegions[0]);
+                //this.studyArea.selectedStudyArea.RegressionRegions = ['290'];
+                //this.nssService.loadStatisticsGroupTypes(this.regionServices.selectedRegion.RegionID, this.studyArea.selectedStudyArea.RegressionRegions[0]);
             };
             MapController.prototype.mapBoundsChange = function (oldValue, newValue) {
                 this.nomnimalZoomLevel = this.scaleLookup(this.center.zoom);
