@@ -46,6 +46,7 @@ module StreamStats.Services {
         selectInitialParameters(paramList: Array<IParameter>);
         showDelineateButton: boolean;
         loadEditedStudyBoundary();
+        loadWatershed(rcode:string, workspaceID: string): void
         reportGenerated: boolean;
     }
     class StudyAreaService extends WiM.Services.HTTPServiceBase implements IStudyAreaService {
@@ -160,7 +161,6 @@ module StreamStats.Services {
                     this.selectedStudyArea.Features = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"] : null;
                     this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
                     this.selectedStudyArea.Date = new Date();
-
                     this.toaster.clear();
                     //sm when complete
                 },(error) => {
@@ -171,6 +171,51 @@ module StreamStats.Services {
                     this.canUpdate = true;
                     this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
             });
+        }
+
+        public loadWatershed(rcode: string, workspaceID: string): void {
+            try {
+
+                this.toaster.pop("info", "Opening Basin", "Please wait...", 0);
+                var studyArea: Models.IStudyArea = new Models.StudyArea(rcode,null);
+                this.AddStudyArea(studyArea);
+
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSwatershedByWorkspace'].format('geojson', rcode, workspaceID, 4326, false)
+                var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
+
+                this.Execute(request).then(
+                    (response: any) => {                        
+                        this.selectedStudyArea.Features = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"] : null;                        
+                        this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
+                        this.selectedStudyArea.Date = new Date();
+                        //set point
+                        this.selectedStudyArea.Features.forEach((layer) => { 
+                            var item = angular.fromJson(angular.toJson(layer));
+
+                            if (item.name == 'globalwatershedpoint') {
+                                //get and set geometry
+                                var geom = item.feature.features[0].bbox 
+                                this.selectedStudyArea.Pourpoint = new WiM.Models.Point(geom[0], geom[1], item.feature.crs.properties.code);
+                                return;
+                            }//end if
+                        });
+                        
+
+                        
+                        //sm when complete
+                    }, (error) => {
+                        //sm when error
+                        this.toaster.clear();
+                        this.toaster.pop("error", "Error Delineating Basin", "Please retry", 5000);
+                    }).finally(() => {
+                        this.canUpdate = true;
+                        this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
+                        this.toaster.clear();
+                    });
+            }
+            catch(err){
+                return;
+            }
         }
 
         public loadEditedStudyBoundary() {
@@ -202,12 +247,12 @@ module StreamStats.Services {
 
         public selectInitialParameters(paramList: Array<any>) {
             //make inital DRNAREA area selection
-            angular.forEach(paramList, function (value, index) {
-                if (value.code = "DRNAREA") {
+            //angular.forEach(paramList, function (value, index) {
+            //    if (value.code = "DRNAREA") {
                     
-                    this.studyAreaService.studyAreaParameterList.push(item);
-                }
-            });
+            //        this.studyAreaService.studyAreaParameterList.push(item);
+            //    }
+            //});
         }
 
         public loadParameters() {
@@ -301,6 +346,7 @@ module StreamStats.Services {
             });
         }
 
+        
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-       
         private loadParameterResults(results: Array<WiM.Models.IParameter>) {
@@ -321,7 +367,7 @@ module StreamStats.Services {
             console.log('params', this.studyAreaParameterList);
         }
 
-        private loadRegulatedParameterResults(regulatedResults: Array<WiM.Models.IParameter>) {
+        private loadRegulatedParameterResults(regulatedResults: Array<Models.IRegulationParameter>) {
 
             this.toaster.pop('info', "Loading Regulated Parameters", "Please wait...");
 
