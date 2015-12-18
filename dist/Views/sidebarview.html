@@ -113,32 +113,38 @@
                 <div class="list-group-body" ng-show="vm.selectedProcedure == 3">
 
                     <div class="alert alert-info" role="alert">Select a scenario below, or expand the "Show Basin Characteristics" button to select specific basin characteristics. Next, click "Calculate Basin Characterstics" to continue.</div>
-                    <div class="alert alert-info" role="alert" ng-show="vm.nssService.loadingStatisticsGroup">Loading Scenarios...</div>
-                    <div class="alert alert-info" role="alert" ng-show="vm.nssService.statisticsGroupList.length == 0 && !vm.nssService.loadingStatisticsGroup">No Statistic Groups Available</div>
 
-                    <h5>Regression Based Scenarios</h5>
-                    <div class="btn-toolbar" ng-if="vm.nssService.statisticsGroupList.length > 0">
-                        <button class="btn btn-sm btn-default" ng-class="vm.nssService.selectedStatisticsGroup == statisticsGroup ? 'btn-success': ''" ng-click="vm.setStatisticsGroup(statisticsGroup)" ng-repeat="statisticsGroup in vm.nssService.statisticsGroupList"><span>{{statisticsGroup.Name}} </span></button>
+                    <div class="well well-sm">
+                        <h5>Regression Based Scenarios</h5>
+                        <div class="alert alert-info" role="alert" ng-show="vm.nssService.loadingStatisticsGroup">Loading Scenarios...</div>
+                        <div class="alert alert-warning" role="alert" ng-show="vm.nssService.statisticsGroupList.length == 0 && !vm.nssService.loadingStatisticsGroup">No Statistic Groups Available</div>
+                        <div class="btn-toolbar" ng-if="vm.nssService.statisticsGroupList.length > 0">
+                            <button class="btn btn-sm btn-default" ng-class="vm.nssService.selectedStatisticsGroup == statisticsGroup ? 'btn-success': ''" ng-click="vm.setStatisticsGroup(statisticsGroup)" ng-repeat="statisticsGroup in vm.nssService.statisticsGroupList"><span>{{statisticsGroup.Name}} </span></button>
+                        </div>
                     </div>
-                    <h5>Other Scenarios</h5>
-                    <div class="btn-toolbar">
-                        <button class="btn btn-sm btn-default" ng-class="vm.multipleParameterSelectorAdd ? '': 'btn-success'" ng-click="vm.multipleParameterSelector()"><span>Compute All Basin Characteristics</span></button>
+                    <div class="well well-sm">
+                        <h5>Other Scenarios</h5>
+                        <div class="btn-toolbar">
+                            <button class="btn btn-sm btn-default" ng-class="vm.multipleParameterSelectorAdd ? '': 'btn-success'" ng-click="vm.multipleParameterSelector()"><span>Compute All Basin Characteristics</span></button>
+                        </div>
                     </div>
 
-
-                    <div class="btn-toolbar">
-                        <button class="btn btn-sm btn-default" ng-click="vm.showBasinCharacterstics = !vm.showBasinCharacterstics"><span ng-hide="vm.showBasinCharacterstics"><i class="fa fa-chevron-down"></i>&nbsp;&nbsp;Show Basin Characteristics</span><span ng-show="vm.showBasinCharacterstics"><i class="fa fa-chevron-up"></i>&nbsp;&nbsp;Hide Basin Characteristics</span></button>
-                    </div>
-                    <div class="well well-sm" class="table table-condensed" ng-init="vm.showBasinCharacterstics = false" ng-show="vm.showBasinCharacterstics">
-                        <table class="table table-condensed">
-                            <tbody ng-repeat="parameter in vm.regionService.parameterList">
-                                <tr>
-                                    <td><checkbox large ng-model="parameter.checked" ng-change="vm.updateStudyAreaParameterList(parameter)"></checkbox></td>
-                                    <td><span>&nbsp;&nbsp;{{parameter.code}}</span></td>
-                                    <td><span>&nbsp;&nbsp;{{parameter.description}}</span></td>
-                                </tr>
-                            </tbody>
-                        </table>  
+                    <div class="well well-sm">
+                        <h5>Basin Characteristics</h5>
+                        <div class="btn-toolbar">
+                            <button class="btn btn-sm btn-default" ng-click="vm.showBasinCharacterstics = !vm.showBasinCharacterstics"><span ng-hide="vm.showBasinCharacterstics"><i class="fa fa-chevron-down"></i>&nbsp;&nbsp;Show Basin Characteristics</span><span ng-show="vm.showBasinCharacterstics"><i class="fa fa-chevron-up"></i>&nbsp;&nbsp;Hide Basin Characteristics</span></button>
+                        </div>
+                        <div ng-init="vm.showBasinCharacterstics = false" ng-show="vm.showBasinCharacterstics">
+                            <table class="table table-condensed">
+                                <tbody ng-repeat="parameter in vm.regionService.parameterList">
+                                    <tr>
+                                        <td><checkbox large ng-model="parameter.checked" ng-change="vm.updateStudyAreaParameterList(parameter)"></checkbox></td>
+                                        <td><span>&nbsp;&nbsp;{{parameter.code}}</span></td>
+                                        <td><span>&nbsp;&nbsp;{{parameter.description}}</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>  
+                        </div>
                     </div>
 
                     <div class="btn-toolbar">
@@ -179,17 +185,19 @@
                         </table>                       
                     </div>
 
-                    <p>Select available reports to display:</p>
-                    <form ng-init="vm.nssService.showBasinCharacteristicsTable = true" ng-show="vm.studyAreaService.parametersLoaded">
-                        <checkbox large ng-model="vm.nssService.showBasinCharacteristicsTable" ></checkbox><span>&nbsp;&nbsp;Show Basin Characteristics</span>
-                    </form>
-                    <form ng-init="vm.nssService.showFlowsTable = true" ng-show="vm.nssService.selectedStatisticsGroup">
-                        <checkbox large ng-model="vm.nssService.showFlowsTable" ></checkbox><span>&nbsp;&nbsp;Estimate Flows</span>
-                    </form>
+                    <div class="well well-sm">
+                        <p>Select available reports to display:</p>
+                        <form ng-init="vm.nssService.showBasinCharacteristicsTable = true" ng-show="vm.studyAreaService.parametersLoaded">
+                            <checkbox large ng-model="vm.nssService.showBasinCharacteristicsTable" ></checkbox><span>&nbsp;&nbsp;Basin Characteristics Report</span>
+                        </form>
+                        <form ng-init="vm.nssService.showFlowsTable = false" ng-show="vm.nssService.selectedStatisticsGroup">
+                            <checkbox large ng-model="vm.nssService.showFlowsTable" ></checkbox><span>&nbsp;&nbsp;Scenario Flow Report</span>
+                        </form>
 
 
-                    <div class="form-group" ng-show="vm.nssService.showBasinCharacteristicsTable || vm.nssService.showFlowsTable">
-                        <button ng-click="vm.generateReport()" type="button" class="btn btn-sm btn-success"><i ng-class="vm.nssService.canUpdate ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Build Report</button>
+                        <div class="form-group" ng-show="vm.nssService.showBasinCharacteristicsTable || vm.nssService.showFlowsTable">
+                            <button ng-click="vm.generateReport()" type="button" class="btn btn-sm btn-success"><i ng-class="vm.nssService.canUpdate ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Build Report</button>
+                        </div>
                     </div>
                 </div>    
             </div>       

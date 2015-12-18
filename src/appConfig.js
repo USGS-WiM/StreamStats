@@ -75,56 +75,56 @@ configuration.basemaps =
             ]
         }
     },
-    streets: {
-        name: "Streets",
-        type: "agsBase",
-        layer: "Streets",
-        visible: true
-    },
-    topo: {
-        name: "World Topographic",
-        type: "agsBase",
-        layer: "Topographic",
-        visible: false
-    },
     national: {
         name: "National Geographic",
         type: "agsBase",
         layer: "NationalGeographic",
         visible: false
     },
+    streets: {
+        name: "ESRI Streets",
+        type: "agsBase",
+        layer: "Streets",
+        visible: true
+    },
+    topo: {
+        name: "ESRI World Topographic",
+        type: "agsBase",
+        layer: "Topographic",
+        visible: false
+    },
     oceans: {
-        name: "Oceans",
+        name: "ESRI Oceans",
         type: "agsBase",
         layer: "Oceans",
         visible: false
     },
     gray: {
-        name: "Gray",
+        name: "ESRI Gray",
         type: "agsBase",
         layer: "Gray",
         visible: false
     },
     darkgray: {
-        name: "DarkGray",
+        name: "ESRI Dark Gray",
         type: "agsBase",
         layer: "DarkGray",
         visible: false
     },
     imagery: {
-        name: "Imagery",
+        name: "ESRI Imagery",
         type: "agsBase",
         layer: "Imagery",
         visible: false
     },
     shadedrelief: {
-        name: "ShadedRelief",
+        name: "ESRI Shaded Relief",
         type: "agsBase",
         layer: "ShadedRelief",
         visible: false
     },
     terrain: {
-        name: "Terrain",
+        name: "ESRI Terrain",
         type: "agsBase",
         layer: "Terrain",
         visible: false
