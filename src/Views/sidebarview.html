@@ -68,8 +68,10 @@
                     <div class="btn-toolbar" ng-show= "vm.studyAreaService.showDelineateButton"> 
                         <button id="delineateButton" type="button" class="btn btn-sm btn-info" ng-click="vm.startDelineate()" ng-class="vm.studyAreaService.doDelineateFlag ? 'btn-warning' : 'btn-info'" ng-hide="vm.studyAreaService.selectedStudyArea.Features"><i  ng-class="vm.studyAreaService.canUpdate ? 'fa fa-map-marker' : 'fa fa-refresh fa-spin disabled'"></i>&nbsp;&nbsp;<span ng-show="vm.studyAreaService.canUpdate">Delineate</span><span ng-show="!vm.studyAreaService.canUpdate">Delineating Basin, please wait...</span></button>
                      </div>   
+
+                    <button type="button" class="btn btn-sm btn-info" ng-if="this.studyAreaService.regressionRegionQueryComplete || vm.studyAreaService.regressionRegionQueryLoading" ng-click="vm.studyAreaService.queryRegressionRegions()"><span ng-show="vm.studyAreaService.regressionRegionQueryLoading"><i ng-class="vm.studyAreaService.regressionRegionQueryLoading ? 'fa fa-refresh fa-spin disabled' : ''"></i>&nbsp;&nbsp;Querying Regression Regions</span><span ng-show="vm.studyAreaService.regressionRegionQueryLoaded"><i class="fa fa-refresh"></i>&nbsp;&nbsp;Re-query Regression Regions</span></button>
                     
-                    <div ng-show="vm.studyAreaService.selectedStudyArea.Features">
+                    <div ng-show="vm.studyAreaService.regressionRegionQueryComplete">
 
                         <div class="alert alert-info" role="alert">
                             <p>Your delineation is complete.  You can now clear your basin, edit your basin, or choose a state or regional study specific funciton (if available).  Click <strong>continue </strong>when you are ready.</p>
@@ -78,7 +80,10 @@
                         <div class="btn-toolbar">
                             <button id="clearDelinationButton" type="button" class="btn btn-sm btn-info" ng-click="vm.resetWorkSpace()" ng-show="vm.studyAreaService.selectedStudyArea.Features"><span><i class="fa fa-trash-o"></i>&nbsp;&nbsp;Clear Basin</span></button>
                             <button type="button" class="btn btn-sm btn-info" ng-click="vm.studyAreaService.showAddRemoveButtons = !vm.studyAreaService.showAddRemoveButtons"><span class="fa fa-edit"></span>&nbsp;&nbsp;Edit Basin</button>
+
                             <button type="button" class="btn btn-sm btn-success" ng-click="vm.checkForBasinEdits()"><span class="fa fa-check-circle"></span>&nbsp;&nbsp;Continue</button>
+
+                            
                         </div>
 
                         <div class="well well-sm" ng-show="vm.studyAreaService.showAddRemoveButtons">
@@ -116,7 +121,8 @@
 
                     <div class="well well-sm">
                         <h5>Regression Based Scenarios</h5>
-                        <div class="alert alert-info" role="alert" ng-show="vm.nssService.statisticsGroupList.length == 0 && !vm.nssService.loadingStatisticsGroup || vm.nssService.loadingStatisticsGroup">Loading Scenarios...</div>
+                        <div class="alert alert-info" role="alert" ng-show="vm.nssService.statisticsGroupList.length == 0 && !vm.nssService.loadingStatisticsGroup || vm.nssService.loadingStatisticsGroup">Failed to load scenarios</div>
+
                         <!--<div class="alert alert-warning" role="alert" ng-show="vm.nssService.statisticsGroupList.length == 0 && !vm.nssService.loadingStatisticsGroup">No Statistic Groups Available</div>-->
                         <div class="btn-toolbar" ng-if="vm.nssService.statisticsGroupList.length > 0">
                             <button class="btn btn-sm btn-default" ng-class="vm.nssService.selectedStatisticsGroup == statisticsGroup ? 'btn-success': ''" ng-click="vm.setStatisticsGroup(statisticsGroup)" ng-repeat="statisticsGroup in vm.nssService.statisticsGroupList"><span>{{statisticsGroup.Name}} </span></button>

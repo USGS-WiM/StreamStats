@@ -305,8 +305,8 @@ module StreamStats.Controllers {
                     case ProcedureType.IDENTIFY:
                         return this.regionService.selectedRegion != null;
                     case ProcedureType.SELECT:
-                        //proceed if there is a regression re
-                        return this.nssService.queriedRegions;
+                        //proceed if there is a regression region
+                        return this.studyAreaService.regressionRegionQueryComplete;
                     case ProcedureType.BUILD:
                         return this.studyAreaService.parametersLoaded;
                     default:
