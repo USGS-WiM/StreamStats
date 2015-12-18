@@ -12,8 +12,8 @@ module StreamStats {
         constructor(private $stateProvider: ng.ui.IStateProvider, private $urlRouterProvider: ng.ui.IUrlRouterProvider, private $locationProvider: ng.ILocationProvider) {
             this.$stateProvider
                 .state("main", {
-                url: '/?region',
-                reloadOnSearch:true,
+                url: '/?rcode&workspaceID',
+                //reloadOnSearch:true,
                 template:'<ui-view/>',
                 views: {
                     'map': {

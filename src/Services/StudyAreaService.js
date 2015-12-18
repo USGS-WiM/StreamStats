@@ -135,12 +135,49 @@ var StreamStats;
                     _this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
                 });
             };
+            StudyAreaService.prototype.loadWatershed = function (rcode, workspaceID) {
+                var _this = this;
+                try {
+                    this.toaster.pop("info", "Opening Basin", "Please wait...", 0);
+                    var studyArea = new StreamStats.Models.StudyArea(rcode, null);
+                    this.AddStudyArea(studyArea);
+                    var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSwatershedByWorkspace'].format('geojson', rcode, workspaceID, 4326, false);
+                    var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                    this.Execute(request).then(function (response) {
+                        _this.selectedStudyArea.Features = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"] : null;
+                        _this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
+                        _this.selectedStudyArea.Date = new Date();
+                        //set point
+                        _this.selectedStudyArea.Features.forEach(function (layer) {
+                            var item = angular.fromJson(angular.toJson(layer));
+                            if (item.name == 'globalwatershedpoint') {
+                                //get and set geometry
+                                var geom = item.feature.features[0].bbox;
+                                _this.selectedStudyArea.Pourpoint = new WiM.Models.Point(geom[0], geom[1], item.feature.crs.properties.code);
+                                return;
+                            } //end if
+                        });
+                        //sm when complete
+                    }, function (error) {
+                        //sm when error
+                        _this.toaster.clear();
+                        _this.toaster.pop("error", "Error Delineating Basin", "Please retry", 5000);
+                    }).finally(function () {
+                        _this.canUpdate = true;
+                        _this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
+                        _this.toaster.clear();
+                    });
+                }
+                catch (err) {
+                    return;
+                }
+            };
             StudyAreaService.prototype.loadEditedStudyBoundary = function () {
                 var _this = this;
                 this.toaster.pop("info", "Loading Edited Basin", "Please wait...", 0);
                 this.canUpdate = false;
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSeditBasin'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID, this.selectedStudyArea.Pourpoint.crs.toString());
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.PUT, 'json', this.WatershedEditDecisionList, {});
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, 2 /* PUT */, 'json', this.WatershedEditDecisionList, {});
                 this.Execute(request).then(function (response) {
                     _this.clearStudyArea();
                     _this.selectedStudyArea.Features = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"] : null;
@@ -159,11 +196,11 @@ var StreamStats;
             };
             StudyAreaService.prototype.selectInitialParameters = function (paramList) {
                 //make inital DRNAREA area selection
-                angular.forEach(paramList, function (value, index) {
-                    if (value.code = "DRNAREA") {
-                        this.studyAreaService.studyAreaParameterList.push(item);
-                    }
-                });
+                //angular.forEach(paramList, function (value, index) {
+                //    if (value.code = "DRNAREA") {
+                //        this.studyAreaService.studyAreaParameterList.push(item);
+                //    }
+                //});
             };
             StudyAreaService.prototype.loadParameters = function () {
                 var _this = this;
@@ -210,7 +247,7 @@ var StreamStats;
                 this.regulationCheckComplete = false;
                 var watershed = angular.toJson(this.selectedStudyArea.Features[1].feature, null);
                 var url = configuration.baseurls['RegulationServices'] + configuration.queryparams['COregulationService'];
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', { watershed: watershed, outputcrs: 4326, f: 'geojson' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, 1 /* POST */, 'json', { watershed: watershed, outputcrs: 4326, f: 'geojson' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
                 this.Execute(request).then(function (response) {
                     console.log(response);
                     if (response.data.percentarearegulated > 0) {

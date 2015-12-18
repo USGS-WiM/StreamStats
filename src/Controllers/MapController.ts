@@ -208,7 +208,8 @@ module StreamStats.Controllers {
             $scope.$watch(() => studyArea.doDelineateFlag,(newval, oldval) => newval ? this.cursorStyle = 'crosshair' : this.cursorStyle = 'hand');
 
             // check if region was explicitly set.
-            if ($stateParams.region) this.setBoundsByRegion($stateParams.region);
+            if ($stateParams.rcode) this.setBoundsByRegion($stateParams.rcode);
+            if ($stateParams.rcode && $stateParams.workspaceID) this.studyArea.loadWatershed($stateParams.rcode, $stateParams.workspaceID);
         }
 
         //Methods
@@ -524,6 +525,7 @@ module StreamStats.Controllers {
             }
 
         }
+        
         private addRegionOverlayLayers(regionId: string) {
             this.regionServices.loadMapLayersByRegion(regionId)
 
