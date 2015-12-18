@@ -81,6 +81,7 @@ body {
     border-radius: 5px;
     width: 45px;
 }
+
 #wim_logo:hover{
     background: blue none repeat scroll 0 0;
 	opacity: 0.8;

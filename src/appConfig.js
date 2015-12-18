@@ -8,13 +8,15 @@ configuration.baseurls =
     "NWISurl": 'http://waterservices.usgs.gov/nwis',
     'StreamStats': 'http://streamstats09.cr.usgs.gov',
     'StreamStatsServices': 'http://streamstatsags.cr.usgs.gov',
+<<<<<<< HEAD
+=======
     //'StreamStatsServices':'http://ssdev.cr.usgs.gov',
 
+>>>>>>> 2366caf16ac621cb4ed1f0dd3eae8bfe05f8e2c8
     'NSS': 'http://commons.wim.usgs.gov/nssservices',
     'SearchAPI': 'http://txpub.usgs.gov/DSS/search_api/1.1/dataService/dataService.ashx',
     'FARefGage': 'http://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowAnywhere/MapServer',
-    //'RegulationServices': 'http://52.3.175.97:6080'
-    'RegulationServices': 'http://54.164.188.167:6080'
+    'GISserver': 'http://54.164.188.167:6080'
 }
 
 
@@ -36,7 +38,8 @@ configuration.queryparams =
     'SSStateLayers': '/arcgis/rest/services/{0}_ss/MapServer?f=pjson',
     'FARefGage': '/2/query?geometry={0}&geometryType=esriGeometryPoint&inSR={1}&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
     'regionService': '/arcgis/rest/services/ss_studyAreas_prod/MapServer/identify',
-    'COregulationService': '/arcgis/rest/services/Regulation/CORegulationSites/MapServer/exts/RegulationRESTSOE/Regulation'
+    'COregulationService': '/arcgis/rest/services/Regulation/CORegulationSites/MapServer/exts/RegulationRESTSOE/Regulation',
+    'RegressionRegionQueryService': '/arcgis/rest/services/NSS/regions/MapServer/exts/PercentOverlayRESTSOE/FeatureLayers/0/PercentOverlay'
 }
 
 configuration.basemaps =

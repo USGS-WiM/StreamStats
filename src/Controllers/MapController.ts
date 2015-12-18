@@ -210,7 +210,15 @@ module StreamStats.Controllers {
 
             // check if region was explicitly set.
             if ($stateParams.rcode) this.setBoundsByRegion($stateParams.rcode);
-            if ($stateParams.rcode && $stateParams.workspaceID) this.studyArea.loadWatershed($stateParams.rcode, $stateParams.workspaceID);
+            if ($stateParams.rcode && $stateParams.workspaceID) this.studyArea.loadWatershed($stateParams.rcode, $stateParams.workspaceID
+
+            //watch for result of regressionregion query
+            $scope.$watch(() => this.studyArea.regressionRegionQueryComplete,(newval, oldval) => {
+                console.log('in regression query watch', newval, oldval);
+                //join codes from regression region object list and run query
+                if (newval) this.nssService.loadStatisticsGroupTypes(this.regionServices.selectedRegion.RegionID, this.studyArea.selectedStudyArea.RegressionRegions.map(function (elem) {
+                    return elem.code; }).join(","));
+            });
         }
 
         //Methods
@@ -278,7 +286,6 @@ module StreamStats.Controllers {
         }
 
         public scaleLookup(mapZoom: number) {
-            console.log('in scale lookup', mapZoom);
             switch (mapZoom) {
                 case 19: return '1,128'
                 case 18: return '2,256'
@@ -494,18 +501,15 @@ module StreamStats.Controllers {
 
         private queryRegressionRegions() {
 
-            this.toaster.pop('info', "Query regression regions with delineated basin", "Please wait...", 0);
-
-
             this.nssService.queriedRegions = true;
 
             //send watershed to map service query that returns list of regression regions that overlap the watershed
-            //DO MAP SERVICE REQUEST HERE
+            this.studyArea.queryRegressionRegions();
             
             //region placeholder
-            this.studyArea.selectedStudyArea.RegressionRegions = ['290'];
+            //this.studyArea.selectedStudyArea.RegressionRegions = ['290'];
 
-            this.nssService.loadStatisticsGroupTypes(this.regionServices.selectedRegion.RegionID, this.studyArea.selectedStudyArea.RegressionRegions[0]);
+            //this.nssService.loadStatisticsGroupTypes(this.regionServices.selectedRegion.RegionID, this.studyArea.selectedStudyArea.RegressionRegions[0]);
         }
 
         private mapBoundsChange(oldValue, newValue) {
