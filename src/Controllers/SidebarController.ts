@@ -101,6 +101,7 @@ module StreamStats.Controllers {
 
             //watch for completion of load parameters
             $scope.$watch(() => this.studyAreaService.parametersLoaded,(newval, oldval) => {
+                if (newval == oldval) return;
                 console.log('parameters loaded', oldval, newval);
                 if (newval == null) this.setProcedureType(3);
                 else this.setProcedureType(4);

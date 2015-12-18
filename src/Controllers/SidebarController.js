@@ -61,6 +61,8 @@ var StreamStats;
                 });
                 //watch for completion of load parameters
                 $scope.$watch(function () { return _this.studyAreaService.parametersLoaded; }, function (newval, oldval) {
+                    if (newval == oldval)
+                        return;
                     console.log('parameters loaded', oldval, newval);
                     if (newval == null)
                         _this.setProcedureType(3);
