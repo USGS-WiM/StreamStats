@@ -108,10 +108,14 @@ var StreamStats;
                 $scope.$on('$locationChangeStart', function () { return _this.updateRegion(); });
                 $scope.$watch(function () { return studyArea.doDelineateFlag; }, function (newval, oldval) { return newval ? _this.cursorStyle = 'crosshair' : _this.cursorStyle = 'hand'; });
                 // check if region was explicitly set.
-                if ($stateParams.rcode)
+                if ($stateParams.rcode) {
+                    this.regionServices.loadParametersByRegion();
                     this.setBoundsByRegion($stateParams.rcode);
-                if ($stateParams.rcode && $stateParams.workspaceID)
+                }
+                if ($stateParams.rcode && $stateParams.workspaceID) {
+                    this.regionServices.loadParametersByRegion();
                     this.studyArea.loadWatershed($stateParams.rcode, $stateParams.workspaceID);
+                }
                 //watch for result of regressionregion query
                 $scope.$watch(function () { return _this.studyArea.regressionRegionQueryComplete; }, function (newval, oldval) {
                     console.log('in regression query watch', newval, oldval);
