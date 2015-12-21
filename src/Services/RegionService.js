@@ -151,18 +151,24 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     if (response.data.parameters && response.data.parameters.length > 0) {
-                        response.data.parameters.map(function (item) {
+                        response.data.parameters.forEach(function (parameter) {
                             try {
-                                if (item.code == "DRNAREA")
-                                    item['checked'] = true;
-                                else
-                                    item['checked'] = false;
-                                _this.parameterList.push(item);
+                                //dont add an always selected param twice
+                                configuration.alwaysSelectedParameters.forEach(function (alwaysSelectedParam) {
+                                    if (alwaysSelectedParam.name == parameter.code) {
+                                        parameter.checked = true;
+                                        parameter.toggleable = false;
+                                    }
+                                    else {
+                                        parameter.checked = false;
+                                        parameter.toggleable = true;
+                                    }
+                                });
+                                _this.parameterList.push(parameter);
                             }
                             catch (e) {
                                 alert(e);
                             }
-                            //return this.selectedStatisticsGroupParameterList;
                         });
                     }
                     //sm when complete

@@ -24,6 +24,7 @@ var StreamStats;
             function SidebarController($scope, toaster, service, region, studyArea, StatisticsGroup, report, leafletData) {
                 var _this = this;
                 $scope.vm = this;
+                this.init();
                 this.toaster = toaster;
                 this.searchService = service;
                 this.sideBarCollapsed = false;
@@ -34,23 +35,7 @@ var StreamStats;
                 this.reportService = report;
                 this.leafletData = leafletData;
                 this.multipleParameterSelectorAdd = true;
-                //watches for changes to selected StatisticsGroup param list and updates studyareaParamList with them
-                $scope.$watchCollection(function () { return _this.nssService.selectedStatisticsGroupParameterList; }, function (newval, oldval) {
-                    console.log('StatisticsGroup param list changed.  loaded ', newval.length, ' parameters from StatisticsGroup');
-                    //this.studyAreaService.studyAreaParameterList = [];
-                    _this.regionService.parameterList.forEach(function (val, idx) {
-                        _this.nssService.selectedStatisticsGroupParameterList.forEach(function (value, index) {
-                            if (val.code.toLowerCase() == value['Code'].toLowerCase()) {
-                                if (val.code == "DRNAREA")
-                                    return;
-                                //make sure new object isn't already in the list
-                                if (_this.checkParamList(_this.studyAreaService.studyAreaParameterList, val) == -1)
-                                    studyArea.studyAreaParameterList.push(val);
-                                val['checked'] = true;
-                            }
-                        });
-                    });
-                });
+                StatisticsGroup.onSelectedStatisticsGroupChanged.subscribe(this._onSelectedStatisticsGroupChangedHandler);
                 //watch for map based region changes here
                 $scope.$watch(function () { return _this.regionService.selectedRegion; }, function (newval, oldval) {
                     console.log('region change', oldval, newval);
@@ -126,27 +111,22 @@ var StreamStats;
                 });
             };
             SidebarController.prototype.setStatisticsGroup = function (statisticsGroup) {
+                var checkStatisticsGroup = this.checkArrayForObj(this.nssService.selectedStatisticsGroupList, statisticsGroup);
                 //if toggled remove selected parameter set
-                if (this.nssService.selectedStatisticsGroup == statisticsGroup) {
-                    this.nssService.selectedStatisticsGroup = null;
-                    //reset list if toggled off
-                    this.multipleParameterSelectorAdd = false;
-                    this.multipleParameterSelector();
-                    return;
+                if (checkStatisticsGroup != -1) {
+                    //remove this statisticsGroup from the list
+                    this.nssService.selectedStatisticsGroupList.splice(checkStatisticsGroup, 1);
                 }
-                this.nssService.selectedStatisticsGroup = statisticsGroup;
-                console.log(statisticsGroup.Name, ' clicked');
-                //clear studyareaParameterList
-                //this.studyAreaService.studyAreaParameterList = [];
-                //get list of params for selected StatisticsGroup
-                this.nssService.loadParametersByStatisticsGroup(this.regionService.selectedRegion.RegionID, this.nssService.selectedStatisticsGroup.ID, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) {
-                    return elem.code;
-                }).join(","), this.studyAreaService.selectedStudyArea.RegressionRegions);
-                //select subset of parameters from list
-                this.nssService.selectedStatisticsGroupParameterList;
+                else {
+                    this.nssService.selectedStatisticsGroupList.push(statisticsGroup);
+                    //get list of params for selected StatisticsGroup
+                    this.nssService.loadParametersByStatisticsGroup(this.regionService.selectedRegion.RegionID, statisticsGroup.ID, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) {
+                        return elem.code;
+                    }).join(","), this.studyAreaService.selectedStudyArea.RegressionRegions);
+                }
             };
             //special function for searching arrays but ignoring angular hashkey
-            SidebarController.prototype.checkParamList = function (arr, obj) {
+            SidebarController.prototype.checkArrayForObj = function (arr, obj) {
                 for (var i = 0; i < arr.length; i++) {
                     if (angular.equals(arr[i], obj)) {
                         return i;
@@ -157,37 +137,41 @@ var StreamStats;
             };
             SidebarController.prototype.multipleParameterSelector = function () {
                 var _this = this;
-                this.regionService.parameterList.forEach(function (value, index) {
-                    if (value.code == "DRNAREA")
-                        return;
-                    var paramCheck = _this.checkParamList(_this.studyAreaService.studyAreaParameterList, value);
-                    if (_this.multipleParameterSelectorAdd) {
-                        //if its not there add it
-                        if (paramCheck == -1)
-                            _this.studyAreaService.studyAreaParameterList.push(value);
-                        value['checked'] = true;
-                    }
-                    else {
-                        //remove it
-                        if (paramCheck > -1)
-                            _this.studyAreaService.studyAreaParameterList.splice(paramCheck, 1);
-                        value['checked'] = false;
-                    }
+                this.regionService.parameterList.forEach(function (parameter) {
+                    console.log('length of configuration.alwaysSelectedParameters: ', configuration.alwaysSelectedParameters.length);
+                    configuration.alwaysSelectedParameters.forEach(function (alwaysSelectedParam) {
+                        if (alwaysSelectedParam.name == parameter.code) {
+                            console.log('should not remove this param ', alwaysSelectedParam.name, parameter.code);
+                            return;
+                        }
+                        else {
+                            var paramCheck = _this.checkArrayForObj(_this.studyAreaService.studyAreaParameterList, parameter);
+                            if (_this.multipleParameterSelectorAdd) {
+                                //if its not there add it
+                                if (paramCheck == -1)
+                                    _this.studyAreaService.studyAreaParameterList.push(parameter);
+                                parameter.checked = true;
+                            }
+                            else {
+                                //remove it only if toggleable
+                                if (paramCheck > -1 && parameter.toggleable) {
+                                    _this.studyAreaService.studyAreaParameterList.splice(paramCheck, 1);
+                                    _this.toaster.pop('warning', parameter.code + " is required by one of the selected scenarios", "It cannot be unselected");
+                                    parameter.checked = false;
+                                }
+                            }
+                        }
+                    });
                 });
                 //flip toggle
                 this.multipleParameterSelectorAdd = !this.multipleParameterSelectorAdd;
             };
             SidebarController.prototype.updateStudyAreaParameterList = function (parameter) {
                 console.log('in updatestudyarea parameter', parameter);
-                //don't mess with DRNAREA
-                if (parameter.code == "DRNAREA") {
-                    this.toaster.pop("info", "Information", "DRNAREA cannot be unselected");
-                    //keep it checked in regionservice parameterlist
-                    this.regionService.parameterList.forEach(function (value, index) {
-                        if (value.code == parameter.code) {
-                            value['checked'] = true;
-                        }
-                    });
+                //dont mess with certain parameters
+                if (parameter.toggleable == false) {
+                    this.toaster.pop('warning', parameter.code + " is required by one of the selected scenarios", "It cannot be unselected");
+                    parameter.checked = true;
                     return;
                 }
                 var index = this.studyAreaService.studyAreaParameterList.indexOf(parameter);
@@ -197,7 +181,6 @@ var StreamStats;
                 }
                 else {
                     //add it
-                    //console.log(angular.toJson(parameter));
                     this.studyAreaService.studyAreaParameterList.push(parameter);
                 }
             };
@@ -213,11 +196,15 @@ var StreamStats;
                 this.setProcedureType(3);
             };
             SidebarController.prototype.generateReport = function () {
+                var _this = this;
                 console.log('in estimateFlows');
-                if (this.nssService.selectedStatisticsGroup && this.nssService.showFlowsTable) {
-                    this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList, this.regionService.selectedRegion.RegionID, this.nssService.selectedStatisticsGroup.ID, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) {
-                        return elem.code;
-                    }).join(","));
+                if (this.nssService.selectedStatisticsGroupList.length > 0 && this.nssService.showFlowsTable) {
+                    //need to loop over selectedStatisticsGroupList HERE
+                    this.nssService.selectedStatisticsGroupList.forEach(function (statGroup) {
+                        _this.nssService.estimateFlows(_this.studyAreaService.studyAreaParameterList, _this.regionService.selectedRegion.RegionID, statGroup.ID, _this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) {
+                            return elem.code;
+                        }).join(","));
+                    });
                 }
                 this.reportService.openReport();
                 this.studyAreaService.reportGenerated = true;
@@ -225,8 +212,38 @@ var StreamStats;
             SidebarController.prototype.checkRegulation = function () {
                 this.studyAreaService.upstreamRegulation();
             };
+            SidebarController.prototype.onSelectedStatisticsGroupChanged = function () {
+                var _this = this;
+                console.log('StatisticsGroup param list changed.  loaded ', this.nssService.selectedStatisticsGroupList);
+                //toggle show flows checkbox
+                this.nssService.selectedStatisticsGroupList.length > 0 ? this.nssService.showFlowsTable = true : this.nssService.showFlowsTable = false;
+                this.regionService.parameterList.forEach(function (parameter) {
+                    //loop over whole statisticsgroups
+                    _this.nssService.selectedStatisticsGroupList.forEach(function (statisticsGroup) {
+                        //get their parameters
+                        statisticsGroup['RegressionRegions'][0].Parameters.forEach(function (param) {
+                            if (parameter.code.toLowerCase() == param.Code.toLowerCase()) {
+                                configuration.alwaysSelectedParameters.forEach(function (alwaysSelectedParam) {
+                                    if (alwaysSelectedParam.name == parameter.code)
+                                        return;
+                                });
+                                //turn it on
+                                parameter['checked'] = true;
+                                parameter['toggleable'] = false;
+                            }
+                        });
+                    });
+                });
+            };
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
+            SidebarController.prototype.init = function () {
+                var _this = this;
+                //init event handler
+                this._onSelectedStatisticsGroupChangedHandler = new WiM.Event.EventHandler(function () {
+                    _this.onSelectedStatisticsGroupChanged();
+                });
+            };
             SidebarController.prototype.canUpdateProcedure = function (pType) {
                 //console.log('in canUpdateProcedure');
                 //Project flow:

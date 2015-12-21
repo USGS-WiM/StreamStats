@@ -31,7 +31,6 @@ module StreamStats.Services {
         masterRegionList: Array<IRegion>;
         parameterList: Array<IParameter>;
         selectedRegion: IRegion;
-
         loadRegionListByExtent(xmin: number, xmax: number, ymin: number, ymax: number, sr?: number):boolean;
         loadRegionListByRegion(region: string): boolean;
         loadMapLayersByRegion(region: string): boolean;
@@ -49,10 +48,12 @@ module StreamStats.Services {
         description: string;
         name: string;
         unit: string;
-        selected: boolean;
         value: number;
         regulatedValue: number;
         unRegulatedValue: number;
+        checked: boolean;
+        toggleable: boolean;
+
     }
 
     export class Region implements IRegion {
@@ -69,10 +70,11 @@ module StreamStats.Services {
         public description: string;
         public name: string;
         public unit: string;
-        public selected: boolean;
         public value: number;
         public regulatedValue: number;
         public unRegulatedValue: number;
+        public checked: boolean;
+        public toggleable: boolean;
 
     }//end class
 
@@ -193,17 +195,26 @@ module StreamStats.Services {
                 (response: any) => {     
 
                     if (response.data.parameters && response.data.parameters.length > 0) {
-                        response.data.parameters.map((item) => {
+                        response.data.parameters.forEach((parameter) => {
+
                             try {
-                                if (item.code == "DRNAREA") item['checked'] = true;
-                                else item['checked'] = false;
-                                this.parameterList.push(item);
+                                //dont add an always selected param twice
+                                configuration.alwaysSelectedParameters.forEach((alwaysSelectedParam) => {
+                                    if (alwaysSelectedParam.name == parameter.code) {
+                                        parameter.checked = true;
+                                        parameter.toggleable = false;
+                                    }
+                                    else {
+                                        parameter.checked = false;
+                                        parameter.toggleable = true; 
+                                    } 
+                                });
+
+                                this.parameterList.push(parameter);
                             }
                             catch (e) {
                                 alert(e);
                             }
-                            
-                            //return this.selectedStatisticsGroupParameterList;
                         });
                         //console.log(this.selectedStatisticsGroupParameterList);
                     }

@@ -43,7 +43,6 @@ module StreamStats.Services {
         drawControlOption: any;
         WatershedEditDecisionList: Models.IEditDecisionList;
         clearStudyArea();
-        selectInitialParameters(paramList: Array<IParameter>);
         showDelineateButton: boolean;
         loadEditedStudyBoundary();
         loadWatershed(rcode:string, workspaceID: string): void
@@ -140,8 +139,7 @@ module StreamStats.Services {
             this.parametersLoaded = false;
             this.parametersLoading = false;
             this.doDelineateFlag = false;
-            this.studyAreaParameterList = [];
-            this.studyAreaParameterList.push(<IParameter>{ "name": "DRNAREA", "description": "Area that drains to a point on a stream", "code": "DRNAREA", "unit": "square miles"});
+            this.studyAreaParameterList = angular.fromJson(angular.toJson(configuration.alwaysSelectedParameters));
             this.regulationCheckResults = [];
             this.showAddRemoveButtons = false;
             this.WatershedEditDecisionList = new Models.WatershedEditDecisionList();
@@ -249,16 +247,6 @@ module StreamStats.Services {
                 this.canUpdate = true;
                 this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
             });
-        }
-
-        public selectInitialParameters(paramList: Array<any>) {
-            //make inital DRNAREA area selection
-            //angular.forEach(paramList, function (value, index) {
-            //    if (value.code = "DRNAREA") {
-                    
-            //        this.studyAreaService.studyAreaParameterList.push(item);
-            //    }
-            //});
         }
 
         public loadParameters() {

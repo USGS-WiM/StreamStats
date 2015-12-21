@@ -316,3 +316,7 @@ configuration.regions = [
     { "RegionID": "RRB", "Name": "Rainy River Basin", "Bounds": [[47.3, -89.5], [50, -96]] }
 
 ]//end regions
+
+configuration.alwaysSelectedParameters = [
+    { "name": "DRNAREA", "description": "Area that drains to a point on a stream", "code": "DRNAREA", "unit": "square miles", "checked": true, "toggleable":false }
+]
