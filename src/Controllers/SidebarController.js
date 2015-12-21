@@ -196,15 +196,12 @@ var StreamStats;
                 this.setProcedureType(3);
             };
             SidebarController.prototype.generateReport = function () {
-                var _this = this;
                 console.log('in estimateFlows');
                 if (this.nssService.selectedStatisticsGroupList.length > 0 && this.nssService.showFlowsTable) {
                     //need to loop over selectedStatisticsGroupList HERE
-                    this.nssService.selectedStatisticsGroupList.forEach(function (statGroup) {
-                        _this.nssService.estimateFlows(_this.studyAreaService.studyAreaParameterList, _this.regionService.selectedRegion.RegionID, statGroup.ID, _this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) {
-                            return elem.code;
-                        }).join(","));
-                    });
+                    this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList, this.regionService.selectedRegion.RegionID, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) {
+                        return elem.code;
+                    }).join(","));
                 }
                 this.reportService.openReport();
                 this.studyAreaService.reportGenerated = true;
@@ -228,6 +225,8 @@ var StreamStats;
                                         return;
                                 });
                                 //turn it on
+                                if (_this.checkArrayForObj(_this.studyAreaService.studyAreaParameterList, parameter) == -1)
+                                    _this.studyAreaService.studyAreaParameterList.push(parameter);
                                 parameter['checked'] = true;
                                 parameter['toggleable'] = false;
                             }

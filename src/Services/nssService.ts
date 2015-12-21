@@ -30,7 +30,7 @@ module StreamStats.Services {
         selectedStatisticsGroupList: Array<IStatisticsGroup>;
         loadStatisticsGroupTypes(rcode: string, regressionregion: string);
         loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregion: string, percentWeights: any);
-        estimateFlows(studyAreaParameterList: any, rcode: string, statisticsGroupID: string, regressionregion: string)
+        estimateFlows(studyAreaParameterList: any, rcode: string, regressionregion: string)
         showBasinCharacteristicsTable: boolean;
         showFlowsTable: boolean;
         clearNSSdata();
@@ -178,30 +178,30 @@ module StreamStats.Services {
                 });
         }
 
-        public estimateFlows(studyAreaParameterList: any, rcode: string, statisticsGroupID: string, regressionregion: string) {
-
-            this.toaster.pop('info', "Estimating Flows", "Please wait...", 0);
+        public estimateFlows(studyAreaParameterList: any, rcode: string, regressionregion: string) {
+      
             this.canUpdate = false;
-            if (!studyAreaParameterList && !rcode && !statisticsGroupID && !regressionregion) return;
-            console.log('in estimate flows method');
-
+            
             //loop over all selected StatisticsGroups
             this.selectedStatisticsGroupList.forEach((statGroup) => {
 
-                statGroup.RegressionRegions[0].Parameters.forEach((val) => {
-                    angular.forEach(studyAreaParameterList, function (value, index) {
-                        if (val.Code.toLowerCase() == value.code.toLowerCase()) {
-                            console.log('updating parameter in scenario object for: ', val.Code, ' from: ', val.Value, ' to: ', value.value);
-                            val.Value = value.value;
+                this.toaster.pop('info', "Estimating Flows for " + statGroup.Name, "Please wait...", 0);
+                console.log('in estimate flows method for ', statGroup.Name, statGroup);
+
+                statGroup.RegressionRegions[0].Parameters.forEach((regressionParam) => {
+                    studyAreaParameterList.forEach((param) => {
+                        console.log('search for matching params ', regressionParam.Code.toLowerCase(), param.code.toLowerCase());
+                        if (regressionParam.Code.toLowerCase() == param.code.toLowerCase()) {
+                            console.log('updating parameter in scenario object for: ', regressionParam.Code, ' from: ', regressionParam.Value, ' to: ', param.value);
+                            regressionParam.Value = param.value;
                         }
                     });
                 });
 
                 var updatedScenarioObject = angular.toJson([statGroup], null);
-                console.log('updated scenario object: ', updatedScenarioObject);
 
                 //do request
-                var url = configuration.baseurls['NSS'] + configuration.queryparams['estimateFlows'].format(rcode, statisticsGroupID, regressionregion);
+                var url = configuration.baseurls['NSS'] + configuration.queryparams['estimateFlows'].format(rcode, statGroup.ID, regressionregion);
                 var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, 1, 'json', updatedScenarioObject);
 
                 statGroup.Results = [];
@@ -227,12 +227,7 @@ module StreamStats.Services {
                     }).finally(() => {
                     this.canUpdate = true;
                 });
-
-
             });
-
-
-
         }
 
 
