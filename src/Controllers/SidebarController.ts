@@ -274,11 +274,10 @@ module StreamStats.Controllers {
 
 
                 //need to loop over selectedStatisticsGroupList HERE
-                this.nssService.selectedStatisticsGroupList.forEach((statGroup) => {
-                    this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList, this.regionService.selectedRegion.RegionID, statGroup.ID, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) {
-                        return elem.code;
-                    }).join(","));
-                });
+                this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList, this.regionService.selectedRegion.RegionID, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) {
+                    return elem.code;
+                }).join(","));
+
 
 
             }
@@ -314,6 +313,7 @@ module StreamStats.Controllers {
                             });
 
                             //turn it on
+                            if (this.checkArrayForObj(this.studyAreaService.studyAreaParameterList, parameter) == -1) this.studyAreaService.studyAreaParameterList.push(parameter);
                             parameter['checked'] = true;
                             parameter['toggleable'] = false;
                         }

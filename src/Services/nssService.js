@@ -134,27 +134,25 @@ var StreamStats;
                 }).finally(function () {
                 });
             };
-            nssService.prototype.estimateFlows = function (studyAreaParameterList, rcode, statisticsGroupID, regressionregion) {
+            nssService.prototype.estimateFlows = function (studyAreaParameterList, rcode, regressionregion) {
                 var _this = this;
-                this.toaster.pop('info', "Estimating Flows", "Please wait...", 0);
                 this.canUpdate = false;
-                if (!studyAreaParameterList && !rcode && !statisticsGroupID && !regressionregion)
-                    return;
-                console.log('in estimate flows method');
                 //loop over all selected StatisticsGroups
                 this.selectedStatisticsGroupList.forEach(function (statGroup) {
-                    statGroup.RegressionRegions[0].Parameters.forEach(function (val) {
-                        angular.forEach(studyAreaParameterList, function (value, index) {
-                            if (val.Code.toLowerCase() == value.code.toLowerCase()) {
-                                console.log('updating parameter in scenario object for: ', val.Code, ' from: ', val.Value, ' to: ', value.value);
-                                val.Value = value.value;
+                    _this.toaster.pop('info', "Estimating Flows for " + statGroup.Name, "Please wait...", 0);
+                    console.log('in estimate flows method for ', statGroup.Name, statGroup);
+                    statGroup.RegressionRegions[0].Parameters.forEach(function (regressionParam) {
+                        studyAreaParameterList.forEach(function (param) {
+                            console.log('search for matching params ', regressionParam.Code.toLowerCase(), param.code.toLowerCase());
+                            if (regressionParam.Code.toLowerCase() == param.code.toLowerCase()) {
+                                console.log('updating parameter in scenario object for: ', regressionParam.Code, ' from: ', regressionParam.Value, ' to: ', param.value);
+                                regressionParam.Value = param.value;
                             }
                         });
                     });
                     var updatedScenarioObject = angular.toJson([statGroup], null);
-                    console.log('updated scenario object: ', updatedScenarioObject);
                     //do request
-                    var url = configuration.baseurls['NSS'] + configuration.queryparams['estimateFlows'].format(rcode, statisticsGroupID, regressionregion);
+                    var url = configuration.baseurls['NSS'] + configuration.queryparams['estimateFlows'].format(rcode, statGroup.ID, regressionregion);
                     var request = new WiM.Services.Helpers.RequestInfo(url, true, 1, 'json', updatedScenarioObject);
                     statGroup.Results = [];
                     _this.Execute(request).then(function (response) {
