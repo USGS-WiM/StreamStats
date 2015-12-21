@@ -104,8 +104,7 @@ var StreamStats;
                 this.parametersLoaded = false;
                 this.parametersLoading = false;
                 this.doDelineateFlag = false;
-                this.studyAreaParameterList = [];
-                this.studyAreaParameterList.push({ "name": "DRNAREA", "description": "Area that drains to a point on a stream", "code": "DRNAREA", "unit": "square miles" });
+                this.studyAreaParameterList = angular.fromJson(angular.toJson(configuration.alwaysSelectedParameters));
                 this.regulationCheckResults = [];
                 this.showAddRemoveButtons = false;
                 this.WatershedEditDecisionList = new StreamStats.Models.WatershedEditDecisionList();
@@ -195,14 +194,6 @@ var StreamStats;
                     _this.canUpdate = true;
                     _this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
                 });
-            };
-            StudyAreaService.prototype.selectInitialParameters = function (paramList) {
-                //make inital DRNAREA area selection
-                //angular.forEach(paramList, function (value, index) {
-                //    if (value.code = "DRNAREA") {
-                //        this.studyAreaService.studyAreaParameterList.push(item);
-                //    }
-                //});
             };
             StudyAreaService.prototype.loadParameters = function () {
                 var _this = this;

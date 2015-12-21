@@ -123,7 +123,7 @@
 
                         <!--<div class="alert alert-warning" role="alert" ng-show="vm.nssService.statisticsGroupList.length == 0 && !vm.nssService.loadingStatisticsGroup">No Statistic Groups Available</div>-->
                         <div class="btn-toolbar" ng-if="vm.nssService.statisticsGroupList.length > 0">
-                            <button class="btn btn-sm btn-default" ng-class="vm.nssService.selectedStatisticsGroup == statisticsGroup ? 'btn-success': ''" ng-click="vm.setStatisticsGroup(statisticsGroup)" ng-repeat="statisticsGroup in vm.nssService.statisticsGroupList"><span>{{statisticsGroup.Name}} </span></button>
+                            <button class="btn btn-sm btn-default" ng-class="vm.checkArrayForObj(vm.nssService.selectedStatisticsGroupList, statisticsGroup) != -1 ? 'btn-success': ''" ng-click="vm.setStatisticsGroup(statisticsGroup)" ng-repeat="statisticsGroup in vm.nssService.statisticsGroupList"><span>{{statisticsGroup.Name}} </span></button>
                         </div>
                     </div>
                     <div class="well well-sm">
@@ -194,8 +194,8 @@
                         <form ng-init="vm.nssService.showBasinCharacteristicsTable = true" ng-show="vm.studyAreaService.parametersLoaded">
                             <checkbox large ng-model="vm.nssService.showBasinCharacteristicsTable" ></checkbox><span>&nbsp;&nbsp;Basin Characteristics Report</span>
                         </form>
-                        <form ng-init="vm.nssService.showFlowsTable = false" ng-show="vm.nssService.selectedStatisticsGroup">
-                            <checkbox large ng-model="vm.nssService.showFlowsTable" ></checkbox><span>&nbsp;&nbsp;Scenario Flow Report</span>
+                        <form ng-show="vm.nssService.selectedStatisticsGroupList">
+                            <checkbox large ng-model="vm.nssService.showFlowsTable" ></checkbox><span>&nbsp;&nbsp;Scenario Flow Reports</span>
                         </form>
 
 

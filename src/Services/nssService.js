@@ -43,12 +43,12 @@ var StreamStats;
                 _super.call(this, $http, configuration.baseurls['NSS']);
                 this.$q = $q;
                 this.toaster = toaster;
-                this._onselectedStatisticsGroupChanged = new WiM.Event.Delegate();
+                this._onSelectedStatisticsGroupChanged = new WiM.Event.Delegate();
                 this.clearNSSdata();
             }
-            Object.defineProperty(nssService.prototype, "onselectedStatisticsGroupChanged", {
+            Object.defineProperty(nssService.prototype, "onSelectedStatisticsGroupChanged", {
                 get: function () {
-                    return this._onselectedStatisticsGroupChanged;
+                    return this._onSelectedStatisticsGroupChanged;
                 },
                 enumerable: true,
                 configurable: true
@@ -57,11 +57,7 @@ var StreamStats;
             //-+-+-+-+-+-+-+-+-+-+-+-
             nssService.prototype.clearNSSdata = function () {
                 console.log('in clear nss data');
-                this.statisticsGroupList = [];
-                this.selectedStatisticsGroup = null;
-                this.selectedStatisticsGroupParameterList = [];
-                this.selectedStatisticsGroupScenario = [];
-                this.selectedStatisticsGroupScenarioResults = [];
+                this.selectedStatisticsGroupList = [];
                 this.canUpdate = true;
                 this.queriedRegions = false;
             };
@@ -93,34 +89,39 @@ var StreamStats;
                     _this.loadingStatisticsGroup = false;
                 });
             };
+            nssService.prototype.checkArrayForObj = function (arr, obj) {
+                for (var i = 0; i < arr.length; i++) {
+                    if (angular.equals(arr[i], obj)) {
+                        return i;
+                    }
+                }
+                ;
+                return -1;
+            };
             nssService.prototype.loadParametersByStatisticsGroup = function (rcode, statisticsGroupID, regressionregions, percentWeights) {
                 var _this = this;
                 this.toaster.pop('info', "Load Parameters by Scenario", "Please wait...", 0);
-                //var deferred = ng.IQService.defer();
                 console.log('in load StatisticsGroup parameters', rcode, statisticsGroupID, regressionregions);
                 if (!rcode && !statisticsGroupID && !regressionregions)
                     return;
                 var url = configuration.baseurls['NSS'] + configuration.queryparams['statisticsGroupParameterLookup'].format(rcode, statisticsGroupID, regressionregions);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
-                this.selectedStatisticsGroupParameterList = [];
                 this.Execute(request).then(function (response) {
                     console.log('loadParametersByStatisticsGroup response: ', response);
                     if (response.data[0].RegressionRegions[0].Parameters && response.data[0].RegressionRegions[0].Parameters.length > 0) {
-                        _this.selectedStatisticsGroupScenario = response.data;
-                        //add percentweights to regression regions
-                        _this.selectedStatisticsGroupScenario[0].RegressionRegions.forEach(function (item) {
-                            percentWeights.forEach(function (value) {
-                                if (item.Name == value.name)
-                                    item["PercentWeight"] = value.percent;
-                            });
-                        });
-                        response.data[0].RegressionRegions[0].Parameters.map(function (item) {
-                            try {
-                                //console.log(item);
-                                _this.selectedStatisticsGroupParameterList.push(item);
-                            }
-                            catch (e) {
-                                alert(e);
+                        //add Regression Regions to StatisticsGroupList and add percent weights
+                        _this.selectedStatisticsGroupList.forEach(function (statGroup) {
+                            if (response.data[0].StatisticGroupName == statGroup.Name) {
+                                statGroup['StatisticGroupName'] = statGroup.Name;
+                                statGroup['StatisticGroupID'] = statGroup.ID;
+                                response.data[0].RegressionRegions.forEach(function (regressionRegion) {
+                                    percentWeights.forEach(function (regressionRegionPercentWeight) {
+                                        if (regressionRegion.Name == regressionRegionPercentWeight.name)
+                                            regressionRegion["PercentWeight"] = regressionRegionPercentWeight.percent;
+                                    });
+                                });
+                                statGroup.RegressionRegions = response.data[0].RegressionRegions;
+                                _this._onSelectedStatisticsGroupChanged.raise(null, WiM.Event.EventArgs.Empty);
                             }
                         });
                     }
@@ -140,41 +141,42 @@ var StreamStats;
                 if (!studyAreaParameterList && !rcode && !statisticsGroupID && !regressionregion)
                     return;
                 console.log('in estimate flows method');
-                //swap out computed values in object
-                this.selectedStatisticsGroupScenario[0].RegressionRegions[0].Parameters.map(function (val) {
-                    angular.forEach(studyAreaParameterList, function (value, index) {
-                        if (val.Code.toLowerCase() == value.code.toLowerCase()) {
-                            console.log('updating parameter in scenario object for: ', val.Code, ' from: ', val.Value, ' to: ', value.value);
-                            val.Value = value.value;
-                        }
-                    });
-                });
-                var updatedScenarioObject = angular.toJson(this.selectedStatisticsGroupScenario, null);
-                console.log('updated scenario object: ', updatedScenarioObject);
-                //do request
-                var url = configuration.baseurls['NSS'] + configuration.queryparams['estimateFlows'].format(rcode, statisticsGroupID, regressionregion);
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, 1, 'json', updatedScenarioObject);
-                this.selectedStatisticsGroupScenarioResults = [];
-                this.Execute(request).then(function (response) {
-                    console.log(response);
-                    if (response.data[0].RegressionRegions[0].Results && response.data[0].RegressionRegions[0].Results.length > 0) {
-                        response.data[0].RegressionRegions[0].Results.map(function (item) {
-                            try {
-                                _this.selectedStatisticsGroupScenarioResults.push(item);
-                            }
-                            catch (e) {
-                                alert(e);
+                //loop over all selected StatisticsGroups
+                this.selectedStatisticsGroupList.forEach(function (statGroup) {
+                    statGroup.RegressionRegions[0].Parameters.forEach(function (val) {
+                        angular.forEach(studyAreaParameterList, function (value, index) {
+                            if (val.Code.toLowerCase() == value.code.toLowerCase()) {
+                                console.log('updating parameter in scenario object for: ', val.Code, ' from: ', val.Value, ' to: ', value.value);
+                                val.Value = value.value;
                             }
                         });
-                    }
-                    _this.toaster.clear();
-                    //sm when complete
-                }, function (error) {
-                    //sm when error
-                    _this.toaster.clear();
-                    _this.toaster.pop('error', "There was an error Estimating Flows", "Please retry", 5000);
-                }).finally(function () {
-                    _this.canUpdate = true;
+                    });
+                    var updatedScenarioObject = angular.toJson([statGroup], null);
+                    console.log('updated scenario object: ', updatedScenarioObject);
+                    //do request
+                    var url = configuration.baseurls['NSS'] + configuration.queryparams['estimateFlows'].format(rcode, statisticsGroupID, regressionregion);
+                    var request = new WiM.Services.Helpers.RequestInfo(url, true, 1, 'json', updatedScenarioObject);
+                    statGroup.Results = [];
+                    _this.Execute(request).then(function (response) {
+                        if (response.data[0].RegressionRegions[0].Results && response.data[0].RegressionRegions[0].Results.length > 0) {
+                            response.data[0].RegressionRegions[0].Results.map(function (item) {
+                                try {
+                                    statGroup.Results.push(item);
+                                }
+                                catch (e) {
+                                    alert(e);
+                                }
+                            });
+                        }
+                        _this.toaster.clear();
+                        //sm when complete
+                    }, function (error) {
+                        //sm when error
+                        _this.toaster.clear();
+                        _this.toaster.pop('error', "There was an error Estimating Flows", "Please retry", 5000);
+                    }).finally(function () {
+                        _this.canUpdate = true;
+                    });
                 });
             };
             return nssService;
