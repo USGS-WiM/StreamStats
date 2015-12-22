@@ -87,6 +87,7 @@ module StreamStats.Services {
         public clearNSSdata() {
             console.log('in clear nss data');
             this.selectedStatisticsGroupList = [];
+            this.statisticsGroupList = [];
             this.canUpdate = true;
             this.queriedRegions = false;
         }
@@ -100,7 +101,6 @@ module StreamStats.Services {
             var url = configuration.baseurls['NSS'] + configuration.queryparams['statisticsGroupLookup'].format(rcode, regressionregions);
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
 
-            this.statisticsGroupList = [];
             this.loadingStatisticsGroup = true;
 
             this.Execute(request).then(

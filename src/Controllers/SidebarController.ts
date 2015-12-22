@@ -304,7 +304,7 @@ module StreamStats.Controllers {
                 this.nssService.selectedStatisticsGroupList.forEach((statisticsGroup) => {
 
                     //get their parameters
-                    statisticsGroup['RegressionRegions'][0].Parameters.forEach((param) => {
+                    statisticsGroup.RegressionRegions[0].Parameters.forEach((param) => {
 
                         if (parameter.code.toLowerCase() == param.Code.toLowerCase()) {
 

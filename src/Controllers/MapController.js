@@ -362,15 +362,13 @@ var StreamStats;
                     map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]], {});
                 });
                 //query basin against regression regions
-                this.queryRegressionRegions();
+                if (!this.nssService.queriedRegions)
+                    this.queryRegressionRegions();
             };
             MapController.prototype.queryRegressionRegions = function () {
                 this.nssService.queriedRegions = true;
                 //send watershed to map service query that returns list of regression regions that overlap the watershed
                 this.studyArea.queryRegressionRegions();
-                //region placeholder
-                //this.studyArea.selectedStudyArea.RegressionRegions = ['290'];
-                //this.nssService.loadStatisticsGroupTypes(this.regionServices.selectedRegion.RegionID, this.studyArea.selectedStudyArea.RegressionRegions[0]);
             };
             MapController.prototype.mapBoundsChange = function (oldValue, newValue) {
                 this.nomnimalZoomLevel = this.scaleLookup(this.center.zoom);

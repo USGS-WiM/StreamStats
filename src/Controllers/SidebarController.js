@@ -218,7 +218,7 @@ var StreamStats;
                     //loop over whole statisticsgroups
                     _this.nssService.selectedStatisticsGroupList.forEach(function (statisticsGroup) {
                         //get their parameters
-                        statisticsGroup['RegressionRegions'][0].Parameters.forEach(function (param) {
+                        statisticsGroup.RegressionRegions[0].Parameters.forEach(function (param) {
                             if (parameter.code.toLowerCase() == param.Code.toLowerCase()) {
                                 configuration.alwaysSelectedParameters.forEach(function (alwaysSelectedParam) {
                                     if (alwaysSelectedParam.name == parameter.code)
