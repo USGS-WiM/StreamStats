@@ -58,8 +58,6 @@ var StreamStats;
             }
             return MapDefault;
         })();
-        //examples/access-leaflet-object-example.html
-        //http://www.codeitive.com/0JiejWjjXg/two-or-multiple-geojson-layers-in-angular-leaflet-directive.html
         var MapController = (function () {
             function MapController($scope, toaster, $location, $stateParams, leafletBoundsHelper, leafletData, search, region, studyArea, StatisticsGroup) {
                 var _this = this;
@@ -70,7 +68,6 @@ var StreamStats;
                 this.bounds = null;
                 this.controls = null;
                 this.markers = null;
-                this.geojson = null;
                 this.events = null;
                 this.regionLayer = null;
                 $scope.vm = this;
@@ -151,12 +148,10 @@ var StreamStats;
                 this.layers = {
                     baselayers: configuration.basemaps,
                     overlays: configuration.overlayedLayers,
-                    markers: this.markers,
-                    geojson: this.geojson
+                    markers: this.markers
                 };
                 this.mapDefaults = new MapDefault(null, 3, false);
                 this.markers = {};
-                this.geojson = {};
                 this.regionLayer = {};
                 //add custom controls
                 this.controls = {
@@ -226,9 +221,9 @@ var StreamStats;
             };
             MapController.prototype.basinEditor = function () {
                 var _this = this;
-                var basin = angular.fromJson(angular.toJson(this.geojson['globalwatershed'].data.features[0]));
+                var basin = angular.fromJson(angular.toJson(this.layers.overlays['globalwatershed']));
                 var basinConverted = [];
-                basin.geometry.coordinates[0].forEach(function (item) {
+                basin.data.features[0].geometry.coordinates[0].forEach(function (item) {
                     basinConverted.push([item[1], item[0]]);
                 });
                 this.leafletData.getMap().then(function (map) {
@@ -270,14 +265,34 @@ var StreamStats;
                                 _this.studyArea.WatershedEditDecisionList.remove.push(layer.toGeoJSON());
                             }
                             //set studyArea basin to new edited polygon
-                            basin.geometry.coordinates[0] = [];
+                            basin.data.features[0].geometry.coordinates[0] = [];
                             editPolygon.forEach(function (item) {
-                                basin.geometry.coordinates[0].push([item[1], item[0]]);
+                                basin.data.features[0].geometry.coordinates[0].push([item[1], item[0]]);
                             });
-                            console.log('edited basin', basin);
-                            //show new polygon
-                            _this.geojson['globalwatershed'].data.features[0] = basin;
+                            console.log('edited basin', basin, basin.data.features[0].geometry.coordinates[0].length, _this.layers.overlays['globalwatershed'].data.features[0].geometry.coordinates[0].length);
+                            _this.toaster.pop("info", "Submitting your edit", "Please wait...", 5000);
+                            //clear old watershed
+                            _this.removeOverlayLayers('globalwatershed', false);
+                            //clear edit layer
                             drawnItems.clearLayers();
+                            //show new polygon
+                            setTimeout(function () {
+                                _this.layers.overlays['globalwatershed'] = {
+                                    name: 'Edited Basin Boundary',
+                                    type: 'geoJSONShape',
+                                    data: basin.data,
+                                    visible: true,
+                                    layerOptions: {
+                                        style: {
+                                            fillColor: "yellow",
+                                            weight: 2,
+                                            opacity: 1,
+                                            color: 'white',
+                                            fillOpacity: 0.5
+                                        }
+                                    }
+                                };
+                            }, 100);
                             console.log('editedAreas', angular.toJson(_this.studyArea.WatershedEditDecisionList));
                         });
                     });
@@ -304,7 +319,7 @@ var StreamStats;
             MapController.prototype.onSelectedStudyAreaChanged = function () {
                 var _this = this;
                 console.log('study area changed');
-                this.geojson = {};
+                this.removeOverlayLayers('globalwatershed', true);
                 if (!this.studyArea.selectedStudyArea || !this.studyArea.selectedStudyArea.Features)
                     return;
                 var lat = this.studyArea.selectedStudyArea.Pourpoint.Latitude;
@@ -315,49 +330,61 @@ var StreamStats;
                     var item = angular.fromJson(angular.toJson(layer));
                     console.log('in onselectedstudyarea changed', item.name);
                     if (item.name == 'globalwatershed') {
-                        _this.geojson[item.name] = {
+                        _this.layers.overlays[item.name] = {
+                            name: 'Basin Boundary',
+                            type: 'geoJSONShape',
                             data: item.feature,
-                            style: {
-                                fillColor: "yellow",
-                                weight: 2,
-                                opacity: 1,
-                                color: 'white',
-                                fillOpacity: 0.5
+                            visible: true,
+                            layerOptions: {
+                                style: {
+                                    fillColor: "yellow",
+                                    weight: 2,
+                                    opacity: 1,
+                                    color: 'white',
+                                    fillOpacity: 0.5
+                                }
                             }
                         };
                     }
                     if (item.name == 'globalwatershedpoint') {
-                        _this.geojson[item.name] = {
+                        _this.layers.overlays[item.name] = {
+                            name: 'Basin Clicked Point',
+                            type: 'geoJSONShape',
                             data: item.feature,
-                            onEachFeature: function (feature, layer) {
-                                var popupContent = '<strong>Latitude: </strong>' + lat + '</br><strong>Longitude: </strong>' + lng + '</br><strong>Region: </strong>' + rcode + '</br><strong>WorkspaceID: </strong>' + workspaceID + '</br>';
-                                angular.forEach(feature.properties, function (value, key) {
-                                    popupContent += '<strong>' + key + ': </strong>' + value + '</br>';
-                                });
-                                layer.bindPopup(popupContent);
+                            visible: true,
+                            layerOptions: {
+                                onEachFeature: function (feature, layer) {
+                                    var popupContent = '<strong>Latitude: </strong>' + lat + '</br><strong>Longitude: </strong>' + lng + '</br><strong>Region: </strong>' + rcode + '</br><strong>WorkspaceID: </strong>' + workspaceID + '</br>';
+                                    angular.forEach(feature.properties, function (value, key) {
+                                        popupContent += '<strong>' + key + ': </strong>' + value + '</br>';
+                                    });
+                                    layer.bindPopup(popupContent);
+                                }
                             }
                         };
                     }
-                    if (item.name == 'regulatedWatershed') {
+                    if (item.name == 'globalwatershedregulated') {
                         console.log('showing regulated watershed');
-                        _this.geojson[item.name] = {
+                        _this.layers.overlays[item.name] = {
+                            name: 'Basin Boundary (Regulated Area)',
+                            type: 'geoJSONShape',
                             data: item.feature,
-                            style: {
-                                fillColor: "red",
-                                weight: 2,
-                                opacity: 1,
-                                color: 'white',
-                                fillOpacity: 0.5
+                            visible: true,
+                            layerOptions: {
+                                style: {
+                                    fillColor: "red",
+                                    weight: 2,
+                                    opacity: 1,
+                                    color: 'white',
+                                    fillOpacity: 0.5
+                                }
                             }
                         };
                     }
                 });
-                console.log('geojson', this.geojson);
                 //clear out this.markers
                 this.markers = {};
-                //console.log(angular.toJson(this.geojson));    
-                var bbox = this.geojson['globalwatershed'].data.features[0].bbox;
-                //this.bounds = this.leafletBoundsHelperService.createBoundsFromArray([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
+                var bbox = this.layers.overlays['globalwatershed'].data.features[0].bbox;
                 this.leafletData.getMap().then(function (map) {
                     map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]], {});
                 });

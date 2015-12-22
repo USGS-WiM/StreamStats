@@ -49,7 +49,6 @@ module StreamStats.Controllers {
         baselayers: Object;
         overlays: ILayer;
         markers: Object;
-        geojson: Object;
     }
     interface ILayer {
         name: string;
@@ -68,7 +67,6 @@ module StreamStats.Controllers {
         layers: IMapLayers;
         controls: Object;
         markers: Object;
-        geojson: Object;
         bounds: Object;
 
     }
@@ -125,8 +123,7 @@ module StreamStats.Controllers {
             this.zoomControl = zmCtrl;
         }
     }
-    //examples/access-leaflet-object-example.html
-    //http://www.codeitive.com/0JiejWjjXg/two-or-multiple-geojson-layers-in-angular-leaflet-directive.html
+
     class MapController implements IMapController {
         //Events
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -153,7 +150,6 @@ module StreamStats.Controllers {
 
         public controls: Object = null;
         public markers: Object = null;
-        public geojson: Object = null;
         public events: Object = null;
         public regionLayer: Object = null;
         public drawControl: any;    
@@ -254,12 +250,10 @@ module StreamStats.Controllers {
             this.layers = {
                 baselayers: configuration.basemaps,
                 overlays: configuration.overlayedLayers,
-                markers: this.markers,
-                geojson: this.geojson
+                markers: this.markers
             }
             this.mapDefaults = new MapDefault(null, 3, false);
             this.markers = {};
-            this.geojson = {};
             this.regionLayer = {};     
             //add custom controls
             this.controls = {
@@ -343,9 +337,9 @@ module StreamStats.Controllers {
 
         private basinEditor() {
 
-            var basin = angular.fromJson(angular.toJson(this.geojson['globalwatershed'].data.features[0]));
+            var basin = angular.fromJson(angular.toJson(this.layers.overlays['globalwatershed']));
             var basinConverted = [];
-            basin.geometry.coordinates[0].forEach((item) => { basinConverted.push([item[1], item[0]]) });
+            basin.data.features[0].geometry.coordinates[0].forEach((item) => { basinConverted.push([item[1], item[0]]) });
 
             this.leafletData.getMap().then((map: any) => {
                 this.leafletData.getLayers().then((maplayers: any) => {
@@ -396,13 +390,37 @@ module StreamStats.Controllers {
                         }
 
                         //set studyArea basin to new edited polygon
-                        basin.geometry.coordinates[0] = [];
-                        editPolygon.forEach((item) => { basin.geometry.coordinates[0].push([item[1], item[0]]) });
-                        console.log('edited basin', basin);
-                        
-                        //show new polygon
-                        this.geojson['globalwatershed'].data.features[0] = basin;
+                        basin.data.features[0].geometry.coordinates[0] = [];  
+                        editPolygon.forEach((item) => { basin.data.features[0].geometry.coordinates[0].push([item[1], item[0]]) });
+                        console.log('edited basin', basin, basin.data.features[0].geometry.coordinates[0].length, this.layers.overlays['globalwatershed'].data.features[0].geometry.coordinates[0].length);
+                        this.toaster.pop("info", "Submitting your edit", "Please wait...", 5000)
+
+                        //clear old watershed
+                        this.removeOverlayLayers('globalwatershed', false);
+                        //clear edit layer
                         drawnItems.clearLayers();
+
+                        //show new polygon
+                        setTimeout(() => {
+                            
+                            this.layers.overlays['globalwatershed'] = {
+                                name: 'Edited Basin Boundary',
+                                type: 'geoJSONShape',
+                                data: basin.data,
+                                visible: true,
+                                layerOptions: {
+                                    style: {
+                                        fillColor: "yellow",
+                                        weight: 2,
+                                        opacity: 1,
+                                        color: 'white',
+                                        fillOpacity: 0.5
+                                    }
+                                }
+                            }
+                        }, 100);
+
+
                         console.log('editedAreas', angular.toJson(this.studyArea.WatershedEditDecisionList));
                     });
                 });
@@ -431,7 +449,7 @@ module StreamStats.Controllers {
         private onSelectedStudyAreaChanged() {
 
             console.log('study area changed');
-            this.geojson = {};
+            this.removeOverlayLayers('globalwatershed', true);
 
             if (!this.studyArea.selectedStudyArea || !this.studyArea.selectedStudyArea.Features) return;
 
@@ -447,57 +465,66 @@ module StreamStats.Controllers {
                 console.log('in onselectedstudyarea changed', item.name);
 
                 if (item.name == 'globalwatershed') {
-                    this.geojson[item.name] = {
+                    this.layers.overlays[item.name] = {
+                        name: 'Basin Boundary',
+                        type: 'geoJSONShape',
                         data: item.feature,
-                        style: {
-                            fillColor: "yellow",
-                            weight: 2,
-                            opacity: 1,
-                            color: 'white',
-                            fillOpacity: 0.5
+                        visible: true,
+                        layerOptions: {
+                            style: {
+                                fillColor: "yellow",
+                                weight: 2,
+                                opacity: 1,
+                                color: 'white',
+                                fillOpacity: 0.5
+                            }
                         }
                     }
                 }
                 if (item.name == 'globalwatershedpoint') {
-                    this.geojson[item.name] = {
+                    this.layers.overlays[item.name] = {
+                        name: 'Basin Clicked Point',
+                        type: 'geoJSONShape',
                         data: item.feature,
-                        onEachFeature: function (feature, layer) {
-                            var popupContent = '<strong>Latitude: </strong>' + lat + '</br><strong>Longitude: </strong>' + lng + '</br><strong>Region: </strong>' + rcode + '</br><strong>WorkspaceID: </strong>' + workspaceID + '</br>';
-                            angular.forEach(feature.properties, function (value, key) {
-                                popupContent += '<strong>' + key + ': </strong>' + value + '</br>';
-                            });
-                            layer.bindPopup(popupContent);
+                        visible: true,
+                        layerOptions: {
+                            onEachFeature: function (feature, layer) {
+                                var popupContent = '<strong>Latitude: </strong>' + lat + '</br><strong>Longitude: </strong>' + lng + '</br><strong>Region: </strong>' + rcode + '</br><strong>WorkspaceID: </strong>' + workspaceID + '</br>';
+                                angular.forEach(feature.properties, function (value, key) {
+                                    popupContent += '<strong>' + key + ': </strong>' + value + '</br>';
+                                });
+                                layer.bindPopup(popupContent);
+                            }
                         }
                     }
                 }
 
-                if (item.name == 'regulatedWatershed') {
+                if (item.name == 'globalwatershedregulated') {
                     console.log('showing regulated watershed');
-                    this.geojson[item.name] = {
+                    this.layers.overlays[item.name] = {
+                        name: 'Basin Boundary (Regulated Area)',
+                        type: 'geoJSONShape',
                         data: item.feature,
-                        style: {
-                            fillColor: "red",
-                            weight: 2,
-                            opacity: 1,
-                            color: 'white',
-                            fillOpacity: 0.5
+                        visible: true,
+                        layerOptions: {
+                            style: {
+                                fillColor: "red",
+                                weight: 2,
+                                opacity: 1,
+                                color: 'white',
+                                fillOpacity: 0.5
+                            }
                         }
                     }
                 }
             });
 
-            console.log('geojson', this.geojson);
-
             //clear out this.markers
             this.markers = {};
-
-            //console.log(angular.toJson(this.geojson));    
-            var bbox = this.geojson['globalwatershed'].data.features[0].bbox;
-            //this.bounds = this.leafletBoundsHelperService.createBoundsFromArray([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
+ 
+            var bbox = this.layers.overlays['globalwatershed'].data.features[0].bbox;
             this.leafletData.getMap().then((map: any) => {
                 map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]], {
-                    //offset width of sidebar from left, 50px from top
-                    //paddingTopLeft: [document.getElementById("sidebar").offsetWidth,50]
                 });
             });
 
@@ -642,7 +669,7 @@ module StreamStats.Controllers {
             });
             console.log('queryList', queryString);
 
-            this.toaster.pop("info", "Information", "Validating your clicked point...", 5000)
+            this.toaster.pop("info", "Information", "Validating your clicked point...", 5000);
 
             this.leafletData.getMap().then((map: any) => {
                 this.leafletData.getLayers().then((maplayers: any) => {

@@ -34,7 +34,7 @@ var StreamStats;
             function ReportController($scope, $modalInstance, studyArea, StatisticsGroup, leafletData) {
                 var _this = this;
                 this.markers = null;
-                this.geojson = null;
+                this.overlays = null;
                 this.center = null;
                 this.layers = null;
                 $scope.vm = this;
@@ -61,30 +61,34 @@ var StreamStats;
                 this.center = new Center(39, -96, 4);
                 this.layers = {
                     baselayers: configuration.basemaps,
-                    geojson: this.geojson
+                    overlays: {}
                 };
-                this.geojson = {};
                 L.Icon.Default.imagePath = 'images';
             };
             ReportController.prototype.showFeatures = function () {
                 var _this = this;
                 if (!this.studyAreaService.selectedStudyArea)
                     return;
-                this.geojson = {};
+                this.overlays = {};
                 this.studyAreaService.selectedStudyArea.Features.forEach(function (item) {
                     console.log('in each loop', item.name);
                     if (item.name == 'globalwatershed') {
-                        _this.geojson[item.name] = {
+                        _this.layers.overlays[item.name] = {
+                            name: 'Basin Boundary',
+                            type: 'geoJSONShape',
                             data: item.feature,
-                            style: {
-                                fillColor: "yellow",
-                                weight: 2,
-                                opacity: 1,
-                                color: 'white',
-                                fillOpacity: 0.5
+                            visible: true,
+                            layerOptions: {
+                                style: {
+                                    fillColor: "yellow",
+                                    weight: 2,
+                                    opacity: 1,
+                                    color: 'white',
+                                    fillOpacity: 0.5
+                                }
                             }
                         };
-                        var bbox = _this.geojson['globalwatershed'].data.features[0].bbox;
+                        var bbox = _this.layers.overlays[item.name].data.features[0].bbox;
                         _this.leafletData.getMap().then(function (map) {
                             //method to reset the map for modal weirdness
                             map.invalidateSize();
@@ -101,20 +105,28 @@ var StreamStats;
                         });
                     }
                     if (item.name == 'globalwatershedpoint') {
-                        _this.geojson[item.name] = {
-                            data: item.feature
+                        _this.layers.overlays[item.name] = {
+                            name: 'Basin Clicked Point',
+                            type: 'geoJSONShape',
+                            data: item.feature,
+                            visible: true,
                         };
                     }
-                    if (item.name == 'regulatedWatershed') {
+                    if (item.name == 'globalwatershedregulated') {
                         console.log('showing regulated watershed');
-                        _this.geojson[item.name] = {
+                        _this.layers.overlays[item.name] = {
+                            name: 'Basin Boundary (Regulated Area)',
+                            type: 'geoJSONShape',
                             data: item.feature,
-                            style: {
-                                fillColor: "red",
-                                weight: 2,
-                                opacity: 1,
-                                color: 'white',
-                                fillOpacity: 0.5
+                            visible: true,
+                            layerOptions: {
+                                style: {
+                                    fillColor: "red",
+                                    weight: 2,
+                                    opacity: 1,
+                                    color: 'white',
+                                    fillOpacity: 0.5
+                                }
                             }
                         };
                     }
