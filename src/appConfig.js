@@ -101,28 +101,10 @@ configuration.basemaps =
         layer: "Gray",
         visible: false
     },
-    darkgray: {
-        name: "ESRI Dark Gray",
-        type: "agsBase",
-        layer: "DarkGray",
-        visible: false
-    },
     imagery: {
         name: "ESRI Imagery",
         type: "agsBase",
         layer: "Imagery",
-        visible: false
-    },
-    shadedrelief: {
-        name: "ESRI Shaded Relief",
-        type: "agsBase",
-        layer: "ShadedRelief",
-        visible: false
-    },
-    terrain: {
-        name: "ESRI Terrain",
-        type: "agsBase",
-        layer: "Terrain",
         visible: false
     },
     "MapquestOAM": {

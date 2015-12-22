@@ -40,7 +40,7 @@ module StreamStats.Controllers {
     }
     interface IMapLayers {
         baselayers: Object;
-        geojson: Object;
+        overlays: Object;
     }
     interface ILayer {
         name: string;
@@ -72,7 +72,7 @@ module StreamStats.Controllers {
         private studyAreaService: Services.IStudyAreaService;
         private nssService: Services.InssService;
         public markers: Object = null;
-        public geojson: Object = null;
+        public overlays: Object = null;
         public center: ICenter = null;
         public bounds: any;
         public layers: IMapLayers = null;
@@ -114,33 +114,37 @@ module StreamStats.Controllers {
             this.center = new Center(39, -96, 4);
             this.layers = {
                 baselayers: configuration.basemaps,
-                geojson: this.geojson
+                overlays: {}
             }
-            this.geojson = {};
             L.Icon.Default.imagePath = 'images';
         } 
 
         private showFeatures(): void { 
 
             if (!this.studyAreaService.selectedStudyArea) return;
-            this.geojson = {};
+            this.overlays = {};
             this.studyAreaService.selectedStudyArea.Features.forEach((item) => {
 
                 console.log('in each loop', item.name);
 
                 if (item.name == 'globalwatershed') {
-                    this.geojson[item.name] = {
+                    this.layers.overlays[item.name] = {
+                        name: 'Basin Boundary',
+                        type: 'geoJSONShape',
                         data: item.feature,
-                        style: {
-                            fillColor: "yellow",
-                            weight: 2,
-                            opacity: 1,
-                            color: 'white',
-                            fillOpacity: 0.5
+                        visible: true,
+                        layerOptions: {
+                            style: {
+                                fillColor: "yellow",
+                                weight: 2,
+                                opacity: 1,
+                                color: 'white',
+                                fillOpacity: 0.5
+                            }
                         }
                     }
 
-                    var bbox = this.geojson['globalwatershed'].data.features[0].bbox;
+                    var bbox = this.layers.overlays[item.name].data.features[0].bbox;
                     this.leafletData.getMap().then((map: any) => {
                         //method to reset the map for modal weirdness
                         map.invalidateSize();
@@ -157,21 +161,29 @@ module StreamStats.Controllers {
                     });
                 }
                 if (item.name == 'globalwatershedpoint') {
-                    this.geojson[item.name] = {
-                        data: item.feature
+                    this.layers.overlays[item.name] = {
+                        name: 'Basin Clicked Point',
+                        type: 'geoJSONShape',
+                        data: item.feature,
+                        visible: true,
                     }
                 }
 
-                if (item.name == 'regulatedWatershed') {
+                if (item.name == 'globalwatershedregulated') {
                     console.log('showing regulated watershed');
-                    this.geojson[item.name] = {
+                    this.layers.overlays[item.name] = {
+                        name: 'Basin Boundary (Regulated Area)',
+                        type: 'geoJSONShape',
                         data: item.feature,
-                        style: {
-                            fillColor: "red",
-                            weight: 2,
-                            opacity: 1,
-                            color: 'white',
-                            fillOpacity: 0.5
+                        visible: true,
+                        layerOptions: {
+                            style: {
+                                fillColor: "red",
+                                weight: 2,
+                                opacity: 1,
+                                color: 'white',
+                                fillOpacity: 0.5
+                            }
                         }
                     }
                 }
