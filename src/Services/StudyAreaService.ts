@@ -96,6 +96,7 @@ module StreamStats.Services {
         public reportGenerated: boolean;
         public regressionRegionQueryComplete: boolean;
         public regressionRegionQueryLoading: boolean;
+        public servicesURL: string;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -106,6 +107,7 @@ module StreamStats.Services {
             this.toaster = toaster;
             this.clearStudyArea();
             this.showDelineateButton = false;
+            this.servicesURL = configuration.baseurls['StreamStatsServices'];
            
         }
         //Methods

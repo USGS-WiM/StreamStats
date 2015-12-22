@@ -196,7 +196,7 @@ a{
     .dropdown-menu{
     max-height: 150px;
     width: 90%;
-    overflow-y:scroll; 
+    /*overflow-y:scroll;*/ 
   }
 /*
   .list-group-body{
