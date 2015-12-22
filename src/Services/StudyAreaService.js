@@ -245,6 +245,7 @@ var StreamStats;
                 this.Execute(request).then(function (response) {
                     console.log(response.data);
                     _this.toaster.clear();
+                    _this.regressionRegionQueryComplete = true;
                     if (response.data.error) {
                         console.log('query error');
                         _this.toaster.pop('error', "There was an error querying regression regions", response.data.error.message, 5000);
@@ -252,13 +253,12 @@ var StreamStats;
                     }
                     if (response.data.length == 0) {
                         console.log('query error');
-                        _this.toaster.pop('error', "Regression region query failed", "This type of query may not be supported here at this time", 0);
+                        _this.toaster.pop('error', "Regression region query failed", "This type of query may not be supported here at this time", 5000);
                         return;
                     }
                     if (response.data.length > 0) {
                         console.log('query success');
                         _this.selectedStudyArea.RegressionRegions = response.data;
-                        _this.regressionRegionQueryComplete = true;
                         _this.toaster.pop('success', "Regression regions were succcessfully queries", "Please continue", 5000);
                     }
                 }, function (error) {

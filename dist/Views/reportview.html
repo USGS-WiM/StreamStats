@@ -85,20 +85,25 @@
                 <h4>Basin Characteristics</h4>
                 <table class="table table-condensed">
                     <thead class="param-table">
-                    <tr>
-                        <th>Parameter</th>
-                        <th>Value</th>
-                        <th>Unit</th>
-                    </tr>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Value</th> 
+                            <th ng-show="vm.studyAreaService.isRegulated">Unregulated Value</th>
+                            <th ng-show="vm.studyAreaService.isRegulated">Regulated Value</th>
+                            <th>Unit</th>
+                        </tr>
                     </thead>
                     <tbody>
                         <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList">
                             <td ng-bind="parameter.name"></td>
                             <td ng-bind="parameter.value"></td>
+                            <td ng-show="vm.studyAreaService.isRegulated" ng-bind="parameter.unRegulatedValue.toFixed(2)"></td>
+                            <td ng-show="vm.studyAreaService.isRegulated" ng-bind="parameter.regulatedValue.toFixed(2)"></td>
                             <td ng-bind="parameter.unit"></td>
                         </tr>
                     </tbody>
-                </table>
+                </table> 
+                <div class="alert alert-warning" role="alert" ng-show="vm.studyAreaService.isRegulated">This watershed is regulated</div>
             </div>
             
             <!--Parameter Table for Flow Report-->

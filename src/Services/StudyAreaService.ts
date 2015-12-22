@@ -313,8 +313,8 @@ module StreamStats.Services {
             this.Execute(request).then(
                 (response: any) => {
                     console.log(response.data);
-
                     this.toaster.clear();
+                    this.regressionRegionQueryComplete = true;
 
                     if (response.data.error) {
                         console.log('query error');
@@ -324,14 +324,13 @@ module StreamStats.Services {
 
                     if (response.data.length == 0) {
                         console.log('query error');
-                        this.toaster.pop('error', "Regression region query failed", "This type of query may not be supported here at this time", 0);
+                        this.toaster.pop('error', "Regression region query failed", "This type of query may not be supported here at this time", 5000);
                         return;
                     }
 
                     if (response.data.length > 0) {
                         console.log('query success');
                         this.selectedStudyArea.RegressionRegions = response.data;
-                        this.regressionRegionQueryComplete = true;
                         this.toaster.pop('success', "Regression regions were succcessfully queries", "Please continue", 5000);
                     }
 

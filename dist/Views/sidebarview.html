@@ -69,7 +69,7 @@
                         <button id="delineateButton" type="button" class="btn btn-sm btn-info" ng-click="vm.startDelineate()" ng-class="vm.studyAreaService.doDelineateFlag ? 'btn-warning' : 'btn-info'" ng-hide="vm.studyAreaService.selectedStudyArea.Features"><i  ng-class="vm.studyAreaService.canUpdate ? 'fa fa-map-marker' : 'fa fa-refresh fa-spin disabled'"></i>&nbsp;&nbsp;<span ng-show="vm.studyAreaService.canUpdate">Delineate</span><span ng-show="!vm.studyAreaService.canUpdate">Delineating Basin, please wait...</span></button>
                      </div>   
 
-                    <button type="button" class="btn btn-sm btn-info" ng-if="this.studyAreaService.regressionRegionQueryComplete || vm.studyAreaService.regressionRegionQueryLoading" ng-click="vm.studyAreaService.queryRegressionRegions()"><span ng-show="vm.studyAreaService.regressionRegionQueryLoading"><i ng-class="vm.studyAreaService.regressionRegionQueryLoading ? 'fa fa-refresh fa-spin disabled' : ''"></i>&nbsp;&nbsp;Querying Regression Regions</span><span ng-show="vm.studyAreaService.regressionRegionQueryLoaded"><i class="fa fa-refresh"></i>&nbsp;&nbsp;Re-query Regression Regions</span></button>
+                    <button type="button" class="btn btn-sm btn-info" ng-show="this.studyAreaService.regressionRegionQueryComplete || vm.studyAreaService.regressionRegionQueryLoading" ng-click="vm.studyAreaService.queryRegressionRegions()"><span ng-show="vm.studyAreaService.regressionRegionQueryLoading"><i ng-class="vm.studyAreaService.regressionRegionQueryLoading ? 'fa fa-refresh fa-spin disabled' : ''"></i>&nbsp;&nbsp;Querying Regression Regions</span><span ng-show="vm.studyAreaService.regressionRegionQueryLoaded"><i class="fa fa-refresh"></i>&nbsp;&nbsp;Re-query Regression Regions</span></button>
                     
                     <div ng-show="vm.studyAreaService.regressionRegionQueryComplete">
 
@@ -95,15 +95,14 @@
                             </div>
                         </div> 
 
-                        <div class="well well-sm" style="margin-top:20px;">
+                        <div class="well well-sm" ng-show="vm.regionService.selectedRegion.RegionID == 'CO'">
                             <strong>State/Region Specific Functions</strong>
                             <p>The following additional functions area available for {{vm.regionService.selectedRegion.Name}}.</p>
                             <div class="form-group">
-                                <button ng-show="vm.regionService.selectedRegion.RegionID == 'CO'" ng-click="vm.checkRegulation()" type="button" class="btn btn-sm btn-primary"><i ng-class="vm.studyAreaService.regulationCheckComplete ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Check for upstream regulation</button>
+                                <button  ng-click="vm.checkRegulation()" type="button" class="btn btn-sm btn-primary"><i ng-class="vm.studyAreaService.regulationCheckComplete ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Check for upstream regulation</button>
                             </div>
 
                             <div class="alert alert-success" role="alert" ng-show="vm.studyAreaService.isRegulated !== null">Upstream Regulation check has been completed.  There is <strong ng-show="vm.studyAreaService.isRegulated" >{{vm.studyAreaService.regulationCheckResults.percentarearegulated.toFixed(2)}} percent</strong><strong ng-show="!vm.studyAreaService.isRegulated">NO</strong> regulation in this watershed.</div>
-
                         </div> 
                         
                     </div>                            
@@ -119,9 +118,8 @@
 
                     <div class="well well-sm">
                         <h5>Regression Based Scenarios</h5>
-                        <div class="alert alert-info" role="alert" ng-show="vm.nssService.statisticsGroupList.length == 0 && !vm.nssService.loadingStatisticsGroup || vm.nssService.loadingStatisticsGroup">Failed to load scenarios</div>
+                        <div class="alert alert-info" role="alert" ng-show="vm.nssService.statisticsGroupList.length == 0 && !vm.nssService.loadingStatisticsGroup || vm.nssService.loadingStatisticsGroup">Failed to load scenarios or no scenarios available</div>
 
-                        <!--<div class="alert alert-warning" role="alert" ng-show="vm.nssService.statisticsGroupList.length == 0 && !vm.nssService.loadingStatisticsGroup">No Statistic Groups Available</div>-->
                         <div class="btn-toolbar" ng-if="vm.nssService.statisticsGroupList.length > 0">
                             <button class="btn btn-sm btn-default" ng-class="vm.checkArrayForObj(vm.nssService.selectedStatisticsGroupList, statisticsGroup) != -1 ? 'btn-primary': ''" ng-click="vm.setStatisticsGroup(statisticsGroup)" ng-repeat="statisticsGroup in vm.nssService.statisticsGroupList"><span>{{statisticsGroup.Name}} </span></button>
                         </div>
@@ -194,7 +192,7 @@
                         <form ng-init="vm.nssService.showBasinCharacteristicsTable = true" ng-show="vm.studyAreaService.parametersLoaded">
                             <checkbox large ng-model="vm.nssService.showBasinCharacteristicsTable" ></checkbox><span>&nbsp;&nbsp;Basin Characteristics Report</span>
                         </form>
-                        <form ng-show="vm.nssService.selectedStatisticsGroupList">
+                        <form ng-show="vm.nssService.selectedStatisticsGroupList.length > 0">
                             <checkbox large ng-model="vm.nssService.showFlowsTable" ></checkbox><span>&nbsp;&nbsp;Scenario Flow Reports</span>
                         </form>
 
