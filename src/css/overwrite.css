@@ -259,6 +259,10 @@ a{
     .list-group-item-active:hover{
         text-decoration: none !important;
     }
+.exploration-tools {
+    background-color: #99b3e6;
+    color: white !important;
+}
 
 /*Active small link inside*/
 .list-group-item-link-active{

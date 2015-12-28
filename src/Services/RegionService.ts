@@ -38,6 +38,7 @@ module StreamStats.Services {
         clearRegion();
         regionMapLayerList: any;
         nationalMapLayerList: any;
+        allowRegionalQuery: boolean;
     }
     export interface IRegion {
         RegionID: string;

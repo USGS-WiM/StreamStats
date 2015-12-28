@@ -198,7 +198,7 @@ module StreamStats.Controllers {
 
                 //otherwise query map layers
                 else if (!region.selectedRegion) this.queryNationalMapLayers(args.leafletEvent)
-                else if (region.selectedRegion) this.queryRegionalMapLayers(args.leafletEvent);
+                else if (region.selectedRegion && this.regionServices.allowRegionalQuery) this.queryRegionalMapLayers(args.leafletEvent);
             });
 
             $scope.$watch(() => this.bounds,(newval, oldval) => this.mapBoundsChange(oldval, newval));

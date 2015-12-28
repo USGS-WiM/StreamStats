@@ -102,7 +102,7 @@ var StreamStats;
                         _this.checkDelineatePoint(args.leafletEvent.latlng);
                     else if (!region.selectedRegion)
                         _this.queryNationalMapLayers(args.leafletEvent);
-                    else if (region.selectedRegion)
+                    else if (region.selectedRegion && _this.regionServices.allowRegionalQuery)
                         _this.queryRegionalMapLayers(args.leafletEvent);
                 });
                 $scope.$watch(function () { return _this.bounds; }, function (newval, oldval) { return _this.mapBoundsChange(oldval, newval); });

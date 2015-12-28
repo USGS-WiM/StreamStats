@@ -217,6 +217,17 @@
                         </div>
                     </div>
                 </div>    
+            </div>  
+            <div class="sidebar-item">
+                <a ng-class="vm.showExplorationTools ? 'list-group-item-active': 'list-group-item exploration-tools'" ng-click="vm.showExplorationTools = !vm.showExplorationTools" ng-init="vm.showExplorationTools = false" >Exploration Tools<i ng-class="vm.showExplorationTools ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
+
+                <div class="list-group-body" ng-show="vm.showExplorationTools">
+                    <div class="alert alert-info" role="alert" >Tools that can be used outside of the main workflow</div>
+
+                    <div class="btn-toolbar">
+                        <button ng-disabled="!vm.regionService.selectedRegion" ng-class="!vm.regionService.allowRegionalQuery ? 'btn btn-default':'btn btn-success'" ng-click="vm.regionService.allowRegionalQuery = !vm.regionService.allowRegionalQuery" ng-init="vm.regionService.allowRegionalQuery = false"><span><i class="fa fa-info-circle"></i>&nbsp;&nbsp;Query State/Regional Layers</span></button>
+                    </div>
+                </div>    
             </div>       
         </div>
 
