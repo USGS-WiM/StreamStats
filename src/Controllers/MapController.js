@@ -97,15 +97,13 @@ var StreamStats;
                     _this.cursorStyle = 'pointer';
                 });
                 $scope.$on('leafletDirectiveMap.click', function (event, args) {
-                    console.log('caputred map click');
                     //listen for delineate click if ready
-                    if (studyArea.doDelineateFlag) {
-                        var latlng = args.leafletEvent.latlng;
-                        _this.checkDelineatePoint(latlng);
-                    }
-                    else {
-                        _this.queryMapLayers(args.leafletEvent);
-                    }
+                    if (studyArea.doDelineateFlag)
+                        _this.checkDelineatePoint(args.leafletEvent.latlng);
+                    else if (!region.selectedRegion)
+                        _this.queryNationalMapLayers(args.leafletEvent);
+                    else if (region.selectedRegion)
+                        _this.queryRegionalMapLayers(args.leafletEvent);
                 });
                 $scope.$watch(function () { return _this.bounds; }, function (newval, oldval) { return _this.mapBoundsChange(oldval, newval); });
                 $scope.$on('$locationChangeStart', function () { return _this.updateRegion(); });
@@ -123,7 +121,7 @@ var StreamStats;
                 $scope.$watch(function () { return _this.studyArea.regressionRegionQueryComplete; }, function (newval, oldval) {
                     console.log('in regression query watch', newval, oldval);
                     //join codes from regression region object list and run query
-                    if (newval)
+                    if (newval && _this.studyArea.selectedStudyArea.RegressionRegions)
                         _this.nssService.loadStatisticsGroupTypes(_this.regionServices.selectedRegion.RegionID, _this.studyArea.selectedStudyArea.RegressionRegions.map(function (elem) {
                             return elem.code;
                         }).join(","));
@@ -205,9 +203,11 @@ var StreamStats;
                     case 0: return '591,657,550';
                 }
             };
-            MapController.prototype.queryMapLayers = function (evt) {
+            MapController.prototype.queryNationalMapLayers = function (evt) {
                 var _this = this;
                 console.log('in querystates');
+                this.toaster.pop("info", "Information", "Querying National map layers...", 0);
+                this.cursorStyle = 'wait';
                 //build list of layers to query before delineate
                 var queryString = 'visible:';
                 this.regionServices.nationalMapLayerList.forEach(function (item) {
@@ -248,6 +248,7 @@ var StreamStats;
                             if (rcodeList.length > 1) {
                                 map.setView(evt.latlng, 9);
                             }
+                            _this.toaster.clear();
                             _this.markers['rcodeSelect'] = {
                                 lat: evt.latlng.lat,
                                 lng: evt.latlng.lng,
@@ -255,6 +256,94 @@ var StreamStats;
                                 focus: true,
                                 draggable: false
                             };
+                            _this.cursorStyle = 'pointer';
+                        });
+                    });
+                });
+            };
+            MapController.prototype.queryRegionalMapLayers = function (evt) {
+                var _this = this;
+                console.log('in query regional layers');
+                this.toaster.pop("info", "Information", "Querying State/Regional map layers...", 0);
+                this.cursorStyle = 'wait';
+                this.markers = {};
+                this.leafletData.getMap().then(function (map) {
+                    _this.leafletData.getLayers().then(function (maplayers) {
+                        maplayers.overlays[_this.regionServices.selectedRegion.RegionID + "_region"].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).run(function (error, results) {
+                            if (!results.features)
+                                return;
+                            results.features.forEach(function (queryResult) {
+                                _this.regionServices.regionMapLayerList.forEach(function (item) {
+                                    if (queryResult.layerId == item[1]) {
+                                        console.log('Map query found a match with: ', item[0], queryResult);
+                                        if (item[0] == "Streamgages") {
+                                            var popupContent = '<strong>Latitude: </strong>' + evt.latlng.lat + '</br><strong>Longitude: </strong>' + evt.latlng.lng + '</br><strong>Region: </strong>' + _this.regionServices.selectedRegion.Name + '</br><strong>Query result: </strong></br>';
+                                            angular.forEach(queryResult.properties, function (value, key) {
+                                                popupContent += '<strong>' + key + ': </strong>' + value + '</br>';
+                                            });
+                                            _this.markers['regionalQueryResult'] = {
+                                                lat: evt.latlng.lat,
+                                                lng: evt.latlng.lng,
+                                                message: popupContent,
+                                                focus: true,
+                                                draggable: false
+                                            };
+                                            _this.toaster.clear();
+                                        }
+                                    }
+                                });
+                            });
+                            _this.cursorStyle = 'pointer';
+                        });
+                    });
+                });
+            };
+            MapController.prototype.checkDelineatePoint = function (latlng) {
+                var _this = this;
+                console.log('in check delineate point');
+                //clear toasts
+                this.toaster.pop("info", "Information", "Validating your clicked point...", 5000);
+                this.cursorStyle = 'wait';
+                this.markers = {};
+                //put pourpoint on the map
+                this.markers['pourpoint'] = {
+                    lat: latlng.lat,
+                    lng: latlng.lng,
+                    message: 'Your clicked point</br></br><strong>Latitude: </strong>' + latlng.lat.toFixed(5) + '</br><strong>Longitude: </strong>' + latlng.lng.toFixed(5),
+                    focus: true,
+                    draggable: false
+                };
+                //turn off delineate flag
+                this.studyArea.doDelineateFlag = false;
+                //build list of layers to query before delineate
+                var queryString = 'visible:';
+                this.regionServices.regionMapLayerList.forEach(function (item) {
+                    if (item[0] == "Area of limited functionality")
+                        queryString += String(item[1]);
+                });
+                this.leafletData.getMap().then(function (map) {
+                    _this.leafletData.getLayers().then(function (maplayers) {
+                        //force map refresh
+                        map.invalidateSize();
+                        var selectedRegionLayerName = _this.regionServices.selectedRegion.RegionID + "_region";
+                        maplayers.overlays[selectedRegionLayerName].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run(function (error, results) {
+                            //if there are no exclusion area hits
+                            if (results.features.length == 0) {
+                                _this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000);
+                                _this.startDelineate(latlng);
+                            }
+                            else {
+                                var excludeCode = results.features[0].properties.ExcludeCode;
+                                var popupMsg = results.features[0].properties.ExcludeReason;
+                                if (excludeCode == 1) {
+                                    _this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", popupMsg, 0);
+                                }
+                                else {
+                                    _this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", popupMsg, true, 0);
+                                    _this.startDelineate(latlng);
+                                }
+                            }
+                            _this.cursorStyle = 'pointer';
                         });
                     });
                 });
@@ -525,56 +614,6 @@ var StreamStats;
                     }
                 }
                 return layeridList;
-            };
-            MapController.prototype.checkDelineatePoint = function (latlng) {
-                var _this = this;
-                console.log('in check delineate point');
-                this.markers = {};
-                //put pourpoint on the map
-                this.markers['pourpoint'] = {
-                    lat: latlng.lat,
-                    lng: latlng.lng,
-                    message: 'Your clicked point</br></br><strong>Latitude: </strong>' + latlng.lat.toFixed(5) + '</br><strong>Longitude: </strong>' + latlng.lng.toFixed(5),
-                    focus: true,
-                    draggable: false
-                };
-                //turn off delineate flag
-                this.studyArea.doDelineateFlag = false;
-                //clear toasts
-                this.toaster.clear();
-                //build list of layers to query before delineate
-                var queryString = 'visible:';
-                this.regionServices.regionMapLayerList.forEach(function (item) {
-                    if (item[0] == "Area of limited functionality")
-                        queryString += String(item[1]);
-                });
-                console.log('queryList', queryString);
-                this.toaster.pop("info", "Information", "Validating your clicked point...", 5000);
-                this.leafletData.getMap().then(function (map) {
-                    _this.leafletData.getLayers().then(function (maplayers) {
-                        //force map refresh
-                        map.invalidateSize();
-                        var selectedRegionLayerName = _this.regionServices.selectedRegion.RegionID + "_region";
-                        maplayers.overlays[selectedRegionLayerName].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run(function (error, results) {
-                            //if there are no exclusion area hits
-                            if (results.features.length == 0) {
-                                _this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000);
-                                _this.startDelineate(latlng);
-                            }
-                            else {
-                                var excludeCode = results.features[0].properties.ExcludeCode;
-                                var popupMsg = results.features[0].properties.ExcludeReason;
-                                if (excludeCode == 1) {
-                                    _this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", popupMsg, 0);
-                                }
-                                else {
-                                    _this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", popupMsg, true, 0);
-                                    _this.startDelineate(latlng);
-                                }
-                            }
-                        });
-                    });
-                });
             };
             MapController.prototype.startDelineate = function (latlng) {
                 console.log('in startDelineate', latlng);

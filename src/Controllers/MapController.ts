@@ -193,18 +193,12 @@ module StreamStats.Controllers {
             });
 
             $scope.$on('leafletDirectiveMap.click',(event, args) => {
-                console.log('caputred map click');
-                
                 //listen for delineate click if ready
-                if (studyArea.doDelineateFlag) {
-                    var latlng = args.leafletEvent.latlng;
-                    this.checkDelineatePoint(latlng);
-                }
+                if (studyArea.doDelineateFlag) this.checkDelineatePoint(args.leafletEvent.latlng);
 
                 //otherwise query map layers
-                else {
-                    this.queryMapLayers(args.leafletEvent);
-                }
+                else if (!region.selectedRegion) this.queryNationalMapLayers(args.leafletEvent)
+                else if (region.selectedRegion) this.queryRegionalMapLayers(args.leafletEvent);
             });
 
             $scope.$watch(() => this.bounds,(newval, oldval) => this.mapBoundsChange(oldval, newval));
@@ -226,7 +220,7 @@ module StreamStats.Controllers {
             $scope.$watch(() => this.studyArea.regressionRegionQueryComplete,(newval, oldval) => {
                 console.log('in regression query watch', newval, oldval);
                 //join codes from regression region object list and run query
-                if (newval) this.nssService.loadStatisticsGroupTypes(this.regionServices.selectedRegion.RegionID, this.studyArea.selectedStudyArea.RegressionRegions.map(function (elem) {
+                if (newval && this.studyArea.selectedStudyArea.RegressionRegions) this.nssService.loadStatisticsGroupTypes(this.regionServices.selectedRegion.RegionID, this.studyArea.selectedStudyArea.RegressionRegions.map(function (elem) {
                     return elem.code; }).join(","));
             });
         }
@@ -318,9 +312,11 @@ module StreamStats.Controllers {
             }
         }
 
-        private queryMapLayers(evt) {
+        private queryNationalMapLayers(evt) {
 
             console.log('in querystates');
+            this.toaster.pop("info", "Information", "Querying National map layers...", 0);
+            this.cursorStyle = 'wait'; 
 
             //build list of layers to query before delineate
             var queryString = 'visible:'
@@ -369,6 +365,8 @@ module StreamStats.Controllers {
                             map.setView(evt.latlng, 9)
                         }
 
+                        this.toaster.clear();
+
                         this.markers['rcodeSelect'] = {
                             lat: evt.latlng.lat,
                             lng: evt.latlng.lng,
@@ -376,10 +374,120 @@ module StreamStats.Controllers {
                             focus: true,
                             draggable: false
                         }
+
+                        this.cursorStyle = 'pointer';
+                    });
+                });
+            });
+        }
+
+        private queryRegionalMapLayers(evt) {
+
+            console.log('in query regional layers');
+            this.toaster.pop("info", "Information", "Querying State/Regional map layers...", 0);
+            this.cursorStyle = 'wait'; 
+            this.markers = {};
+
+            this.leafletData.getMap().then((map: any) => {
+                this.leafletData.getLayers().then((maplayers: any) => {
+
+                    maplayers.overlays[this.regionServices.selectedRegion.RegionID + "_region"].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).run((error: any, results: any) => {
+                        if (!results.features) return;
+
+                        results.features.forEach((queryResult) => {
+
+                            this.regionServices.regionMapLayerList.forEach((item) => {
+                                if (queryResult.layerId == item[1]) {
+                                    console.log('Map query found a match with: ', item[0], queryResult)
+
+                                    if (item[0] == "Streamgages") {
+                                        var popupContent = '<strong>Latitude: </strong>' + evt.latlng.lat + '</br><strong>Longitude: </strong>' + evt.latlng.lng + '</br><strong>Region: </strong>' + this.regionServices.selectedRegion.Name + '</br><strong>Query result: </strong></br>';
+
+                                        angular.forEach(queryResult.properties, function (value, key) {
+                                            popupContent += '<strong>' + key + ': </strong>' + value + '</br>';
+                                        });
+                                        
+                                        this.markers['regionalQueryResult'] = {
+                                            lat: evt.latlng.lat,
+                                            lng: evt.latlng.lng,
+                                            message: popupContent,
+                                            focus: true,
+                                            draggable: false
+                                        };
+
+                                        this.toaster.clear();
+                                    }
+                                }
+                            });
+                        });
+                        this.cursorStyle = 'pointer';
+                    });
+                });
+            });
+        }
+
+        private checkDelineatePoint(latlng) {
+
+            console.log('in check delineate point');
+            //clear toasts
+            
+            this.toaster.pop("info", "Information", "Validating your clicked point...", 5000);
+            this.cursorStyle = 'wait'; 
+            this.markers = {};
+
+            //put pourpoint on the map
+            this.markers['pourpoint'] = {
+                lat: latlng.lat,
+                lng: latlng.lng,
+                message: 'Your clicked point</br></br><strong>Latitude: </strong>' + latlng.lat.toFixed(5) + '</br><strong>Longitude: </strong>' + latlng.lng.toFixed(5),
+                focus: true,
+                draggable: false
+            }
+
+            //turn off delineate flag
+            this.studyArea.doDelineateFlag = false;
+
+            //build list of layers to query before delineate
+            var queryString = 'visible:'
+            this.regionServices.regionMapLayerList.forEach((item) => {
+                if (item[0] == "Area of limited functionality") queryString += String(item[1]);
+            });
+
+            this.leafletData.getMap().then((map: any) => {
+                this.leafletData.getLayers().then((maplayers: any) => {
+
+                    //force map refresh
+                    map.invalidateSize();
+
+                    var selectedRegionLayerName = this.regionServices.selectedRegion.RegionID + "_region"
+
+                    maplayers.overlays[selectedRegionLayerName].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run((error: any, results: any) => {
+
+                        //if there are no exclusion area hits
+                        if (results.features.length == 0) {
+                            this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000)
+                            this.startDelineate(latlng);
+                        }
+
+                        //otherwise parse exclude Codes
+                        else {
+                            var excludeCode = results.features[0].properties.ExcludeCode;
+                            var popupMsg = results.features[0].properties.ExcludeReason;
+                            if (excludeCode == 1) {
+                                this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", popupMsg, 0);
+                            }
+                            else {
+                                this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", popupMsg, true, 0);
+                                this.startDelineate(latlng);
+                            }
+                        }
+
+                        this.cursorStyle = 'pointer';
                     });
                 });
             });
 
+            
         }
 
         private basinEditor() {
@@ -695,68 +803,6 @@ module StreamStats.Controllers {
                 }
             }//next variable
             return layeridList;
-        }
-
-        private checkDelineatePoint(latlng) {
-
-            console.log('in check delineate point');
-            this.markers = {};
-
-            //put pourpoint on the map
-            this.markers['pourpoint'] = {
-                lat: latlng.lat,
-                lng: latlng.lng,
-                message: 'Your clicked point</br></br><strong>Latitude: </strong>' + latlng.lat.toFixed(5) + '</br><strong>Longitude: </strong>' + latlng.lng.toFixed(5),
-                focus: true,
-                draggable: false
-            }
-
-            //turn off delineate flag
-            this.studyArea.doDelineateFlag = false;
-
-            //clear toasts
-            this.toaster.clear();
-
-            //build list of layers to query before delineate
-            var queryString = 'visible:' 
-            this.regionServices.regionMapLayerList.forEach((item) => {
-                if (item[0] == "Area of limited functionality") queryString += String(item[1]);
-            });
-            console.log('queryList', queryString);
-
-            this.toaster.pop("info", "Information", "Validating your clicked point...", 5000);
-
-            this.leafletData.getMap().then((map: any) => {
-                this.leafletData.getLayers().then((maplayers: any) => {
-
-                    //force map refresh
-                    map.invalidateSize(); 
-
-                    var selectedRegionLayerName = this.regionServices.selectedRegion.RegionID + "_region"
-
-                    maplayers.overlays[selectedRegionLayerName].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run((error: any, results: any) => {
-
-                        //if there are no exclusion area hits
-                        if (results.features.length == 0) {
-                            this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000)
-                            this.startDelineate(latlng);
-                        }
-
-                        //otherwise parse exclude Codes
-                        else {
-                            var excludeCode = results.features[0].properties.ExcludeCode;
-                            var popupMsg = results.features[0].properties.ExcludeReason;
-                            if (excludeCode == 1) {
-                                this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", popupMsg, 0);
-                            }
-                            else {
-                                this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", popupMsg, true, 0);
-                                this.startDelineate(latlng);
-                            }
-                        } 
-                    });
-                });
-            });
         }
 
         private startDelineate(latlng: any) {
