@@ -428,6 +428,7 @@ var StreamStats;
                 });
             };
             MapController.prototype.onSelectedAreaOfInterestChanged = function (sender, e) {
+                this.markers = {};
                 var AOI = e.selectedAreaOfInterest;
                 if (AOI.Category == "U.S. State or Territory")
                     var zoomlevel = 9;
@@ -440,7 +441,7 @@ var StreamStats;
                     focus: true,
                     draggable: false
                 };
-                //this.center = new Center(AOI.Latitude, AOI.Longitude, );
+                //this.center = new Center(AOI.Latitude, AOI.Longitude, zoomlevel);
                 this.leafletData.getMap().then(function (map) {
                     map.setView([AOI.Latitude, AOI.Longitude], zoomlevel);
                 });

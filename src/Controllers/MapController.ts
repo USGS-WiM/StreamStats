@@ -583,6 +583,7 @@ module StreamStats.Controllers {
         }
 
         private onSelectedAreaOfInterestChanged(sender: any, e: WiM.Services.SearchAPIEventArgs) {
+            this.markers = {};
             var AOI = e.selectedAreaOfInterest;
 
             if (AOI.Category == "U.S. State or Territory") var zoomlevel = 9;
@@ -596,7 +597,7 @@ module StreamStats.Controllers {
                 draggable: false
             }
 
-            //this.center = new Center(AOI.Latitude, AOI.Longitude, );
+            //this.center = new Center(AOI.Latitude, AOI.Longitude, zoomlevel);
 
             this.leafletData.getMap().then((map: any) => {
                 map.setView([AOI.Latitude, AOI.Longitude], zoomlevel)
