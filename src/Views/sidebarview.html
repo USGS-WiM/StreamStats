@@ -225,7 +225,9 @@
                     <div class="alert alert-info" role="alert" >Tools that can be used outside of the main workflow</div>
 
                     <div class="btn-toolbar">
-                        <button ng-disabled="!vm.regionService.selectedRegion" ng-class="!vm.regionService.allowRegionalQuery ? 'btn btn-default':'btn btn-success'" ng-click="vm.regionService.allowRegionalQuery = !vm.regionService.allowRegionalQuery" ng-init="vm.regionService.allowRegionalQuery = false"><span><i class="fa fa-info-circle"></i>&nbsp;&nbsp;Query State/Regional Layers</span></button>
+                        <button ng-disabled="!vm.regionService.selectedRegion" ng-class="!vm.regionService.allowRegionalQuery ? 'btn btn-sm btn-default':'btn btn-sm btn-success'" ng-click="vm.regionService.allowRegionalQuery = !vm.regionService.allowRegionalQuery" ng-init="vm.regionService.allowRegionalQuery = false"><span><i class="fa fa-info-circle"></i>&nbsp;&nbsp;Query State/Regional Layers</span></button>
+                        <button class="btn btn-sm btn-default" ng-click="" ng-init=""><span><i class="fa fa-info-circle"></i>&nbsp;&nbsp;Elevation Profile Tool</span></button>
+                        <button class="btn btn-sm btn-default" ng-click="" ng-init=""><span><i class="fa fa-info-circle"></i>&nbsp;&nbsp;Measure Tool</span></button>
                     </div>
                 </div>    
             </div>       
