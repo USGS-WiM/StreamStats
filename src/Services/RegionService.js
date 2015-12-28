@@ -52,6 +52,7 @@ var StreamStats;
                 this.regionList = [];
                 this.parameterList = [];
                 this.masterRegionList = configuration.regions;
+                this.loadNationalMapLayers();
             }
             Object.defineProperty(RegionService.prototype, "onSelectedRegionChanged", {
                 get: function () {
@@ -123,6 +124,23 @@ var StreamStats;
                     return false;
                 this.regionList.push(selectedRegion);
                 return true;
+            };
+            RegionService.prototype.loadNationalMapLayers = function () {
+                var _this = this;
+                var url = configuration.baseurls['StreamStats'] + "/arcgis/rest/services/ss_studyAreas_prod/MapServer?f=pjson";
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, 0 /* GET */, 'json');
+                this.nationalMapLayerList = [];
+                this.Execute(request).then(function (response) {
+                    response.data.layers.forEach(function (value, key) {
+                        console.log("Adding layer: ", value);
+                        _this.nationalMapLayerList.push([value.name, value.id]);
+                    });
+                    console.log('list of national map layers', _this.nationalMapLayerList);
+                    //return layerArray;
+                }, function (error) {
+                    console.log('No national map layers found');
+                    return _this.$q.reject(error.data);
+                });
             };
             RegionService.prototype.loadMapLayersByRegion = function (regionid) {
                 var _this = this;

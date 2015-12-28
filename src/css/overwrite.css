@@ -345,6 +345,19 @@ a{
     font-family: 'Lato', Helvetica, sans-serif !important;
 }
 
+.leaflet-popup-content-wrapper,.leaflet-popup-content
+ {
+   -webkit-border-radius: 0 !important;
+   -moz-border-radius: 0 !important;
+    border-radius: 0 !important;
+ }
+
+.leaflet-control{
+   -webkit-border-radius: 0 !important;
+   -moz-border-radius: 0 !important;
+    border-radius: 0 !important;
+}
+
 /*Add padding to body (except blue top header box)*/
 .panel,
 .page-header{

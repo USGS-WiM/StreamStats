@@ -184,6 +184,14 @@ module StreamStats.Controllers {
                 this.mapPoint.lng = latlng.lng;
             });
 
+            $scope.$on('leafletDirectiveMap.drag',(event, args) => {
+                this.cursorStyle = 'grabbing'
+            });
+
+            $scope.$on('leafletDirectiveMap.dragend',(event, args) => {
+                this.cursorStyle = 'pointer'
+            });
+
             $scope.$on('leafletDirectiveMap.click',(event, args) => {
                 console.log('caputred map click');
                 
@@ -195,14 +203,14 @@ module StreamStats.Controllers {
 
                 //otherwise query map layers
                 else {
-                    this.queryStates(args.leafletEvent);
+                    this.queryMapLayers(args.leafletEvent);
                 }
             });
 
             $scope.$watch(() => this.bounds,(newval, oldval) => this.mapBoundsChange(oldval, newval));
             $scope.$on('$locationChangeStart',() => this.updateRegion());
 
-            $scope.$watch(() => studyArea.doDelineateFlag,(newval, oldval) => newval ? this.cursorStyle = 'crosshair' : this.cursorStyle = 'hand');
+            $scope.$watch(() => studyArea.doDelineateFlag,(newval, oldval) => newval ? this.cursorStyle = 'crosshair' : this.cursorStyle = 'pointer');
 
             // check if region was explicitly set.
             if ($stateParams.rcode) {
@@ -310,25 +318,64 @@ module StreamStats.Controllers {
             }
         }
 
-        private queryStates(evt) {
+        private queryMapLayers(evt) {
 
             console.log('in querystates');
+
+            //build list of layers to query before delineate
+            var queryString = 'visible:'
+            this.regionServices.nationalMapLayerList.forEach((item) => {
+                if (item[0] == "Area of limited functionality") queryString += String(item[1]);
+            });
+            console.log('queryList', queryString);
 
             this.leafletData.getMap().then((map: any) => {
                 this.leafletData.getLayers().then((maplayers: any) => {
 
-                    maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).layers([3]).run((error: any, results: any) => {
-                        console.log('map query', error, results);
+                    maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).run((error: any, results: any) => {
+                        if (!results.features) return;
 
-                        if (!results.features[0]) return;
-                        var rcode = results.features[0].properties.ST_ABBR;
+                        var rcodeList = []
 
-                        this.regionServices.masterRegionList.forEach((item) => {
-                            if (item.RegionID == rcode) {
-                                this.setBoundsByRegion(rcode);
-                                this.regionServices.loadParametersByRegion();
-                            }
+                        results.features.forEach((queryResult) => {
+
+                            this.regionServices.nationalMapLayerList.forEach((item) => {
+                                if (queryResult.layerId == item[1]) {
+                                    console.log('Map query found a match with: ', item[0], queryResult)
+
+                                    if (((item[0] == 'State Applications') || (item[0] == 'Regional Studies')) && (map.getZoom() <= 7)) {
+
+                                        if (item[0] == 'State Applications') rcodeList.push(queryResult.properties.ST_ABBR);
+                                        if (item[0] == 'Regional Studies') rcodeList.push(queryResult.properties.st_abbr);
+                                    }
+                                }
+                            });  
                         });
+
+                        console.log('RCODELIST: ', rcodeList);
+
+                        if (rcodeList.length < 1) return;
+
+                        if (rcodeList.length == 1) {
+                            this.regionServices.masterRegionList.forEach((item) => {
+                                if (item.RegionID == rcodeList[0]) {
+                                    this.setBoundsByRegion(rcodeList[0]);
+                                    this.regionServices.loadParametersByRegion();
+                                }
+                            });
+                        }
+
+                        if (rcodeList.length > 1) {
+                            map.setView(evt.latlng, 9)
+                        }
+
+                        this.markers['rcodeSelect'] = {
+                            lat: evt.latlng.lat,
+                            lng: evt.latlng.lng,
+                            message: (rcodeList.length > 1) ? '<strong>Multiple State/Regional Studies found</strong></br>Please use the sidebar to select a State/Regional Study' : '<strong>State/Regional Study Found</strong>',
+                            focus: true,
+                            draggable: false
+                        }
                     });
                 });
             });
@@ -430,6 +477,9 @@ module StreamStats.Controllers {
         private onSelectedAreaOfInterestChanged(sender: any, e: WiM.Services.SearchAPIEventArgs) {
             var AOI = e.selectedAreaOfInterest;
 
+            if (AOI.Category == "U.S. State or Territory") var zoomlevel = 9;
+            else var zoomlevel = 14;
+
             this.markers['AOI'] = {
                 lat: AOI.Latitude,
                 lng: AOI.Longitude,
@@ -438,7 +488,11 @@ module StreamStats.Controllers {
                 draggable: false
             }
 
-            this.center = new Center(AOI.Latitude, AOI.Longitude, 14);
+            //this.center = new Center(AOI.Latitude, AOI.Longitude, );
+
+            this.leafletData.getMap().then((map: any) => {
+                map.setView([AOI.Latitude, AOI.Longitude], zoomlevel)
+            });
         }
         private onSelectedRegionChanged() {
             console.log('in onselected region changed', this.regionServices.regionList, this.regionServices.selectedRegion);
@@ -646,6 +700,7 @@ module StreamStats.Controllers {
         private checkDelineatePoint(latlng) {
 
             console.log('in check delineate point');
+            this.markers = {};
 
             //put pourpoint on the map
             this.markers['pourpoint'] = {
@@ -673,6 +728,9 @@ module StreamStats.Controllers {
 
             this.leafletData.getMap().then((map: any) => {
                 this.leafletData.getLayers().then((maplayers: any) => {
+
+                    //force map refresh
+                    map.invalidateSize(); 
 
                     var selectedRegionLayerName = this.regionServices.selectedRegion.RegionID + "_region"
 
