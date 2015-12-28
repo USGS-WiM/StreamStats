@@ -220,32 +220,41 @@ var StreamStats;
                         maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).run(function (error, results) {
                             if (!results.features)
                                 return;
+                            var rcodeList = [];
                             results.features.forEach(function (queryResult) {
                                 _this.regionServices.nationalMapLayerList.forEach(function (item) {
                                     if (queryResult.layerId == item[1]) {
                                         console.log('Map query found a match with: ', item[0], queryResult);
                                         if (((item[0] == 'State Applications') || (item[0] == 'Regional Studies')) && (map.getZoom() <= 7)) {
                                             if (item[0] == 'State Applications')
-                                                var rcode = queryResult.properties.ST_ABBR;
+                                                rcodeList.push(queryResult.properties.ST_ABBR);
                                             if (item[0] == 'Regional Studies')
-                                                var rcode = queryResult.properties.ST_ABBR;
-                                            _this.markers['rcodeSelect'] = {
-                                                lat: evt.latlng.lat,
-                                                lng: evt.latlng.lng,
-                                                message: 'State/Regional Study Found',
-                                                focus: true,
-                                                draggable: false
-                                            };
-                                            _this.regionServices.masterRegionList.forEach(function (item) {
-                                                if (item.RegionID == rcode) {
-                                                    _this.setBoundsByRegion(rcode);
-                                                    _this.regionServices.loadParametersByRegion();
-                                                }
-                                            });
+                                                rcodeList.push(queryResult.properties.st_abbr);
                                         }
                                     }
                                 });
                             });
+                            console.log('RCODELIST: ', rcodeList);
+                            if (rcodeList.length < 1)
+                                return;
+                            if (rcodeList.length == 1) {
+                                _this.regionServices.masterRegionList.forEach(function (item) {
+                                    if (item.RegionID == rcodeList[0]) {
+                                        _this.setBoundsByRegion(rcodeList[0]);
+                                        _this.regionServices.loadParametersByRegion();
+                                    }
+                                });
+                            }
+                            if (rcodeList.length > 1) {
+                                map.setView(evt.latlng, 9);
+                            }
+                            _this.markers['rcodeSelect'] = {
+                                lat: evt.latlng.lat,
+                                lng: evt.latlng.lng,
+                                message: (rcodeList.length > 1) ? '<strong>Multiple State/Regional Studies found</strong></br>Please use the sidebar to select a State/Regional Study' : '<strong>State/Regional Study Found</strong>',
+                                focus: true,
+                                draggable: false
+                            };
                         });
                     });
                 });
@@ -342,9 +351,9 @@ var StreamStats;
                     focus: true,
                     draggable: false
                 };
-                this.center = new Center(AOI.Latitude, AOI.Longitude, zoomlevel);
+                //this.center = new Center(AOI.Latitude, AOI.Longitude, );
                 this.leafletData.getMap().then(function (map) {
-                    map.invalidateSize();
+                    map.setView([AOI.Latitude, AOI.Longitude], zoomlevel);
                 });
             };
             MapController.prototype.onSelectedRegionChanged = function () {
@@ -520,6 +529,7 @@ var StreamStats;
             MapController.prototype.checkDelineatePoint = function (latlng) {
                 var _this = this;
                 console.log('in check delineate point');
+                this.markers = {};
                 //put pourpoint on the map
                 this.markers['pourpoint'] = {
                     lat: latlng.lat,

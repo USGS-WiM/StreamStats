@@ -335,8 +335,9 @@ module StreamStats.Controllers {
                     maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).run((error: any, results: any) => {
                         if (!results.features) return;
 
-                        results.features.forEach((queryResult) => {
+                        var rcodeList = []
 
+                        results.features.forEach((queryResult) => {
 
                             this.regionServices.nationalMapLayerList.forEach((item) => {
                                 if (queryResult.layerId == item[1]) {
@@ -344,31 +345,37 @@ module StreamStats.Controllers {
 
                                     if (((item[0] == 'State Applications') || (item[0] == 'Regional Studies')) && (map.getZoom() <= 7)) {
 
-                                        if (item[0] == 'State Applications') var rcode = queryResult.properties.ST_ABBR;
-                                        if (item[0] == 'Regional Studies') var rcode = queryResult.properties.ST_ABBR;
-
-                                        this.markers['rcodeSelect'] = {
-                                            lat: evt.latlng.lat,
-                                            lng: evt.latlng.lng,
-                                            message: 'State/Regional Study Found',
-                                            focus: true,
-                                            draggable: false
-                                        }
-
-                                        this.regionServices.masterRegionList.forEach((item) => {
-                                            if (item.RegionID == rcode) {
-                                                this.setBoundsByRegion(rcode);
-                                                this.regionServices.loadParametersByRegion();
-                                            }
-                                        });
+                                        if (item[0] == 'State Applications') rcodeList.push(queryResult.properties.ST_ABBR);
+                                        if (item[0] == 'Regional Studies') rcodeList.push(queryResult.properties.st_abbr);
                                     }
                                 }
                             });  
-
                         });
- 
 
+                        console.log('RCODELIST: ', rcodeList);
 
+                        if (rcodeList.length < 1) return;
+
+                        if (rcodeList.length == 1) {
+                            this.regionServices.masterRegionList.forEach((item) => {
+                                if (item.RegionID == rcodeList[0]) {
+                                    this.setBoundsByRegion(rcodeList[0]);
+                                    this.regionServices.loadParametersByRegion();
+                                }
+                            });
+                        }
+
+                        if (rcodeList.length > 1) {
+                            map.setView(evt.latlng, 9)
+                        }
+
+                        this.markers['rcodeSelect'] = {
+                            lat: evt.latlng.lat,
+                            lng: evt.latlng.lng,
+                            message: (rcodeList.length > 1) ? '<strong>Multiple State/Regional Studies found</strong></br>Please use the sidebar to select a State/Regional Study' : '<strong>State/Regional Study Found</strong>',
+                            focus: true,
+                            draggable: false
+                        }
                     });
                 });
             });
@@ -481,10 +488,10 @@ module StreamStats.Controllers {
                 draggable: false
             }
 
-            this.center = new Center(AOI.Latitude, AOI.Longitude, zoomlevel);
+            //this.center = new Center(AOI.Latitude, AOI.Longitude, );
 
             this.leafletData.getMap().then((map: any) => {
-                map.invalidateSize();
+                map.setView([AOI.Latitude, AOI.Longitude], zoomlevel)
             });
         }
         private onSelectedRegionChanged() {
@@ -693,6 +700,7 @@ module StreamStats.Controllers {
         private checkDelineatePoint(latlng) {
 
             console.log('in check delineate point');
+            this.markers = {};
 
             //put pourpoint on the map
             this.markers['pourpoint'] = {
