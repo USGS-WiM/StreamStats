@@ -367,13 +367,13 @@ module StreamStats.Controllers {
 
                         this.toaster.clear();
 
-                        this.markers['rcodeSelect'] = {
-                            lat: evt.latlng.lat,
-                            lng: evt.latlng.lng,
-                            message: (rcodeList.length > 1) ? '<strong>Multiple State/Regional Studies found</strong></br>Please use the sidebar to select a State/Regional Study' : '<strong>State/Regional Study Found</strong>',
-                            focus: true,
-                            draggable: false
-                        }
+                        //this.markers['rcodeSelect'] = {
+                        //    lat: evt.latlng.lat,
+                        //    lng: evt.latlng.lng,
+                        //    message: (rcodeList.length > 1) ? '<strong>Multiple State/Regional Studies found</strong></br>Please use the sidebar to select a State/Regional Study' : '<strong>State/Regional Study Found</strong>',
+                        //    focus: true,
+                        //    draggable: false
+                        //}
 
                         this.cursorStyle = 'pointer';
                     });
@@ -662,9 +662,9 @@ module StreamStats.Controllers {
                     }
                 }
 
-                if (item.name == 'globalwatershedregulated') {
+                if (item.name == 'regulatedWatershed') {
                     console.log('showing regulated watershed');
-                    this.layers.overlays[item.name] = {
+                    this.layers.overlays["globalwatershedregulated"] = {
                         name: 'Basin Boundary (Regulated Area)',
                         type: 'geoJSONShape',
                         data: item.feature,

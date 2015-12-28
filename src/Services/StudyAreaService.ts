@@ -333,7 +333,7 @@ module StreamStats.Services {
                     if (response.data.length > 0) {
                         console.log('query success');
                         this.selectedStudyArea.RegressionRegions = response.data;
-                        this.toaster.pop('success', "Regression regions were succcessfully queries", "Please continue", 5000);
+                        this.toaster.pop('success', "Regression regions were succcessfully queried", "Please continue", 5000);
                     }
 
                 },(error) => {

@@ -169,9 +169,9 @@ module StreamStats.Controllers {
                     }
                 }
 
-                if (item.name == 'globalwatershedregulated') {
+                if (item.name == 'regulatedWatershed') {
                     console.log('showing regulated watershed');
-                    this.layers.overlays[item.name] = {
+                    this.layers.overlays["globalwatershedregulated"] = {
                         name: 'Basin Boundary (Regulated Area)',
                         type: 'geoJSONShape',
                         data: item.feature,
