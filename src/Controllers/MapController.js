@@ -249,13 +249,13 @@ var StreamStats;
                                 map.setView(evt.latlng, 9);
                             }
                             _this.toaster.clear();
-                            _this.markers['rcodeSelect'] = {
-                                lat: evt.latlng.lat,
-                                lng: evt.latlng.lng,
-                                message: (rcodeList.length > 1) ? '<strong>Multiple State/Regional Studies found</strong></br>Please use the sidebar to select a State/Regional Study' : '<strong>State/Regional Study Found</strong>',
-                                focus: true,
-                                draggable: false
-                            };
+                            //this.markers['rcodeSelect'] = {
+                            //    lat: evt.latlng.lat,
+                            //    lng: evt.latlng.lng,
+                            //    message: (rcodeList.length > 1) ? '<strong>Multiple State/Regional Studies found</strong></br>Please use the sidebar to select a State/Regional Study' : '<strong>State/Regional Study Found</strong>',
+                            //    focus: true,
+                            //    draggable: false
+                            //}
                             _this.cursorStyle = 'pointer';
                         });
                     });
@@ -500,9 +500,9 @@ var StreamStats;
                             }
                         };
                     }
-                    if (item.name == 'globalwatershedregulated') {
+                    if (item.name == 'regulatedWatershed') {
                         console.log('showing regulated watershed');
-                        _this.layers.overlays[item.name] = {
+                        _this.layers.overlays["globalwatershedregulated"] = {
                             name: 'Basin Boundary (Regulated Area)',
                             type: 'geoJSONShape',
                             data: item.feature,

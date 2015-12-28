@@ -112,9 +112,9 @@ var StreamStats;
                             visible: true,
                         };
                     }
-                    if (item.name == 'globalwatershedregulated') {
+                    if (item.name == 'regulatedWatershed') {
                         console.log('showing regulated watershed');
-                        _this.layers.overlays[item.name] = {
+                        _this.layers.overlays["globalwatershedregulated"] = {
                             name: 'Basin Boundary (Regulated Area)',
                             type: 'geoJSONShape',
                             data: item.feature,
