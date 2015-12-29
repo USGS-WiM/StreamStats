@@ -298,8 +298,8 @@ module StreamStats.Controllers {
                     //zoom home button control
                     (<any>L.Control).zoomHome({ homeCoordinates: [39, -100], homeZoom: 4 }),
                     //location control
-                    (<any>L.control).locate({ follow: false })//,
-                    //(<any>L.control).elevation()
+                    (<any>L.control).locate({ follow: false }),
+                    (<any>L.control).elevation()
                     )
             };
             this.events = {
@@ -457,8 +457,9 @@ module StreamStats.Controllers {
         private elevationProfile() {
 
             console.log('in elevation profile');
-            this.toaster.pop("info", "Information", "Querying State/Regional map layers...", 0);
             this.markers = {};
+            var el = this.controls.custom[2];
+            el.clear();
 
             this.leafletData.getMap().then((map: any) => {
                 this.leafletData.getLayers().then((maplayers: any) => {
@@ -474,7 +475,7 @@ module StreamStats.Controllers {
 
                     map.on('draw:drawstart',(e) => {
                         //console.log('in draw start');
-                        el.clear();
+                        this.controls.custom[2].clear();
                     });
 
                     //listen for end of draw
@@ -499,6 +500,9 @@ module StreamStats.Controllers {
                         var lines3d = L.layerGroup();
                         map.addLayer(lines3d);
                         lines3d.addLayer(geojsonlayer);
+
+                        //disable button 
+                        this.explorationService.drawElevationProfile = false;
                     });
                 });
             });
