@@ -49,6 +49,7 @@ module StreamStats.Controllers {
         baselayers: Object;
         overlays: ILayer;
         markers: Object;
+        geojson: Object;
     }
     interface ILayer {
         name: string;
@@ -68,6 +69,7 @@ module StreamStats.Controllers {
         controls: Object;
         markers: Object;
         bounds: Object;
+        geojson: Object;
         layercontrol: Object;
 
     }
@@ -152,6 +154,7 @@ module StreamStats.Controllers {
 
         public controls: any;
         public markers: Object = null;
+        public geojson: Object = null;
         public events: Object = null;
         public layercontrol: Object = null;
         public regionLayer: Object = null;
@@ -206,6 +209,8 @@ module StreamStats.Controllers {
             });
 
             $scope.$watch(() => this.bounds,(newval, oldval) => this.mapBoundsChange(oldval, newval));
+
+            $scope.$watch(() => this.explorationService.elevationProfileGeoJSON,(newval, oldval) => this.displayElevationProfile());
 
             $scope.$watch(() => this.explorationService.drawElevationProfile,(newval, oldval) => {
                 if (newval) this.elevationProfile();
@@ -268,10 +273,12 @@ module StreamStats.Controllers {
             this.layers = {
                 baselayers: configuration.basemaps,
                 overlays: configuration.overlayedLayers,
-                markers: this.markers
+                markers: this.markers,
+                geojson: this.geojson
             }
             this.mapDefaults = new MapDefault(null, 3, false);
             this.markers = {};
+            this.geojson = {};
             this.regionLayer = {};     
             //add custom controls
             //this.layercontrol = {
@@ -457,7 +464,8 @@ module StreamStats.Controllers {
         private elevationProfile() {
 
             console.log('in elevation profile');
-            this.markers = {};
+
+            //get reference to elevation control
             var el = this.controls.custom[2];
             el.clear();
 
@@ -471,8 +479,6 @@ module StreamStats.Controllers {
                     var drawControl = new (<any>L).Draw.Polyline(map, drawnItems);
                     drawControl.enable();
 
-                    var el = this.controls.custom[2];
-
                     map.on('draw:drawstart',(e) => {
                         //console.log('in draw start');
                         this.controls.custom[2].clear();
@@ -483,29 +489,39 @@ module StreamStats.Controllers {
 
                         map.removeEventListener('draw:created');
 
-                        var layer = e.layer;
                         var feature = e.layer.toGeoJSON();
 			
                         //convert to esriJSON
                         var esriJSON = '{"geometryType":"esriGeometryPolyline","spatialReference":{"wkid":"4326"},"fields": [],"features":[{"geometry": {"type":"polyline", "paths":[' + JSON.stringify(feature.geometry.coordinates) + ']}}]}'
 
-                        //var geojson = this.explorationService.elevationProfile(esriJSON);
-
-                        //console.log('geojson response: ', geojson);
-
-                        var geojsonlayer = L.geoJson(this.explorationService.elevationProfile(esriJSON), {
-                            onEachFeature: el.addData.bind(el)
-                        });
-
-                        var lines3d = L.layerGroup();
-                        map.addLayer(lines3d);
-                        lines3d.addLayer(geojsonlayer);
+                        //make the request
+                        this.explorationService.elevationProfile(esriJSON)
 
                         //disable button 
                         this.explorationService.drawElevationProfile = false;
                     });
                 });
             });
+        }
+
+        private displayElevationProfile() {
+
+            console.log('here', this.explorationService.elevationProfileGeoJSON);
+            var el = this.controls.custom[2];
+
+            //parse it
+            this.geojson["elevationProfileLine3D"] = {
+                data: this.explorationService.elevationProfileGeoJSON,
+                style: {
+                    "color": "#ff7800",
+                    "weight": 5,
+                    "opacity": 0.65
+                },
+                onEachFeature: el.addData.bind(el)
+            }
+
+            //show the div
+            angular.element(document.querySelector('.elevation')).css('display', 'block');
         }
 
         private checkDelineatePoint(latlng) {

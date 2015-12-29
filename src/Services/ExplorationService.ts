@@ -27,6 +27,7 @@ module StreamStats.Services {
     export interface IExplorationService {
         elevationProfile(any);
         drawElevationProfile: boolean;
+        elevationProfileGeoJSON: any;
 
     }
     class ExplorationService extends WiM.Services.HTTPServiceBase implements IExplorationService {
@@ -37,7 +38,7 @@ module StreamStats.Services {
         //-+-+-+-+-+-+-+-+-+-+-+-
         public toaster: any;
         public drawElevationProfile: boolean;
-
+        public elevationProfileGeoJSON: any;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -69,15 +70,12 @@ module StreamStats.Services {
 
                     if (coords.length > 0) {
 
-                        var geojson = {
+                        this.elevationProfileGeoJSON = {
                             "name": "NewFeatureType", "type": "FeatureCollection"
                             , "features": [
                                 { "type": "Feature", "geometry": { "type": "LineString", "coordinates": coords }, "properties": "" }
                             ]
                         };
-
-                        return response.data.results[0].value.features;
-
                     }
                     //sm when complete
                 },(error) => {

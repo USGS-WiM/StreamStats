@@ -154,7 +154,7 @@ module StreamStats.Services {
 
             this.Execute(request).then(
                 (response: any) => {
-                    console.log(response);
+                    //console.log(response);
                     if (response.data.results.length < 1) {
                         this.toaster.pop('warning', "No State/Regional Study Areas available here", "", 5000);
                     }
@@ -202,7 +202,7 @@ module StreamStats.Services {
         }
 
         public loadMapLayersByRegion(regionid: string): any {
-            console.log('in loadMapLayersByRegion');
+            //console.log('in loadMapLayersByRegion');
             this.regionMapLayerListLoaded = false;
 
             var url = configuration.baseurls['StreamStats'] + configuration.queryparams['SSStateLayers'].format(regionid.toLowerCase());
@@ -216,7 +216,7 @@ module StreamStats.Services {
                         return;
                     }
                     response.data.layers.forEach((value, key) => {
-                        console.log("Adding layer: ",value);
+                        //console.log("Adding layer: ",value);
                         this.regionMapLayerList.push([value.name,value.id]);
                     });
                     this.regionMapLayerListLoaded = true;

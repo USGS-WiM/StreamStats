@@ -67,6 +67,7 @@ var StreamStats;
                 this.mapPoint = null;
                 this.bounds = null;
                 this.markers = null;
+                this.geojson = null;
                 this.events = null;
                 this.layercontrol = null;
                 this.regionLayer = null;
@@ -107,6 +108,7 @@ var StreamStats;
                         _this.queryRegionalMapLayers(args.leafletEvent);
                 });
                 $scope.$watch(function () { return _this.bounds; }, function (newval, oldval) { return _this.mapBoundsChange(oldval, newval); });
+                $scope.$watch(function () { return _this.explorationService.elevationProfileGeoJSON; }, function (newval, oldval) { return _this.displayElevationProfile(); });
                 $scope.$watch(function () { return _this.explorationService.drawElevationProfile; }, function (newval, oldval) {
                     if (newval)
                         _this.elevationProfile();
@@ -163,10 +165,12 @@ var StreamStats;
                 this.layers = {
                     baselayers: configuration.basemaps,
                     overlays: configuration.overlayedLayers,
-                    markers: this.markers
+                    markers: this.markers,
+                    geojson: this.geojson
                 };
                 this.mapDefaults = new MapDefault(null, 3, false);
                 this.markers = {};
+                this.geojson = {};
                 this.regionLayer = {};
                 //add custom controls
                 //this.layercontrol = {
@@ -321,7 +325,7 @@ var StreamStats;
             MapController.prototype.elevationProfile = function () {
                 var _this = this;
                 console.log('in elevation profile');
-                this.markers = {};
+                //get reference to elevation control
                 var el = this.controls.custom[2];
                 el.clear();
                 this.leafletData.getMap().then(function (map) {
@@ -331,7 +335,6 @@ var StreamStats;
                         drawnItems.clearLayers();
                         var drawControl = new L.Draw.Polyline(map, drawnItems);
                         drawControl.enable();
-                        var el = _this.controls.custom[2];
                         map.on('draw:drawstart', function (e) {
                             //console.log('in draw start');
                             _this.controls.custom[2].clear();
@@ -339,23 +342,32 @@ var StreamStats;
                         //listen for end of draw
                         map.on('draw:created', function (e) {
                             map.removeEventListener('draw:created');
-                            var layer = e.layer;
                             var feature = e.layer.toGeoJSON();
                             //convert to esriJSON
                             var esriJSON = '{"geometryType":"esriGeometryPolyline","spatialReference":{"wkid":"4326"},"fields": [],"features":[{"geometry": {"type":"polyline", "paths":[' + JSON.stringify(feature.geometry.coordinates) + ']}}]}';
-                            //var geojson = this.explorationService.elevationProfile(esriJSON);
-                            //console.log('geojson response: ', geojson);
-                            var geojsonlayer = L.geoJson(_this.explorationService.elevationProfile(esriJSON), {
-                                onEachFeature: el.addData.bind(el)
-                            });
-                            var lines3d = L.layerGroup();
-                            map.addLayer(lines3d);
-                            lines3d.addLayer(geojsonlayer);
+                            //make the request
+                            _this.explorationService.elevationProfile(esriJSON);
                             //disable button 
                             _this.explorationService.drawElevationProfile = false;
                         });
                     });
                 });
+            };
+            MapController.prototype.displayElevationProfile = function () {
+                console.log('here', this.explorationService.elevationProfileGeoJSON);
+                var el = this.controls.custom[2];
+                //parse it
+                this.geojson["elevationProfileLine3D"] = {
+                    data: this.explorationService.elevationProfileGeoJSON,
+                    style: {
+                        "color": "#ff7800",
+                        "weight": 5,
+                        "opacity": 0.65
+                    },
+                    onEachFeature: el.addData.bind(el)
+                };
+                //show the div
+                angular.element(document.querySelector('.elevation')).css('display', 'block');
             };
             MapController.prototype.checkDelineatePoint = function (latlng) {
                 //console.log('in check delineate point');
