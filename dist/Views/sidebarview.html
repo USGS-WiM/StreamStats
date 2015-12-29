@@ -52,7 +52,10 @@
                         <div ng-repeat="region in vm.regionService.regionList track by $index">
                             <button ng-class="region.Name === vm.regionService.selectedRegion.Name ? 'btn btn-primary btn-group-justified':'btn btn-group-justified'" ng-click="vm.setRegion(region)"><span>{{region.Name}} </span></button>
                         </div>
-                    </div>                          
+                    </div>       
+                    <div class="form-group" ng-show="vm.regionService.regionList.length < 0">
+                        <div class="alert alert-info" role="alert"></div>
+                    </div>                      
                 </div>    
             </div>   
             <div class="sidebar-item">
@@ -60,10 +63,12 @@
 
                 <div class="list-group-body" ng-show="vm.selectedProcedure == 2">
 
-                    <div ng-hide="vm.studyAreaService.selectedStudyArea.Features">
+                    <div ng-hide="vm.studyAreaService.selectedStudyArea.Features || !vm.regionService.streamStatsAvailable">
                          <div class="alert alert-info" role="alert" ng-hide="vm.studyAreaService.showDelineateButton">Zoom to at least a zoom level of 15 (scale shown in lower left of map)</div>
                         <div class="alert alert-info" role="alert" ng-show="vm.studyAreaService.showDelineateButton">Click the 'Delineate' button, then use your mouse or finger to click or tap a blue stream cell on the map</div>
                     </div>
+
+                    <div class="alert alert-warning" role="alert" ng-hide="vm.regionService.streamStatsAvailable">StreamStats is not available here at this time</div>
               
                     <div class="btn-toolbar" ng-show= "vm.studyAreaService.showDelineateButton"> 
                         <button id="delineateButton" type="button" class="btn btn-sm btn-info" ng-click="vm.startDelineate()" ng-class="vm.studyAreaService.doDelineateFlag ? 'btn-warning' : 'btn-info'" ng-hide="vm.studyAreaService.selectedStudyArea.Features"><i  ng-class="vm.studyAreaService.canUpdate ? 'fa fa-map-marker' : 'fa fa-refresh fa-spin disabled'"></i>&nbsp;&nbsp;<span ng-show="vm.studyAreaService.canUpdate">Delineate</span><span ng-show="!vm.studyAreaService.canUpdate">Delineating Basin, please wait...</span></button>
@@ -226,7 +231,7 @@
 
                     <div class="btn-toolbar">
                         <button ng-disabled="!vm.regionService.selectedRegion" ng-class="!vm.regionService.allowRegionalQuery ? 'btn btn-sm btn-default':'btn btn-sm btn-success'" ng-click="vm.regionService.allowRegionalQuery = !vm.regionService.allowRegionalQuery" ng-init="vm.regionService.allowRegionalQuery = false"><span><i class="fa fa-info-circle"></i>&nbsp;&nbsp;Query State/Regional Layers</span></button>
-                        <button class="btn btn-sm btn-default" ng-click="" ng-init=""><span><i class="fa fa-info-circle"></i>&nbsp;&nbsp;Elevation Profile Tool</span></button>
+                        <button ng-class="!vm.explorationService.drawElevationProfile ? 'btn btn-sm btn-default':'btn btn-sm btn-success'" ng-click="vm.explorationService.drawElevationProfile = !vm.explorationService.drawElevationProfile"><span><i class="fa fa-info-circle"></i>&nbsp;&nbsp;Elevation Profile Tool</span></button>
                         <button class="btn btn-sm btn-default" ng-click="" ng-init=""><span><i class="fa fa-info-circle"></i>&nbsp;&nbsp;Measure Tool</span></button>
                     </div>
                 </div>    

@@ -33,6 +33,8 @@
     "leaflet.zoomhome": "~0.1.0",
     "wim_angular": "https://github.com/USGS-WiM/wim_angular.git",
     "GreinerHormann": "greiner-hormann#~1.3.0",
-    "mobileangularui-checkbox": "~1.0.0"
+    "mobileangularui-checkbox": "~1.0.0",
+    "d3": "~3.5.12",
+    "Leaflet.Elevation": "https://github.com/MrMufflon/Leaflet.Elevation.git"
   }
 }

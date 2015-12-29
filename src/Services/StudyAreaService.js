@@ -85,7 +85,7 @@ var StreamStats;
                 this._onEditClick.raise(null, WiM.Event.EventArgs.Empty);
             };
             StudyAreaService.prototype.undoEdit = function () {
-                console.log('undo edit');
+                //console.log('undo edit');
                 this.WatershedEditDecisionList = new StreamStats.Models.WatershedEditDecisionList();
                 this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
             };
@@ -98,7 +98,7 @@ var StreamStats;
                 //remove the study area to studyAreaList
             };
             StudyAreaService.prototype.clearStudyArea = function () {
-                console.log('in clear study area');
+                //console.log('in clear study area');
                 this._studyAreaList = [];
                 this.canUpdate = true;
                 this.regulationCheckComplete = true;
@@ -199,7 +199,7 @@ var StreamStats;
             StudyAreaService.prototype.loadParameters = function () {
                 var _this = this;
                 this.toaster.pop('info', "Calculating Selected Parameters", "Please wait...", 0);
-                console.log('in load parameters');
+                //console.log('in load parameters');
                 //this.canUpdate = false;
                 this.parametersLoading = true;
                 this.parametersLoaded = false;
@@ -237,28 +237,28 @@ var StreamStats;
             StudyAreaService.prototype.queryRegressionRegions = function () {
                 var _this = this;
                 this.toaster.pop('info', "Querying regression regions with your Basin", "Please wait...", 0);
-                console.log('in load query regression regions');
+                //console.log('in load query regression regions');
                 this.regressionRegionQueryLoading = true;
                 this.regressionRegionQueryComplete = false;
                 var watershed = angular.toJson(this.selectedStudyArea.Features[1].feature, null);
                 var url = configuration.baseurls['GISserver'] + configuration.queryparams['RegressionRegionQueryService'];
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', { geometry: watershed, f: 'json' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
                 this.Execute(request).then(function (response) {
-                    console.log(response.data);
+                    //console.log(response.data);
                     _this.toaster.clear();
                     _this.regressionRegionQueryComplete = true;
                     if (response.data.error) {
-                        console.log('query error');
+                        //console.log('query error');
                         _this.toaster.pop('error', "There was an error querying regression regions", response.data.error.message, 5000);
                         return;
                     }
                     if (response.data.length == 0) {
-                        console.log('query error');
+                        //console.log('query error');
                         _this.toaster.pop('error', "Regression region query failed", "This type of query may not be supported here at this time", 5000);
                         return;
                     }
                     if (response.data.length > 0) {
-                        console.log('query success');
+                        //console.log('query success');
                         _this.selectedStudyArea.RegressionRegions = response.data;
                         _this.toaster.pop('success', "Regression regions were succcessfully queried", "Please continue", 5000);
                     }
@@ -271,14 +271,14 @@ var StreamStats;
             };
             StudyAreaService.prototype.upstreamRegulation = function () {
                 var _this = this;
-                console.log('upstream regulation');
+                //console.log('upstream regulation');
                 this.toaster.pop('info', "Checking for Upstream Regulation", "Please wait...", 0);
                 this.regulationCheckComplete = false;
                 var watershed = angular.toJson(this.selectedStudyArea.Features[1].feature, null);
                 var url = configuration.baseurls['GISserver'] + configuration.queryparams['COregulationService'];
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', { watershed: watershed, outputcrs: 4326, f: 'geojson' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
                 this.Execute(request).then(function (response) {
-                    console.log(response);
+                    //console.log(response);
                     if (response.data.percentarearegulated > 0) {
                         _this.toaster.clear();
                         _this.toaster.pop('success', "Map updated with Regulated Area", "Continue to 'Modify Parameters' to see area-weighted basin characteristics", 5000);
@@ -308,7 +308,7 @@ var StreamStats;
             //-+-+-+-+-+-+-+-+-+-+-+-       
             StudyAreaService.prototype.loadParameterResults = function (results) {
                 this.toaster.pop('info', "Loading Parameters", "Please wait...");
-                console.log('in load parameter results');
+                //console.log('in load parameter results');
                 var paramList = this.studyAreaParameterList;
                 results.map(function (val) {
                     angular.forEach(paramList, function (value, index) {
@@ -318,11 +318,11 @@ var StreamStats;
                         } //endif
                     });
                 });
-                console.log('params', this.studyAreaParameterList);
+                //console.log('params', this.studyAreaParameterList);
             };
             StudyAreaService.prototype.loadRegulatedParameterResults = function (regulatedResults) {
                 this.toaster.pop('info', "Loading Regulated Parameters", "Please wait...");
-                console.log('in load regulated parameter results');
+                //console.log('in load regulated parameter results');
                 var paramList = this.studyAreaParameterList;
                 regulatedResults.map(function (regulatedParam) {
                     angular.forEach(paramList, function (param, index) {
@@ -359,7 +359,7 @@ var StreamStats;
                         } //endif
                     });
                 });
-                console.log('regulated params', this.studyAreaParameterList);
+                //console.log('regulated params', this.studyAreaParameterList);
             };
             return StudyAreaService;
         })(WiM.Services.HTTPServiceBase); //end class

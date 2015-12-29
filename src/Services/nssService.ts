@@ -85,7 +85,7 @@ module StreamStats.Services {
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         public clearNSSdata() {
-            console.log('in clear nss data');
+            //console.log('in clear nss data');
             this.selectedStatisticsGroupList = [];
             this.statisticsGroupList = [];
             this.canUpdate = true;
@@ -95,7 +95,7 @@ module StreamStats.Services {
         public loadStatisticsGroupTypes(rcode: string, regressionregions: string) {
 
             this.toaster.pop('info', "Loading Available Scenarios", "Please wait...", 0);
-            console.log('in load StatisticsGroups', rcode, regressionregions);
+            //console.log('in load StatisticsGroups', rcode, regressionregions);
             if (!rcode && !regressionregions) return;
 
             var url = configuration.baseurls['NSS'] + configuration.queryparams['statisticsGroupLookup'].format(rcode, regressionregions);
@@ -105,7 +105,7 @@ module StreamStats.Services {
 
             this.Execute(request).then(
                 (response: any) => {
-                    console.log(response.data);
+                    //console.log(response.data);
                     if (response.data.length > 0) {
                         this.loadingStatisticsGroup = false;
                         
@@ -137,7 +137,7 @@ module StreamStats.Services {
 
             this.toaster.pop('info', "Load Parameters by Scenario", "Please wait...", 0);
 
-            console.log('in load StatisticsGroup parameters', rcode, statisticsGroupID,regressionregions);
+            //console.log('in load StatisticsGroup parameters', rcode, statisticsGroupID,regressionregions);
             if (!rcode && !statisticsGroupID && !regressionregions) return;
 
             var url = configuration.baseurls['NSS'] + configuration.queryparams['statisticsGroupParameterLookup'].format(rcode,statisticsGroupID,regressionregions);
@@ -145,7 +145,7 @@ module StreamStats.Services {
 
             this.Execute(request).then(
                 (response: any) => {
-                    console.log('loadParametersByStatisticsGroup response: ', response);
+                    //console.log('loadParametersByStatisticsGroup response: ', response);
                     if (response.data[0].RegressionRegions[0].Parameters && response.data[0].RegressionRegions[0].Parameters.length > 0) {
 
                         //add Regression Regions to StatisticsGroupList and add percent weights
@@ -186,13 +186,13 @@ module StreamStats.Services {
             this.selectedStatisticsGroupList.forEach((statGroup) => {
 
                 this.toaster.pop('info', "Estimating Flows for " + statGroup.Name, "Please wait...", 0);
-                console.log('in estimate flows method for ', statGroup.Name, statGroup);
+                //console.log('in estimate flows method for ', statGroup.Name, statGroup);
 
                 statGroup.RegressionRegions[0].Parameters.forEach((regressionParam) => {
                     studyAreaParameterList.forEach((param) => {
-                        console.log('search for matching params ', regressionParam.Code.toLowerCase(), param.code.toLowerCase());
+                        //console.log('search for matching params ', regressionParam.Code.toLowerCase(), param.code.toLowerCase());
                         if (regressionParam.Code.toLowerCase() == param.code.toLowerCase()) {
-                            console.log('updating parameter in scenario object for: ', regressionParam.Code, ' from: ', regressionParam.Value, ' to: ', param.value);
+                            //console.log('updating parameter in scenario object for: ', regressionParam.Code, ' from: ', regressionParam.Value, ' to: ', param.value);
                             regressionParam.Value = param.value;
                         }
                     });

@@ -118,7 +118,7 @@ module StreamStats.Services {
         }
 
         public undoEdit() {
-            console.log('undo edit');
+            //console.log('undo edit');
             this.WatershedEditDecisionList = new Models.WatershedEditDecisionList();
             this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
         }
@@ -134,7 +134,7 @@ module StreamStats.Services {
         }
 
         public clearStudyArea() {
-            console.log('in clear study area');
+            //console.log('in clear study area');
             this._studyAreaList = [];
             this.canUpdate = true;
             this.regulationCheckComplete = true;
@@ -254,7 +254,7 @@ module StreamStats.Services {
         public loadParameters() {
 
             this.toaster.pop('info', "Calculating Selected Parameters", "Please wait...", 0);
-            console.log('in load parameters');
+            //console.log('in load parameters');
             //this.canUpdate = false;
             this.parametersLoading = true;
             this.parametersLoaded = false;
@@ -299,7 +299,7 @@ module StreamStats.Services {
         public queryRegressionRegions() {
 
             this.toaster.pop('info', "Querying regression regions with your Basin", "Please wait...", 0);
-            console.log('in load query regression regions');
+            //console.log('in load query regression regions');
 
             this.regressionRegionQueryLoading = true;
             this.regressionRegionQueryComplete = false;
@@ -314,24 +314,24 @@ module StreamStats.Services {
 
             this.Execute(request).then(
                 (response: any) => {
-                    console.log(response.data);
+                    //console.log(response.data);
                     this.toaster.clear();
                     this.regressionRegionQueryComplete = true;
 
                     if (response.data.error) {
-                        console.log('query error');
+                        //console.log('query error');
                         this.toaster.pop('error', "There was an error querying regression regions", response.data.error.message, 5000);
                         return;
                     }
 
                     if (response.data.length == 0) {
-                        console.log('query error');
+                        //console.log('query error');
                         this.toaster.pop('error', "Regression region query failed", "This type of query may not be supported here at this time", 5000);
                         return;
                     }
 
                     if (response.data.length > 0) {
-                        console.log('query success');
+                        //console.log('query success');
                         this.selectedStudyArea.RegressionRegions = response.data;
                         this.toaster.pop('success', "Regression regions were succcessfully queried", "Please continue", 5000);
                     }
@@ -347,7 +347,7 @@ module StreamStats.Services {
 
         public upstreamRegulation() {
 
-            console.log('upstream regulation');
+            //console.log('upstream regulation');
             this.toaster.pop('info', "Checking for Upstream Regulation", "Please wait...",0);
 
             this.regulationCheckComplete = false;
@@ -362,7 +362,7 @@ module StreamStats.Services {
 
             this.Execute(request).then(
                 (response: any) => {
-                    console.log(response);
+                    //console.log(response);
                     if (response.data.percentarearegulated > 0) {
                         this.toaster.clear();
                         this.toaster.pop('success', "Map updated with Regulated Area", "Continue to 'Modify Parameters' to see area-weighted basin characteristics", 5000);
@@ -398,7 +398,7 @@ module StreamStats.Services {
 
             this.toaster.pop('info', "Loading Parameters", "Please wait...");
 
-            console.log('in load parameter results');
+            //console.log('in load parameter results');
 
             var paramList = this.studyAreaParameterList;
             results.map(function (val) {
@@ -409,14 +409,14 @@ module StreamStats.Services {
                     }//endif
                 });
             });
-            console.log('params', this.studyAreaParameterList);
+            //console.log('params', this.studyAreaParameterList);
         }
 
         private loadRegulatedParameterResults(regulatedResults: Array<Models.IRegulationParameter>) {
 
             this.toaster.pop('info', "Loading Regulated Parameters", "Please wait...");
 
-            console.log('in load regulated parameter results');
+            //console.log('in load regulated parameter results');
 
             var paramList = this.studyAreaParameterList;
             regulatedResults.map(function (regulatedParam) {
@@ -464,7 +464,7 @@ module StreamStats.Services {
                     }//endif
                 });
             });
-            console.log('regulated params', this.studyAreaParameterList);
+            //console.log('regulated params', this.studyAreaParameterList);
         }
 
     }//end class
