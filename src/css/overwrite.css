@@ -400,6 +400,9 @@ a{
 .angular-leaflet-control-layers .lf-row .lf-icons {
     float: right;
 }
+.elevation {
+    display:none;
+}
 
 /*Add padding to body (except blue top header box)*/
 .panel,

@@ -186,7 +186,7 @@ var StreamStats;
                             marker: false
                         }
                     },
-                    custom: new Array(L.Control.zoomHome({ homeCoordinates: [39, -100], homeZoom: 4 }), L.control.locate({ follow: false }))
+                    custom: new Array(L.Control.zoomHome({ homeCoordinates: [39, -100], homeZoom: 4 }), L.control.locate({ follow: false }), L.control.elevation())
                 };
                 this.events = {
                     map: {
@@ -321,8 +321,9 @@ var StreamStats;
             MapController.prototype.elevationProfile = function () {
                 var _this = this;
                 console.log('in elevation profile');
-                this.toaster.pop("info", "Information", "Querying State/Regional map layers...", 0);
                 this.markers = {};
+                var el = this.controls.custom[2];
+                el.clear();
                 this.leafletData.getMap().then(function (map) {
                     _this.leafletData.getLayers().then(function (maplayers) {
                         //create draw control
@@ -333,7 +334,7 @@ var StreamStats;
                         var el = _this.controls.custom[2];
                         map.on('draw:drawstart', function (e) {
                             //console.log('in draw start');
-                            el.clear();
+                            _this.controls.custom[2].clear();
                         });
                         //listen for end of draw
                         map.on('draw:created', function (e) {
@@ -350,6 +351,8 @@ var StreamStats;
                             var lines3d = L.layerGroup();
                             map.addLayer(lines3d);
                             lines3d.addLayer(geojsonlayer);
+                            //disable button 
+                            _this.explorationService.drawElevationProfile = false;
                         });
                     });
                 });
