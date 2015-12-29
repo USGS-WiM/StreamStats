@@ -45,14 +45,16 @@ var StreamStats;
             __extends(RegionService, _super);
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
-            function RegionService($http, $q) {
+            function RegionService($http, $q, toaster) {
                 _super.call(this, $http, configuration.baseurls['StreamStats']);
                 this.$q = $q;
                 this._onSelectedRegionChanged = new WiM.Event.Delegate();
+                this.toaster = toaster;
                 this.regionList = [];
                 this.parameterList = [];
                 this.masterRegionList = configuration.regions;
                 this.loadNationalMapLayers();
+                this.streamStatsAvailable = false;
             }
             Object.defineProperty(RegionService.prototype, "onSelectedRegionChanged", {
                 get: function () {
@@ -77,11 +79,12 @@ var StreamStats;
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             RegionService.prototype.clearRegion = function () {
-                console.log('in clear region');
+                //console.log('in clear region');
                 this.regionList = [];
                 this.parameterList = [];
                 this.regionMapLayerList = [];
                 this.selectedRegion = null;
+                this.regionMapLayerListLoaded = false;
             };
             RegionService.prototype.loadRegionListByExtent = function (xmin, xmax, ymin, ymax, sr) {
                 var _this = this;
@@ -103,6 +106,10 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 request.params = input;
                 this.Execute(request).then(function (response) {
+                    console.log(response);
+                    if (response.data.results.length < 1) {
+                        _this.toaster.pop('warning', "No State/Regional Study Areas available here", "", 5000);
+                    }
                     response.data.results.map(function (item) {
                         try {
                             var region = _this.getRegion(item.attributes.st_abbr);
@@ -132,10 +139,10 @@ var StreamStats;
                 this.nationalMapLayerList = [];
                 this.Execute(request).then(function (response) {
                     response.data.layers.forEach(function (value, key) {
-                        console.log("Adding layer: ", value);
+                        //console.log("Adding layer: ", value);
                         _this.nationalMapLayerList.push([value.name, value.id]);
                     });
-                    console.log('list of national map layers', _this.nationalMapLayerList);
+                    //console.log('list of national map layers', this.nationalMapLayerList);
                     //return layerArray;
                 }, function (error) {
                     console.log('No national map layers found');
@@ -145,30 +152,37 @@ var StreamStats;
             RegionService.prototype.loadMapLayersByRegion = function (regionid) {
                 var _this = this;
                 console.log('in loadMapLayersByRegion');
+                this.regionMapLayerListLoaded = false;
                 var url = configuration.baseurls['StreamStats'] + configuration.queryparams['SSStateLayers'].format(regionid.toLowerCase());
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.regionMapLayerList = [];
                 this.Execute(request).then(function (response) {
+                    if (!response.data.layers) {
+                        _this.toaster.pop('warning', "No map layers available", "", 5000);
+                        return;
+                    }
                     response.data.layers.forEach(function (value, key) {
                         console.log("Adding layer: ", value);
                         _this.regionMapLayerList.push([value.name, value.id]);
                     });
-                    console.log('list of layers', _this.regionMapLayerList);
-                    //return layerArray;
+                    _this.regionMapLayerListLoaded = true;
                 }, function (error) {
                     console.log('No region map layers found');
                     return _this.$q.reject(error.data);
+                }).finally(function () {
                 });
             };
             RegionService.prototype.loadParametersByRegion = function () {
                 var _this = this;
-                console.log('in load parameters', this.selectedRegion);
+                //console.log('in load parameters', this.selectedRegion);
                 if (!this.selectedRegion)
                     return;
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSAvailableParams'].format(this.selectedRegion.RegionID);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
+                    //console.log(response);
                     if (response.data.parameters && response.data.parameters.length > 0) {
+                        _this.streamStatsAvailable = true;
                         response.data.parameters.forEach(function (parameter) {
                             try {
                                 //dont add an always selected param twice
@@ -189,9 +203,15 @@ var StreamStats;
                             }
                         });
                     }
+                    else {
+                        _this.streamStatsAvailable = false;
+                        _this.toaster.pop('warning', "StreamStats not available here at this time", "", 5000);
+                    }
                     //sm when complete
                 }, function (error) {
                     console.log('Bad response from the regression service');
+                    _this.streamStatsAvailable = false;
+                    _this.toaster.pop('warning', "StreamStats not available here at this time", "", 5000);
                     //sm when complete
                 }).finally(function () {
                 });
@@ -213,9 +233,9 @@ var StreamStats;
             };
             return RegionService;
         })(WiM.Services.HTTPServiceBase); //end class
-        factory.$inject = ['$http', '$q'];
-        function factory($http, $q) {
-            return new RegionService($http, $q);
+        factory.$inject = ['$http', '$q', 'toaster'];
+        function factory($http, $q, toaster) {
+            return new RegionService($http, $q, toaster);
         }
         angular.module('StreamStats.Services').factory('StreamStats.Services.RegionService', factory);
     })(Services = StreamStats.Services || (StreamStats.Services = {}));

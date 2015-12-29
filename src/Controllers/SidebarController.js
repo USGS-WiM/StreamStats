@@ -21,7 +21,7 @@ var StreamStats;
     (function (Controllers) {
         'use strinct';
         var SidebarController = (function () {
-            function SidebarController($scope, toaster, service, region, studyArea, StatisticsGroup, report, leafletData) {
+            function SidebarController($scope, toaster, service, region, studyArea, StatisticsGroup, report, leafletData, exploration) {
                 var _this = this;
                 $scope.vm = this;
                 this.init();
@@ -35,10 +35,11 @@ var StreamStats;
                 this.reportService = report;
                 this.leafletData = leafletData;
                 this.multipleParameterSelectorAdd = true;
+                this.explorationService = exploration;
                 StatisticsGroup.onSelectedStatisticsGroupChanged.subscribe(this._onSelectedStatisticsGroupChangedHandler);
                 //watch for map based region changes here
                 $scope.$watch(function () { return _this.regionService.selectedRegion; }, function (newval, oldval) {
-                    console.log('region change', oldval, newval);
+                    //console.log('region change', oldval, newval);
                     if (newval == null)
                         _this.setProcedureType(1);
                     else
@@ -48,7 +49,7 @@ var StreamStats;
                 $scope.$watch(function () { return _this.studyAreaService.parametersLoaded; }, function (newval, oldval) {
                     if (newval == oldval)
                         return;
-                    console.log('parameters loaded', oldval, newval);
+                    //console.log('parameters loaded', oldval, newval);
                     if (newval == null)
                         _this.setProcedureType(3);
                     else
@@ -59,7 +60,7 @@ var StreamStats;
                 return this.searchService.getLocations(term);
             };
             SidebarController.prototype.setProcedureType = function (pType) {
-                console.log('in setProcedureType', this.selectedProcedure, pType, !this.canUpdateProcedure(pType));
+                //console.log('in setProcedureType', this.selectedProcedure, pType, !this.canUpdateProcedure(pType));     
                 if (this.selectedProcedure == pType || !this.canUpdateProcedure(pType)) {
                     //capture issues and send notifications here
                     if (this.selectedProcedure == 3 && (pType == 4))
@@ -81,10 +82,10 @@ var StreamStats;
             };
             SidebarController.prototype.zoomRegion = function (inRegion) {
                 var region = angular.fromJson(inRegion);
-                console.log('zooming to region: ', region);
+                //console.log('zooming to region: ', region);
             };
             SidebarController.prototype.setRegion = function (region) {
-                console.log('setting region: ', region);
+                //console.log('setting region: ', region);
                 if (this.regionService.selectedRegion == undefined || this.regionService.selectedRegion.RegionID !== region.RegionID)
                     this.regionService.selectedRegion = region;
                 this.setProcedureType(2);
@@ -99,7 +100,7 @@ var StreamStats;
             SidebarController.prototype.startDelineate = function () {
                 var _this = this;
                 this.leafletData.getMap().then(function (map) {
-                    console.log('mapzoom', map.getZoom());
+                    //console.log('mapzoom', map.getZoom());
                     if (map.getZoom() < 15) {
                         _this.toaster.pop('error', "Delineate", "You must be at or above zoom level 15 to delineate.");
                         return;
@@ -138,10 +139,10 @@ var StreamStats;
             SidebarController.prototype.multipleParameterSelector = function () {
                 var _this = this;
                 this.regionService.parameterList.forEach(function (parameter) {
-                    console.log('length of configuration.alwaysSelectedParameters: ', configuration.alwaysSelectedParameters.length);
+                    //console.log('length of configuration.alwaysSelectedParameters: ', configuration.alwaysSelectedParameters.length);
                     configuration.alwaysSelectedParameters.forEach(function (alwaysSelectedParam) {
                         if (alwaysSelectedParam.name == parameter.code) {
-                            console.log('should not remove this param ', alwaysSelectedParam.name, parameter.code);
+                            //console.log('should not remove this param ', alwaysSelectedParam.name, parameter.code);
                             return;
                         }
                         else {
@@ -167,7 +168,7 @@ var StreamStats;
                 this.multipleParameterSelectorAdd = !this.multipleParameterSelectorAdd;
             };
             SidebarController.prototype.updateStudyAreaParameterList = function (parameter) {
-                console.log('in updatestudyarea parameter', parameter);
+                //console.log('in updatestudyarea parameter', parameter);
                 //dont mess with certain parameters
                 if (parameter.toggleable == false) {
                     this.toaster.pop('warning', parameter.code + " is required by one of the selected scenarios", "It cannot be unselected");
@@ -185,7 +186,7 @@ var StreamStats;
                 }
             };
             SidebarController.prototype.calculateParameters = function () {
-                console.log('in Calculate Parameters');
+                //console.log('in Calculate Parameters');
                 this.studyAreaService.loadParameters();
             };
             SidebarController.prototype.checkForBasinEdits = function () {
@@ -196,7 +197,7 @@ var StreamStats;
                 this.setProcedureType(3);
             };
             SidebarController.prototype.generateReport = function () {
-                console.log('in estimateFlows');
+                //console.log('in estimateFlows');
                 if (this.nssService.selectedStatisticsGroupList.length > 0 && this.nssService.showFlowsTable) {
                     //need to loop over selectedStatisticsGroupList HERE
                     this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList, this.regionService.selectedRegion.RegionID, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) {
@@ -210,8 +211,8 @@ var StreamStats;
                 this.studyAreaService.upstreamRegulation();
             };
             SidebarController.prototype.onSelectedStatisticsGroupChanged = function () {
+                //console.log('StatisticsGroup param list changed.  loaded ', this.nssService.selectedStatisticsGroupList);
                 var _this = this;
-                console.log('StatisticsGroup param list changed.  loaded ', this.nssService.selectedStatisticsGroupList);
                 //toggle show flows checkbox
                 this.nssService.selectedStatisticsGroupList.length > 0 ? this.nssService.showFlowsTable = true : this.nssService.showFlowsTable = false;
                 this.regionService.parameterList.forEach(function (parameter) {
@@ -275,7 +276,7 @@ var StreamStats;
             };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
-            SidebarController.$inject = ['$scope', 'toaster', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ReportService', 'leafletData'];
+            SidebarController.$inject = ['$scope', 'toaster', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ReportService', 'leafletData', 'StreamStats.Services.ExplorationService'];
             return SidebarController;
         })(); //end class
         var ProcedureType;

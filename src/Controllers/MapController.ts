@@ -68,6 +68,7 @@ module StreamStats.Controllers {
         controls: Object;
         markers: Object;
         bounds: Object;
+        layercontrol: Object;
 
     }
     interface IMapControllerScope extends ng.IScope {
@@ -140,6 +141,7 @@ module StreamStats.Controllers {
         private leafletData: ILeafletData;
         private studyArea: Services.IStudyAreaService;
         private nssService: Services.InssService;
+        private explorationService: Services.IExplorationService;
 
         public cursorStyle: string;
         public center: ICenter = null;
@@ -148,9 +150,10 @@ module StreamStats.Controllers {
         public mapPoint: IMapPoint = null;
         public bounds: IBounds = null;
 
-        public controls: Object = null;
+        public controls: any;
         public markers: Object = null;
         public events: Object = null;
+        public layercontrol: Object = null;
         public regionLayer: Object = null;
         public drawControl: any;    
         public toaster: any; 
@@ -158,8 +161,8 @@ module StreamStats.Controllers {
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', 'toaster', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService'];
-        constructor($scope: IMapControllerScope, toaster, $location: ng.ILocationService, $stateParams, leafletBoundsHelper: any, leafletData: ILeafletData, search: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService) {
+        static $inject = ['$scope', 'toaster', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService'];
+        constructor($scope: IMapControllerScope, toaster, $location: ng.ILocationService, $stateParams, leafletBoundsHelper: any, leafletData: ILeafletData, search: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, exploration: Services.IExplorationService) {
             $scope.vm = this;
             this.init();
 
@@ -171,6 +174,7 @@ module StreamStats.Controllers {
             this.leafletData = leafletData;
             this.studyArea = studyArea;
             this.nssService = StatisticsGroup;
+            this.explorationService = exploration;
 
             //subscribe to Events
             search.onSelectedAreaOfInterestChanged.subscribe(this._onSelectedAreaOfInterestHandler);
@@ -197,11 +201,23 @@ module StreamStats.Controllers {
                 if (studyArea.doDelineateFlag) this.checkDelineatePoint(args.leafletEvent.latlng);
 
                 //otherwise query map layers
-                else if (!region.selectedRegion) this.queryNationalMapLayers(args.leafletEvent)
+                else if (!region.selectedRegion && !this.explorationService.drawElevationProfile) this.queryNationalMapLayers(args.leafletEvent)
                 else if (region.selectedRegion && this.regionServices.allowRegionalQuery) this.queryRegionalMapLayers(args.leafletEvent);
             });
 
             $scope.$watch(() => this.bounds,(newval, oldval) => this.mapBoundsChange(oldval, newval));
+
+            $scope.$watch(() => this.explorationService.drawElevationProfile,(newval, oldval) => {
+                if (newval) this.elevationProfile();
+            });
+
+            $scope.$watch(() => this.regionServices.regionMapLayerListLoaded,(newval, oldval) => {
+                if (newval) {
+                    console.log(newval);
+                    this.addRegionOverlayLayers(this.regionServices.selectedRegion.RegionID);
+                }
+            });            
+
             $scope.$on('$locationChangeStart',() => this.updateRegion());
 
             $scope.$watch(() => studyArea.doDelineateFlag,(newval, oldval) => newval ? this.cursorStyle = 'crosshair' : this.cursorStyle = 'pointer');
@@ -218,7 +234,7 @@ module StreamStats.Controllers {
 
             //watch for result of regressionregion query
             $scope.$watch(() => this.studyArea.regressionRegionQueryComplete,(newval, oldval) => {
-                console.log('in regression query watch', newval, oldval);
+                //console.log('in regression query watch', newval, oldval);
                 //join codes from regression region object list and run query
                 if (newval && this.studyArea.selectedStudyArea.RegressionRegions) this.nssService.loadStatisticsGroupTypes(this.regionServices.selectedRegion.RegionID, this.studyArea.selectedStudyArea.RegressionRegions.map(function (elem) {
                     return elem.code; }).join(","));
@@ -258,6 +274,13 @@ module StreamStats.Controllers {
             this.markers = {};
             this.regionLayer = {};     
             //add custom controls
+            //this.layercontrol = {
+            //    icons: {
+            //        uncheck: "fa fa-toggle-off",
+            //        check: "fa fa-toggle-on"
+            //    }
+            //};
+
             this.controls = {
                 scale: true,
                 draw: {
@@ -270,11 +293,13 @@ module StreamStats.Controllers {
                     }
 
                 },
-                custom: new Array(
+                custom: 
+                new Array(
                     //zoom home button control
                     (<any>L.Control).zoomHome({ homeCoordinates: [39, -100], homeZoom: 4 }),
                     //location control
-                    (<any>L.control).locate({ follow: false })
+                    (<any>L.control).locate({ follow: false })//,
+                    //(<any>L.control).elevation()
                     )
             };
             this.events = {
@@ -314,7 +339,7 @@ module StreamStats.Controllers {
 
         private queryNationalMapLayers(evt) {
 
-            console.log('in querystates');
+            //console.log('in querystates');
             this.toaster.pop("info", "Information", "Querying National map layers...", 0);
             this.cursorStyle = 'wait'; 
 
@@ -323,13 +348,22 @@ module StreamStats.Controllers {
             this.regionServices.nationalMapLayerList.forEach((item) => {
                 if (item[0] == "Area of limited functionality") queryString += String(item[1]);
             });
-            console.log('queryList', queryString);
+            //console.log('queryList', queryString);
 
             this.leafletData.getMap().then((map: any) => {
                 this.leafletData.getLayers().then((maplayers: any) => {
 
                     maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).run((error: any, results: any) => {
-                        if (!results.features) return;
+                        console.log('national results', results, results.features.length);
+
+                        if (results.features.length < 1) {
+                            //console.log('here');
+                            this.cursorStyle = 'pointer';
+                            this.toaster.clear();
+                            this.toaster.pop("warning", "Warning", "No State/Regional Study Found", 0);
+                            map.panBy([0, 1]);
+                            return;
+                        }
 
                         var rcodeList = []
 
@@ -337,7 +371,7 @@ module StreamStats.Controllers {
 
                             this.regionServices.nationalMapLayerList.forEach((item) => {
                                 if (queryResult.layerId == item[1]) {
-                                    console.log('Map query found a match with: ', item[0], queryResult)
+                                    //console.log('Map query found a match with: ', item[0], queryResult)
 
                                     if (((item[0] == 'State Applications') || (item[0] == 'Regional Studies')) && (map.getZoom() <= 7)) {
 
@@ -345,10 +379,11 @@ module StreamStats.Controllers {
                                         if (item[0] == 'Regional Studies') rcodeList.push(queryResult.properties.st_abbr);
                                     }
                                 }
+        
                             });  
                         });
 
-                        console.log('RCODELIST: ', rcodeList);
+                        //console.log('RCODELIST: ', rcodeList);
 
                         if (rcodeList.length < 1) return;
 
@@ -356,25 +391,18 @@ module StreamStats.Controllers {
                             this.regionServices.masterRegionList.forEach((item) => {
                                 if (item.RegionID == rcodeList[0]) {
                                     this.setBoundsByRegion(rcodeList[0]);
-                                    this.regionServices.loadParametersByRegion();
+                                    //console.log('right here', this.regionServices.selectedRegion);
+                                    if (this.regionServices.selectedRegion) this.regionServices.loadParametersByRegion();
                                 }
                             });
                         }
 
+                        //if multiple results, zoom to level 9 where selection options appear in sidebar
                         if (rcodeList.length > 1) {
                             map.setView(evt.latlng, 9)
                         }
 
                         this.toaster.clear();
-
-                        //this.markers['rcodeSelect'] = {
-                        //    lat: evt.latlng.lat,
-                        //    lng: evt.latlng.lng,
-                        //    message: (rcodeList.length > 1) ? '<strong>Multiple State/Regional Studies found</strong></br>Please use the sidebar to select a State/Regional Study' : '<strong>State/Regional Study Found</strong>',
-                        //    focus: true,
-                        //    draggable: false
-                        //}
-
                         this.cursorStyle = 'pointer';
                     });
                 });
@@ -383,9 +411,9 @@ module StreamStats.Controllers {
 
         private queryRegionalMapLayers(evt) {
 
-            console.log('in query regional layers');
+            //console.log('in query regional layers');
             this.toaster.pop("info", "Information", "Querying State/Regional map layers...", 0);
-            this.cursorStyle = 'wait'; 
+            this.cursorStyle = 'wait';
             this.markers = {};
 
             this.leafletData.getMap().then((map: any) => {
@@ -398,7 +426,7 @@ module StreamStats.Controllers {
 
                             this.regionServices.regionMapLayerList.forEach((item) => {
                                 if (queryResult.layerId == item[1]) {
-                                    console.log('Map query found a match with: ', item[0], queryResult)
+                                    //console.log('Map query found a match with: ', item[0], queryResult)
 
                                     if (item[0] == "Streamgages") {
                                         var popupContent = '<strong>Latitude: </strong>' + evt.latlng.lat + '</br><strong>Longitude: </strong>' + evt.latlng.lng + '</br><strong>Region: </strong>' + this.regionServices.selectedRegion.Name + '</br><strong>Query result: </strong></br>';
@@ -406,7 +434,7 @@ module StreamStats.Controllers {
                                         angular.forEach(queryResult.properties, function (value, key) {
                                             popupContent += '<strong>' + key + ': </strong>' + value + '</br>';
                                         });
-                                        
+
                                         this.markers['regionalQueryResult'] = {
                                             lat: evt.latlng.lat,
                                             lng: evt.latlng.lng,
@@ -426,9 +454,59 @@ module StreamStats.Controllers {
             });
         }
 
+        private elevationProfile() {
+
+            console.log('in elevation profile');
+            this.toaster.pop("info", "Information", "Querying State/Regional map layers...", 0);
+            this.markers = {};
+
+            this.leafletData.getMap().then((map: any) => {
+                this.leafletData.getLayers().then((maplayers: any) => {
+
+                    //create draw control
+                    var drawnItems = maplayers.overlays.draw;
+                    drawnItems.clearLayers();
+
+                    var drawControl = new (<any>L).Draw.Polyline(map, drawnItems);
+                    drawControl.enable();
+
+                    var el = this.controls.custom[2];
+
+                    map.on('draw:drawstart',(e) => {
+                        //console.log('in draw start');
+                        el.clear();
+                    });
+
+                    //listen for end of draw
+                    map.on('draw:created',(e) => {
+
+                        map.removeEventListener('draw:created');
+
+                        var layer = e.layer;
+                        var feature = e.layer.toGeoJSON();
+			
+                        //convert to esriJSON
+                        var esriJSON = '{"geometryType":"esriGeometryPolyline","spatialReference":{"wkid":"4326"},"fields": [],"features":[{"geometry": {"type":"polyline", "paths":[' + JSON.stringify(feature.geometry.coordinates) + ']}}]}'
+
+                        //var geojson = this.explorationService.elevationProfile(esriJSON);
+
+                        //console.log('geojson response: ', geojson);
+
+                        var geojsonlayer = L.geoJson(this.explorationService.elevationProfile(esriJSON), {
+                            onEachFeature: el.addData.bind(el)
+                        });
+
+                        var lines3d = L.layerGroup();
+                        map.addLayer(lines3d);
+                        lines3d.addLayer(geojsonlayer);
+                    });
+                });
+            });
+        }
+
         private checkDelineatePoint(latlng) {
 
-            console.log('in check delineate point');
+            //console.log('in check delineate point');
             //clear toasts
             
             this.toaster.pop("info", "Information", "Validating your clicked point...", 5000);
@@ -499,7 +577,7 @@ module StreamStats.Controllers {
             this.leafletData.getMap().then((map: any) => {
                 this.leafletData.getLayers().then((maplayers: any) => {
 
-                    console.log('maplayers', map, maplayers);
+                    //console.log('maplayers', map, maplayers);
 
                     //create draw control
                     var drawnItems = maplayers.overlays.draw;
@@ -524,17 +602,17 @@ module StreamStats.Controllers {
                         var clipPolygon = L.polygon(editAreaConverted);
 
                         if (this.studyArea.drawControlOption == 'add') {
-                            console.log('add layer', layer.toGeoJSON());
+                            //console.log('add layer', layer.toGeoJSON());
                             var editPolygon = greinerHormann.union(sourcePolygon, clipPolygon);
                             this.studyArea.WatershedEditDecisionList.append.push(layer.toGeoJSON());
                         }
 
                         if (this.studyArea.drawControlOption == 'remove') {
-                            console.log('remove layer', layer.toGeoJSON());
+                            //console.log('remove layer', layer.toGeoJSON());
                             var editPolygon = greinerHormann.diff(sourcePolygon, clipPolygon);
 
                             //check for split polygon
-                            console.log('editPoly', editPolygon.length);
+                            //console.log('editPoly', editPolygon.length);
                             if (editPolygon.length == 2) {
                                 alert('Splitting polygons is not permitted');
                                 drawnItems.clearLayers();
@@ -547,7 +625,7 @@ module StreamStats.Controllers {
                         //set studyArea basin to new edited polygon
                         basin.data.features[0].geometry.coordinates[0] = [];  
                         editPolygon.forEach((item) => { basin.data.features[0].geometry.coordinates[0].push([item[1], item[0]]) });
-                        console.log('edited basin', basin, basin.data.features[0].geometry.coordinates[0].length, this.layers.overlays['globalwatershed'].data.features[0].geometry.coordinates[0].length);
+                        //console.log('edited basin', basin, basin.data.features[0].geometry.coordinates[0].length, this.layers.overlays['globalwatershed'].data.features[0].geometry.coordinates[0].length);
                         this.toaster.pop("info", "Submitting your edit", "Please wait...", 5000)
 
                         //clear old watershed
@@ -575,8 +653,7 @@ module StreamStats.Controllers {
                             }
                         }, 100);
 
-
-                        console.log('editedAreas', angular.toJson(this.studyArea.WatershedEditDecisionList));
+                        //console.log('editedAreas', angular.toJson(this.studyArea.WatershedEditDecisionList));
                     });
                 });
             });
@@ -604,14 +681,15 @@ module StreamStats.Controllers {
             });
         }
         private onSelectedRegionChanged() {
-            console.log('in onselected region changed', this.regionServices.regionList, this.regionServices.selectedRegion);
+            //console.log('in onselected region changed', this.regionServices.regionList, this.regionServices.selectedRegion);
             if (!this.regionServices.selectedRegion) return;
             this.removeOverlayLayers("_region", true);
-            this.addRegionOverlayLayers(this.regionServices.selectedRegion.RegionID);
+
+            this.regionServices.loadMapLayersByRegion(this.regionServices.selectedRegion.RegionID)
         }
         private onSelectedStudyAreaChanged() {
 
-            console.log('study area changed');
+            //console.log('study area changed');
             this.removeOverlayLayers('globalwatershed', true);
 
             if (!this.studyArea.selectedStudyArea || !this.studyArea.selectedStudyArea.Features) return;
@@ -625,7 +703,7 @@ module StreamStats.Controllers {
 
                 var item = angular.fromJson(angular.toJson(layer));
 
-                console.log('in onselectedstudyarea changed', item.name);
+                //console.log('in onselectedstudyarea changed', item.name);
 
                 if (item.name == 'globalwatershed') {
                     this.layers.overlays[item.name] = {
@@ -663,7 +741,7 @@ module StreamStats.Controllers {
                 }
 
                 if (item.name == 'regulatedWatershed') {
-                    console.log('showing regulated watershed');
+                    //console.log('showing regulated watershed');
                     this.layers.overlays["globalwatershedregulated"] = {
                         name: 'Basin Boundary (Regulated Area)',
                         type: 'geoJSONShape',
@@ -708,14 +786,14 @@ module StreamStats.Controllers {
             this.nomnimalZoomLevel = this.scaleLookup(this.center.zoom);
 
             if (this.center.zoom >= 9 && oldValue !== newValue) {
-                console.log('requesting region list');
+                //console.log('requesting region list');
                 this.regionServices.loadRegionListByExtent(this.bounds.northEast.lng, this.bounds.southWest.lng,
                     this.bounds.southWest.lat, this.bounds.northEast.lat);
             }
             
             //if a region was selected, and then user zooms back out, clear and start over
             if (this.center.zoom <= 6 && oldValue !== newValue) {
-                console.log('removing region layers', this.layers.overlays);
+                //console.log('removing region layers', this.layers.overlays);
 
                 this.regionServices.clearRegion();
                 this.studyArea.clearStudyArea();
@@ -751,12 +829,13 @@ module StreamStats.Controllers {
         }
         
         private addRegionOverlayLayers(regionId: string) {
-            this.regionServices.loadMapLayersByRegion(regionId)
+
+            if (this.regionServices.regionMapLayerList.length < 1) return;
 
             //refine list here if needed
             //if ((value.name.toLowerCase().indexOf('stream grid') > -1) || (value.name.toLowerCase().indexOf('study area bndys') > -1) || (value.name.toLowerCase().indexOf('str') > -1)) {   };
 
-            console.log('adding layers to map');
+            //console.log('adding layers to map');
 
             this.layers.overlays[regionId + "_region"] = new Layer(regionId + " Map layers", configuration.baseurls['StreamStats'] + "/arcgis/rest/services/{0}_ss/MapServer".format(regionId.toLowerCase()),
                 "agsDynamic", true, {
@@ -781,7 +860,7 @@ module StreamStats.Controllers {
             layeridList = this.getLayerIdsByID(name, this.layers.overlays, isPartial);
 
             layeridList.forEach((item) => {
-                console.log('removing map overlay layer: ', item);
+                //console.log('removing map overlay layer: ', item);
                 delete this.layers.overlays[item];
             });
         }
@@ -807,7 +886,7 @@ module StreamStats.Controllers {
         }
 
         private startDelineate(latlng: any) {
-            console.log('in startDelineate', latlng);
+            //console.log('in startDelineate', latlng);
 
             var studyArea: Models.IStudyArea = new Models.StudyArea(this.regionServices.selectedRegion.RegionID, new WiM.Models.Point(latlng.lat, latlng.lng, '4326'));
 

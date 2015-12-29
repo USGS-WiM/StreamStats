@@ -56,7 +56,7 @@ var StreamStats;
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             nssService.prototype.clearNSSdata = function () {
-                console.log('in clear nss data');
+                //console.log('in clear nss data');
                 this.selectedStatisticsGroupList = [];
                 this.statisticsGroupList = [];
                 this.canUpdate = true;
@@ -65,14 +65,14 @@ var StreamStats;
             nssService.prototype.loadStatisticsGroupTypes = function (rcode, regressionregions) {
                 var _this = this;
                 this.toaster.pop('info', "Loading Available Scenarios", "Please wait...", 0);
-                console.log('in load StatisticsGroups', rcode, regressionregions);
+                //console.log('in load StatisticsGroups', rcode, regressionregions);
                 if (!rcode && !regressionregions)
                     return;
                 var url = configuration.baseurls['NSS'] + configuration.queryparams['statisticsGroupLookup'].format(rcode, regressionregions);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.loadingStatisticsGroup = true;
                 this.Execute(request).then(function (response) {
-                    console.log(response.data);
+                    //console.log(response.data);
                     if (response.data.length > 0) {
                         _this.loadingStatisticsGroup = false;
                         var statisticsGroupList = _this.statisticsGroupList;
@@ -101,13 +101,13 @@ var StreamStats;
             nssService.prototype.loadParametersByStatisticsGroup = function (rcode, statisticsGroupID, regressionregions, percentWeights) {
                 var _this = this;
                 this.toaster.pop('info', "Load Parameters by Scenario", "Please wait...", 0);
-                console.log('in load StatisticsGroup parameters', rcode, statisticsGroupID, regressionregions);
+                //console.log('in load StatisticsGroup parameters', rcode, statisticsGroupID,regressionregions);
                 if (!rcode && !statisticsGroupID && !regressionregions)
                     return;
                 var url = configuration.baseurls['NSS'] + configuration.queryparams['statisticsGroupParameterLookup'].format(rcode, statisticsGroupID, regressionregions);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
-                    console.log('loadParametersByStatisticsGroup response: ', response);
+                    //console.log('loadParametersByStatisticsGroup response: ', response);
                     if (response.data[0].RegressionRegions[0].Parameters && response.data[0].RegressionRegions[0].Parameters.length > 0) {
                         //add Regression Regions to StatisticsGroupList and add percent weights
                         _this.selectedStatisticsGroupList.forEach(function (statGroup) {
@@ -140,12 +140,12 @@ var StreamStats;
                 //loop over all selected StatisticsGroups
                 this.selectedStatisticsGroupList.forEach(function (statGroup) {
                     _this.toaster.pop('info', "Estimating Flows for " + statGroup.Name, "Please wait...", 0);
-                    console.log('in estimate flows method for ', statGroup.Name, statGroup);
+                    //console.log('in estimate flows method for ', statGroup.Name, statGroup);
                     statGroup.RegressionRegions[0].Parameters.forEach(function (regressionParam) {
                         studyAreaParameterList.forEach(function (param) {
-                            console.log('search for matching params ', regressionParam.Code.toLowerCase(), param.code.toLowerCase());
+                            //console.log('search for matching params ', regressionParam.Code.toLowerCase(), param.code.toLowerCase());
                             if (regressionParam.Code.toLowerCase() == param.code.toLowerCase()) {
-                                console.log('updating parameter in scenario object for: ', regressionParam.Code, ' from: ', regressionParam.Value, ' to: ', param.value);
+                                //console.log('updating parameter in scenario object for: ', regressionParam.Code, ' from: ', regressionParam.Value, ' to: ', param.value);
                                 regressionParam.Value = param.value;
                             }
                         });
