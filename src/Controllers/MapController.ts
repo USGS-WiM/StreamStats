@@ -204,8 +204,8 @@ module StreamStats.Controllers {
                 if (studyArea.doDelineateFlag) this.checkDelineatePoint(args.leafletEvent.latlng);
 
                 //otherwise query map layers
-                else if (!region.selectedRegion && !this.explorationService.drawElevationProfile) this.queryNationalMapLayers(args.leafletEvent)
-                else if (region.selectedRegion && this.regionServices.allowRegionalQuery) this.queryRegionalMapLayers(args.leafletEvent);
+                else if (!region.selectedRegion && !this.explorationService.drawElevationProfile && !this.explorationService.drawMeasurement) this.queryNationalMapLayers(args.leafletEvent)
+                else if (region.selectedRegion && this.regionServices.allowRegionalQuery && !this.explorationService.drawElevationProfile && !this.explorationService.drawMeasurement) this.queryRegionalMapLayers(args.leafletEvent);
             });
 
             $scope.$watch(() => this.bounds,(newval, oldval) => this.mapBoundsChange(oldval, newval));
@@ -214,6 +214,10 @@ module StreamStats.Controllers {
 
             $scope.$watch(() => this.explorationService.drawElevationProfile,(newval, oldval) => {
                 if (newval) this.elevationProfile();
+            });
+
+            $scope.$watch(() => this.explorationService.drawMeasurement,(newval, oldval) => {
+                if (newval) this.measurement();
             });
 
             $scope.$watch(() => this.regionServices.regionMapLayerListLoaded,(newval, oldval) => {
@@ -306,7 +310,7 @@ module StreamStats.Controllers {
                     (<any>L.Control).zoomHome({ homeCoordinates: [39, -100], homeZoom: 4 }),
                     //location control
                     (<any>L.control).locate({ follow: false }),
-                    (<any>L.control).elevation()
+                    (<any>L.control).elevation({ imperial: true })
                     )
             };
             this.events = {
@@ -427,7 +431,10 @@ module StreamStats.Controllers {
                 this.leafletData.getLayers().then((maplayers: any) => {
 
                     maplayers.overlays[this.regionServices.selectedRegion.RegionID + "_region"].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).run((error: any, results: any) => {
-                        if (!results.features) return;
+                        if (!results.features) {
+                            this.toaster.clear();
+                            return;
+                        }
 
                         results.features.forEach((queryResult) => {
 
@@ -450,6 +457,7 @@ module StreamStats.Controllers {
                                             draggable: false
                                         };
 
+                                        map.panBy([0, 1]);
                                         this.toaster.clear();
                                     }
                                 }
@@ -467,7 +475,6 @@ module StreamStats.Controllers {
 
             //get reference to elevation control
             var el = this.controls.custom[2];
-            el.clear();
 
             this.leafletData.getMap().then((map: any) => {
                 this.leafletData.getLayers().then((maplayers: any) => {
@@ -476,12 +483,16 @@ module StreamStats.Controllers {
                     var drawnItems = maplayers.overlays.draw;
                     drawnItems.clearLayers();
 
-                    var drawControl = new (<any>L).Draw.Polyline(map, drawnItems);
+
+                    var drawControl = new (<any>L).Draw.Polyline(map, {
+                        metric: false
+                    });
                     drawControl.enable();
+                    this.geojson = {};
 
                     map.on('draw:drawstart',(e) => {
                         //console.log('in draw start');
-                        this.controls.custom[2].clear();
+                        el.clear();
                     });
 
                     //listen for end of draw
@@ -495,6 +506,8 @@ module StreamStats.Controllers {
                         var esriJSON = '{"geometryType":"esriGeometryPolyline","spatialReference":{"wkid":"4326"},"fields": [],"features":[{"geometry": {"type":"polyline", "paths":[' + JSON.stringify(feature.geometry.coordinates) + ']}}]}'
 
                         //make the request
+                        this.cursorStyle = 'wait'
+                        this.toaster.pop("info", "Information", "Querying the elevation service...", 0);
                         this.explorationService.elevationProfile(esriJSON)
 
                         //disable button 
@@ -522,6 +535,67 @@ module StreamStats.Controllers {
 
             //show the div
             angular.element(document.querySelector('.elevation')).css('display', 'block');
+            this.toaster.clear();
+            this.cursorStyle = 'pointer'
+        }
+
+        private measurement() {
+
+            console.log('in measurement');
+
+            this.leafletData.getMap().then((map: any) => {
+                this.leafletData.getLayers().then((maplayers: any) => {
+
+                    var stopclick = false; //to prevent more than one click listener
+
+                    var polyline = new (<any>L).Draw.Polyline(map, {
+                        shapeOptions: {
+                            color: 'blue'
+                        },
+                        metric: false
+                    });
+                    polyline.enable();
+
+                    var drawnItems = maplayers.overlays.draw;
+                    drawnItems.clearLayers();
+
+                    //user affordance
+                    this.explorationService.measurementData = 'Click the map to begin';
+			
+                    //listeners active during drawing
+                    var measuremove = () => {
+                        this.explorationService.measurementData = "Total length: " + polyline._getMeasurementString();
+                    };
+                    var measurestart = () => {
+                        if (stopclick == false) {
+                            stopclick = true;
+                            this.explorationService.measurementData = "Total Length: ";
+                            map.on("mousemove", measuremove);
+                        };
+                    };
+
+                    var measurestop = (e) => {
+                        var layer = e.layer;
+                        drawnItems.addLayer(layer);
+                        drawnItems.addTo(map);
+			
+                        //reset button
+                        this.explorationService.measurementData = "Total length: " + polyline._getMeasurementString();
+                        //remove listeners
+                        map.off("click", measurestart);
+                        map.off("mousemove", measuremove);
+                        map.off("draw:created", measurestop);
+
+                        polyline.disable();
+                        this.explorationService.drawMeasurement = false;
+                    };
+
+                    map.on("click", measurestart);
+                    map.on("draw:created", measurestop);
+
+                    
+                });
+            });
         }
 
         private checkDelineatePoint(latlng) {
@@ -917,6 +991,10 @@ module StreamStats.Controllers {
 
     angular.module('StreamStats.Controllers')
         .controller('StreamStats.Controllers.MapController', MapController)
+        //turns of angular-leaflet console spam
+        .config(function ($logProvider) {
+            $logProvider.debugEnabled(false);
+        });
 
 }//end module
  
