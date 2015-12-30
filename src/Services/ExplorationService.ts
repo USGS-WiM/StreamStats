@@ -27,8 +27,10 @@ module StreamStats.Services {
     export interface IExplorationService {
         elevationProfile(any);
         drawElevationProfile: boolean;
+        drawMeasurement: boolean;
         elevationProfileGeoJSON: any;
-
+        measurementData: string;
+        
     }
     class ExplorationService extends WiM.Services.HTTPServiceBase implements IExplorationService {
         //Events
@@ -38,7 +40,10 @@ module StreamStats.Services {
         //-+-+-+-+-+-+-+-+-+-+-+-
         public toaster: any;
         public drawElevationProfile: boolean;
+        public drawMeasurement: boolean;
         public elevationProfileGeoJSON: any;
+        public measurementData: string;
+        
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -47,7 +52,8 @@ module StreamStats.Services {
 
             this.toaster = toaster;
             this.drawElevationProfile = false;
-
+            this.drawMeasurement = false;
+            this.measurementData = '';
 
         }
         //Methods
