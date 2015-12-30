@@ -395,6 +395,7 @@ module StreamStats.Controllers {
                         });
 
                         //console.log('RCODELIST: ', rcodeList);
+                        console.log('bounds',map.getBounds())
 
                         if (rcodeList.length < 1) return;
 

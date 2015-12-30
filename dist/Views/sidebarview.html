@@ -235,7 +235,7 @@
                         <button ng-class="!vm.explorationService.drawMeasurement ? 'btn btn-sm btn-default':'btn btn-sm btn-success'" ng-click="vm.explorationService.drawMeasurement = !vm.explorationService.drawMeasurement"><span><i class="fa fa-arrows-h"></i>&nbsp;&nbsp;Measure Tool</span></button>
                         
                     </div>
-                    <div class="alert alert-info" role="alert" >
+                    <div class="alert alert-info" role="alert" ng-show="vm.explorationService.drawMeasurement">
                         <span ng-bind="vm.explorationService.measurementData"></span>
                     </div>
                 </div>    
