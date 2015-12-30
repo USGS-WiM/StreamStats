@@ -222,7 +222,7 @@ module StreamStats.Controllers {
 
             $scope.$watch(() => this.regionServices.regionMapLayerListLoaded,(newval, oldval) => {
                 if (newval) {
-                    console.log(newval);
+                    //console.log(newval);
                     this.addRegionOverlayLayers(this.regionServices.selectedRegion.RegionID);
                 }
             });            
@@ -365,7 +365,7 @@ module StreamStats.Controllers {
                 this.leafletData.getLayers().then((maplayers: any) => {
 
                     maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).run((error: any, results: any) => {
-                        console.log('national results', results, results.features.length);
+                        //console.log('national results', results, results.features.length);
 
                         if (results.features.length < 1) {
                             //console.log('here');
@@ -471,8 +471,6 @@ module StreamStats.Controllers {
 
         private elevationProfile() {
 
-            console.log('in elevation profile');
-
             //get reference to elevation control
             var el = this.controls.custom[2];
 
@@ -518,8 +516,6 @@ module StreamStats.Controllers {
         }
 
         private displayElevationProfile() {
-
-            console.log('here', this.explorationService.elevationProfileGeoJSON);
             var el = this.controls.custom[2];
 
             //parse it
@@ -541,7 +537,7 @@ module StreamStats.Controllers {
 
         private measurement() {
 
-            console.log('in measurement');
+            //console.log('in measurement');
 
             this.leafletData.getMap().then((map: any) => {
                 this.leafletData.getLayers().then((maplayers: any) => {
