@@ -119,7 +119,7 @@ var StreamStats;
                 });
                 $scope.$watch(function () { return _this.regionServices.regionMapLayerListLoaded; }, function (newval, oldval) {
                     if (newval) {
-                        console.log(newval);
+                        //console.log(newval);
                         _this.addRegionOverlayLayers(_this.regionServices.selectedRegion.RegionID);
                     }
                 });
@@ -243,7 +243,7 @@ var StreamStats;
                 this.leafletData.getMap().then(function (map) {
                     _this.leafletData.getLayers().then(function (maplayers) {
                         maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).run(function (error, results) {
-                            console.log('national results', results, results.features.length);
+                            //console.log('national results', results, results.features.length);
                             if (results.features.length < 1) {
                                 //console.log('here');
                                 _this.cursorStyle = 'pointer';
@@ -331,7 +331,6 @@ var StreamStats;
             };
             MapController.prototype.elevationProfile = function () {
                 var _this = this;
-                console.log('in elevation profile');
                 //get reference to elevation control
                 var el = this.controls.custom[2];
                 this.leafletData.getMap().then(function (map) {
@@ -365,7 +364,6 @@ var StreamStats;
                 });
             };
             MapController.prototype.displayElevationProfile = function () {
-                console.log('here', this.explorationService.elevationProfileGeoJSON);
                 var el = this.controls.custom[2];
                 //parse it
                 this.geojson["elevationProfileLine3D"] = {
@@ -383,8 +381,8 @@ var StreamStats;
                 this.cursorStyle = 'pointer';
             };
             MapController.prototype.measurement = function () {
+                //console.log('in measurement');
                 var _this = this;
-                console.log('in measurement');
                 this.leafletData.getMap().then(function (map) {
                     _this.leafletData.getLayers().then(function (maplayers) {
                         var stopclick = false; //to prevent more than one click listener
