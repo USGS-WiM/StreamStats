@@ -267,6 +267,7 @@ var StreamStats;
                                 });
                             });
                             //console.log('RCODELIST: ', rcodeList);
+                            console.log('bounds', map.getBounds());
                             if (rcodeList.length < 1)
                                 return;
                             if (rcodeList.length == 1) {
