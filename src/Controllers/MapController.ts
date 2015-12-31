@@ -989,10 +989,5 @@ module StreamStats.Controllers {
 
     angular.module('StreamStats.Controllers')
         .controller('StreamStats.Controllers.MapController', MapController)
-    //turns of angular-leaflet console spam
-        .config(function ($logProvider) {
-        $logProvider.debugEnabled(false);
-    });
-
 }//end module
  

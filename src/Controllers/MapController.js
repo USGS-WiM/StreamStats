@@ -758,9 +758,7 @@ var StreamStats;
             MapController.$inject = ['$scope', 'toaster', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService'];
             return MapController;
         })(); //end class
-        angular.module('StreamStats.Controllers').controller('StreamStats.Controllers.MapController', MapController).config(function ($logProvider) {
-            $logProvider.debugEnabled(false);
-        });
+        angular.module('StreamStats.Controllers').controller('StreamStats.Controllers.MapController', MapController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));
 })(StreamStats || (StreamStats = {})); //end module
 //# sourceMappingURL=MapController.js.map
