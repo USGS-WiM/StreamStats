@@ -798,7 +798,7 @@ module StreamStats.Controllers {
 
                 if (item.name == 'globalwatershed') {
                     this.layers.overlays[item.name] = {
-                        name: '<img src=images/basin.png height="16">&nbsp;&nbsp;Basin Boundary',
+                        name: '<img src=images/marker-icon.png height="16">&nbsp;&nbspBasin Boundary',
                         type: 'geoJSONShape',
                         data: item.feature,
                         visible: true,
@@ -834,7 +834,7 @@ module StreamStats.Controllers {
                 if (item.name == 'regulatedWatershed') {
                     //console.log('showing regulated watershed');
                     this.layers.overlays["globalwatershedregulated"] = {
-                        name: '<img src=images/regulated-basin.png height="16">&nbsp;&nbsp;Basin Boundary (Regulated Area)',
+                        name: 'Basin Boundary (Regulated Area)',
                         type: 'geoJSONShape',
                         data: item.feature,
                         visible: true,
@@ -988,10 +988,5 @@ module StreamStats.Controllers {
 
     angular.module('StreamStats.Controllers')
         .controller('StreamStats.Controllers.MapController', MapController)
-        //turns of angular-leaflet console spam
-        .config(function ($logProvider) {
-            $logProvider.debugEnabled(false);
-        });
-
 }//end module
  

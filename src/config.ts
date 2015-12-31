@@ -8,8 +8,8 @@ module StreamStats {
     //'use strict';
 
     class config {
-        static $inject = ['$stateProvider', '$urlRouterProvider', '$locationProvider'];
-        constructor(private $stateProvider: ng.ui.IStateProvider, private $urlRouterProvider: ng.ui.IUrlRouterProvider, private $locationProvider: ng.ILocationProvider) {
+        static $inject = ['$stateProvider', '$urlRouterProvider', '$locationProvider', '$logProvider'];
+        constructor(private $stateProvider: ng.ui.IStateProvider, private $urlRouterProvider: ng.ui.IUrlRouterProvider, private $locationProvider: ng.ILocationProvider, private $logProvider: ng.ILogProvider) {
             this.$stateProvider
                 .state("main", {
                 url: '/?rcode&workspaceID',
@@ -39,7 +39,10 @@ module StreamStats {
           
             this.$urlRouterProvider.otherwise('/');     
             
-            this.$locationProvider.html5Mode(true);                            
+            this.$locationProvider.html5Mode(true);   
+            
+            //turns of angular-leaflet console spam
+            this.$logProvider.debugEnabled(false);                        
         }//end constructor
     }//end class
 

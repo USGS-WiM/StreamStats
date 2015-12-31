@@ -5,10 +5,11 @@ var StreamStats;
 (function (StreamStats) {
     //'use strict';
     var config = (function () {
-        function config($stateProvider, $urlRouterProvider, $locationProvider) {
+        function config($stateProvider, $urlRouterProvider, $locationProvider, $logProvider) {
             this.$stateProvider = $stateProvider;
             this.$urlRouterProvider = $urlRouterProvider;
             this.$locationProvider = $locationProvider;
+            this.$logProvider = $logProvider;
             this.$stateProvider.state("main", {
                 url: '/?rcode&workspaceID',
                 //reloadOnSearch:true,
@@ -35,8 +36,10 @@ var StreamStats;
             }); //end main state 
             this.$urlRouterProvider.otherwise('/');
             this.$locationProvider.html5Mode(true);
+            //turns of angular-leaflet console spam
+            this.$logProvider.debugEnabled(false);
         } //end constructor
-        config.$inject = ['$stateProvider', '$urlRouterProvider', '$locationProvider'];
+        config.$inject = ['$stateProvider', '$urlRouterProvider', '$locationProvider', '$logProvider'];
         return config;
     })(); //end class
     angular.module('StreamStats', [
