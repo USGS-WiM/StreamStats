@@ -158,8 +158,8 @@ module StreamStats.Controllers {
         public events: Object = null;
         public layercontrol: Object = null;
         public regionLayer: Object = null;
-        public drawControl: any;    
-        public toaster: any; 
+        public drawControl: any;
+        public toaster: any;
         public nomnimalZoomLevel: string;
 
         //Constructor
@@ -225,7 +225,7 @@ module StreamStats.Controllers {
                     //console.log(newval);
                     this.addRegionOverlayLayers(this.regionServices.selectedRegion.RegionID);
                 }
-            });            
+            });
 
             $scope.$on('$locationChangeStart',() => this.updateRegion());
 
@@ -246,7 +246,8 @@ module StreamStats.Controllers {
                 //console.log('in regression query watch', newval, oldval);
                 //join codes from regression region object list and run query
                 if (newval && this.studyArea.selectedStudyArea.RegressionRegions) this.nssService.loadStatisticsGroupTypes(this.regionServices.selectedRegion.RegionID, this.studyArea.selectedStudyArea.RegressionRegions.map(function (elem) {
-                    return elem.code; }).join(","));
+                    return elem.code;
+                }).join(","));
             });
         }
 
@@ -304,7 +305,7 @@ module StreamStats.Controllers {
                     }
 
                 },
-                custom: 
+                custom:
                 new Array(
                     //zoom home button control
                     (<any>L.Control).zoomHome({ homeCoordinates: [39, -100], homeZoom: 4 }),
@@ -390,12 +391,12 @@ module StreamStats.Controllers {
                                         if (item[0] == 'Regional Studies') rcodeList.push(queryResult.properties.st_abbr);
                                     }
                                 }
-        
-                            });  
+
+                            });
                         });
 
                         //console.log('RCODELIST: ', rcodeList);
-                        console.log('bounds',map.getBounds())
+                        console.log('bounds', map.getBounds())
 
                         if (rcodeList.length < 1) return;
 
@@ -590,7 +591,7 @@ module StreamStats.Controllers {
                     map.on("click", measurestart);
                     map.on("draw:created", measurestop);
 
-                    
+
                 });
             });
         }
@@ -601,7 +602,7 @@ module StreamStats.Controllers {
             //clear toasts
             
             this.toaster.pop("info", "Information", "Validating your clicked point...", 5000);
-            this.cursorStyle = 'wait'; 
+            this.cursorStyle = 'wait';
             this.markers = {};
 
             //put pourpoint on the map
@@ -656,7 +657,7 @@ module StreamStats.Controllers {
                 });
             });
 
-            
+
         }
 
         private basinEditor() {
@@ -714,7 +715,7 @@ module StreamStats.Controllers {
                         }
 
                         //set studyArea basin to new edited polygon
-                        basin.data.features[0].geometry.coordinates[0] = [];  
+                        basin.data.features[0].geometry.coordinates[0] = [];
                         editPolygon.forEach((item) => { basin.data.features[0].geometry.coordinates[0].push([item[1], item[0]]) });
                         //console.log('edited basin', basin, basin.data.features[0].geometry.coordinates[0].length, this.layers.overlays['globalwatershed'].data.features[0].geometry.coordinates[0].length);
                         this.toaster.pop("info", "Submitting your edit", "Please wait...", 5000)
@@ -726,7 +727,7 @@ module StreamStats.Controllers {
 
                         //show new polygon
                         setTimeout(() => {
-                            
+
                             this.layers.overlays['globalwatershed'] = {
                                 name: 'Edited Basin Boundary',
                                 type: 'geoJSONShape',
@@ -853,7 +854,7 @@ module StreamStats.Controllers {
 
             //clear out this.markers
             this.markers = {};
- 
+
             var bbox = this.layers.overlays['globalwatershed'].data.features[0].bbox;
             this.leafletData.getMap().then((map: any) => {
                 map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]], {
@@ -918,7 +919,7 @@ module StreamStats.Controllers {
             }
 
         }
-        
+
         private addRegionOverlayLayers(regionId: string) {
 
             if (this.regionServices.regionMapLayerList.length < 1) return;
@@ -933,7 +934,7 @@ module StreamStats.Controllers {
                     "opacity": 0.5,
                     "layers": this.regionServices.regionMapLayerList,
                     "format": "png8",
-                    "f":"image"
+                    "f": "image"
                 });
             
             //get any other layers specified in config
@@ -988,10 +989,5 @@ module StreamStats.Controllers {
 
     angular.module('StreamStats.Controllers')
         .controller('StreamStats.Controllers.MapController', MapController)
-        //turns of angular-leaflet console spam
-        .config(function ($logProvider) {
-            $logProvider.debugEnabled(false);
-        });
-
 }//end module
  

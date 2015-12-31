@@ -26,7 +26,6 @@
     "font-awesome": "~4.3.0",
     "lato": "~0.3.0",
     "esri-leaflet": "~1.0.0",
-    "bootstrap-datepicker": "~1.4.0",
     "leaflet.locatecontrol": "~0.40.0",
     "leaflet-groupedlayercontrol": "~0.3.0",
     "leaflet-draw": "~0.2.4",
