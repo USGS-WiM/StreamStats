@@ -798,7 +798,7 @@ module StreamStats.Controllers {
 
                 if (item.name == 'globalwatershed') {
                     this.layers.overlays[item.name] = {
-                        name: 'Basin Boundary',
+                        name: '<img src=images/basin.png height="16">&nbsp;&nbsp;Basin Boundary',
                         type: 'geoJSONShape',
                         data: item.feature,
                         visible: true,
@@ -815,7 +815,7 @@ module StreamStats.Controllers {
                 }
                 if (item.name == 'globalwatershedpoint') {
                     this.layers.overlays[item.name] = {
-                        name: 'Basin Clicked Point',
+                        name: '<img src=images/marker-icon.png height="16">&nbsp;&nbsp;Basin Clicked Point',
                         type: 'geoJSONShape',
                         data: item.feature,
                         visible: true,
@@ -834,7 +834,7 @@ module StreamStats.Controllers {
                 if (item.name == 'regulatedWatershed') {
                     //console.log('showing regulated watershed');
                     this.layers.overlays["globalwatershedregulated"] = {
-                        name: 'Basin Boundary (Regulated Area)',
+                        name: '<img src=images/regulated-basin.png height="16">&nbsp;&nbsp;Basin Boundary (Regulated Area)',
                         type: 'geoJSONShape',
                         data: item.feature,
                         visible: true,
