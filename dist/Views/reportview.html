@@ -72,7 +72,8 @@
                     <dt>Time:</dt><dd>{{vm.studyAreaService.selectedStudyArea.Date | date:'yyyy-MM-dd HH:mm:ss Z'}}</dd>
                 </dl>
 
-                <leaflet width="100%" height="400px" layers="vm.layers" center="vm.center"></leaflet>
+                <leaflet width="100%" height="400px" layers="vm.layers" center="vm.center"></leaflet><br />
+
             </div>
 
             <br/>
@@ -103,7 +104,17 @@
                         </tr>
                     </tbody>
                 </table> 
+            </div>
+
+            <!--Study Area Disclaimers-->
+            <div class="well well-sm" >
+                <h4>Disclaimers</h4>
                 <div class="alert alert-warning" role="alert" ng-show="vm.studyAreaService.isRegulated">This watershed is regulated</div>
+
+                <div class="alert alert-warning" role="alert" ng-show="this.studyAreaService.WatershedEditDecisionList.append.length > 0 || this.studyAreaService.WatershedEditDecisionList.remove.length > 0">This watershed has been edited, computed flows may not apply.</div>
+
+                <div class="alert alert-warning" role="alert" ng-show="">One or more basin parameters are out of range, computed flows may not apply</div>
+                
             </div>
             
             <!--Parameter Table for Flow Report-->
@@ -160,7 +171,26 @@
                     <dd>{{citation.Author}}</dd>
                 </dl>
 
+                
             </div>
+
+            <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-primary dropdown-toggle" ui-turn-on='downloadBasinDropdown' ><span class="fa fa-download"></span>&nbsp;&nbsp;Download Basin</button>
+                <ul 
+                class="dropdown-menu"
+                ui-outer-click="Ui.turnOff('downloadBasinDropdown')"
+                ui-outer-click-if="Ui.active('downloadBasinDropdown')"
+                role="menu"
+                ui-show="downloadBasinDropdown" 
+                ui-state="downloadBasinDropdown"
+                ui-turn-off="downloadBasinDropdown">
+
+                <li><a href="{{vm.studyAreaService.servicesURL}}/streamstatsservices/download?workspaceID={{vm.studyAreaService.selectedStudyArea.WorkspaceID}}&format=Shape">Shapefile</a></li>
+                <li><a href="{{vm.studyAreaService.servicesURL}}/streamstatsservices/download?workspaceID={{vm.studyAreaService.selectedStudyArea.WorkspaceID}}">ESRI File GDB</a>
+                </li>
+                </ul>
+            </div>
+            <button type="button" class="btn btn-sm btn-primary" ng-click="vm.downloadCSV()" ><span><i class="fa fa-download"></i>&nbsp;&nbsp;Download CSV</span></button>
         </div>
        
     </div>
