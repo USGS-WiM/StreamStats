@@ -212,6 +212,7 @@ module StreamStats.Services {
                     (response: any) => {
                         if (response.data[0].RegressionRegions[0].Results && response.data[0].RegressionRegions[0].Results.length > 0) {
 
+                            console.log('flow response: ', response.data);
                             //get flows
                             response.data[0].RegressionRegions[0].Results.map((item) => {
                                 try {
