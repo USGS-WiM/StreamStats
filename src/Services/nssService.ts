@@ -42,6 +42,7 @@ module StreamStats.Services {
         Code: string;
         RegressionRegions: Array<any>;
         Results: Array<any>;
+        Citations: any;
     }
 
     export class StatisticsGroup implements IStatisticsGroup {
@@ -51,6 +52,7 @@ module StreamStats.Services {
         public Code: string;
         public RegressionRegions: Array<any>;
         public Results: Array<any>;
+        public Citations: any;
 
     }//end class
 
@@ -205,9 +207,12 @@ module StreamStats.Services {
                 var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, 1, 'json', updatedScenarioObject);
 
                 statGroup.Results = [];
+                statGroup.Citations = [];
                 this.Execute(request).then(
                     (response: any) => {
                         if (response.data[0].RegressionRegions[0].Results && response.data[0].RegressionRegions[0].Results.length > 0) {
+
+                            //get flows
                             response.data[0].RegressionRegions[0].Results.map((item) => {
                                 try {
                                     statGroup.Results.push(item);
@@ -216,6 +221,10 @@ module StreamStats.Services {
                                     alert(e);
                                 }
                             });
+
+                            //nested requests for citations
+                            var citationUrl = response.data[0].Links[0].Href;
+                            var citationResults = this.getSelectedCitations(citationUrl, statGroup);
 
                         }
                         this.toaster.clear();
@@ -227,6 +236,29 @@ module StreamStats.Services {
                     }).finally(() => {
                     this.canUpdate = true;
                 });
+            });
+        }
+
+        private getSelectedCitations(citationUrl: string, statGroup: any): any {
+
+            //nested requests for citations
+            this.toaster.pop('info', "Requesting selected citations, Please wait...", 5000);
+            var url = citationUrl;
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, 0, 'json');
+
+            this.Execute(request).then(
+                (response: any) => {            
+
+                    if (response.data[0] && response.data[0].ID) {
+                        statGroup.Citations.push(response.data[0]);
+
+                    }
+                    //sm when complete
+                },(error) => {
+                    //sm when error
+                    this.toaster.clear();
+                    this.toaster.pop('error', "There was an error getting selected Citations", "Please retry", 5000);
+                }).finally(() => {
             });
         }
 
