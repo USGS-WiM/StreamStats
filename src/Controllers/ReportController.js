@@ -134,53 +134,40 @@ var StreamStats;
             };
             ReportController.prototype.downloadCSV = function () {
                 var _this = this;
-                console.log('in downloadCSV');
                 var filename = 'data.csv';
-                //var rows = statGroup.RegressionRegions[0].Parameters;
-                var parameterList = this.studyAreaService.studyAreaParameterList;
                 var processParameterTable = function (data) {
-                    console.log('paramtable data ', data);
                     var finalVal = '\n\nParameters\n';
-                    if (_this.studyAreaService.isRegulated) {
+                    if (_this.studyAreaService.isRegulated)
                         finalVal += 'Name,Value,Reglated Value, Unregulated Value, Unit\n';
-                    }
-                    else {
+                    else
                         finalVal += 'Name,Value,Unit\n';
-                    }
                     data.forEach(function (item) {
-                        console.log('in foreach', item);
-                        if (_this.studyAreaService.isRegulated) {
+                        if (_this.studyAreaService.isRegulated)
                             finalVal += item.name + ',' + item.value + ',' + item.unRegulatedValue.toFixed(2) + ',' + item.regulatedValue.toFixed(2) + ',' + item.unit + '\n';
-                        }
-                        else {
+                        else
                             finalVal += item.name + ',' + item.value + ',' + item.unit + '\n';
-                        }
                     });
                     return finalVal + '\n';
                 };
                 var processScenarioParamTable = function (statGroup) {
-                    console.log('flow paramtable data ', statGroup);
                     var finalVal = statGroup.Name + ' Parameters\n';
                     finalVal += 'Name,Value,Min Limit, Max Limit\n';
                     statGroup.RegressionRegions[0].Parameters.forEach(function (item) {
-                        console.log('in foreach', item);
                         finalVal += item.Name + ',' + item.Value + ',' + item.Limits.Min.toFixed(2) + ',' + item.Limits.Max.toFixed(2) + '\n';
                     });
                     return finalVal + '\n';
                 };
                 var processScenarioFlowTable = function (statGroup) {
-                    console.log('flowtable data ', statGroup);
                     var finalVal = statGroup.Name + ' Flow Report\n';
                     finalVal += 'Name,Value,Unit,Prediction Error\n';
                     statGroup.Results.forEach(function (item) {
-                        console.log('in foreach', item);
                         finalVal += item.Name + ',' + item.Value.toFixed(0) + ',' + item.Unit.Abbr + ',' + '' + '\n';
                     });
                     return finalVal + '\n';
                 };
                 var csvFile = 'State/Region ID,' + this.studyAreaService.selectedStudyArea.RegionID.toUpperCase() + '\nWorkspace ID,' + this.studyAreaService.selectedStudyArea.WorkspaceID + '\nLatitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + '\nLongitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5) + '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString();
                 //process parametertable
-                csvFile += processParameterTable(parameterList);
+                csvFile += processParameterTable(this.studyAreaService.studyAreaParameterList);
                 this.nssService.selectedStatisticsGroupList.forEach(function (statGroup) {
                     csvFile += processScenarioParamTable(statGroup);
                     csvFile += processScenarioFlowTable(statGroup);
