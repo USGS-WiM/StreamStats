@@ -153,7 +153,12 @@
                 </table>
 
                 <h4>{{StatisticsGroup.Name}} Citations</h4>
-                <p>Selected citations go here</p>
+                <dl class="dl-horizontal" ng-repeat="citation in StatisticsGroup.Citations">
+                    <dt>Title</dt>
+                    <dd><a href="{{citation.CitationURL}}" target="_blank">{{citation.Title}}</a></dd>
+                    <dt>Author</dt>
+                    <dd>{{citation.Author}}</dd>
+                </dl>
 
             </div>
         </div>

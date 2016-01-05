@@ -155,8 +155,10 @@ var StreamStats;
                     var url = configuration.baseurls['NSS'] + configuration.queryparams['estimateFlows'].format(rcode, statGroup.ID, regressionregion);
                     var request = new WiM.Services.Helpers.RequestInfo(url, true, 1, 'json', updatedScenarioObject);
                     statGroup.Results = [];
+                    statGroup.Citations = [];
                     _this.Execute(request).then(function (response) {
                         if (response.data[0].RegressionRegions[0].Results && response.data[0].RegressionRegions[0].Results.length > 0) {
+                            //get flows
                             response.data[0].RegressionRegions[0].Results.map(function (item) {
                                 try {
                                     statGroup.Results.push(item);
@@ -165,6 +167,9 @@ var StreamStats;
                                     alert(e);
                                 }
                             });
+                            //nested requests for citations
+                            var citationUrl = response.data[0].Links[0].Href;
+                            var citationResults = _this.getSelectedCitations(citationUrl, statGroup);
                         }
                         _this.toaster.clear();
                         //sm when complete
@@ -175,6 +180,24 @@ var StreamStats;
                     }).finally(function () {
                         _this.canUpdate = true;
                     });
+                });
+            };
+            nssService.prototype.getSelectedCitations = function (citationUrl, statGroup) {
+                var _this = this;
+                //nested requests for citations
+                this.toaster.pop('info', "Requesting selected citations, Please wait...", 5000);
+                var url = citationUrl;
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, 0, 'json');
+                this.Execute(request).then(function (response) {
+                    if (response.data[0] && response.data[0].ID) {
+                        statGroup.Citations.push(response.data[0]);
+                    }
+                    //sm when complete
+                }, function (error) {
+                    //sm when error
+                    _this.toaster.clear();
+                    _this.toaster.pop('error', "There was an error getting selected Citations", "Please retry", 5000);
+                }).finally(function () {
                 });
             };
             return nssService;
