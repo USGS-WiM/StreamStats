@@ -192,57 +192,35 @@ module StreamStats.Controllers {
 
         private downloadCSV() {
 
-            console.log('in downloadCSV');
-
             var filename = 'data.csv';
-            //var rows = statGroup.RegressionRegions[0].Parameters;
-            var parameterList = this.studyAreaService.studyAreaParameterList;
 
             var processParameterTable = (data) => {
-                console.log('paramtable data ', data);
                 var finalVal = '\n\nParameters\n';
-                if (this.studyAreaService.isRegulated) {
-                    finalVal += 'Name,Value,Reglated Value, Unregulated Value, Unit\n'
-                }
-                else {
-                    finalVal += 'Name,Value,Unit\n'
-                }
+                if (this.studyAreaService.isRegulated) finalVal += 'Name,Value,Reglated Value, Unregulated Value, Unit\n';
+                else finalVal += 'Name,Value,Unit\n';
+
                 data.forEach((item) => {
-                    console.log('in foreach', item);
-                    if (this.studyAreaService.isRegulated) {
-                        finalVal += item.name + ',' + item.value + ',' + item.unRegulatedValue.toFixed(2) + ',' + item.regulatedValue.toFixed(2) + ',' + item.unit + '\n';
-                    }
-                    else {
-                        finalVal += item.name + ',' + item.value + ',' + item.unit + '\n';
-                    }
-                    
+                    if (this.studyAreaService.isRegulated) finalVal += item.name + ',' + item.value + ',' + item.unRegulatedValue.toFixed(2) + ',' + item.regulatedValue.toFixed(2) + ',' + item.unit + '\n';
+                    else finalVal += item.name + ',' + item.value + ',' + item.unit + '\n';                   
                 });
                 return finalVal + '\n';
             };
 
             var processScenarioParamTable = (statGroup) => {
-                console.log('flow paramtable data ', statGroup);
                 var finalVal = statGroup.Name + ' Parameters\n';
-
                 finalVal += 'Name,Value,Min Limit, Max Limit\n'
      
                 statGroup.RegressionRegions[0].Parameters.forEach((item) => {
-                    console.log('in foreach', item);
-
                     finalVal += item.Name + ',' + item.Value + ',' + item.Limits.Min.toFixed(2) + ',' + item.Limits.Max.toFixed(2) + '\n';
                 });
                 return finalVal + '\n';
             };
 
             var processScenarioFlowTable = (statGroup) => {
-                console.log('flowtable data ', statGroup);
                 var finalVal = statGroup.Name + ' Flow Report\n';
-
                 finalVal += 'Name,Value,Unit,Prediction Error\n'
 
                 statGroup.Results.forEach((item) => {
-                    console.log('in foreach', item);
-
                     finalVal += item.Name + ',' + item.Value.toFixed(0) + ',' + item.Unit.Abbr + ',' + '' + '\n';
                 });
                 return finalVal + '\n';
@@ -252,7 +230,7 @@ module StreamStats.Controllers {
 
 
             //process parametertable
-            csvFile += processParameterTable(parameterList);
+            csvFile += processParameterTable(this.studyAreaService.studyAreaParameterList);
 
             this.nssService.selectedStatisticsGroupList.forEach((statGroup) => {
                 csvFile += processScenarioParamTable(statGroup);
