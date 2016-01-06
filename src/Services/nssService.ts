@@ -211,6 +211,7 @@ module StreamStats.Services {
                 this.Execute(request).then(
                     (response: any) => {
                         if (response.data[0].RegressionRegions[0].Results && response.data[0].RegressionRegions[0].Results.length > 0) {
+                            console.log(response.headers()['x-usgswim-messages'])
 
                             console.log('flow response: ', response.data);
                             //get flows
