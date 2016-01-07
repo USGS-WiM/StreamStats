@@ -46,6 +46,8 @@ module StreamStats.Services {
         RegionID: string;
         Name: string;
         Bounds: Array<Array<number>>;
+        Layers: Array<any>;
+        Applications: Array<string>;
     }
     export interface IParameter {
         code: string;
@@ -65,6 +67,8 @@ module StreamStats.Services {
         public RegionID: string;
         public Name: string;
         public Bounds: Array<Array<number>>;
+        public Layers: Array<any>;
+        public Applications: Array<string>;
 
     }//end class
 

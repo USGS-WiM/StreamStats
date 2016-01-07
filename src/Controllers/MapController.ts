@@ -956,7 +956,7 @@ module StreamStats.Controllers {
                 });
             
             //get any other layers specified in config
-            var layers = configuration.customMapServices[regionId];
+            var layers = this.regionServices.selectedRegion.Layers;
             if (layers == undefined) return;
 
             for (var layer in layers) {

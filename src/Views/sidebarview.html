@@ -116,7 +116,7 @@
                             </div>
                         </div> 
 
-                        <div class="well well-sm" ng-show="vm.regionService.selectedRegion.RegionID == 'CO'&& !vm.studyAreaService.showEditToolbar">
+                        <div class="well well-sm" ng-show="vm.regionService.selectedRegion.Applications.indexOf('Regulation') != -1">
                             <strong>State/Region Specific Functions</strong>
                             <p>The following additional functions area available for {{vm.regionService.selectedRegion.Name}}.</p>
                             <div class="form-group">
