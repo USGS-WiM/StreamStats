@@ -308,9 +308,18 @@ var StreamStats;
                                     if (queryResult.layerId == item[1]) {
                                         //console.log('Map query found a match with: ', item[0], queryResult)
                                         if (item[0] == "Streamgages") {
-                                            var popupContent = '<strong>Latitude: </strong>' + evt.latlng.lat + '</br><strong>Longitude: </strong>' + evt.latlng.lng + '</br><strong>Region: </strong>' + _this.regionServices.selectedRegion.Name + '</br><strong>Query result: </strong></br>';
+                                            var popupContent = '';
+                                            var popupKeyList = ['latitude', 'longitude', 'sta_id', 'sta_name', 'featureurl', 'drnarea'];
                                             angular.forEach(queryResult.properties, function (value, key) {
-                                                popupContent += '<strong>' + key + ': </strong>' + value + '</br>';
+                                                if (popupKeyList.indexOf(key) != -1) {
+                                                    if (key == "featureurl") {
+                                                        var siteNo = value.split('site_no=')[1];
+                                                        var SSgagepage = 'http://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm';
+                                                        popupContent += '<strong>NWIS page: </strong><a href="' + value + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br>';
+                                                    }
+                                                    else
+                                                        popupContent += '<strong>' + key + ': </strong>' + value + '</br>';
+                                                }
                                             });
                                             _this.markers['regionalQueryResult'] = {
                                                 lat: evt.latlng.lat,
