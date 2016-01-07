@@ -480,6 +480,10 @@ var StreamStats;
             };
             MapController.prototype.basinEditor = function () {
                 var _this = this;
+                if (this.layers.overlays['globalwatershed'].data.features.length > 1) {
+                    this.toaster.pop("warning", "Warning", "You cannot edit a global watershed", 5000);
+                    return;
+                }
                 var basin = angular.fromJson(angular.toJson(this.layers.overlays['globalwatershed']));
                 var basinConverted = [];
                 basin.data.features[0].geometry.coordinates[0].forEach(function (item) {
