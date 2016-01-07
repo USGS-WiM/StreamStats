@@ -189,10 +189,13 @@ var StreamStats;
                 //console.log('in Calculate Parameters');
                 this.studyAreaService.loadParameters();
             };
-            SidebarController.prototype.checkForBasinEdits = function () {
+            SidebarController.prototype.submitBasinEdits = function () {
+                this.studyAreaService.showEditToolbar = false;
                 //check if basin has been edited, if so we need to re-query regression regions
-                if (this.studyAreaService.WatershedEditDecisionList.append.length > 0 || this.studyAreaService.WatershedEditDecisionList.remove.length > 0)
+                if (this.studyAreaService.isEdited)
                     this.studyAreaService.loadEditedStudyBoundary();
+            };
+            SidebarController.prototype.selectScenarios = function () {
                 //if not, just continue
                 this.setProcedureType(3);
             };

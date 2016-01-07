@@ -308,9 +308,18 @@ var StreamStats;
                                     if (queryResult.layerId == item[1]) {
                                         //console.log('Map query found a match with: ', item[0], queryResult)
                                         if (item[0] == "Streamgages") {
-                                            var popupContent = '<strong>Latitude: </strong>' + evt.latlng.lat + '</br><strong>Longitude: </strong>' + evt.latlng.lng + '</br><strong>Region: </strong>' + _this.regionServices.selectedRegion.Name + '</br><strong>Query result: </strong></br>';
+                                            var popupContent = '';
+                                            var popupKeyList = ['latitude', 'longitude', 'sta_id', 'sta_name', 'featureurl', 'drnarea'];
                                             angular.forEach(queryResult.properties, function (value, key) {
-                                                popupContent += '<strong>' + key + ': </strong>' + value + '</br>';
+                                                if (popupKeyList.indexOf(key) != -1) {
+                                                    if (key == "featureurl") {
+                                                        var siteNo = value.split('site_no=')[1];
+                                                        var SSgagepage = 'http://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm';
+                                                        popupContent += '<strong>NWIS page: </strong><a href="' + value + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br>';
+                                                    }
+                                                    else
+                                                        popupContent += '<strong>' + key + ': </strong>' + value + '</br>';
+                                                }
                                             });
                                             _this.markers['regionalQueryResult'] = {
                                                 lat: evt.latlng.lat,
@@ -463,6 +472,7 @@ var StreamStats;
                                 _this.startDelineate(latlng);
                             }
                             else {
+                                _this.studyArea.isInExclusionArea = true;
                                 var excludeCode = results.features[0].properties.ExcludeCode;
                                 var popupMsg = results.features[0].properties.ExcludeReason;
                                 if (excludeCode == 1) {
@@ -480,6 +490,10 @@ var StreamStats;
             };
             MapController.prototype.basinEditor = function () {
                 var _this = this;
+                if (this.layers.overlays['globalwatershed'].data.features.length > 1) {
+                    this.toaster.pop("warning", "Warning", "You cannot edit a global watershed", 5000);
+                    return;
+                }
                 var basin = angular.fromJson(angular.toJson(this.layers.overlays['globalwatershed']));
                 var basinConverted = [];
                 basin.data.features[0].geometry.coordinates[0].forEach(function (item) {
@@ -498,6 +512,7 @@ var StreamStats;
                             map.removeEventListener('draw:created');
                             var layer = e.layer;
                             drawnItems.addLayer(layer);
+                            _this.studyArea.isEdited = true;
                             //convert edit polygon coords
                             var editArea = layer.toGeoJSON().geometry.coordinates[0];
                             var editAreaConverted = [];
@@ -537,7 +552,7 @@ var StreamStats;
                             //show new polygon
                             setTimeout(function () {
                                 _this.layers.overlays['globalwatershed'] = {
-                                    name: 'Edited Basin Boundary',
+                                    name: '<img src=images/regulated-basin.png height="16">&nbsp;&nbsp;Edited Basin Boundary',
                                     type: 'geoJSONShape',
                                     data: basin.data,
                                     visible: true,

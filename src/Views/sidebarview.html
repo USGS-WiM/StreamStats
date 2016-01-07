@@ -82,9 +82,9 @@
                             <p>Your delineation is complete.  You can now clear your basin, edit your basin, or choose a state or regional study specific funciton (if available).  Click <strong>continue </strong>when you are ready.</p>
                         </div>
 
-                        <div class="btn-toolbar">
+                        <div class="btn-toolbar" ng-hide="vm.studyAreaService.showEditToolbar">
                             <button id="clearDelinationButton" type="button" class="btn btn-sm btn-info" ng-click="vm.resetWorkSpace()" ng-show="vm.studyAreaService.selectedStudyArea.Features"><span><i class="fa fa-trash-o"></i>&nbsp;&nbsp;Clear Basin</span></button>
-                            <button type="button" class="btn btn-sm btn-info" ng-click="vm.studyAreaService.showAddRemoveButtons = !vm.studyAreaService.showAddRemoveButtons"><span class="fa fa-edit"></span>&nbsp;&nbsp;Edit Basin</button>
+                            <button type="button" class="btn btn-sm btn-info" ng-click="vm.studyAreaService.showEditToolbar = !vm.studyAreaService.showEditToolbar"><span class="fa fa-edit"></span>&nbsp;&nbsp;Edit Basin</button>
                             <div class="btn-group">
                               <button type="button" class="btn btn-sm btn-primary dropdown-toggle" ui-turn-on='downloadBasinDropdown' ><span class="fa fa-download"></span>&nbsp;&nbsp;Download Basin</button>
                               <ul 
@@ -101,10 +101,10 @@
                                 </li>
                               </ul>
                             </div>
-                            <button type="button" class="btn btn-sm btn-success" ng-click="vm.checkForBasinEdits()"><span class="fa fa-check-circle"></span>&nbsp;&nbsp;Continue</button>
+                            <button type="button" class="btn btn-sm btn-success" ng-click="vm.selectScenarios()"><span class="fa fa-check-circle"></span>&nbsp;&nbsp;Continue</button>
                         </div>
 
-                        <div class="well well-sm" ng-show="vm.studyAreaService.showAddRemoveButtons">
+                        <div class="well well-sm" ng-show="vm.studyAreaService.showEditToolbar">
                             <p>To edit your basin, first click the 'Add Area' or 'Remove Area' button below.  Use your mouse or finger to draw a polygon.</p><p>If <strong>adding</strong> an area be sure your drawn polygon starts and ends within the yellow basin boundaries</p><p>If <strong>removing</strong> an area, be sure your drawn polygon starts and ends outside of the yellow basin.</p>
                             <div class="btn-toolbar">
                                 <button type="button" class="btn btn-sm btn-success" ng-click="vm.studyAreaService.editBasin('add')"><span class="fa fa-plus-square-o"></span>&nbsp;&nbsp;Add Area</button>
@@ -112,6 +112,7 @@
                             </div>
                             <div class="btn-toolbar">
                                 <button type="button" class="btn btn-sm btn-primary" ng-click="vm.studyAreaService.undoEdit()"><span class="fa fa-undo"></span>&nbsp;&nbsp;Undo Edits</button>
+                                <button type="button" class="btn btn-sm btn-primary" ng-click="vm.submitBasinEdits()"><span class="fa fa-check"></span>&nbsp;&nbsp;Finished Editing</button>
                             </div>
                         </div> 
 
@@ -119,10 +120,10 @@
                             <strong>State/Region Specific Functions</strong>
                             <p>The following additional functions area available for {{vm.regionService.selectedRegion.Name}}.</p>
                             <div class="form-group">
-                                <button ng-click="vm.checkRegulation()" type="button" class="btn btn-sm btn-primary"><i ng-class="vm.studyAreaService.regulationCheckComplete ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Check for upstream regulation</button>
+                                <button  ng-click="vm.checkRegulation()" type="button" class="btn btn-sm btn-primary"><i ng-class="vm.studyAreaService.regulationCheckComplete ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Check for upstream regulation</button>
                             </div>
 
-                            <div class="alert alert-success" role="alert" ng-show="vm.studyAreaService.isRegulated !== null">Upstream Regulation check has been completed.  There is <strong ng-show="vm.studyAreaService.isRegulated">{{vm.studyAreaService.regulationCheckResults.percentarearegulated.toFixed(2)}} percent</strong><strong ng-show="!vm.studyAreaService.isRegulated">NO</strong> regulation in this watershed.</div>
+                            <div class="alert alert-success" role="alert" ng-show="vm.studyAreaService.isRegulated !== null">Upstream Regulation check has been completed.  There is <strong ng-show="vm.studyAreaService.isRegulated" >{{vm.studyAreaService.regulationCheckResults.percentarearegulated.toFixed(2)}} percent</strong><strong ng-show="!vm.studyAreaService.isRegulated">NO</strong> regulation in this watershed.</div>
                         </div> 
                         
                     </div>                            

@@ -47,131 +47,131 @@
         <button type="button" class="close" ng-click="vm.close()"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title">Report</h4>
     </div>
-    <div class="modal-body">
-        
-        <div class="form-group hidden-print">
+    <div class="modal-body" >
+     <div ng-hide="vm.studyAreaService.selectedStudyArea">A study area is needed before viewing the report</div>   
+     <div ng-show="vm.studyAreaService.selectedStudyArea">
+            <div class="form-group hidden-print">
 
-            <div class="alert alert-info" role="alert">Enter a report title and/or comments here that will display on the printed report.  Use the print button below.</div>
+                <div class="alert alert-info" role="alert">Enter a report title and/or comments here that will display on the printed report.  Use the print button below.</div>
  
-            <label >Enter report title:</label>
-            <input type="text" class="form-control" ng-model="vm.reportTitle" placeholder="Title">
+                <label >Enter report title:</label>
+                <input type="text" class="form-control" ng-model="vm.reportTitle" placeholder="Title">
 
-            <label>Enter comments:</label>
-            <textarea rows="3" class="form-control" ng-model="vm.reportComments" placeholder="Comments"></textarea>
+                <label>Enter comments:</label>
+                <textarea rows="3" class="form-control" ng-model="vm.reportComments" placeholder="Comments"></textarea>
             
-        </div>
-        <div id="printArea">
-            
-            <h2>{{vm.reportTitle}}</h2>
-            
-            <div ng-if="vm.studyAreaService.selectedStudyArea">
-                <dl class="dl-horizontal">
-                    <dt>Region ID:</dt><dd>{{vm.studyAreaService.selectedStudyArea.RegionID}}</dd>
-                    <dt>Workspace ID:</dt><dd>{{vm.studyAreaService.selectedStudyArea.WorkspaceID}}</dd>
-                    <dt>Pourpoint:</dt><dd>{{vm.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5)}},{{vm.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5)}}</dd>
-                    <dt>Time:</dt><dd>{{vm.studyAreaService.selectedStudyArea.Date | date:'yyyy-MM-dd HH:mm:ss Z'}}</dd>
-                </dl>
-
-                <leaflet width="100%" height="400px" layers="vm.layers" center="vm.center"></leaflet><br />
-
             </div>
+            <div id="printArea">
+            
+                <h2>{{vm.reportTitle}}</h2>
+            
+                <div ng-if="vm.studyAreaService.selectedStudyArea">
+                    <dl class="dl-horizontal">
+                        <dt>Region ID:</dt><dd>{{vm.studyAreaService.selectedStudyArea.RegionID}}</dd>
+                        <dt>Workspace ID:</dt><dd>{{vm.studyAreaService.selectedStudyArea.WorkspaceID}}</dd>
+                        <dt>Pourpoint:</dt><dd>{{vm.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5)}},{{vm.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5)}}</dd>
+                        <dt>Time:</dt><dd>{{vm.studyAreaService.selectedStudyArea.Date | date:'yyyy-MM-dd HH:mm:ss Z'}}</dd>
+                    </dl>
 
-            <br/>
-            <div ng-if="vm.reportComments != 'Some comments here'">
-                <p>{{vm.reportComments}}</p>
-            </div>
+                    <leaflet width="100%" height="400px" layers="vm.layers" center="vm.center"></leaflet><br />
 
-            <!--Parameter Table if just basin chars-->
-            <div class="well well-sm" ng-show="vm.nssService.showBasinCharacteristicsTable">
-                <h4>Basin Characteristics</h4>
-                <table class="table table-condensed">
-                    <thead class="param-table">
+                </div>
+
+                <br/>
+                <div ng-if="vm.reportComments != 'Some comments here'">
+                    <p>{{vm.reportComments}}</p>
+                </div>
+
+                <!--Parameter Table if just basin chars-->
+                <div class="well well-sm" ng-show="vm.nssService.showBasinCharacteristicsTable">
+                    <h4>Basin Characteristics</h4>
+                    <table class="table table-condensed">
+                        <thead class="param-table">
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Value</th> 
+                                <th ng-show="vm.studyAreaService.isRegulated">Unregulated Value</th>
+                                <th ng-show="vm.studyAreaService.isRegulated">Regulated Value</th>
+                                <th>Unit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList">
+                                <td ng-bind="parameter.name"></td>
+                                <td ng-bind="parameter.value"></td>
+                                <td ng-show="vm.studyAreaService.isRegulated" ng-bind="parameter.unRegulatedValue.toFixed(2)"></td>
+                                <td ng-show="vm.studyAreaService.isRegulated" ng-bind="parameter.regulatedValue.toFixed(2)"></td>
+                                <td ng-bind="parameter.unit"></td>
+                            </tr>
+                        </tbody>
+                    </table> 
+                </div>
+
+                <!--Study Area Disclaimers-->
+                <div class="well well-sm" >
+                    <h4>General Disclaimers</h4>
+                    <div class="alert alert-danger" role="alert" ng-show="vm.studyAreaService.isRegulated">This watershed is regulated, computed flows may not apply.</div>
+                    <div class="alert alert-danger" role="alert" ng-show="vm.studyAreaService.isEdited">This watershed has been edited, computed flows may not apply.</div>
+                    <div class="alert alert-danger" role="alert" ng-show="vm.studyAreaService.isInExclusionArea">This watershed is in an exclusion area.</div>
+                </div>
+            
+                <!--Parameter Table for Flow Report-->
+                <div class="well well-sm" ng-show="vm.nssService.showFlowsTable" ng-repeat="StatisticsGroup in vm.nssService.selectedStatisticsGroupList">
+                    <h4>{{StatisticsGroup.Name}} Parameters</h4>
+                    <table class="table table-condensed">
+                        <thead class="param-table">
                         <tr>
                             <th>Parameter</th>
                             <th>Value</th> 
-                            <th ng-show="vm.studyAreaService.isRegulated">Unregulated Value</th>
-                            <th ng-show="vm.studyAreaService.isRegulated">Regulated Value</th>
+                            <th>Min Limit</th>
+                            <th>Max Limit</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="parameter in StatisticsGroup.RegressionRegions[0].Parameters">
+                                <td ng-bind="parameter.Name"></td>
+                                <td ng-bind="parameter.Value" ng-class="(parameter.Value < parameter.Limits.Min) || (parameter.Value > parameter.Limits.Max) ? 'danger' : ''"></td>
+                                <td ng-bind="parameter.Limits.Min.toFixed(2)"></td>
+                                <td ng-bind="parameter.Limits.Max.toFixed(2)"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!--Scenario Disclaimers-->
+                    <h4>{{StatisticsGroup.Name}} Disclaimers</h4>
+                    <div class="alert alert-danger" role="alert" ng-show="StatisticsGroup.ResultsHeaders.Warnings || StatisticsGroup.ResultsHeaders.Errors" ng-repeat="headerMsg in StatisticsGroup.ResultsHeaders">{{headerMsg}}</div> 
+
+                    <!--Flow Report-->
+                    <h4>{{StatisticsGroup.Name}} Flow Report</h4>
+                    <table class="table table-condensed">
+                        <thead class="param-table">
+                        <tr>
+                            <th>Statistic</th>
+                            <th>Value</th> 
                             <th>Unit</th>
+                            <th>Prediction Error</th>
                         </tr>
-                    </thead>
-                    <tbody>
-                        <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList">
-                            <td ng-bind="parameter.name"></td>
-                            <td ng-bind="parameter.value"></td>
-                            <td ng-show="vm.studyAreaService.isRegulated" ng-bind="parameter.unRegulatedValue.toFixed(2)"></td>
-                            <td ng-show="vm.studyAreaService.isRegulated" ng-bind="parameter.regulatedValue.toFixed(2)"></td>
-                            <td ng-bind="parameter.unit"></td>
-                        </tr>
-                    </tbody>
-                </table> 
-            </div>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="parameter in StatisticsGroup.Results">
+                                <td ng-bind="parameter.Name"></td>
+                                <td ng-bind="parameter.Value.toFixed(0)"></td>
+                                <td ng-bind="parameter.Unit.Abbr"></td>
+                                <td ng-bind="parameter.Errors[0].Value"></td>
+                            </tr>
+                        </tbody>
+                    </table>
 
-            <!--Study Area Disclaimers-->
-            <div class="well well-sm" >
-                <h4>Disclaimers</h4>
-                <div class="alert alert-warning" role="alert" ng-show="vm.studyAreaService.isRegulated">This watershed is regulated</div>
-
-                <div class="alert alert-warning" role="alert" ng-show="this.studyAreaService.WatershedEditDecisionList.append.length > 0 || this.studyAreaService.WatershedEditDecisionList.remove.length > 0">This watershed has been edited, computed flows may not apply.</div>
-
-                <div class="alert alert-warning" role="alert" ng-show="">One or more basin parameters are out of range, computed flows may not apply</div>
-                
-            </div>
-            
-            <!--Parameter Table for Flow Report-->
-            <div class="well well-sm" ng-show="vm.nssService.showFlowsTable" ng-repeat="StatisticsGroup in vm.nssService.selectedStatisticsGroupList">
-                <h4>{{StatisticsGroup.Name}} Parameters</h4>
-                <table class="table table-condensed">
-                    <thead class="param-table">
-                    <tr>
-                        <th>Parameter</th>
-                        <th>Value</th> 
-                        <th>Min Limit</th>
-                        <th>Max Limit</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                        <tr ng-repeat="parameter in StatisticsGroup.RegressionRegions[0].Parameters">
-                            <td ng-bind="parameter.Name"></td>
-                            <td ng-bind="parameter.Value" ng-class="(parameter.Value < parameter.Limits.Min) || (parameter.Value > parameter.Limits.Max) ? 'danger' : ''"></td>
-                            <td ng-bind="parameter.Limits.Min.toFixed(2)"></td>
-                            <td ng-bind="parameter.Limits.Max.toFixed(2)"></td>
-                        </tr>
-                    </tbody>
-                </table>
-                <!-- SHOW WARNING EXPLANATION HERE FROM WIM HEADER THAT ONE OR MORE PARAMETER VALUES WERE OUT OF RANGE.  NEED TO MODIFY WIM SERVICES REQUEST TO RETURN HEADERS
-                <span ng-show="(parameter.Value < parameter.Limits.Min) || (parameter.Value > parameter.Limits.Max)"></span>
-                -->
-
-                <!--Flow Report-->
-                <h4>{{StatisticsGroup.Name}} Flow Report</h4>
-                <table class="table table-condensed">
-                    <thead class="param-table">
-                    <tr>
-                        <th>Statistic</th>
-                        <th>Value</th> 
-                        <th>Unit</th>
-                        <th>Prediction Error</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                        <tr ng-repeat="parameter in StatisticsGroup.Results">
-                            <td ng-bind="parameter.Name"></td>
-                            <td ng-bind="parameter.Value.toFixed(0)"></td>
-                            <td ng-bind="parameter.Unit.Abbr"></td>
-                            <td ng-bind="parameter.Errors[0].Value"></td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <h4>{{StatisticsGroup.Name}} Citations</h4>
-                <dl class="dl-horizontal" ng-repeat="citation in StatisticsGroup.Citations">
-                    <dt>Title</dt>
-                    <dd><a href="{{citation.CitationURL}}" target="_blank">{{citation.Title}}</a></dd>
-                    <dt>Author</dt>
-                    <dd>{{citation.Author}}</dd>
-                </dl>
+                    <h4>{{StatisticsGroup.Name}} Citations</h4>
+                    <dl class="dl-horizontal" ng-repeat="citation in StatisticsGroup.Citations">
+                        <dt>Title</dt>
+                        <dd><a href="{{citation.CitationURL}}" target="_blank">{{citation.Title}}</a></dd>
+                        <dt>Author</dt>
+                        <dd>{{citation.Author}}</dd>
+                    </dl>
 
                 
+                </div>
             </div>
 
             <div class="btn-group">
@@ -195,7 +195,6 @@
        
     </div>
     <div class="modal-footer">
-        
         <div class="btn-group">
             <button type="button" class="btn btn-default hidden-print" ng-click="vm.close()"><i class="fa fa-close"></i>&nbsp;&nbsp;Close</button>
             <button type="button" class="btn btn-default hidden-print" ng-click="vm.print()"><i class="fa fa-print"></i>&nbsp;&nbsp;Print</button>
