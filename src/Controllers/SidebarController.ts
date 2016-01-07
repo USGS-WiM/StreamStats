@@ -259,10 +259,16 @@ module StreamStats.Controllers {
             this.studyAreaService.loadParameters();
         }
 
-        public checkForBasinEdits() {
+        public submitBasinEdits() {
+
+            this.studyAreaService.showEditToolbar = false;
 
             //check if basin has been edited, if so we need to re-query regression regions
             if (this.studyAreaService.isEdited) this.studyAreaService.loadEditedStudyBoundary();
+
+        }
+
+        public selectScenarios() {
 
             //if not, just continue
             this.setProcedureType(3);

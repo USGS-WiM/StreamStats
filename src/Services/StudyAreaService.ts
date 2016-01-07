@@ -39,6 +39,7 @@ module StreamStats.Services {
         isInExclusionArea: boolean;
         parametersLoading: boolean;
         parametersLoaded: boolean;
+        showEditToolbar: boolean;
         canUpdate: boolean;
         studyAreaParameterList: Array<IParameter>;
         drawControl: any;
@@ -92,7 +93,7 @@ module StreamStats.Services {
         }
         public studyAreaParameterList: Array<IParameter>;
         public drawControl: any;
-        public showAddRemoveButtons: boolean;
+        public showEditToolbar: boolean;
         public drawControlOption: any;
         public WatershedEditDecisionList: Models.IEditDecisionList;
         public regulationCheckResults: any;
@@ -147,7 +148,7 @@ module StreamStats.Services {
             this.doDelineateFlag = false;
             this.studyAreaParameterList = angular.fromJson(angular.toJson(configuration.alwaysSelectedParameters));
             this.regulationCheckResults = [];
-            this.showAddRemoveButtons = false;
+            this.showEditToolbar = false;
             this.WatershedEditDecisionList = new Models.WatershedEditDecisionList();
             this.isRegulated = null;
             this.isEdited = null;
