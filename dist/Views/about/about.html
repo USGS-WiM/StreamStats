@@ -19,23 +19,29 @@
             <div class="modal-body">
                     <ul id="aboutTabs" class="nav nav-tabs">
                         <li ng-class="{'active':vm.selectedAboutTabName==='about'}"><a ng-click="vm.selectAboutTab('about')"><i class="fa fa-question-circle"></i>&nbsp;About the project</a></li>
-                        <li ng-class="{'active':vm.selectedAboutTabName==='disclaimer'}"><a ng-click="vm.selectAboutTab('disclaimer')"><i class="fa fa-exclamation-circle"></i>&nbsp;Disclaimer</a></li>
+                        <li ng-class="{'active':vm.selectedAboutTabName==='disclaimer'}"><a ng-click="vm.selectAboutTab('disclaimer')"><i class="fa fa-exclamation-circle"></i>&nbsp;Limitations</a></li>
                     </ul>
                     <div style="padding-top: 10px;">
                         <div id="about" ng-if="vm.selectedAboutTabName==='about'">
+                            <p>StreamStats is a Web application that incorporates a Geographic Information System (GIS) to provide users with access to an assortment of analytical tools that are useful for a variety of water-resources planning and management purposes, and for engineering and design purposes. StreamStats users can select USGS data-collection station locations shown on a map and obtain previously published information for the stations. Users also can select any location along a stream and obtain the drainage-basin boundary, basin characteristics, and estimates of streamflow statistics for the location. The streamflow statistics that StreamStats can provide for data-collection stations and for user-selected ungaged sites vary among the states that are implemented in StreamStats and among data-collection stations within states. Estimates obtained for ungaged sites assume natural flow conditions at the site.</p>
 
-                            <p style="color:black;">
-                                The StreamStats 4.0 interface is developed by the Wisconsin Internet Mapping (WiM) group in collaboration with the Office of Surface Water StreamStats team working with USGS Water Science Centers across the nation.
+                            <p>StreamStats also includes several tools that rely on searching along the stream network upstream or downstream from user-selected sites to identify stream reaches and water-related activities along the streams, such as dams and point discharges, and obtain information about those activities. In addition, users can obtain elevation profiles along stream channels and between points on the land surface.</p>
+
+                            <p>Separate applications have been established for each state that has implemented StreamStats. The State Applications link at the left provides access to a web page that shows where StreamStats is available and where it is being implemented. Users can select an individual state application from the map or the pull-down list on the State Applications page to view an introductory page for the state, which contains a link to the StreamStats user interface. The introductory pages explain any unique functionality that is available for the state and provides citations to reports that document the methods implemented for the state.</p>
+
+                            <p>Information for each state and regional application can be found by visiting the StreamStats state/region applications page here: <a href="http://water.usgs.gov/osw/streamstats/ssonline.html" target="_blank">http://water.usgs.gov/osw/streamstats/ssonline.html</a>
                             </p>
+
+                            <p>The StreamStats 4.0 interface was developed by the Wisconsin Internet Mapping (WiM) group in collaboration with the Office of Surface Water StreamStats team working with USGS Water Science Centers across the nation.</p>
 
                         </div>
-                        <div id="disclaimer" ng-show="vm.selectedAboutTabName==='disclaimer'" class="text-danger">
-                            <h3>Limitations</h3>
-                            <p>
-                                Some about text here
-                            </p>
+                        <div id="disclaimer" ng-show="vm.selectedAboutTabName==='disclaimer'" >
+                            <h4>This application is currently in BETA</h4>
 
                             <p>Absolutely no accuracy or completeness guarantee is implied or intended. The U.S. Geological Survey expressly disclaims responsibility for damages or liability that may arise from use of these data.</p>
+
+                            <p>Please view the comprehensive explanation of limitations of StreamStats here: <a href="http://water.usgs.gov/osw/streamstats/ssdis.html" target="_blank">http://water.usgs.gov/osw/streamstats/ssdis.html</a></p>
+                            
                         </div>
                         
                         <div id="contact" ng-show="vm.selectedAboutTabName === 'contact'">
@@ -89,7 +95,7 @@
             <div class="modal-footer">
                 <p style="color:black; margin-left:35px;text-align:left">
                     For more information about StreamStats 4.0 please contact <a href="http://wim.usgs.gov/" target="_blank"><img src="images/wimvectorxs.png" id="wim_logo"></a>
-                    or select the 'contact us' tab to submit a message.
+                    
                 </p>
                 <button ng-click="vm.toggleAboutSelected()" class="btn btn-default"><i class="fa fa-close"></i><span >&nbsp;&nbsp;Close</span></button>
             </div>
@@ -136,10 +142,10 @@
                                         <label for="message">Description:</label>
                                         <textarea class="form-control" rows="6" id="description" ng-model="vm.freshdeskTicketData.description" required></textarea>
                                     </div>
-                                    <span class="btn btn-default btn-file">
+                                    <!--<span class="btn btn-default btn-file">
                                         <i class="fa fa-upload"></i><span >&nbsp;&nbsp;Upload attachment... </span>
-                                        <input type="file" select-file="vm.uploadFile" >
-                                    </span>
+                                        <input type="file" select-file="vm.uploadFile()" >
+                                    </span>-->
                                 </div>
                                 <button type="submit" class="btn btn-default pull-right" ng-click="vm.submitTicket()" ><i class="fa fa-check"></i><span >&nbsp;&nbsp;Submit</span></button>
                             </div>
