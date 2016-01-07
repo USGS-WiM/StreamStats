@@ -262,7 +262,7 @@ module StreamStats.Controllers {
         public checkForBasinEdits() {
 
             //check if basin has been edited, if so we need to re-query regression regions
-            if (this.studyAreaService.WatershedEditDecisionList.append.length > 0 || this.studyAreaService.WatershedEditDecisionList.remove.length > 0) this.studyAreaService.loadEditedStudyBoundary();
+            if (this.studyAreaService.isEdited) this.studyAreaService.loadEditedStudyBoundary();
 
             //if not, just continue
             this.setProcedureType(3);

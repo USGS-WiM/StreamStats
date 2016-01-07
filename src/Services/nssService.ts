@@ -43,6 +43,7 @@ module StreamStats.Services {
         RegressionRegions: Array<any>;
         Results: Array<any>;
         Citations: any;
+        ResultsHeaders: any;
     }
 
     export class StatisticsGroup implements IStatisticsGroup {
@@ -53,6 +54,7 @@ module StreamStats.Services {
         public RegressionRegions: Array<any>;
         public Results: Array<any>;
         public Citations: any;
+        public ResultsHeaders: any;
 
     }//end class
 
@@ -211,7 +213,19 @@ module StreamStats.Services {
                 this.Execute(request).then(
                     (response: any) => {
                         if (response.data[0].RegressionRegions[0].Results && response.data[0].RegressionRegions[0].Results.length > 0) {
-                            console.log(response.headers()['x-usgswim-messages'])
+
+                            statGroup.ResultsHeaders = {};
+                            var headerMsgs = response.headers()['x-usgswim-messages'].split(';');
+                            console.log('headerMsgs', headerMsgs);
+
+                            headerMsgs.forEach((item) => {
+                                var headerMsg = item.split(':');
+                                if (headerMsg[0] == 'warning') statGroup.ResultsHeaders['Warnings'] = headerMsg[1].trim();
+                                if (headerMsg[0] == 'error') statGroup.ResultsHeaders['Error'] = headerMsg[1].trim();
+                                //comment out for not, not useful
+                                //if (headerMsg[0] == 'info') statGroup.ResultsHeaders['Info'] = headerMsg[1].trim();
+                            });
+                            console.log('headerMsgs: ', statGroup.ResultsHeaders);
 
                             console.log('flow response: ', response.data);
                             //get flows

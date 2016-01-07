@@ -35,6 +35,8 @@ module StreamStats.Services {
         RemoveStudyArea();
         doDelineateFlag: boolean;
         isRegulated: boolean;
+        isEdited: boolean;
+        isInExclusionArea: boolean;
         parametersLoading: boolean;
         parametersLoaded: boolean;
         canUpdate: boolean;
@@ -74,6 +76,8 @@ module StreamStats.Services {
         }
         public doDelineateFlag: boolean;
         public isRegulated: boolean;
+        public isEdited: boolean;
+        public isInExclusionArea: boolean;
 
         private _selectedStudyArea: Models.IStudyArea;
         public set selectedStudyArea(val: Models.IStudyArea) {
@@ -146,6 +150,8 @@ module StreamStats.Services {
             this.showAddRemoveButtons = false;
             this.WatershedEditDecisionList = new Models.WatershedEditDecisionList();
             this.isRegulated = null;
+            this.isEdited = null;
+            this.isInExclusionArea = null;
             this.selectedStudyArea = null;
             this.showDelineateButton = false;
             this.reportGenerated = false;

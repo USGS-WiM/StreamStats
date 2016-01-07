@@ -641,6 +641,7 @@ module StreamStats.Controllers {
 
                         //otherwise parse exclude Codes
                         else {
+                            this.studyArea.isInExclusionArea = true;
                             var excludeCode = results.features[0].properties.ExcludeCode;
                             var popupMsg = results.features[0].properties.ExcludeReason;
                             if (excludeCode == 1) {
@@ -689,6 +690,7 @@ module StreamStats.Controllers {
 
                         var layer = e.layer;
                         drawnItems.addLayer(layer);
+                        this.studyArea.isEdited = true;  
 
                         //convert edit polygon coords
                         var editArea = layer.toGeoJSON().geometry.coordinates[0];
@@ -734,7 +736,7 @@ module StreamStats.Controllers {
                         setTimeout(() => {
 
                             this.layers.overlays['globalwatershed'] = {
-                                name: 'Edited Basin Boundary',
+                                name: '<img src=images/regulated-basin.png height="16">&nbsp;&nbsp;Edited Basin Boundary',
                                 type: 'geoJSONShape',
                                 data: basin.data,
                                 visible: true,
