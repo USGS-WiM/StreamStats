@@ -107,7 +107,7 @@ var StreamStats;
                 this.doDelineateFlag = false;
                 this.studyAreaParameterList = angular.fromJson(angular.toJson(configuration.alwaysSelectedParameters));
                 this.regulationCheckResults = [];
-                this.showAddRemoveButtons = false;
+                this.showEditToolbar = false;
                 this.WatershedEditDecisionList = new StreamStats.Models.WatershedEditDecisionList();
                 this.isRegulated = null;
                 this.isEdited = null;
