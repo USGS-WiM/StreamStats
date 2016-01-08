@@ -438,9 +438,9 @@ var StreamStats;
                 });
             };
             MapController.prototype.checkDelineatePoint = function (latlng) {
-                //console.log('in check delineate point');
-                //clear toasts
                 var _this = this;
+                //console.log('in check delineate point');
+                this.studyArea.checkingDelineatedPoint = true;
                 this.toaster.pop("info", "Information", "Validating your clicked point...", 5000);
                 this.cursorStyle = 'wait';
                 this.markers = {};
@@ -469,6 +469,7 @@ var StreamStats;
                             //if there are no exclusion area hits
                             if (results.features.length == 0) {
                                 _this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000);
+                                _this.studyArea.checkingDelineatedPoint = false;
                                 _this.startDelineate(latlng);
                             }
                             else {

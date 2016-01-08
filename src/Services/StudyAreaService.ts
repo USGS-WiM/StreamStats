@@ -40,6 +40,7 @@ module StreamStats.Services {
         parametersLoading: boolean;
         parametersLoaded: boolean;
         showEditToolbar: boolean;
+        checkingDelineatedPoint: boolean;
         canUpdate: boolean;
         studyAreaParameterList: Array<IParameter>;
         drawControl: any;
@@ -71,6 +72,7 @@ module StreamStats.Services {
         public regulationCheckComplete: boolean
         public parametersLoaded: boolean;
         public parametersLoading: boolean;
+        public checkingDelineatedPoint: boolean;
         private _studyAreaList: Array<Models.IStudyArea>;
         public get StudyAreaList(): Array<Models.IStudyArea> {
             return this._studyAreaList;
@@ -146,6 +148,7 @@ module StreamStats.Services {
             this.parametersLoaded = false;
             this.parametersLoading = false;
             this.doDelineateFlag = false;
+            this.checkingDelineatedPoint = false;
             this.studyAreaParameterList = angular.fromJson(angular.toJson(configuration.alwaysSelectedParameters));
             this.regulationCheckResults = [];
             this.showEditToolbar = false;
@@ -345,7 +348,9 @@ module StreamStats.Services {
 
                 },(error) => {
                     //sm when complete
-                    this.toaster.clear();
+                    console.log('Regression query failed, HTTP Error');
+                    this.toaster.pop('error', "There was an HTTP error querying Regression regions", "Please retry", 5000);
+                    return this.$q.reject(error.data);
                     
                 }).finally(() => {
                     this.regressionRegionQueryLoading = false;
