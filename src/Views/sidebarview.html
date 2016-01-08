@@ -16,7 +16,7 @@
 
                     <div class="row search-bar">
                       <div class="col-md-9 search-bar"><div id="sapi_searchTextBoxDiv">Loading Search Bar...</div></div>
-                      <div class="col-md-2 search-bar"><button class="btn btn-primary" ng-click="vm.showSearchHelp = !vm.showSearchHelp"><i class="fa fa-question-circle"></i></button></div>
+                      <div class="col-md-2 search-bar"><button class="btn btn-info" ng-click="vm.showSearchHelp = !vm.showSearchHelp"><i class="fa fa-question-circle"></i></button></div>
                     </div>
 
                     <div ng-init="vm.showSearchHelp = false" ng-show="vm.showSearchHelp">
@@ -50,7 +50,7 @@
                         <label> Select a State or Regional Study Area</label>
                         <p>You have zoomed in suffiently to select a state or regional study area.  Your selection will dictate the data used to perform basin delination and flow statistics calculation.</p>
                         <div ng-repeat="region in vm.regionService.regionList track by $index">
-                            <button ng-class="region.Name === vm.regionService.selectedRegion.Name ? 'btn btn-primary btn-group-justified':'btn btn-group-justified'" ng-click="vm.setRegion(region)"><span>{{region.Name}} </span></button>
+                            <button ng-class="region.Name === vm.regionService.selectedRegion.Name ? 'btn btn-info btn-group-justified':'btn btn-group-justified'" ng-click="vm.setRegion(region)"><span>{{region.Name}} </span></button>
                         </div>
                     </div>       
                     <div class="form-group" ng-show="vm.regionService.regionList.length < 0">
@@ -69,12 +69,14 @@
                     </div>
 
                     <div class="alert alert-warning" role="alert" ng-hide="vm.regionService.streamStatsAvailable">StreamStats is not available here at this time</div>
-              
-                    <div class="btn-toolbar" ng-show= "vm.studyAreaService.showDelineateButton"> 
-                        <button id="delineateButton" type="button" class="btn btn-sm btn-info" ng-click="vm.startDelineate()" ng-class="vm.studyAreaService.doDelineateFlag ? 'btn-warning' : 'btn-info'" ng-hide="vm.studyAreaService.selectedStudyArea.Features"><i  ng-class="vm.studyAreaService.canUpdate ? 'fa fa-map-marker' : 'fa fa-refresh fa-spin disabled'"></i>&nbsp;&nbsp;<span ng-show="vm.studyAreaService.canUpdate">Delineate</span><span ng-show="!vm.studyAreaService.canUpdate">Delineating Basin, please wait...</span></button>
-                     </div>   
 
-                    <button type="button" class="btn btn-sm btn-info" ng-show="this.studyAreaService.regressionRegionQueryComplete || vm.studyAreaService.regressionRegionQueryLoading" ng-click="vm.studyAreaService.queryRegressionRegions()"><span ng-show="vm.studyAreaService.regressionRegionQueryLoading"><i ng-class="vm.studyAreaService.regressionRegionQueryLoading ? 'fa fa-refresh fa-spin disabled' : ''"></i>&nbsp;&nbsp;Querying Regression Regions</span><span ng-show="vm.studyAreaService.regressionRegionQueryLoaded"><i class="fa fa-refresh"></i>&nbsp;&nbsp;Re-query Regression Regions</span></button>
+                    <div class="btn-toolbar" ng-show= "vm.studyAreaService.showDelineateButton"> 
+                        <button id="delineateButton" type="button" class="btn btn-sm btn-info" ng-click="vm.startDelineate()" ng-class="vm.studyAreaService.doDelineateFlag ? 'btn-warning' : 'btn-info'" ng-hide="vm.studyAreaService.selectedStudyArea.Features" ng-disabled="!vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint"><i  ng-class="vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint ? 'fa fa-map-marker' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;<span ng-show="vm.studyAreaService.canUpdate">Delineate</span><span ng-show="!vm.studyAreaService.canUpdate">Delineating Basin, please wait...</span></button>
+                     </div>    
+
+                    <div class="btn-toolbar" ng-show="vm.studyAreaService.selectedStudyArea.Features && !vm.studyAreaService.regressionRegionQueryComplete"> 
+                        <button type="button" class="btn btn-sm btn-info" ng-click="vm.studyAreaService.queryRegressionRegions()" ng-disabled="vm.studyAreaService.regressionRegionQueryLoading"><span ng-show="vm.studyAreaService.regressionRegionQueryLoading"><i ng-class="vm.studyAreaService.regressionRegionQueryLoading ? 'fa fa-refresh fa-spin' : ''"></i>&nbsp;&nbsp;Querying Regression Regions</span><span ng-show="vm.studyAreaService.regressionRegionQueryLoaded"><i class="fa fa-refresh"></i>&nbsp;&nbsp;Re-query Regression Regions</span></button>
+                    </div>
                     
                     <div ng-show="vm.studyAreaService.regressionRegionQueryComplete">
 
@@ -86,7 +88,7 @@
                             <button id="clearDelinationButton" type="button" class="btn btn-sm btn-info" ng-click="vm.resetWorkSpace()" ng-show="vm.studyAreaService.selectedStudyArea.Features"><span><i class="fa fa-trash-o"></i>&nbsp;&nbsp;Clear Basin</span></button>
                             <button type="button" class="btn btn-sm btn-info" ng-click="vm.studyAreaService.showEditToolbar = !vm.studyAreaService.showEditToolbar"><span class="fa fa-edit"></span>&nbsp;&nbsp;Edit Basin</button>
                             <div class="btn-group">
-                              <button type="button" class="btn btn-sm btn-primary dropdown-toggle" ui-turn-on='downloadBasinDropdown' ><span class="fa fa-download"></span>&nbsp;&nbsp;Download Basin</button>
+                              <button type="button" class="btn btn-sm btn-info dropdown-toggle" ui-turn-on='downloadBasinDropdown' ><span class="fa fa-download"></span>&nbsp;&nbsp;Download Basin</button>
                               <ul 
                                 class="dropdown-menu"
                                 ui-outer-click="Ui.turnOff('downloadBasinDropdown')"
@@ -107,12 +109,12 @@
                         <div class="well well-sm" ng-show="vm.studyAreaService.showEditToolbar">
                             <p>To edit your basin, first click the 'Add Area' or 'Remove Area' button below.  Use your mouse or finger to draw a polygon.</p><p>If <strong>adding</strong> an area be sure your drawn polygon starts and ends within the yellow basin boundaries</p><p>If <strong>removing</strong> an area, be sure your drawn polygon starts and ends outside of the yellow basin.</p>
                             <div class="btn-toolbar">
-                                <button type="button" class="btn btn-sm btn-success" ng-click="vm.studyAreaService.editBasin('add')"><span class="fa fa-plus-square-o"></span>&nbsp;&nbsp;Add Area</button>
-                                <button type="button" class="btn btn-sm btn-warning" ng-click="vm.studyAreaService.editBasin('remove')"><span class="fa fa-minus-square-o"></span>&nbsp;&nbsp;Remove Area</button>
+                                <button type="button" class="btn btn-sm btn-info" ng-click="vm.studyAreaService.editBasin('add')"><span class="fa fa-plus-square-o"></span>&nbsp;&nbsp;Add Area</button>
+                                <button type="button" class="btn btn-sm btn-info" ng-click="vm.studyAreaService.editBasin('remove')"><span class="fa fa-minus-square-o"></span>&nbsp;&nbsp;Remove Area</button>
                             </div>
                             <div class="btn-toolbar">
-                                <button type="button" class="btn btn-sm btn-primary" ng-click="vm.studyAreaService.undoEdit()"><span class="fa fa-undo"></span>&nbsp;&nbsp;Undo Edits</button>
-                                <button type="button" class="btn btn-sm btn-primary" ng-click="vm.submitBasinEdits()"><span class="fa fa-check"></span>&nbsp;&nbsp;Finished Editing</button>
+                                <button type="button" class="btn btn-sm btn-warning" ng-click="vm.studyAreaService.undoEdit()"><span class="fa fa-undo"></span>&nbsp;&nbsp;Undo Edits</button>
+                                <button type="button" class="btn btn-sm btn-success" ng-click="vm.submitBasinEdits()"><span class="fa fa-check"></span>&nbsp;&nbsp;Finished Editing</button>
                             </div>
                         </div> 
 
@@ -120,7 +122,7 @@
                             <strong>State/Region Specific Functions</strong>
                             <p>The following additional functions area available for {{vm.regionService.selectedRegion.Name}}.</p>
                             <div class="form-group">
-                                <button  ng-click="vm.checkRegulation()" type="button" class="btn btn-sm btn-primary"><i ng-class="vm.studyAreaService.regulationCheckComplete ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Check for upstream regulation</button>
+                                <button  ng-click="vm.checkRegulation()" type="button" class="btn btn-sm btn-info" ng-disabled="!vm.studyAreaService.regulationCheckComplete"><i ng-class="vm.studyAreaService.regulationCheckComplete ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Check for upstream regulation</button>
                             </div>
 
                             <div class="alert alert-success" role="alert" ng-show="vm.studyAreaService.isRegulated !== null">Upstream Regulation check has been completed.  There is <strong ng-show="vm.studyAreaService.isRegulated" >{{vm.studyAreaService.regulationCheckResults.percentarearegulated.toFixed(2)}} percent</strong><strong ng-show="!vm.studyAreaService.isRegulated">NO</strong> regulation in this watershed.</div>
@@ -142,13 +144,13 @@
                         <div class="alert alert-info" role="alert" ng-show="vm.nssService.statisticsGroupList.length == 0 && !vm.nssService.loadingStatisticsGroup || vm.nssService.loadingStatisticsGroup">Failed to load scenarios or no scenarios available</div>
 
                         <div class="btn-toolbar" ng-if="vm.nssService.statisticsGroupList.length > 0">
-                            <button class="btn btn-sm btn-default" ng-class="vm.checkArrayForObj(vm.nssService.selectedStatisticsGroupList, statisticsGroup) != -1 ? 'btn-primary': ''" ng-click="vm.setStatisticsGroup(statisticsGroup)" ng-repeat="statisticsGroup in vm.nssService.statisticsGroupList"><span>{{statisticsGroup.Name}} </span></button>
+                            <button class="btn btn-sm btn-default" ng-class="vm.checkArrayForObj(vm.nssService.selectedStatisticsGroupList, statisticsGroup) != -1 ? 'btn-info': ''" ng-click="vm.setStatisticsGroup(statisticsGroup)" ng-repeat="statisticsGroup in vm.nssService.statisticsGroupList"><span>{{statisticsGroup.Name}} </span></button>
                         </div>
                     </div>
                     <div class="well well-sm">
                         <h5>Other Scenarios</h5>
                         <div class="btn-toolbar">
-                            <button class="btn btn-sm btn-default" ng-class="vm.multipleParameterSelectorAdd ? '': 'btn-primary'" ng-click="vm.multipleParameterSelector()"><span>Select All Basin Characteristics</span></button>
+                            <button class="btn btn-sm btn-default" ng-class="vm.multipleParameterSelectorAdd ? '': 'btn-info'" ng-click="vm.multipleParameterSelector()"><span>Select All Basin Characteristics</span></button>
                         </div>
                     </div>
 
@@ -171,7 +173,7 @@
                     </div>
 
                     <div class="btn-toolbar">
-                        <button type="button" class="btn btn-sm btn-success" ng-click="vm.calculateParameters()"><i class="fa fa-refresh" ng-class="vm.studyAreaService.parametersLoading ? 'fa fa-refresh fa-spin' : 'fa fa-flash'"></i>&nbsp;&nbsp;Calculate Selected Basin Characteristics</button>
+                        <button type="button" class="btn btn-sm btn-success" ng-click="vm.calculateParameters()" ng-disabled="vm.studyAreaService.parametersLoading"><i class="fa fa-refresh" ng-class="vm.studyAreaService.parametersLoading ? 'fa fa-refresh fa-spin' : 'fa fa-flash'"></i>&nbsp;&nbsp;Calculate Selected Basin Characteristics</button>
                     </div>                  
                 </div>    
             </div>    

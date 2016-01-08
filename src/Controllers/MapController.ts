@@ -610,7 +610,7 @@ module StreamStats.Controllers {
         private checkDelineatePoint(latlng) {
 
             //console.log('in check delineate point');
-            //clear toasts
+            this.studyArea.checkingDelineatedPoint = true;
             
             this.toaster.pop("info", "Information", "Validating your clicked point...", 5000);
             this.cursorStyle = 'wait';
@@ -647,6 +647,7 @@ module StreamStats.Controllers {
                         //if there are no exclusion area hits
                         if (results.features.length == 0) {
                             this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000)
+                            this.studyArea.checkingDelineatedPoint = false;
                             this.startDelineate(latlng);
                         }
 

@@ -553,7 +553,7 @@ a{
   }
 
   .modal .btn-default,
-  #contact-form .btn-primary{
+  #contact-form .btn-default{
     background-color: #3C6DD1;
     transition: 0.2s;
     color:#fff;
@@ -570,7 +570,7 @@ a{
     margin-right:20px;
   }
     .modal .btn-default:hover,
-    #contact-form .btn-primary:hover{
+    #contact-form .btn-default:hover{
       background-color: #2b5ab9;
       transition: 0.2s;
       color:#fff;
