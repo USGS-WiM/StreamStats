@@ -160,7 +160,6 @@ var StreamStats;
                         if (response.data[0].RegressionRegions[0].Results && response.data[0].RegressionRegions[0].Results.length > 0) {
                             statGroup.ResultsHeaders = {};
                             var headerMsgs = response.headers()['x-usgswim-messages'].split(';');
-                            console.log('headerMsgs', headerMsgs);
                             headerMsgs.forEach(function (item) {
                                 var headerMsg = item.split(':');
                                 if (headerMsg[0] == 'warning')
@@ -170,7 +169,7 @@ var StreamStats;
                                 //comment out for not, not useful
                                 //if (headerMsg[0] == 'info') statGroup.ResultsHeaders['Info'] = headerMsg[1].trim();
                             });
-                            console.log('headerMsgs: ', statGroup.ResultsHeaders);
+                            console.log('headerMsgs: ', statGroup.Name, statGroup.ResultsHeaders);
                             console.log('flow response: ', response.data);
                             //get flows
                             response.data[0].RegressionRegions[0].Results.map(function (item) {

@@ -216,7 +216,6 @@ module StreamStats.Services {
 
                             statGroup.ResultsHeaders = {};
                             var headerMsgs = response.headers()['x-usgswim-messages'].split(';');
-                            console.log('headerMsgs', headerMsgs);
 
                             headerMsgs.forEach((item) => {
                                 var headerMsg = item.split(':');
@@ -225,7 +224,7 @@ module StreamStats.Services {
                                 //comment out for not, not useful
                                 //if (headerMsg[0] == 'info') statGroup.ResultsHeaders['Info'] = headerMsg[1].trim();
                             });
-                            console.log('headerMsgs: ', statGroup.ResultsHeaders);
+                            console.log('headerMsgs: ', statGroup.Name, statGroup.ResultsHeaders);
 
                             console.log('flow response: ', response.data);
                             //get flows
