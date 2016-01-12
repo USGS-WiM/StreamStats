@@ -24,7 +24,6 @@
     "angular-leaflet-directive": "~0.10.0",
     "leaflet": "~0.7.5",
     "font-awesome": "~4.3.0",
-    "lato": "~0.3.0",
     "esri-leaflet": "~1.0.0",
     "leaflet.locatecontrol": "~0.40.0",
     "leaflet-groupedlayercontrol": "~0.3.0",
