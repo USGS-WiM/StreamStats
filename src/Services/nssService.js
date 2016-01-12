@@ -158,10 +158,10 @@ var StreamStats;
                     statGroup.Citations = [];
                     _this.Execute(request).then(function (response) {
                         if (response.data[0].RegressionRegions[0].Results && response.data[0].RegressionRegions[0].Results.length > 0) {
-                            console.log('flows response: ', response);
+                            console.log('flows headers response: ', response, response.headers());
                             statGroup.ResultsHeaders = {};
-                            if (response.headers()['USGSWiM-Messages']) {
-                                var headerMsgs = response.headers()['USGSWiM-Messages'].split(';');
+                            if (response.headers()['usgswim-messages']) {
+                                var headerMsgs = response.headers()['usgswim-messages'].split(';');
                                 headerMsgs.forEach(function (item) {
                                     var headerMsg = item.split(':');
                                     if (headerMsg[0] == 'warning')
