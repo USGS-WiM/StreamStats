@@ -174,30 +174,32 @@
                 </div>
             </div>
 
-            <div class="btn-group">
-                <button type="button" class="btn btn-sm btn-default dropdown-toggle" ui-turn-on='downloadBasinDropdown' ><span class="fa fa-download"></span>&nbsp;&nbsp;Download Basin</button>
-                <ul 
-                class="dropdown-menu"
-                ui-outer-click="Ui.turnOff('downloadBasinDropdown')"
-                ui-outer-click-if="Ui.active('downloadBasinDropdown')"
-                role="menu"
-                ui-show="downloadBasinDropdown" 
-                ui-state="downloadBasinDropdown"
-                ui-turn-off="downloadBasinDropdown">
+            <div id="downloadButtons" class="hidden-print">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-default dropdown-toggle" ui-turn-on='downloadBasinDropdown' ><span class="fa fa-download"></span>&nbsp;&nbsp;Download Basin</button>
+                    <ul 
+                    class="dropdown-menu"
+                    ui-outer-click="Ui.turnOff('downloadBasinDropdown')"
+                    ui-outer-click-if="Ui.active('downloadBasinDropdown')"
+                    role="menu"
+                    ui-show="downloadBasinDropdown" 
+                    ui-state="downloadBasinDropdown"
+                    ui-turn-off="downloadBasinDropdown">
 
-                <li><a href="{{vm.studyAreaService.servicesURL}}/streamstatsservices/download?workspaceID={{vm.studyAreaService.selectedStudyArea.WorkspaceID}}&format=Shape">Shapefile</a></li>
-                <li><a href="{{vm.studyAreaService.servicesURL}}/streamstatsservices/download?workspaceID={{vm.studyAreaService.selectedStudyArea.WorkspaceID}}">ESRI File GDB</a>
-                </li>
-                </ul>
+                    <li><a href="{{vm.studyAreaService.servicesURL}}/streamstatsservices/download?workspaceID={{vm.studyAreaService.selectedStudyArea.WorkspaceID}}&format=Shape">Shapefile</a></li>
+                    <li><a href="{{vm.studyAreaService.servicesURL}}/streamstatsservices/download?workspaceID={{vm.studyAreaService.selectedStudyArea.WorkspaceID}}">ESRI File GDB</a>
+                    </li>
+                    </ul>
+                </div>
+                <button type="button" class="btn btn-sm btn-default" ng-click="vm.downloadCSV()" ><span><i class="fa fa-download"></i>&nbsp;&nbsp;Download CSV</span></button>
             </div>
-            <button type="button" class="btn btn-sm btn-default" ng-click="vm.downloadCSV()" ><span><i class="fa fa-download"></i>&nbsp;&nbsp;Download CSV</span></button>
         </div>
        
     </div>
-    <div class="modal-footer">
+    <div class="modal-footer hidden-print">
         <div class="btn-group">
-            <button type="button" class="btn btn-default hidden-print" ng-click="vm.close()"><i class="fa fa-close"></i>&nbsp;&nbsp;Close</button>
-            <button type="button" class="btn btn-default hidden-print" ng-click="vm.print()"><i class="fa fa-print"></i>&nbsp;&nbsp;Print</button>
+            <button type="button" class="btn btn-default" ng-click="vm.close()"><i class="fa fa-close"></i>&nbsp;&nbsp;Close</button>
+            <button type="button" class="btn btn-default" ng-click="vm.print()"><i class="fa fa-print"></i>&nbsp;&nbsp;Print</button>
         </div>
     </div>
     
