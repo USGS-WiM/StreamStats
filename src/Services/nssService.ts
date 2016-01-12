@@ -214,11 +214,11 @@ module StreamStats.Services {
                     (response: any) => {
                         if (response.data[0].RegressionRegions[0].Results && response.data[0].RegressionRegions[0].Results.length > 0) {
 
-                            console.log('flows response: ', response);
+                            console.log('flows headers response: ', response, response.headers());
                             statGroup.ResultsHeaders = {};
 
-                            if (response.headers()['USGSWiM-Messages']) {
-                                var headerMsgs = response.headers()['USGSWiM-Messages'].split(';');
+                            if (response.headers()['usgswim-messages']) {
+                                var headerMsgs = response.headers()['usgswim-messages'].split(';');
 
                                 headerMsgs.forEach((item) => {
                                     var headerMsg = item.split(':');
