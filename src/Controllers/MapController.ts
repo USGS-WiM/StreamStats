@@ -26,6 +26,7 @@
 module StreamStats.Controllers {
 
     declare var greinerHormann;
+    declare var ga;
 
     //'use strict';
     interface ILeafletData {
@@ -998,6 +999,8 @@ module StreamStats.Controllers {
 
         private startDelineate(latlng: any) {
             //console.log('in startDelineate', latlng);
+            //track this click
+            ga('send', 'event', "Map", "Delineate", this.regionServices.selectedRegion.RegionID, '', '');
 
             var studyArea: Models.IStudyArea = new Models.StudyArea(this.regionServices.selectedRegion.RegionID, new WiM.Models.Point(latlng.lat, latlng.lng, '4326'));
 

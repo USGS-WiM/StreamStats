@@ -765,6 +765,8 @@ var StreamStats;
             };
             MapController.prototype.startDelineate = function (latlng) {
                 //console.log('in startDelineate', latlng);
+                //track this click
+                ga('send', 'event', "Map", "Delineate", this.regionServices.selectedRegion.RegionID, '', '');
                 var studyArea = new StreamStats.Models.StudyArea(this.regionServices.selectedRegion.RegionID, new WiM.Models.Point(latlng.lat, latlng.lng, '4326'));
                 this.studyArea.AddStudyArea(studyArea);
                 this.studyArea.loadStudyBoundary();
