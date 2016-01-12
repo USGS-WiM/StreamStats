@@ -1,4 +1,6 @@
-﻿html, body, .angular-leaflet-map {
+﻿@import url(https://fonts.googleapis.com/css?family=Lato:400,100,300,700,900);
+
+html, body, .angular-leaflet-map {
    padding: 0; 
    margin: 0;
    height: 100%;
