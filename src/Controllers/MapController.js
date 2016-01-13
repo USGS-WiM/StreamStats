@@ -59,7 +59,7 @@ var StreamStats;
             return MapDefault;
         })();
         var MapController = (function () {
-            function MapController($scope, toaster, $location, $stateParams, leafletBoundsHelper, leafletData, search, region, studyArea, StatisticsGroup, exploration) {
+            function MapController($scope, toaster, $analytics, $location, $stateParams, leafletBoundsHelper, leafletData, search, region, studyArea, StatisticsGroup, exploration) {
                 var _this = this;
                 this.center = null;
                 this.layers = null;
@@ -74,6 +74,7 @@ var StreamStats;
                 $scope.vm = this;
                 this.init();
                 this.toaster = toaster;
+                this.angulartics = $analytics;
                 this.searchService = search;
                 this.$locationService = $location;
                 this.regionServices = region;
@@ -233,6 +234,8 @@ var StreamStats;
                 //console.log('in querystates');
                 this.toaster.pop("info", "Information", "Querying National map layers...", 0);
                 this.cursorStyle = 'wait';
+                //ga event
+                this.angulartics.eventTrack('initialOperation', { category: 'Map', label: 'Map click query' });
                 //build list of layers to query before delineate
                 var queryString = 'visible:';
                 this.regionServices.nationalMapLayerList.forEach(function (item) {
@@ -296,6 +299,8 @@ var StreamStats;
                 this.toaster.pop("info", "Information", "Querying State/Regional map layers...", 0);
                 this.cursorStyle = 'wait';
                 this.markers = {};
+                //report ga event
+                this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'queryRegionalLayers' });
                 this.leafletData.getMap().then(function (map) {
                     _this.leafletData.getLayers().then(function (maplayers) {
                         maplayers.overlays[_this.regionServices.selectedRegion.RegionID + "_region"].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).run(function (error, results) {
@@ -343,6 +348,8 @@ var StreamStats;
                 var _this = this;
                 //get reference to elevation control
                 var el = this.controls.custom[2];
+                //report ga event
+                this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'elevationProfile' });
                 this.leafletData.getMap().then(function (map) {
                     _this.leafletData.getLayers().then(function (maplayers) {
                         //create draw control
@@ -393,6 +400,8 @@ var StreamStats;
             MapController.prototype.measurement = function () {
                 //console.log('in measurement');
                 var _this = this;
+                //report ga event
+                this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'measurement' });
                 this.leafletData.getMap().then(function (map) {
                     _this.leafletData.getLayers().then(function (maplayers) {
                         var stopclick = false; //to prevent more than one click listener
@@ -462,12 +471,15 @@ var StreamStats;
                 });
                 this.leafletData.getMap().then(function (map) {
                     _this.leafletData.getLayers().then(function (maplayers) {
+                        _this.angulartics.eventTrack('delineationClick', { category: 'Map', label: _this.regionServices.selectedRegion.Name + ', Zoom Level: ' + map.getZoom() });
                         //force map refresh
                         map.invalidateSize();
                         var selectedRegionLayerName = _this.regionServices.selectedRegion.RegionID + "_region";
                         maplayers.overlays[selectedRegionLayerName].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run(function (error, results) {
                             //if there are no exclusion area hits
                             if (results.features.length == 0) {
+                                //ga event
+                                _this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'validPoint' });
                                 _this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000);
                                 _this.studyArea.checkingDelineatedPoint = false;
                                 _this.startDelineate(latlng);
@@ -478,6 +490,8 @@ var StreamStats;
                                 var popupMsg = results.features[0].properties.ExcludeReason;
                                 if (excludeCode == 1) {
                                     _this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", popupMsg, 0);
+                                    //ga event
+                                    _this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'exclusionAreaPoint' });
                                 }
                                 else {
                                     _this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", popupMsg, true, 0);
@@ -526,6 +540,8 @@ var StreamStats;
                                 //console.log('add layer', layer.toGeoJSON());
                                 var editPolygon = greinerHormann.union(sourcePolygon, clipPolygon);
                                 _this.studyArea.WatershedEditDecisionList.append.push(layer.toGeoJSON());
+                                //ga event
+                                _this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'addArea' });
                             }
                             if (_this.studyArea.drawControlOption == 'remove') {
                                 //console.log('remove layer', layer.toGeoJSON());
@@ -538,6 +554,8 @@ var StreamStats;
                                     return;
                                 }
                                 _this.studyArea.WatershedEditDecisionList.remove.push(layer.toGeoJSON());
+                                //ga event
+                                _this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'removeArea' });
                             }
                             //set studyArea basin to new edited polygon
                             basin.data.features[0].geometry.coordinates[0] = [];
@@ -574,6 +592,8 @@ var StreamStats;
                 });
             };
             MapController.prototype.onSelectedAreaOfInterestChanged = function (sender, e) {
+                //ga event
+                this.angulartics.eventTrack('initialOperation', { category: 'Map', label: 'Search' });
                 this.markers = {};
                 var AOI = e.selectedAreaOfInterest;
                 if (AOI.Category == "U.S. State or Territory")
@@ -765,15 +785,13 @@ var StreamStats;
             };
             MapController.prototype.startDelineate = function (latlng) {
                 //console.log('in startDelineate', latlng);
-                //track this click
-                ga('send', 'event', "Map", "Delineate", this.regionServices.selectedRegion.RegionID, '', '');
                 var studyArea = new StreamStats.Models.StudyArea(this.regionServices.selectedRegion.RegionID, new WiM.Models.Point(latlng.lat, latlng.lng, '4326'));
                 this.studyArea.AddStudyArea(studyArea);
                 this.studyArea.loadStudyBoundary();
             };
-            //Constructor
+            //Constructro
             //-+-+-+-+-+-+-+-+-+-+-+-
-            MapController.$inject = ['$scope', 'toaster', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService'];
+            MapController.$inject = ['$scope', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService'];
             return MapController;
         })(); //end class
         angular.module('StreamStats.Controllers').controller('StreamStats.Controllers.MapController', MapController);

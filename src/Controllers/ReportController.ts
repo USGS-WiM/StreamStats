@@ -79,12 +79,15 @@ module StreamStats.Controllers {
         private leafletData: ILeafletData;
         public reportTitle: string;
         public reportComments: string;
+        public angulartics: any;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData'];
-        constructor($scope: IReportControllerScope, $modalInstance: ng.ui.bootstrap.IModalServiceInstance, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, leafletData: ILeafletData) {
+        static $inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData'];
+        constructor($scope: IReportControllerScope, $analytics, $modalInstance: ng.ui.bootstrap.IModalServiceInstance, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, leafletData: ILeafletData) {
             $scope.vm = this;
+
+            this.angulartics = $analytics;
             this.studyAreaService = studyArea;
             this.nssService = StatisticsGroup;
             this.leafletData = leafletData;
@@ -191,6 +194,9 @@ module StreamStats.Controllers {
         }
 
         private downloadCSV() {
+
+            //ga event
+            this.angulartics.eventTrack('Download', { category: 'Report', label: 'CSV' });
 
             var filename = 'data.csv';
 
