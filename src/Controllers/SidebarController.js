@@ -21,11 +21,12 @@ var StreamStats;
     (function (Controllers) {
         'use strinct';
         var SidebarController = (function () {
-            function SidebarController($scope, toaster, service, region, studyArea, StatisticsGroup, report, leafletData, exploration) {
+            function SidebarController($scope, toaster, $analytics, service, region, studyArea, StatisticsGroup, report, leafletData, exploration) {
                 var _this = this;
                 $scope.vm = this;
                 this.init();
                 this.toaster = toaster;
+                this.angulartics = $analytics;
                 this.searchService = service;
                 this.sideBarCollapsed = false;
                 this.selectedProcedure = 1 /* INIT */;
@@ -54,6 +55,9 @@ var StreamStats;
                         _this.setProcedureType(3);
                     else
                         _this.setProcedureType(4);
+                });
+                $scope.$watch(function () { return _this.studyAreaService.studyAreaParameterList; }, function (newval, oldval) {
+                    console.log('watch for modify basin chars ', newval, oldval);
                 });
             }
             SidebarController.prototype.getLocations = function (term) {
@@ -85,6 +89,8 @@ var StreamStats;
                 //console.log('zooming to region: ', region);
             };
             SidebarController.prototype.setRegion = function (region) {
+                //ga event
+                this.angulartics.eventTrack('initialOperation', { category: 'SideBar', label: 'Region Selection Button' });
                 //console.log('setting region: ', region);
                 if (this.regionService.selectedRegion == undefined || this.regionService.selectedRegion.RegionID !== region.RegionID)
                     this.regionService.selectedRegion = region;
@@ -186,6 +192,13 @@ var StreamStats;
                 }
             };
             SidebarController.prototype.calculateParameters = function () {
+                //ga event
+                this.angulartics.eventTrack('CalculateParameters', {
+                    category: 'SideBar',
+                    label: this.regionService.selectedRegion.Name + '; ' + this.studyAreaService.studyAreaParameterList.map(function (elem) {
+                        return elem.code;
+                    }).join(",")
+                });
                 //console.log('in Calculate Parameters');
                 this.studyAreaService.loadParameters();
             };
@@ -201,8 +214,14 @@ var StreamStats;
             };
             SidebarController.prototype.generateReport = function () {
                 //console.log('in estimateFlows');
+                //ga event
+                this.angulartics.eventTrack('CalculateFlows', {
+                    category: 'SideBar',
+                    label: this.regionService.selectedRegion.Name + '; ' + this.nssService.selectedStatisticsGroupList.map(function (elem) {
+                        return elem.Name;
+                    }).join(",")
+                });
                 if (this.nssService.selectedStatisticsGroupList.length > 0 && this.nssService.showFlowsTable) {
-                    //need to loop over selectedStatisticsGroupList HERE
                     this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList, this.regionService.selectedRegion.RegionID, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) {
                         return elem.code;
                     }).join(","));
@@ -279,7 +298,7 @@ var StreamStats;
             };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
-            SidebarController.$inject = ['$scope', 'toaster', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ReportService', 'leafletData', 'StreamStats.Services.ExplorationService'];
+            SidebarController.$inject = ['$scope', 'toaster', '$analytics', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ReportService', 'leafletData', 'StreamStats.Services.ExplorationService'];
             return SidebarController;
         })(); //end class
         var ProcedureType;
