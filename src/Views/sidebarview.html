@@ -87,22 +87,6 @@
                         <div class="btn-toolbar" ng-hide="vm.studyAreaService.showEditToolbar">
                             <button id="clearDelinationButton" type="button" class="btn btn-sm btn-info" ng-click="vm.resetWorkSpace()" ng-show="vm.studyAreaService.selectedStudyArea.Features"><span><i class="fa fa-trash-o"></i>&nbsp;&nbsp;Clear Basin</span></button>
                             <button type="button" class="btn btn-sm btn-info" ng-click="vm.studyAreaService.showEditToolbar = !vm.studyAreaService.showEditToolbar"><span class="fa fa-edit"></span>&nbsp;&nbsp;Edit Basin</button>
-                            <!--<div class="btn-group">
-                              <button type="button" class="btn btn-sm btn-info dropdown-toggle" ui-turn-on='downloadBasinDropdown' ><span class="fa fa-download"></span>&nbsp;&nbsp;Download Basin</button>
-                              <ul 
-                                class="dropdown-menu"
-                                ui-outer-click="Ui.turnOff('downloadBasinDropdown')"
-                                ui-outer-click-if="Ui.active('downloadBasinDropdown')"
-                                role="menu"
-                                ui-show="downloadBasinDropdown" 
-                                ui-state="downloadBasinDropdown"
-                                ui-turn-off="downloadBasinDropdown">
-
-                                <li><a href="{{vm.studyAreaService.servicesURL}}/streamstatsservices/download?workspaceID={{vm.studyAreaService.selectedStudyArea.WorkspaceID}}&format=Shape">Shapefile</a></li>
-                                <li><a href="{{vm.studyAreaService.servicesURL}}/streamstatsservices/download?workspaceID={{vm.studyAreaService.selectedStudyArea.WorkspaceID}}">ESRI File GDB</a>
-                                </li>
-                              </ul>
-                            </div>-->
                             <button type="button" class="btn btn-sm btn-success" ng-click="vm.selectScenarios()"><span class="fa fa-check-circle"></span>&nbsp;&nbsp;Continue</button>
                         </div>
 
