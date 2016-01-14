@@ -202,11 +202,11 @@ module StreamStats.Controllers {
 
             var processParameterTable = (data) => {
                 var finalVal = '\n\nParameters\n';
-                if (this.studyAreaService.isRegulated) finalVal += 'Name,Value,Reglated Value, Unregulated Value, Unit\n';
+                if (this.studyAreaService.Disclaimers['isRegulated']) finalVal += 'Name,Value,Reglated Value, Unregulated Value, Unit\n';
                 else finalVal += 'Name,Value,Unit\n';
 
                 data.forEach((item) => {
-                    if (this.studyAreaService.isRegulated) finalVal += item.name + ',' + item.value + ',' + item.unRegulatedValue.toFixed(2) + ',' + item.regulatedValue.toFixed(2) + ',' + item.unit + '\n';
+                    if (this.studyAreaService.Disclaimers['isRegulated']) finalVal += item.name + ',' + item.value + ',' + item.unRegulatedValue.toFixed(2) + ',' + item.regulatedValue.toFixed(2) + ',' + item.unit + '\n';
                     else finalVal += item.name + ',' + item.value + ',' + item.unit + '\n';                   
                 });
                 return finalVal + '\n';

@@ -99,9 +99,9 @@ module StreamStats.Controllers {
                 else this.setProcedureType(4);
             });
 
-            $scope.$watch(() => this.studyAreaService.studyAreaParameterList,(newval, oldval) => {
-                console.log('watch for modify basin chars ', newval, oldval);
-            });
+            //$scope.$watch(() => this.studyAreaService.studyAreaParameterList,(newval, oldval) => {
+            //    console.log('watch for modify basin chars ', newval, oldval);
+            //});
         }
 
         public getLocations(term: string):ng.IPromise<Array<WiM.Services.ISearchAPIOutput>> {
@@ -277,7 +277,7 @@ module StreamStats.Controllers {
             this.studyAreaService.showEditToolbar = false;
 
             //check if basin has been edited, if so we need to re-query regression regions
-            if (this.studyAreaService.isEdited) this.studyAreaService.loadEditedStudyBoundary();
+            if (this.studyAreaService.Disclaimers['isEdited']) this.studyAreaService.loadEditedStudyBoundary();
 
         }
 
@@ -322,22 +322,25 @@ module StreamStats.Controllers {
                 //loop over whole statisticsgroups
                 this.nssService.selectedStatisticsGroupList.forEach((statisticsGroup) => {
 
-                    //get their parameters
-                    statisticsGroup.RegressionRegions[0].Parameters.forEach((param) => {
+                    if (statisticsGroup.RegressionRegions) {
 
-                        if (parameter.code.toLowerCase() == param.Code.toLowerCase()) {
+                        //get their parameters
+                        statisticsGroup.RegressionRegions[0].Parameters.forEach((param) => {
 
-                            configuration.alwaysSelectedParameters.forEach((alwaysSelectedParam) => {
-                                if (alwaysSelectedParam.name == parameter.code) return;
-                            });
+                            if (parameter.code.toLowerCase() == param.Code.toLowerCase()) {
 
-                            //turn it on
-                            if (this.checkArrayForObj(this.studyAreaService.studyAreaParameterList, parameter) == -1) this.studyAreaService.studyAreaParameterList.push(parameter);
-                            parameter['checked'] = true;
-                            parameter['toggleable'] = false;
-                        }
+                                configuration.alwaysSelectedParameters.forEach((alwaysSelectedParam) => {
+                                    if (alwaysSelectedParam.name == parameter.code) return;
+                                });
 
-                    });
+                                //turn it on
+                                if (this.checkArrayForObj(this.studyAreaService.studyAreaParameterList, parameter) == -1) this.studyAreaService.studyAreaParameterList.push(parameter);
+                                parameter['checked'] = true;
+                                parameter['toggleable'] = false;
+                            }
+
+                        });
+                    }
                 });
             });
         }

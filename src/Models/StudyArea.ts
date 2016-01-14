@@ -33,6 +33,7 @@ module StreamStats.Models {
         WorkspaceID: string;
         Date: Date;
         Parameters: Array<WiM.Models.IParameter>;
+        Disclaimers: Object;
     }
 
     export class StudyArea implements IStudyArea {
@@ -46,6 +47,7 @@ module StreamStats.Models {
         public WorkspaceID: string;
         public Date: Date;
         public Parameters: Array<WiM.Models.IParameter>;
+        public Disclaimers: Object;
         //public Scenarios: Array<WiM.Models.IScenario>;
 
         constructor(region: string, point: WiM.Models.IPoint) {

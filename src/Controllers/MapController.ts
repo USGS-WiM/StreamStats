@@ -646,7 +646,7 @@ module StreamStats.Controllers {
             //build list of layers to query before delineate
             var queryString = 'visible:'
             this.regionServices.regionMapLayerList.forEach((item) => {
-                if (item[0] == "Area of limited functionality") queryString += String(item[1]);
+                if (item[0].toLowerCase() == "area of limited functionality" || item[0].toLowerCase() == "areas of limited functionality") queryString += String(item[1]);
             });
 
             this.leafletData.getMap().then((map: any) => {
@@ -661,6 +661,8 @@ module StreamStats.Controllers {
 
                     maplayers.overlays[selectedRegionLayerName].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run((error: any, results: any) => {
 
+                        console.log('exclusion area check: ', queryString, results.features); 
+
                         //if there are no exclusion area hits
                         if (results.features.length == 0) {
                             //ga event
@@ -673,7 +675,8 @@ module StreamStats.Controllers {
 
                         //otherwise parse exclude Codes
                         else {
-                            this.studyArea.isInExclusionArea = true;
+                            this.studyArea.Disclaimers['isInExclusionArea'] = true;
+                            this.studyArea.checkingDelineatedPoint = false;
                             var excludeCode = results.features[0].properties.ExcludeCode;
                             var popupMsg = results.features[0].properties.ExcludeReason;
                             if (excludeCode == 1) {
@@ -724,7 +727,7 @@ module StreamStats.Controllers {
 
                         var layer = e.layer;
                         drawnItems.addLayer(layer);
-                        this.studyArea.isEdited = true;  
+                        this.studyArea.Disclaimers['isEdited'] = true;  
 
                         //convert edit polygon coords
                         var editArea = layer.toGeoJSON().geometry.coordinates[0];
@@ -938,16 +941,16 @@ module StreamStats.Controllers {
             
             //if a region was selected, and then user zooms back out, clear and start over
             if (this.center.zoom <= 6 && oldValue !== newValue) {
-                //console.log('removing region layers', this.layers.overlays);
+                ////console.log('removing region layers', this.layers.overlays);
 
-                this.regionServices.clearRegion();
-                this.studyArea.clearStudyArea();
-                this.nssService.clearNSSdata();
+                //this.regionServices.clearRegion();
+                //this.studyArea.clearStudyArea();
+                //this.nssService.clearNSSdata();
 
-                //THIS IS JUST THROWING AN ANGULAR LEAFLET ERROR EVEN THOUGH SAME AS DOCS
-                // http://tombatossals.github.io/angular-leaflet-directive/examples/0000-viewer.html#/layers/dynamic-addition-example
-                this.removeOverlayLayers("_region", true)
-                //this.onSelectedRegionChanged();
+                ////THIS IS JUST THROWING AN ANGULAR LEAFLET ERROR EVEN THOUGH SAME AS DOCS
+                //// http://tombatossals.github.io/angular-leaflet-directive/examples/0000-viewer.html#/layers/dynamic-addition-example
+                //this.removeOverlayLayers("_region", true)
+                ////this.onSelectedRegionChanged();
             }
 
             if (this.center.zoom >= 15) {
@@ -968,7 +971,7 @@ module StreamStats.Controllers {
             if (key && this.regionServices.loadRegionListByRegion(key)) {
                 this.regionServices.selectedRegion = this.regionServices.regionList[0];
                 this.bounds = this.leafletBoundsHelperService.createBoundsFromArray(this.regionServices.selectedRegion.Bounds);
-                this.center = <ICenter>{};
+                //this.center = <ICenter>{};
             }
 
         }

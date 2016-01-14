@@ -56,9 +56,9 @@ var StreamStats;
                     else
                         _this.setProcedureType(4);
                 });
-                $scope.$watch(function () { return _this.studyAreaService.studyAreaParameterList; }, function (newval, oldval) {
-                    console.log('watch for modify basin chars ', newval, oldval);
-                });
+                //$scope.$watch(() => this.studyAreaService.studyAreaParameterList,(newval, oldval) => {
+                //    console.log('watch for modify basin chars ', newval, oldval);
+                //});
             }
             SidebarController.prototype.getLocations = function (term) {
                 return this.searchService.getLocations(term);
@@ -205,7 +205,7 @@ var StreamStats;
             SidebarController.prototype.submitBasinEdits = function () {
                 this.studyAreaService.showEditToolbar = false;
                 //check if basin has been edited, if so we need to re-query regression regions
-                if (this.studyAreaService.isEdited)
+                if (this.studyAreaService.Disclaimers['isEdited'])
                     this.studyAreaService.loadEditedStudyBoundary();
             };
             SidebarController.prototype.selectScenarios = function () {
@@ -240,20 +240,22 @@ var StreamStats;
                 this.regionService.parameterList.forEach(function (parameter) {
                     //loop over whole statisticsgroups
                     _this.nssService.selectedStatisticsGroupList.forEach(function (statisticsGroup) {
-                        //get their parameters
-                        statisticsGroup.RegressionRegions[0].Parameters.forEach(function (param) {
-                            if (parameter.code.toLowerCase() == param.Code.toLowerCase()) {
-                                configuration.alwaysSelectedParameters.forEach(function (alwaysSelectedParam) {
-                                    if (alwaysSelectedParam.name == parameter.code)
-                                        return;
-                                });
-                                //turn it on
-                                if (_this.checkArrayForObj(_this.studyAreaService.studyAreaParameterList, parameter) == -1)
-                                    _this.studyAreaService.studyAreaParameterList.push(parameter);
-                                parameter['checked'] = true;
-                                parameter['toggleable'] = false;
-                            }
-                        });
+                        if (statisticsGroup.RegressionRegions) {
+                            //get their parameters
+                            statisticsGroup.RegressionRegions[0].Parameters.forEach(function (param) {
+                                if (parameter.code.toLowerCase() == param.Code.toLowerCase()) {
+                                    configuration.alwaysSelectedParameters.forEach(function (alwaysSelectedParam) {
+                                        if (alwaysSelectedParam.name == parameter.code)
+                                            return;
+                                    });
+                                    //turn it on
+                                    if (_this.checkArrayForObj(_this.studyAreaService.studyAreaParameterList, parameter) == -1)
+                                        _this.studyAreaService.studyAreaParameterList.push(parameter);
+                                    parameter['checked'] = true;
+                                    parameter['toggleable'] = false;
+                                }
+                            });
+                        }
                     });
                 });
             };

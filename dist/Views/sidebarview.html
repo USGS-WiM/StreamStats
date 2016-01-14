@@ -71,7 +71,7 @@
                     <div class="alert alert-warning" role="alert" ng-hide="vm.regionService.streamStatsAvailable">StreamStats is not available here at this time</div>
 
                     <div class="btn-toolbar" ng-show= "vm.studyAreaService.showDelineateButton"> 
-                        <button id="delineateButton" type="button" class="btn btn-sm btn-info" ng-click="vm.startDelineate()" ng-class="vm.studyAreaService.doDelineateFlag ? 'btn-warning' : 'btn-info'" ng-hide="vm.studyAreaService.selectedStudyArea.Features" ng-disabled="!vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint"><i  ng-class="vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint ? 'fa fa-map-marker' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;<span ng-show="vm.studyAreaService.canUpdate">Delineate</span><span ng-show="!vm.studyAreaService.canUpdate">Delineating Basin, please wait...</span></button>
+                        <button id="delineateButton" type="button" class="btn btn-sm btn-info" ng-click="vm.startDelineate()" ng-class="vm.studyAreaService.doDelineateFlag ? 'btn-warning' : 'btn-info'" ng-hide="vm.studyAreaService.selectedStudyArea.Features" ng-disabled="!vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint"><i  ng-class="vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint ? 'fa fa-map-marker' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;<span>Delineate Basin</span></button>
                      </div>    
 
                     <div class="btn-toolbar" ng-show="vm.studyAreaService.selectedStudyArea.Features && !vm.studyAreaService.regressionRegionQueryComplete"> 
@@ -109,7 +109,7 @@
                                 <button  ng-click="vm.checkRegulation()" type="button" class="btn btn-sm btn-info" ng-disabled="!vm.studyAreaService.regulationCheckComplete"><i ng-class="vm.studyAreaService.regulationCheckComplete ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Check for upstream regulation</button>
                             </div>
 
-                            <div class="alert alert-success" role="alert" ng-show="vm.studyAreaService.isRegulated !== null">Upstream Regulation check has been completed.  There is <strong ng-show="vm.studyAreaService.isRegulated" >{{vm.studyAreaService.regulationCheckResults.percentarearegulated.toFixed(2)}} percent</strong><strong ng-show="!vm.studyAreaService.isRegulated">NO</strong> regulation in this watershed.</div>
+                            <div class="alert alert-success" role="alert" ng-show="vm.studyAreaService.Disclaimers.isRegulated == true || vm.studyAreaService.Disclaimers.isRegulated == false">Upstream Regulation check has been completed.  There is <strong ng-show="vm.studyAreaService.Disclaimers.isRegulated" >{{vm.studyAreaService.regulationCheckResults.percentarearegulated.toFixed(2)}} percent</strong><strong ng-show="!vm.studyAreaService.Disclaimers.isRegulated">NO</strong> regulation in this watershed.</div>
                         </div> 
                         
                     </div>                            
@@ -178,17 +178,17 @@
                             <thead class="param-table">
                             <tr>
                                 <th>Parameter</th>
-                                <th ng-hide="vm.studyAreaService.isRegulated">Value</th> 
-                                <th ng-show="vm.studyAreaService.isRegulated">Unregulated</th>
-                                <th ng-show="vm.studyAreaService.isRegulated">Regulated</th>
+                                <th ng-hide="vm.studyAreaService.Disclaimers.isRegulated">Value</th> 
+                                <th ng-show="vm.studyAreaService.Disclaimers.isRegulated">Unregulated</th>
+                                <th ng-show="vm.studyAreaService.Disclaimers.isRegulated">Regulated</th>
                             </tr>
                             </thead>
                             <tbody>
                                 <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList">
                                 <td ng-bind="parameter.name"></td>
-                                <td ng-hide="vm.studyAreaService.isRegulated"><input class="form-control" ng-model="parameter.value" type="text"/></td>
-                                <td ng-show="vm.studyAreaService.isRegulated"><input class="form-control" ng-model="parameter.unRegulatedValue" type="text"/></td>
-                                <td ng-show="vm.studyAreaService.isRegulated"><input class="form-control" ng-model="parameter.regulatedValue" type="text"/></td>
+                                <td ng-hide="vm.studyAreaService.Disclaimers.isRegulated"><input class="form-control" ng-model="parameter.value" type="text"/></td>
+                                <td ng-show="vm.studyAreaService.Disclaimers.isRegulated"><input class="form-control" ng-model="parameter.unRegulatedValue" type="text"/></td>
+                                <td ng-show="vm.studyAreaService.Disclaimers.isRegulated"><input class="form-control" ng-model="parameter.regulatedValue" type="text"/></td>
                                 </tr>
                             </tbody>
                         </table>                       

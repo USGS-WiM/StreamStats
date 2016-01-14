@@ -90,8 +90,8 @@
                             <tr>
                                 <th>Parameter</th>
                                 <th>Value</th> 
-                                <th ng-show="vm.studyAreaService.isRegulated">Unregulated Value</th>
-                                <th ng-show="vm.studyAreaService.isRegulated">Regulated Value</th>
+                                <th ng-show="vm.studyAreaService.Disclaimers.isRegulated">Unregulated Value</th>
+                                <th ng-show="vm.studyAreaService.Disclaimers.isRegulated">Regulated Value</th>
                                 <th>Unit</th>
                             </tr>
                         </thead>
@@ -99,20 +99,20 @@
                             <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList">
                                 <td ng-bind="parameter.name"></td>
                                 <td ng-bind="parameter.value"></td>
-                                <td ng-show="vm.studyAreaService.isRegulated" ng-bind="parameter.unRegulatedValue.toFixed(2)"></td>
-                                <td ng-show="vm.studyAreaService.isRegulated" ng-bind="parameter.regulatedValue.toFixed(2)"></td>
+                                <td ng-show="vm.studyAreaService.Disclaimers.isRegulated" ng-bind="parameter.unRegulatedValue.toFixed(2)"></td>
+                                <td ng-show="vm.studyAreaService.Disclaimers.isRegulated" ng-bind="parameter.regulatedValue.toFixed(2)"></td>
                                 <td ng-bind="parameter.unit"></td>
                             </tr>
                         </tbody>
                     </table> 
                 </div>
 
-                <!--Study Area Disclaimers-->
-                <div class="well well-sm" >
+                <!--Study Area Disclaimers-->  
+                <div class="well well-sm" ng-show="vm.studyAreaService.Disclaimers.isRegulated || vm.studyAreaService.Disclaimers.isEdited || vm.studyAreaService.Disclaimers.isInExclusionArea">
                     <h4>General Disclaimers</h4>
-                    <div class="alert alert-danger" role="alert" ng-show="vm.studyAreaService.isRegulated">This watershed is regulated, computed flows may not apply.</div>
-                    <div class="alert alert-danger" role="alert" ng-show="vm.studyAreaService.isEdited">This watershed has been edited, computed flows may not apply.</div>
-                    <div class="alert alert-danger" role="alert" ng-show="vm.studyAreaService.isInExclusionArea">This watershed is in an exclusion area.</div>
+                    <div class="alert alert-danger" role="alert" ng-show="vm.studyAreaService.Disclaimers.isRegulated">This watershed is regulated, computed flows may not apply.</div>
+                    <div class="alert alert-danger" role="alert" ng-show="vm.studyAreaService.Disclaimers.isEdited">This watershed has been edited, computed flows may not apply.</div>
+                    <div class="alert alert-danger" role="alert" ng-show="vm.studyAreaService.Disclaimers.isInExclusionArea">This watershed is in an exclusion area.</div>
                 </div>
             
                 <!--Parameter Table for Flow Report-->
@@ -138,8 +138,10 @@
                     </table>
 
                     <!--Scenario Disclaimers-->
-                    <h4>{{StatisticsGroup.Name}} Disclaimers</h4>
-                    <div class="alert alert-danger" role="alert" ng-show="StatisticsGroup.ResultsHeaders.Warnings || StatisticsGroup.ResultsHeaders.Errors" ng-repeat="headerMsg in StatisticsGroup.ResultsHeaders">{{headerMsg}}</div> 
+                    <div ng-show="StatisticsGroup.Disclaimers">
+                        <h4>{{StatisticsGroup.Name}} Disclaimers</h4>
+                        <div class="alert alert-danger" role="alert" ng-show="StatisticsGroup.Disclaimers.Warnings || StatisticsGroup.Disclaimers.Errors" ng-repeat="headerMsg in StatisticsGroup.Disclaimers">{{headerMsg}}</div> 
+                    </div>
 
                     <!--Flow Report-->
                     <h4>{{StatisticsGroup.Name}} Flow Report</h4>
