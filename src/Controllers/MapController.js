@@ -466,7 +466,7 @@ var StreamStats;
                 //build list of layers to query before delineate
                 var queryString = 'visible:';
                 this.regionServices.regionMapLayerList.forEach(function (item) {
-                    if (item[0] == "Area of limited functionality")
+                    if (item[0].toLowerCase() == "area of limited functionality" || item[0].toLowerCase() == "areas of limited functionality")
                         queryString += String(item[1]);
                 });
                 this.leafletData.getMap().then(function (map) {
@@ -476,6 +476,7 @@ var StreamStats;
                         map.invalidateSize();
                         var selectedRegionLayerName = _this.regionServices.selectedRegion.RegionID + "_region";
                         maplayers.overlays[selectedRegionLayerName].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run(function (error, results) {
+                            console.log('exclusion area check: ', queryString, results.features);
                             //if there are no exclusion area hits
                             if (results.features.length == 0) {
                                 //ga event
@@ -485,7 +486,8 @@ var StreamStats;
                                 _this.startDelineate(latlng);
                             }
                             else {
-                                _this.studyArea.isInExclusionArea = true;
+                                _this.studyArea.Disclaimers['isInExclusionArea'] = true;
+                                _this.studyArea.checkingDelineatedPoint = false;
                                 var excludeCode = results.features[0].properties.ExcludeCode;
                                 var popupMsg = results.features[0].properties.ExcludeReason;
                                 if (excludeCode == 1) {
@@ -527,7 +529,7 @@ var StreamStats;
                             map.removeEventListener('draw:created');
                             var layer = e.layer;
                             drawnItems.addLayer(layer);
-                            _this.studyArea.isEdited = true;
+                            _this.studyArea.Disclaimers['isEdited'] = true;
                             //convert edit polygon coords
                             var editArea = layer.toGeoJSON().geometry.coordinates[0];
                             var editAreaConverted = [];
@@ -708,13 +710,6 @@ var StreamStats;
                 }
                 //if a region was selected, and then user zooms back out, clear and start over
                 if (this.center.zoom <= 6 && oldValue !== newValue) {
-                    //console.log('removing region layers', this.layers.overlays);
-                    this.regionServices.clearRegion();
-                    this.studyArea.clearStudyArea();
-                    this.nssService.clearNSSdata();
-                    //THIS IS JUST THROWING AN ANGULAR LEAFLET ERROR EVEN THOUGH SAME AS DOCS
-                    // http://tombatossals.github.io/angular-leaflet-directive/examples/0000-viewer.html#/layers/dynamic-addition-example
-                    this.removeOverlayLayers("_region", true);
                 }
                 if (this.center.zoom >= 15) {
                     this.studyArea.showDelineateButton = true;
@@ -732,7 +727,6 @@ var StreamStats;
                 if (key && this.regionServices.loadRegionListByRegion(key)) {
                     this.regionServices.selectedRegion = this.regionServices.regionList[0];
                     this.bounds = this.leafletBoundsHelperService.createBoundsFromArray(this.regionServices.selectedRegion.Bounds);
-                    this.center = {};
                 }
             };
             MapController.prototype.addRegionOverlayLayers = function (regionId) {
