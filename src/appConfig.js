@@ -192,7 +192,7 @@ configuration.overlayedLayers = {
             "zIndex": 1,
             "opacity": 0.6,
             "format": "png8",
-            "f": "image"
+            "f": "image",
         }
     },//end ssLayer    
     "draw": {
@@ -201,7 +201,7 @@ configuration.overlayedLayers = {
         "visible": true,
         "layerParams": {
             "showOnSelector": false,
-        },
+        }
     }
 }//end overlayedLayers
 

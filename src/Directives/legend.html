@@ -1,0 +1,29 @@
+﻿
+    <div class="angular-leaflet-control-layers">
+        <h4 ng-if="title">{{ title }}</h4>
+        <!-- baselayers -->
+        <div ng-repeat="(key, layer) in layers.baselayers">
+            <label ng-click="vm.changeBaseLayer(key, $event)">
+                <input type="radio" name="baselayerRadio" ng-checked="$parent.vm.baselayer === key.toString()" ng-value="key.toString()" /> {{layer.name}}
+                <i ng-class="layer.icon"></i>
+            </label>
+        </div>
+        <hr />
+        <!-- overlay -->
+        <div ng-repeat="layer in layers.overlays">
+            <label ng-if="!layer.layerParams.showOnSelector && layer.layerParams.showOnSelector !== false" ng-click="layer.visible = (layer.visible) ? false : true;">
+                <input type="checkbox" ng-checked="layer.visible"/> {{layer.name}}
+                <i ng-class="layer.icon"></i>
+            </label>
+        </div>
+        <hr />
+        <!-- geojson -->
+        <div ng-repeat="layer in layers.overlays">
+            <label ng-if="!layer.layerParams.showOnSelector && layer.layerParams.showOnSelector !== false" ng-click="layer.visible = (layer.visible) ? false : true;">
+                <input type="checkbox" ng-checked="layer.visible" /> {{layer.name}}
+                <i ng-class="layer.icon"></i>
+            </label>
+        </div>
+
+    </div>
+  
