@@ -735,7 +735,6 @@ var StreamStats;
                 });
                 //override default map service visibility
                 this.leafletData.getLayers().then(function (maplayers) {
-                    console.log('maplayers: ', maplayers);
                     var regionLayer = maplayers.overlays[regionId + "_region"];
                     var visibleLayers = [];
                     _this.regionServices.regionMapLayerList.forEach(function (item) {

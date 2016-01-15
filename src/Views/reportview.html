@@ -138,9 +138,9 @@
                     </table>
 
                     <!--Scenario Disclaimers-->
-                    <div ng-show="StatisticsGroup.Disclaimers">
+                    <div ng-show="StatisticsGroup.Disclaimers.Warnings || StatisticsGroup.Disclaimers.Errors">
                         <h4>{{StatisticsGroup.Name}} Disclaimers</h4>
-                        <div class="alert alert-danger" role="alert" ng-show="StatisticsGroup.Disclaimers.Warnings || StatisticsGroup.Disclaimers.Errors" ng-repeat="headerMsg in StatisticsGroup.Disclaimers">{{headerMsg}}</div> 
+                        <div class="alert alert-danger" role="alert" ng-repeat="headerMsg in StatisticsGroup.Disclaimers">{{headerMsg}}</div> 
                     </div>
 
                     <!--Flow Report-->
