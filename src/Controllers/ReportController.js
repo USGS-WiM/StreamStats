@@ -31,13 +31,14 @@ var StreamStats;
             return Center;
         })();
         var ReportController = (function () {
-            function ReportController($scope, $modalInstance, studyArea, StatisticsGroup, leafletData) {
+            function ReportController($scope, $analytics, $modalInstance, studyArea, StatisticsGroup, leafletData) {
                 var _this = this;
                 this.markers = null;
                 this.overlays = null;
                 this.center = null;
                 this.layers = null;
                 $scope.vm = this;
+                this.angulartics = $analytics;
                 this.studyAreaService = studyArea;
                 this.nssService = StatisticsGroup;
                 this.leafletData = leafletData;
@@ -134,15 +135,17 @@ var StreamStats;
             };
             ReportController.prototype.downloadCSV = function () {
                 var _this = this;
+                //ga event
+                this.angulartics.eventTrack('Download', { category: 'Report', label: 'CSV' });
                 var filename = 'data.csv';
                 var processParameterTable = function (data) {
                     var finalVal = '\n\nParameters\n';
-                    if (_this.studyAreaService.isRegulated)
+                    if (_this.studyAreaService.Disclaimers['isRegulated'])
                         finalVal += 'Name,Value,Reglated Value, Unregulated Value, Unit\n';
                     else
                         finalVal += 'Name,Value,Unit\n';
                     data.forEach(function (item) {
-                        if (_this.studyAreaService.isRegulated)
+                        if (_this.studyAreaService.Disclaimers['isRegulated'])
                             finalVal += item.name + ',' + item.value + ',' + item.unRegulatedValue.toFixed(2) + ',' + item.regulatedValue.toFixed(2) + ',' + item.unit + '\n';
                         else
                             finalVal += item.name + ',' + item.value + ',' + item.unit + '\n';
@@ -195,7 +198,7 @@ var StreamStats;
             };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
-            ReportController.$inject = ['$scope', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData'];
+            ReportController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData'];
             return ReportController;
         })(); //end class
         angular.module('StreamStats.Controllers').controller('StreamStats.Controllers.ReportController', ReportController);

@@ -161,9 +161,14 @@ var StreamStats;
                         _this.toaster.pop('warning', "No map layers available", "", 5000);
                         return;
                     }
+                    //set initial visibility array
                     response.data.layers.forEach(function (value, key) {
-                        //console.log("Adding layer: ",value);
-                        _this.regionMapLayerList.push([value.name, value.id]);
+                        var visible = false;
+                        if (value.name.toLowerCase() == 'stream grid' || value.name.toLowerCase() == 'area of limited functionality') {
+                            visible = true;
+                        }
+                        ;
+                        _this.regionMapLayerList.push([value.name, value.id, visible]);
                     });
                     _this.regionMapLayerListLoaded = true;
                 }, function (error) {

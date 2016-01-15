@@ -8,7 +8,7 @@ var gulp = require('gulp'),
     size = require('gulp-size'),
     uglify = require('gulp-uglify'),
     useref = require('gulp-useref'),
-    csso = require('gulp-csso'),
+    minifyCss = require('gulp-minify-css'),
     connect = require('gulp-connect'),
     autoprefixer = require('gulp-autoprefixer'),
     filter = require('gulp-filter'),
@@ -73,7 +73,7 @@ gulp.task('styles', function () {
 
 // Icons
 gulp.task('icons', function () {
-    return gulp.src(['bower_components/bootstrap/dist/fonts/*.*', 'bower_components/font-awesome/fonts/*.*', 'bower_components/lato/fonts/**/*'])
+    return gulp.src(['bower_components/bootstrap/dist/fonts/*.*', 'bower_components/font-awesome/fonts/*.*'])
         .pipe(gulp.dest('dist/fonts'));
 });
 
@@ -96,7 +96,7 @@ gulp.task('html', ['styles', 'scripts', 'icons', 'views'], function () {
         .pipe(uglify())
         .pipe(jsFilter.restore())
         .pipe(cssFilter)
-        .pipe(csso())
+        .pipe(minifyCss({ processImport: false }))
         .pipe(cssFilter.restore())
         .pipe(useref.restore())
         .pipe(useref())

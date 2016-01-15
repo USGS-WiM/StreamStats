@@ -79,12 +79,15 @@ module StreamStats.Controllers {
         private leafletData: ILeafletData;
         public reportTitle: string;
         public reportComments: string;
+        public angulartics: any;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData'];
-        constructor($scope: IReportControllerScope, $modalInstance: ng.ui.bootstrap.IModalServiceInstance, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, leafletData: ILeafletData) {
+        static $inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData'];
+        constructor($scope: IReportControllerScope, $analytics, $modalInstance: ng.ui.bootstrap.IModalServiceInstance, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, leafletData: ILeafletData) {
             $scope.vm = this;
+
+            this.angulartics = $analytics;
             this.studyAreaService = studyArea;
             this.nssService = StatisticsGroup;
             this.leafletData = leafletData;
@@ -192,15 +195,18 @@ module StreamStats.Controllers {
 
         private downloadCSV() {
 
+            //ga event
+            this.angulartics.eventTrack('Download', { category: 'Report', label: 'CSV' });
+
             var filename = 'data.csv';
 
             var processParameterTable = (data) => {
                 var finalVal = '\n\nParameters\n';
-                if (this.studyAreaService.isRegulated) finalVal += 'Name,Value,Reglated Value, Unregulated Value, Unit\n';
+                if (this.studyAreaService.Disclaimers['isRegulated']) finalVal += 'Name,Value,Reglated Value, Unregulated Value, Unit\n';
                 else finalVal += 'Name,Value,Unit\n';
 
                 data.forEach((item) => {
-                    if (this.studyAreaService.isRegulated) finalVal += item.name + ',' + item.value + ',' + item.unRegulatedValue.toFixed(2) + ',' + item.regulatedValue.toFixed(2) + ',' + item.unit + '\n';
+                    if (this.studyAreaService.Disclaimers['isRegulated']) finalVal += item.name + ',' + item.value + ',' + item.unRegulatedValue.toFixed(2) + ',' + item.regulatedValue.toFixed(2) + ',' + item.unit + '\n';
                     else finalVal += item.name + ',' + item.value + ',' + item.unit + '\n';                   
                 });
                 return finalVal + '\n';

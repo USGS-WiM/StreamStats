@@ -34,12 +34,10 @@ module StreamStats.Services {
         AddStudyArea(sa: Models.IStudyArea);
         RemoveStudyArea();
         doDelineateFlag: boolean;
-        isRegulated: boolean;
-        isEdited: boolean;
-        isInExclusionArea: boolean;
         parametersLoading: boolean;
         parametersLoaded: boolean;
         showEditToolbar: boolean;
+        checkingDelineatedPoint: boolean;
         canUpdate: boolean;
         studyAreaParameterList: Array<IParameter>;
         drawControl: any;
@@ -52,6 +50,7 @@ module StreamStats.Services {
         reportGenerated: boolean;
         queryRegressionRegions();
         regressionRegionQueryComplete: boolean;
+        Disclaimers: Object;
     }
     class StudyAreaService extends WiM.Services.HTTPServiceBase implements IStudyAreaService {
         //Events
@@ -71,14 +70,12 @@ module StreamStats.Services {
         public regulationCheckComplete: boolean
         public parametersLoaded: boolean;
         public parametersLoading: boolean;
+        public checkingDelineatedPoint: boolean;
         private _studyAreaList: Array<Models.IStudyArea>;
         public get StudyAreaList(): Array<Models.IStudyArea> {
             return this._studyAreaList;
         }
         public doDelineateFlag: boolean;
-        public isRegulated: boolean;
-        public isEdited: boolean;
-        public isInExclusionArea: boolean;
 
         private _selectedStudyArea: Models.IStudyArea;
         public set selectedStudyArea(val: Models.IStudyArea) {
@@ -102,6 +99,7 @@ module StreamStats.Services {
         public regressionRegionQueryComplete: boolean;
         public regressionRegionQueryLoading: boolean;
         public servicesURL: string;
+        public Disclaimers: Object;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -146,13 +144,12 @@ module StreamStats.Services {
             this.parametersLoaded = false;
             this.parametersLoading = false;
             this.doDelineateFlag = false;
+            this.checkingDelineatedPoint = false;
             this.studyAreaParameterList = angular.fromJson(angular.toJson(configuration.alwaysSelectedParameters));
             this.regulationCheckResults = [];
+            this.Disclaimers = {};
             this.showEditToolbar = false;
             this.WatershedEditDecisionList = new Models.WatershedEditDecisionList();
-            this.isRegulated = null;
-            this.isEdited = null;
-            this.isInExclusionArea = null;
             this.selectedStudyArea = null;
             this.showDelineateButton = false;
             this.reportGenerated = false;
@@ -286,7 +283,7 @@ module StreamStats.Services {
                         this.parametersLoaded = true;
                         
                         //do regulation parameter update if needed
-                        if (this.isRegulated) {
+                        if (this.Disclaimers['isRegulated']) {
                             this.loadRegulatedParameterResults(this.regulationCheckResults.parameters);
                         }
                     }
@@ -345,7 +342,9 @@ module StreamStats.Services {
 
                 },(error) => {
                     //sm when complete
-                    this.toaster.clear();
+                    console.log('Regression query failed, HTTP Error');
+                    this.toaster.pop('error', "There was an HTTP error querying Regression regions", "Please retry", 5000);
+                    return this.$q.reject(error.data);
                     
                 }).finally(() => {
                     this.regressionRegionQueryLoading = false;
@@ -376,11 +375,11 @@ module StreamStats.Services {
                         this.selectedStudyArea.Features.push(response.data["featurecollection"][0]);
                         this.regulationCheckResults = response.data;
                         //this.loadRegulatedParameterResults(this.regulationCheckResults.parameters);
-                        this.isRegulated = true;                      
+                        this.Disclaimers['isRegulated'] = true;                      
                     }
                     else {
                         //alert("No regulation found");
-                        this.isRegulated = false;
+                        this.Disclaimers['isRegulated'] = false;
                         this.toaster.clear();
                         this.toaster.pop('warning', "No regulation found", "Please continue", 5000);
                         

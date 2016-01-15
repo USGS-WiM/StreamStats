@@ -32,7 +32,7 @@ configuration.queryparams =
     'FARefGage': '/2/query?geometry={0}&geometryType=esriGeometryPoint&inSR={1}&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
     'regionService': '/arcgis/rest/services/ss_studyAreas_prod/MapServer/identify',
     'COregulationService': '/arcgis/rest/services/Regulation/CORegulationSites/MapServer/exts/RegulationRESTSOE/Regulation',
-    'RegressionRegionQueryService': '/arcgis/rest/services/NSS/regions/MapServer/exts/PercentOverlayRESTSOE/FeatureLayers/0/PercentOverlay'
+    'RegressionRegionQueryService': '/arcgis/rest/services/NSS/regions/MapServer/exts/PercentOverlayRESTSOE/PercentOverlay'
 }
 
 configuration.basemaps =
@@ -48,6 +48,7 @@ configuration.basemaps =
                     "url": "http://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer",
                     "type": 'agsTiled',
                     "layerOptions": {
+                        "opacity": 0.8,
                         "minZoom": 0,
                         "maxZoom": 15,
                         "attribution": "<a href='http://www.doi.gov'>U.S. Department of the Interior</a> | <a href='http://www.usgs.gov'>U.S. Geological Survey</a> | <a href='http://www.usgs.gov/laws/policies_notices.html'>Policies</a>"

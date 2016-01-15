@@ -24,7 +24,6 @@
     "angular-leaflet-directive": "~0.10.0",
     "leaflet": "~0.7.5",
     "font-awesome": "~4.3.0",
-    "lato": "~0.3.0",
     "esri-leaflet": "~1.0.0",
     "leaflet.locatecontrol": "~0.40.0",
     "leaflet-groupedlayercontrol": "~0.3.0",
@@ -34,6 +33,8 @@
     "GreinerHormann": "greiner-hormann#~1.3.0",
     "mobileangularui-checkbox": "~1.0.0",
     "d3": "~3.5.12",
-    "Leaflet.Elevation": "https://github.com/aaronblondeau/Leaflet.Elevation.git#718286ac51775baf460c7b67f4dffa15280fa3a7"
+    "Leaflet.Elevation": "https://github.com/aaronblondeau/Leaflet.Elevation.git#718286ac51775baf460c7b67f4dffa15280fa3a7",
+    "angulartics": "~1.0.3",
+    "angulartics-google-analytics": "~0.1.4"
   }
 }

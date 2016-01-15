@@ -43,7 +43,7 @@ module StreamStats.Services {
         RegressionRegions: Array<any>;
         Results: Array<any>;
         Citations: any;
-        ResultsHeaders: any;
+        Disclaimers: any;
     }
 
     export class StatisticsGroup implements IStatisticsGroup {
@@ -54,7 +54,7 @@ module StreamStats.Services {
         public RegressionRegions: Array<any>;
         public Results: Array<any>;
         public Citations: any;
-        public ResultsHeaders: any;
+        public Disclaimers: any;
 
     }//end class
 
@@ -214,18 +214,22 @@ module StreamStats.Services {
                     (response: any) => {
                         if (response.data[0].RegressionRegions[0].Results && response.data[0].RegressionRegions[0].Results.length > 0) {
 
-                            statGroup.ResultsHeaders = {};
-                            var headerMsgs = response.headers()['x-usgswim-messages'].split(';');
-                            console.log('headerMsgs', headerMsgs);
+                            this.toaster.clear();
+                            console.log('flows headers response: ', response, response.headers());
 
-                            headerMsgs.forEach((item) => {
-                                var headerMsg = item.split(':');
-                                if (headerMsg[0] == 'warning') statGroup.ResultsHeaders['Warnings'] = headerMsg[1].trim();
-                                if (headerMsg[0] == 'error') statGroup.ResultsHeaders['Error'] = headerMsg[1].trim();
-                                //comment out for not, not useful
-                                //if (headerMsg[0] == 'info') statGroup.ResultsHeaders['Info'] = headerMsg[1].trim();
-                            });
-                            console.log('headerMsgs: ', statGroup.ResultsHeaders);
+                            if (response.headers()['usgswim-messages']) {
+                                var headerMsgs = response.headers()['usgswim-messages'].split(';');
+                                statGroup.Disclaimers = {};
+
+                                headerMsgs.forEach((item) => {
+                                    var headerMsg = item.split(':');
+                                    if (headerMsg[0] == 'warning') statGroup.Disclaimers['Warnings'] = headerMsg[1].trim();
+                                    if (headerMsg[0] == 'error') statGroup.Disclaimers['Error'] = headerMsg[1].trim();
+                                    //comment out for not, not useful
+                                    //if (headerMsg[0] == 'info') statGroup.Disclaimers['Info'] = headerMsg[1].trim();
+                                });
+                                console.log('headerMsgs: ', statGroup.Name, statGroup.Disclaimers);
+                            }
 
                             console.log('flow response: ', response.data);
                             //get flows
@@ -243,12 +247,17 @@ module StreamStats.Services {
                             var citationResults = this.getSelectedCitations(citationUrl, statGroup);
 
                         }
-                        this.toaster.clear();
+                        else {
+                            this.toaster.clear();
+                            this.toaster.pop('error', "There was an error Estimating Flows", "No results were returned", 5000);
+                            console.log("Zero length flow response, check equations in NSS service");
+                        }
+
                         //sm when complete
                     },(error) => {
                         //sm when error
                         this.toaster.clear();
-                        this.toaster.pop('error', "There was an error Estimating Flows", "Please retry", 5000);
+                        this.toaster.pop('error', "There was an error Estimating Flows", "HTTP request error", 5000);
                     }).finally(() => {
                     this.canUpdate = true;
                 });
@@ -258,7 +267,7 @@ module StreamStats.Services {
         private getSelectedCitations(citationUrl: string, statGroup: any): any {
 
             //nested requests for citations
-            this.toaster.pop('info', "Requesting selected citations, Please wait...", 5000);
+            this.toaster.pop('info', "Requesting selected citations", "Please wait...", 5000);
             var url = citationUrl;
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, 0, 'json');
 

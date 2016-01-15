@@ -158,19 +158,22 @@ var StreamStats;
                     statGroup.Citations = [];
                     _this.Execute(request).then(function (response) {
                         if (response.data[0].RegressionRegions[0].Results && response.data[0].RegressionRegions[0].Results.length > 0) {
-                            statGroup.ResultsHeaders = {};
-                            var headerMsgs = response.headers()['x-usgswim-messages'].split(';');
-                            console.log('headerMsgs', headerMsgs);
-                            headerMsgs.forEach(function (item) {
-                                var headerMsg = item.split(':');
-                                if (headerMsg[0] == 'warning')
-                                    statGroup.ResultsHeaders['Warnings'] = headerMsg[1].trim();
-                                if (headerMsg[0] == 'error')
-                                    statGroup.ResultsHeaders['Error'] = headerMsg[1].trim();
-                                //comment out for not, not useful
-                                //if (headerMsg[0] == 'info') statGroup.ResultsHeaders['Info'] = headerMsg[1].trim();
-                            });
-                            console.log('headerMsgs: ', statGroup.ResultsHeaders);
+                            _this.toaster.clear();
+                            console.log('flows headers response: ', response, response.headers());
+                            if (response.headers()['usgswim-messages']) {
+                                var headerMsgs = response.headers()['usgswim-messages'].split(';');
+                                statGroup.Disclaimers = {};
+                                headerMsgs.forEach(function (item) {
+                                    var headerMsg = item.split(':');
+                                    if (headerMsg[0] == 'warning')
+                                        statGroup.Disclaimers['Warnings'] = headerMsg[1].trim();
+                                    if (headerMsg[0] == 'error')
+                                        statGroup.Disclaimers['Error'] = headerMsg[1].trim();
+                                    //comment out for not, not useful
+                                    //if (headerMsg[0] == 'info') statGroup.Disclaimers['Info'] = headerMsg[1].trim();
+                                });
+                                console.log('headerMsgs: ', statGroup.Name, statGroup.Disclaimers);
+                            }
                             console.log('flow response: ', response.data);
                             //get flows
                             response.data[0].RegressionRegions[0].Results.map(function (item) {
@@ -185,12 +188,16 @@ var StreamStats;
                             var citationUrl = response.data[0].Links[0].Href;
                             var citationResults = _this.getSelectedCitations(citationUrl, statGroup);
                         }
-                        _this.toaster.clear();
+                        else {
+                            _this.toaster.clear();
+                            _this.toaster.pop('error', "There was an error Estimating Flows", "No results were returned", 5000);
+                            console.log("Zero length flow response, check equations in NSS service");
+                        }
                         //sm when complete
                     }, function (error) {
                         //sm when error
                         _this.toaster.clear();
-                        _this.toaster.pop('error', "There was an error Estimating Flows", "Please retry", 5000);
+                        _this.toaster.pop('error', "There was an error Estimating Flows", "HTTP request error", 5000);
                     }).finally(function () {
                         _this.canUpdate = true;
                     });
@@ -199,7 +206,7 @@ var StreamStats;
             nssService.prototype.getSelectedCitations = function (citationUrl, statGroup) {
                 var _this = this;
                 //nested requests for citations
-                this.toaster.pop('info', "Requesting selected citations, Please wait...", 5000);
+                this.toaster.pop('info', "Requesting selected citations", "Please wait...", 5000);
                 var url = citationUrl;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, 0, 'json');
                 this.Execute(request).then(function (response) {

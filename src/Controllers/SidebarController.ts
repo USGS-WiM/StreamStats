@@ -51,6 +51,7 @@ module StreamStats.Controllers {
         public sideBarCollapsed: boolean;
         public selectedProcedure: ProcedureType;
         public toaster: any;
+        public angulartics: any;
         public selectedStatisticsGroupList: Services.IStatisticsGroup;
         private searchService: WiM.Services.ISearchAPIService;
         private regionService: Services.IRegionService;
@@ -63,12 +64,13 @@ module StreamStats.Controllers {
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', 'toaster', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ReportService', 'leafletData', 'StreamStats.Services.ExplorationService'];
-        constructor($scope: ISidebarControllerScope, toaster, service: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, report: Services.IreportService, leafletData: ILeafletData, exploration: Services.IExplorationService) {
+        static $inject = ['$scope', 'toaster', '$analytics', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ReportService', 'leafletData', 'StreamStats.Services.ExplorationService'];
+        constructor($scope: ISidebarControllerScope, toaster, $analytics, service: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, report: Services.IreportService, leafletData: ILeafletData, exploration: Services.IExplorationService) {
             $scope.vm = this;
             this.init();
 
             this.toaster = toaster;
+            this.angulartics = $analytics;
             this.searchService = service;
             this.sideBarCollapsed = false;
             this.selectedProcedure = ProcedureType.INIT;
@@ -96,6 +98,10 @@ module StreamStats.Controllers {
                 if (newval == null) this.setProcedureType(3);
                 else this.setProcedureType(4);
             });
+
+            //$scope.$watch(() => this.studyAreaService.studyAreaParameterList,(newval, oldval) => {
+            //    console.log('watch for modify basin chars ', newval, oldval);
+            //});
         }
 
         public getLocations(term: string):ng.IPromise<Array<WiM.Services.ISearchAPIOutput>> {
@@ -125,6 +131,9 @@ module StreamStats.Controllers {
             
         }
         public setRegion(region: Services.IRegion) {
+            //ga event
+            this.angulartics.eventTrack('initialOperation', { category: 'SideBar', label: 'Region Selection Button' });
+
             //console.log('setting region: ', region);
             if (this.regionService.selectedRegion == undefined || this.regionService.selectedRegion.RegionID !== region.RegionID)
                 this.regionService.selectedRegion = region;
@@ -255,6 +264,10 @@ module StreamStats.Controllers {
 
         public calculateParameters() {
 
+            //ga event
+            this.angulartics.eventTrack('CalculateParameters', {
+                category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.studyAreaService.studyAreaParameterList.map(function (elem) { return elem.code; }).join(",")});
+
             //console.log('in Calculate Parameters');
             this.studyAreaService.loadParameters();
         }
@@ -264,7 +277,7 @@ module StreamStats.Controllers {
             this.studyAreaService.showEditToolbar = false;
 
             //check if basin has been edited, if so we need to re-query regression regions
-            if (this.studyAreaService.isEdited) this.studyAreaService.loadEditedStudyBoundary();
+            if (this.studyAreaService.Disclaimers['isEdited']) this.studyAreaService.loadEditedStudyBoundary();
 
         }
 
@@ -278,17 +291,15 @@ module StreamStats.Controllers {
 
             //console.log('in estimateFlows');
 
+            //ga event
+            this.angulartics.eventTrack('CalculateFlows', {
+                category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.nssService.selectedStatisticsGroupList.map(function (elem) { return elem.Name; }).join(",") });
+
             if (this.nssService.selectedStatisticsGroupList.length > 0 && this.nssService.showFlowsTable) {
 
-
-                //need to loop over selectedStatisticsGroupList HERE
-                this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList, this.regionService.selectedRegion.RegionID, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) {
-                    return elem.code;
-                }).join(","));
-
-
-
+                this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList, this.regionService.selectedRegion.RegionID, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) { return elem.code; }).join(","));
             }
+
             this.reportService.openReport();
             this.studyAreaService.reportGenerated = true;
 
@@ -311,22 +322,25 @@ module StreamStats.Controllers {
                 //loop over whole statisticsgroups
                 this.nssService.selectedStatisticsGroupList.forEach((statisticsGroup) => {
 
-                    //get their parameters
-                    statisticsGroup.RegressionRegions[0].Parameters.forEach((param) => {
+                    if (statisticsGroup.RegressionRegions) {
 
-                        if (parameter.code.toLowerCase() == param.Code.toLowerCase()) {
+                        //get their parameters
+                        statisticsGroup.RegressionRegions[0].Parameters.forEach((param) => {
 
-                            configuration.alwaysSelectedParameters.forEach((alwaysSelectedParam) => {
-                                if (alwaysSelectedParam.name == parameter.code) return;
-                            });
+                            if (parameter.code.toLowerCase() == param.Code.toLowerCase()) {
 
-                            //turn it on
-                            if (this.checkArrayForObj(this.studyAreaService.studyAreaParameterList, parameter) == -1) this.studyAreaService.studyAreaParameterList.push(parameter);
-                            parameter['checked'] = true;
-                            parameter['toggleable'] = false;
-                        }
+                                configuration.alwaysSelectedParameters.forEach((alwaysSelectedParam) => {
+                                    if (alwaysSelectedParam.name == parameter.code) return;
+                                });
 
-                    });
+                                //turn it on
+                                if (this.checkArrayForObj(this.studyAreaService.studyAreaParameterList, parameter) == -1) this.studyAreaService.studyAreaParameterList.push(parameter);
+                                parameter['checked'] = true;
+                                parameter['toggleable'] = false;
+                            }
+
+                        });
+                    }
                 });
             });
         }

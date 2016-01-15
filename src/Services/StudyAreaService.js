@@ -105,13 +105,12 @@ var StreamStats;
                 this.parametersLoaded = false;
                 this.parametersLoading = false;
                 this.doDelineateFlag = false;
+                this.checkingDelineatedPoint = false;
                 this.studyAreaParameterList = angular.fromJson(angular.toJson(configuration.alwaysSelectedParameters));
                 this.regulationCheckResults = [];
+                this.Disclaimers = {};
                 this.showEditToolbar = false;
                 this.WatershedEditDecisionList = new StreamStats.Models.WatershedEditDecisionList();
-                this.isRegulated = null;
-                this.isEdited = null;
-                this.isInExclusionArea = null;
                 this.selectedStudyArea = null;
                 this.showDelineateButton = false;
                 this.reportGenerated = false;
@@ -221,7 +220,7 @@ var StreamStats;
                         _this.loadParameterResults(results);
                         _this.parametersLoaded = true;
                         //do regulation parameter update if needed
-                        if (_this.isRegulated) {
+                        if (_this.Disclaimers['isRegulated']) {
                             _this.loadRegulatedParameterResults(_this.regulationCheckResults.parameters);
                         }
                     }
@@ -266,7 +265,9 @@ var StreamStats;
                     }
                 }, function (error) {
                     //sm when complete
-                    _this.toaster.clear();
+                    console.log('Regression query failed, HTTP Error');
+                    _this.toaster.pop('error', "There was an HTTP error querying Regression regions", "Please retry", 5000);
+                    return _this.$q.reject(error.data);
                 }).finally(function () {
                     _this.regressionRegionQueryLoading = false;
                 });
@@ -287,11 +288,11 @@ var StreamStats;
                         _this.selectedStudyArea.Features.push(response.data["featurecollection"][0]);
                         _this.regulationCheckResults = response.data;
                         //this.loadRegulatedParameterResults(this.regulationCheckResults.parameters);
-                        _this.isRegulated = true;
+                        _this.Disclaimers['isRegulated'] = true;
                     }
                     else {
                         //alert("No regulation found");
-                        _this.isRegulated = false;
+                        _this.Disclaimers['isRegulated'] = false;
                         _this.toaster.clear();
                         _this.toaster.pop('warning', "No regulation found", "Please continue", 5000);
                     }
