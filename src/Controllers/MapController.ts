@@ -984,7 +984,6 @@ module StreamStats.Controllers {
 
             //override default map service visibility
             this.leafletData.getLayers().then((maplayers: any) => {
-                console.log('maplayers: ', maplayers);
                 var regionLayer = maplayers.overlays[regionId + "_region"];
 
                 var visibleLayers = [];
