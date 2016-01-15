@@ -48,6 +48,7 @@ configuration.basemaps =
                     "url": "http://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer",
                     "type": 'agsTiled',
                     "layerOptions": {
+                        "opacity": 0.8,
                         "minZoom": 0,
                         "maxZoom": 15,
                         "attribution": "<a href='http://www.doi.gov'>U.S. Department of the Interior</a> | <a href='http://www.usgs.gov'>U.S. Geological Survey</a> | <a href='http://www.usgs.gov/laws/policies_notices.html'>Policies</a>"

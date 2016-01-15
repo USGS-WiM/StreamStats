@@ -105,8 +105,8 @@ var StreamStats;
                         _this.checkDelineatePoint(args.leafletEvent.latlng);
                     else if (!region.selectedRegion && !_this.explorationService.drawElevationProfile && !_this.explorationService.drawMeasurement)
                         _this.queryNationalMapLayers(args.leafletEvent);
-                    else if (region.selectedRegion && _this.regionServices.allowRegionalQuery && !_this.explorationService.drawElevationProfile && !_this.explorationService.drawMeasurement)
-                        _this.queryRegionalMapLayers(args.leafletEvent);
+                    else if (region.selectedRegion && _this.regionServices.allowStreamgageQuery && !_this.explorationService.drawElevationProfile && !_this.explorationService.drawMeasurement)
+                        _this.queryStreamgages(args.leafletEvent);
                 });
                 $scope.$watch(function () { return _this.bounds; }, function (newval, oldval) { return _this.mapBoundsChange(oldval, newval); });
                 $scope.$watch(function () { return _this.explorationService.elevationProfileGeoJSON; }, function (newval, oldval) { return _this.displayElevationProfile(); });
@@ -236,13 +236,6 @@ var StreamStats;
                 this.cursorStyle = 'wait';
                 //ga event
                 this.angulartics.eventTrack('initialOperation', { category: 'Map', label: 'Map click query' });
-                //build list of layers to query before delineate
-                var queryString = 'visible:';
-                this.regionServices.nationalMapLayerList.forEach(function (item) {
-                    if (item[0] == "Area of limited functionality")
-                        queryString += String(item[1]);
-                });
-                //console.log('queryList', queryString);
                 this.leafletData.getMap().then(function (map) {
                     _this.leafletData.getLayers().then(function (maplayers) {
                         maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).run(function (error, results) {
@@ -293,17 +286,18 @@ var StreamStats;
                     });
                 });
             };
-            MapController.prototype.queryRegionalMapLayers = function (evt) {
+            MapController.prototype.queryStreamgages = function (evt) {
                 var _this = this;
                 //console.log('in query regional layers');
-                this.toaster.pop("info", "Information", "Querying State/Regional map layers...", 0);
+                this.toaster.pop("info", "Information", "Querying Streamgages...", 0);
                 this.cursorStyle = 'wait';
                 this.markers = {};
                 //report ga event
-                this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'queryRegionalLayers' });
+                this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'queryStreamgages' });
                 this.leafletData.getMap().then(function (map) {
                     _this.leafletData.getLayers().then(function (maplayers) {
-                        maplayers.overlays[_this.regionServices.selectedRegion.RegionID + "_region"].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).run(function (error, results) {
+                        //maplayers.overlays[this.regionServices.selectedRegion.RegionID + "_region"].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).run((error: any, results: any) => {
+                        maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).run(function (error, results) {
                             if (!results.features) {
                                 _this.toaster.clear();
                                 return;
@@ -312,7 +306,7 @@ var StreamStats;
                                 _this.regionServices.regionMapLayerList.forEach(function (item) {
                                     if (queryResult.layerId == item[1]) {
                                         //console.log('Map query found a match with: ', item[0], queryResult)
-                                        if (item[0] == "Streamgages") {
+                                        if (item[0].toLowerCase() == "streamgages") {
                                             var popupContent = '';
                                             var popupKeyList = ['latitude', 'longitude', 'sta_id', 'sta_name', 'featureurl', 'drnarea'];
                                             angular.forEach(queryResult.properties, function (value, key) {
@@ -471,7 +465,7 @@ var StreamStats;
                 });
                 this.leafletData.getMap().then(function (map) {
                     _this.leafletData.getLayers().then(function (maplayers) {
-                        _this.angulartics.eventTrack('delineationClick', { category: 'Map', label: _this.regionServices.selectedRegion.Name + ', Zoom Level: ' + map.getZoom() });
+                        _this.angulartics.eventTrack('delineationClick', { category: 'Map', label: _this.regionServices.selectedRegion.Name });
                         //force map refresh
                         map.invalidateSize();
                         var selectedRegionLayerName = _this.regionServices.selectedRegion.RegionID + "_region";
@@ -730,16 +724,25 @@ var StreamStats;
                 }
             };
             MapController.prototype.addRegionOverlayLayers = function (regionId) {
+                var _this = this;
                 if (this.regionServices.regionMapLayerList.length < 1)
                     return;
-                //refine list here if needed
-                //if ((value.name.toLowerCase().indexOf('stream grid') > -1) || (value.name.toLowerCase().indexOf('study area bndys') > -1) || (value.name.toLowerCase().indexOf('str') > -1)) {   };
-                //console.log('adding layers to map');
                 this.layers.overlays[regionId + "_region"] = new Layer(regionId + " Map layers", configuration.baseurls['StreamStats'] + "/arcgis/rest/services/{0}_ss/MapServer".format(regionId.toLowerCase()), "agsDynamic", true, {
                     "opacity": 0.5,
-                    "layers": this.regionServices.regionMapLayerList,
+                    //"layers": this.regionServices.regionMapLayerList,
                     "format": "png8",
                     "f": "image"
+                });
+                //override default map service visibility
+                this.leafletData.getLayers().then(function (maplayers) {
+                    console.log('maplayers: ', maplayers);
+                    var regionLayer = maplayers.overlays[regionId + "_region"];
+                    var visibleLayers = [];
+                    _this.regionServices.regionMapLayerList.forEach(function (item) {
+                        if (item[2])
+                            visibleLayers.push(item[1]);
+                    });
+                    regionLayer.setLayers([visibleLayers]);
                 });
                 //get any other layers specified in config
                 var layers = this.regionServices.selectedRegion.Layers;
