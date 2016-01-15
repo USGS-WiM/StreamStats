@@ -217,7 +217,7 @@
                     <div class="alert alert-info" role="alert" >Tools that can be used outside of the main workflow</div>
 
                     <div class="btn-toolbar">
-                        <button ng-disabled="!vm.regionService.selectedRegion" ng-class="!vm.regionService.allowRegionalQuery ? 'btn btn-sm btn-default':'btn btn-sm btn-success'" ng-click="vm.regionService.allowRegionalQuery = !vm.regionService.allowRegionalQuery" ng-init="vm.regionService.allowRegionalQuery = false"><span><i class="fa fa-info-circle"></i>&nbsp;&nbsp;Query State/Regional Layers</span></button>
+                        <button ng-disabled="!vm.regionService.selectedRegion" ng-class="!vm.regionService.allowStreamgageQuery ? 'btn btn-sm btn-default':'btn btn-sm btn-success'" ng-click="vm.regionService.allowStreamgageQuery = !vm.regionService.allowStreamgageQuery" ng-init="vm.regionService.allowStreamgageQuery = false"><span><i class="fa fa-info-circle"></i>&nbsp;&nbsp;Query Streamgages</span></button>
                         <button ng-class="!vm.explorationService.drawElevationProfile ? 'btn btn-sm btn-default':'btn btn-sm btn-success'" ng-click="vm.explorationService.drawElevationProfile = !vm.explorationService.drawElevationProfile"><span><i class="fa fa-line-chart"></i>&nbsp;&nbsp;Elevation Profile Tool</span></button>
                         <button ng-class="!vm.explorationService.drawMeasurement ? 'btn btn-sm btn-default':'btn btn-sm btn-success'" ng-click="vm.explorationService.drawMeasurement = !vm.explorationService.drawMeasurement"><span><i class="fa fa-arrows-h"></i>&nbsp;&nbsp;Measure Tool</span></button>
                         

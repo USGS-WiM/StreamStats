@@ -38,7 +38,7 @@ module StreamStats.Services {
         clearRegion();
         regionMapLayerList: any;
         nationalMapLayerList: any;
-        allowRegionalQuery: boolean;
+        allowStreamgageQuery: boolean;
         streamStatsAvailable: boolean;
         regionMapLayerListLoaded: boolean;
     }
@@ -219,9 +219,13 @@ module StreamStats.Services {
                         this.toaster.pop('warning', "No map layers available", "", 5000);
                         return;
                     }
+
+                    //set initial visibility array
                     response.data.layers.forEach((value, key) => {
-                        //console.log("Adding layer: ",value);
-                        this.regionMapLayerList.push([value.name,value.id]);
+                        var visible = false;
+                        if (value.name.toLowerCase() == 'stream grid' || value.name.toLowerCase() == 'area of limited functionality') { visible = true };
+ 
+                        this.regionMapLayerList.push([value.name, value.id, visible]);
                     });
                     this.regionMapLayerListLoaded = true;
                 },(error) => {
