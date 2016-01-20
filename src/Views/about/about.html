@@ -1,7 +1,7 @@
-﻿<button id="aboutButton" class="btn btn-default navbar-btn pull-right navBarButton" ng-click="vm.toggleAboutSelected()">
+﻿<button id="aboutButton" class="btn-default navbar-btn pull-right" ng-click="vm.toggleAboutSelected()">
     <i class="fa fa-info"></i><span class="hidden-xs">&nbsp;&nbsp;About</span>
 </button>
-<button id="helpButton" class="btn btn-default navbar-btn pull-right navBarButton" ng-click="vm.toggleHelpSelected()">
+<button id="helpButton" class="btn-default navbar-btn pull-right" ng-click="vm.toggleHelpSelected()">
     <i class="fa fa-question"></i><span class="hidden-xs">&nbsp;&nbsp;Help</span>
 </button>
 
@@ -81,7 +81,7 @@
                                         </div>
                                         <div class="col-md-12">
 
-                                            <button type="submit" class="btn btn-info pull-right" ng-click="vm.submitGitHubIssue()"><i class="fa fa-check"></i><span >&nbsp;&nbsp;Submit</span></button>
+                                            <button type="submit" class="btn-wim-info pull-right" ng-click="vm.submitGitHubIssue()"><i class="fa fa-check"></i><span >&nbsp;&nbsp;Submit</span></button>
          
                                         </div>
                                     </div>
@@ -97,7 +97,7 @@
                     For more information about StreamStats 4.0 please contact <a href="http://wim.usgs.gov/" target="_blank"><img src="images/wimvectorxs.png" id="wim_logo"></a>
                     
                 </p>
-                <button ng-click="vm.toggleAboutSelected()" class="btn btn-default"><i class="fa fa-close"></i><span >&nbsp;&nbsp;Close</span></button>
+                <button ng-click="vm.toggleAboutSelected()" class="btn-wim-default"><i class="fa fa-close"></i><span >&nbsp;&nbsp;Close</span></button>
             </div>
         </div>
     </div>
@@ -142,12 +142,12 @@
                                         <label for="message">Description:</label>
                                         <textarea class="form-control" rows="6" id="description" ng-model="vm.freshdeskTicketData.description" required></textarea>
                                     </div>
-                                    <!--<span class="btn btn-default btn-file">
+                                    <!--<span class="btn-wim-default btn-file">
                                         <i class="fa fa-upload"></i><span >&nbsp;&nbsp;Upload attachment... </span>
                                         <input type="file" select-file="vm.uploadFile()" >
                                     </span>-->
                                 </div>
-                                <button type="submit" class="btn btn-default pull-right" ng-click="vm.submitTicket()" ><i class="fa fa-check"></i><span >&nbsp;&nbsp;Submit</span></button>
+                                <button type="submit" class="btn-wim-default pull-right" ng-click="vm.submitTicket()" ><i class="fa fa-check"></i><span >&nbsp;&nbsp;Submit</span></button>
                             </div>
                         </div>
                         <span ng-model="vm.displayMessage"></span>
@@ -166,7 +166,7 @@
                     For more information about StreamStats 4.0 please contact <a href="http://wim.usgs.gov/" target="_blank"><img src="images/wimvectorxs.png" id="wim_logo"></a>
                     or select the 'contact us' tab to submit a message.
                 </p>
-                <button ng-click="vm.toggleHelpSelected()" class="btn btn-default"><i class="fa fa-close"></i><span >&nbsp;&nbsp;Close</span></button>
+                <button ng-click="vm.toggleHelpSelected()" class="btn-wim-default"><i class="fa fa-close"></i><span >&nbsp;&nbsp;Close</span></button>
             </div>
         </div>
     </div>

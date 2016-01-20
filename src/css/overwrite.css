@@ -115,7 +115,7 @@ a{
 
 .sapi-autocomplete-title {
     font-family: 'Lato', Helvetica, sans-serif !important;
-    background-color : #161C27 !important
+    background-color : #2D3146 !important
 }
 
 .sapi-autocomplete-tip {
@@ -124,7 +124,7 @@ a{
 
 .sapi-autocomplete-category {
     font-family: 'Lato', Helvetica, sans-serif !important;
-    background-color : #3A7BD5 !important
+    background-color : #0071BC !important
 }
 
 .sapi-autocomplete-item {
@@ -552,8 +552,8 @@ a{
     line-height: 1em;
   }
 
-  .modal .btn-default,
-  #contact-form .btn-default{
+  .modal .btn-wim-default,
+  #contact-form .btn-wim-default{
     background-color: #3C6DD1;
     transition: 0.2s;
     color:#fff;
@@ -569,8 +569,8 @@ a{
     line-height: 40px;
     margin-right:20px;
   }
-    .modal .btn-default:hover,
-    #contact-form .btn-default:hover{
+    .modal .btn-wim-default:hover,
+    #contact-form .btn-wim-default:hover{
       background-color: #2b5ab9;
       transition: 0.2s;
       color:#fff;

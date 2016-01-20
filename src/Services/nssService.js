@@ -141,13 +141,15 @@ var StreamStats;
                 this.selectedStatisticsGroupList.forEach(function (statGroup) {
                     _this.toaster.pop('info', "Estimating Flows for " + statGroup.Name, "Please wait...", 0);
                     //console.log('in estimate flows method for ', statGroup.Name, statGroup);
-                    statGroup.RegressionRegions[0].Parameters.forEach(function (regressionParam) {
-                        studyAreaParameterList.forEach(function (param) {
-                            //console.log('search for matching params ', regressionParam.Code.toLowerCase(), param.code.toLowerCase());
-                            if (regressionParam.Code.toLowerCase() == param.code.toLowerCase()) {
-                                //console.log('updating parameter in scenario object for: ', regressionParam.Code, ' from: ', regressionParam.Value, ' to: ', param.value);
-                                regressionParam.Value = param.value;
-                            }
+                    statGroup.RegressionRegions.forEach(function (regressionRegion) {
+                        regressionRegion.Parameters.forEach(function (regressionParam) {
+                            studyAreaParameterList.forEach(function (param) {
+                                //console.log('search for matching params ', regressionParam.Code.toLowerCase(), param.code.toLowerCase());
+                                if (regressionParam.Code.toLowerCase() == param.code.toLowerCase()) {
+                                    //console.log('updating parameter in scenario object for: ', regressionParam.Code, ' from: ', regressionParam.Value, ' to: ', param.value);
+                                    regressionParam.Value = param.value;
+                                }
+                            });
                         });
                     });
                     var updatedScenarioObject = angular.toJson([statGroup], null);
@@ -157,36 +159,32 @@ var StreamStats;
                     statGroup.Results = [];
                     statGroup.Citations = [];
                     _this.Execute(request).then(function (response) {
+                        console.log('estimate flows: ', response.data[0]);
+                        //nested requests for citations
+                        var citationUrl = response.data[0].Links[0].Href;
+                        var citationResults = _this.getSelectedCitations(citationUrl, statGroup);
+                        //get header values
+                        if (response.headers()['usgswim-messages']) {
+                            var headerMsgs = response.headers()['usgswim-messages'].split(';');
+                            statGroup.Disclaimers = {};
+                            headerMsgs.forEach(function (item) {
+                                var headerMsg = item.split(':');
+                                if (headerMsg[0] == 'warning')
+                                    statGroup.Disclaimers['Warnings'] = headerMsg[1].trim();
+                                if (headerMsg[0] == 'error')
+                                    statGroup.Disclaimers['Error'] = headerMsg[1].trim();
+                                //comment out for not, not useful
+                                //if (headerMsg[0] == 'info') statGroup.Disclaimers['Info'] = headerMsg[1].trim();
+                            });
+                            console.log('headerMsgs: ', statGroup.Name, statGroup.Disclaimers);
+                        }
+                        //make sure there are some results
                         if (response.data[0].RegressionRegions[0].Results && response.data[0].RegressionRegions[0].Results.length > 0) {
                             _this.toaster.clear();
-                            console.log('flows headers response: ', response, response.headers());
-                            if (response.headers()['usgswim-messages']) {
-                                var headerMsgs = response.headers()['usgswim-messages'].split(';');
-                                statGroup.Disclaimers = {};
-                                headerMsgs.forEach(function (item) {
-                                    var headerMsg = item.split(':');
-                                    if (headerMsg[0] == 'warning')
-                                        statGroup.Disclaimers['Warnings'] = headerMsg[1].trim();
-                                    if (headerMsg[0] == 'error')
-                                        statGroup.Disclaimers['Error'] = headerMsg[1].trim();
-                                    //comment out for not, not useful
-                                    //if (headerMsg[0] == 'info') statGroup.Disclaimers['Info'] = headerMsg[1].trim();
-                                });
-                                console.log('headerMsgs: ', statGroup.Name, statGroup.Disclaimers);
-                            }
-                            console.log('flow response: ', response.data);
                             //get flows
-                            response.data[0].RegressionRegions[0].Results.map(function (item) {
-                                try {
-                                    statGroup.Results.push(item);
-                                }
-                                catch (e) {
-                                    alert(e);
-                                }
-                            });
-                            //nested requests for citations
-                            var citationUrl = response.data[0].Links[0].Href;
-                            var citationResults = _this.getSelectedCitations(citationUrl, statGroup);
+                            statGroup.RegressionRegions = [];
+                            //overwrite existing Regressions Regions array with new one from request that includes results
+                            statGroup.RegressionRegions = response.data[0].RegressionRegions;
                         }
                         else {
                             _this.toaster.clear();

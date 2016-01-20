@@ -52,7 +52,7 @@
      <div ng-show="vm.studyAreaService.selectedStudyArea">
             <div class="form-group hidden-print">
 
-                <div class="alert alert-info" role="alert">Enter a report title and/or comments here that will display on the printed report.  Use the print button below.</div>
+                <div class="wim-alert-info" >Enter a report title and/or comments here that will display on the printed report.  Use the print button below.</div>
  
                 <label >Enter report title:</label>
                 <input type="text" class="form-control" ng-model="vm.reportTitle" placeholder="Title">
@@ -88,7 +88,8 @@
                     <table class="table table-condensed">
                         <thead class="param-table">
                             <tr>
-                                <th>Parameter</th>
+                                <th>Parameter Code</th>
+                                <th>Parameter Description</th>
                                 <th>Value</th> 
                                 <th ng-show="vm.studyAreaService.Disclaimers.isRegulated">Unregulated Value</th>
                                 <th ng-show="vm.studyAreaService.Disclaimers.isRegulated">Regulated Value</th>
@@ -98,6 +99,7 @@
                         <tbody>
                             <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList">
                                 <td ng-bind="parameter.name"></td>
+                                <td ng-bind="parameter.description"></td>
                                 <td ng-bind="parameter.value"></td>
                                 <td ng-show="vm.studyAreaService.Disclaimers.isRegulated" ng-bind="parameter.unRegulatedValue.toFixed(2)"></td>
                                 <td ng-show="vm.studyAreaService.Disclaimers.isRegulated" ng-bind="parameter.regulatedValue.toFixed(2)"></td>
@@ -110,38 +112,44 @@
                 <!--Study Area Disclaimers-->  
                 <div class="well well-sm" ng-show="vm.studyAreaService.Disclaimers.isRegulated || vm.studyAreaService.Disclaimers.isEdited || vm.studyAreaService.Disclaimers.isInExclusionArea">
                     <h4>General Disclaimers</h4>
-                    <div class="alert alert-danger" role="alert" ng-show="vm.studyAreaService.Disclaimers.isRegulated">This watershed is regulated, computed flows may not apply.</div>
-                    <div class="alert alert-danger" role="alert" ng-show="vm.studyAreaService.Disclaimers.isEdited">This watershed has been edited, computed flows may not apply.</div>
-                    <div class="alert alert-danger" role="alert" ng-show="vm.studyAreaService.Disclaimers.isInExclusionArea">This watershed is in an exclusion area.</div>
+                    <div class="wim-alert-danger" ng-show="vm.studyAreaService.Disclaimers.isRegulated">This watershed is regulated, computed flows may not apply.</div>
+                    <div class="wim-alert-danger" ng-show="vm.studyAreaService.Disclaimers.isEdited">This watershed has been edited, computed flows may not apply.</div>
+                    <div class="wim-alert-danger" ng-show="vm.studyAreaService.Disclaimers.isInExclusionArea">This watershed is in an exclusion area.</div>
                 </div>
             
                 <!--Parameter Table for Flow Report-->
                 <div class="well well-sm" ng-show="vm.nssService.showFlowsTable" ng-repeat="StatisticsGroup in vm.nssService.selectedStatisticsGroupList">
-                    <h4>{{StatisticsGroup.Name}} Parameters</h4>
-                    <table class="table table-condensed">
-                        <thead class="param-table">
-                        <tr>
-                            <th>Parameter</th>
-                            <th>Value</th> 
-                            <th>Min Limit</th>
-                            <th>Max Limit</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="parameter in StatisticsGroup.RegressionRegions[0].Parameters">
-                                <td ng-bind="parameter.Name"></td>
-                                <td ng-bind="parameter.Value" ng-class="(parameter.Value < parameter.Limits.Min) || (parameter.Value > parameter.Limits.Max) ? 'danger' : ''"></td>
-                                <td ng-bind="parameter.Limits.Min.toFixed(2)"></td>
-                                <td ng-bind="parameter.Limits.Max.toFixed(2)"></td>
-                            </tr>
-                        </tbody>
-                    </table>
 
-                    <!--Scenario Disclaimers-->
-                    <div ng-show="StatisticsGroup.Disclaimers.Warnings || StatisticsGroup.Disclaimers.Errors">
-                        <h4>{{StatisticsGroup.Name}} Disclaimers</h4>
-                        <div class="alert alert-danger" role="alert" ng-repeat="headerMsg in StatisticsGroup.Disclaimers">{{headerMsg}}</div> 
+
+                    <div ng-repeat="RegressionRegion in StatisticsGroup.RegressionRegions" ng-hide="RegressionRegion.Name == 'Area-Averaged'">
+                        <h4>{{StatisticsGroup.Name}} Parameters<small>&nbsp;&nbsp;{{RegressionRegion.PercentWeight.toFixed(0)}} Percent {{RegressionRegion.Name.split("_").join(" ")}}</small></h4>
+                        <table class="table table-condensed">
+                            <thead class="param-table">
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Value</th> 
+                                <th>Min Limit</th>
+                                <th>Max Limit</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="parameter in RegressionRegion.Parameters">
+                                    <td ng-bind="parameter.Name"></td>
+                                    <td ng-bind="parameter.Value" ng-class="(parameter.Value < parameter.Limits.Min) || (parameter.Value > parameter.Limits.Max) ? 'danger' : ''"></td>
+                                    <td ng-bind="parameter.Limits.Min.toFixed(2)"></td>
+                                    <td ng-bind="parameter.Limits.Max.toFixed(2)"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!--Scenario Disclaimers-->
+                        <div ng-show="RegressionRegion.Disclaimers.Warnings || RegressionRegion.Disclaimers.Errors">
+                            <h4>{{StatisticsGroup.Name}} Disclaimers</h4>
+                            <div class="wim-alert-danger"  ng-repeat="headerMsg in RegressionRegion.Disclaimers">{{headerMsg}}</div> 
+                        </div>
                     </div>
+
+
 
                     <!--Flow Report-->
                     <h4>{{StatisticsGroup.Name}} Flow Report</h4>
@@ -154,25 +162,22 @@
                             <th>Prediction Error</th>
                         </tr>
                         </thead>
-                        <tbody>
-                            <tr ng-repeat="parameter in StatisticsGroup.Results">
-                                <td ng-bind="parameter.Name"></td>
+                        <tbody ng-repeat="RegressionRegion in StatisticsGroup.RegressionRegions">
+                            <tr ng-repeat="parameter in RegressionRegion.Results">
+                                <td>{{parameter.Name}} <small>&nbsp;&nbsp;[{{RegressionRegion.PercentWeight.toFixed(0)}} Percent {{RegressionRegion.Name.split("_").join(" ")}}]</small></td>
                                 <td ng-bind="parameter.Value.toFixed(0)"></td>
                                 <td ng-bind="parameter.Unit.Abbr"></td>
-                                <td ng-bind="parameter.Errors[0].Value"></td>
+                                <td ng-bind="(parameter.Errors[0].Value) ? parameter.Errors[0].Value : '--'"></td>   <!--  SHOW SOME DASHES IF ERROR IS BLANK -->
                             </tr>
                         </tbody>
                     </table>
+ 
 
                     <h4>{{StatisticsGroup.Name}} Citations</h4>
-                    <dl class="dl-horizontal" ng-repeat="citation in StatisticsGroup.Citations">
-                        <dt>Title</dt>
-                        <dd><a href="{{citation.CitationURL}}" target="_blank">{{citation.Title}}</a></dd>
-                        <dt>Author</dt>
-                        <dd>{{citation.Author}}</dd>
-                    </dl>
+                    <div ng-repeat="citation in StatisticsGroup.Citations">
+                        <a href="{{citation.CitationURL}}" target="_blank">{{citation.Author}}{{citation.Title}}</a>
+                    </div>
 
-                
                 </div>
             </div>
 
@@ -193,15 +198,15 @@
                     </li>
                     </ul>
                 </div>
-                <button type="button" class="btn btn-sm btn-default" ng-click="vm.downloadCSV()" ><span><i class="fa fa-download"></i>&nbsp;&nbsp;Download CSV</span></button>
+                <button type="button" class="btn-wim-sm btn-wim-default" ng-click="vm.downloadCSV()" ><span><i class="fa fa-download"></i>&nbsp;&nbsp;Download CSV</span></button>
             </div>
         </div>
        
     </div>
     <div class="modal-footer hidden-print">
         <div class="btn-group">
-            <button type="button" class="btn btn-default" ng-click="vm.close()"><i class="fa fa-close"></i>&nbsp;&nbsp;Close</button>
-            <button type="button" class="btn btn-default" ng-click="vm.print()" analytics-on analytics-event="Print" analytics-category="Report" analytics-label="Print"><i class="fa fa-print"></i>&nbsp;&nbsp;Print</button>
+            <button class="btn-wim-default" ng-click="vm.close()"><i class="fa fa-close"></i>&nbsp;&nbsp;Close</button>
+            <button class="btn-wim-default" ng-click="vm.print()" analytics-on analytics-event="Print" analytics-category="Report" analytics-label="Print"><i class="fa fa-print"></i>&nbsp;&nbsp;Print</button>
         </div>
     </div>
     
