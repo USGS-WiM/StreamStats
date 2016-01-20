@@ -470,7 +470,7 @@ var StreamStats;
                         map.invalidateSize();
                         var selectedRegionLayerName = _this.regionServices.selectedRegion.RegionID + "_region";
                         maplayers.overlays[selectedRegionLayerName].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run(function (error, results) {
-                            console.log('exclusion area check: ', queryString, results.features);
+                            //console.log('exclusion area check: ', queryString, results.features); 
                             //if there are no exclusion area hits
                             if (results.features.length == 0) {
                                 //ga event
@@ -728,7 +728,7 @@ var StreamStats;
                 if (this.regionServices.regionMapLayerList.length < 1)
                     return;
                 this.layers.overlays[regionId + "_region"] = new Layer(regionId + " Map layers", configuration.baseurls['StreamStats'] + "/arcgis/rest/services/{0}_ss/MapServer".format(regionId.toLowerCase()), "agsDynamic", true, {
-                    "opacity": 0.5,
+                    "opacity": 1,
                     //"layers": this.regionServices.regionMapLayerList,
                     "format": "png8",
                     "f": "image"
@@ -741,6 +741,7 @@ var StreamStats;
                         if (item[2])
                             visibleLayers.push(item[1]);
                     });
+                    console.log('visible state/region map layers: ', visibleLayers);
                     regionLayer.setLayers([visibleLayers]);
                 });
                 //get any other layers specified in config

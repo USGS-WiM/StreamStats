@@ -655,7 +655,7 @@ module StreamStats.Controllers {
 
                     maplayers.overlays[selectedRegionLayerName].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run((error: any, results: any) => {
 
-                        console.log('exclusion area check: ', queryString, results.features); 
+                        //console.log('exclusion area check: ', queryString, results.features); 
 
                         //if there are no exclusion area hits
                         if (results.features.length == 0) {
@@ -976,7 +976,7 @@ module StreamStats.Controllers {
 
             this.layers.overlays[regionId + "_region"] = new Layer(regionId + " Map layers", configuration.baseurls['StreamStats'] + "/arcgis/rest/services/{0}_ss/MapServer".format(regionId.toLowerCase()),
                 "agsDynamic", true, {
-                    "opacity": 0.5,
+                    "opacity": 1,
                     //"layers": this.regionServices.regionMapLayerList,
                     "format": "png8",
                     "f": "image"
@@ -990,6 +990,7 @@ module StreamStats.Controllers {
                 this.regionServices.regionMapLayerList.forEach((item) => {
                     if (item[2]) visibleLayers.push(item[1]);
                 });
+                console.log('visible state/region map layers: ', visibleLayers);
                 regionLayer.setLayers([visibleLayers]);
             });
             
