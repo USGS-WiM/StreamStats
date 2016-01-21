@@ -143,9 +143,9 @@
                         </table>
 
                         <!--Scenario Disclaimers-->
-                        <div ng-show="RegressionRegion.Disclaimers.Warnings || RegressionRegion.Disclaimers.Errors">
+                        <div ng-show="StatisticsGroup.Disclaimers.Warnings || StatisticsGroup.Disclaimers.Errors">
                             <h4>{{StatisticsGroup.Name}} Disclaimers</h4>
-                            <div class="wim-alert-danger"  ng-repeat="headerMsg in RegressionRegion.Disclaimers">{{headerMsg}}</div> 
+                            <div class="wim-alert-danger"  ng-repeat="headerMsg in StatisticsGroup.Disclaimers">{{headerMsg}}</div> 
                         </div>
                     </div>
 
@@ -183,7 +183,7 @@
 
             <div id="downloadButtons" class="hidden-print">
                 <div class="btn-group">
-                    <button type="button" class="btn btn-sm btn-default dropdown-toggle" ui-turn-on='downloadBasinDropdown' ><span class="fa fa-download"></span>&nbsp;&nbsp;Download Basin</button>
+                    <button type="button" class="btn-wim-sm btn-wim-default dropdown-toggle" ui-turn-on='downloadBasinDropdown' ><span class="fa fa-download"></span>&nbsp;&nbsp;Download Basin</button>
                     <ul 
                     class="dropdown-menu"
                     ui-outer-click="Ui.turnOff('downloadBasinDropdown')"

@@ -18,7 +18,7 @@
                 </div>  
             <!-- overlay -->
             <div ng-repeat="layer in vm.overlays.layergroup" ng-init="vm.initOverlays(layer)">
-                <input type="checkbox" id="checkbox1" ng-checked="!layer.visible"/>
+                <input type="checkbox" id="checkbox1" ng-checked="layer.visible" ng-init="!layer.visible"/>
                     <label for="checkbox1" ng-if="!layer.layerParams.showOnSelector && layer.layerParams.showOnSelector !== false" ng-click="layer.visible = (layer.visible) ? false : true;">{{layer.name}}
                         <div ng-if="layer.type == 'agsDynamic'">
                             <div ng-repeat="lyr in layer.layerArray ">
