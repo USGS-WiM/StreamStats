@@ -298,8 +298,8 @@ var StreamStats;
                     _this.leafletData.getLayers().then(function (maplayers) {
                         //maplayers.overlays[this.regionServices.selectedRegion.RegionID + "_region"].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).run((error: any, results: any) => {
                         maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).run(function (error, results) {
+                            _this.toaster.clear();
                             if (!results.features) {
-                                _this.toaster.clear();
                                 return;
                             }
                             results.features.forEach(function (queryResult) {
