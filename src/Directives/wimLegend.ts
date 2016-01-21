@@ -31,14 +31,17 @@ module WiM.Directives {
         vm: IwimLegendController;
     }
     interface IwimLegendController {
-        selectedBaselayerName: string;
-        overlays: any;
-        baselayers: any;
+        overlays: IwimLegendLayerGroup;
+        baselayers: IwimLegendLayerGroup;
         
     }
-    interface ILayerController {
-        getLeafletScope();
+    interface IwimLegendLayerGroup {
+        selectedlayerName: string;
+        layergroup: any;
+        isOpen: boolean;
+
     }
+
     interface IwimLegendAttributes extends ng.IAttributes {
         //must use camelcase
         stopEvents: string;
@@ -51,10 +54,8 @@ module WiM.Directives {
         private isDefined: any;
         private leafletHelpers: any;
         private leafletData: any;
-
-        public selectedBaselayerName: string;
-        public overlays: any;
-        public baselayers: any;
+        public overlays: IwimLegendLayerGroup;
+        public baselayers: IwimLegendLayerGroup;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -91,7 +92,7 @@ module WiM.Directives {
         
         public changeBaseLayer(key: any, evt: any)
         {
-            this.selectedBaselayerName = key.toString();
+            this.baselayers.selectedlayerName = key.toString();
             this.leafletData.getMap().then((map: any) => {
                 this.leafletData.getLayers().then((maplayers: any) => {
                     if (map.hasLayer(maplayers.baselayers[key])) { return; }
@@ -111,11 +112,16 @@ module WiM.Directives {
 
         //Helper Methods
         private init() {
+            this.overlays = <IwimLegendLayerGroup>{};
+            this.baselayers = <IwimLegendLayerGroup>{};
+            this.overlays.isOpen = false;
+            this.baselayers.isOpen = true;
+
             this.leafletData.getMap().then((map: any) => {
                 this.leafletData.getLayers().then((maplayers: any) => {
                     for (var key in maplayers.baselayers) {
                         if (map.hasLayer(maplayers.baselayers[key])) {
-                            this.selectedBaselayerName = key.toString();
+                            this.baselayers.selectedlayerName = key.toString();
                             break;
                         }//end if
                     }//next
@@ -159,8 +165,8 @@ module WiM.Directives {
 
             var leafletScope = controller.getLeafletScope();
             var layers = leafletScope.layers;
-            (<any>scope).vm.overlays = layers.overlays;
-            (<any>scope).vm.baselayers = layers.baselayers;
+            (<any>scope).vm.overlays.layergroup = layers.overlays;
+            (<any>scope).vm.baselayers.layergroup = layers.baselayers;
             (<any>scope).vm.layers = layers;
 
             element.bind('click', function (e) {
