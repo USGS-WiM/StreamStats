@@ -74,6 +74,49 @@ body {
     z-index:99999;
 }
 
+.leaflet-control-layers.leaflet-control {
+display: none;
+}
+
+.angular-leaflet-control-layers {
+    position: absolute;
+    background: white;
+    z-index: 100;
+    right: 10px;
+    top: 20px;
+    width: 200px;
+    box-shadow: 1px 1px 5px #333;
+    padding: 5px;
+}
+
+.angular-leaflet-control-layers .lf-row label {
+    cursor: pointer;
+    width: 75%;
+}
+
+.angular-leaflet-control-layers .lf-row .lf-icon-ol {
+    padding-left: 8px;
+}
+
+.angular-leaflet-control-layers .lf-row .lf-icon {
+    cursor: pointer;
+    float: left;
+    margin-right: 5px;
+    padding-top: 2px;
+}
+
+.angular-leaflet-control-layers .lf-row label .lf-text {
+    float: left;
+}
+
+.angular-leaflet-control-layers .lf-row .lf-icon-ol-group {
+    color: #00650a;
+}
+
+.angular-leaflet-control-layers .lf-row .lf-icons {
+    float: right;
+}
+
 /*
     ===========================
     ===========================

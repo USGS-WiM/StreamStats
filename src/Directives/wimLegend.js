@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 //----- WiM Legend ------------------------------------------------------
 //------------------------------------------------------------------------------
-var __extends = (this && this.__extends) || function (d, b) {
+var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -68,7 +68,7 @@ var WiM;
                             if (map.hasLayer(maplayers.baselayers[mlayr])) {
                                 map.removeLayer(maplayers.baselayers[mlayr]);
                             } //end if
-                        } //next
+                        }
                         map.addLayer(maplayers.baselayers[key]);
                     });
                 });
@@ -84,7 +84,7 @@ var WiM;
                                 _this.selectedBaselayerName = key.toString();
                                 break;
                             } //end if
-                        } //next
+                        }
                     }); //end getLayers
                     //remove legend
                 }); //end getMap   
@@ -130,8 +130,7 @@ var WiM;
             }; //end link
             return wimLegend;
         })(); //end UrlDirective
-        angular.module('wim_angular')
-            .directive('wimLegend', wimLegend.instance);
+        angular.module('wim_angular').directive('wimLegend', wimLegend.instance);
     })(Directives = WiM.Directives || (WiM.Directives = {}));
 })(WiM || (WiM = {})); //end module 
 //# sourceMappingURL=wimLegend.js.map
