@@ -114,7 +114,7 @@ var WiM;
                 this.require = '^leaflet';
                 this.transclude = false;
                 this.controller = wimLegendController;
-                this.templateUrl = 'Directives/legend.html';
+                this.templateUrl = 'Views/Legend/legend.html';
                 this.replace = true;
             }
             wimLegend.instance = function () {

@@ -156,7 +156,7 @@ module WiM.Directives {
         require = '^leaflet';
         transclude= false;
         controller = wimLegendController;
-        templateUrl = 'Directives/legend.html';
+        templateUrl = 'Views/Legend/legend.html';
         replace = true;
 
         link(scope: ng.IScope, element: ng.IAugmentedJQuery, attributes: IwimLegendAttributes, controller: any): void {

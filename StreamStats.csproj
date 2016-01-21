@@ -64,7 +64,7 @@
     <Content Include="src\Assets\images\usgs_logo.png" />
     <Content Include="src\css\main.css" />
     <Content Include="src\css\wim.css" />
-    <Content Include="src\Directives\legend.html" />
+    <Content Include="src\Views\Legend\legend.html" />
     <Content Include="src\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="src\images\arrows.gif" />
     <Content Include="src\images\multi_sw_act.png" />
