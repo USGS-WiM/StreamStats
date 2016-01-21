@@ -75,18 +75,44 @@ body {
 }
 
 .leaflet-control-layers.leaflet-control {
-display: none;
+    display: none;
 }
 
-.angular-leaflet-control-layers {
+.angular-leaflet-control-layers-collapsed {
+    
+    position: absolute;
+    background: white;
+    z-index: 100;
+    right: 10px;
+    top: 20px;
+    box-shadow: 1px 1px 5px #333;
+    padding: 15px;
+    background-image: url(../images/layers.png);
+    background-repeat: no-repeat;
+    background-position: center;
+	width: 36px;
+	height: 36px;
+}
+
+.angular-leaflet-control-layers-expanded {
     position: absolute;
     background: white;
     z-index: 100;
     right: 10px;
     top: 20px;
     width: 200px;
+    height:90%;
     box-shadow: 1px 1px 5px #333;
     padding: 5px;
+    overflow-y:auto;
+}
+
+.angular-leaflet-control-layers-header {
+    height: 30px;
+}
+
+.angular-leaflet-control-layers-close-button {
+    margin-right:20px;  
 }
 
 .angular-leaflet-control-layers .lf-row label {
