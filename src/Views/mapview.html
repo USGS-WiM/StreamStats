@@ -1,6 +1,6 @@
 ﻿<leaflet layers="vm.layers" geojson="vm.geojson" geojson-nested="true" center="vm.center" controls="vm.controls" markers="vm.markers" defaults="vm.mapDefaults" bounds="vm.bounds" ng-style="{cursor:vm.cursorStyle}">
     <!--<i id="loadingSpinner" class="fa fa-spinner fa-5x fa-spin"></i>-->    
-    <wim-legend order="normal" base-title="Available Base Layers" stop-event='click'></wim-legend>
+    <wim-legend></wim-legend>
 </leaflet>
 <div class="map-position leaflet-bottom leaflet-left">
     <span>Zoom Level: {{vm.center.zoom}}</span> <br/>
