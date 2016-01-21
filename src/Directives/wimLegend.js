@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 //----- WiM Legend ------------------------------------------------------
 //------------------------------------------------------------------------------
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -42,19 +42,33 @@ var WiM;
             }
             //Methods  
             //-+-+-+-+-+-+-+-+-+-+-+-
+            wimLegendController.prototype.initOverlays = function (mlyr) {
+                if (mlyr.type != "agsDynamic")
+                    return;
+                //getsublayers
+                var url = mlyr.url + "/legend?f=pjson";
+                var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                this.Execute(request).then(function (response) {
+                    console.log(response.data);
+                    if (response.data.layers.length > 0) {
+                        mlyr.layerArray = response.data.layers;
+                    }
+                }, function (error) {
+                });
+            };
             wimLegendController.prototype.changeBaseLayer = function (key, evt) {
                 var _this = this;
-                this.baselayer = key.toString();
+                this.selectedBaselayerName = key.toString();
                 this.leafletData.getMap().then(function (map) {
                     _this.leafletData.getLayers().then(function (maplayers) {
                         if (map.hasLayer(maplayers.baselayers[key])) {
                             return;
                         }
-                        for (var i in maplayers.baselayers) {
-                            if (map.hasLayer(maplayers.baselayers[i])) {
-                                map.removeLayer(maplayers.baselayers[i]);
+                        for (var mlayr in maplayers.baselayers) {
+                            if (map.hasLayer(maplayers.baselayers[mlayr])) {
+                                map.removeLayer(maplayers.baselayers[mlayr]);
                             } //end if
-                        }
+                        } //next
                         map.addLayer(maplayers.baselayers[key]);
                     });
                 });
@@ -67,12 +81,14 @@ var WiM;
                     _this.leafletData.getLayers().then(function (maplayers) {
                         for (var key in maplayers.baselayers) {
                             if (map.hasLayer(maplayers.baselayers[key])) {
-                                _this.baselayer = key;
-                                return;
+                                _this.selectedBaselayerName = key.toString();
+                                break;
                             } //end if
-                        }
+                        } //next
                     }); //end getLayers
+                    //remove legend
                 }); //end getMap   
+                //http://pastebin.com/k8z6ZkdX
             }; //end init
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
@@ -105,14 +121,17 @@ var WiM;
                 // The result of this process is why the live data- binding exists between the scope and the DOM tree.
                 var leafletScope = controller.getLeafletScope();
                 var layers = leafletScope.layers;
+                scope.vm.overlays = layers.overlays;
+                scope.vm.baselayers = layers.baselayers;
+                scope.vm.layers = layers;
                 element.bind('click', function (e) {
                     e.stopPropagation();
                 });
-                scope.layers = layers;
             }; //end link
             return wimLegend;
         })(); //end UrlDirective
-        angular.module('wim_angular').directive('wimLegend', wimLegend.instance);
+        angular.module('wim_angular')
+            .directive('wimLegend', wimLegend.instance);
     })(Directives = WiM.Directives || (WiM.Directives = {}));
 })(WiM || (WiM = {})); //end module 
 //# sourceMappingURL=wimLegend.js.map

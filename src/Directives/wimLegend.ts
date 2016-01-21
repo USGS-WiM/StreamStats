@@ -31,11 +31,9 @@ module WiM.Directives {
         vm: IwimLegendController;
     }
     interface IwimLegendController {
-        baselayer: any;
-        oldGroup: string;
-        layerProperties: any;
-        groupProperties: any;
-        rangeIsSupported: any;
+        selectedBaselayerName: string;
+        overlays: any;
+        baselayers: any;
         
     }
     interface ILayerController {
@@ -54,12 +52,9 @@ module WiM.Directives {
         private leafletHelpers: any;
         private leafletData: any;
 
-        public $scope: ng.IScope;
-        public baselayer: string;
-        public oldGroup: string;
-        public layerProperties: any;
-        public groupProperties: any;
-        public rangeIsSupported: any;
+        public selectedBaselayerName: string;
+        public overlays: any;
+        public baselayers: any;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -71,21 +66,39 @@ module WiM.Directives {
             this.leafletData = leafletData;
             this.leafletHelpers = leafletHelpers;
             this.init();
+ 
         }  
         
         //Methods  
         //-+-+-+-+-+-+-+-+-+-+-+-
+        public initOverlays(mlyr: any) {
+            if (mlyr.type != "agsDynamic") return;
+            //getsublayers
+            var url = mlyr.url + "/legend?f=pjson";
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
+            this.Execute(request).then(
+                (response: any) => {
+                    console.log(response.data);
+                    if (response.data.layers.length > 0) {
+                        mlyr.layerArray = response.data.layers;
+                    }
+                }, (error) => {
+
+                });
+
+
+        }
         
         public changeBaseLayer(key: any, evt: any)
         {
-            this.baselayer = key.toString();
+            this.selectedBaselayerName = key.toString();
             this.leafletData.getMap().then((map: any) => {
                 this.leafletData.getLayers().then((maplayers: any) => {
                     if (map.hasLayer(maplayers.baselayers[key])) { return; }
 
-                    for (var i in maplayers.baselayers) {
-                        if (map.hasLayer(maplayers.baselayers[i])) {
-                            map.removeLayer(maplayers.baselayers[i]);
+                    for (var mlayr in maplayers.baselayers) {
+                        if (map.hasLayer(maplayers.baselayers[mlayr])) {
+                            map.removeLayer(maplayers.baselayers[mlayr]);
                         }//end if
                     }//next
 
@@ -102,15 +115,21 @@ module WiM.Directives {
                 this.leafletData.getLayers().then((maplayers: any) => {
                     for (var key in maplayers.baselayers) {
                         if (map.hasLayer(maplayers.baselayers[key])) {
-                            this.baselayer = key;
-                            return;
+                            this.selectedBaselayerName = key.toString();
+                            break;
                         }//end if
                     }//next
                 });//end getLayers
+
+                //remove legend
+                
             });//end getMap   
 
+            
+            //http://pastebin.com/k8z6ZkdX
+
+
         }//end init
-        
 
     }//end wimLayerControlController class
 
@@ -134,19 +153,20 @@ module WiM.Directives {
         templateUrl = 'Directives/legend.html';
         replace = true;
 
-        link(scope: ng.IScope, element: ng.IAugmentedJQuery, attributes: IwimLegendAttributes, controller: ILayerController): void {
+        link(scope: ng.IScope, element: ng.IAugmentedJQuery, attributes: IwimLegendAttributes, controller: any): void {
             //this is where we can register listeners, set up watches, and add functionality. 
             // The result of this process is why the live data- binding exists between the scope and the DOM tree.
 
             var leafletScope = controller.getLeafletScope();
             var layers = leafletScope.layers;
+            (<any>scope).vm.overlays = layers.overlays;
+            (<any>scope).vm.baselayers = layers.baselayers;
+            (<any>scope).vm.layers = layers;
 
             element.bind('click', function (e) {
                     e.stopPropagation();
             });
 
-            (<any>scope).layers = layers;
-           
         }//end link
 
     }//end UrlDirective
