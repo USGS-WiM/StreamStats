@@ -436,8 +436,10 @@ module StreamStats.Controllers {
 
                     //maplayers.overlays[this.regionServices.selectedRegion.RegionID + "_region"].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).run((error: any, results: any) => {
                     maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).run((error: any, results: any) => {
+
+                        this.toaster.clear();
+
                         if (!results.features) {
-                            this.toaster.clear();
                             return;
                         }
 
