@@ -2,20 +2,21 @@
     <div class="angular-leaflet-control-layers">
     <h4 ng-if="title">{{ title }}</h4>
         <div class="list-group">
-            <div>
-                <a ng-class="vm.selectedProcedure == 1  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(1)">Base Maps
-                <i ng-class="vm.selectedProcedure == 1 ? 'fa fa-chevron-up pull-right': 'fa fa-chevron-down pull-right'"></i></a>
+                <a ng-class="!vm.baselayers.isOpen  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.baselayers.isOpen=(vm.baselayers.isOpen) ? false : true;">
+                    Base Maps
+                    <i ng-class="!vm.baselayers.isOpen ? 'fa fa-chevron-up pull-right': 'fa fa-chevron-down pull-right'"></i>
+                </a>
                 <!-- baselayers -->
-                <div class="sitebar-item" ng-repeat="(key, layer) in vm.baselayers">
-                    <label ng-click="vm.changeBaseLayer(key, $event)">
-                        <input type="radio" name="baselayerRadio" ng-checked="$parent.vm.selectedBaselayerName === key.toString()" ng-value="key.toString()" /> {{layer.name}}
-                        <i ng-class="layer.icon"></i>
-                    </label>
-                </div>
-             </div>   
-            <hr />
+                <div ng-hide="vm.baselayers.isOpen" class="list-group-body">
+                    <div class="sitebar-item" ng-repeat="(key, layer) in vm.baselayers.layergroup">
+                        <label ng-click="vm.changeBaseLayer(key, $event)">
+                            <input type="radio" name="baselayerRadio" ng-checked="$parent.vm.selectedBaselayerName === key.toString()" ng-value="key.toString()" /> {{layer.name}}
+                            <i ng-class="layer.icon"></i>
+                        </label>
+                    </div>
+                </div>  
             <!-- overlay -->
-            <div ng-repeat="layer in vm.overlays" ng-init="vm.initOverlays(layer)">
+            <div ng-repeat="layer in vm.overlays.layergroup" ng-init="vm.initOverlays(layer)">
                 <label ng-if="!layer.layerParams.showOnSelector && layer.layerParams.showOnSelector !== false" ng-click="layer.visible = (layer.visible) ? false : true;">
                     <input type="checkbox" ng-checked="layer.visible" /> {{layer.name}}
                     <div ng-if="layer.type == 'agsDynamic'">

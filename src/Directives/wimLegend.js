@@ -58,7 +58,7 @@ var WiM;
             };
             wimLegendController.prototype.changeBaseLayer = function (key, evt) {
                 var _this = this;
-                this.selectedBaselayerName = key.toString();
+                this.baselayers.selectedlayerName = key.toString();
                 this.leafletData.getMap().then(function (map) {
                     _this.leafletData.getLayers().then(function (maplayers) {
                         if (map.hasLayer(maplayers.baselayers[key])) {
@@ -77,11 +77,15 @@ var WiM;
             //Helper Methods
             wimLegendController.prototype.init = function () {
                 var _this = this;
+                this.overlays = {};
+                this.baselayers = {};
+                this.overlays.isOpen = false;
+                this.baselayers.isOpen = true;
                 this.leafletData.getMap().then(function (map) {
                     _this.leafletData.getLayers().then(function (maplayers) {
                         for (var key in maplayers.baselayers) {
                             if (map.hasLayer(maplayers.baselayers[key])) {
-                                _this.selectedBaselayerName = key.toString();
+                                _this.baselayers.selectedlayerName = key.toString();
                                 break;
                             } //end if
                         } //next
@@ -121,8 +125,8 @@ var WiM;
                 // The result of this process is why the live data- binding exists between the scope and the DOM tree.
                 var leafletScope = controller.getLeafletScope();
                 var layers = leafletScope.layers;
-                scope.vm.overlays = layers.overlays;
-                scope.vm.baselayers = layers.baselayers;
+                scope.vm.overlays.layergroup = layers.overlays;
+                scope.vm.baselayers.layergroup = layers.baselayers;
                 scope.vm.layers = layers;
                 element.bind('click', function (e) {
                     e.stopPropagation();
