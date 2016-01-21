@@ -1,6 +1,10 @@
 ﻿
-    <div class="angular-leaflet-control-layers">
-    <h4 ng-if="title">{{ title }}</h4>
+<div ng-class="vm.layerControlExpanded ? 'angular-leaflet-control-layers-expanded' : 'angular-leaflet-control-layers-collapsed'" ng-click="vm.layerControlExpanded = true; $event.stopPropagation(); $event.preventDefault();" ng-init="vm.layerControlExpanded == false">
+    <div ng-show="vm.layerControlExpanded">
+        <div class="row angular-leaflet-control-layers-header">
+            <h4 ng-if="title">Layer Control}</h4>
+            <button class="close angular-leaflet-control-layers-close-button" ng-click="vm.layerControlExpanded = false; $event.stopPropagation();">&times;</button>
+        </div>
         <div class="list-group">
             <!-- baselayers -->
             <a ng-class="!vm.baselayers.isOpen  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.baselayers.isOpen=(vm.baselayers.isOpen) ? false : true;">
@@ -19,14 +23,14 @@
             </div>  
             <!-- overlays -->
             <div ng-repeat="layer in vm.overlays.layergroup" ng-init="vm.initOverlays(layer)">
-                <input type="checkbox" id="checkbox1" ng-checked="layer.visible" ng-init="!layer.visible"/>
+                <input type="checkbox" id="checkbox1" ng-checked="layer.visible" />
                     <label for="checkbox1" ng-if="!layer.layerParams.showOnSelector && layer.layerParams.showOnSelector !== false" ng-click="layer.visible = (layer.visible) ? false : true;">{{layer.name}}
                         <div ng-if="layer.type == 'agsDynamic'">
                             <div ng-repeat="lyr in layer.layerArray ">
                                 <label>{{lyr.layerName}}</label>
                                 <div ng-repeat="leg in lyr.legend ">
                                     <img alt="Embedded Image"
-                                         src="data:{{leg.contentType}};base64,{{leg.imageData}}"/>
+                                            src="data:{{leg.contentType}};base64,{{leg.imageData}}"/>
                                     <i>{{leg.label}}</i>
 
                                 </div>
@@ -41,7 +45,7 @@
                             <label>{{lyr.layerName}}</label>
                             <div ng-repeat="leg in lyr.legend ">
                                 <img alt="Embedded Image"
-                                     src="data:{{leg.contentType}};base64,{{leg.imageData}}" />
+                                        src="data:{{leg.contentType}};base64,{{leg.imageData}}" />
                                 <i>{{leg.label}}</i>
 
                             </div>
@@ -50,5 +54,5 @@
                 </label>-->
             </div>
         </div>
+    </div>
 </div>
-  
