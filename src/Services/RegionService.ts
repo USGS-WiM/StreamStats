@@ -254,17 +254,20 @@ module StreamStats.Services {
                         response.data.parameters.forEach((parameter) => {
 
                             try {
-                                //dont add an always selected param twice
-                                configuration.alwaysSelectedParameters.forEach((alwaysSelectedParam) => {
-                                    if (alwaysSelectedParam.name == parameter.code) {
-                                        parameter.checked = true;
-                                        parameter.toggleable = false;
-                                    }
-                                    else {
-                                        parameter.checked = false;
-                                        parameter.toggleable = true;
-                                    }
-                                });
+                                ////dont add an always selected param twice
+                                //configuration.alwaysSelectedParameters.forEach((alwaysSelectedParam) => {
+                                //    if (alwaysSelectedParam.name == parameter.code) {
+                                //        parameter.checked = true;
+                                //        parameter.toggleable = false;
+                                //    }
+                                //    else {
+                                //        parameter.checked = false;
+                                //        parameter.toggleable = true;
+                                //    }
+                                //});
+
+                                parameter.checked = false;
+                                parameter.toggleable = true;
 
                                 this.parameterList.push(parameter);
                             }
