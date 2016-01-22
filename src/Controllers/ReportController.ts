@@ -213,11 +213,15 @@ module StreamStats.Controllers {
             };
 
             var processScenarioParamTable = (statGroup) => {
-                var finalVal = statGroup.Name + ' Parameters\n';
-                finalVal += 'Name,Value,Min Limit, Max Limit\n'
+                var finalVal = '';
      
-                statGroup.RegressionRegions[0].Parameters.forEach((item) => {
-                    finalVal += item.Name + ',' + item.Value + ',' + item.Limits.Min.toFixed(2) + ',' + item.Limits.Max.toFixed(2) + '\n';
+                statGroup.RegressionRegions.forEach((regressionRegion) => {
+                    finalVal += statGroup.Name + ' Parameters ' + regressionRegion.PercentWeight.toFixed(0) + ' Percent  ' + regressionRegion.Name.split("_").join(" ") + '\n';
+                    finalVal += 'Name,Value,Min Limit, Max Limit\n';
+
+                    regressionRegion.Parameters.forEach((item) => {
+                        finalVal += item.Name + ',' + item.Value + ',' + item.Limits.Min.toFixed(2) + ',' + item.Limits.Max.toFixed(2) + '\n';
+                    });
                 });
                 return finalVal + '\n';
             };

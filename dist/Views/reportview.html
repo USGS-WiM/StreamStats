@@ -15,7 +15,8 @@
             left: 0;
             top: 0;
             margin: 0;
-            padding: 0;
+            padding-right:20px;
+            /*padding: 0;*/
             min-height:550px;
             visibility: visible;
             /**Remove scrollbar for printing.**/
@@ -144,7 +145,7 @@
 
                         <!--Scenario Disclaimers-->
                         <div ng-show="StatisticsGroup.Disclaimers.Warnings || StatisticsGroup.Disclaimers.Errors">
-                            <h4>{{StatisticsGroup.Name}} Disclaimers</h4>
+                            <h4>{{StatisticsGroup.Name}} Disclaimers<small>&nbsp;&nbsp;{{RegressionRegion.PercentWeight.toFixed(0)}} Percent {{RegressionRegion.Name.split("_").join(" ")}}</small></h4>
                             <div class="wim-alert-danger"  ng-repeat="headerMsg in StatisticsGroup.Disclaimers">{{headerMsg}}</div> 
                         </div>
                     </div>

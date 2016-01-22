@@ -119,6 +119,7 @@ var StreamStats;
             };
             SidebarController.prototype.setStatisticsGroup = function (statisticsGroup) {
                 var checkStatisticsGroup = this.checkArrayForObj(this.nssService.selectedStatisticsGroupList, statisticsGroup);
+                console.log('set stat group: ', checkStatisticsGroup);
                 //if toggled remove selected parameter set
                 if (checkStatisticsGroup != -1) {
                     //remove this statisticsGroup from the list
@@ -242,18 +243,20 @@ var StreamStats;
                     _this.nssService.selectedStatisticsGroupList.forEach(function (statisticsGroup) {
                         if (statisticsGroup.RegressionRegions) {
                             //get their parameters
-                            statisticsGroup.RegressionRegions[0].Parameters.forEach(function (param) {
-                                if (parameter.code.toLowerCase() == param.Code.toLowerCase()) {
-                                    configuration.alwaysSelectedParameters.forEach(function (alwaysSelectedParam) {
-                                        if (alwaysSelectedParam.name == parameter.code)
-                                            return;
-                                    });
-                                    //turn it on
-                                    if (_this.checkArrayForObj(_this.studyAreaService.studyAreaParameterList, parameter) == -1)
-                                        _this.studyAreaService.studyAreaParameterList.push(parameter);
-                                    parameter['checked'] = true;
-                                    parameter['toggleable'] = false;
-                                }
+                            statisticsGroup.RegressionRegions.forEach(function (regressionRegion) {
+                                regressionRegion.Parameters.forEach(function (param) {
+                                    if (parameter.code.toLowerCase() == param.Code.toLowerCase()) {
+                                        configuration.alwaysSelectedParameters.forEach(function (alwaysSelectedParam) {
+                                            if (alwaysSelectedParam.name == parameter.code)
+                                                return;
+                                        });
+                                        //turn it on
+                                        if (_this.checkArrayForObj(_this.studyAreaService.studyAreaParameterList, parameter) == -1)
+                                            _this.studyAreaService.studyAreaParameterList.push(parameter);
+                                        parameter['checked'] = true;
+                                        parameter['toggleable'] = false;
+                                    }
+                                });
                             });
                         }
                     });
