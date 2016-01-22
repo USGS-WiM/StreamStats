@@ -145,7 +145,7 @@ module StreamStats.Services {
             this.parametersLoading = false;
             this.doDelineateFlag = false;
             this.checkingDelineatedPoint = false;
-            this.studyAreaParameterList = angular.fromJson(angular.toJson(configuration.alwaysSelectedParameters));
+            this.studyAreaParameterList = [];  //angular.fromJson(angular.toJson(configuration.alwaysSelectedParameters));
             this.regulationCheckResults = [];
             this.Disclaimers = {};
             this.showEditToolbar = false;

@@ -312,6 +312,20 @@ module StreamStats.Controllers {
             this.studyAreaService.upstreamRegulation();
         }
 
+        private queryRegressionRegions() {
+
+            //return if this state is not enabled
+            if (!this.regionService.selectedRegion.ScenariosAvailable) {
+                this.studyAreaService.regressionRegionQueryComplete = true;
+                return;
+            }
+
+            this.nssService.queriedRegions = true;
+
+            //send watershed to map service query that returns list of regression regions that overlap the watershed
+            this.studyAreaService.queryRegressionRegions();
+        }
+
         public onSelectedStatisticsGroupChanged() {
 
             //console.log('StatisticsGroup param list changed.  loaded ', this.nssService.selectedStatisticsGroupList);

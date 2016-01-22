@@ -914,15 +914,19 @@ module StreamStats.Controllers {
             });
 
             //query basin against regression regions
-            if (!this.nssService.queriedRegions) this.queryRegressionRegions();
-        }
+            if (!this.nssService.queriedRegions) {
 
-        private queryRegressionRegions() {
+                //return if this state is not enabled
+                if (!this.regionServices.selectedRegion.ScenariosAvailable) {
+                    this.studyArea.regressionRegionQueryComplete = true;
+                    return;
+                }
 
-            this.nssService.queriedRegions = true;
+                this.nssService.queriedRegions = true;
 
-            //send watershed to map service query that returns list of regression regions that overlap the watershed
-            this.studyArea.queryRegressionRegions();
+                //send watershed to map service query that returns list of regression regions that overlap the watershed
+                this.studyArea.queryRegressionRegions();
+            }
         }
 
         private mapBoundsChange(oldValue, newValue) {
