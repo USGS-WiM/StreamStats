@@ -48,6 +48,7 @@ module StreamStats.Services {
         Bounds: Array<Array<number>>;
         Layers: Array<any>;
         Applications: Array<string>;
+        ScenariosAvailable: boolean;
     }
     export interface IParameter {
         code: string;
@@ -69,6 +70,7 @@ module StreamStats.Services {
         public Bounds: Array<Array<number>>;
         public Layers: Array<any>;
         public Applications: Array<string>;
+        public ScenariosAvailable: boolean;
 
     }//end class
 

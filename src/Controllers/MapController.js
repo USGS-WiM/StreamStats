@@ -688,13 +688,16 @@ var StreamStats;
                     map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]], {});
                 });
                 //query basin against regression regions
-                if (!this.nssService.queriedRegions)
-                    this.queryRegressionRegions();
-            };
-            MapController.prototype.queryRegressionRegions = function () {
-                this.nssService.queriedRegions = true;
-                //send watershed to map service query that returns list of regression regions that overlap the watershed
-                this.studyArea.queryRegressionRegions();
+                if (!this.nssService.queriedRegions) {
+                    //return if this state is not enabled
+                    if (!this.regionServices.selectedRegion.ScenariosAvailable) {
+                        this.studyArea.regressionRegionQueryComplete = true;
+                        return;
+                    }
+                    this.nssService.queriedRegions = true;
+                    //send watershed to map service query that returns list of regression regions that overlap the watershed
+                    this.studyArea.queryRegressionRegions();
+                }
             };
             MapController.prototype.mapBoundsChange = function (oldValue, newValue) {
                 this.nomnimalZoomLevel = this.scaleLookup(this.center.zoom);
