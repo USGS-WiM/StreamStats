@@ -168,6 +168,8 @@ module StreamStats.Controllers {
 
             var checkStatisticsGroup = this.checkArrayForObj(this.nssService.selectedStatisticsGroupList, statisticsGroup);
 
+            console.log('set stat group: ', checkStatisticsGroup);
+
             //if toggled remove selected parameter set
             if (checkStatisticsGroup != -1) {
 
@@ -325,20 +327,23 @@ module StreamStats.Controllers {
                     if (statisticsGroup.RegressionRegions) {
 
                         //get their parameters
-                        statisticsGroup.RegressionRegions[0].Parameters.forEach((param) => {
+                        statisticsGroup.RegressionRegions.forEach((regressionRegion) => {
 
-                            if (parameter.code.toLowerCase() == param.Code.toLowerCase()) {
+                            regressionRegion.Parameters.forEach((param) => {
 
-                                configuration.alwaysSelectedParameters.forEach((alwaysSelectedParam) => {
-                                    if (alwaysSelectedParam.name == parameter.code) return;
-                                });
+                                if (parameter.code.toLowerCase() == param.Code.toLowerCase()) {
 
-                                //turn it on
-                                if (this.checkArrayForObj(this.studyAreaService.studyAreaParameterList, parameter) == -1) this.studyAreaService.studyAreaParameterList.push(parameter);
-                                parameter['checked'] = true;
-                                parameter['toggleable'] = false;
-                            }
+                                    configuration.alwaysSelectedParameters.forEach((alwaysSelectedParam) => {
+                                        if (alwaysSelectedParam.name == parameter.code) return;
+                                    });
 
+                                    //turn it on
+                                    if (this.checkArrayForObj(this.studyAreaService.studyAreaParameterList, parameter) == -1) this.studyAreaService.studyAreaParameterList.push(parameter);
+                                    parameter['checked'] = true;
+                                    parameter['toggleable'] = false;
+                                }
+
+                            });
                         });
                     }
                 });

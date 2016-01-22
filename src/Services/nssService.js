@@ -107,7 +107,8 @@ var StreamStats;
                 var url = configuration.baseurls['NSS'] + configuration.queryparams['statisticsGroupParameterLookup'].format(rcode, statisticsGroupID, regressionregions);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
-                    //console.log('loadParametersByStatisticsGroup response: ', response);
+                    console.log('loadParams: ', response.data[0]);
+                    //check to make sure there is a valid response
                     if (response.data[0].RegressionRegions[0].Parameters && response.data[0].RegressionRegions[0].Parameters.length > 0) {
                         //add Regression Regions to StatisticsGroupList and add percent weights
                         _this.selectedStatisticsGroupList.forEach(function (statGroup) {

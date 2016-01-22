@@ -153,10 +153,13 @@ var StreamStats;
                     return finalVal + '\n';
                 };
                 var processScenarioParamTable = function (statGroup) {
-                    var finalVal = statGroup.Name + ' Parameters\n';
-                    finalVal += 'Name,Value,Min Limit, Max Limit\n';
-                    statGroup.RegressionRegions[0].Parameters.forEach(function (item) {
-                        finalVal += item.Name + ',' + item.Value + ',' + item.Limits.Min.toFixed(2) + ',' + item.Limits.Max.toFixed(2) + '\n';
+                    var finalVal = '';
+                    statGroup.RegressionRegions.forEach(function (regressionRegion) {
+                        finalVal += statGroup.Name + ' Parameters ' + regressionRegion.PercentWeight.toFixed(0) + ' Percent  ' + regressionRegion.Name.split("_").join(" ") + '\n';
+                        finalVal += 'Name,Value,Min Limit, Max Limit\n';
+                        regressionRegion.Parameters.forEach(function (item) {
+                            finalVal += item.Name + ',' + item.Value + ',' + item.Limits.Min.toFixed(2) + ',' + item.Limits.Max.toFixed(2) + '\n';
+                        });
                     });
                     return finalVal + '\n';
                 };
