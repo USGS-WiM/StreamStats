@@ -147,29 +147,21 @@ var StreamStats;
                 var _this = this;
                 this.regionService.parameterList.forEach(function (parameter) {
                     //console.log('length of configuration.alwaysSelectedParameters: ', configuration.alwaysSelectedParameters.length);
-                    configuration.alwaysSelectedParameters.forEach(function (alwaysSelectedParam) {
-                        if (alwaysSelectedParam.name == parameter.code) {
-                            //console.log('should not remove this param ', alwaysSelectedParam.name, parameter.code);
-                            return;
+                    var paramCheck = _this.checkArrayForObj(_this.studyAreaService.studyAreaParameterList, parameter);
+                    if (_this.multipleParameterSelectorAdd) {
+                        //if its not there add it
+                        if (paramCheck == -1)
+                            _this.studyAreaService.studyAreaParameterList.push(parameter);
+                        parameter.checked = true;
+                    }
+                    else {
+                        //remove it only if toggleable
+                        if (paramCheck > -1 && parameter.toggleable) {
+                            _this.studyAreaService.studyAreaParameterList.splice(paramCheck, 1);
+                            _this.toaster.pop('warning', parameter.code + " is required by one of the selected scenarios", "It cannot be unselected");
+                            parameter.checked = false;
                         }
-                        else {
-                            var paramCheck = _this.checkArrayForObj(_this.studyAreaService.studyAreaParameterList, parameter);
-                            if (_this.multipleParameterSelectorAdd) {
-                                //if its not there add it
-                                if (paramCheck == -1)
-                                    _this.studyAreaService.studyAreaParameterList.push(parameter);
-                                parameter.checked = true;
-                            }
-                            else {
-                                //remove it only if toggleable
-                                if (paramCheck > -1 && parameter.toggleable) {
-                                    _this.studyAreaService.studyAreaParameterList.splice(paramCheck, 1);
-                                    _this.toaster.pop('warning', parameter.code + " is required by one of the selected scenarios", "It cannot be unselected");
-                                    parameter.checked = false;
-                                }
-                            }
-                        }
-                    });
+                    }
                 });
                 //flip toggle
                 this.multipleParameterSelectorAdd = !this.multipleParameterSelectorAdd;
@@ -256,10 +248,9 @@ var StreamStats;
                             statisticsGroup.RegressionRegions.forEach(function (regressionRegion) {
                                 regressionRegion.Parameters.forEach(function (param) {
                                     if (parameter.code.toLowerCase() == param.Code.toLowerCase()) {
-                                        configuration.alwaysSelectedParameters.forEach(function (alwaysSelectedParam) {
-                                            if (alwaysSelectedParam.name == parameter.code)
-                                                return;
-                                        });
+                                        //configuration.alwaysSelectedParameters.forEach((alwaysSelectedParam) => {
+                                        //    if (alwaysSelectedParam.name == parameter.code) return;
+                                        //});
                                         //turn it on
                                         if (_this.checkArrayForObj(_this.studyAreaService.studyAreaParameterList, parameter) == -1)
                                             _this.studyAreaService.studyAreaParameterList.push(parameter);
