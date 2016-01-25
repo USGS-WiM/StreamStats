@@ -585,12 +585,11 @@ module StreamStats.Controllers {
         private showLocation() {
 
             var lc;
+
             //get reference to elevation control
             this.controls.custom.forEach((control) => {
-                console.log('here',control);
-                if (control._container.className.indexOf("leaflet-control-locate") > -1) lc = control;
+                if (control._container.className.indexOf("leaflet-control-locate") > -1) lc = control; 
             });
-
             lc.start();
         }
 
@@ -985,12 +984,12 @@ module StreamStats.Controllers {
             }
             
             //if a region was selected, and then user zooms back out, clear and start over
-            if (this.center.zoom <= 6 && oldValue !== newValue) {
+            if (this.center.zoom <= 5 && oldValue !== newValue) {
                 ////console.log('removing region layers', this.layers.overlays);
 
-                //this.regionServices.clearRegion();
-                //this.studyArea.clearStudyArea();
-                //this.nssService.clearNSSdata();
+                this.regionServices.clearRegion();
+                this.studyArea.clearStudyArea();
+                this.nssService.clearNSSdata();
 
                 ////THIS IS JUST THROWING AN ANGULAR LEAFLET ERROR EVEN THOUGH SAME AS DOCS
                 //// http://tombatossals.github.io/angular-leaflet-directive/examples/0000-viewer.html#/layers/dynamic-addition-example
