@@ -316,7 +316,7 @@ module StreamStats.Controllers {
                     //zoom home button control
                     //(<any>L.Control).zoomHome({ homeCoordinates: [39, -100], homeZoom: 4 }),
                     //location control
-                    //(<any>L.control).locate({ follow: false }),
+                    (<any>L.control).locate({ follow: false, locateOptions: {"maxZoom": 15} }),
                     (<any>L.control).elevation({ imperial: true })
                     )
             };
@@ -363,7 +363,7 @@ module StreamStats.Controllers {
 
             //ga event
             this.angulartics.eventTrack('initialOperation', { category: 'Map', label: 'Map click query' });
-            
+
             this.leafletData.getMap().then((map: any) => {
                 this.leafletData.getLayers().then((maplayers: any) => {
 
@@ -576,10 +576,27 @@ module StreamStats.Controllers {
                 document.getElementById('elevation-div').innerHTML = '';
                 document.getElementById('elevation-div').appendChild(container);
             });
-                
+
 
             this.toaster.clear();
             this.cursorStyle = 'pointer'
+        }
+
+        private showLocation() {
+
+            var lc;
+            //get reference to elevation control
+            this.controls.custom.forEach((control) => {
+                console.log('here',control);
+                if (control._container.className.indexOf("leaflet-control-locate") > -1) lc = control;
+            });
+
+            lc.start();
+        }
+
+        private resetMap() {
+
+            this.center = new Center(39, -100, 3);
         }
 
         private measurement() {
