@@ -526,7 +526,7 @@ select:disabled:hover {
 /* checked mark aspect */
 [type="checkbox"]:not(:checked) + label:after,
 [type="checkbox"]:checked + label:after {
-  content: '\f3fd';
+  /*content: '\f3fd';
   font-family: 'ionicons';
   position: absolute;
   top: -1px;
@@ -534,7 +534,18 @@ select:disabled:hover {
   font-size: 32px;
   line-height: 0.8;
   color: #0071bc;
-  transition: all .2s;
+  transition: all .2s;*/
+
+    content: "\f00c";
+    font-family: FontAwesome;
+    left:-5px;
+    position:absolute;
+    top:2px;
+    left: 0px;
+    font-size: 18px;
+    line-height: 0.8;
+    color: #0071bc;
+    transition: all .2s;
 }
 /* checked mark aspect changes */
 [type="checkbox"]:not(:checked) + label:after {

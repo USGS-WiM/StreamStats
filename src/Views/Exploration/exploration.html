@@ -1,0 +1,18 @@
+﻿<div ng-class="vm.explorationToolsExpanded ? 'exploration-tools-expanded' : 'exploration-tools-collapsed'" ng-click="vm.explorationToolsExpanded = true; $event.stopPropagation(); $event.preventDefault();" ng-init="vm.explorationToolsExpanded == false">
+    <div ng-show="vm.explorationToolsExpanded">
+        
+
+            <div class="wim-alert-info"  >Tools that can be used outside of the main workflow</div>
+
+            <div class="btn-toolbar">
+                <button ng-disabled="!vm.regionService.selectedRegion" ng-class="!vm.regionService.allowStreamgageQuery ? 'btn-wim-sm btn-wim-default':'btn-wim-sm btn-wim-success'" ng-click="vm.regionService.allowStreamgageQuery = !vm.regionService.allowStreamgageQuery" ng-init="vm.regionService.allowStreamgageQuery = false"><span><i class="fa fa-info-circle"></i>&nbsp;&nbsp;Query Streamgages</span></button>
+                <button ng-class="!vm.explorationService.drawElevationProfile ? 'btn-wim-sm btn-wim-default':'btn-wim-sm btn-wim-success'" ng-click="vm.explorationService.drawElevationProfile = !vm.explorationService.drawElevationProfile"><span><i class="fa fa-line-chart"></i>&nbsp;&nbsp;Elevation Profile Tool</span></button>
+                <button ng-class="!vm.explorationService.drawMeasurement ? 'btn-wim-sm btn-wim-default':'btn-wim-sm btn-wim-success'" ng-click="vm.explorationService.drawMeasurement = !vm.explorationService.drawMeasurement"><span><i class="fa fa-arrows-h"></i>&nbsp;&nbsp;Measure Tool</span></button>
+                        
+            </div>
+            <div class="wim-alert-info"  ng-show="vm.explorationService.measurementData.length > 0">
+                <span ng-bind="vm.explorationService.measurementData"></span>
+            </div>
+
+    </div>
+</div>

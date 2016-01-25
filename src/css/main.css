@@ -60,18 +60,45 @@ body {
     border-radius: 0 !important;
 }
 
-.elevation {
+div.leaflet-top:nth-child(2) > div:nth-child(1) {
     display:none;
 }
 
 .map-position {
     padding: 0px 4px;
     font-size:small;
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: rgba(255, 255, 255, 1);
     margin-bottom:50px;
     margin-left:9px;
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.65);
     z-index:99999;
+}
+
+.exploration-tools-collapsed {
+    
+    position: absolute;
+    background: white;
+    z-index: 100;
+    left: 10px;
+    top: 130px;
+    box-shadow: 1px 1px 5px #333;
+    padding: 15px;
+    background-image: url(../images/tool-box.png);
+    background-repeat: no-repeat;
+    background-position: center;
+	width: 36px;
+	height: 36px;
+}
+
+.exploration-tools-expanded {
+    position: absolute;
+    background: white;
+    z-index: 100;
+    left: 10px;
+    top: 130px;
+
+    box-shadow: 1px 1px 5px #333;
+    padding: 10px;
 }
 
 .leaflet-control-layers.leaflet-control {

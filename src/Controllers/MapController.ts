@@ -213,13 +213,16 @@ module StreamStats.Controllers {
 
             $scope.$watch(() => this.bounds,(newval, oldval) => this.mapBoundsChange(oldval, newval));
 
-            $scope.$watch(() => this.explorationService.elevationProfileGeoJSON,(newval, oldval) => this.displayElevationProfile());
+            $scope.$watch(() => this.explorationService.elevationProfileGeoJSON,(newval, oldval) => {
+                if (newval) this.displayElevationProfile()
+            });
 
             $scope.$watch(() => this.explorationService.drawElevationProfile,(newval, oldval) => {
                 if (newval) this.elevationProfile();
             });
 
             $scope.$watch(() => this.explorationService.drawMeasurement,(newval, oldval) => {
+                console.log('measurementListener ', newval, oldval);
                 if (newval) this.measurement();
             });
 
@@ -284,7 +287,7 @@ module StreamStats.Controllers {
                 markers: this.markers,
                 geojson: this.geojson
             }
-            this.mapDefaults = new MapDefault(null, 3, false);
+            this.mapDefaults = new MapDefault(null, 3, true);
             this.markers = {};
             this.geojson = {};
             this.regionLayer = {};     
@@ -311,9 +314,9 @@ module StreamStats.Controllers {
                 custom:
                 new Array(
                     //zoom home button control
-                    (<any>L.Control).zoomHome({ homeCoordinates: [39, -100], homeZoom: 4 }),
+                    //(<any>L.Control).zoomHome({ homeCoordinates: [39, -100], homeZoom: 4 }),
                     //location control
-                    (<any>L.control).locate({ follow: false }),
+                    //(<any>L.control).locate({ follow: false }),
                     (<any>L.control).elevation({ imperial: true })
                     )
             };
@@ -489,8 +492,16 @@ module StreamStats.Controllers {
 
         private elevationProfile() {
 
+            document.getElementById('measurement-div').innerHTML = '';
+            this.explorationService.measurementData = '';
+
+            var el;
+
             //get reference to elevation control
-            var el = this.controls.custom[2];
+            this.controls.custom.forEach((control) => {
+                if (control._container.className.indexOf("elevation") > -1) el = control;
+                console.log(control._container.className.indexOf("elevation"));
+            });
 
             //report ga event
             this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'elevationProfile' });
@@ -537,7 +548,14 @@ module StreamStats.Controllers {
         }
 
         private displayElevationProfile() {
-            var el = this.controls.custom[2];
+
+            var el;
+
+            //get reference to elevation control
+            this.controls.custom.forEach((control) => {
+                if (control._container && control._container.className.indexOf("elevation") > -1) el = control;
+                console.log(el);
+            });
 
             //parse it
             this.geojson["elevationProfileLine3D"] = {
@@ -551,14 +569,25 @@ module StreamStats.Controllers {
             }
 
             //show the div
-            angular.element(document.querySelector('.elevation')).css('display', 'block');
+            //angular.element(document.querySelector('.elevation')).css('display', 'block');
+
+            this.leafletData.getMap().then((map: any) => {
+                var container = el.onAdd(map);
+                document.getElementById('elevation-div').innerHTML = '';
+                document.getElementById('elevation-div').appendChild(container);
+            });
+                
+
             this.toaster.clear();
             this.cursorStyle = 'pointer'
         }
 
         private measurement() {
 
-            //console.log('in measurement');
+            console.log('in measurement');
+            document.getElementById('elevation-div').innerHTML = '';
+            //user affordance
+            this.explorationService.measurementData = 'Click the map to begin';
 
             //report ga event
             this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'measurement' });
@@ -579,8 +608,7 @@ module StreamStats.Controllers {
                     var drawnItems = maplayers.overlays.draw;
                     drawnItems.clearLayers();
 
-                    //user affordance
-                    this.explorationService.measurementData = 'Click the map to begin';
+
 			
                     //listeners active during drawing
                     var measuremove = () => {
