@@ -417,7 +417,6 @@ var StreamStats;
                 var lc;
                 //get reference to elevation control
                 this.controls.custom.forEach(function (control) {
-                    console.log('here', control);
                     if (control._container.className.indexOf("leaflet-control-locate") > -1)
                         lc = control;
                 });
@@ -742,7 +741,11 @@ var StreamStats;
                     this.regionServices.loadRegionListByExtent(this.bounds.northEast.lng, this.bounds.southWest.lng, this.bounds.southWest.lat, this.bounds.northEast.lat);
                 }
                 //if a region was selected, and then user zooms back out, clear and start over
-                if (this.center.zoom <= 6 && oldValue !== newValue) {
+                if (this.center.zoom <= 5 && oldValue !== newValue) {
+                    ////console.log('removing region layers', this.layers.overlays);
+                    this.regionServices.clearRegion();
+                    this.studyArea.clearStudyArea();
+                    this.nssService.clearNSSdata();
                 }
                 if (this.center.zoom >= 15) {
                     this.studyArea.showDelineateButton = true;
