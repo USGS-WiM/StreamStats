@@ -109,12 +109,16 @@ var StreamStats;
                         _this.queryStreamgages(args.leafletEvent);
                 });
                 $scope.$watch(function () { return _this.bounds; }, function (newval, oldval) { return _this.mapBoundsChange(oldval, newval); });
-                $scope.$watch(function () { return _this.explorationService.elevationProfileGeoJSON; }, function (newval, oldval) { return _this.displayElevationProfile(); });
+                $scope.$watch(function () { return _this.explorationService.elevationProfileGeoJSON; }, function (newval, oldval) {
+                    if (newval)
+                        _this.displayElevationProfile();
+                });
                 $scope.$watch(function () { return _this.explorationService.drawElevationProfile; }, function (newval, oldval) {
                     if (newval)
                         _this.elevationProfile();
                 });
                 $scope.$watch(function () { return _this.explorationService.drawMeasurement; }, function (newval, oldval) {
+                    console.log('measurementListener ', newval, oldval);
                     if (newval)
                         _this.measurement();
                 });
@@ -173,7 +177,7 @@ var StreamStats;
                     markers: this.markers,
                     geojson: this.geojson
                 };
-                this.mapDefaults = new MapDefault(null, 3, false);
+                this.mapDefaults = new MapDefault(null, 3, true);
                 this.markers = {};
                 this.geojson = {};
                 this.regionLayer = {};
@@ -195,7 +199,7 @@ var StreamStats;
                             marker: false
                         }
                     },
-                    custom: new Array(L.Control.zoomHome({ homeCoordinates: [39, -100], homeZoom: 4 }), L.control.locate({ follow: false }), L.control.elevation({ imperial: true }))
+                    custom: new Array(L.control.elevation({ imperial: true }))
                 };
                 this.events = {
                     map: {
@@ -340,8 +344,15 @@ var StreamStats;
             };
             MapController.prototype.elevationProfile = function () {
                 var _this = this;
+                document.getElementById('measurement-div').innerHTML = '';
+                this.explorationService.measurementData = '';
+                var el;
                 //get reference to elevation control
-                var el = this.controls.custom[2];
+                this.controls.custom.forEach(function (control) {
+                    if (control._container.className.indexOf("elevation") > -1)
+                        el = control;
+                    console.log(control._container.className.indexOf("elevation"));
+                });
                 //report ga event
                 this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'elevationProfile' });
                 this.leafletData.getMap().then(function (map) {
@@ -375,7 +386,13 @@ var StreamStats;
                 });
             };
             MapController.prototype.displayElevationProfile = function () {
-                var el = this.controls.custom[2];
+                var el;
+                //get reference to elevation control
+                this.controls.custom.forEach(function (control) {
+                    if (control._container && control._container.className.indexOf("elevation") > -1)
+                        el = control;
+                    console.log(el);
+                });
                 //parse it
                 this.geojson["elevationProfileLine3D"] = {
                     data: this.explorationService.elevationProfileGeoJSON,
@@ -387,13 +404,21 @@ var StreamStats;
                     onEachFeature: el.addData.bind(el)
                 };
                 //show the div
-                angular.element(document.querySelector('.elevation')).css('display', 'block');
+                //angular.element(document.querySelector('.elevation')).css('display', 'block');
+                this.leafletData.getMap().then(function (map) {
+                    var container = el.onAdd(map);
+                    document.getElementById('elevation-div').innerHTML = '';
+                    document.getElementById('elevation-div').appendChild(container);
+                });
                 this.toaster.clear();
                 this.cursorStyle = 'pointer';
             };
             MapController.prototype.measurement = function () {
-                //console.log('in measurement');
                 var _this = this;
+                console.log('in measurement');
+                document.getElementById('elevation-div').innerHTML = '';
+                //user affordance
+                this.explorationService.measurementData = 'Click the map to begin';
                 //report ga event
                 this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'measurement' });
                 this.leafletData.getMap().then(function (map) {
@@ -408,8 +433,6 @@ var StreamStats;
                         polyline.enable();
                         var drawnItems = maplayers.overlays.draw;
                         drawnItems.clearLayers();
-                        //user affordance
-                        _this.explorationService.measurementData = 'Click the map to begin';
                         //listeners active during drawing
                         var measuremove = function () {
                             _this.explorationService.measurementData = "Total length: " + polyline._getMeasurementString();

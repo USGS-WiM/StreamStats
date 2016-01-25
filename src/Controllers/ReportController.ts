@@ -91,7 +91,7 @@ module StreamStats.Controllers {
             this.studyAreaService = studyArea;
             this.nssService = StatisticsGroup;
             this.leafletData = leafletData;
-            this.reportTitle = 'Report Title';
+            this.reportTitle = 'StreamStats Report';
             this.reportComments = 'Some comments here';
 
             this.initMap();
