@@ -205,35 +205,26 @@ module StreamStats.Controllers {
             this.regionService.parameterList.forEach((parameter) => {
 
                 //console.log('length of configuration.alwaysSelectedParameters: ', configuration.alwaysSelectedParameters.length);
-                
-                configuration.alwaysSelectedParameters.forEach((alwaysSelectedParam) => {
+             
+                var paramCheck = this.checkArrayForObj(this.studyAreaService.studyAreaParameterList, parameter);
 
-                    if (alwaysSelectedParam.name == parameter.code) {
-                        //console.log('should not remove this param ', alwaysSelectedParam.name, parameter.code);
-                        return;
+                if (this.multipleParameterSelectorAdd) {
+
+                    //if its not there add it
+                    if (paramCheck == -1) this.studyAreaService.studyAreaParameterList.push(parameter);
+                    parameter.checked = true;
+                }
+                else {
+
+                    //remove it only if toggleable
+                    if (paramCheck > -1 && parameter.toggleable) {
+                        this.studyAreaService.studyAreaParameterList.splice(paramCheck, 1);
+                        this.toaster.pop('warning', parameter.code + " is required by one of the selected scenarios", "It cannot be unselected");
+                        parameter.checked = false;
                     }
+                } 
 
-                    else {
-
-                        var paramCheck = this.checkArrayForObj(this.studyAreaService.studyAreaParameterList, parameter);
-
-                        if (this.multipleParameterSelectorAdd) {
-
-                            //if its not there add it
-                            if (paramCheck == -1) this.studyAreaService.studyAreaParameterList.push(parameter);
-                            parameter.checked = true;
-                        }
-                        else {
-
-                            //remove it only if toggleable
-                            if (paramCheck > -1 && parameter.toggleable) {
-                                this.studyAreaService.studyAreaParameterList.splice(paramCheck, 1);
-                                this.toaster.pop('warning', parameter.code + " is required by one of the selected scenarios", "It cannot be unselected");
-                                parameter.checked = false;
-                            }
-                        } 
-                    }
-                });
+     
             });
 
             //flip toggle
@@ -347,9 +338,9 @@ module StreamStats.Controllers {
 
                                 if (parameter.code.toLowerCase() == param.Code.toLowerCase()) {
 
-                                    configuration.alwaysSelectedParameters.forEach((alwaysSelectedParam) => {
-                                        if (alwaysSelectedParam.name == parameter.code) return;
-                                    });
+                                    //configuration.alwaysSelectedParameters.forEach((alwaysSelectedParam) => {
+                                    //    if (alwaysSelectedParam.name == parameter.code) return;
+                                    //});
 
                                     //turn it on
                                     if (this.checkArrayForObj(this.studyAreaService.studyAreaParameterList, parameter) == -1) this.studyAreaService.studyAreaParameterList.push(parameter);

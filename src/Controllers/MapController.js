@@ -351,7 +351,6 @@ var StreamStats;
                 this.controls.custom.forEach(function (control) {
                     if (control._container.className.indexOf("elevation") > -1)
                         el = control;
-                    console.log(control._container.className.indexOf("elevation"));
                 });
                 //report ga event
                 this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'elevationProfile' });
@@ -381,6 +380,8 @@ var StreamStats;
                             _this.explorationService.elevationProfile(esriJSON);
                             //disable button 
                             _this.explorationService.drawElevationProfile = false;
+                            //force map refresh
+                            map.panBy([0, 1]);
                         });
                     });
                 });
@@ -391,7 +392,6 @@ var StreamStats;
                 this.controls.custom.forEach(function (control) {
                     if (control._container && control._container.className.indexOf("elevation") > -1)
                         el = control;
-                    console.log(el);
                 });
                 //parse it
                 this.geojson["elevationProfileLine3D"] = {
@@ -427,7 +427,6 @@ var StreamStats;
             };
             MapController.prototype.measurement = function () {
                 var _this = this;
-                console.log('in measurement');
                 document.getElementById('elevation-div').innerHTML = '';
                 //user affordance
                 this.explorationService.measurementData = 'Click the map to begin';

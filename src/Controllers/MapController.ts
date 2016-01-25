@@ -500,7 +500,6 @@ module StreamStats.Controllers {
             //get reference to elevation control
             this.controls.custom.forEach((control) => {
                 if (control._container.className.indexOf("elevation") > -1) el = control;
-                console.log(control._container.className.indexOf("elevation"));
             });
 
             //report ga event
@@ -542,7 +541,10 @@ module StreamStats.Controllers {
 
                         //disable button 
                         this.explorationService.drawElevationProfile = false;
-                    });
+
+                        //force map refresh
+                        map.panBy([0, 1]);
+                    }); 
                 });
             });
         }
@@ -554,7 +556,6 @@ module StreamStats.Controllers {
             //get reference to elevation control
             this.controls.custom.forEach((control) => {
                 if (control._container && control._container.className.indexOf("elevation") > -1) el = control;
-                console.log(el);
             });
 
             //parse it
@@ -600,7 +601,6 @@ module StreamStats.Controllers {
 
         private measurement() {
 
-            console.log('in measurement');
             document.getElementById('elevation-div').innerHTML = '';
             //user affordance
             this.explorationService.measurementData = 'Click the map to begin';
