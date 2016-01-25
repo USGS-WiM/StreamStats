@@ -14,6 +14,8 @@
             <button ng-class="!vm.regionService.allowStreamgageQuery ? 'btn-wim-sm btn-wim-default':'btn-wim-sm btn-wim-success'" ng-click="vm.regionService.allowStreamgageQuery = !vm.regionService.allowStreamgageQuery" ng-init="vm.regionService.allowStreamgageQuery = false"><span><i class="fa fa-info-circle"></i>&nbsp;&nbsp;Query Streamgages</span></button>
             <button ng-class="!vm.explorationService.drawElevationProfile ? 'btn-wim-sm btn-wim-default':'btn-wim-sm btn-wim-success'" ng-click="vm.explorationService.drawElevationProfile = !vm.explorationService.drawElevationProfile"><span><i class="fa fa-line-chart"></i>&nbsp;&nbsp;Elevation Profile Tool</span></button>
             <button ng-class="!vm.explorationService.drawMeasurement ? 'btn-wim-sm btn-wim-default':'btn-wim-sm btn-wim-success'" ng-click="vm.explorationService.drawMeasurement = !vm.explorationService.drawMeasurement"><span><i class="fa fa-arrows-h"></i>&nbsp;&nbsp;Measure Tool</span></button>
+            <button class="btn-wim-sm btn-wim-default" ng-click="vm.showLocation()"><span><i class="fa fa-map-marker"></i>&nbsp;&nbsp;Show your location</span></button>
+            <button class="btn-wim-sm btn-wim-default" ng-click="vm.resetMap()"><span><i class="fa fa-home"></i>&nbsp;&nbsp;Reset the view</span></button>
                         
         </div>
         <div id="elevation-div" class="leaflet-control elevation"></div>

@@ -199,7 +199,7 @@ var StreamStats;
                             marker: false
                         }
                     },
-                    custom: new Array(L.control.elevation({ imperial: true }))
+                    custom: new Array(L.control.locate({ follow: false, locateOptions: { "maxZoom": 15 } }), L.control.elevation({ imperial: true }))
                 };
                 this.events = {
                     map: {
@@ -412,6 +412,19 @@ var StreamStats;
                 });
                 this.toaster.clear();
                 this.cursorStyle = 'pointer';
+            };
+            MapController.prototype.showLocation = function () {
+                var lc;
+                //get reference to elevation control
+                this.controls.custom.forEach(function (control) {
+                    console.log('here', control);
+                    if (control._container.className.indexOf("leaflet-control-locate") > -1)
+                        lc = control;
+                });
+                lc.start();
+            };
+            MapController.prototype.resetMap = function () {
+                this.center = new Center(39, -100, 3);
             };
             MapController.prototype.measurement = function () {
                 var _this = this;

@@ -105,6 +105,10 @@ div.leaflet-top:nth-child(2) > div:nth-child(1) {
     display: none;
 }
 
+.leaflet-control-locate {
+    display: none;
+}
+
 .angular-leaflet-control-layers-collapsed {
     
     position: absolute;
