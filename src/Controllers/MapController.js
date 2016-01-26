@@ -508,7 +508,7 @@ var StreamStats;
                             //if there are no exclusion area hits
                             if (results.features.length == 0) {
                                 //ga event
-                                _this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'validPoint' });
+                                _this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'valid' });
                                 _this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000);
                                 _this.studyArea.checkingDelineatedPoint = false;
                                 _this.startDelineate(latlng);
@@ -521,11 +521,12 @@ var StreamStats;
                                 if (excludeCode == 1) {
                                     _this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", popupMsg, 0);
                                     //ga event
-                                    _this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'exclusionAreaPoint' });
+                                    _this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'not allowed' });
                                 }
                                 else {
                                     _this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", popupMsg, true, 0);
                                     _this.startDelineate(latlng);
+                                    _this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'not advised' });
                                 }
                             }
                             _this.cursorStyle = 'pointer';
@@ -623,7 +624,7 @@ var StreamStats;
             };
             MapController.prototype.onSelectedAreaOfInterestChanged = function (sender, e) {
                 //ga event
-                this.angulartics.eventTrack('initialOperation', { category: 'Map', label: 'Search' });
+                this.angulartics.eventTrack('Search', { category: 'Sidebar' });
                 this.markers = {};
                 var AOI = e.selectedAreaOfInterest;
                 if (AOI.Category == "U.S. State or Territory")

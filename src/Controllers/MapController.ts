@@ -706,7 +706,7 @@ module StreamStats.Controllers {
                         //if there are no exclusion area hits
                         if (results.features.length == 0) {
                             //ga event
-                            this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'validPoint'});
+                            this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'valid'});
 
                             this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000)
                             this.studyArea.checkingDelineatedPoint = false;
@@ -722,11 +722,12 @@ module StreamStats.Controllers {
                             if (excludeCode == 1) {
                                 this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", popupMsg, 0);
                                 //ga event
-                                this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'exclusionAreaPoint' });
+                                this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'not allowed' });
                             }
                             else {
                                 this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", popupMsg, true, 0);
                                 this.startDelineate(latlng);
+                                this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'not advised' });
                             }
                         }
 
@@ -846,7 +847,7 @@ module StreamStats.Controllers {
         private onSelectedAreaOfInterestChanged(sender: any, e: WiM.Services.SearchAPIEventArgs) {
 
             //ga event
-            this.angulartics.eventTrack('initialOperation', { category: 'Map', label: 'Search' });
+            this.angulartics.eventTrack('Search', { category: 'Sidebar' });
 
             this.markers = {};
             var AOI = e.selectedAreaOfInterest;
