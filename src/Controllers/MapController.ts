@@ -229,7 +229,7 @@ module StreamStats.Controllers {
             $scope.$watch(() => this.regionServices.regionMapLayerListLoaded,(newval, oldval) => {
                 if (newval) {
                     console.log('in regionMapLayerListLoaded watch: ', this.regionServices.selectedRegion);
-                    //this.addRegionOverlayLayers(this.regionServices.selectedRegion.RegionID);
+                    this.addRegionOverlayLayers(this.regionServices.selectedRegion.RegionID);
                 }
             });
 
