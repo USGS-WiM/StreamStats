@@ -61,6 +61,7 @@ var StreamStats;
                 this.statisticsGroupList = [];
                 this.canUpdate = true;
                 this.queriedRegions = false;
+                this.loadingParametersByStatisticsGroup = false;
             };
             nssService.prototype.loadStatisticsGroupTypes = function (rcode, regressionregions) {
                 var _this = this;
@@ -100,7 +101,7 @@ var StreamStats;
             };
             nssService.prototype.loadParametersByStatisticsGroup = function (rcode, statisticsGroupID, regressionregions, percentWeights) {
                 var _this = this;
-                this.toaster.pop('info', "Load Parameters by Scenario", "Please wait...", 0);
+                this.loadingParametersByStatisticsGroup = true;
                 //console.log('in load StatisticsGroup parameters', rcode, statisticsGroupID,regressionregions);
                 if (!rcode && !statisticsGroupID && !regressionregions)
                     return;
@@ -108,6 +109,7 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     console.log('loadParams: ', response.data[0]);
+                    _this.loadingParametersByStatisticsGroup = false;
                     //check to make sure there is a valid response
                     if (response.data[0].RegressionRegions[0].Parameters && response.data[0].RegressionRegions[0].Parameters.length > 0) {
                         //add Regression Regions to StatisticsGroupList and add percent weights

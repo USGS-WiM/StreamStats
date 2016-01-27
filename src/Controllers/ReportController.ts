@@ -227,6 +227,7 @@ module StreamStats.Controllers {
             };
 
             var processScenarioFlowTable = (statGroup) => {
+                console.log('here', statGroup);
                 var finalVal = statGroup.Name + ' Flow Report\n';
                 finalVal += 'Name,Value,Unit,Prediction Error\n'
 

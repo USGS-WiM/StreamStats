@@ -35,6 +35,7 @@ module StreamStats.Services {
         showFlowsTable: boolean;
         clearNSSdata();
         queriedRegions: boolean;
+        loadingParametersByStatisticsGroup: boolean;
     }
     export interface IStatisticsGroup {
         ID: string;
@@ -76,6 +77,7 @@ module StreamStats.Services {
         public showBasinCharacteristicsTable: boolean;
         public showFlowsTable: boolean;
         public queriedRegions: boolean;
+        public loadingParametersByStatisticsGroup: boolean;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -94,6 +96,7 @@ module StreamStats.Services {
             this.statisticsGroupList = [];
             this.canUpdate = true;
             this.queriedRegions = false;
+            this.loadingParametersByStatisticsGroup = false;
         }
 
         public loadStatisticsGroupTypes(rcode: string, regressionregions: string) {
@@ -139,7 +142,7 @@ module StreamStats.Services {
 
         public loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregions: string, percentWeights:any) {
 
-            this.toaster.pop('info', "Load Parameters by Scenario", "Please wait...", 0);
+            this.loadingParametersByStatisticsGroup = true;
 
             //console.log('in load StatisticsGroup parameters', rcode, statisticsGroupID,regressionregions);
             if (!rcode && !statisticsGroupID && !regressionregions) return;
@@ -151,6 +154,7 @@ module StreamStats.Services {
                 (response: any) => {
 
                     console.log('loadParams: ', response.data[0]);
+                    this.loadingParametersByStatisticsGroup = false;
 
                     //check to make sure there is a valid response
                     if (response.data[0].RegressionRegions[0].Parameters && response.data[0].RegressionRegions[0].Parameters.length > 0) {

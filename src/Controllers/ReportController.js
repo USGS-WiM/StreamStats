@@ -164,6 +164,7 @@ var StreamStats;
                     return finalVal + '\n';
                 };
                 var processScenarioFlowTable = function (statGroup) {
+                    console.log('here', statGroup);
                     var finalVal = statGroup.Name + ' Flow Report\n';
                     finalVal += 'Name,Value,Unit,Prediction Error\n';
                     statGroup.Results.forEach(function (item) {
