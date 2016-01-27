@@ -51,6 +51,7 @@ var WiM;
                 this.Execute(request).then(function (response) {
                     console.log(response.data);
                     if (response.data.layers.length > 0) {
+                        mlyr.isOpen = true;
                         mlyr.layerArray = response.data.layers;
                     }
                 }, function (error) {
@@ -90,7 +91,6 @@ var WiM;
                             } //end if
                         }
                     }); //end getLayers
-                    //remove legend
                 }); //end getMap   
                 //http://pastebin.com/k8z6ZkdX
             }; //end init

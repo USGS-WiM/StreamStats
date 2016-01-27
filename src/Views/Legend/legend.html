@@ -13,46 +13,33 @@
             </a> 
             <div ng-hide="vm.baselayers.isOpen" class="list-group-body">
                 <div class="sitebar-item" ng-repeat="(key, layer) in vm.baselayers.layergroup">
-                    <input type="radio" id="baselayerRadio" ng-checked="$parent.vm.selectedBaselayerName === key.toString()" ng-value="key.toString()" /><label for="baselayerRadio" ng-click="vm.changeBaseLayer(key, $event)">{{layer.name}}</label>
-                    <!--<label ng-click="vm.changeBaseLayer(key, $event)">
-                        <input type="radio" name="baselayerRadio" ng-checked="$parent.vm.selectedBaselayerName === key.toString()" ng-value="key.toString()" /> {{layer.name}}
-                        <i ng-class="layer.icon"></i>
-                    </label>-->
+                    <input type="radio" id="baselayerRadio{{$id}}" ng-checked="$parent.vm.baselayers.selectedlayerName === key.toString()" ng-value="key.toString()" /><label for="baselayerRadio{{$id}}" ng-click="vm.changeBaseLayer(key, $event)">{{layer.name}}</label>
                 </div>
-                <hr/>
             </div>  
-            <!-- overlays -->
+
+            <!-- overlays --> 
             <div ng-repeat="layer in vm.overlays.layergroup" ng-init="vm.initOverlays(layer)">
-                <input type="checkbox" id="checkbox1" ng-checked="layer.visible" />
-                    <label for="checkbox1" ng-if="!layer.layerParams.showOnSelector && layer.layerParams.showOnSelector !== false" ng-click="layer.visible = (layer.visible) ? false : true;">{{layer.name}}
-                        <div ng-if="layer.type == 'agsDynamic'">
-                            <div ng-repeat="lyr in layer.layerArray ">
-                                <label>{{lyr.layerName}}</label>
-                                <div ng-repeat="leg in lyr.legend ">
-                                    <img alt="Embedded Image"
-                                            src="data:{{leg.contentType}};base64,{{leg.imageData}}"/>
-                                    <i>{{leg.label}}</i>
-
-                                </div>
-                            </div>
-                        </div>
+                <div ng-if="!layer.layerParams.showOnSelector && layer.layerParams.showOnSelector !== false" ng-class="!layer.isOpen  ? 'list-group-item-active': 'list-group-item'">
+                    <input type="checkbox" id="checkbox{{$id}}" ng-checked="layer.visible" />
+                    <label for="checkbox{{$id}}" ng-if="!layer.layerParams.showOnSelector && layer.layerParams.showOnSelector !== false" ng-click="layer.visible = (layer.visible) ? false : true;">
+                        {{layer.name}}
                     </label>
-
-                <!--<label ng-if="!layer.layerParams.showOnSelector && layer.layerParams.showOnSelector !== false" ng-click="layer.visible = (layer.visible) ? false : true;">
-                    <input type="checkbox" ng-checked="layer.visible" /> {{layer.name}}
+                    <i ng-class="!layer.isOpen ? 'fa fa-chevron-up pull-right': 'fa fa-chevron-down pull-right'" ng-click="layer.isOpen=(layer.isOpen) ? false : true;"></i>
+                </div>
+                <div ng-hide="layer.isOpen">
                     <div ng-if="layer.type == 'agsDynamic'">
                         <div ng-repeat="lyr in layer.layerArray ">
                             <label>{{lyr.layerName}}</label>
                             <div ng-repeat="leg in lyr.legend ">
                                 <img alt="Embedded Image"
-                                        src="data:{{leg.contentType}};base64,{{leg.imageData}}" />
+                                     src="data:{{leg.contentType}};base64,{{leg.imageData}}" />
                                 <i>{{leg.label}}</i>
-
                             </div>
                         </div>
                     </div>
-                </label>-->
+                </div>
             </div>
+
         </div>
     </div>
 </div>
