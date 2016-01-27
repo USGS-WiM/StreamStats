@@ -64,6 +64,15 @@ div.leaflet-top > .elevation {
     display:none;
 }
 
+#elevation-div {
+    background-color:white !important;
+    padding:10px;
+}
+
+.elevation-close-button {
+    left:10px;
+}
+
 .map-position {
     padding: 0px 4px;
     font-size:small;
