@@ -1,6 +1,6 @@
 ﻿<leaflet layers="vm.layers" geojson="vm.geojson" geojson-nested="true" center="vm.center" controls="vm.controls" markers="vm.markers" defaults="vm.mapDefaults" bounds="vm.bounds" ng-style="{cursor:vm.cursorStyle}">
     <!--<i id="loadingSpinner" class="fa fa-spinner fa-5x fa-spin"></i>-->    
-    <wim-legend></wim-legend>
+    <wim-legend stop-event="click"></wim-legend>
 </leaflet>
 <div ng-class="vm.explorationToolsExpanded ? 'exploration-tools-expanded ' : 'exploration-tools-collapsed '" ng-click="vm.explorationToolsExpanded = true; $event.stopPropagation(); $event.preventDefault();" ng-init="vm.explorationToolsExpanded == false">
     <div ng-show="vm.explorationToolsExpanded">

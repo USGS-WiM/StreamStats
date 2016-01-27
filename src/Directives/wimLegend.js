@@ -130,6 +130,17 @@ var WiM;
                 scope.vm.layers = layers;
                 element.bind('click', function (e) {
                     e.stopPropagation();
+                    e.preventDefault();
+                });
+                element.bind('mouseover', function (e) {
+                    controller.getMap().then(function (map) {
+                        map.dragging.disable();
+                    }); //end getMap   
+                });
+                element.bind('mouseout', function (e) {
+                    controller.getMap().then(function (map) {
+                        map.dragging.enable();
+                    }); //end getMap  
                 });
             }; //end link
             return wimLegend;

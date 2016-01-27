@@ -87,8 +87,6 @@ module WiM.Directives {
                 }, (error) => {
 
                 });
-
-
         }
         
         public changeBaseLayer(key: any, evt: any)
@@ -169,8 +167,21 @@ module WiM.Directives {
             (<any>scope).vm.layers = layers;
 
             element.bind('click', function (e) {
-                    e.stopPropagation();
+                e.stopPropagation();
+                e.preventDefault();
             });
+
+            element.bind('mouseover', (e) => {
+               controller.getMap().then((map: any) => {
+                   map.dragging.disable();                              
+                });//end getMap   
+            });
+            element.bind('mouseout', (e) => {
+                controller.getMap().then((map: any) => {
+                    map.dragging.enable();
+                });//end getMap  
+            });
+
 
         }//end link
 

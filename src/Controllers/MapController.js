@@ -125,6 +125,7 @@ var StreamStats;
                 $scope.$watch(function () { return _this.regionServices.regionMapLayerListLoaded; }, function (newval, oldval) {
                     if (newval) {
                         console.log('in regionMapLayerListLoaded watch: ', _this.regionServices.selectedRegion);
+                        _this.addRegionOverlayLayers(_this.regionServices.selectedRegion.RegionID);
                     }
                 });
                 $scope.$on('$locationChangeStart', function () { return _this.updateRegion(); });
@@ -198,7 +199,11 @@ var StreamStats;
                             marker: false
                         }
                     },
-                    custom: new Array(L.control.locate({ follow: false, locateOptions: { "maxZoom": 15 } }), L.control.elevation({ imperial: true }))
+                    custom: new Array(
+                    //zoom home button control
+                    //(<any>L.Control).zoomHome({ homeCoordinates: [39, -100], homeZoom: 4 }),
+                    //location control
+                    L.control.locate({ follow: false, locateOptions: { "maxZoom": 15 } }), L.control.elevation({ imperial: true }))
                 };
                 this.events = {
                     map: {
@@ -541,9 +546,7 @@ var StreamStats;
                 }
                 var basin = angular.fromJson(angular.toJson(this.layers.overlays['globalwatershed']));
                 var basinConverted = [];
-                basin.data.features[0].geometry.coordinates[0].forEach(function (item) {
-                    basinConverted.push([item[1], item[0]]);
-                });
+                basin.data.features[0].geometry.coordinates[0].forEach(function (item) { basinConverted.push([item[1], item[0]]); });
                 this.leafletData.getMap().then(function (map) {
                     _this.leafletData.getLayers().then(function (maplayers) {
                         //console.log('maplayers', map, maplayers);
@@ -561,9 +564,7 @@ var StreamStats;
                             //convert edit polygon coords
                             var editArea = layer.toGeoJSON().geometry.coordinates[0];
                             var editAreaConverted = [];
-                            editArea.forEach(function (item) {
-                                editAreaConverted.push([item[1], item[0]]);
-                            });
+                            editArea.forEach(function (item) { editAreaConverted.push([item[1], item[0]]); });
                             var sourcePolygon = L.polygon(basinConverted);
                             var clipPolygon = L.polygon(editAreaConverted);
                             if (_this.studyArea.drawControlOption == 'add') {
@@ -589,9 +590,7 @@ var StreamStats;
                             }
                             //set studyArea basin to new edited polygon
                             basin.data.features[0].geometry.coordinates[0] = [];
-                            editPolygon.forEach(function (item) {
-                                basin.data.features[0].geometry.coordinates[0].push([item[1], item[0]]);
-                            });
+                            editPolygon.forEach(function (item) { basin.data.features[0].geometry.coordinates[0].push([item[1], item[0]]); });
                             //console.log('edited basin', basin, basin.data.features[0].geometry.coordinates[0].length, this.layers.overlays['globalwatershed'].data.features[0].geometry.coordinates[0].length);
                             _this.toaster.pop("info", "Submitting your edit", "Please wait...", 5000);
                             //clear old watershed
@@ -814,7 +813,7 @@ var StreamStats;
                     if (layerObj[variable].hasOwnProperty("name") && (isPartial ? (layerObj[variable].name.indexOf(name) > -1) : (layerObj[variable].name === name))) {
                         layeridList.push(variable);
                     }
-                }
+                } //next variable
                 return layeridList;
             };
             MapController.prototype.getLayerIdsByID = function (id, layerObj, isPartial) {
@@ -823,7 +822,7 @@ var StreamStats;
                     if (isPartial ? (variable.indexOf(id) > -1) : (variable === id)) {
                         layeridList.push(variable);
                     }
-                }
+                } //next variable
                 return layeridList;
             };
             MapController.prototype.startDelineate = function (latlng) {
@@ -837,7 +836,8 @@ var StreamStats;
             MapController.$inject = ['$scope', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService'];
             return MapController;
         })(); //end class
-        angular.module('StreamStats.Controllers').controller('StreamStats.Controllers.MapController', MapController);
+        angular.module('StreamStats.Controllers')
+            .controller('StreamStats.Controllers.MapController', MapController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));
 })(StreamStats || (StreamStats = {})); //end module
 //# sourceMappingURL=MapController.js.map
