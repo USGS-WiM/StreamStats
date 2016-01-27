@@ -124,8 +124,7 @@ var StreamStats;
                 });
                 $scope.$watch(function () { return _this.regionServices.regionMapLayerListLoaded; }, function (newval, oldval) {
                     if (newval) {
-                        //console.log(newval);
-                        _this.addRegionOverlayLayers(_this.regionServices.selectedRegion.RegionID);
+                        console.log('in regionMapLayerListLoaded watch: ', _this.regionServices.selectedRegion);
                     }
                 });
                 $scope.$on('$locationChangeStart', function () { return _this.updateRegion(); });
@@ -274,7 +273,7 @@ var StreamStats;
                                 _this.regionServices.masterRegionList.forEach(function (item) {
                                     if (item.RegionID == rcodeList[0]) {
                                         _this.setBoundsByRegion(rcodeList[0]);
-                                        //console.log('right here', this.regionServices.selectedRegion);
+                                        console.log('in map click query', _this.regionServices.selectedRegion);
                                         if (_this.regionServices.selectedRegion)
                                             _this.regionServices.loadParametersByRegion();
                                     }
@@ -508,7 +507,7 @@ var StreamStats;
                             //if there are no exclusion area hits
                             if (results.features.length == 0) {
                                 //ga event
-                                _this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'validPoint' });
+                                _this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'valid' });
                                 _this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000);
                                 _this.studyArea.checkingDelineatedPoint = false;
                                 _this.startDelineate(latlng);
@@ -521,11 +520,12 @@ var StreamStats;
                                 if (excludeCode == 1) {
                                     _this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", popupMsg, 0);
                                     //ga event
-                                    _this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'exclusionAreaPoint' });
+                                    _this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'not allowed' });
                                 }
                                 else {
                                     _this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", popupMsg, true, 0);
                                     _this.startDelineate(latlng);
+                                    _this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'not advised' });
                                 }
                             }
                             _this.cursorStyle = 'pointer';
@@ -623,7 +623,7 @@ var StreamStats;
             };
             MapController.prototype.onSelectedAreaOfInterestChanged = function (sender, e) {
                 //ga event
-                this.angulartics.eventTrack('initialOperation', { category: 'Map', label: 'Search' });
+                this.angulartics.eventTrack('Search', { category: 'Sidebar' });
                 this.markers = {};
                 var AOI = e.selectedAreaOfInterest;
                 if (AOI.Category == "U.S. State or Territory")
@@ -643,7 +643,7 @@ var StreamStats;
                 });
             };
             MapController.prototype.onSelectedRegionChanged = function () {
-                //console.log('in onselected region changed', this.regionServices.regionList, this.regionServices.selectedRegion);
+                console.log('in onselected region changed', this.regionServices.regionList, this.regionServices.selectedRegion);
                 if (!this.regionServices.selectedRegion)
                     return;
                 this.removeOverlayLayers("_region", true);
@@ -740,12 +740,16 @@ var StreamStats;
                     this.regionServices.loadRegionListByExtent(this.bounds.northEast.lng, this.bounds.southWest.lng, this.bounds.southWest.lat, this.bounds.northEast.lat);
                 }
                 //if a region was selected, and then user zooms back out, clear and start over
-                if (this.center.zoom <= 5 && oldValue !== newValue) {
-                    ////console.log('removing region layers', this.layers.overlays);
-                    this.regionServices.clearRegion();
-                    this.studyArea.clearStudyArea();
-                    this.nssService.clearNSSdata();
-                }
+                //if (this.center.zoom <= 5 && oldValue !== newValue) {
+                //    ////console.log('removing region layers', this.layers.overlays);
+                //    this.regionServices.clearRegion();
+                //    this.studyArea.clearStudyArea();
+                //    this.nssService.clearNSSdata();
+                //    ////THIS IS JUST THROWING AN ANGULAR LEAFLET ERROR EVEN THOUGH SAME AS DOCS
+                //    //// http://tombatossals.github.io/angular-leaflet-directive/examples/0000-viewer.html#/layers/dynamic-addition-example
+                //    //this.removeOverlayLayers("_region", true)
+                //    ////this.onSelectedRegionChanged();
+                //}
                 if (this.center.zoom >= 15) {
                     this.studyArea.showDelineateButton = true;
                 }
@@ -760,6 +764,7 @@ var StreamStats;
             };
             MapController.prototype.setBoundsByRegion = function (key) {
                 if (key && this.regionServices.loadRegionListByRegion(key)) {
+                    console.log('in setBoundsByRegion selectedRegion gets set here');
                     this.regionServices.selectedRegion = this.regionServices.regionList[0];
                     this.bounds = this.leafletBoundsHelperService.createBoundsFromArray(this.regionServices.selectedRegion.Bounds);
                 }
