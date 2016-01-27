@@ -206,9 +206,12 @@ module StreamStats.Controllers {
                 //listen for delineate click if ready
                 if (studyArea.doDelineateFlag) this.checkDelineatePoint(args.leafletEvent.latlng);
 
-                //otherwise query map layers
-                else if (!region.selectedRegion && !this.explorationService.drawElevationProfile && !this.explorationService.drawMeasurement) this.queryNationalMapLayers(args.leafletEvent)
-                else if (region.selectedRegion && this.regionServices.allowStreamgageQuery && !this.explorationService.drawElevationProfile && !this.explorationService.drawMeasurement) this.queryStreamgages(args.leafletEvent);
+                //query streamgages
+                console.log('map click listener: ', region.allowStreamgageQuery);
+                if (region.allowStreamgageQuery) this.queryStreamgages(args.leafletEvent);
+
+                //state or region layer query
+                if (!region.selectedRegion && !exploration.drawElevationProfile && !exploration.drawMeasurement && !region.allowStreamgageQuery) this.queryNationalMapLayers(args.leafletEvent)
             });
 
             $scope.$watch(() => this.bounds,(newval, oldval) => this.mapBoundsChange(oldval, newval));
@@ -451,7 +454,7 @@ module StreamStats.Controllers {
 
                         results.features.forEach((queryResult) => {
 
-                            this.regionServices.regionMapLayerList.forEach((item) => {
+                            this.regionServices.nationalMapLayerList.forEach((item) => {
                                 if (queryResult.layerId == item[1]) {
                                     //console.log('Map query found a match with: ', item[0], queryResult)
 

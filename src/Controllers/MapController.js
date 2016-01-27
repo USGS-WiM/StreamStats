@@ -103,10 +103,13 @@ var StreamStats;
                     //listen for delineate click if ready
                     if (studyArea.doDelineateFlag)
                         _this.checkDelineatePoint(args.leafletEvent.latlng);
-                    else if (!region.selectedRegion && !_this.explorationService.drawElevationProfile && !_this.explorationService.drawMeasurement)
-                        _this.queryNationalMapLayers(args.leafletEvent);
-                    else if (region.selectedRegion && _this.regionServices.allowStreamgageQuery && !_this.explorationService.drawElevationProfile && !_this.explorationService.drawMeasurement)
+                    //query streamgages
+                    console.log('map click listener: ', region.allowStreamgageQuery);
+                    if (region.allowStreamgageQuery)
                         _this.queryStreamgages(args.leafletEvent);
+                    //state or region layer query
+                    if (!region.selectedRegion && !exploration.drawElevationProfile && !exploration.drawMeasurement && !region.allowStreamgageQuery)
+                        _this.queryNationalMapLayers(args.leafletEvent);
                 });
                 $scope.$watch(function () { return _this.bounds; }, function (newval, oldval) { return _this.mapBoundsChange(oldval, newval); });
                 $scope.$watch(function () { return _this.explorationService.elevationProfileGeoJSON; }, function (newval, oldval) {
@@ -307,7 +310,7 @@ var StreamStats;
                                 return;
                             }
                             results.features.forEach(function (queryResult) {
-                                _this.regionServices.regionMapLayerList.forEach(function (item) {
+                                _this.regionServices.nationalMapLayerList.forEach(function (item) {
                                     if (queryResult.layerId == item[1]) {
                                         //console.log('Map query found a match with: ', item[0], queryResult)
                                         if (item[0].toLowerCase() == "streamgages") {
