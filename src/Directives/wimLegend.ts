@@ -81,6 +81,7 @@ module WiM.Directives {
                 (response: any) => {
                     console.log(response.data);
                     if (response.data.layers.length > 0) {
+                        mlyr.isOpen = true;
                         mlyr.layerArray = response.data.layers;
                     }
                 }, (error) => {
@@ -126,9 +127,7 @@ module WiM.Directives {
                         }//end if
                     }//next
                 });//end getLayers
-
-                //remove legend
-                
+                                
             });//end getMap   
 
             

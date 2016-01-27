@@ -163,7 +163,7 @@ configuration.basemaps =
 
 configuration.overlayedLayers = {
     "SSLayer": {
-        "name": "StreamStats National Layers",
+        "name": "National Layers",
         "url": configuration.baseurls['StreamStats'] + "/arcgis/rest/services/ss_studyAreas_prod/MapServer",
         "type": 'agsDynamic',
         "visible": true,
