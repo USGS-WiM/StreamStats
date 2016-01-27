@@ -94,6 +94,7 @@ div.leaflet-top > .elevation {
     position: absolute;
     background: white;
     z-index: 100;
+    width:200px;
     left: 10px;
     top: 130px;
     box-shadow: 1px 1px 5px #333;

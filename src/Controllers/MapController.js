@@ -422,6 +422,9 @@ var StreamStats;
                 lc.start();
             };
             MapController.prototype.resetMap = function () {
+                this.regionServices.clearRegion();
+                this.studyArea.clearStudyArea();
+                this.nssService.clearNSSdata();
                 this.center = new Center(39, -100, 3);
             };
             MapController.prototype.measurement = function () {
