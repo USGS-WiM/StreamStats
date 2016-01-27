@@ -125,6 +125,7 @@ var StreamStats;
                 $scope.$watch(function () { return _this.regionServices.regionMapLayerListLoaded; }, function (newval, oldval) {
                     if (newval) {
                         console.log('in regionMapLayerListLoaded watch: ', _this.regionServices.selectedRegion);
+                        _this.addRegionOverlayLayers(_this.regionServices.selectedRegion.RegionID);
                     }
                 });
                 $scope.$on('$locationChangeStart', function () { return _this.updateRegion(); });
