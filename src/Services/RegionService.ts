@@ -208,7 +208,7 @@ module StreamStats.Services {
         }
 
         public loadMapLayersByRegion(regionid: string): any {
-            //console.log('in loadMapLayersByRegion');
+            console.log('in loadMapLayersByRegion');
             this.regionMapLayerListLoaded = false;
 
             var url = configuration.baseurls['StreamStats'] + configuration.queryparams['SSStateLayers'].format(regionid.toLowerCase());
