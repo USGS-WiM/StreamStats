@@ -1,5 +1,5 @@
 
-<div ng-class="vm.layerControlExpanded ? 'angular-leaflet-control-layers-expanded' : 'angular-leaflet-control-layers-collapsed'" ng-click="vm.layerControlExpanded = true; $event.stopPropagation(); $event.preventDefault();" ng-init="vm.layerControlExpanded == false">
+<div ng-class="vm.layerControlExpanded ? 'angular-leaflet-control-layers-expanded' : 'angular-leaflet-control-layers-collapsed'" ng-click="vm.layerControlExpanded = true;" ng-init="vm.layerControlExpanded == false">
     <div ng-show="vm.layerControlExpanded">
         <div class="row angular-leaflet-control-layers-header">
             <h4 ng-if="title">Layer Control}</h4>
@@ -15,10 +15,21 @@
                 <div class="sitebar-item" ng-repeat="(key, layer) in vm.baselayers.layergroup">
                     <input type="radio" id="baselayerRadio{{$id}}" ng-checked="$parent.vm.baselayers.selectedlayerName === key.toString()" ng-value="key.toString()" /><label for="baselayerRadio{{$id}}" ng-click="vm.changeBaseLayer(key, $event)">{{layer.name}}</label>
                 </div>
-            </div>  
-
+            </div>
+              
+            <!--         <table class="table table-condensed">
+                                <tbody ng-repeat="parameter in vm.regionService.parameterList">
+                                    <tr>
+                                        <td><checkbox large ng-model="parameter.checked" ng-change="vm.updateStudyAreaParameterList(parameter)"></checkbox></td>
+                                        <td><span>&nbsp;&nbsp;{{parameter.code}}</span></td>
+                                        <td><span>&nbsp;&nbsp;{{parameter.description}}</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>  
+                 -->
             <!-- overlays --> 
             <div ng-repeat="layer in vm.overlays.layergroup" ng-init="vm.initOverlays(layer)">
+   
                 <div ng-if="!layer.layerParams.showOnSelector && layer.layerParams.showOnSelector !== false" ng-class="!layer.isOpen  ? 'list-group-item-active': 'list-group-item'">
                     <input type="checkbox" id="checkbox{{$id}}" ng-checked="layer.visible" />
                     <label for="checkbox{{$id}}" ng-if="!layer.layerParams.showOnSelector && layer.layerParams.showOnSelector !== false" ng-click="layer.visible = (layer.visible) ? false : true;">

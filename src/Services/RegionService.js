@@ -151,7 +151,7 @@ var StreamStats;
             };
             RegionService.prototype.loadMapLayersByRegion = function (regionid) {
                 var _this = this;
-                //console.log('in loadMapLayersByRegion');
+                console.log('in loadMapLayersByRegion');
                 this.regionMapLayerListLoaded = false;
                 var url = configuration.baseurls['StreamStats'] + configuration.queryparams['SSStateLayers'].format(regionid.toLowerCase());
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, 0 /* GET */, 'json');
