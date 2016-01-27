@@ -1,6 +1,6 @@
 <leaflet layers="vm.layers" geojson="vm.geojson" geojson-nested="true" center="vm.center" controls="vm.controls" markers="vm.markers" defaults="vm.mapDefaults" bounds="vm.bounds" ng-style="{cursor:vm.cursorStyle}">
     <!--<i id="loadingSpinner" class="fa fa-spinner fa-5x fa-spin"></i>-->    
-    <wim-legend></wim-legend>
+    <wim-legend stop-event="click"></wim-legend>
 </leaflet>
 <div ng-class="vm.explorationToolsExpanded ? 'exploration-tools-expanded ' : 'exploration-tools-collapsed '" ng-click="vm.explorationToolsExpanded = true; $event.stopPropagation(); $event.preventDefault();" ng-init="vm.explorationToolsExpanded == false">
     <div ng-show="vm.explorationToolsExpanded">
@@ -11,12 +11,12 @@
         <h6>Exploration Tools</h6>
         <!--<div class="wim-alert-info"  >Tools that can be used outside of the main workflow</div>-->
 
-        <div class="btn-toolbar">
-            <button ng-class="!vm.regionService.allowStreamgageQuery ? 'btn-wim-sm btn-wim-primary':'btn-wim-sm btn-wim-success'" ng-click="vm.regionService.allowStreamgageQuery = !vm.regionService.allowStreamgageQuery" ng-init="vm.regionService.allowStreamgageQuery = false"><span><i class="fa fa-info-circle"></i>&nbsp;&nbsp;Query Streamgages</span></button>
-            <button ng-class="!vm.explorationService.drawElevationProfile ? 'btn-wim-sm btn-wim-primary':'btn-wim-sm btn-wim-success'" ng-click="vm.explorationService.drawElevationProfile = !vm.explorationService.drawElevationProfile"><span><i class="fa fa-line-chart"></i>&nbsp;&nbsp;Elevation Profile Tool</span></button>
-            <button ng-class="!vm.explorationService.drawMeasurement ? 'btn-wim-sm btn-wim-primary':'btn-wim-sm btn-wim-success'" ng-click="vm.explorationService.drawMeasurement = !vm.explorationService.drawMeasurement"><span><i class="fa fa-arrows-h"></i>&nbsp;&nbsp;Measure Tool</span></button>
-            <button class="btn-wim-sm btn-wim-primary" ng-click="vm.showLocation()"><span><i class="fa fa-map-marker"></i>&nbsp;&nbsp;Show your location</span></button>
-            <button class="btn-wim-sm btn-wim-primary" ng-click="vm.resetMap()"><span><i class="fa fa-home"></i>&nbsp;&nbsp;Reset the view</span></button>
+        <div class="group-wrapper">
+            <button ng-class="!vm.regionService.allowStreamgageQuery ? 'btn-wim-sm btn-wim-primary btn-wim-group-1':'btn-wim-sm btn-wim-success btn-wim-group-1'" ng-click="vm.regionService.allowStreamgageQuery = !vm.regionService.allowStreamgageQuery" ng-init="vm.regionService.allowStreamgageQuery = false"><span><i class="fa fa-info-circle"></i>&nbsp;&nbsp;Query Streamgages</span></button>
+            <button ng-class="!vm.explorationService.drawElevationProfile ? 'btn-wim-sm btn-wim-primary btn-wim-group-1':'btn-wim-sm btn-wim-success btn-wim-group-1'" ng-click="vm.explorationService.drawElevationProfile = !vm.explorationService.drawElevationProfile"><span><i class="fa fa-line-chart"></i>&nbsp;&nbsp;Elevation Profile Tool</span></button>
+            <button ng-class="!vm.explorationService.drawMeasurement ? 'btn-wim-sm btn-wim-primary btn-wim-group-1':'btn-wim-sm btn-wim-success btn-wim-group-1'" ng-click="vm.explorationService.drawMeasurement = !vm.explorationService.drawMeasurement"><span><i class="fa fa-arrows-h"></i>&nbsp;&nbsp;Measure Tool</span></button>
+            <button class="btn-wim-sm btn-wim-primary btn-wim-group-1" ng-click="vm.showLocation()"><span><i class="fa fa-map-marker"></i>&nbsp;&nbsp;Show your location</span></button>
+            <button class="btn-wim-sm btn-wim-primary btn-wim-group-1" ng-click="vm.resetMap()"><span><i class="fa fa-home"></i>&nbsp;&nbsp;Reset the view</span></button>
                         
         </div>
         <div id="elevation-div" class="leaflet-control elevation"></div>

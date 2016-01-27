@@ -598,7 +598,9 @@ module StreamStats.Controllers {
         }
 
         private resetMap() {
-
+            this.regionServices.clearRegion();
+            this.studyArea.clearStudyArea();
+            this.nssService.clearNSSdata();
             this.center = new Center(39, -100, 3);
         }
 
