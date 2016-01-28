@@ -101,6 +101,7 @@ var StreamStats;
             SidebarController.prototype.resetWorkSpace = function () {
                 //this.regionService.clearRegion();
                 this.studyAreaService.clearStudyArea();
+                this.studyAreaService.showDelineateButton = true;
                 this.nssService.clearNSSdata();
             };
             SidebarController.prototype.startDelineate = function () {

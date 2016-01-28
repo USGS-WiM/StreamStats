@@ -76,6 +76,7 @@ div.leaflet-top > .elevation {
 .map-position {
     padding: 0px 4px;
     font-size:small;
+    font-weight:400;
     background-color: rgba(255, 255, 255, 1);
     margin-bottom:50px;
     margin-left:9px;
@@ -210,6 +211,7 @@ div.leaflet-top > .elevation {
     .app-name{
     position: relative;
     top:-2px;
+    font-weight:300;
     }
 
     .navBarButton{

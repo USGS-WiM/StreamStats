@@ -164,10 +164,14 @@ var StreamStats;
                     return finalVal + '\n';
                 };
                 var processScenarioFlowTable = function (statGroup) {
-                    var finalVal = statGroup.Name + ' Flow Report\n';
-                    finalVal += 'Name,Value,Unit,Prediction Error\n';
-                    statGroup.Results.forEach(function (item) {
-                        finalVal += item.Name + ',' + item.Value.toFixed(0) + ',' + item.Unit.Abbr + ',' + '' + '\n';
+                    console.log('here', statGroup);
+                    var finalVal = '';
+                    statGroup.RegressionRegions.forEach(function (regressionRegion) {
+                        finalVal = statGroup.Name + ' Flow Report\n';
+                        finalVal += 'Name,Value,Unit,Prediction Error\n';
+                        regressionRegion.Results.forEach(function (item) {
+                            finalVal += item.Name + ',' + item.Value.toFixed(0) + ',' + item.Unit.Abbr + ',' + '' + '\n';
+                        });
                     });
                     return finalVal + '\n';
                 };

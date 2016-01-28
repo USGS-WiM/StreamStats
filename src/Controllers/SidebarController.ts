@@ -146,6 +146,7 @@ module StreamStats.Controllers {
         public resetWorkSpace() {
             //this.regionService.clearRegion();
             this.studyAreaService.clearStudyArea();
+            this.studyAreaService.showDelineateButton = true;
             this.nssService.clearNSSdata();
         }
 
