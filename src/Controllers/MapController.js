@@ -238,13 +238,16 @@ var StreamStats;
             };
             MapController.prototype.queryNationalMapLayers = function (evt) {
                 var _this = this;
-                //console.log('in querystates');
-                this.toaster.pop("info", "Information", "Querying National map layers...", 0);
-                this.cursorStyle = 'wait';
-                //ga event
-                this.angulartics.eventTrack('initialOperation', { category: 'Map', label: 'Map click query' });
                 this.leafletData.getMap().then(function (map) {
                     _this.leafletData.getLayers().then(function (maplayers) {
+                        //turn off if zoomed in too far
+                        if (map.getZoom() >= 9)
+                            return;
+                        //console.log('in querystates');
+                        _this.toaster.pop("info", "Information", "Querying National map layers...", 0);
+                        _this.cursorStyle = 'wait';
+                        //ga event
+                        _this.angulartics.eventTrack('initialOperation', { category: 'Map', label: 'Map click query' });
                         maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).run(function (error, results) {
                             //console.log('national results', results, results.features.length);
                             if (results.features.length < 1) {

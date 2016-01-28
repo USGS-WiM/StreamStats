@@ -360,15 +360,18 @@ module StreamStats.Controllers {
 
         private queryNationalMapLayers(evt) {
 
-            //console.log('in querystates');
-            this.toaster.pop("info", "Information", "Querying National map layers...", 0);
-            this.cursorStyle = 'wait'; 
-
-            //ga event
-            this.angulartics.eventTrack('initialOperation', { category: 'Map', label: 'Map click query' });
-
             this.leafletData.getMap().then((map: any) => {
                 this.leafletData.getLayers().then((maplayers: any) => {
+
+                    //turn off if zoomed in too far
+                    if (map.getZoom() >= 9) return;
+
+                    //console.log('in querystates');
+                    this.toaster.pop("info", "Information", "Querying National map layers...", 0);
+                    this.cursorStyle = 'wait'; 
+
+                    //ga event
+                    this.angulartics.eventTrack('initialOperation', { category: 'Map', label: 'Map click query' });
 
                     maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).run((error: any, results: any) => {
                         //console.log('national results', results, results.features.length);
