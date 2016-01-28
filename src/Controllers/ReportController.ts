@@ -228,11 +228,15 @@ module StreamStats.Controllers {
 
             var processScenarioFlowTable = (statGroup) => {
                 console.log('here', statGroup);
-                var finalVal = statGroup.Name + ' Flow Report\n';
-                finalVal += 'Name,Value,Unit,Prediction Error\n'
+                var finalVal = '';
 
-                statGroup.Results.forEach((item) => {
-                    finalVal += item.Name + ',' + item.Value.toFixed(0) + ',' + item.Unit.Abbr + ',' + '' + '\n';
+                statGroup.RegressionRegions.forEach((regressionRegion) => {
+                    finalVal = statGroup.Name + ' Flow Report\n';
+                    finalVal += 'Name,Value,Unit,Prediction Error\n'
+
+                    regressionRegion.Results.forEach((item) => {
+                        finalVal += item.Name + ',' + item.Value.toFixed(0) + ',' + item.Unit.Abbr + ',' + '' + '\n';
+                    });
                 });
                 return finalVal + '\n';
             };

@@ -42,7 +42,6 @@ module StreamStats.Services {
         Name: string;
         Code: string;
         RegressionRegions: Array<any>;
-        Results: Array<any>;
         Citations: any;
         Disclaimers: any;
     }
@@ -53,7 +52,6 @@ module StreamStats.Services {
         public Name: string;
         public Code: string;
         public RegressionRegions: Array<any>;
-        public Results: Array<any>;
         public Citations: any;
         public Disclaimers: any;
 
@@ -200,6 +198,10 @@ module StreamStats.Services {
                 //console.log('in estimate flows method for ', statGroup.Name, statGroup);
 
                 statGroup.RegressionRegions.forEach((regressionRegion) => {
+
+                    //delete results object if it exists
+                    if (regressionRegion.Results) delete regressionRegion.Results;
+
                     regressionRegion.Parameters.forEach((regressionParam) => {
                         studyAreaParameterList.forEach((param) => {
                             //console.log('search for matching params ', regressionParam.Code.toLowerCase(), param.code.toLowerCase());
@@ -217,7 +219,6 @@ module StreamStats.Services {
                 var url = configuration.baseurls['NSS'] + configuration.queryparams['estimateFlows'].format(rcode, statGroup.ID, regressionregion);
                 var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, 1, 'json', updatedScenarioObject);
 
-                statGroup.Results = [];
                 statGroup.Citations = [];
                 this.Execute(request).then(
                     (response: any) => {
