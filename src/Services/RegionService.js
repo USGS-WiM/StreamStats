@@ -105,7 +105,7 @@ var StreamStats;
                     layers: "all: 4"
                 };
                 var url = configuration.baseurls['StreamStats'] + configuration.queryparams['regionService'];
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, 0 /* GET */, 'json');
                 request.params = input;
                 this.Execute(request).then(function (response) {
                     //console.log(response);
@@ -137,7 +137,7 @@ var StreamStats;
             RegionService.prototype.loadNationalMapLayers = function () {
                 var _this = this;
                 var url = configuration.baseurls['StreamStats'] + "/arcgis/rest/services/ss_studyAreas_prod/MapServer?f=pjson";
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, 0 /* GET */, 'json');
                 this.nationalMapLayerList = [];
                 this.Execute(request).then(function (response) {
                     response.data.layers.forEach(function (value, key) {
@@ -156,7 +156,7 @@ var StreamStats;
                 console.log('in loadMapLayersByRegion');
                 this.regionMapLayerListLoaded = false;
                 var url = configuration.baseurls['StreamStats'] + configuration.queryparams['SSStateLayers'].format(regionid.toLowerCase());
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, 0 /* GET */, 'json');
                 this.regionMapLayerList = [];
                 this.Execute(request).then(function (response) {
                     if (!response.data.layers) {
