@@ -167,6 +167,7 @@
 
                     <div class="well well-sm" ng-init="vm.showModifyBasinCharacterstics = false" ng-show="vm.showModifyBasinCharacterstics">
                         <p>Basin Characteristics can be edited here</p>
+
                         <table class="table table-condensed">
                             <thead class="param-table">
                             <tr>
@@ -177,14 +178,15 @@
                             </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList">
+                                <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList" ng-form="paramaterForm">
                                 <td ng-bind="parameter.name"></td>
-                                <td ng-hide="vm.studyAreaService.Disclaimers.isRegulated"><input class="form-control" ng-model="parameter.value" type="text"/></td>
-                                <td ng-show="vm.studyAreaService.Disclaimers.isRegulated"><input class="form-control" ng-model="parameter.unRegulatedValue" type="text"/></td>
-                                <td ng-show="vm.studyAreaService.Disclaimers.isRegulated"><input class="form-control" ng-model="parameter.regulatedValue" type="text"/></td>
+                                <td ng-hide="vm.studyAreaService.Disclaimers.isRegulated"><input class="form-control" ng-change="vm.studyAreaService.Disclaimers.parametersEdited = true" ng-model="parameter.value" type="text"/></td>
+                                <td ng-show="vm.studyAreaService.Disclaimers.isRegulated"><input class="form-control" ng-change="vm.studyAreaService.Disclaimers.parametersEdited = true" ng-model="parameter.unRegulatedValue" type="text"/></td>
+                                <td ng-show="vm.studyAreaService.Disclaimers.isRegulated"><input class="form-control" ng-change="vm.studyAreaService.Disclaimers.parametersEdited = true" ng-model="parameter.regulatedValue" type="text"/></td>
                                 </tr>
                             </tbody>
-                        </table>                       
+                        </table>     
+               
                     </div>
 
                     <div class="well well-sm">
@@ -202,24 +204,7 @@
                         </div>
                     </div>
                 </div>    
-            </div>  
-            <!--<div class="sidebar-item">
-                <a ng-class="vm.showExplorationTools ? 'list-group-item-active': 'list-group-item exploration-tools'" ng-click="vm.showExplorationTools = !vm.showExplorationTools" ng-init="vm.showExplorationTools = false" >Exploration Tools<i ng-class="vm.showExplorationTools ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
-
-                <div class="list-group-body" ng-show="vm.showExplorationTools">
-                    <div class="wim-alert-info"  >Tools that can be used outside of the main workflow</div>
-
-                    <div class="btn-toolbar">
-                        <button ng-disabled="!vm.regionService.selectedRegion" ng-class="!vm.regionService.allowStreamgageQuery ? 'btn-wim-sm btn-wim-default':'btn-wim-sm btn-wim-success'" ng-click="vm.regionService.allowStreamgageQuery = !vm.regionService.allowStreamgageQuery" ng-init="vm.regionService.allowStreamgageQuery = false"><span><i class="fa fa-info-circle"></i>&nbsp;&nbsp;Query Streamgages</span></button>
-                        <button ng-class="!vm.explorationService.drawElevationProfile ? 'btn-wim-sm btn-wim-default':'btn-wim-sm btn-wim-success'" ng-click="vm.explorationService.drawElevationProfile = !vm.explorationService.drawElevationProfile"><span><i class="fa fa-line-chart"></i>&nbsp;&nbsp;Elevation Profile Tool</span></button>
-                        <button ng-class="!vm.explorationService.drawMeasurement ? 'btn-wim-sm btn-wim-default':'btn-wim-sm btn-wim-success'" ng-click="vm.explorationService.drawMeasurement = !vm.explorationService.drawMeasurement"><span><i class="fa fa-arrows-h"></i>&nbsp;&nbsp;Measure Tool</span></button>
-                        
-                    </div>
-                    <div class="wim-alert-info"  ng-show="vm.explorationService.measurementData.length > 0">
-                        <span ng-bind="vm.explorationService.measurementData"></span>
-                    </div>
-                </div>    
-            </div>-->       
+            </div>        
         </div>
 
         <div class="identification pull-right">powered by <a href="http://wim.usgs.gov/" target="_blank">WiM</a></div>
