@@ -364,7 +364,7 @@ module StreamStats.Controllers {
                 this.leafletData.getLayers().then((maplayers: any) => {
 
                     //turn off if zoomed in too far
-                    if (map.getZoom() >= 9) return;
+                    if (map.getZoom() >= 8) return;
 
                     //console.log('in querystates');
                     this.toaster.pop("info", "Information", "Querying National map layers...", 0);
@@ -374,7 +374,7 @@ module StreamStats.Controllers {
                     this.angulartics.eventTrack('initialOperation', { category: 'Map', label: 'Map click query' });
 
                     maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).run((error: any, results: any) => {
-                        //console.log('national results', results, results.features.length);
+                        console.log('national results', results, results.features.length);
 
                         if (results.features.length < 1) {
                             //console.log('here');
@@ -990,7 +990,7 @@ module StreamStats.Controllers {
 
             this.nomnimalZoomLevel = this.scaleLookup(this.center.zoom);
 
-            if (this.center.zoom >= 9 && oldValue !== newValue) {
+            if (this.center.zoom >= 8 && oldValue !== newValue) {
                 //console.log('requesting region list');
                 this.regionServices.loadRegionListByExtent(this.bounds.northEast.lng, this.bounds.southWest.lng,
                     this.bounds.southWest.lat, this.bounds.northEast.lat);

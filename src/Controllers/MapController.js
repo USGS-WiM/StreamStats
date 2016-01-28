@@ -241,7 +241,7 @@ var StreamStats;
                 this.leafletData.getMap().then(function (map) {
                     _this.leafletData.getLayers().then(function (maplayers) {
                         //turn off if zoomed in too far
-                        if (map.getZoom() >= 9)
+                        if (map.getZoom() >= 8)
                             return;
                         //console.log('in querystates');
                         _this.toaster.pop("info", "Information", "Querying National map layers...", 0);
@@ -249,7 +249,7 @@ var StreamStats;
                         //ga event
                         _this.angulartics.eventTrack('initialOperation', { category: 'Map', label: 'Map click query' });
                         maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).run(function (error, results) {
-                            //console.log('national results', results, results.features.length);
+                            console.log('national results', results, results.features.length);
                             if (results.features.length < 1) {
                                 //console.log('here');
                                 _this.cursorStyle = 'pointer';
@@ -746,7 +746,7 @@ var StreamStats;
             };
             MapController.prototype.mapBoundsChange = function (oldValue, newValue) {
                 this.nomnimalZoomLevel = this.scaleLookup(this.center.zoom);
-                if (this.center.zoom >= 9 && oldValue !== newValue) {
+                if (this.center.zoom >= 8 && oldValue !== newValue) {
                     //console.log('requesting region list');
                     this.regionServices.loadRegionListByExtent(this.bounds.northEast.lng, this.bounds.southWest.lng, this.bounds.southWest.lat, this.bounds.northEast.lat);
                 }
