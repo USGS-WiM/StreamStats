@@ -35,6 +35,6 @@
     "d3": "~3.5.12",
     "Leaflet.Elevation": "https://github.com/aaronblondeau/Leaflet.Elevation.git#718286ac51775baf460c7b67f4dffa15280fa3a7",
     "angulartics": "~1.0.3",
-    "angulartics-google-analytics": "~0.1.4",
+    "angulartics-google-analytics": "~0.1.4"
   }
 }
