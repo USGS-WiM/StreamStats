@@ -159,7 +159,7 @@ var StreamStats;
                         //remove it only if toggleable
                         if (paramCheck > -1 && parameter.toggleable) {
                             _this.studyAreaService.studyAreaParameterList.splice(paramCheck, 1);
-                            _this.toaster.pop('warning', parameter.code + " is required by one of the selected scenarios", "It cannot be unselected");
+                            //this.toaster.pop('warning', parameter.code + " is required by one of the selected scenarios", "It cannot be unselected");
                             parameter.checked = false;
                         }
                     }
