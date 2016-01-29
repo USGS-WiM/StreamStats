@@ -46,15 +46,21 @@
                         <div class="wim-alert-info" ng-show="vm.studyAreaService.showDelineateButton">Click the 'Delineate' button, then use your mouse or finger to click or tap a blue stream cell on the map</div>
                     </div>
 
-                    <div class="wim-alert-warning" ng-hide="vm.regionService.streamStatsAvailable">StreamStats is not available here at this time</div>
+                    <!--<div class="wim-alert-warning" ng-hide="vm.regionService.streamStatsAvailable">StreamStats is not available here at this time</div>-->
 
                     <div class="group-wrapper" ng-hide="vm.studyAreaService.selectedStudyArea.Features"> 
                         <button id="delineateButton" type="button" class="btn-wim-sm btn-wim-success btn-wim-group-1" ng-click="vm.startDelineate()" ng-class="vm.studyAreaService.doDelineateFlag ? 'btn-wim-warning' : 'btn-wim-success'" ng-hide="vm.studyAreaService.selectedStudyArea.Features" ng-disabled="!vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint || !vm.studyAreaService.showDelineateButton"><i  ng-class="vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint ? 'fa fa-map-marker' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;<span ng-show="vm.studyAreaService.canUpdate">Delineate</span><span ng-show="!vm.studyAreaService.canUpdate">Delineating Basin</span></button>
                      </div>    
 
+                    <div class="wim-alert-info" ng-show="!vm.studyAreaService.regressionRegionQueryLoading && !vm.studyAreaService.regressionRegionQueryComplete && vm.studyAreaService.selectedStudyArea.Features"> The Regression region query failed, please use the "Re-query Regression Regions" button below to try again or click the "Continue" button if you would like to continue with limited functionality</div>
                     <div class="group-wrapper" ng-show="vm.studyAreaService.selectedStudyArea.Features && !vm.studyAreaService.regressionRegionQueryComplete"> 
-                        <button type="button" class="btn-wim-sm btn-wim-info btn-wim-group-1" ng-click="vm.queryRegressionRegions()" ng-disabled="vm.studyAreaService.regressionRegionQueryLoading"><span ng-show="vm.studyAreaService.regressionRegionQueryLoading"><i ng-class="vm.studyAreaService.regressionRegionQueryLoading ? 'fa fa-refresh fa-spin' : ''"></i>&nbsp;&nbsp;Querying Regression Regions</span><span ng-show="!vm.studyAreaService.regressionRegionQueryLoading && !vm.studyAreaService.regressionRegionQueryComplete"><i class="fa fa-refresh"></i>&nbsp;&nbsp;Re-query Regression Regions</span></button>
+                        <button type="button" class="btn-wim-sm btn-wim-info btn-wim-group-1" ng-click="vm.queryRegressionRegions()" ng-disabled="vm.studyAreaService.regressionRegionQueryLoading"><span ng-show="vm.studyAreaService.regressionRegionQueryLoading"><i ng-class="vm.studyAreaService.regressionRegionQueryLoading ? 'fa fa-refresh fa-spin' : ''"></i>&nbsp;&nbsp;Querying Regression Regions</span><span ng-show="!vm.studyAreaService.regressionRegionQueryLoading && !vm.studyAreaService.regressionRegionQueryComplete">Re-query Regression Regions</span></button>
                     </div>
+                    <div class="group-wrapper" ng-show="!vm.studyAreaService.regressionRegionQueryLoading && !vm.studyAreaService.regressionRegionQueryComplete && vm.studyAreaService.selectedStudyArea.Features"> 
+                        <button type="button" class="btn-wim-sm btn-wim-success btn-wim-group-1" ng-click="vm.studyAreaService.regressionRegionQueryComplete = true;"> <span>Continue</span></button>
+                    </div>
+
+
                     
                     <div ng-show="vm.studyAreaService.regressionRegionQueryComplete">
 
