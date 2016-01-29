@@ -46,7 +46,7 @@
                         <div class="wim-alert-info" ng-show="vm.studyAreaService.showDelineateButton">Click the 'Delineate' button, then use your mouse or finger to click or tap a blue stream cell on the map</div>
                     </div>
 
-                    <div class="wim-alert-warning" ng-hide="vm.regionService.streamStatsAvailable">StreamStats is not available here at this time</div>
+                    <!--<div class="wim-alert-warning" ng-hide="vm.regionService.streamStatsAvailable">StreamStats is not available here at this time</div>-->
 
                     <div class="group-wrapper" ng-hide="vm.studyAreaService.selectedStudyArea.Features"> 
                         <button id="delineateButton" type="button" class="btn-wim-sm btn-wim-success btn-wim-group-1" ng-click="vm.startDelineate()" ng-class="vm.studyAreaService.doDelineateFlag ? 'btn-wim-warning' : 'btn-wim-success'" ng-hide="vm.studyAreaService.selectedStudyArea.Features" ng-disabled="!vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint || !vm.studyAreaService.showDelineateButton"><i  ng-class="vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint ? 'fa fa-map-marker' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;<span ng-show="vm.studyAreaService.canUpdate">Delineate</span><span ng-show="!vm.studyAreaService.canUpdate">Delineating Basin</span></button>
