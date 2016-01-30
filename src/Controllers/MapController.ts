@@ -211,9 +211,12 @@ module StreamStats.Controllers {
                 //listen for delineate click if ready
                 if (studyArea.doDelineateFlag) this.checkDelineatePoint(args.leafletEvent.latlng);
 
-                //otherwise query map layers
-                else if (!region.selectedRegion && !this.explorationService.drawElevationProfile && !this.explorationService.drawMeasurement) this.queryNationalMapLayers(args.leafletEvent)
-                else if (region.selectedRegion && this.regionServices.allowStreamgageQuery && !this.explorationService.drawElevationProfile && !this.explorationService.drawMeasurement) this.queryStreamgages(args.leafletEvent);
+                //query streamgages
+                console.log('map click listener: ', region.allowStreamgageQuery);
+                if (region.allowStreamgageQuery) this.queryStreamgages(args.leafletEvent);
+
+                //state or region layer query
+                if (!region.selectedRegion && !exploration.drawElevationProfile && !exploration.drawMeasurement && !region.allowStreamgageQuery) this.queryNationalMapLayers(args.leafletEvent)
             });
 
             $scope.$watch(() => this.bounds,(newval, oldval) => this.mapBoundsChange(oldval, newval));
@@ -360,18 +363,21 @@ module StreamStats.Controllers {
 
         private queryNationalMapLayers(evt) {
 
-            //console.log('in querystates');
-            this.toaster.pop("info", "Information", "Querying National map layers...", 0);
-            this.cursorStyle = 'wait'; 
-
-            //ga event
-            this.angulartics.eventTrack('initialOperation', { category: 'Map', label: 'Map click query' });
-
             this.leafletData.getMap().then((map: any) => {
                 this.leafletData.getLayers().then((maplayers: any) => {
 
+                    //turn off if zoomed in too far
+                    if (map.getZoom() >= 8) return;
+
+                    //console.log('in querystates');
+                    this.toaster.pop("info", "Information", "Querying National map layers...", 0);
+                    this.cursorStyle = 'wait'; 
+
+                    //ga event
+                    this.angulartics.eventTrack('initialOperation', { category: 'Map', label: 'Map click query' });
+
                     maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).run((error: any, results: any) => {
-                        //console.log('national results', results, results.features.length);
+                        console.log('national results', results, results.features.length);
 
                         if (results.features.length < 1) {
                             //console.log('here');
@@ -454,7 +460,7 @@ module StreamStats.Controllers {
 
                         results.features.forEach((queryResult) => {
 
-                            this.regionServices.regionMapLayerList.forEach((item) => {
+                            this.regionServices.nationalMapLayerList.forEach((item) => {
                                 if (queryResult.layerId == item[1]) {
                                     //console.log('Map query found a match with: ', item[0], queryResult)
 
@@ -601,7 +607,10 @@ module StreamStats.Controllers {
         }
 
         private resetMap() {
-
+            this.regionServices.clearRegion();
+            this.studyArea.clearStudyArea();
+            this.nssService.clearNSSdata();
+            this.removeOverlayLayers("_region", true);
             this.center = new Center(39, -100, 3);
         }
 
@@ -995,7 +1004,7 @@ module StreamStats.Controllers {
 
             this.nomnimalZoomLevel = this.scaleLookup(this.center.zoom);
 
-            if (this.center.zoom >= 9 && oldValue !== newValue) {
+            if (this.center.zoom >= 8 && oldValue !== newValue) {
                 //console.log('requesting region list');
                 this.regionServices.loadRegionListByExtent(this.bounds.northEast.lng, this.bounds.southWest.lng,
                     this.bounds.southWest.lat, this.bounds.northEast.lat);

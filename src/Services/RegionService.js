@@ -55,6 +55,7 @@ var StreamStats;
                 this.masterRegionList = configuration.regions;
                 this.loadNationalMapLayers();
                 this.streamStatsAvailable = false;
+                this.allowStreamgageQuery = false;
             }
             Object.defineProperty(RegionService.prototype, "onSelectedRegionChanged", {
                 get: function () {
@@ -85,6 +86,7 @@ var StreamStats;
                 this.regionMapLayerList = [];
                 this.selectedRegion = null;
                 this.regionMapLayerListLoaded = false;
+                this.allowStreamgageQuery = false;
             };
             RegionService.prototype.loadRegionListByExtent = function (xmin, xmax, ymin, ymax, sr) {
                 var _this = this;

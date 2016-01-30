@@ -105,10 +105,13 @@ var StreamStats;
                     //listen for delineate click if ready
                     if (studyArea.doDelineateFlag)
                         _this.checkDelineatePoint(args.leafletEvent.latlng);
-                    else if (!region.selectedRegion && !_this.explorationService.drawElevationProfile && !_this.explorationService.drawMeasurement)
-                        _this.queryNationalMapLayers(args.leafletEvent);
-                    else if (region.selectedRegion && _this.regionServices.allowStreamgageQuery && !_this.explorationService.drawElevationProfile && !_this.explorationService.drawMeasurement)
+                    //query streamgages
+                    console.log('map click listener: ', region.allowStreamgageQuery);
+                    if (region.allowStreamgageQuery)
                         _this.queryStreamgages(args.leafletEvent);
+                    //state or region layer query
+                    if (!region.selectedRegion && !exploration.drawElevationProfile && !exploration.drawMeasurement && !region.allowStreamgageQuery)
+                        _this.queryNationalMapLayers(args.leafletEvent);
                 });
                 $scope.$watch(function () { return _this.bounds; }, function (newval, oldval) { return _this.mapBoundsChange(oldval, newval); });
                 $scope.$watch(function () { return _this.explorationService.elevationProfileGeoJSON; }, function (newval, oldval) {
@@ -199,11 +202,7 @@ var StreamStats;
                             marker: false
                         }
                     },
-                    custom: new Array(
-                    //zoom home button control
-                    //(<any>L.Control).zoomHome({ homeCoordinates: [39, -100], homeZoom: 4 }),
-                    //location control
-                    L.control.locate({ follow: false, locateOptions: { "maxZoom": 15 } }), L.control.elevation({ imperial: true }))
+                    custom: new Array(L.control.locate({ follow: false, locateOptions: { "maxZoom": 15 } }), L.control.elevation({ imperial: true }))
                 };
                 this.events = {
                     map: {
@@ -239,15 +238,18 @@ var StreamStats;
             };
             MapController.prototype.queryNationalMapLayers = function (evt) {
                 var _this = this;
-                //console.log('in querystates');
-                this.toaster.pop("info", "Information", "Querying National map layers...", 0);
-                this.cursorStyle = 'wait';
-                //ga event
-                this.angulartics.eventTrack('initialOperation', { category: 'Map', label: 'Map click query' });
                 this.leafletData.getMap().then(function (map) {
                     _this.leafletData.getLayers().then(function (maplayers) {
+                        //turn off if zoomed in too far
+                        if (map.getZoom() >= 8)
+                            return;
+                        //console.log('in querystates');
+                        _this.toaster.pop("info", "Information", "Querying National map layers...", 0);
+                        _this.cursorStyle = 'wait';
+                        //ga event
+                        _this.angulartics.eventTrack('initialOperation', { category: 'Map', label: 'Map click query' });
                         maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).run(function (error, results) {
-                            //console.log('national results', results, results.features.length);
+                            console.log('national results', results, results.features.length);
                             if (results.features.length < 1) {
                                 //console.log('here');
                                 _this.cursorStyle = 'pointer';
@@ -311,7 +313,7 @@ var StreamStats;
                                 return;
                             }
                             results.features.forEach(function (queryResult) {
-                                _this.regionServices.regionMapLayerList.forEach(function (item) {
+                                _this.regionServices.nationalMapLayerList.forEach(function (item) {
                                     if (queryResult.layerId == item[1]) {
                                         //console.log('Map query found a match with: ', item[0], queryResult)
                                         if (item[0].toLowerCase() == "streamgages") {
@@ -427,6 +429,10 @@ var StreamStats;
                 lc.start();
             };
             MapController.prototype.resetMap = function () {
+                this.regionServices.clearRegion();
+                this.studyArea.clearStudyArea();
+                this.nssService.clearNSSdata();
+                this.removeOverlayLayers("_region", true);
                 this.center = new Center(39, -100, 3);
             };
             MapController.prototype.measurement = function () {
@@ -546,7 +552,9 @@ var StreamStats;
                 }
                 var basin = angular.fromJson(angular.toJson(this.layers.overlays['globalwatershed']));
                 var basinConverted = [];
-                basin.data.features[0].geometry.coordinates[0].forEach(function (item) { basinConverted.push([item[1], item[0]]); });
+                basin.data.features[0].geometry.coordinates[0].forEach(function (item) {
+                    basinConverted.push([item[1], item[0]]);
+                });
                 this.leafletData.getMap().then(function (map) {
                     _this.leafletData.getLayers().then(function (maplayers) {
                         //console.log('maplayers', map, maplayers);
@@ -564,7 +572,9 @@ var StreamStats;
                             //convert edit polygon coords
                             var editArea = layer.toGeoJSON().geometry.coordinates[0];
                             var editAreaConverted = [];
-                            editArea.forEach(function (item) { editAreaConverted.push([item[1], item[0]]); });
+                            editArea.forEach(function (item) {
+                                editAreaConverted.push([item[1], item[0]]);
+                            });
                             var sourcePolygon = L.polygon(basinConverted);
                             var clipPolygon = L.polygon(editAreaConverted);
                             if (_this.studyArea.drawControlOption == 'add') {
@@ -590,7 +600,9 @@ var StreamStats;
                             }
                             //set studyArea basin to new edited polygon
                             basin.data.features[0].geometry.coordinates[0] = [];
-                            editPolygon.forEach(function (item) { basin.data.features[0].geometry.coordinates[0].push([item[1], item[0]]); });
+                            editPolygon.forEach(function (item) {
+                                basin.data.features[0].geometry.coordinates[0].push([item[1], item[0]]);
+                            });
                             //console.log('edited basin', basin, basin.data.features[0].geometry.coordinates[0].length, this.layers.overlays['globalwatershed'].data.features[0].geometry.coordinates[0].length);
                             _this.toaster.pop("info", "Submitting your edit", "Please wait...", 5000);
                             //clear old watershed
@@ -743,7 +755,7 @@ var StreamStats;
             };
             MapController.prototype.mapBoundsChange = function (oldValue, newValue) {
                 this.nomnimalZoomLevel = this.scaleLookup(this.center.zoom);
-                if (this.center.zoom >= 9 && oldValue !== newValue) {
+                if (this.center.zoom >= 8 && oldValue !== newValue) {
                     //console.log('requesting region list');
                     this.regionServices.loadRegionListByExtent(this.bounds.northEast.lng, this.bounds.southWest.lng, this.bounds.southWest.lat, this.bounds.northEast.lat);
                 }
@@ -822,7 +834,7 @@ var StreamStats;
                     if (layerObj[variable].hasOwnProperty("name") && (isPartial ? (layerObj[variable].name.indexOf(name) > -1) : (layerObj[variable].name === name))) {
                         layeridList.push(variable);
                     }
-                } //next variable
+                }
                 return layeridList;
             };
             MapController.prototype.getLayerIdsByID = function (id, layerObj, isPartial) {
@@ -831,7 +843,7 @@ var StreamStats;
                     if (isPartial ? (variable.indexOf(id) > -1) : (variable === id)) {
                         layeridList.push(variable);
                     }
-                } //next variable
+                }
                 return layeridList;
             };
             MapController.prototype.startDelineate = function (latlng) {
@@ -845,8 +857,7 @@ var StreamStats;
             MapController.$inject = ['$scope', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'WiM.Services.EventService'];
             return MapController;
         })(); //end class
-        angular.module('StreamStats.Controllers')
-            .controller('StreamStats.Controllers.MapController', MapController);
+        angular.module('StreamStats.Controllers').controller('StreamStats.Controllers.MapController', MapController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));
 })(StreamStats || (StreamStats = {})); //end module
 //# sourceMappingURL=MapController.js.map

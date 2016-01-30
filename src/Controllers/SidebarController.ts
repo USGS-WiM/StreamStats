@@ -146,6 +146,7 @@ module StreamStats.Controllers {
         public resetWorkSpace() {
             //this.regionService.clearRegion();
             this.studyAreaService.clearStudyArea();
+            this.studyAreaService.showDelineateButton = true;
             this.nssService.clearNSSdata();
         }
 
@@ -219,7 +220,7 @@ module StreamStats.Controllers {
                     //remove it only if toggleable
                     if (paramCheck > -1 && parameter.toggleable) {
                         this.studyAreaService.studyAreaParameterList.splice(paramCheck, 1);
-                        this.toaster.pop('warning', parameter.code + " is required by one of the selected scenarios", "It cannot be unselected");
+                        //this.toaster.pop('warning', parameter.code + " is required by one of the selected scenarios", "It cannot be unselected");
                         parameter.checked = false;
                     }
                 } 

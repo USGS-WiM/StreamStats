@@ -64,9 +64,19 @@ div.leaflet-top > .elevation {
     display:none;
 }
 
+#elevation-div {
+    background-color:white !important;
+    padding:10px;
+}
+
+.elevation-close-button {
+    left:10px;
+}
+
 .map-position {
     padding: 0px 4px;
     font-size:small;
+    font-weight:400;
     background-color: rgba(255, 255, 255, 1);
     margin-bottom:50px;
     margin-left:9px;
@@ -94,6 +104,7 @@ div.leaflet-top > .elevation {
     position: absolute;
     background: white;
     z-index: 100;
+    width:200px;
     left: 10px;
     top: 130px;
     box-shadow: 1px 1px 5px #333;
@@ -136,6 +147,7 @@ div.leaflet-top > .elevation {
     box-shadow: 1px 1px 5px #333;
     padding: 5px;
     overflow-y:auto;
+    overflow-x:hidden;
 }
 
 .angular-leaflet-control-layers-header {
@@ -199,6 +211,7 @@ div.leaflet-top > .elevation {
     .app-name{
     position: relative;
     top:-2px;
+    font-weight:300;
     }
 
     .navBarButton{

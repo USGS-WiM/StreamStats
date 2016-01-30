@@ -35,13 +35,13 @@ module StreamStats.Services {
         showFlowsTable: boolean;
         clearNSSdata();
         queriedRegions: boolean;
+        loadingParametersByStatisticsGroup: boolean;
     }
     export interface IStatisticsGroup {
         ID: string;
         Name: string;
         Code: string;
         RegressionRegions: Array<any>;
-        Results: Array<any>;
         Citations: any;
         Disclaimers: any;
     }
@@ -52,7 +52,6 @@ module StreamStats.Services {
         public Name: string;
         public Code: string;
         public RegressionRegions: Array<any>;
-        public Results: Array<any>;
         public Citations: any;
         public Disclaimers: any;
 
@@ -76,6 +75,7 @@ module StreamStats.Services {
         public showBasinCharacteristicsTable: boolean;
         public showFlowsTable: boolean;
         public queriedRegions: boolean;
+        public loadingParametersByStatisticsGroup: boolean;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -94,6 +94,7 @@ module StreamStats.Services {
             this.statisticsGroupList = [];
             this.canUpdate = true;
             this.queriedRegions = false;
+            this.loadingParametersByStatisticsGroup = false;
         }
 
         public loadStatisticsGroupTypes(rcode: string, regressionregions: string) {
@@ -139,7 +140,7 @@ module StreamStats.Services {
 
         public loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregions: string, percentWeights:any) {
 
-            this.toaster.pop('info', "Load Parameters by Scenario", "Please wait...", 0);
+            this.loadingParametersByStatisticsGroup = true;
 
             //console.log('in load StatisticsGroup parameters', rcode, statisticsGroupID,regressionregions);
             if (!rcode && !statisticsGroupID && !regressionregions) return;
@@ -151,6 +152,7 @@ module StreamStats.Services {
                 (response: any) => {
 
                     console.log('loadParams: ', response.data[0]);
+                    this.loadingParametersByStatisticsGroup = false;
 
                     //check to make sure there is a valid response
                     if (response.data[0].RegressionRegions[0].Parameters && response.data[0].RegressionRegions[0].Parameters.length > 0) {
@@ -196,6 +198,10 @@ module StreamStats.Services {
                 //console.log('in estimate flows method for ', statGroup.Name, statGroup);
 
                 statGroup.RegressionRegions.forEach((regressionRegion) => {
+
+                    //delete results object if it exists
+                    if (regressionRegion.Results) delete regressionRegion.Results;
+
                     regressionRegion.Parameters.forEach((regressionParam) => {
                         studyAreaParameterList.forEach((param) => {
                             //console.log('search for matching params ', regressionParam.Code.toLowerCase(), param.code.toLowerCase());
@@ -213,7 +219,6 @@ module StreamStats.Services {
                 var url = configuration.baseurls['NSS'] + configuration.queryparams['estimateFlows'].format(rcode, statGroup.ID, regressionregion);
                 var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, 1, 'json', updatedScenarioObject);
 
-                statGroup.Results = [];
                 statGroup.Citations = [];
                 this.Execute(request).then(
                     (response: any) => {
