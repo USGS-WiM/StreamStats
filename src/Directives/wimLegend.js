@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 //----- WiM Legend ------------------------------------------------------
 //------------------------------------------------------------------------------
-var __extends = (this && this.__extends) || function (d, b) {
+var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -33,9 +33,14 @@ var WiM;
         'use string';
         var wimLegendController = (function (_super) {
             __extends(wimLegendController, _super);
-            function wimLegendController($scope, $http, leafletData) {
+            function wimLegendController($scope, $http, leafletData, eventService) {
+                var _this = this;
                 _super.call(this, $http, '');
                 $scope.vm = this;
+                //subscribe to Events
+                eventService.SubscribeToEvent("onSelectedStudyAreaChanged", new WiM.Event.EventHandler(function (sender, e) {
+                    _this.onSelectedStudyAreaChanged(sender, e);
+                }));
                 this.leafletData = leafletData;
                 this.init();
             }
@@ -68,7 +73,7 @@ var WiM;
                             if (map.hasLayer(maplayers.baselayers[mlayr])) {
                                 map.removeLayer(maplayers.baselayers[mlayr]);
                             } //end if
-                        } //next
+                        }
                         map.addLayer(maplayers.baselayers[key]);
                     });
                 });
@@ -87,13 +92,16 @@ var WiM;
                                 _this.baselayers.selectedlayerName = key.toString();
                                 break;
                             } //end if
-                        } //next
+                        }
                     }); //end getLayers                                
                 }); //end getMap   
             }; //end init
+            wimLegendController.prototype.onSelectedStudyAreaChanged = function (sender, e) {
+                console.log('wimLegend study area changed');
+            };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
-            wimLegendController.$inject = ['$scope', '$http', 'leafletData'];
+            wimLegendController.$inject = ['$scope', '$http', 'leafletData', 'WiM.Services.EventService'];
             return wimLegendController;
         })(WiM.Services.HTTPServiceBase); //end wimLayerControlController class
         var wimLegend = (function () {
@@ -143,8 +151,7 @@ var WiM;
             }; //end link
             return wimLegend;
         })(); //end UrlDirective
-        angular.module('wim_angular')
-            .directive('wimLegend', wimLegend.instance);
+        angular.module('wim_angular').directive('wimLegend', wimLegend.instance);
     })(Directives = WiM.Directives || (WiM.Directives = {}));
 })(WiM || (WiM = {})); //end module 
 //# sourceMappingURL=wimLegend.js.map

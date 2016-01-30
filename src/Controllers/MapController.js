@@ -84,12 +84,19 @@ var StreamStats;
                 this.studyArea = studyArea;
                 this.nssService = StatisticsGroup;
                 this.explorationService = exploration;
-                this.eventService = eventService;
                 //subscribe to Events
-                search.onSelectedAreaOfInterestChanged.subscribe(this._onSelectedAreaOfInterestHandler);
-                region.onSelectedRegionChanged.subscribe(this._onSelectedRegionHandler);
-                eventService.SubscribeToEvent("onSelectedStudyAreaChanged", this._onSelectedStudyAreaHandler);
-                studyArea.onEditClick.subscribe(this._onEditClickHandler);
+                eventService.SubscribeToEvent("onSelectedStudyAreaChanged", new WiM.Event.EventHandler(function () {
+                    _this.onSelectedStudyAreaChanged();
+                }));
+                search.onSelectedAreaOfInterestChanged.subscribe(new WiM.Event.EventHandler(function (sender, e) {
+                    _this.onSelectedAreaOfInterestChanged(sender, e);
+                }));
+                region.onSelectedRegionChanged.subscribe(new WiM.Event.EventHandler(function () {
+                    _this.onSelectedRegionChanged();
+                }));
+                studyArea.onEditClick.subscribe(new WiM.Event.EventHandler(function () {
+                    _this.basinEditor();
+                }));
                 $scope.$on('leafletDirectiveMap.mousemove', function (event, args) {
                     var latlng = args.leafletEvent.latlng;
                     _this.mapPoint.lat = latlng.lat;
@@ -159,20 +166,6 @@ var StreamStats;
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             MapController.prototype.init = function () {
-                var _this = this;
-                //init event handler
-                this._onSelectedAreaOfInterestHandler = new WiM.Event.EventHandler(function (sender, e) {
-                    _this.onSelectedAreaOfInterestChanged(sender, e);
-                });
-                this._onSelectedRegionHandler = new WiM.Event.EventHandler(function () {
-                    _this.onSelectedRegionChanged();
-                });
-                this._onSelectedStudyAreaHandler = new WiM.Event.EventHandler(function () {
-                    _this.onSelectedStudyAreaChanged();
-                });
-                this._onEditClickHandler = new WiM.Event.EventHandler(function () {
-                    _this.basinEditor();
-                });
                 //init map           
                 this.center = new Center(39, -100, 3);
                 //this.center = new Center(39, -106, 16);
@@ -689,17 +682,16 @@ var StreamStats;
                         //        }
                         //    }
                         //}
-                        _this.geojson[item.name] =
-                            {
-                                data: item.feature,
-                                style: {
-                                    fillColor: "yellow",
-                                    weight: 2,
-                                    opacity: 1,
-                                    color: 'white',
-                                    fillOpacity: 0.5
-                                }
-                            };
+                        _this.geojson[item.name] = {
+                            data: item.feature,
+                            style: {
+                                fillColor: "yellow",
+                                weight: 2,
+                                opacity: 1,
+                                color: 'white',
+                                fillOpacity: 0.5
+                            }
+                        };
                     }
                     if (item.name == 'globalwatershedpoint') {
                         _this.layers.overlays[item.name] = {

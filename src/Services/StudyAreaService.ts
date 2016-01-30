@@ -53,7 +53,9 @@ module StreamStats.Services {
     }
     class StudyAreaService extends WiM.Services.HTTPServiceBase implements IStudyAreaService {
         //Events
+        private onSelectedStudyAreaAdded: string = "onSelectedStudyAreaChanged";
         private onSelectedStudyAreaChanged: string = "onSelectedStudyAreaChanged";
+
         private _onStudyAreaChangedHandler: WiM.Event.EventHandler<WiM.Event.EventArgs>;
 
         private _onEditClick: WiM.Event.Delegate<WiM.Event.EventArgs>;
@@ -80,7 +82,7 @@ module StreamStats.Services {
             if (!this.canUpdate) return;
             if (this._selectedStudyArea != val) {
                 this._selectedStudyArea = val;
-                this.eventService.RaiseEvent(this.onSelectedStudyAreaChanged, this, WiM.Event.EventArgs.Empty);
+                this.eventService.RaiseEvent(this.onSelectedStudyAreaAdded, this, WiM.Event.EventArgs.Empty);
             }
         }
         public get selectedStudyArea(): Models.IStudyArea {
@@ -103,12 +105,10 @@ module StreamStats.Services {
         //-+-+-+-+-+-+-+-+-+-+-+-
         constructor($http: ng.IHttpService, private $q: ng.IQService, public eventService: WiM.Services.IEventService, toaster) {
             super($http, configuration.baseurls['StreamStats'])
-            eventService.AddEvent(this.onSelectedStudyAreaChanged, new WiM.Event.Delegate<WiM.Event.EventArgs>());
-
-            //init event handler
-            this._onStudyAreaChangedHandler = new WiM.Event.EventHandler<WiM.Event.EventArgs>((sender: any, e: WiM.Services.SearchAPIEventArgs) => {
+            eventService.AddEvent(this.onSelectedStudyAreaAdded, new WiM.Event.Delegate<WiM.Event.EventArgs>());
+            eventService.SubscribeToEvent(this.onSelectedStudyAreaAdded, new WiM.Event.EventHandler<WiM.Event.EventArgs>((sender: any, e: WiM.Services.SearchAPIEventArgs) => {
                 this.onStudyAreaChanged(sender, e);
-            });
+            }));
 
             this._onEditClick = new WiM.Event.Delegate<WiM.Event.EventArgs>();
             this.toaster = toaster;
@@ -127,7 +127,7 @@ module StreamStats.Services {
         public undoEdit() {
             //console.log('undo edit');
             this.WatershedEditDecisionList = new Models.WatershedEditDecisionList();
-            this.eventService.RaiseEvent(this.onSelectedStudyAreaChanged, this, WiM.Event.EventArgs.Empty);
+            this.eventService.RaiseEvent(this.onSelectedStudyAreaAdded, this, WiM.Event.EventArgs.Empty);
         }
 
         public AddStudyArea(sa: Models.IStudyArea) {
@@ -183,7 +183,7 @@ module StreamStats.Services {
                     this.toaster.pop("error", "Error Delineating Basin", "Please retry", 5000);
                 }).finally(() => {
                     this.canUpdate = true;
-                    this.eventService.RaiseEvent(this.onSelectedStudyAreaChanged, this, WiM.Event.EventArgs.Empty);    
+                    this.eventService.RaiseEvent(this.onSelectedStudyAreaAdded, this, WiM.Event.EventArgs.Empty);    
             });
         }
 
@@ -223,7 +223,7 @@ module StreamStats.Services {
                         this.toaster.pop("error", "Error Delineating Basin", "Please retry", 5000);
                     }).finally(() => {
                         this.canUpdate = true;
-                        this.eventService.RaiseEvent(this.onSelectedStudyAreaChanged, this, WiM.Event.EventArgs.Empty);    
+                        this.eventService.RaiseEvent(this.onSelectedStudyAreaAdded, this, WiM.Event.EventArgs.Empty);    
                         this.toaster.clear();
                     });
             }
@@ -255,7 +255,7 @@ module StreamStats.Services {
                     this.toaster.pop("error", "Error Delineating Basin", "Please retry", 5000);
                 }).finally(() => {
                 this.canUpdate = true;
-                this.eventService.RaiseEvent(this.onSelectedStudyAreaChanged, this, WiM.Event.EventArgs.Empty);
+                this.eventService.RaiseEvent(this.onSelectedStudyAreaAdded, this, WiM.Event.EventArgs.Empty);
             });
         }
 
@@ -396,7 +396,7 @@ module StreamStats.Services {
                 }).finally(() => {
                     //this.toaster.clear();
                     this.regulationCheckComplete = true;
-                    this.eventService.RaiseEvent(this.onSelectedStudyAreaChanged, this, WiM.Event.EventArgs.Empty);    
+                    this.eventService.RaiseEvent(this.onSelectedStudyAreaAdded, this, WiM.Event.EventArgs.Empty);    
 
             });
         }
@@ -479,6 +479,7 @@ module StreamStats.Services {
         //EventHandlers Methods
         //-+-+-+-+-+-+-+-+-+-+-+- 
         private onStudyAreaChanged(sender: any, e: WiM.Services.SearchAPIEventArgs) {
+            if (!this.selectedStudyArea || !this.selectedStudyArea.Features) return;
             this.queryRegressionRegions();
         }
 

@@ -60,10 +60,14 @@ module WiM.Directives {
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$http','leafletData'];
-        constructor($scope: IwimLegendControllerScope, $http: ng.IHttpService, leafletData: any) {
+        static $inject = ['$scope', '$http', 'leafletData', 'WiM.Services.EventService'];
+        constructor($scope: IwimLegendControllerScope, $http: ng.IHttpService, leafletData: any, eventService: WiM.Services.IEventService) {
             super($http, '');
             $scope.vm = this;
+            //subscribe to Events
+            eventService.SubscribeToEvent("onSelectedStudyAreaChanged", new WiM.Event.EventHandler<WiM.Event.EventArgs>((sender: any, e: WiM.Event.EventArgs) => {
+                this.onSelectedStudyAreaChanged(sender,e);
+            }));
             this.leafletData = leafletData;
             this.init();
  
@@ -128,6 +132,10 @@ module WiM.Directives {
             
 
         }//end init
+
+        private onSelectedStudyAreaChanged(sender: any, e: WiM.Event.EventArgs) {
+            console.log('wimLegend study area changed');            
+        }
 
     }//end wimLayerControlController class
 

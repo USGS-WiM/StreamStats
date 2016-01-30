@@ -131,10 +131,6 @@ module StreamStats.Controllers {
     class MapController implements IMapController {
         //Events
         //-+-+-+-+-+-+-+-+-+-+-+-
-        private _onSelectedAreaOfInterestHandler: WiM.Event.EventHandler<WiM.Event.EventArgs>;
-        private _onSelectedRegionHandler: WiM.Event.EventHandler<WiM.Event.EventArgs>;
-        private _onSelectedStudyAreaHandler: WiM.Event.EventHandler<WiM.Event.EventArgs>;
-        private _onEditClickHandler: WiM.Event.EventHandler<WiM.Event.EventArgs>;
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
         private regionServices: Services.IRegionService;
@@ -145,7 +141,6 @@ module StreamStats.Controllers {
         private studyArea: Services.IStudyAreaService;
         private nssService: Services.InssService;
         private explorationService: Services.IExplorationService;
-        private eventService: WiM.Services.IEventService;
 
         public cursorStyle: string;
         public center: ICenter = null;
@@ -182,15 +177,23 @@ module StreamStats.Controllers {
             this.studyArea = studyArea;
             this.nssService = StatisticsGroup;
             this.explorationService = exploration;
-            this.eventService = eventService;
 
             //subscribe to Events
-            search.onSelectedAreaOfInterestChanged.subscribe(this._onSelectedAreaOfInterestHandler);
-            region.onSelectedRegionChanged.subscribe(this._onSelectedRegionHandler);
+            eventService.SubscribeToEvent("onSelectedStudyAreaChanged", new WiM.Event.EventHandler<WiM.Event.EventArgs>(() => {
+                this.onSelectedStudyAreaChanged();
+            }));
 
-            eventService.SubscribeToEvent("onSelectedStudyAreaChanged", this._onSelectedStudyAreaHandler);
+            search.onSelectedAreaOfInterestChanged.subscribe(new WiM.Event.EventHandler<WiM.Event.EventArgs>((sender: any, e: WiM.Services.SearchAPIEventArgs) => {
+                this.onSelectedAreaOfInterestChanged(sender, e);
+            }));
 
-            studyArea.onEditClick.subscribe(this._onEditClickHandler);
+            region.onSelectedRegionChanged.subscribe(new WiM.Event.EventHandler<WiM.Event.EventArgs>(() => {
+                this.onSelectedRegionChanged();
+            }));            
+
+            studyArea.onEditClick.subscribe(new WiM.Event.EventHandler<WiM.Event.EventArgs>(() => {
+                this.basinEditor();
+            }));
             
 
             $scope.$on('leafletDirectiveMap.mousemove',(event, args) => {
@@ -271,20 +274,6 @@ module StreamStats.Controllers {
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         private init(): void { 
-            //init event handler
-            this._onSelectedAreaOfInterestHandler = new WiM.Event.EventHandler<WiM.Event.EventArgs>((sender: any, e: WiM.Services.SearchAPIEventArgs) => {
-                this.onSelectedAreaOfInterestChanged(sender, e);
-            });
-            this._onSelectedRegionHandler = new WiM.Event.EventHandler<WiM.Event.EventArgs>(() => {
-                this.onSelectedRegionChanged();
-            });
-            this._onSelectedStudyAreaHandler = new WiM.Event.EventHandler<WiM.Event.EventArgs>(() => {
-                this.onSelectedStudyAreaChanged();
-            });
-
-            this._onEditClickHandler = new WiM.Event.EventHandler<WiM.Event.EventArgs>(() => {
-                this.basinEditor();
-            });
 
             //init map           
             this.center = new Center(39, -100, 3);
@@ -994,9 +983,6 @@ module StreamStats.Controllers {
                 }
 
                 this.nssService.queriedRegions = true;
-
-                //send watershed to map service query that returns list of regression regions that overlap the watershed
-                //this.studyArea.queryRegressionRegions();
             }
         }
 

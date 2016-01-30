@@ -68,15 +68,12 @@ module WiM.Services {
         //-+-+-+-+-+-+-+-+-+-+-+-
         public AddEvent<T extends WiM.Event.EventArgs>(EventName: string, EventDelegate: WiM.Event.Delegate<T>) {
             if (!this._eventList.hasOwnProperty(EventName))
-                this._eventList[EventName] = new Event(EventDelegate);
-
-            
+                this._eventList[EventName] = new Event(EventDelegate);            
         }
         public SubscribeToEvent<T extends WiM.Event.EventArgs>(EventName: string, handler: WiM.Event.EventHandler<T>) {
             if (!this._eventList.hasOwnProperty(EventName)) return;
 
             this._eventList[EventName].onChanged.subscribe(handler);
-
         }
         public RaiseEvent(EventName: string, sender:any = null, args: WiM.Event.EventArgs = WiM.Event.EventArgs.Empty) {
             if (!this._eventList.hasOwnProperty(EventName)) return;
