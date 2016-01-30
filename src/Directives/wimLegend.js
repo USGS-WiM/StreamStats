@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 //----- WiM Legend ------------------------------------------------------
 //------------------------------------------------------------------------------
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -33,11 +33,10 @@ var WiM;
         'use string';
         var wimLegendController = (function (_super) {
             __extends(wimLegendController, _super);
-            function wimLegendController($scope, $http, $element, $sce, leafletData, leafletHelpers) {
+            function wimLegendController($scope, $http, leafletData) {
                 _super.call(this, $http, '');
                 $scope.vm = this;
                 this.leafletData = leafletData;
-                this.leafletHelpers = leafletHelpers;
                 this.init();
             }
             //Methods  
@@ -69,7 +68,7 @@ var WiM;
                             if (map.hasLayer(maplayers.baselayers[mlayr])) {
                                 map.removeLayer(maplayers.baselayers[mlayr]);
                             } //end if
-                        }
+                        } //next
                         map.addLayer(maplayers.baselayers[key]);
                     });
                 });
@@ -80,7 +79,6 @@ var WiM;
                 var _this = this;
                 this.overlays = {};
                 this.baselayers = {};
-                this.overlays.isOpen = false;
                 this.baselayers.isOpen = true;
                 this.leafletData.getMap().then(function (map) {
                     _this.leafletData.getLayers().then(function (maplayers) {
@@ -89,14 +87,13 @@ var WiM;
                                 _this.baselayers.selectedlayerName = key.toString();
                                 break;
                             } //end if
-                        }
-                    }); //end getLayers
+                        } //next
+                    }); //end getLayers                                
                 }); //end getMap   
-                //http://pastebin.com/k8z6ZkdX
             }; //end init
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
-            wimLegendController.$inject = ['$scope', '$http', '$element', '$sce', 'leafletData', 'leafletHelpers'];
+            wimLegendController.$inject = ['$scope', '$http', 'leafletData'];
             return wimLegendController;
         })(WiM.Services.HTTPServiceBase); //end wimLayerControlController class
         var wimLegend = (function () {
@@ -127,7 +124,6 @@ var WiM;
                 var layers = leafletScope.layers;
                 scope.vm.overlays.layergroup = layers.overlays;
                 scope.vm.baselayers.layergroup = layers.baselayers;
-                scope.vm.layers = layers;
                 element.bind('click', function (e) {
                     e.stopPropagation();
                     e.preventDefault();
@@ -135,17 +131,20 @@ var WiM;
                 element.bind('mouseover', function (e) {
                     controller.getMap().then(function (map) {
                         map.dragging.disable();
+                        map.scrollWheelZoom.disable();
                     }); //end getMap   
                 });
                 element.bind('mouseout', function (e) {
                     controller.getMap().then(function (map) {
                         map.dragging.enable();
+                        map.scrollWheelZoom.enable();
                     }); //end getMap  
                 });
             }; //end link
             return wimLegend;
         })(); //end UrlDirective
-        angular.module('wim_angular').directive('wimLegend', wimLegend.instance);
+        angular.module('wim_angular')
+            .directive('wimLegend', wimLegend.instance);
     })(Directives = WiM.Directives || (WiM.Directives = {}));
 })(WiM || (WiM = {})); //end module 
 //# sourceMappingURL=wimLegend.js.map

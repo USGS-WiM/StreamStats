@@ -57,15 +57,14 @@ module WiM.Directives {
         public overlays: IwimLegendLayerGroup;
         public baselayers: IwimLegendLayerGroup;
 
+
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$http', '$element','$sce' ,'leafletData', 'leafletHelpers'];
-        constructor($scope: IwimLegendControllerScope, $http: ng.IHttpService, $element, $sce: ng.ISCEService, leafletData: any, leafletHelpers: any) {
-
+        static $inject = ['$scope', '$http','leafletData'];
+        constructor($scope: IwimLegendControllerScope, $http: ng.IHttpService, leafletData: any) {
             super($http, '');
             $scope.vm = this;
             this.leafletData = leafletData;
-            this.leafletHelpers = leafletHelpers;
             this.init();
  
         }  
@@ -82,7 +81,7 @@ module WiM.Directives {
                     console.log(response.data);
                     if (response.data.layers.length > 0) {
                         mlyr.isOpen = true;
-                        mlyr.layerArray = response.data.layers;
+                        mlyr.layerArray = response.data.layers;                      
                     }
                 }, (error) => {
 
@@ -113,7 +112,6 @@ module WiM.Directives {
         private init() {
             this.overlays = <IwimLegendLayerGroup>{};
             this.baselayers = <IwimLegendLayerGroup>{};
-            this.overlays.isOpen = false;
             this.baselayers.isOpen = true;
 
             this.leafletData.getMap().then((map: any) => {
@@ -124,13 +122,10 @@ module WiM.Directives {
                             break;
                         }//end if
                     }//next
-                });//end getLayers
-                                
+                });//end getLayers                                
             });//end getMap   
 
             
-            //http://pastebin.com/k8z6ZkdX
-
 
         }//end init
 
@@ -159,12 +154,11 @@ module WiM.Directives {
         link(scope: ng.IScope, element: ng.IAugmentedJQuery, attributes: IwimLegendAttributes, controller: any): void {
             //this is where we can register listeners, set up watches, and add functionality. 
             // The result of this process is why the live data- binding exists between the scope and the DOM tree.
-
+            
             var leafletScope = controller.getLeafletScope();
             var layers = leafletScope.layers;
             (<any>scope).vm.overlays.layergroup = layers.overlays;
             (<any>scope).vm.baselayers.layergroup = layers.baselayers;
-            (<any>scope).vm.layers = layers;
 
             element.bind('click', function (e) {
                 e.stopPropagation();
@@ -173,12 +167,14 @@ module WiM.Directives {
 
             element.bind('mouseover', (e) => {
                controller.getMap().then((map: any) => {
-                   map.dragging.disable();                              
+                   map.dragging.disable();  
+                   map.scrollWheelZoom.disable();                            
                 });//end getMap   
             });
             element.bind('mouseout', (e) => {
                 controller.getMap().then((map: any) => {
                     map.dragging.enable();
+                    map.scrollWheelZoom.enable();
                 });//end getMap  
             });
 

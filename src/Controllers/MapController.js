@@ -59,8 +59,9 @@ var StreamStats;
             return MapDefault;
         })();
         var MapController = (function () {
-            function MapController($scope, toaster, $analytics, $location, $stateParams, leafletBoundsHelper, leafletData, search, region, studyArea, StatisticsGroup, exploration) {
+            function MapController($scope, toaster, $analytics, $location, $stateParams, leafletBoundsHelper, leafletData, search, region, studyArea, StatisticsGroup, exploration, eventService) {
                 var _this = this;
+                this.$scope = $scope;
                 this.center = null;
                 this.layers = null;
                 this.mapDefaults = null;
@@ -83,10 +84,11 @@ var StreamStats;
                 this.studyArea = studyArea;
                 this.nssService = StatisticsGroup;
                 this.explorationService = exploration;
+                this.eventService = eventService;
                 //subscribe to Events
                 search.onSelectedAreaOfInterestChanged.subscribe(this._onSelectedAreaOfInterestHandler);
                 region.onSelectedRegionChanged.subscribe(this._onSelectedRegionHandler);
-                studyArea.onSelectedStudyAreaChanged.subscribe(this._onSelectedStudyAreaHandler);
+                eventService.SubscribeToEvent("onSelectedStudyAreaChanged", this._onSelectedStudyAreaHandler);
                 studyArea.onEditClick.subscribe(this._onEditClickHandler);
                 $scope.$on('leafletDirectiveMap.mousemove', function (event, args) {
                     var latlng = args.leafletEvent.latlng;
@@ -173,9 +175,7 @@ var StreamStats;
                 //this.center = new Center(39, -106, 16);
                 this.layers = {
                     baselayers: configuration.basemaps,
-                    overlays: configuration.overlayedLayers,
-                    markers: this.markers,
-                    geojson: this.geojson
+                    overlays: configuration.overlayedLayers
                 };
                 this.mapDefaults = new MapDefault(null, 3, true);
                 this.markers = {};
@@ -662,12 +662,24 @@ var StreamStats;
                     var item = angular.fromJson(angular.toJson(layer));
                     //console.log('in onselectedstudyarea changed', item.name);
                     if (item.name == 'globalwatershed') {
-                        _this.layers.overlays[item.name] = {
-                            name: '<img src=images/basin.png height="16">&nbsp;&nbsp;Basin Boundary',
-                            type: 'geoJSONShape',
-                            data: item.feature,
-                            visible: true,
-                            layerOptions: {
+                        //this.layers.overlays[item.name] = {
+                        //    name: '<img src=images/basin.png height="16">&nbsp;&nbsp;Basin Boundary',
+                        //    type: 'geoJSONShape',
+                        //    data: item.feature,
+                        //    visible: true,
+                        //    layerOptions: {
+                        //        style: {
+                        //            fillColor: "yellow",
+                        //            weight: 2,
+                        //            opacity: 1,
+                        //            color: 'white',
+                        //            fillOpacity: 0.5
+                        //        }
+                        //    }
+                        //}
+                        _this.geojson[item.name] =
+                            {
+                                data: item.feature,
                                 style: {
                                     fillColor: "yellow",
                                     weight: 2,
@@ -675,8 +687,7 @@ var StreamStats;
                                     color: 'white',
                                     fillOpacity: 0.5
                                 }
-                            }
-                        };
+                            };
                     }
                     if (item.name == 'globalwatershedpoint') {
                         _this.layers.overlays[item.name] = {
@@ -728,8 +739,6 @@ var StreamStats;
                         return;
                     }
                     this.nssService.queriedRegions = true;
-                    //send watershed to map service query that returns list of regression regions that overlap the watershed
-                    this.studyArea.queryRegressionRegions();
                 }
             };
             MapController.prototype.mapBoundsChange = function (oldValue, newValue) {
@@ -833,7 +842,7 @@ var StreamStats;
             };
             //Constructro
             //-+-+-+-+-+-+-+-+-+-+-+-
-            MapController.$inject = ['$scope', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService'];
+            MapController.$inject = ['$scope', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'WiM.Services.EventService'];
             return MapController;
         })(); //end class
         angular.module('StreamStats.Controllers')

@@ -49,8 +49,8 @@ module StreamStats.Controllers {
     interface IMapLayers {
         baselayers: Object;
         overlays: ILayer;
-        markers: Object;
-        geojson: Object;
+        //markers: Object;
+        //geojson: Object;
     }
     interface ILayer {
         name: string;
@@ -145,6 +145,7 @@ module StreamStats.Controllers {
         private studyArea: Services.IStudyAreaService;
         private nssService: Services.InssService;
         private explorationService: Services.IExplorationService;
+        private eventService: WiM.Services.IEventService;
 
         public cursorStyle: string;
         public center: ICenter = null;
@@ -166,8 +167,8 @@ module StreamStats.Controllers {
 
         //Constructro
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService'];
-        constructor($scope: IMapControllerScope, toaster, $analytics, $location: ng.ILocationService, $stateParams, leafletBoundsHelper: any, leafletData: ILeafletData, search: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, exploration: Services.IExplorationService) {
+        static $inject = ['$scope', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService','WiM.Services.EventService'];
+        constructor(public $scope: IMapControllerScope, toaster, $analytics, $location: ng.ILocationService, $stateParams, leafletBoundsHelper: any, leafletData: ILeafletData, search: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, exploration: Services.IExplorationService, eventService:WiM.Services.IEventService) {
             $scope.vm = this;
             this.init();
 
@@ -181,12 +182,16 @@ module StreamStats.Controllers {
             this.studyArea = studyArea;
             this.nssService = StatisticsGroup;
             this.explorationService = exploration;
+            this.eventService = eventService;
 
             //subscribe to Events
             search.onSelectedAreaOfInterestChanged.subscribe(this._onSelectedAreaOfInterestHandler);
             region.onSelectedRegionChanged.subscribe(this._onSelectedRegionHandler);
-            studyArea.onSelectedStudyAreaChanged.subscribe(this._onSelectedStudyAreaHandler);
+
+            eventService.SubscribeToEvent("onSelectedStudyAreaChanged", this._onSelectedStudyAreaHandler);
+
             studyArea.onEditClick.subscribe(this._onEditClickHandler);
+            
 
             $scope.$on('leafletDirectiveMap.mousemove',(event, args) => {
                 var latlng = args.leafletEvent.latlng;
@@ -283,9 +288,7 @@ module StreamStats.Controllers {
             //this.center = new Center(39, -106, 16);
             this.layers = {
                 baselayers: configuration.basemaps,
-                overlays: configuration.overlayedLayers,
-                markers: this.markers,
-                geojson: this.geojson
+                overlays: configuration.overlayedLayers
             }
             this.mapDefaults = new MapDefault(null, 3, true);
             this.markers = {};
@@ -898,20 +901,31 @@ module StreamStats.Controllers {
                 //console.log('in onselectedstudyarea changed', item.name);
 
                 if (item.name == 'globalwatershed') {
-                    this.layers.overlays[item.name] = {
-                        name: '<img src=images/basin.png height="16">&nbsp;&nbsp;Basin Boundary',
-                        type: 'geoJSONShape',
+                    //this.layers.overlays[item.name] = {
+                    //    name: '<img src=images/basin.png height="16">&nbsp;&nbsp;Basin Boundary',
+                    //    type: 'geoJSONShape',
+                    //    data: item.feature,
+                    //    visible: true,
+                    //    layerOptions: {
+                    //        style: {
+                    //            fillColor: "yellow",
+                    //            weight: 2,
+                    //            opacity: 1,
+                    //            color: 'white',
+                    //            fillOpacity: 0.5
+                    //        }
+                    //    }
+                    //}
+                    this.geojson[item.name] =
+                    {
                         data: item.feature,
-                        visible: true,
-                        layerOptions: {
-                            style: {
+                        style: {
                                 fillColor: "yellow",
                                 weight: 2,
                                 opacity: 1,
                                 color: 'white',
                                 fillOpacity: 0.5
                             }
-                        }
                     }
                 }
                 if (item.name == 'globalwatershedpoint') {
@@ -973,7 +987,7 @@ module StreamStats.Controllers {
                 this.nssService.queriedRegions = true;
 
                 //send watershed to map service query that returns list of regression regions that overlap the watershed
-                this.studyArea.queryRegressionRegions();
+                //this.studyArea.queryRegressionRegions();
             }
         }
 
