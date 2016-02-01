@@ -4,9 +4,9 @@
 </leaflet>
 <div ng-class="vm.explorationToolsExpanded ? 'exploration-tools-expanded ' : 'exploration-tools-collapsed '" ng-click="vm.explorationToolsExpanded = true; $event.stopPropagation(); $event.preventDefault();" ng-init="vm.explorationToolsExpanded == false">
     <div ng-show="vm.explorationToolsExpanded">
-        <div class="row angular-leaflet-control-layers-header">
+        <div class="row exploration-tools-header">
             <h4 ng-if="title">Layer Control}</h4>
-            <button class="close angular-leaflet-control-layers-close-button" ng-click="vm.explorationToolsExpanded = false; $event.stopPropagation();">&times;</button>
+            <button class="close exploration-tools-close-button" ng-click="vm.explorationToolsExpanded = false; $event.stopPropagation();">&times;</button>
         </div>
         <h6>Exploration Tools</h6>
         <!--<div class="wim-alert-info"  >Tools that can be used outside of the main workflow</div>-->
