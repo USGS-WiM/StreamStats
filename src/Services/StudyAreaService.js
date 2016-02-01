@@ -235,6 +235,29 @@ var StreamStats;
                     _this.parametersLoading = false;
                 });
             };
+            StudyAreaService.prototype.queryLandCover = function () {
+                var _this = this;
+                this.toaster.pop('info', "Querying Land Cover Data with your Basin", "Please wait...", 0);
+                console.log('querying land cover');
+                var esriJSON = '{"geometryType":"esriGeometryPolygon","spatialReference":{"wkid":"4326"},"fields": [],"features":[{"geometry": {"type":"polygon", "rings":[' + JSON.stringify(this.selectedStudyArea.Features[1].feature.features[0].geometry.coordinates) + ']}}]}';
+                //var watershed = angular.toJson(this.selectedStudyArea.Features[1].feature, null);
+                var url = configuration.baseurls['NationalMapRasterServices'] + configuration.queryparams['NLCDQueryService'];
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', { InputLineFeatures: esriJSON, returnZ: true, f: 'json' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
+                this.Execute(request).then(function (response) {
+                    //console.log(response.data);
+                    _this.toaster.clear();
+                    if (response.data.length > 0) {
+                        //console.log('query success');
+                        _this.toaster.pop('success', "Land Cover was succcessfully queried", "Please continue", 5000);
+                    }
+                }, function (error) {
+                    //sm when complete
+                    console.log('Regression query failed, HTTP Error');
+                    _this.toaster.pop('error', "There was an HTTP error querying Land Cover", "Please retry", 5000);
+                    return _this.$q.reject(error.data);
+                }).finally(function () {
+                });
+            };
             StudyAreaService.prototype.queryRegressionRegions = function () {
                 var _this = this;
                 this.toaster.pop('info', "Querying regression regions with your Basin", "Please wait...", 0);
@@ -263,6 +286,7 @@ var StreamStats;
                         _this.selectedStudyArea.RegressionRegions = response.data;
                         _this.toaster.pop('success', "Regression regions were succcessfully queried", "Please continue", 5000);
                     }
+                    //this.queryLandCover();
                 }, function (error) {
                     //sm when complete
                     console.log('Regression query failed, HTTP Error');

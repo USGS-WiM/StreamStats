@@ -38,6 +38,17 @@ body {
 	cursor: pointer;
 }
 
+*/
+/*Navbar button hover*/
+.navbar-btn{
+    font-weight: 400;
+    color: rgba(0,0,0,0.8);
+}
+.navbar-btn:hover{
+    color: rgba(0,0,0,0.8);
+}
+
+
 
 /*
     ===========================
@@ -45,7 +56,59 @@ body {
          Leaflet Overrides
     ===========================
     ===========================
-*/
+
+
+/*Toolbox button*/
+.exploration-tools-collapsed{
+    border-radius: 4px;
+    font-size: 12pt;
+    box-sizing: border-box;
+    padding: 0;
+    height: 27px;
+    width: 27px;
+    background-size: 18px 18px;
+}
+.exploration-tools-collapsed:hover{
+    cursor: pointer;
+    background-color: #f0f0f0;
+}
+.exploration-tools-expanded .btn-wim-sm{
+    font-size: 8.5pt;
+    font-weight: 400;
+}
+/*Close toolbox*/
+.angular-leaflet-control-layers-header{
+    display: inline-block;
+    float: right;
+}
+.angular-leaflet-control-layers-header .close{
+    font-size: 22pt;
+    margin: 0 auto;
+    width: 40px;
+    height: 40px;
+    opacity: 1;
+    background-color: white;
+    border-radius: 50%;
+    box-sizing: border-box;
+    padding: 0 0 2px 0;
+    float: right;
+    color: rgba(0,0,0,0.5);
+    box-shadow: 1px 1px 5px #333;
+    position: relative;
+    left: 10px;
+    top: -25px;
+}
+.angular-leaflet-control-layers-header .close:hover{
+    border: none;
+    color: rgba(44,116,183,.5);
+}
+
+/*Zoom controls*/
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out{
+    padding-top: 0;
+}
+
 
 .leaflet-popup-content-wrapper,.leaflet-popup-content
  {
