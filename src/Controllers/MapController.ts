@@ -380,7 +380,7 @@ module StreamStats.Controllers {
                             //console.log('here');
                             this.cursorStyle = 'pointer';
                             this.toaster.clear();
-                            this.toaster.pop("warning", "Warning", "No State/Regional Study Found", 0);
+                            this.toaster.pop("warning", "Warning", "No State/Regional Study Found", 5000);
                             map.panBy([0, 1]);
                             return;
                         }
