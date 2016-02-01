@@ -38,6 +38,16 @@ body {
 	cursor: pointer;
 }
 
+/*Navbar button hover*/
+.navbar-btn{
+    font-weight: 400;
+    color: rgba(0,0,0,0.8);
+}
+.navbar-btn:hover{
+    color: rgba(0,0,0,0.8);
+}
+
+
 
 /*
     ===========================
@@ -45,7 +55,21 @@ body {
          Leaflet Overrides
     ===========================
     ===========================
-*/
+
+/* disable some default controls*/
+.leaflet-control-layers.leaflet-control {
+    display: none;
+}
+
+.leaflet-control-locate {
+    display: none;
+}
+
+/*Zoom controls*/
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out{
+    padding-top: 0;
+}
 
 .leaflet-popup-content-wrapper,.leaflet-popup-content
  {
@@ -84,20 +108,55 @@ div.leaflet-top > .elevation {
     z-index:99999;
 }
 
+.exploration-tools-header {
+    height: 30px;
+    display: inline-block;
+    float: right;
+}
+
+.exploration-tools-close-button {
+    margin-right:20px;  
+}
+
+.exploration-tools-header .close{
+    font-size: 22pt;
+    margin: 0 auto;
+    width: 40px;
+    height: 40px;
+    opacity: 1;
+    background-color: white;
+    border-radius: 50%;
+    box-sizing: border-box;
+    padding: 0 0 2px 0;
+    float: right;
+    color: rgba(0,0,0,0.5);
+    box-shadow: 1px 1px 5px #333;
+    position: relative;
+    left: 10px;
+    top: -25px;
+}
+.exploration-tools-header .close:hover{
+    border: none;
+    color: rgba(44,116,183,.5);
+}
+
 .exploration-tools-collapsed {
     position: absolute;
     background: white;
     z-index: 100;
     left: 10px;
     top: 130px;
+    transition: all .2s;
+    font-size: 12pt;
+    box-sizing: border-box;
+    padding: 0;
+    height: 36px;
+    width: 36px;
     box-shadow: 1px 1px 5px #333;
-    padding: 15px;
     background-image: url(../images/tool-box.png);
     background-repeat: no-repeat;
     background-position: center;
-	width: 36px;
-	height: 36px;
-    transition: all .2s;
+    background-size: 18px 18px;
 }
 
 .exploration-tools-expanded {
@@ -112,12 +171,13 @@ div.leaflet-top > .elevation {
     transition: all .2s;
 }
 
-.leaflet-control-layers.leaflet-control {
-    display: none;
+.exploration-tools-collapsed:hover{
+    cursor: pointer;
+    background-color: #f0f0f0;
 }
-
-.leaflet-control-locate {
-    display: none;
+.exploration-tools-expanded .btn-wim-sm{
+    font-size: 8.5pt;
+    font-weight: 400;
 }
 
 .angular-leaflet-control-layers-collapsed {
@@ -126,7 +186,7 @@ div.leaflet-top > .elevation {
     background: white;
     z-index: 100;
     right: 10px;
-    top: 20px;
+    top: 10px;
     box-shadow: 1px 1px 5px #333;
     padding: 15px;
     background-image: url(../images/layers.png);
@@ -141,7 +201,7 @@ div.leaflet-top > .elevation {
     background: white;
     z-index: 100;
     right: 10px;
-    top: 20px;
+    top: 10px;
     width: 200px;
     height:90%;
     box-shadow: 1px 1px 5px #333;
@@ -152,10 +212,34 @@ div.leaflet-top > .elevation {
 
 .angular-leaflet-control-layers-header {
     height: 30px;
+    display: inline-block;
+    float: left;
 }
 
 .angular-leaflet-control-layers-close-button {
     margin-right:20px;  
+}
+
+.angular-leaflet-control-layers-header .close{
+    font-size: 22pt;
+    margin: 0 auto;
+    width: 40px;
+    height: 40px;
+    opacity: 1;
+    background-color: white;
+    border-radius: 50%;
+    box-sizing: border-box;
+    padding: 0 0 2px 0;
+    float: left;
+    color: rgba(0,0,0,0.5);
+    box-shadow: 1px 1px 5px #333;
+    position: relative;
+    left: 10px;
+    top: -25px;
+}
+.angular-leaflet-control-layers-header .close:hover{
+    border: none;
+    color: rgba(44,116,183,.5);
 }
 
 .angular-leaflet-control-layers .lf-row label {
@@ -198,9 +282,9 @@ div.leaflet-top > .elevation {
   padding:15px 20px;
 }
 
-.navbar-absolute-top {
+/*.navbar-absolute-top {
     min-width: 700px;
-}
+}*/
 
     .navbar-app{
     background-color: #2D3146;
@@ -527,8 +611,10 @@ div.leaflet-top > .elevation {
     }
 
     .navBarButton{
-      top: 2px; right:10px;
-      padding-left:4px;
+      top: 2px; 
+      right:10px;
+      padding-left:8px;
+      padding-right:8px;
     }
 
     .modal-dialog{
@@ -556,14 +642,16 @@ div.leaflet-top > .elevation {
 
 @media only screen and (max-width: 590px) {
     .navbar-brand{
-        width: 150px;
-        top: -1px;
+        top:0px;
         position: relative;
-        padding: 20px 6px 20px 6px;
     }
-        .navbar-brand img{
-            margin-right: 2px;
-        }
+
+    .navBarButton{
+      top: 2px; 
+      right:10px;
+      padding-left:8px;
+      padding-right:8px;
+    }
 
     .app-name{
         font-size: 12pt;
@@ -575,19 +663,19 @@ div.leaflet-top > .elevation {
         padding: 0;
         display: block;
     }
-        #aboutTabs li a{
-            border-radius: 20px;
-            border: none;
-            padding-bottom: 8px;
-            text-transform: uppercase;
-            text-align: center;
-            margin-bottom: 5px;
-            background-color: #ECEEF4;
-            font-weight: bolder;
-        }
-            #aboutTabs li a:hover{
-                background-color: #fff;
-            }
+#aboutTabs li a{
+    border-radius: 20px;
+    border: none;
+    padding-bottom: 8px;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 5px;
+    background-color: #ECEEF4;
+    font-weight: bolder;
+}
+    #aboutTabs li a:hover{
+        background-color: #fff;
+    }
     #aboutTabs .active a{
         background-color: #19232F !important;
         color: #fff;
@@ -598,8 +686,16 @@ div.leaflet-top > .elevation {
 
 @media only screen and (max-width: 520px) {
     .navbar-brand{
-        width: 120px;
-        position: relative; top:-1px;
+        width:120px;
+        position: relative; 
+        top:4px;
+    }
+
+    .navBarButton{
+      top: 2px; 
+      right:10px;
+      padding-left:8px;
+      padding-right:8px;
     }
 
     .app-name{
@@ -609,7 +705,42 @@ div.leaflet-top > .elevation {
         letter-spacing: 1px;
         font-weight: 400;
         display: inline-block;
-        position: relative; top:12px;
+        position: relative; 
+        top:22px;
         font-size: 10pt;
     }
+
+}
+
+
+@media only screen and (max-width: 420px) {
+    .navbar-app {
+        height:70px;
+    }
+    .navbar-brand{
+        width:100px;
+        position: absolute; 
+        top:-1px;
+        left:34px;
+    }
+
+    .navBarButton{
+      top: 2px; 
+      right:10px;
+      padding-left:6px;
+      padding-right:6px;
+    }
+
+    .app-name{
+        max-width: 130px;
+        line-height: 15px;
+        padding-left: 6px;
+        letter-spacing: 1px;
+        font-weight: 400;
+        display: inline-block;
+        position: relative; 
+        top:34px;
+        font-size: 10pt;
+    }
+
 }
