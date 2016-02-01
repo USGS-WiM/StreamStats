@@ -51,10 +51,21 @@ module StreamStats.Services {
         regressionRegionQueryComplete: boolean;
         Disclaimers: Object;
     }
+
+    export var onSelectedStudyAreaChanged: string = "onSelectedStudyAreaChanged";
+    export class StudyAreaEventArgs extends WiM.Event.EventArgs {
+        //properties
+        public studyArea: StreamStats.Models.IStudyArea;
+        public studyAreaVisible: boolean;
+
+        constructor() {
+            super();
+        }
+
+    }
+
     class StudyAreaService extends WiM.Services.HTTPServiceBase implements IStudyAreaService {
         //Events
-        private onSelectedStudyAreaAdded: string = "onSelectedStudyAreaChanged";
-        private onSelectedStudyAreaChanged: string = "onSelectedStudyAreaChanged";
 
         private _onStudyAreaChangedHandler: WiM.Event.EventHandler<WiM.Event.EventArgs>;
 
@@ -82,7 +93,7 @@ module StreamStats.Services {
             if (!this.canUpdate) return;
             if (this._selectedStudyArea != val) {
                 this._selectedStudyArea = val;
-                this.eventService.RaiseEvent(this.onSelectedStudyAreaAdded, this, WiM.Event.EventArgs.Empty);
+                this.eventService.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);
             }
         }
         public get selectedStudyArea(): Models.IStudyArea {
@@ -105,8 +116,8 @@ module StreamStats.Services {
         //-+-+-+-+-+-+-+-+-+-+-+-
         constructor($http: ng.IHttpService, private $q: ng.IQService, public eventService: WiM.Services.IEventService, toaster) {
             super($http, configuration.baseurls['StreamStats'])
-            eventService.AddEvent(this.onSelectedStudyAreaAdded, new WiM.Event.Delegate<WiM.Event.EventArgs>());
-            eventService.SubscribeToEvent(this.onSelectedStudyAreaAdded, new WiM.Event.EventHandler<WiM.Event.EventArgs>((sender: any, e: WiM.Services.SearchAPIEventArgs) => {
+            eventService.AddEvent(onSelectedStudyAreaChanged, new WiM.Event.Delegate<StudyAreaEventArgs>());
+            eventService.SubscribeToEvent(onSelectedStudyAreaChanged, new WiM.Event.EventHandler<StudyAreaEventArgs>((sender: any, e: StudyAreaEventArgs) => {
                 this.onStudyAreaChanged(sender, e);
             }));
 
@@ -127,7 +138,7 @@ module StreamStats.Services {
         public undoEdit() {
             //console.log('undo edit');
             this.WatershedEditDecisionList = new Models.WatershedEditDecisionList();
-            this.eventService.RaiseEvent(this.onSelectedStudyAreaAdded, this, WiM.Event.EventArgs.Empty);
+            this.eventService.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);
         }
 
         public AddStudyArea(sa: Models.IStudyArea) {
@@ -183,7 +194,7 @@ module StreamStats.Services {
                     this.toaster.pop("error", "Error Delineating Basin", "Please retry", 5000);
                 }).finally(() => {
                     this.canUpdate = true;
-                    this.eventService.RaiseEvent(this.onSelectedStudyAreaAdded, this, WiM.Event.EventArgs.Empty);    
+                    this.eventService.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);    
             });
         }
 
@@ -223,7 +234,7 @@ module StreamStats.Services {
                         this.toaster.pop("error", "Error Delineating Basin", "Please retry", 5000);
                     }).finally(() => {
                         this.canUpdate = true;
-                        this.eventService.RaiseEvent(this.onSelectedStudyAreaAdded, this, WiM.Event.EventArgs.Empty);    
+                        this.eventService.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);    
                         this.toaster.clear();
                     });
             }
@@ -255,7 +266,9 @@ module StreamStats.Services {
                     this.toaster.pop("error", "Error Delineating Basin", "Please retry", 5000);
                 }).finally(() => {
                 this.canUpdate = true;
-                this.eventService.RaiseEvent(this.onSelectedStudyAreaAdded, this, WiM.Event.EventArgs.Empty);
+                var evnt = new StudyAreaEventArgs();
+                evnt.studyArea = this.selectedStudyArea;                
+                this.eventService.RaiseEvent(onSelectedStudyAreaChanged, this, evnt);
             });
         }
 
@@ -363,7 +376,7 @@ module StreamStats.Services {
             this.regulationCheckComplete = false;
 
             var watershed = angular.toJson(this.selectedStudyArea.Features[1].feature, null);
-            var url = configuration.baseurls['GISserver'] + configuration.queryparams['COregulationService'];
+            var url = configuration.baseurls['GISserver'] + configuration.queryparams['regulationService'].format(this.selectedStudyArea.RegionID);
             var request: WiM.Services.Helpers.RequestInfo =
                 new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST,
                     'json', { watershed: watershed, outputcrs: 4326, f: 'geojson' },
@@ -396,7 +409,7 @@ module StreamStats.Services {
                 }).finally(() => {
                     //this.toaster.clear();
                     this.regulationCheckComplete = true;
-                    this.eventService.RaiseEvent(this.onSelectedStudyAreaAdded, this, WiM.Event.EventArgs.Empty);    
+                    this.eventService.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);    
 
             });
         }
@@ -478,7 +491,7 @@ module StreamStats.Services {
         }
         //EventHandlers Methods
         //-+-+-+-+-+-+-+-+-+-+-+- 
-        private onStudyAreaChanged(sender: any, e: WiM.Services.SearchAPIEventArgs) {
+        private onStudyAreaChanged(sender: any, e: StudyAreaEventArgs) {
             if (!this.selectedStudyArea || !this.selectedStudyArea.Features) return;
             this.queryRegressionRegions();
         }

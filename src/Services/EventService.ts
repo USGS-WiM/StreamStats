@@ -35,7 +35,7 @@ module WiM.Services {
     export interface IEventService {
         AddEvent<T extends WiM.Event.EventArgs>(EventName: string, EventDelegate: WiM.Event.Delegate<T>);
         SubscribeToEvent<T extends WiM.Event.EventArgs>(EventName: string, handler: WiM.Event.EventHandler<T>);
-        RaiseEvent(EventName: string, sender: any, args: WiM.Event.EventArgs);
+        RaiseEvent<T extends WiM.Event.EventArgs>(EventName: string, sender: any, args: T);
     }
 
     class Event implements IEvent {

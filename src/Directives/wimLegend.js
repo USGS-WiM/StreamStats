@@ -31,6 +31,28 @@ var WiM;
     var Directives;
     (function (Directives) {
         'use string';
+        Directives.onLayerAdded = "onLayerAdded";
+        Directives.onLayerChanged = "onLayerChanged";
+        var LegendLayerAddedEventArgs = (function (_super) {
+            __extends(LegendLayerAddedEventArgs, _super);
+            function LegendLayerAddedEventArgs(layername, ltype, style) {
+                _super.call(this);
+                this.LayerName = layername;
+                this.layerType = ltype;
+                this.style = style;
+            }
+            return LegendLayerAddedEventArgs;
+        })(WiM.Event.EventArgs);
+        Directives.LegendLayerAddedEventArgs = LegendLayerAddedEventArgs;
+        var LegendLayerChangedEventArgs = (function (_super) {
+            __extends(LegendLayerChangedEventArgs, _super);
+            function LegendLayerChangedEventArgs(layername, propertyname) {
+                _super.call(this);
+                this.LayerName = layername;
+            }
+            return LegendLayerChangedEventArgs;
+        })(WiM.Event.EventArgs);
+        Directives.LegendLayerChangedEventArgs = LegendLayerChangedEventArgs;
         var wimLegendController = (function (_super) {
             __extends(wimLegendController, _super);
             function wimLegendController($scope, $http, leafletData, eventService) {
@@ -38,8 +60,9 @@ var WiM;
                 _super.call(this, $http, '');
                 $scope.vm = this;
                 //subscribe to Events
-                eventService.SubscribeToEvent("onSelectedStudyAreaChanged", new WiM.Event.EventHandler(function (sender, e) {
-                    _this.onSelectedStudyAreaChanged(sender, e);
+                eventService.AddEvent(Directives.onLayerAdded, new WiM.Event.Delegate());
+                eventService.SubscribeToEvent(Directives.onLayerAdded, new WiM.Event.EventHandler(function (sender, e) {
+                    _this.onLayerAdded(sender, e);
                 }));
                 this.leafletData = leafletData;
                 this.init();
@@ -85,6 +108,12 @@ var WiM;
                 this.overlays = {};
                 this.baselayers = {};
                 this.baselayers.isOpen = true;
+                this.applicationLayer = {
+                    selectedlayerName: "Application Layers",
+                    isAvailable: false,
+                    layergroup: {},
+                    isOpen: false
+                };
                 this.leafletData.getMap().then(function (map) {
                     _this.leafletData.getLayers().then(function (maplayers) {
                         for (var key in maplayers.baselayers) {
@@ -96,8 +125,17 @@ var WiM;
                     }); //end getLayers                                
                 }); //end getMap   
             }; //end init
-            wimLegendController.prototype.onSelectedStudyAreaChanged = function (sender, e) {
-                console.log('wimLegend study area changed');
+            wimLegendController.prototype.onLayerAdded = function (sender, e) {
+                if (e.layerType != 'geojson')
+                    return;
+                //add to legend
+                if (this.applicationLayer.layergroup.hasOwnProperty(e.LayerName))
+                    return;
+                this.applicationLayer.isAvailable = true;
+                this.applicationLayer.layergroup[e.LayerName] = {
+                    visible: true,
+                    style: e.style
+                };
             };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
@@ -139,12 +177,14 @@ var WiM;
                 element.bind('mouseover', function (e) {
                     controller.getMap().then(function (map) {
                         map.dragging.disable();
+                        map.doubleClickZoom.disable;
                         map.scrollWheelZoom.disable();
                     }); //end getMap   
                 });
                 element.bind('mouseout', function (e) {
                     controller.getMap().then(function (map) {
                         map.dragging.enable();
+                        map.doubleClickZoom.enable();
                         map.scrollWheelZoom.enable();
                     }); //end getMap  
                 });

@@ -31,7 +31,7 @@ configuration.queryparams =
     'SSStateLayers': '/arcgis/rest/services/{0}_ss/MapServer?f=pjson',
     'FARefGage': '/2/query?geometry={0}&geometryType=esriGeometryPoint&inSR={1}&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
     'regionService': '/arcgis/rest/services/ss_studyAreas_prod/MapServer/identify',
-    'COregulationService': '/arcgis/rest/services/Regulation/CORegulationSites/MapServer/exts/RegulationRESTSOE/Regulation',
+    'regulationService': '/arcgis/rest/services/Regulation/{0}RegulationSites/MapServer/exts/RegulationRESTSOE/Regulation',
     'RegressionRegionQueryService': '/arcgis/rest/services/NSS/regions/MapServer/exts/PercentOverlayRESTSOE/PercentOverlay'
 }
 
@@ -265,7 +265,27 @@ configuration.regions = [
     { "RegionID": "MN", "Name": "Minnesota", "Bounds": [[43.502101, -97.238975], [49.38562, -89.487754]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "MS", "Name": "Mississippi", "Bounds": [[30.174402, -91.654251], [34.998321, -88.097961]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "MO", "Name": "Missouri", "Bounds": [[35.99509, -95.774414], [40.614028, -89.100593]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
-    { "RegionID": "MT", "Name": "Montana", "Bounds": [[44.357688, -116.050735], [49.001808, -104.03971]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
+    {
+        "RegionID": "MT",
+        "Name": "Montana",
+        "Bounds": [[44.357688, -116.050735], [49.001808, -104.03971]],
+        "Layers": {
+            "MT_Regulation": {
+                "name": "Regulation Points",
+                "url": configuration.baseurls['GISserver'] + "/arcgis/rest/services/Regulation/MTRegulationSites/MapServer",
+                "type": 'agsDynamic',
+                "visible": true,
+                "layerOptions": {
+                    "zIndex": 1,
+                    "format": "png8",
+                    "layers": [0],
+                    "f": "image"
+                }
+            }
+        },
+        "Applications": ["Regulation"],
+        "ScenariosAvailable": true
+    },
     { "RegionID": "NE", "Name": "Nebraska", "Bounds": [[39.999885, -104.052841], [43.002796, -95.307998]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "NV", "Name": "Nevada", "Bounds": [[35.002079, -120.005348], [42.000312, -114.039344]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "NH", "Name": "New Hampshire", "Bounds": [[42.697776, -72.556434], [45.308731, -70.7135]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },

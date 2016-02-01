@@ -37,6 +37,7 @@ module WiM.Directives {
     }
     interface IwimLegendLayerGroup {
         selectedlayerName: string;
+        isAvailable: boolean;
         layergroup: any;
         isOpen: boolean;
 
@@ -45,6 +46,33 @@ module WiM.Directives {
     interface IwimLegendAttributes extends ng.IAttributes {
         //must use camelcase
         stopEvents: string;
+    }
+
+    export var onLayerAdded: string = "onLayerAdded";
+    export var onLayerChanged: string = "onLayerChanged";
+
+    export class LegendLayerAddedEventArgs extends WiM.Event.EventArgs {
+        //properties
+        public LayerName: string;
+        public layerType: String;
+        public style: any;
+
+        constructor(layername:string, ltype:string, style:any) {
+            super();
+            this.LayerName = layername;
+            this.layerType = ltype;
+            this.style = style;
+        }
+    }
+    export class LegendLayerChangedEventArgs extends WiM.Event.EventArgs {
+        //properties
+        public LayerName: string;
+        public layerType: String;
+
+        constructor(layername: string, propertyname: string) {
+            super();
+            this.LayerName = layername
+        }
     }
 
     class wimLegendController extends WiM.Services.HTTPServiceBase implements IwimLegendController {
@@ -56,6 +84,7 @@ module WiM.Directives {
         private leafletData: any;
         public overlays: IwimLegendLayerGroup;
         public baselayers: IwimLegendLayerGroup;
+        public applicationLayer: IwimLegendLayerGroup;
 
 
         //Constructor
@@ -65,9 +94,11 @@ module WiM.Directives {
             super($http, '');
             $scope.vm = this;
             //subscribe to Events
-            eventService.SubscribeToEvent("onSelectedStudyAreaChanged", new WiM.Event.EventHandler<WiM.Event.EventArgs>((sender: any, e: WiM.Event.EventArgs) => {
-                this.onSelectedStudyAreaChanged(sender,e);
+            eventService.AddEvent(onLayerAdded, new WiM.Event.Delegate<LegendLayerAddedEventArgs>());
+            eventService.SubscribeToEvent(onLayerAdded, new WiM.Event.EventHandler<LegendLayerAddedEventArgs>((sender: any, e: LegendLayerAddedEventArgs) => {
+                this.onLayerAdded(sender, e);
             }));
+
             this.leafletData = leafletData;
             this.init();
  
@@ -118,6 +149,14 @@ module WiM.Directives {
             this.baselayers = <IwimLegendLayerGroup>{};
             this.baselayers.isOpen = true;
 
+            this.applicationLayer = <IwimLegendLayerGroup>{
+                selectedlayerName: "Application Layers",
+                isAvailable:false,
+                layergroup: {},
+                isOpen: false
+            };
+
+
             this.leafletData.getMap().then((map: any) => {
                 this.leafletData.getLayers().then((maplayers: any) => {
                     for (var key in maplayers.baselayers) {
@@ -133,8 +172,15 @@ module WiM.Directives {
 
         }//end init
 
-        private onSelectedStudyAreaChanged(sender: any, e: WiM.Event.EventArgs) {
-            console.log('wimLegend study area changed');            
+        private onLayerAdded(sender: any, e: LegendLayerAddedEventArgs) {
+            if (e.layerType != 'geojson') return; 
+            //add to legend
+            if (this.applicationLayer.layergroup.hasOwnProperty(e.LayerName)) return;
+            this.applicationLayer.isAvailable = true;
+            this.applicationLayer.layergroup[e.LayerName] = {
+                visible: true,
+                style: e.style
+            }         
         }
 
     }//end wimLayerControlController class
@@ -176,12 +222,14 @@ module WiM.Directives {
             element.bind('mouseover', (e) => {
                controller.getMap().then((map: any) => {
                    map.dragging.disable();  
+                   map.doubleClickZoom.disable
                    map.scrollWheelZoom.disable();                            
                 });//end getMap   
             });
             element.bind('mouseout', (e) => {
                 controller.getMap().then((map: any) => {
                     map.dragging.enable();
+                    map.doubleClickZoom.enable();
                     map.scrollWheelZoom.enable();
                 });//end getMap  
             });

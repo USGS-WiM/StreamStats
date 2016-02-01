@@ -16,6 +16,21 @@
                 </div>
             </div>  
 
+            <!-- Application Layers -->
+            <div ng-if="vm.applicationLayer.isAvailable">
+                <div ng-class="vm.applicationLayer.isOpen  ? 'list-group-item-active': 'list-group-item'">
+                    <label> {{vm.applicationLayer.selectedlayerName}}</label>
+                    <i ng-class="vm.applicationLayer.isOpen ? 'fa fa-chevron-up pull-right': 'fa fa-chevron-down pull-right'" ng-click="vm.applicationLayer.isOpen=(vm.applicationLayer.isOpen) ? false : true;"></i>
+                </div>
+                <div ng-show="vm.applicationLayer.isOpen">
+                    <div ng-repeat="lyr in vm.applicationLayer.layergroup">
+                        <input type="checkbox" id="applicationLayer{{$id}}" ng-checked="lyr.visible" ng-value="lyr.visible" />                        
+                        <label for="applicationLayer{{$id}}" ng-click="lyr.visible=(lyr.visible) ? false : true;"><img ng-src={{lyr.style.imagesrc}} />{{lyr.style.displayName}}</label>
+                        
+                    </div>
+                </div>
+            </div>
+
             <!-- overlays --> 
             <div ng-repeat="layer in vm.overlays.layergroup" ng-init="vm.initOverlays(layer)">
                 <div ng-if="!layer.layerParams.showOnSelector && layer.layerParams.showOnSelector !== false" ng-class="!layer.isOpen  ? 'list-group-item-active': 'list-group-item'">
@@ -38,7 +53,7 @@
                     </div>
                 </div>
             </div>
-
+            
         </div>
     </div>
 </div>
