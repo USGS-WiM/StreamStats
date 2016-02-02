@@ -106,7 +106,7 @@
     <TypeScriptCompile Include="src\Controllers\ReportController.ts" />
     <TypeScriptCompile Include="src\Controllers\SidebarController.ts" />
     <TypeScriptCompile Include="src\Directives\explorationTools.ts" />
-    <TypeScriptCompile Include="src\Directives\wimLegend.ts" />
+    <TypeScriptCompile Include="src\Events\StudyAreaEvents.ts" />
     <TypeScriptCompile Include="src\Models\RegulationParameter.ts" />
     <TypeScriptCompile Include="src\Models\StudyArea.ts" />
     <TypeScriptCompile Include="src\Models\WatershedEDL.ts" />
