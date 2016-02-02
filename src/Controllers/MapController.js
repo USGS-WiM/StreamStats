@@ -246,7 +246,7 @@ var StreamStats;
                                 //console.log('here');
                                 _this.cursorStyle = 'pointer';
                                 _this.toaster.clear();
-                                _this.toaster.pop("warning", "Warning", "No State/Regional Study Found", 0);
+                                _this.toaster.pop("warning", "Warning", "No State/Regional Study Found", 5000);
                                 map.panBy([0, 1]);
                                 return;
                             }
