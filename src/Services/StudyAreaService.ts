@@ -25,7 +25,6 @@
 module StreamStats.Services {
     'use strict'
     export interface IStudyAreaService {
-        onEditClick: WiM.Event.Delegate<WiM.Event.EventArgs>;
         selectedStudyArea: Models.IStudyArea;
         loadParameters();
         loadStudyBoundary();
@@ -53,6 +52,8 @@ module StreamStats.Services {
     }
 
     export var onSelectedStudyAreaChanged: string = "onSelectedStudyAreaChanged";
+    export var onStudyAreaReset: string = "onStudyAreaReset";
+    export var onEditClick: string = "onEditClick";
     export class StudyAreaEventArgs extends WiM.Event.EventArgs {
         //properties
         public studyArea: StreamStats.Models.IStudyArea;
@@ -65,15 +66,6 @@ module StreamStats.Services {
     }
 
     class StudyAreaService extends WiM.Services.HTTPServiceBase implements IStudyAreaService {
-        //Events
-
-        private _onStudyAreaChangedHandler: WiM.Event.EventHandler<WiM.Event.EventArgs>;
-
-        private _onEditClick: WiM.Event.Delegate<WiM.Event.EventArgs>;
-        public get onEditClick(): WiM.Event.Delegate<WiM.Event.EventArgs> {
-            return this._onEditClick;
-        }
-        
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
         public toaster: any;
@@ -93,7 +85,7 @@ module StreamStats.Services {
             if (!this.canUpdate) return;
             if (this._selectedStudyArea != val) {
                 this._selectedStudyArea = val;
-                this.eventService.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);
+                this.eventManager.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);
             }
         }
         public get selectedStudyArea(): Models.IStudyArea {
@@ -114,14 +106,18 @@ module StreamStats.Services {
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        constructor($http: ng.IHttpService, private $q: ng.IQService, public eventService: WiM.Services.IEventService, toaster) {
+        constructor($http: ng.IHttpService, private $q: ng.IQService, private eventManager: WiM.Event.IEventManager, toaster) {
             super($http, configuration.baseurls['StreamStats'])
-            eventService.AddEvent(onSelectedStudyAreaChanged, new WiM.Event.Delegate<StudyAreaEventArgs>());
-            eventService.SubscribeToEvent(onSelectedStudyAreaChanged, new WiM.Event.EventHandler<StudyAreaEventArgs>((sender: any, e: StudyAreaEventArgs) => {
+
+            eventManager.AddEvent<StudyAreaEventArgs>(onSelectedStudyAreaChanged);
+            eventManager.AddEvent<StudyAreaEventArgs>(onStudyAreaReset);
+            eventManager.SubscribeToEvent(onSelectedStudyAreaChanged, new WiM.Event.EventHandler<StudyAreaEventArgs>((sender: any, e: StudyAreaEventArgs) => {
                 this.onStudyAreaChanged(sender, e);
             }));
+            eventManager.AddEvent<WiM.Event.EventArgs>(onEditClick);
+      
 
-            this._onEditClick = new WiM.Event.Delegate<WiM.Event.EventArgs>();
+
             this.toaster = toaster;
             this.clearStudyArea();
             this.showDelineateButton = false;
@@ -132,13 +128,13 @@ module StreamStats.Services {
         //-+-+-+-+-+-+-+-+-+-+-+-
         public editBasin(selection) {
             this.drawControlOption = selection;
-            this._onEditClick.raise(null, WiM.Event.EventArgs.Empty);
+            this.eventManager.RaiseEvent(onEditClick,this,WiM.Event.EventArgs.Empty)
         }
 
         public undoEdit() {
             //console.log('undo edit');
             this.WatershedEditDecisionList = new Models.WatershedEditDecisionList();
-            this.eventService.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);
+            this.eventManager.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);
         }
 
         public AddStudyArea(sa: Models.IStudyArea) {
@@ -170,6 +166,8 @@ module StreamStats.Services {
             this.reportGenerated = false;
             this.regressionRegionQueryComplete = false;
             this.regressionRegionQueryLoading = false;
+
+            this.eventManager.RaiseEvent(Services.onStudyAreaReset, this, WiM.Event.EventArgs.Empty);
         }
 
         public loadStudyBoundary() {
@@ -194,7 +192,7 @@ module StreamStats.Services {
                     this.toaster.pop("error", "Error Delineating Basin", "Please retry", 5000);
                 }).finally(() => {
                     this.canUpdate = true;
-                    this.eventService.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);    
+                    this.eventManager.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);    
             });
         }
 
@@ -234,7 +232,7 @@ module StreamStats.Services {
                         this.toaster.pop("error", "Error Delineating Basin", "Please retry", 5000);
                     }).finally(() => {
                         this.canUpdate = true;
-                        this.eventService.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);    
+                        this.eventManager.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);    
                         this.toaster.clear();
                     });
             }
@@ -268,7 +266,7 @@ module StreamStats.Services {
                 this.canUpdate = true;
                 var evnt = new StudyAreaEventArgs();
                 evnt.studyArea = this.selectedStudyArea;                
-                this.eventService.RaiseEvent(onSelectedStudyAreaChanged, this, evnt);
+                this.eventManager.RaiseEvent(onSelectedStudyAreaChanged, this, evnt);
             });
         }
 
@@ -409,7 +407,7 @@ module StreamStats.Services {
                 }).finally(() => {
                     //this.toaster.clear();
                     this.regulationCheckComplete = true;
-                    this.eventService.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);    
+                    this.eventManager.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);    
 
             });
         }
@@ -498,9 +496,9 @@ module StreamStats.Services {
 
     }//end class
 
-    factory.$inject = ['$http', '$q', 'WiM.Services.EventService', 'toaster'];
-    function factory($http: ng.IHttpService, $q: ng.IQService, eventService: WiM.Services.IEventService, toaster:any) {
-        return new StudyAreaService($http,$q, eventService, toaster)
+    factory.$inject = ['$http', '$q', 'WiM.Event.EventManager', 'toaster'];
+    function factory($http: ng.IHttpService, $q: ng.IQService, eventManager: WiM.Event.IEventManager, toaster:any) {
+        return new StudyAreaService($http,$q, eventManager, toaster)
     }
     angular.module('StreamStats.Services')
         .factory('StreamStats.Services.StudyAreaService', factory)

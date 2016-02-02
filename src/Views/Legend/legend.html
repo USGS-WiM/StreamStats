@@ -23,9 +23,9 @@
                     <i ng-class="vm.applicationLayer.isOpen ? 'fa fa-chevron-up pull-right': 'fa fa-chevron-down pull-right'" ng-click="vm.applicationLayer.isOpen=(vm.applicationLayer.isOpen) ? false : true;"></i>
                 </div>
                 <div ng-show="vm.applicationLayer.isOpen">
-                    <div ng-repeat="lyr in vm.applicationLayer.layergroup">
+                    <div ng-repeat="(key, lyr) in vm.applicationLayer.layergroup">
                         <input type="checkbox" id="applicationLayer{{$id}}" ng-checked="lyr.visible" ng-value="lyr.visible" />                        
-                        <label for="applicationLayer{{$id}}" ng-click="lyr.visible=(lyr.visible) ? false : true;"><img ng-src={{lyr.style.imagesrc}} />{{lyr.style.displayName}}</label>
+                        <label for="applicationLayer{{$id}}" ng-click="$parent.vm.toggleLayer(key.toString(), lyr.visible)"><img ng-src={{lyr.style.imagesrc}} />{{lyr.style.displayName}}</label>
                         
                     </div>
                 </div>

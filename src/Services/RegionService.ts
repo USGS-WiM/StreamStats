@@ -87,14 +87,9 @@ module StreamStats.Services {
         public toggleable: boolean;
 
     }//end class
+    export var onSelectedRegionChanged: string = "onSelectedRegionChanged";
 
     class RegionService extends WiM.Services.HTTPServiceBase {
-        //Events
-        private _onSelectedRegionChanged: WiM.Event.Delegate<WiM.Event.EventArgs>;
-        public get onSelectedRegionChanged(): WiM.Event.Delegate<WiM.Event.EventArgs> {
-            return this._onSelectedRegionChanged;
-        }
-        
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
         public toaster: any;
@@ -108,7 +103,7 @@ module StreamStats.Services {
         public set selectedRegion(val: IRegion) {
             if (this._selectedRegion != val) {
                 this._selectedRegion = val;
-                this._onSelectedRegionChanged.raise(null, WiM.Event.EventArgs.Empty);
+                this.eventManager.RaiseEvent(onSelectedRegionChanged, this, WiM.Event.EventArgs.Empty);
             }
         }
         public regionMapLayerList: any;
@@ -119,9 +114,8 @@ module StreamStats.Services {
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        constructor($http: ng.IHttpService, private $q: ng.IQService, toaster) {
+        constructor($http: ng.IHttpService, private $q: ng.IQService, toaster, private eventManager:WiM.Event.IEventManager) {
             super($http, configuration.baseurls['StreamStats']);
-            this._onSelectedRegionChanged = new WiM.Event.Delegate<WiM.Event.EventArgs>(); 
             this.toaster = toaster;
             this.regionList = [];
             this.parameterList = [];
@@ -129,6 +123,7 @@ module StreamStats.Services {
             this.loadNationalMapLayers();
             this.streamStatsAvailable = false;
             this.allowStreamgageQuery = false;
+            this.eventManager.AddEvent<WiM.Event.EventArgs>(onSelectedRegionChanged);
         }
 
         //Methods
@@ -316,9 +311,9 @@ module StreamStats.Services {
 
     }//end class
 
-    factory.$inject = ['$http', '$q', 'toaster'];
-    function factory($http: ng.IHttpService, $q: ng.IQService, toaster: any) {
-        return new RegionService($http, $q, toaster)
+    factory.$inject = ['$http', '$q', 'toaster','WiM.Event.EventManager'];
+    function factory($http: ng.IHttpService, $q: ng.IQService, toaster: any, eventManager:WiM.Event.IEventManager) {
+        return new RegionService($http, $q, toaster, eventManager)
     }
     angular.module('StreamStats.Services')
         .factory('StreamStats.Services.RegionService', factory)
