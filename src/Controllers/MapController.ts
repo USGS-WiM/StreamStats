@@ -522,7 +522,8 @@ module StreamStats.Controllers {
                         metric: false
                     });
                     drawControl.enable();
-                    this.geojson = {};
+                    //this.geojson = {};
+                    delete this.geojson['elevationProfileLine3D'];
 
                     map.on('draw:drawstart',(e) => {
                         //console.log('in draw start');
@@ -783,6 +784,7 @@ module StreamStats.Controllers {
                             console.log('add layer', layer.toGeoJSON());
                             var editPolygon = greinerHormann.union(sourcePolygon, clipPolygon);
                             this.studyArea.WatershedEditDecisionList.append.push(layer.toGeoJSON());
+                            this.studyArea.Disclaimers['isEdited'] = true;
                         }
 
                         if (this.studyArea.drawControlOption == 'remove') {
@@ -798,6 +800,7 @@ module StreamStats.Controllers {
                             }
 
                             this.studyArea.WatershedEditDecisionList.remove.push(layer.toGeoJSON());
+                            this.studyArea.Disclaimers['isEdited'] = true;
                         }
 
                         //set studyArea basin to new edited polygon
@@ -848,7 +851,7 @@ module StreamStats.Controllers {
         }
         private onSelectedStudyAreaChanged() {
 
-            //console.log('study area changed');
+            console.log('in onSelectedStudyAreaChanged');
             this.removeOverlayLayers('globalwatershed', true);
 
             if (!this.studyArea.selectedStudyArea || !this.studyArea.selectedStudyArea.Features) return;
@@ -879,6 +882,7 @@ module StreamStats.Controllers {
                 }
 
                 this.nssService.queriedRegions = true;
+                console.log('set queriedregions flag to true: ', this.nssService.queriedRegions);
             }
             
         }
