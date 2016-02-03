@@ -38,17 +38,6 @@ body {
 	cursor: pointer;
 }
 
-/*Navbar button hover*/
-.navbar-btn{
-    font-weight: 400;
-    color: rgba(0,0,0,0.8);
-}
-.navbar-btn:hover{
-    color: rgba(0,0,0,0.8);
-}
-
-
-
 /*
     ===========================
     ===========================
@@ -208,6 +197,7 @@ div.leaflet-top > .elevation {
     padding: 5px;
     overflow-y:auto;
     overflow-x:hidden;
+    transition: all .2s;
 }
 
 .angular-leaflet-control-layers-header {
@@ -278,38 +268,38 @@ div.leaflet-top > .elevation {
     ===========================
 */
 
+.navbar-btn{
+    font-weight: 400;
+    color: rgba(0,0,0,0.8);
+}
+
+.navbar-btn:hover{
+    color: rgba(0,0,0,0.8);
+    transition: 0.2s;
+}
+
 .navbar-brand {
   padding:15px 20px;
 }
 
-/*.navbar-absolute-top {
-    min-width: 700px;
-}*/
-
-    .navbar-app{
+.navbar-app{
     background-color: #2D3146;
-    }
-    .navbar-brand{
+}
+
+.navbar-brand{
     padding-top: 18px;
-    }
-    .app-name{
+}
+
+.app-name{
     position: relative;
     top:-2px;
     font-weight:300;
-    }
+}
 
-    .navBarButton{
+.navBarButton{
     margin-top:12px;
     margin-right:12px;
-    }
-    .navBarButton:hover{
-        cursor: pointer;
-        color: rgba(255,255,255,1);
-        transition: 0.2s;
-    }
-    .navBarButton:focus{
-        outline: none;
-    }
+}
 
 /*
     ===========================
@@ -318,7 +308,6 @@ div.leaflet-top > .elevation {
     ===========================
     ===========================
 */
-
 
 .search-bar {
     margin:0px;

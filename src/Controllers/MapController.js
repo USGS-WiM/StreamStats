@@ -298,10 +298,17 @@ var StreamStats;
                 this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'queryStreamgages' });
                 this.leafletData.getMap().then(function (map) {
                     _this.leafletData.getLayers().then(function (maplayers) {
-                        //maplayers.overlays[this.regionServices.selectedRegion.RegionID + "_region"].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).run((error: any, results: any) => {
+                        //check to make sure layer is visible
+                        if (map.getZoom() <= 8) {
+                            _this.cursorStyle = 'pointer';
+                            _this.toaster.clear();
+                            _this.toaster.pop("warning", "Warning", "You must be at Zoom Level 9 or greater to query streamgages", 5000);
+                            return;
+                        }
                         maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).run(function (error, results) {
                             _this.toaster.clear();
                             if (!results.features) {
+                                _this.toaster.pop("warning", "Warning", "No streamgages were found", 5000);
                                 return;
                             }
                             results.features.forEach(function (queryResult) {
@@ -732,6 +739,10 @@ var StreamStats;
                 if (this.center.zoom >= 8 && oldValue !== newValue) {
                     //console.log('requesting region list');
                     this.regionServices.loadRegionListByExtent(this.bounds.northEast.lng, this.bounds.southWest.lng, this.bounds.southWest.lat, this.bounds.northEast.lat);
+                }
+                if (this.center.zoom < 8 && oldValue !== newValue) {
+                    //clear region list
+                    this.regionServices.regionList = [];
                 }
                 //if a region was selected, and then user zooms back out, clear and start over
                 //if (this.center.zoom <= 5 && oldValue !== newValue) {
