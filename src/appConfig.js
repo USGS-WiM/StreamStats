@@ -12,7 +12,7 @@ configuration.baseurls =
     'NSS': 'http://commons.wim.usgs.gov/nssservices',
     'SearchAPI': 'http://txpub.usgs.gov/DSS/search_api/1.1/dataService/dataService.ashx',
     'FARefGage': 'http://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowAnywhere/MapServer',
-    'GISserver': 'http://54.164.188.167:6080',
+    'GISserver': 'http://54.164.188.167',
     'NationalMapRasterServices': 'http://raster.nationalmap.gov/arcgis/rest/services'
 
 }
