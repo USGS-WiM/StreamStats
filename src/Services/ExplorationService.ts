@@ -29,6 +29,7 @@ module StreamStats.Services {
         drawElevationProfile: boolean;
         drawMeasurement: boolean;
         elevationProfileGeoJSON: any;
+        showElevationChart: boolean;
         measurementData: string;
         
     }
@@ -42,6 +43,7 @@ module StreamStats.Services {
         public drawElevationProfile: boolean;
         public drawMeasurement: boolean;
         public elevationProfileGeoJSON: any;
+        public showElevationChart: boolean;
         public measurementData: string;
         
 
@@ -53,6 +55,7 @@ module StreamStats.Services {
             this.toaster = toaster;
             this.drawElevationProfile = false;
             this.drawMeasurement = false;
+            this.showElevationChart = false;
             this.measurementData = '';
 
         }

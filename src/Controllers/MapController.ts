@@ -499,6 +499,7 @@ module StreamStats.Controllers {
 
             document.getElementById('measurement-div').innerHTML = '';
             this.explorationService.measurementData = '';
+            this.explorationService.showElevationChart = true;
 
             var el;
 
@@ -517,12 +518,8 @@ module StreamStats.Controllers {
                     var drawnItems = maplayers.overlays.draw;
                     drawnItems.clearLayers();
 
+                    this.drawController({ metric: false }, true);
 
-                    var drawControl = new (<any>L).Draw.Polyline(map, {
-                        metric: false
-                    });
-                    drawControl.enable();
-                    //this.geojson = {};
                     delete this.geojson['elevationProfileLine3D'];
 
                     map.on('draw:drawstart',(e) => {
@@ -552,6 +549,19 @@ module StreamStats.Controllers {
                         map.panBy([0, 1]);
                     }); 
                 });
+            });
+        }
+
+        private drawController(options: Object, enable: boolean) {
+            console.log('in drawcontroller: ', options, enable);
+
+            if (!enable) {
+                this.drawControl.disable();
+                return;
+            }
+            this.leafletData.getMap().then((map: any) => {
+                this.drawControl = new (<any>L).Draw.Polyline(map, options);
+                this.drawControl.enable();
             });
         }
 
@@ -608,6 +618,18 @@ module StreamStats.Controllers {
             this.center = new Center(39, -100, 3);
         }
 
+        private resetExplorationTools() {
+            document.getElementById('elevation-div').innerHTML = '';
+            document.getElementById('measurement-div').innerHTML = '';
+
+            this.drawController({ }, false);
+            this.regionServices.allowStreamgageQuery = false;
+            this.explorationService.drawMeasurement = false;
+            this.explorationService.measurementData = '';
+            this.explorationService.drawElevationProfile = false;
+            this.explorationService.showElevationChart = false;
+        }
+
         private measurement() {
 
             document.getElementById('elevation-div').innerHTML = '';
@@ -622,13 +644,15 @@ module StreamStats.Controllers {
 
                     var stopclick = false; //to prevent more than one click listener
 
-                    var polyline = new (<any>L).Draw.Polyline(map, {
-                        shapeOptions: {
-                            color: 'blue'
-                        },
-                        metric: false
-                    });
-                    polyline.enable();
+                    //var polyline = new (<any>L).Draw.Polyline(map, {
+                    //    shapeOptions: {
+                    //        color: 'blue'
+                    //    },
+                    //    metric: false
+                    //});
+                    //polyline.enable();
+
+                    this.drawController({shapeOptions: { color: 'blue' }, metric: false }, true);
 
                     var drawnItems = maplayers.overlays.draw;
                     drawnItems.clearLayers();
@@ -637,7 +661,7 @@ module StreamStats.Controllers {
 			
                     //listeners active during drawing
                     var measuremove = () => {
-                        this.explorationService.measurementData = "Total length: " + polyline._getMeasurementString();
+                        this.explorationService.measurementData = "Total length: " + this.drawControl._getMeasurementString();
                     };
                     var measurestart = () => {
                         if (stopclick == false) {
@@ -653,13 +677,13 @@ module StreamStats.Controllers {
                         drawnItems.addTo(map);
 			
                         //reset button
-                        this.explorationService.measurementData = "Total length: " + polyline._getMeasurementString();
+                        this.explorationService.measurementData = "Total length: " + this.drawControl._getMeasurementString();
                         //remove listeners
                         map.off("click", measurestart);
                         map.off("mousemove", measuremove);
                         map.off("draw:created", measurestop);
 
-                        polyline.disable();
+                        this.drawControl.disable();
                         this.explorationService.drawMeasurement = false;
                     };
 

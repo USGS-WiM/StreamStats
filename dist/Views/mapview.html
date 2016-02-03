@@ -6,7 +6,7 @@
     <div ng-show="vm.explorationToolsExpanded">
         <div class="row exploration-tools-header">
             <h4 ng-if="title">Layer Control}</h4>
-            <button class="close exploration-tools-close-button" ng-click="vm.explorationToolsExpanded = false; $event.stopPropagation();">&times;</button>
+            <button class="close exploration-tools-close-button" ng-click="vm.explorationToolsExpanded = false; $event.stopPropagation(); vm.resetExplorationTools()">&times;</button>
         </div>
         <h6>Exploration Tools</h6>
         <!--<div class="wim-alert-info"  >Tools that can be used outside of the main workflow</div>-->
@@ -18,8 +18,8 @@
             <div id="measurement-div" class="wim-alert-info row"  ng-show="vm.explorationService.measurementData.length > 0" ng-bind="vm.explorationService.measurementData"></div>
 
             <button ng-class="!vm.explorationService.drawElevationProfile ? 'btn-wim-sm btn-wim-primary btn-wim-group-1':'btn-wim-sm btn-wim-warning btn-wim-group-1'" ng-click="vm.explorationService.drawElevationProfile = !vm.explorationService.drawElevationProfile; vm.showElevationChart = !vm.showElevationChart" ng-init="vm.showElevationChart = false"><span><i class="fa fa-line-chart"></i>&nbsp;&nbsp;Elevation Profile Tool</span></button>
-            <button class="close pull-left" ng-show="vm.showElevationChart" ng-click="vm.showElevationChart = !vm.showElevationChart">&times;</button>
-            <div id="elevation-div" class="leaflet-control elevation" ng-show="vm.showElevationChart"></div>
+            <button class="close pull-left" ng-show="vm.explorationService.showElevationChart" ng-click="vm.explorationService.showElevationChart = !vm.explorationService.showElevationChart">&times;</button>
+            <div id="elevation-div" class="leaflet-control elevation" ng-show="vm.explorationService.showElevationChart"></div>
 
             <button class="btn-wim-sm btn-wim-primary btn-wim-group-1" ng-click="vm.showLocation()"><span><i class="fa fa-map-marker"></i>&nbsp;&nbsp;Show your location</span></button>
             <button class="btn-wim-sm btn-wim-primary btn-wim-group-1" ng-click="vm.resetMap()"><span><i class="fa fa-home"></i>&nbsp;&nbsp;Reset the view</span></button>         
