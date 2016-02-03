@@ -442,54 +442,54 @@ module StreamStats.Controllers {
                         return;
                     }
 
-                    maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).run((error: any, results: any) => {
+                    //get layer to query
+                    var layerString;
+                    this.regionServices.nationalMapLayerList.forEach((item) => {
+                        if (item[0].toLowerCase() == "streamgages") layerString = '"' + item[1] + '"';
+                    });
+
+                    maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).layers(layerString).run((error: any, results: any) => {
 
                         this.toaster.clear();
+                        this.cursorStyle = 'pointer';
+                        console.log('gage query response', results);
 
-                        if (!results.features) {
+                        if (!results.features || results.features.length == 0) {
                             this.toaster.pop("warning", "Warning", "No streamgages were found", 5000);
                             return;
                         }
 
                         results.features.forEach((queryResult) => {
 
-                            this.regionServices.nationalMapLayerList.forEach((item) => {
-                                if (queryResult.layerId == item[1]) {
-                                    //console.log('Map query found a match with: ', item[0], queryResult)
+                            var popupContent = '';
+                            var popupKeyList = ['latitude', 'longitude', 'sta_id', 'sta_name', 'featureurl', 'drnarea'];
 
-                                    if (item[0].toLowerCase() == "streamgages") {
-                                        var popupContent = '';
-                                        var popupKeyList = ['latitude', 'longitude', 'sta_id', 'sta_name', 'featureurl', 'drnarea'];
+                            angular.forEach(queryResult.properties, function (value, key) {
+                                if (popupKeyList.indexOf(key) != -1) {
+                                    if (key == "featureurl") {
 
-                                        angular.forEach(queryResult.properties, function (value, key) {
-                                            if (popupKeyList.indexOf(key) != -1) {
-                                                if (key == "featureurl") {
+                                        var siteNo = value.split('site_no=')[1];
+                                        var SSgagepage = 'http://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm'
 
-                                                    var siteNo = value.split('site_no=')[1];
-                                                    var SSgagepage = 'http://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm'
+                                        popupContent += '<strong>NWIS page: </strong><a href="' + value + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br>';
 
-                                                    popupContent += '<strong>NWIS page: </strong><a href="' + value + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br>';
-
-                                                }
-                                                else popupContent += '<strong>' + key + ': </strong>' + value + '</br>';
-                                            }
-                                        });
-
-                                        this.markers['regionalQueryResult'] = {
-                                            lat: evt.latlng.lat,
-                                            lng: evt.latlng.lng,
-                                            message: popupContent,
-                                            focus: true,
-                                            draggable: false
-                                        };
-
-                                        map.panBy([0, 1]);
-                                        this.toaster.clear();
                                     }
+                                    else popupContent += '<strong>' + key + ': </strong>' + value + '</br>';
                                 }
                             });
+
+                            this.markers['regionalQueryResult'] = {
+                                lat: evt.latlng.lat,
+                                lng: evt.latlng.lng,
+                                message: popupContent,
+                                focus: true,
+                                draggable: false
+                            };
+
+                            map.panBy([0, 1]);
+                            this.toaster.clear();
+
                         });
-                        this.cursorStyle = 'pointer';
                     });
                 });
             });
