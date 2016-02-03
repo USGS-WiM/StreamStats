@@ -21,8 +21,9 @@ var StreamStats;
     (function (Controllers) {
         'use strinct';
         var SidebarController = (function () {
-            function SidebarController($scope, toaster, $analytics, service, region, studyArea, StatisticsGroup, report, leafletData, exploration) {
+            function SidebarController($scope, toaster, $analytics, service, region, studyArea, StatisticsGroup, report, leafletData, exploration, EventManager) {
                 var _this = this;
+                this.EventManager = EventManager;
                 $scope.vm = this;
                 this.init();
                 this.toaster = toaster;
@@ -82,7 +83,7 @@ var StreamStats;
                     this.sideBarCollapsed = true;
             };
             SidebarController.prototype.onAOISelect = function (item) {
-                this.searchService.onSelectedAreaOfInterestChanged.raise(this, new WiM.Services.SearchAPIEventArgs(item));
+                this.EventManager.RaiseEvent(WiM.Services.onSelectedAreaOfInterestChanged, this, new WiM.Services.SearchAPIEventArgs(item));
             };
             SidebarController.prototype.zoomRegion = function (inRegion) {
                 var region = angular.fromJson(inRegion);
@@ -305,7 +306,7 @@ var StreamStats;
             };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
-            SidebarController.$inject = ['$scope', 'toaster', '$analytics', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ReportService', 'leafletData', 'StreamStats.Services.ExplorationService'];
+            SidebarController.$inject = ['$scope', 'toaster', '$analytics', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ReportService', 'leafletData', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager'];
             return SidebarController;
         })(); //end class
         var ProcedureType;

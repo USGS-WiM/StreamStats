@@ -41,14 +41,15 @@ var StreamStats;
             return Parameter;
         })();
         Services.Parameter = Parameter; //end class
+        Services.onSelectedRegionChanged = "onSelectedRegionChanged";
         var RegionService = (function (_super) {
             __extends(RegionService, _super);
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
-            function RegionService($http, $q, toaster) {
+            function RegionService($http, $q, toaster, eventManager) {
                 _super.call(this, $http, configuration.baseurls['StreamStats']);
                 this.$q = $q;
-                this._onSelectedRegionChanged = new WiM.Event.Delegate();
+                this.eventManager = eventManager;
                 this.toaster = toaster;
                 this.regionList = [];
                 this.parameterList = [];
@@ -56,14 +57,8 @@ var StreamStats;
                 this.loadNationalMapLayers();
                 this.streamStatsAvailable = false;
                 this.allowStreamgageQuery = false;
+                this.eventManager.AddEvent(Services.onSelectedRegionChanged);
             }
-            Object.defineProperty(RegionService.prototype, "onSelectedRegionChanged", {
-                get: function () {
-                    return this._onSelectedRegionChanged;
-                },
-                enumerable: true,
-                configurable: true
-            });
             Object.defineProperty(RegionService.prototype, "selectedRegion", {
                 get: function () {
                     return this._selectedRegion;
@@ -71,7 +66,7 @@ var StreamStats;
                 set: function (val) {
                     if (this._selectedRegion != val) {
                         this._selectedRegion = val;
-                        this._onSelectedRegionChanged.raise(null, WiM.Event.EventArgs.Empty);
+                        this.eventManager.RaiseEvent(Services.onSelectedRegionChanged, this, WiM.Event.EventArgs.Empty);
                     }
                 },
                 enumerable: true,
@@ -242,9 +237,9 @@ var StreamStats;
             };
             return RegionService;
         })(WiM.Services.HTTPServiceBase); //end class
-        factory.$inject = ['$http', '$q', 'toaster'];
-        function factory($http, $q, toaster) {
-            return new RegionService($http, $q, toaster);
+        factory.$inject = ['$http', '$q', 'toaster', 'WiM.Event.EventManager'];
+        function factory($http, $q, toaster, eventManager) {
+            return new RegionService($http, $q, toaster, eventManager);
         }
         angular.module('StreamStats.Services').factory('StreamStats.Services.RegionService', factory);
     })(Services = StreamStats.Services || (StreamStats.Services = {}));

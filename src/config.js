@@ -55,6 +55,7 @@ var StreamStats;
         'StreamStats.Services',
         'StreamStats.Controllers',
         'WiM.Services',
+        'WiM.Event',
         'wim_angular'
     ]).config(config);
 })(StreamStats || (StreamStats = {})); //end module 

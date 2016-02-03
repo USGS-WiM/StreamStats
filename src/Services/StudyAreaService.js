@@ -28,34 +28,37 @@ var StreamStats;
     var Services;
     (function (Services) {
         'use strict';
+        Services.onSelectedStudyAreaChanged = "onSelectedStudyAreaChanged";
+        Services.onStudyAreaReset = "onStudyAreaReset";
+        Services.onEditClick = "onEditClick";
+        var StudyAreaEventArgs = (function (_super) {
+            __extends(StudyAreaEventArgs, _super);
+            function StudyAreaEventArgs() {
+                _super.call(this);
+            }
+            return StudyAreaEventArgs;
+        })(WiM.Event.EventArgs);
+        Services.StudyAreaEventArgs = StudyAreaEventArgs;
         var StudyAreaService = (function (_super) {
             __extends(StudyAreaService, _super);
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
-            function StudyAreaService($http, $q, toaster) {
+            function StudyAreaService($http, $q, eventManager, toaster) {
+                var _this = this;
                 _super.call(this, $http, configuration.baseurls['StreamStats']);
                 this.$q = $q;
-                this._onSelectedStudyAreaChanged = new WiM.Event.Delegate();
-                this._onEditClick = new WiM.Event.Delegate();
+                this.eventManager = eventManager;
+                eventManager.AddEvent(Services.onSelectedStudyAreaChanged);
+                eventManager.AddEvent(Services.onStudyAreaReset);
+                eventManager.SubscribeToEvent(Services.onSelectedStudyAreaChanged, new WiM.Event.EventHandler(function (sender, e) {
+                    _this.onStudyAreaChanged(sender, e);
+                }));
+                eventManager.AddEvent(Services.onEditClick);
                 this.toaster = toaster;
                 this.clearStudyArea();
                 this.showDelineateButton = false;
                 this.servicesURL = configuration.baseurls['StreamStatsServices'];
             }
-            Object.defineProperty(StudyAreaService.prototype, "onSelectedStudyAreaChanged", {
-                get: function () {
-                    return this._onSelectedStudyAreaChanged;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(StudyAreaService.prototype, "onEditClick", {
-                get: function () {
-                    return this._onEditClick;
-                },
-                enumerable: true,
-                configurable: true
-            });
             Object.defineProperty(StudyAreaService.prototype, "StudyAreaList", {
                 get: function () {
                     return this._studyAreaList;
@@ -72,7 +75,7 @@ var StreamStats;
                         return;
                     if (this._selectedStudyArea != val) {
                         this._selectedStudyArea = val;
-                        this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
+                        this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);
                     }
                 },
                 enumerable: true,
@@ -82,12 +85,12 @@ var StreamStats;
             //-+-+-+-+-+-+-+-+-+-+-+-
             StudyAreaService.prototype.editBasin = function (selection) {
                 this.drawControlOption = selection;
-                this._onEditClick.raise(null, WiM.Event.EventArgs.Empty);
+                this.eventManager.RaiseEvent(Services.onEditClick, this, WiM.Event.EventArgs.Empty);
             };
             StudyAreaService.prototype.undoEdit = function () {
                 //console.log('undo edit');
                 this.WatershedEditDecisionList = new StreamStats.Models.WatershedEditDecisionList();
-                this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
+                this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);
             };
             StudyAreaService.prototype.AddStudyArea = function (sa) {
                 //add the study area to studyAreaList
@@ -116,6 +119,7 @@ var StreamStats;
                 this.reportGenerated = false;
                 this.regressionRegionQueryComplete = false;
                 this.regressionRegionQueryLoading = false;
+                this.eventManager.RaiseEvent(Services.onStudyAreaReset, this, WiM.Event.EventArgs.Empty);
             };
             StudyAreaService.prototype.loadStudyBoundary = function () {
                 var _this = this;
@@ -135,7 +139,7 @@ var StreamStats;
                     _this.toaster.pop("error", "Error Delineating Basin", "Please retry", 5000);
                 }).finally(function () {
                     _this.canUpdate = true;
-                    _this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
+                    _this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, _this, StudyAreaEventArgs.Empty);
                 });
             };
             StudyAreaService.prototype.loadWatershed = function (rcode, workspaceID) {
@@ -167,7 +171,7 @@ var StreamStats;
                         _this.toaster.pop("error", "Error Delineating Basin", "Please retry", 5000);
                     }).finally(function () {
                         _this.canUpdate = true;
-                        _this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
+                        _this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, _this, StudyAreaEventArgs.Empty);
                         _this.toaster.clear();
                     });
                 }
@@ -194,7 +198,9 @@ var StreamStats;
                     _this.toaster.pop("error", "Error Delineating Basin", "Please retry", 5000);
                 }).finally(function () {
                     _this.canUpdate = true;
-                    _this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
+                    var evnt = new StudyAreaEventArgs();
+                    evnt.studyArea = _this.selectedStudyArea;
+                    _this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, _this, evnt);
                 });
             };
             StudyAreaService.prototype.loadParameters = function () {
@@ -302,7 +308,7 @@ var StreamStats;
                 this.toaster.pop('info', "Checking for Upstream Regulation", "Please wait...", 0);
                 this.regulationCheckComplete = false;
                 var watershed = angular.toJson(this.selectedStudyArea.Features[1].feature, null);
-                var url = configuration.baseurls['GISserver'] + configuration.queryparams['COregulationService'];
+                var url = configuration.baseurls['GISserver'] + configuration.queryparams['regulationService'].format(this.selectedStudyArea.RegionID);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, 1 /* POST */, 'json', { watershed: watershed, outputcrs: 4326, f: 'geojson' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
                 this.Execute(request).then(function (response) {
                     //console.log(response);
@@ -328,7 +334,7 @@ var StreamStats;
                 }).finally(function () {
                     //this.toaster.clear();
                     _this.regulationCheckComplete = true;
-                    _this._onSelectedStudyAreaChanged.raise(null, WiM.Event.EventArgs.Empty);
+                    _this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, _this, StudyAreaEventArgs.Empty);
                 });
             };
             //Helper Methods
@@ -388,11 +394,18 @@ var StreamStats;
                 });
                 //console.log('regulated params', this.studyAreaParameterList);
             };
+            //EventHandlers Methods
+            //-+-+-+-+-+-+-+-+-+-+-+- 
+            StudyAreaService.prototype.onStudyAreaChanged = function (sender, e) {
+                if (!this.selectedStudyArea || !this.selectedStudyArea.Features)
+                    return;
+                this.queryRegressionRegions();
+            };
             return StudyAreaService;
         })(WiM.Services.HTTPServiceBase); //end class
-        factory.$inject = ['$http', '$q', 'toaster'];
-        function factory($http, $q, toaster) {
-            return new StudyAreaService($http, $q, toaster);
+        factory.$inject = ['$http', '$q', 'WiM.Event.EventManager', 'toaster'];
+        function factory($http, $q, eventManager, toaster) {
+            return new StudyAreaService($http, $q, eventManager, toaster);
         }
         angular.module('StreamStats.Services').factory('StreamStats.Services.StudyAreaService', factory);
     })(Services = StreamStats.Services || (StreamStats.Services = {}));
