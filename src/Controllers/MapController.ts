@@ -656,8 +656,6 @@ module StreamStats.Controllers {
 
                     var drawnItems = maplayers.overlays.draw;
                     drawnItems.clearLayers();
-
-
 			
                     //listeners active during drawing
                     var measuremove = () => {
@@ -772,6 +770,11 @@ module StreamStats.Controllers {
 
         }
         private basinEditor() {
+
+            if (this.geojson['globalwatershed'].data.features.length > 1) {
+                this.toaster.pop("warning", "Warning", "You cannot edit a global watershed", 5000);
+                return;
+            }
 
             var basin = angular.fromJson(angular.toJson(this.geojson['globalwatershed'].data.features[0]));
             var basinConverted = [];
