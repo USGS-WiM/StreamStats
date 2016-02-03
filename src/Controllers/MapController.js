@@ -368,7 +368,8 @@ var StreamStats;
                             metric: false
                         });
                         drawControl.enable();
-                        _this.geojson = {};
+                        //this.geojson = {};
+                        delete _this.geojson['elevationProfileLine3D'];
                         map.on('draw:drawstart', function (e) {
                             //console.log('in draw start');
                             el.clear();
@@ -575,6 +576,7 @@ var StreamStats;
                                 console.log('add layer', layer.toGeoJSON());
                                 var editPolygon = greinerHormann.union(sourcePolygon, clipPolygon);
                                 _this.studyArea.WatershedEditDecisionList.append.push(layer.toGeoJSON());
+                                _this.studyArea.Disclaimers['isEdited'] = true;
                             }
                             if (_this.studyArea.drawControlOption == 'remove') {
                                 console.log('remove layer', layer.toGeoJSON());
@@ -587,6 +589,7 @@ var StreamStats;
                                     return;
                                 }
                                 _this.studyArea.WatershedEditDecisionList.remove.push(layer.toGeoJSON());
+                                _this.studyArea.Disclaimers['isEdited'] = true;
                             }
                             //set studyArea basin to new edited polygon
                             basin.geometry.coordinates[0] = [];
@@ -632,7 +635,7 @@ var StreamStats;
             };
             MapController.prototype.onSelectedStudyAreaChanged = function () {
                 var _this = this;
-                //console.log('study area changed');
+                console.log('in onSelectedStudyAreaChanged');
                 this.removeOverlayLayers('globalwatershed', true);
                 if (!this.studyArea.selectedStudyArea || !this.studyArea.selectedStudyArea.Features)
                     return;
@@ -655,6 +658,7 @@ var StreamStats;
                         return;
                     }
                     this.nssService.queriedRegions = true;
+                    console.log('set queriedregions flag to true: ', this.nssService.queriedRegions);
                 }
             };
             MapController.prototype.removeGeoJson = function (layerName) {
