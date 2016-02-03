@@ -622,7 +622,7 @@ module StreamStats.Controllers {
             document.getElementById('elevation-div').innerHTML = '';
             document.getElementById('measurement-div').innerHTML = '';
 
-            this.drawController({ }, false);
+            if (this.drawControl) this.drawController({ }, false);
             this.regionServices.allowStreamgageQuery = false;
             this.explorationService.drawMeasurement = false;
             this.explorationService.measurementData = '';
