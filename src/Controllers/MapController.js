@@ -305,44 +305,44 @@ var StreamStats;
                             _this.toaster.pop("warning", "Warning", "You must be at Zoom Level 9 or greater to query streamgages", 5000);
                             return;
                         }
-                        maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).run(function (error, results) {
+                        //get layer to query
+                        var layerString;
+                        _this.regionServices.nationalMapLayerList.forEach(function (item) {
+                            if (item[0].toLowerCase() == "streamgages")
+                                layerString = '"' + item[1] + '"';
+                        });
+                        maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).layers(layerString).run(function (error, results) {
                             _this.toaster.clear();
-                            if (!results.features) {
+                            _this.cursorStyle = 'pointer';
+                            console.log('gage query response', results);
+                            if (!results.features || results.features.length == 0) {
                                 _this.toaster.pop("warning", "Warning", "No streamgages were found", 5000);
                                 return;
                             }
                             results.features.forEach(function (queryResult) {
-                                _this.regionServices.nationalMapLayerList.forEach(function (item) {
-                                    if (queryResult.layerId == item[1]) {
-                                        //console.log('Map query found a match with: ', item[0], queryResult)
-                                        if (item[0].toLowerCase() == "streamgages") {
-                                            var popupContent = '';
-                                            var popupKeyList = ['latitude', 'longitude', 'sta_id', 'sta_name', 'featureurl', 'drnarea'];
-                                            angular.forEach(queryResult.properties, function (value, key) {
-                                                if (popupKeyList.indexOf(key) != -1) {
-                                                    if (key == "featureurl") {
-                                                        var siteNo = value.split('site_no=')[1];
-                                                        var SSgagepage = 'http://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm';
-                                                        popupContent += '<strong>NWIS page: </strong><a href="' + value + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br>';
-                                                    }
-                                                    else
-                                                        popupContent += '<strong>' + key + ': </strong>' + value + '</br>';
-                                                }
-                                            });
-                                            _this.markers['regionalQueryResult'] = {
-                                                lat: evt.latlng.lat,
-                                                lng: evt.latlng.lng,
-                                                message: popupContent,
-                                                focus: true,
-                                                draggable: false
-                                            };
-                                            map.panBy([0, 1]);
-                                            _this.toaster.clear();
+                                var popupContent = '';
+                                var popupKeyList = ['latitude', 'longitude', 'sta_id', 'sta_name', 'featureurl', 'drnarea'];
+                                angular.forEach(queryResult.properties, function (value, key) {
+                                    if (popupKeyList.indexOf(key) != -1) {
+                                        if (key == "featureurl") {
+                                            var siteNo = value.split('site_no=')[1];
+                                            var SSgagepage = 'http://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm';
+                                            popupContent += '<strong>NWIS page: </strong><a href="' + value + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br>';
                                         }
+                                        else
+                                            popupContent += '<strong>' + key + ': </strong>' + value + '</br>';
                                     }
                                 });
+                                _this.markers['regionalQueryResult'] = {
+                                    lat: evt.latlng.lat,
+                                    lng: evt.latlng.lng,
+                                    message: popupContent,
+                                    focus: true,
+                                    draggable: false
+                                };
+                                map.panBy([0, 1]);
+                                _this.toaster.clear();
                             });
-                            _this.cursorStyle = 'pointer';
                         });
                     });
                 });
