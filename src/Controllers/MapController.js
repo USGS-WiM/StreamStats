@@ -351,6 +351,7 @@ var StreamStats;
                 var _this = this;
                 document.getElementById('measurement-div').innerHTML = '';
                 this.explorationService.measurementData = '';
+                this.explorationService.showElevationChart = true;
                 var el;
                 //get reference to elevation control
                 this.controls.custom.forEach(function (control) {
@@ -364,11 +365,7 @@ var StreamStats;
                         //create draw control
                         var drawnItems = maplayers.overlays.draw;
                         drawnItems.clearLayers();
-                        var drawControl = new L.Draw.Polyline(map, {
-                            metric: false
-                        });
-                        drawControl.enable();
-                        //this.geojson = {};
+                        _this.drawController({ metric: false }, true);
                         delete _this.geojson['elevationProfileLine3D'];
                         map.on('draw:drawstart', function (e) {
                             //console.log('in draw start');
@@ -390,6 +387,18 @@ var StreamStats;
                             map.panBy([0, 1]);
                         });
                     });
+                });
+            };
+            MapController.prototype.drawController = function (options, enable) {
+                var _this = this;
+                console.log('in drawcontroller: ', options, enable);
+                if (!enable) {
+                    this.drawControl.disable();
+                    return;
+                }
+                this.leafletData.getMap().then(function (map) {
+                    _this.drawControl = new L.Draw.Polyline(map, options);
+                    _this.drawControl.enable();
                 });
             };
             MapController.prototype.displayElevationProfile = function () {
@@ -435,6 +444,16 @@ var StreamStats;
                 this.removeOverlayLayers("_region", true);
                 this.center = new Center(39, -100, 3);
             };
+            MapController.prototype.resetExplorationTools = function () {
+                document.getElementById('elevation-div').innerHTML = '';
+                document.getElementById('measurement-div').innerHTML = '';
+                this.drawController({}, false);
+                this.regionServices.allowStreamgageQuery = false;
+                this.explorationService.drawMeasurement = false;
+                this.explorationService.measurementData = '';
+                this.explorationService.drawElevationProfile = false;
+                this.explorationService.showElevationChart = false;
+            };
             MapController.prototype.measurement = function () {
                 var _this = this;
                 document.getElementById('elevation-div').innerHTML = '';
@@ -445,18 +464,19 @@ var StreamStats;
                 this.leafletData.getMap().then(function (map) {
                     _this.leafletData.getLayers().then(function (maplayers) {
                         var stopclick = false; //to prevent more than one click listener
-                        var polyline = new L.Draw.Polyline(map, {
-                            shapeOptions: {
-                                color: 'blue'
-                            },
-                            metric: false
-                        });
-                        polyline.enable();
+                        //var polyline = new (<any>L).Draw.Polyline(map, {
+                        //    shapeOptions: {
+                        //        color: 'blue'
+                        //    },
+                        //    metric: false
+                        //});
+                        //polyline.enable();
+                        _this.drawController({ shapeOptions: { color: 'blue' }, metric: false }, true);
                         var drawnItems = maplayers.overlays.draw;
                         drawnItems.clearLayers();
                         //listeners active during drawing
                         var measuremove = function () {
-                            _this.explorationService.measurementData = "Total length: " + polyline._getMeasurementString();
+                            _this.explorationService.measurementData = "Total length: " + _this.drawControl._getMeasurementString();
                         };
                         var measurestart = function () {
                             if (stopclick == false) {
@@ -471,12 +491,12 @@ var StreamStats;
                             drawnItems.addLayer(layer);
                             drawnItems.addTo(map);
                             //reset button
-                            _this.explorationService.measurementData = "Total length: " + polyline._getMeasurementString();
+                            _this.explorationService.measurementData = "Total length: " + _this.drawControl._getMeasurementString();
                             //remove listeners
                             map.off("click", measurestart);
                             map.off("mousemove", measuremove);
                             map.off("draw:created", measurestop);
-                            polyline.disable();
+                            _this.drawControl.disable();
                             _this.explorationService.drawMeasurement = false;
                         };
                         map.on("click", measurestart);
