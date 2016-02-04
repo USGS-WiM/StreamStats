@@ -46,7 +46,7 @@ var StreamStats;
             ExplorationService.prototype.elevationProfile = function (esriJSON) {
                 var _this = this;
                 var url = 'http://elevation.arcgis.com/arcgis/rest/services/Tools/ElevationSync/GPServer/Profile/execute';
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', { InputLineFeatures: esriJSON, returnZ: true, f: 'json' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, 1 /* POST */, 'json', { InputLineFeatures: esriJSON, returnZ: true, f: 'json' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
                 //do ajax call for future precip layer, needs to happen even if only runoff value is needed for this region
                 this.Execute(request).then(function (response) {
                     console.log('elevation profile response: ', response.data);
