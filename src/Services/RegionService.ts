@@ -200,13 +200,13 @@ module StreamStats.Services {
                     //return layerArray;
                        
                 },(error) => {
-                    console.log('No national map layers found');
+                    //console.log('No national map layers found');
                     return this.$q.reject(error.data)
                 });
         }
 
         public loadMapLayersByRegion(regionid: string): any {
-            console.log('in loadMapLayersByRegion');
+            //console.log('in loadMapLayersByRegion');
             this.regionMapLayerListLoaded = false;
 
             var url = configuration.baseurls['StreamStats'] + configuration.queryparams['SSStateLayers'].format(regionid.toLowerCase());

@@ -32,7 +32,7 @@ var StreamStats;
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             reportService.prototype.openReport = function () {
-                console.log('in report open function');
+                //console.log('in report open function');
                 var modalInstance = this.modal.open({
                     templateUrl: 'Views/reportview.html',
                     controller: 'StreamStats.Controllers.ReportController',

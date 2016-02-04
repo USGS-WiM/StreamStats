@@ -38,6 +38,10 @@ body {
 	cursor: pointer;
 }
 
+.wim-btn-group {
+    margin-bottom:4px;
+}
+
 /*
     ===========================
     ===========================

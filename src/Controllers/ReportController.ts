@@ -100,7 +100,7 @@ module StreamStats.Controllers {
             this.initMap();
 
             $scope.$on('leafletDirectiveMap.load',(event, args) => {
-                console.log('report map load');
+                //console.log('report map load');
                 this.showFeatures();
             });
 
@@ -131,7 +131,7 @@ module StreamStats.Controllers {
             this.overlays = {};
             this.studyAreaService.selectedStudyArea.Features.forEach((item) => {
 
-                console.log('in each loop', item.name);
+                //console.log('in each loop', item.name);
 
                 if (item.name == 'globalwatershed') {
                     this.layers.overlays[item.name] = {
@@ -154,7 +154,7 @@ module StreamStats.Controllers {
                     this.leafletData.getMap().then((map: any) => {
                         //method to reset the map for modal weirdness
                         map.invalidateSize();
-                        console.log('in getmap: ', bbox);
+                        //console.log('in getmap: ', bbox);
                         map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
 
                         //map.dragging.disable();
@@ -176,7 +176,7 @@ module StreamStats.Controllers {
                 }
 
                 if (item.name == 'regulatedWatershed') {
-                    console.log('showing regulated watershed');
+                    //console.log('showing regulated watershed');
                     this.layers.overlays["globalwatershedregulated"] = {
                         name: 'Basin Boundary (Regulated Area)',
                         type: 'geoJSONShape',
@@ -230,7 +230,7 @@ module StreamStats.Controllers {
             };
 
             var processScenarioFlowTable = (statGroup) => {
-                console.log('here', statGroup);
+                //console.log('here', statGroup);
                 var finalVal = '';
 
                 statGroup.RegressionRegions.forEach((regressionRegion) => {
@@ -286,7 +286,7 @@ module StreamStats.Controllers {
             //var source = $('#customers')[0];
             //var source = angular.element(document.getElementById('printArea'));
             var source = document.getElementById('printArea').innerHTML;
-            console.log(source);
+            //console.log(source);
 
             // we support special element handlers. Register them with jQuery-style 
             // ID selector for either ID or node name. ("#iAmID", "div", "span" etc.)

@@ -86,6 +86,7 @@ var StreamStats;
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             StudyAreaService.prototype.editBasin = function (selection) {
+                console.log('in editbasin, selection: ', selection);
                 this.Disclaimers['isEdited'] = true;
                 this.drawControlOption = selection;
                 this.eventManager.RaiseEvent(Services.onEditClick, this, WiM.Event.EventArgs.Empty);
@@ -189,7 +190,7 @@ var StreamStats;
                 this.canUpdate = false;
                 //Content-Type: application/json
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSeditBasin'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID, this.selectedStudyArea.Pourpoint.crs.toString());
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, 2 /* PUT */, 'json', angular.toJson(this.WatershedEditDecisionList), {});
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.PUT, 'json', angular.toJson(this.WatershedEditDecisionList), {});
                 this.Execute(request).then(function (response) {
                     //create new study area                    
                     _this.AddStudyArea(new StreamStats.Models.StudyArea(_this.selectedStudyArea.RegionID, _this.selectedStudyArea.Pourpoint));
@@ -207,11 +208,12 @@ var StreamStats;
                     var evnt = new StudyAreaEventArgs();
                     evnt.studyArea = _this.selectedStudyArea;
                     _this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, _this, evnt);
+                    _this.Disclaimers['isEdited'] = true;
                 });
             };
             StudyAreaService.prototype.loadParameters = function () {
                 var _this = this;
-                this.toaster.pop('info', "Calculating Selected Parameters", "Please wait...", 0);
+                this.toaster.pop('info', "Calculating Selected Basin Characteristics", "Please wait...", 0);
                 //console.log('in load parameters');
                 //this.canUpdate = false;
                 this.parametersLoading = true;
@@ -250,11 +252,11 @@ var StreamStats;
             StudyAreaService.prototype.queryLandCover = function () {
                 var _this = this;
                 this.toaster.pop('info', "Querying Land Cover Data with your Basin", "Please wait...", 0);
-                console.log('querying land cover');
+                //console.log('querying land cover');
                 var esriJSON = '{"geometryType":"esriGeometryPolygon","spatialReference":{"wkid":"4326"},"fields": [],"features":[{"geometry": {"type":"polygon", "rings":[' + JSON.stringify(this.selectedStudyArea.Features[1].feature.features[0].geometry.coordinates) + ']}}]}';
                 //var watershed = angular.toJson(this.selectedStudyArea.Features[1].feature, null);
                 var url = configuration.baseurls['NationalMapRasterServices'] + configuration.queryparams['NLCDQueryService'];
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, 1 /* POST */, 'json', { InputLineFeatures: esriJSON, returnZ: true, f: 'json' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', { InputLineFeatures: esriJSON, returnZ: true, f: 'json' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
                 this.Execute(request).then(function (response) {
                     //console.log(response.data);
                     _this.toaster.clear();
@@ -264,7 +266,7 @@ var StreamStats;
                     }
                 }, function (error) {
                     //sm when complete
-                    console.log('Regression query failed, HTTP Error');
+                    //console.log('Regression query failed, HTTP Error');
                     _this.toaster.pop('error', "There was an HTTP error querying Land Cover", "Please retry", 5000);
                     return _this.$q.reject(error.data);
                 }).finally(function () {
@@ -278,7 +280,7 @@ var StreamStats;
                 this.regressionRegionQueryComplete = false;
                 var watershed = angular.toJson(this.selectedStudyArea.Features[1].feature, null);
                 var url = configuration.baseurls['GISserver'] + configuration.queryparams['RegressionRegionQueryService'];
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, 1 /* POST */, 'json', { geometry: watershed, f: 'json' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', { geometry: watershed, f: 'json' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
                 this.Execute(request).then(function (response) {
                     //console.log(response.data);
                     _this.toaster.clear();
@@ -301,7 +303,7 @@ var StreamStats;
                     //this.queryLandCover();
                 }, function (error) {
                     //sm when complete
-                    console.log('Regression query failed, HTTP Error');
+                    //console.log('Regression query failed, HTTP Error');
                     _this.toaster.pop('error', "There was an HTTP error querying Regression regions", "Please retry", 5000);
                     return _this.$q.reject(error.data);
                 }).finally(function () {
@@ -315,12 +317,12 @@ var StreamStats;
                 this.regulationCheckComplete = false;
                 var watershed = angular.toJson(this.selectedStudyArea.Features[1].feature, null);
                 var url = configuration.baseurls['GISserver'] + configuration.queryparams['regulationService'].format(this.selectedStudyArea.RegionID);
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, 1 /* POST */, 'json', { watershed: watershed, outputcrs: 4326, f: 'geojson' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', { watershed: watershed, outputcrs: 4326, f: 'geojson' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
                 this.Execute(request).then(function (response) {
                     //console.log(response);
                     if (response.data.percentarearegulated > 0) {
                         _this.toaster.clear();
-                        _this.toaster.pop('success', "Map updated with Regulated Area", "Continue to 'Modify Parameters' to see area-weighted basin characteristics", 5000);
+                        _this.toaster.pop('success', "Map updated with Regulated Area", "Continue to 'Modify Basin Characteristics' to see area-weighted basin characteristics", 5000);
                         _this.selectedStudyArea.Features.push(response.data["featurecollection"][0]);
                         _this.regulationCheckResults = response.data;
                         //this.loadRegulatedParameterResults(this.regulationCheckResults.parameters);
@@ -346,7 +348,7 @@ var StreamStats;
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+-       
             StudyAreaService.prototype.loadParameterResults = function (results) {
-                this.toaster.pop('info', "Loading Parameters", "Please wait...");
+                this.toaster.pop('info', "Loading Basin Characteristics", "Please wait...");
                 //console.log('in load parameter results');
                 var paramList = this.studyAreaParameterList;
                 results.map(function (val) {
@@ -360,7 +362,7 @@ var StreamStats;
                 //console.log('params', this.studyAreaParameterList);
             };
             StudyAreaService.prototype.loadRegulatedParameterResults = function (regulatedResults) {
-                this.toaster.pop('info', "Loading Regulated Parameters", "Please wait...");
+                this.toaster.pop('info', "Loading Regulated Basin Characteristics", "Please wait...");
                 //console.log('in load regulated parameter results');
                 var paramList = this.studyAreaParameterList;
                 regulatedResults.map(function (regulatedParam) {
@@ -403,7 +405,7 @@ var StreamStats;
             //EventHandlers Methods
             //-+-+-+-+-+-+-+-+-+-+-+- 
             StudyAreaService.prototype.onStudyAreaChanged = function (sender, e) {
-                console.log('in onStudyAreaChanged');
+                //console.log('in onStudyAreaChanged');
                 if (!this.selectedStudyArea || !this.selectedStudyArea.Features)
                     return;
                 this.queryRegressionRegions();

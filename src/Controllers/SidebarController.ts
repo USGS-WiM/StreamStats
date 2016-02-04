@@ -169,7 +169,7 @@ module StreamStats.Controllers {
 
             var checkStatisticsGroup = this.checkArrayForObj(this.nssService.selectedStatisticsGroupList, statisticsGroup);
 
-            console.log('set stat group: ', checkStatisticsGroup);
+            //console.log('set stat group: ', checkStatisticsGroup);
 
             //if toggled remove selected parameter set
             if (checkStatisticsGroup != -1) {
@@ -271,7 +271,14 @@ module StreamStats.Controllers {
             this.studyAreaService.showEditToolbar = false;
 
             //check if basin has been edited, if so we need to re-query regression regions
-            if (this.studyAreaService.Disclaimers['isEdited']) this.studyAreaService.loadEditedStudyBoundary();
+            if (this.studyAreaService.Disclaimers['isEdited']) {
+
+                //clear out any scenarios and other stuff
+                this.nssService.clearNSSdata();
+
+                this.studyAreaService.loadEditedStudyBoundary();
+
+            }
 
         }
 

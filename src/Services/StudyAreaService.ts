@@ -127,6 +127,7 @@ module StreamStats.Services {
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         public editBasin(selection) {
+            console.log('in editbasin, selection: ', selection);
             this.Disclaimers['isEdited']=true;
             this.drawControlOption = selection;
             this.eventManager.RaiseEvent(onEditClick,this,WiM.Event.EventArgs.Empty)
@@ -270,12 +271,14 @@ module StreamStats.Services {
                 var evnt = new StudyAreaEventArgs();
                 evnt.studyArea = this.selectedStudyArea;                
                 this.eventManager.RaiseEvent(onSelectedStudyAreaChanged, this, evnt);
+                this.Disclaimers['isEdited'] = true;
+
             });
         }
 
         public loadParameters() {
 
-            this.toaster.pop('info', "Calculating Selected Parameters", "Please wait...", 0);
+            this.toaster.pop('info', "Calculating Selected Basin Characteristics", "Please wait...", 0);
             //console.log('in load parameters');
             //this.canUpdate = false;
             this.parametersLoading = true;
@@ -321,7 +324,7 @@ module StreamStats.Services {
         public queryLandCover() {
 
             this.toaster.pop('info', "Querying Land Cover Data with your Basin", "Please wait...", 0);
-            console.log('querying land cover');
+            //console.log('querying land cover');
 
             var esriJSON = '{"geometryType":"esriGeometryPolygon","spatialReference":{"wkid":"4326"},"fields": [],"features":[{"geometry": {"type":"polygon", "rings":[' + JSON.stringify(this.selectedStudyArea.Features[1].feature.features[0].geometry.coordinates) + ']}}]}'
             //var watershed = angular.toJson(this.selectedStudyArea.Features[1].feature, null);
@@ -347,7 +350,7 @@ module StreamStats.Services {
 
                 },(error) => {
                     //sm when complete
-                    console.log('Regression query failed, HTTP Error');
+                    //console.log('Regression query failed, HTTP Error');
                     this.toaster.pop('error', "There was an HTTP error querying Land Cover", "Please retry", 5000);
                     return this.$q.reject(error.data);
 
@@ -399,7 +402,7 @@ module StreamStats.Services {
 
                 },(error) => {
                     //sm when complete
-                    console.log('Regression query failed, HTTP Error');
+                    //console.log('Regression query failed, HTTP Error');
                     this.toaster.pop('error', "There was an HTTP error querying Regression regions", "Please retry", 5000);
                     return this.$q.reject(error.data);
                     
@@ -428,7 +431,7 @@ module StreamStats.Services {
                     //console.log(response);
                     if (response.data.percentarearegulated > 0) {
                         this.toaster.clear();
-                        this.toaster.pop('success', "Map updated with Regulated Area", "Continue to 'Modify Parameters' to see area-weighted basin characteristics", 5000);
+                        this.toaster.pop('success', "Map updated with Regulated Area", "Continue to 'Modify Basin Characteristics' to see area-weighted basin characteristics", 5000);
                         this.selectedStudyArea.Features.push(response.data["featurecollection"][0]);
                         this.regulationCheckResults = response.data;
                         //this.loadRegulatedParameterResults(this.regulationCheckResults.parameters);
@@ -459,7 +462,7 @@ module StreamStats.Services {
         //-+-+-+-+-+-+-+-+-+-+-+-       
         private loadParameterResults(results: Array<WiM.Models.IParameter>) {
 
-            this.toaster.pop('info', "Loading Parameters", "Please wait...");
+            this.toaster.pop('info', "Loading Basin Characteristics", "Please wait...");
 
             //console.log('in load parameter results');
 
@@ -477,7 +480,7 @@ module StreamStats.Services {
 
         private loadRegulatedParameterResults(regulatedResults: Array<Models.IRegulationParameter>) {
 
-            this.toaster.pop('info', "Loading Regulated Parameters", "Please wait...");
+            this.toaster.pop('info', "Loading Regulated Basin Characteristics", "Please wait...");
 
             //console.log('in load regulated parameter results');
 
@@ -532,7 +535,7 @@ module StreamStats.Services {
         //EventHandlers Methods
         //-+-+-+-+-+-+-+-+-+-+-+- 
         private onStudyAreaChanged(sender: any, e: StudyAreaEventArgs) {
-            console.log('in onStudyAreaChanged');
+            //console.log('in onStudyAreaChanged');
             if (!this.selectedStudyArea || !this.selectedStudyArea.Features) return;
             this.queryRegressionRegions();
         }

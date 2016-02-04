@@ -46,7 +46,7 @@ var StreamStats;
                 this.reportComments = 'Some comments here';
                 this.initMap();
                 $scope.$on('leafletDirectiveMap.load', function (event, args) {
-                    console.log('report map load');
+                    //console.log('report map load');
                     _this.showFeatures();
                 });
                 this.close = function () {
@@ -72,7 +72,7 @@ var StreamStats;
                     return;
                 this.overlays = {};
                 this.studyAreaService.selectedStudyArea.Features.forEach(function (item) {
-                    console.log('in each loop', item.name);
+                    //console.log('in each loop', item.name);
                     if (item.name == 'globalwatershed') {
                         _this.layers.overlays[item.name] = {
                             name: 'Basin Boundary',
@@ -93,7 +93,7 @@ var StreamStats;
                         _this.leafletData.getMap().then(function (map) {
                             //method to reset the map for modal weirdness
                             map.invalidateSize();
-                            console.log('in getmap: ', bbox);
+                            //console.log('in getmap: ', bbox);
                             map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
                             //map.dragging.disable();
                             map.touchZoom.disable();
@@ -114,7 +114,7 @@ var StreamStats;
                         };
                     }
                     if (item.name == 'regulatedWatershed') {
-                        console.log('showing regulated watershed');
+                        //console.log('showing regulated watershed');
                         _this.layers.overlays["globalwatershedregulated"] = {
                             name: 'Basin Boundary (Regulated Area)',
                             type: 'geoJSONShape',
@@ -164,7 +164,7 @@ var StreamStats;
                     return finalVal + '\n';
                 };
                 var processScenarioFlowTable = function (statGroup) {
-                    console.log('here', statGroup);
+                    //console.log('here', statGroup);
                     var finalVal = '';
                     statGroup.RegressionRegions.forEach(function (regressionRegion) {
                         finalVal = statGroup.Name + ' Flow Report\n';
@@ -210,7 +210,7 @@ var StreamStats;
                 //var source = $('#customers')[0];
                 //var source = angular.element(document.getElementById('printArea'));
                 var source = document.getElementById('printArea').innerHTML;
-                console.log(source);
+                //console.log(source);
                 // we support special element handlers. Register them with jQuery-style 
                 // ID selector for either ID or node name. ("#iAmID", "div", "span" etc.)
                 // There is no support for any other type of selectors 
