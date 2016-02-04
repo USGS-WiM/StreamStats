@@ -221,7 +221,7 @@ module StreamStats.Controllers {
                 if (studyArea.doDelineateFlag) this.checkDelineatePoint(args.leafletEvent.latlng);
 
                 //query streamgages
-                console.log('map click listener: ', region.allowStreamgageQuery);
+                //console.log('map click listener: ', region.allowStreamgageQuery);
                 if (region.allowStreamgageQuery) this.queryStreamgages(args.leafletEvent);
 
                 //state or region layer query
@@ -239,13 +239,13 @@ module StreamStats.Controllers {
             });
 
             $scope.$watch(() => this.explorationService.drawMeasurement,(newval, oldval) => {
-                console.log('measurementListener ', newval, oldval);
+                //console.log('measurementListener ', newval, oldval);
                 if (newval) this.measurement();
             });
 
             $scope.$watch(() => this.regionServices.regionMapLayerListLoaded,(newval, oldval) => {
                 if (newval) {
-                    console.log('in regionMapLayerListLoaded watch: ', this.regionServices.selectedRegion);
+                    //console.log('in regionMapLayerListLoaded watch: ', this.regionServices.selectedRegion);
                     this.addRegionOverlayLayers(this.regionServices.selectedRegion.RegionID);
                 }
             });
@@ -362,7 +362,7 @@ module StreamStats.Controllers {
                     this.angulartics.eventTrack('initialOperation', { category: 'Map', label: 'Map click query' });
 
                     maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).run((error: any, results: any) => {
-                        console.log('national results', results, results.features.length);
+                        //console.log('national results', results, results.features.length);
 
                         if (results.features.length < 1) {
                             //console.log('here');
@@ -392,7 +392,7 @@ module StreamStats.Controllers {
                         });
 
                         //console.log('RCODELIST: ', rcodeList);
-                        console.log('bounds', map.getBounds())
+                        //console.log('bounds', map.getBounds())
 
                         if (rcodeList.length < 1) return;
 
@@ -400,11 +400,9 @@ module StreamStats.Controllers {
                             this.regionServices.masterRegionList.forEach((item) => {
                                 if (item.RegionID == rcodeList[0]) {
                                     this.setBoundsByRegion(rcodeList[0]);
-                                    console.log('in map click query', this.regionServices.selectedRegion);
+                                    //console.log('in map click query', this.regionServices.selectedRegion);
 
-                                    if (this.regionServices.selectedRegion) this.regionServices.loadParametersByRegion();
-    
-                                    
+                                    if (this.regionServices.selectedRegion) this.regionServices.loadParametersByRegion(); 
                                 }
                             });
                         }
@@ -452,7 +450,7 @@ module StreamStats.Controllers {
 
                         this.toaster.clear();
                         this.cursorStyle = 'pointer';
-                        console.log('gage query response', results);
+                        //console.log('gage query response', results);
 
                         if (!results.features || results.features.length == 0) {
                             this.toaster.pop("warning", "Warning", "No streamgages were found", 5000);
@@ -553,7 +551,7 @@ module StreamStats.Controllers {
         }
 
         private drawController(options: Object, enable: boolean) {
-            console.log('in drawcontroller: ', options, enable);
+            //console.log('in drawcontroller: ', options, enable);
 
             if (!enable) {
                 this.drawControl.disable();
@@ -634,7 +632,7 @@ module StreamStats.Controllers {
 
             document.getElementById('elevation-div').innerHTML = '';
             //user affordance
-            this.explorationService.measurementData = 'Click the map to begin';
+            this.explorationService.measurementData = 'Click the map to begin\nDouble click to end the Drawing';
 
             //report ga event
             this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'measurement' });
@@ -783,7 +781,7 @@ module StreamStats.Controllers {
             this.leafletData.getMap().then((map: any) => {
                 this.leafletData.getLayers().then((maplayers: any) => {
 
-                    console.log('maplayers', map, maplayers);
+                    //console.log('maplayers', map, maplayers);
 
                     //create draw control
                     var drawnItems = maplayers.overlays.draw;
@@ -808,18 +806,18 @@ module StreamStats.Controllers {
                         var clipPolygon = L.polygon(editAreaConverted);
 
                         if (this.studyArea.drawControlOption == 'add') {
-                            console.log('add layer', layer.toGeoJSON());
+                            //console.log('add layer', layer.toGeoJSON());
                             var editPolygon = greinerHormann.union(sourcePolygon, clipPolygon);
                             this.studyArea.WatershedEditDecisionList.append.push(layer.toGeoJSON());
-                            this.studyArea.Disclaimers['isEdited'] = true;
+                            //this.studyArea.Disclaimers['isEdited'] = true;
                         }
 
                         if (this.studyArea.drawControlOption == 'remove') {
-                            console.log('remove layer', layer.toGeoJSON());
+                            //console.log('remove layer', layer.toGeoJSON());
                             var editPolygon = greinerHormann.diff(sourcePolygon, clipPolygon);
 
                             //check for split polygon
-                            console.log('editPoly', editPolygon.length);
+                            //console.log('editPoly', editPolygon.length);
                             if (editPolygon.length == 2) {
                                 alert('Splitting polygons is not permitted');
                                 drawnItems.clearLayers();
@@ -827,18 +825,18 @@ module StreamStats.Controllers {
                             }
 
                             this.studyArea.WatershedEditDecisionList.remove.push(layer.toGeoJSON());
-                            this.studyArea.Disclaimers['isEdited'] = true;
+                            //this.studyArea.Disclaimers['isEdited'] = true;
                         }
 
                         //set studyArea basin to new edited polygon
                         basin.geometry.coordinates[0] = [];
                         editPolygon.forEach((item) => { basin.geometry.coordinates[0].push([item[1], item[0]]) });
-                        console.log('edited basin', basin);
+                        //console.log('edited basin', basin);
                         
                         //show new polygon
                         this.geojson['globalwatershed'].data.features[0] = basin;
                         drawnItems.clearLayers();
-                        console.log('editedAreas', angular.toJson(this.studyArea.WatershedEditDecisionList));
+                        //console.log('editedAreas', angular.toJson(this.studyArea.WatershedEditDecisionList));
                     });
                 });
             });
@@ -870,7 +868,7 @@ module StreamStats.Controllers {
             });
         }
         private onSelectedRegionChanged() {
-            console.log('in onselected region changed', this.regionServices.regionList, this.regionServices.selectedRegion);
+            //console.log('in onselected region changed', this.regionServices.regionList, this.regionServices.selectedRegion);
             if (!this.regionServices.selectedRegion) return;
             this.removeOverlayLayers("_region", true);
 
@@ -878,7 +876,7 @@ module StreamStats.Controllers {
         }
         private onSelectedStudyAreaChanged() {
 
-            console.log('in onSelectedStudyAreaChanged');
+            //console.log('in onSelectedStudyAreaChanged');
             this.removeOverlayLayers('globalwatershed', true);
 
             if (!this.studyArea.selectedStudyArea || !this.studyArea.selectedStudyArea.Features) return;
@@ -909,7 +907,7 @@ module StreamStats.Controllers {
                 }
 
                 this.nssService.queriedRegions = true;
-                console.log('set queriedregions flag to true: ', this.nssService.queriedRegions);
+                //console.log('set queriedregions flag to true: ', this.nssService.queriedRegions);
             }
             
         }
@@ -1043,7 +1041,7 @@ module StreamStats.Controllers {
         }
         private setBoundsByRegion(key: string) {
             if (key && this.regionServices.loadRegionListByRegion(key)) {
-                console.log('in setBoundsByRegion selectedRegion gets set here');
+                //console.log('in setBoundsByRegion selectedRegion gets set here');
                 this.regionServices.selectedRegion = this.regionServices.regionList[0];
                 this.bounds = this.leafletBoundsHelperService.createBoundsFromArray(this.regionServices.selectedRegion.Bounds);
                 //this.center = <ICenter>{};
@@ -1071,7 +1069,7 @@ module StreamStats.Controllers {
                 this.regionServices.regionMapLayerList.forEach((item) => {
                     if (item[2]) visibleLayers.push(item[1]);
                 });
-                console.log('visible state/region map layers: ', visibleLayers);
+                //console.log('visible state/region map layers: ', visibleLayers);
                 regionLayer.setLayers([visibleLayers]);
             });
             

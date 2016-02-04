@@ -121,7 +121,7 @@ var StreamStats;
             };
             SidebarController.prototype.setStatisticsGroup = function (statisticsGroup) {
                 var checkStatisticsGroup = this.checkArrayForObj(this.nssService.selectedStatisticsGroupList, statisticsGroup);
-                console.log('set stat group: ', checkStatisticsGroup);
+                //console.log('set stat group: ', checkStatisticsGroup);
                 //if toggled remove selected parameter set
                 if (checkStatisticsGroup != -1) {
                     //remove this statisticsGroup from the list
@@ -200,8 +200,11 @@ var StreamStats;
             SidebarController.prototype.submitBasinEdits = function () {
                 this.studyAreaService.showEditToolbar = false;
                 //check if basin has been edited, if so we need to re-query regression regions
-                if (this.studyAreaService.Disclaimers['isEdited'])
+                if (this.studyAreaService.Disclaimers['isEdited']) {
+                    //clear out any scenarios and other stuff
+                    this.nssService.clearNSSdata();
                     this.studyAreaService.loadEditedStudyBoundary();
+                }
             };
             SidebarController.prototype.selectScenarios = function () {
                 //if not, just continue

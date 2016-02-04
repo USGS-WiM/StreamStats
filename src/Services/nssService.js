@@ -72,6 +72,7 @@ var StreamStats;
                 var url = configuration.baseurls['NSS'] + configuration.queryparams['statisticsGroupLookup'].format(rcode, regressionregions);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.loadingStatisticsGroup = true;
+                this.statisticsGroupList = [];
                 this.Execute(request).then(function (response) {
                     //console.log(response.data);
                     if (response.data.length > 0) {
@@ -108,7 +109,7 @@ var StreamStats;
                 var url = configuration.baseurls['NSS'] + configuration.queryparams['statisticsGroupParameterLookup'].format(rcode, statisticsGroupID, regressionregions);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
-                    console.log('loadParams: ', response.data[0]);
+                    //console.log('loadParams: ', response.data[0]);
                     _this.loadingParametersByStatisticsGroup = false;
                     //check to make sure there is a valid response
                     if (response.data[0].RegressionRegions[0].Parameters && response.data[0].RegressionRegions[0].Parameters.length > 0) {
@@ -164,7 +165,7 @@ var StreamStats;
                     var request = new WiM.Services.Helpers.RequestInfo(url, true, 1, 'json', updatedScenarioObject);
                     statGroup.Citations = [];
                     _this.Execute(request).then(function (response) {
-                        console.log('estimate flows: ', response.data[0]);
+                        //console.log('estimate flows: ', response.data[0]);
                         //nested requests for citations
                         var citationUrl = response.data[0].Links[0].Href;
                         var citationResults = _this.getSelectedCitations(citationUrl, statGroup);
@@ -181,7 +182,6 @@ var StreamStats;
                                 //comment out for not, not useful
                                 //if (headerMsg[0] == 'info') statGroup.Disclaimers['Info'] = headerMsg[1].trim();
                             });
-                            console.log('headerMsgs: ', statGroup.Name, statGroup.Disclaimers);
                         }
                         //make sure there are some results
                         if (response.data[0].RegressionRegions[0].Results && response.data[0].RegressionRegions[0].Results.length > 0) {
@@ -194,7 +194,6 @@ var StreamStats;
                         else {
                             _this.toaster.clear();
                             _this.toaster.pop('error', "There was an error Estimating Flows", "No results were returned", 5000);
-                            console.log("Zero length flow response, check equations in NSS service");
                         }
                         //sm when complete
                     }, function (error) {

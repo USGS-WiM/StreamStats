@@ -107,6 +107,7 @@ module StreamStats.Services {
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
 
             this.loadingStatisticsGroup = true;
+            this.statisticsGroupList = [];
 
             this.Execute(request).then(
                 (response: any) => {
@@ -151,7 +152,7 @@ module StreamStats.Services {
             this.Execute(request).then(
                 (response: any) => {
 
-                    console.log('loadParams: ', response.data[0]);
+                    //console.log('loadParams: ', response.data[0]);
                     this.loadingParametersByStatisticsGroup = false;
 
                     //check to make sure there is a valid response
@@ -223,7 +224,7 @@ module StreamStats.Services {
                 this.Execute(request).then(
                     (response: any) => {
 
-                        console.log('estimate flows: ', response.data[0]);
+                        //console.log('estimate flows: ', response.data[0]);
 
                         //nested requests for citations
                         var citationUrl = response.data[0].Links[0].Href;
@@ -241,7 +242,7 @@ module StreamStats.Services {
                                 //comment out for not, not useful
                                 //if (headerMsg[0] == 'info') statGroup.Disclaimers['Info'] = headerMsg[1].trim();
                             });
-                            console.log('headerMsgs: ', statGroup.Name, statGroup.Disclaimers);
+                            //console.log('headerMsgs: ', statGroup.Name, statGroup.Disclaimers);
                         }
 
                         //make sure there are some results
@@ -258,7 +259,7 @@ module StreamStats.Services {
                         else {
                             this.toaster.clear();
                             this.toaster.pop('error', "There was an error Estimating Flows", "No results were returned", 5000);
-                            console.log("Zero length flow response, check equations in NSS service");
+                            //console.log("Zero length flow response, check equations in NSS service");
                         }
               
 

@@ -49,7 +49,7 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, 1 /* POST */, 'json', { InputLineFeatures: esriJSON, returnZ: true, f: 'json' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
                 //do ajax call for future precip layer, needs to happen even if only runoff value is needed for this region
                 this.Execute(request).then(function (response) {
-                    console.log('elevation profile response: ', response.data);
+                    //console.log('elevation profile response: ', response.data);
                     var coords = response.data.results[0].value.features[0].geometry.paths[0];
                     if (coords.length > 0) {
                         _this.elevationProfileGeoJSON = {

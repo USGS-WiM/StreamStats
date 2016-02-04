@@ -47,7 +47,7 @@ module StreamStats.Services {
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         public openReport() {
-            console.log('in report open function');
+            //console.log('in report open function');
 
             var modalInstance = this.modal.open({
                 templateUrl: 'Views/reportview.html',

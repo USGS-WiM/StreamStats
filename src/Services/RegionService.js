@@ -142,13 +142,13 @@ var StreamStats;
                     //console.log('list of national map layers', this.nationalMapLayerList);
                     //return layerArray;
                 }, function (error) {
-                    console.log('No national map layers found');
+                    //console.log('No national map layers found');
                     return _this.$q.reject(error.data);
                 });
             };
             RegionService.prototype.loadMapLayersByRegion = function (regionid) {
                 var _this = this;
-                console.log('in loadMapLayersByRegion');
+                //console.log('in loadMapLayersByRegion');
                 this.regionMapLayerListLoaded = false;
                 var url = configuration.baseurls['StreamStats'] + configuration.queryparams['SSStateLayers'].format(regionid.toLowerCase());
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, 0 /* GET */, 'json');
