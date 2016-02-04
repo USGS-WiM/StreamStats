@@ -106,7 +106,7 @@ module StreamStats.Services {
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        constructor($http: ng.IHttpService, private $q: ng.IQService, private eventManager: WiM.Event.IEventManager, toaster) {
+        constructor(public $http: ng.IHttpService, private $q: ng.IQService, private eventManager: WiM.Event.IEventManager, toaster) {
             super($http, configuration.baseurls['StreamStats'])
 
             eventManager.AddEvent<StudyAreaEventArgs>(onSelectedStudyAreaChanged);
@@ -115,7 +115,7 @@ module StreamStats.Services {
                 this.onStudyAreaChanged(sender, e);
             }));
             eventManager.AddEvent<WiM.Event.EventArgs>(onEditClick);
-      
+            this._studyAreaList = [];
 
 
             this.toaster = toaster;
@@ -127,18 +127,21 @@ module StreamStats.Services {
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         public editBasin(selection) {
+            this.Disclaimers['isEdited']=true;
             this.drawControlOption = selection;
             this.eventManager.RaiseEvent(onEditClick,this,WiM.Event.EventArgs.Empty)
         }
 
         public undoEdit() {
             //console.log('undo edit');
+            delete this.Disclaimers['isEdited'];
             this.WatershedEditDecisionList = new Models.WatershedEditDecisionList();
             this.eventManager.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);
         }
 
         public AddStudyArea(sa: Models.IStudyArea) {
             //add the study area to studyAreaList
+            this.clearStudyArea();
             this.StudyAreaList.push(sa);
             this.selectedStudyArea = sa;
         }
@@ -149,7 +152,6 @@ module StreamStats.Services {
 
         public clearStudyArea() {
             //console.log('in clear study area');
-            this._studyAreaList = [];
             this.canUpdate = true;
             this.regulationCheckComplete = true;
             this.parametersLoaded = false;
@@ -245,13 +247,14 @@ module StreamStats.Services {
 
             this.toaster.pop("info", "Loading Edited Basin", "Please wait...", 0);
             this.canUpdate = false;
-
+            //Content-Type: application/json
             var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSeditBasin'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID, this.selectedStudyArea.Pourpoint.crs.toString())
-            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.PUT, 'json', this.WatershedEditDecisionList, {});
-
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.PUT, 'json', angular.toJson(this.WatershedEditDecisionList), {});
             this.Execute(request).then(
                 (response: any) => {
-                    this.clearStudyArea();
+                    //create new study area                    
+                    this.AddStudyArea(new Models.StudyArea(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint));
+                    
                     this.selectedStudyArea.Features = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"] : null;
                     this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
                     this.selectedStudyArea.Date = new Date();
