@@ -38,6 +38,7 @@ var StreamStats;
                 this.toaster = toaster;
                 this.drawElevationProfile = false;
                 this.drawMeasurement = false;
+                this.showElevationChart = false;
                 this.measurementData = '';
             }
             //Methods

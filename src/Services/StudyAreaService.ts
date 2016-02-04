@@ -532,6 +532,7 @@ module StreamStats.Services {
         //EventHandlers Methods
         //-+-+-+-+-+-+-+-+-+-+-+- 
         private onStudyAreaChanged(sender: any, e: StudyAreaEventArgs) {
+            console.log('in onStudyAreaChanged');
             if (!this.selectedStudyArea || !this.selectedStudyArea.Features) return;
             this.queryRegressionRegions();
         }

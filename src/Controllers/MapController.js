@@ -305,44 +305,44 @@ var StreamStats;
                             _this.toaster.pop("warning", "Warning", "You must be at Zoom Level 9 or greater to query streamgages", 5000);
                             return;
                         }
-                        maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).run(function (error, results) {
+                        //get layer to query
+                        var layerString;
+                        _this.regionServices.nationalMapLayerList.forEach(function (item) {
+                            if (item[0].toLowerCase() == "streamgages")
+                                layerString = '"' + item[1] + '"';
+                        });
+                        maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).layers(layerString).run(function (error, results) {
                             _this.toaster.clear();
-                            if (!results.features) {
+                            _this.cursorStyle = 'pointer';
+                            console.log('gage query response', results);
+                            if (!results.features || results.features.length == 0) {
                                 _this.toaster.pop("warning", "Warning", "No streamgages were found", 5000);
                                 return;
                             }
                             results.features.forEach(function (queryResult) {
-                                _this.regionServices.nationalMapLayerList.forEach(function (item) {
-                                    if (queryResult.layerId == item[1]) {
-                                        //console.log('Map query found a match with: ', item[0], queryResult)
-                                        if (item[0].toLowerCase() == "streamgages") {
-                                            var popupContent = '';
-                                            var popupKeyList = ['latitude', 'longitude', 'sta_id', 'sta_name', 'featureurl', 'drnarea'];
-                                            angular.forEach(queryResult.properties, function (value, key) {
-                                                if (popupKeyList.indexOf(key) != -1) {
-                                                    if (key == "featureurl") {
-                                                        var siteNo = value.split('site_no=')[1];
-                                                        var SSgagepage = 'http://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm';
-                                                        popupContent += '<strong>NWIS page: </strong><a href="' + value + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br>';
-                                                    }
-                                                    else
-                                                        popupContent += '<strong>' + key + ': </strong>' + value + '</br>';
-                                                }
-                                            });
-                                            _this.markers['regionalQueryResult'] = {
-                                                lat: evt.latlng.lat,
-                                                lng: evt.latlng.lng,
-                                                message: popupContent,
-                                                focus: true,
-                                                draggable: false
-                                            };
-                                            map.panBy([0, 1]);
-                                            _this.toaster.clear();
+                                var popupContent = '';
+                                var popupKeyList = ['latitude', 'longitude', 'sta_id', 'sta_name', 'featureurl', 'drnarea'];
+                                angular.forEach(queryResult.properties, function (value, key) {
+                                    if (popupKeyList.indexOf(key) != -1) {
+                                        if (key == "featureurl") {
+                                            var siteNo = value.split('site_no=')[1];
+                                            var SSgagepage = 'http://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm';
+                                            popupContent += '<strong>NWIS page: </strong><a href="' + value + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br>';
                                         }
+                                        else
+                                            popupContent += '<strong>' + key + ': </strong>' + value + '</br>';
                                     }
                                 });
+                                _this.markers['regionalQueryResult'] = {
+                                    lat: evt.latlng.lat,
+                                    lng: evt.latlng.lng,
+                                    message: popupContent,
+                                    focus: true,
+                                    draggable: false
+                                };
+                                map.panBy([0, 1]);
+                                _this.toaster.clear();
                             });
-                            _this.cursorStyle = 'pointer';
                         });
                     });
                 });
@@ -351,6 +351,7 @@ var StreamStats;
                 var _this = this;
                 document.getElementById('measurement-div').innerHTML = '';
                 this.explorationService.measurementData = '';
+                this.explorationService.showElevationChart = true;
                 var el;
                 //get reference to elevation control
                 this.controls.custom.forEach(function (control) {
@@ -364,11 +365,8 @@ var StreamStats;
                         //create draw control
                         var drawnItems = maplayers.overlays.draw;
                         drawnItems.clearLayers();
-                        var drawControl = new L.Draw.Polyline(map, {
-                            metric: false
-                        });
-                        drawControl.enable();
-                        _this.geojson = {};
+                        _this.drawController({ metric: false }, true);
+                        delete _this.geojson['elevationProfileLine3D'];
                         map.on('draw:drawstart', function (e) {
                             //console.log('in draw start');
                             el.clear();
@@ -389,6 +387,18 @@ var StreamStats;
                             map.panBy([0, 1]);
                         });
                     });
+                });
+            };
+            MapController.prototype.drawController = function (options, enable) {
+                var _this = this;
+                console.log('in drawcontroller: ', options, enable);
+                if (!enable) {
+                    this.drawControl.disable();
+                    return;
+                }
+                this.leafletData.getMap().then(function (map) {
+                    _this.drawControl = new L.Draw.Polyline(map, options);
+                    _this.drawControl.enable();
                 });
             };
             MapController.prototype.displayElevationProfile = function () {
@@ -434,6 +444,17 @@ var StreamStats;
                 this.removeOverlayLayers("_region", true);
                 this.center = new Center(39, -100, 3);
             };
+            MapController.prototype.resetExplorationTools = function () {
+                document.getElementById('elevation-div').innerHTML = '';
+                document.getElementById('measurement-div').innerHTML = '';
+                if (this.drawControl)
+                    this.drawController({}, false);
+                this.regionServices.allowStreamgageQuery = false;
+                this.explorationService.drawMeasurement = false;
+                this.explorationService.measurementData = '';
+                this.explorationService.drawElevationProfile = false;
+                this.explorationService.showElevationChart = false;
+            };
             MapController.prototype.measurement = function () {
                 var _this = this;
                 document.getElementById('elevation-div').innerHTML = '';
@@ -444,18 +465,19 @@ var StreamStats;
                 this.leafletData.getMap().then(function (map) {
                     _this.leafletData.getLayers().then(function (maplayers) {
                         var stopclick = false; //to prevent more than one click listener
-                        var polyline = new L.Draw.Polyline(map, {
-                            shapeOptions: {
-                                color: 'blue'
-                            },
-                            metric: false
-                        });
-                        polyline.enable();
+                        //var polyline = new (<any>L).Draw.Polyline(map, {
+                        //    shapeOptions: {
+                        //        color: 'blue'
+                        //    },
+                        //    metric: false
+                        //});
+                        //polyline.enable();
+                        _this.drawController({ shapeOptions: { color: 'blue' }, metric: false }, true);
                         var drawnItems = maplayers.overlays.draw;
                         drawnItems.clearLayers();
                         //listeners active during drawing
                         var measuremove = function () {
-                            _this.explorationService.measurementData = "Total length: " + polyline._getMeasurementString();
+                            _this.explorationService.measurementData = "Total length: " + _this.drawControl._getMeasurementString();
                         };
                         var measurestart = function () {
                             if (stopclick == false) {
@@ -470,12 +492,12 @@ var StreamStats;
                             drawnItems.addLayer(layer);
                             drawnItems.addTo(map);
                             //reset button
-                            _this.explorationService.measurementData = "Total length: " + polyline._getMeasurementString();
+                            _this.explorationService.measurementData = "Total length: " + _this.drawControl._getMeasurementString();
                             //remove listeners
                             map.off("click", measurestart);
                             map.off("mousemove", measuremove);
                             map.off("draw:created", measurestop);
-                            polyline.disable();
+                            _this.drawControl.disable();
                             _this.explorationService.drawMeasurement = false;
                         };
                         map.on("click", measurestart);
@@ -545,6 +567,10 @@ var StreamStats;
             };
             MapController.prototype.basinEditor = function () {
                 var _this = this;
+                if (this.geojson['globalwatershed'].data.features.length > 1) {
+                    this.toaster.pop("warning", "Warning", "You cannot edit a global watershed", 5000);
+                    return;
+                }
                 var basin = angular.fromJson(angular.toJson(this.geojson['globalwatershed'].data.features[0]));
                 var basinConverted = [];
                 basin.geometry.coordinates[0].forEach(function (item) {
@@ -575,6 +601,7 @@ var StreamStats;
                                 console.log('add layer', layer.toGeoJSON());
                                 var editPolygon = greinerHormann.union(sourcePolygon, clipPolygon);
                                 _this.studyArea.WatershedEditDecisionList.append.push(layer.toGeoJSON());
+                                _this.studyArea.Disclaimers['isEdited'] = true;
                             }
                             if (_this.studyArea.drawControlOption == 'remove') {
                                 console.log('remove layer', layer.toGeoJSON());
@@ -587,6 +614,7 @@ var StreamStats;
                                     return;
                                 }
                                 _this.studyArea.WatershedEditDecisionList.remove.push(layer.toGeoJSON());
+                                _this.studyArea.Disclaimers['isEdited'] = true;
                             }
                             //set studyArea basin to new edited polygon
                             basin.geometry.coordinates[0] = [];
@@ -632,7 +660,7 @@ var StreamStats;
             };
             MapController.prototype.onSelectedStudyAreaChanged = function () {
                 var _this = this;
-                //console.log('study area changed');
+                console.log('in onSelectedStudyAreaChanged');
                 this.removeOverlayLayers('globalwatershed', true);
                 if (!this.studyArea.selectedStudyArea || !this.studyArea.selectedStudyArea.Features)
                     return;
@@ -655,6 +683,7 @@ var StreamStats;
                         return;
                     }
                     this.nssService.queriedRegions = true;
+                    console.log('set queriedregions flag to true: ', this.nssService.queriedRegions);
                 }
             };
             MapController.prototype.removeGeoJson = function (layerName) {
