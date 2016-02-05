@@ -48,7 +48,7 @@ body {
          Leaflet Overrides
     ===========================
     ===========================
-
+*/
 /* disable some default controls*/
 .leaflet-control-layers.leaflet-control {
     display: none;
@@ -264,6 +264,46 @@ div.leaflet-top > .elevation {
     float: right;
 }
 
+/*Layers/right button*/
+.angular-leaflet-control-layers-expanded{
+    padding: 0;
+}
+.angular-leaflet-control-layers-expanded .close-legend{
+    display: block;
+    margin: 0 auto;
+    padding: 10px 0;
+    border: none;
+    width: 100%;
+    font-size:9pt;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+.angular-leaflet-control-layers-expanded .list-group-item,
+.angular-leaflet-control-layers-expanded .list-group-item-active{
+    padding: 15px 5px 25px 5px;
+    font-weight: 400;
+    text-align: center;
+}
+.angular-leaflet-control-layers-expanded .list-group-item-active{
+    background-color: #2D3245;
+}
+.angular-leaflet-control-layers-expanded .list-group-item-active label{
+    color: #FFF;
+}
+.angular-leaflet-control-layers-expanded .list-group-item-active label,
+.angular-leaflet-control-layers-expanded .list-group-item label{
+    display: block;
+    text-align: center;
+}
+.angular-leaflet-control-layers-expanded .list-group-item .fa-chevron-down,
+.angular-leaflet-control-layers-expanded .list-group-item-active .fa-chevron-up{
+    display: block !important;
+    width: 100% !important;
+    padding: 0 0 10px 0 !important;
+    text-align: center !important;
+
+}
+
 /*
     ===========================
     ===========================
@@ -273,13 +313,32 @@ div.leaflet-top > .elevation {
 */
 
 .navbar-btn{
+    background-color: transparent;
+    border: none;
+    color: rgba(255,255,255,0.5);
     font-weight: 400;
-    color: rgba(0,0,0,0.8);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-size: 12pt;
+    margin: 18px auto;
 }
-
 .navbar-btn:hover{
-    color: rgba(0,0,0,0.8);
-    transition: 0.2s;
+    font-size: 12pt;
+    background-color: transparent;
+    border: none;
+    color: rgba(255,255,255,0.8)
+}
+.navbar-btn:focus{
+    background-color: transparent;
+    border: none;
+    color: rgba(255,255,255,0.8);
+    font-size: 12pt;
+}
+.navbar-btn:active{
+    color: rgba(255,255,255,1) !important;
+    background-color: transparent !important;
+    font-size: 12pt;
+    border: none;
 }
 
 .navbar-brand {
