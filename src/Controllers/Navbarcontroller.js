@@ -35,7 +35,8 @@ var StreamStats;
             NavbarController.$inject = ['$scope', 'StreamStats.Services.ReportService', 'StreamStats.Services.StudyAreaService'];
             return NavbarController;
         })(); //end class
-        angular.module('StreamStats.Controllers').controller('StreamStats.Controllers.NavbarController', NavbarController);
+        angular.module('StreamStats.Controllers')
+            .controller('StreamStats.Controllers.NavbarController', NavbarController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));
 })(StreamStats || (StreamStats = {})); //end module
 //# sourceMappingURL=Navbarcontroller.js.map

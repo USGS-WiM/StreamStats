@@ -1,11 +1,10 @@
 //------------------------------------------------------------------------------
 //----- RegionService -----------------------------------------------------
 //------------------------------------------------------------------------------
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 //-------1---------2---------3---------4---------5---------6---------7---------8
 //       01234567890123456789012345678901234567890123456789012345678901234567890
@@ -100,7 +99,7 @@ var StreamStats;
                     layers: "all: 4"
                 };
                 var url = configuration.baseurls['StreamStats'] + configuration.queryparams['regionService'];
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, 0 /* GET */, 'json');
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 request.params = input;
                 this.Execute(request).then(function (response) {
                     //console.log(response);
@@ -132,7 +131,7 @@ var StreamStats;
             RegionService.prototype.loadNationalMapLayers = function () {
                 var _this = this;
                 var url = configuration.baseurls['StreamStats'] + "/arcgis/rest/services/ss_studyAreas_prod/MapServer?f=pjson";
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, 0 /* GET */, 'json');
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.nationalMapLayerList = [];
                 this.Execute(request).then(function (response) {
                     response.data.layers.forEach(function (value, key) {
@@ -151,7 +150,7 @@ var StreamStats;
                 //console.log('in loadMapLayersByRegion');
                 this.regionMapLayerListLoaded = false;
                 var url = configuration.baseurls['StreamStats'] + configuration.queryparams['SSStateLayers'].format(regionid.toLowerCase());
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, 0 /* GET */, 'json');
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.regionMapLayerList = [];
                 this.Execute(request).then(function (response) {
                     if (!response.data.layers) {
@@ -217,18 +216,19 @@ var StreamStats;
                     _this.streamStatsAvailable = false;
                     _this.toaster.pop('warning', "StreamStats not available here at this time", "", 5000);
                     //sm when complete
-                }).finally(function () {
-                });
+                }).finally(function () { });
             };
             //HelperMethods
             //-+-+-+-+-+-+-+-+-+-+-+-
             RegionService.prototype.getRegion = function (lookupID) {
                 var regionArray = configuration.regions;
                 try {
+                    //search for item
                     for (var i = 0; i < regionArray.length; i++) {
-                        if (regionArray[i].Name.toUpperCase().trim() === lookupID.toUpperCase().trim() || regionArray[i].RegionID.toUpperCase().trim() === lookupID.toUpperCase().trim())
+                        if (regionArray[i].Name.toUpperCase().trim() === lookupID.toUpperCase().trim() ||
+                            regionArray[i].RegionID.toUpperCase().trim() === lookupID.toUpperCase().trim())
                             return regionArray[i];
-                    }
+                    } //next region
                     return null;
                 }
                 catch (e) {
@@ -241,7 +241,8 @@ var StreamStats;
         function factory($http, $q, toaster, eventManager) {
             return new RegionService($http, $q, toaster, eventManager);
         }
-        angular.module('StreamStats.Services').factory('StreamStats.Services.RegionService', factory);
+        angular.module('StreamStats.Services')
+            .factory('StreamStats.Services.RegionService', factory);
     })(Services = StreamStats.Services || (StreamStats.Services = {}));
 })(StreamStats || (StreamStats = {})); //end module 
 //# sourceMappingURL=RegionService.js.map

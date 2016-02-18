@@ -1,11 +1,10 @@
 //------------------------------------------------------------------------------
 //----- StudyAreaService -------------------------------------------------------
 //------------------------------------------------------------------------------
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 //-------1---------2---------3---------4---------5---------6---------7---------8
 //       01234567890123456789012345678901234567890123456789012345678901234567890
@@ -190,7 +189,7 @@ var StreamStats;
                 this.canUpdate = false;
                 //Content-Type: application/json
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSeditBasin'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID, this.selectedStudyArea.Pourpoint.crs.toString());
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, 2 /* PUT */, 'json', angular.toJson(this.WatershedEditDecisionList), {});
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.PUT, 'json', angular.toJson(this.WatershedEditDecisionList), {});
                 this.Execute(request).then(function (response) {
                     //create new study area                    
                     _this.AddStudyArea(new StreamStats.Models.StudyArea(_this.selectedStudyArea.RegionID, _this.selectedStudyArea.Pourpoint));
@@ -223,9 +222,7 @@ var StreamStats;
                     return; //sm study area is incomplete
                 }
                 var requestParameterList = [];
-                this.studyAreaParameterList.map(function (param) {
-                    requestParameterList.push(param.code);
-                });
+                this.studyAreaParameterList.map(function (param) { requestParameterList.push(param.code); });
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSComputeParams'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID, requestParameterList.join(','));
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
@@ -256,7 +253,7 @@ var StreamStats;
                 var esriJSON = '{"geometryType":"esriGeometryPolygon","spatialReference":{"wkid":"4326"},"fields": [],"features":[{"geometry": {"type":"polygon", "rings":[' + JSON.stringify(this.selectedStudyArea.Features[1].feature.features[0].geometry.coordinates) + ']}}]}';
                 //var watershed = angular.toJson(this.selectedStudyArea.Features[1].feature, null);
                 var url = configuration.baseurls['NationalMapRasterServices'] + configuration.queryparams['NLCDQueryService'];
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, 1 /* POST */, 'json', { InputLineFeatures: esriJSON, returnZ: true, f: 'json' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', { InputLineFeatures: esriJSON, returnZ: true, f: 'json' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
                 this.Execute(request).then(function (response) {
                     //console.log(response.data);
                     _this.toaster.clear();
@@ -280,7 +277,7 @@ var StreamStats;
                 this.regressionRegionQueryComplete = false;
                 var watershed = angular.toJson(this.selectedStudyArea.Features[1].feature, null);
                 var url = configuration.baseurls['GISserver'] + configuration.queryparams['RegressionRegionQueryService'];
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, 1 /* POST */, 'json', { geometry: watershed, f: 'json' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', { geometry: watershed, f: 'json' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
                 this.Execute(request).then(function (response) {
                     //console.log(response.data);
                     _this.toaster.clear();
@@ -317,7 +314,7 @@ var StreamStats;
                 this.regulationCheckComplete = false;
                 var watershed = angular.toJson(this.selectedStudyArea.Features[1].feature, null);
                 var url = configuration.baseurls['GISserver'] + configuration.queryparams['regulationService'].format(this.selectedStudyArea.RegionID);
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, 1 /* POST */, 'json', { watershed: watershed, outputcrs: 4326, f: 'geojson' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', { watershed: watershed, outputcrs: 4326, f: 'geojson' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
                 this.Execute(request).then(function (response) {
                     //console.log(response);
                     if (response.data.percentarearegulated > 0) {
@@ -368,6 +365,7 @@ var StreamStats;
                 regulatedResults.map(function (regulatedParam) {
                     angular.forEach(paramList, function (param, index) {
                         if (regulatedParam.code.toUpperCase().trim() === param.code.toUpperCase().trim()) {
+                            //calculate unregulated values
                             switch (regulatedParam.operation) {
                                 case "Sum":
                                     param.unRegulatedValue = param.value - regulatedParam.value;
@@ -416,7 +414,8 @@ var StreamStats;
         function factory($http, $q, eventManager, toaster) {
             return new StudyAreaService($http, $q, eventManager, toaster);
         }
-        angular.module('StreamStats.Services').factory('StreamStats.Services.StudyAreaService', factory);
+        angular.module('StreamStats.Services')
+            .factory('StreamStats.Services.StudyAreaService', factory);
     })(Services = StreamStats.Services || (StreamStats.Services = {}));
 })(StreamStats || (StreamStats = {})); //end module
 //# sourceMappingURL=StudyAreaService.js.map

@@ -1,11 +1,10 @@
 //------------------------------------------------------------------------------
 //----- WiM Legend ------------------------------------------------------
 //------------------------------------------------------------------------------
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 //-------1---------2---------3---------4---------5---------6---------7---------8
 //       01234567890123456789012345678901234567890123456789012345678901234567890
@@ -87,7 +86,8 @@ var WiM;
             }; //end link
             return explorationTools;
         })(); //end UrlDirective
-        angular.module('wim_angular').directive('explorationTools', explorationTools.instance);
+        angular.module('wim_angular')
+            .directive('explorationTools', explorationTools.instance);
     })(Directives = WiM.Directives || (WiM.Directives = {}));
 })(WiM || (WiM = {})); //end module 
 //# sourceMappingURL=explorationTools.js.map
