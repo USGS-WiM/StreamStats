@@ -30,7 +30,7 @@ var StreamStats;
                 this.angulartics = $analytics;
                 this.searchService = service;
                 this.sideBarCollapsed = false;
-                this.selectedProcedure = 1 /* INIT */;
+                this.selectedProcedure = ProcedureType.INIT;
                 this.regionService = region;
                 this.nssService = StatisticsGroup;
                 this.studyAreaService = studyArea;
@@ -189,11 +189,7 @@ var StreamStats;
             SidebarController.prototype.calculateParameters = function () {
                 //ga event
                 this.angulartics.eventTrack('CalculateParameters', {
-                    category: 'SideBar',
-                    label: this.regionService.selectedRegion.Name + '; ' + this.studyAreaService.studyAreaParameterList.map(function (elem) {
-                        return elem.code;
-                    }).join(",")
-                });
+                    category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.studyAreaService.studyAreaParameterList.map(function (elem) { return elem.code; }).join(",") });
                 //console.log('in Calculate Parameters');
                 this.studyAreaService.loadParameters();
             };
@@ -214,15 +210,9 @@ var StreamStats;
                 //console.log('in estimateFlows');
                 //ga event
                 this.angulartics.eventTrack('CalculateFlows', {
-                    category: 'SideBar',
-                    label: this.regionService.selectedRegion.Name + '; ' + this.nssService.selectedStatisticsGroupList.map(function (elem) {
-                        return elem.Name;
-                    }).join(",")
-                });
+                    category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.nssService.selectedStatisticsGroupList.map(function (elem) { return elem.Name; }).join(",") });
                 if (this.nssService.selectedStatisticsGroupList.length > 0 && this.nssService.showFlowsTable) {
-                    this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList, this.regionService.selectedRegion.RegionID, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) {
-                        return elem.code;
-                    }).join(","));
+                    this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList, this.regionService.selectedRegion.RegionID, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) { return elem.code; }).join(","));
                 }
                 this.reportService.openReport();
                 this.studyAreaService.reportGenerated = true;
@@ -283,18 +273,18 @@ var StreamStats;
                 var msg;
                 try {
                     switch (pType) {
-                        case 1 /* INIT */:
+                        case ProcedureType.INIT:
                             return true;
-                        case 2 /* IDENTIFY */:
+                        case ProcedureType.IDENTIFY:
                             return this.regionService.selectedRegion != null;
-                        case 3 /* SELECT */:
+                        case ProcedureType.SELECT:
                             //proceed if there is a regression region
                             return this.studyAreaService.regressionRegionQueryComplete;
-                        case 4 /* BUILD */:
+                        case ProcedureType.BUILD:
                             return this.studyAreaService.parametersLoaded;
                         default:
                             return false;
-                    }
+                    } //end switch          
                 }
                 catch (e) {
                     //this.sm(new MSG.NotificationArgs(e.message, MSG.NotificationType.INFORMATION, 1.5));
@@ -319,7 +309,8 @@ var StreamStats;
             ProcedureType[ProcedureType["SELECT"] = 3] = "SELECT";
             ProcedureType[ProcedureType["BUILD"] = 4] = "BUILD";
         })(ProcedureType || (ProcedureType = {}));
-        angular.module('StreamStats.Controllers').controller('StreamStats.Controllers.SidebarController', SidebarController);
+        angular.module('StreamStats.Controllers')
+            .controller('StreamStats.Controllers.SidebarController', SidebarController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));
 })(StreamStats || (StreamStats = {})); //end module
 //# sourceMappingURL=SidebarController.js.map

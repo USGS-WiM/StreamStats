@@ -47,7 +47,8 @@ var StreamStats;
         function factory($modal) {
             return new reportService($modal);
         }
-        angular.module('StreamStats.Services').factory('StreamStats.Services.ReportService', factory);
+        angular.module('StreamStats.Services')
+            .factory('StreamStats.Services.ReportService', factory);
     })(Services = StreamStats.Services || (StreamStats.Services = {}));
 })(StreamStats || (StreamStats = {})); //end module  
 //# sourceMappingURL=ReportService.js.map

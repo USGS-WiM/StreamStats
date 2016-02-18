@@ -1,8 +1,6 @@
-﻿
-//http://lgorithms.blogspot.com/2013/07/angularui-router-as-infrastructure-of.html
+﻿//http://lgorithms.blogspot.com/2013/07/angularui-router-as-infrastructure-of.html
 //http://www.funnyant.com/angularjs-ui-router/
 
-///<reference path="../typings/angular-ui-router/angular-ui-router.d.ts" />
 declare var configuration: any;
 module StreamStats {
     //'use strict';

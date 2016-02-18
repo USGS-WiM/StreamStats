@@ -1,6 +1,5 @@
 //http://lgorithms.blogspot.com/2013/07/angularui-router-as-infrastructure-of.html
 //http://www.funnyant.com/angularjs-ui-router/
-///<reference path="../typings/angular-ui-router/angular-ui-router.d.ts" />
 var StreamStats;
 (function (StreamStats) {
     //'use strict';
@@ -10,7 +9,8 @@ var StreamStats;
             this.$urlRouterProvider = $urlRouterProvider;
             this.$locationProvider = $locationProvider;
             this.$logProvider = $logProvider;
-            this.$stateProvider.state("main", {
+            this.$stateProvider
+                .state("main", {
                 url: '/?rcode&workspaceID',
                 //reloadOnSearch:true,
                 template: '<ui-view/>',
@@ -43,20 +43,15 @@ var StreamStats;
         return config;
     })(); //end class
     angular.module('StreamStats', [
-        'ui.router',
-        'ui.bootstrap',
-        'ui.checkbox',
+        'ui.router', 'ui.bootstrap', 'ui.checkbox',
         'mobile-angular-ui',
-        'angulartics',
-        'angulartics.google.analytics',
-        'toaster',
-        'ngAnimate',
+        'angulartics', 'angulartics.google.analytics',
+        'toaster', 'ngAnimate',
         'leaflet-directive',
         'StreamStats.Services',
         'StreamStats.Controllers',
-        'WiM.Services',
-        'WiM.Event',
-        'wim_angular'
-    ]).config(config);
+        'WiM.Services', 'WiM.Event', 'wim_angular'
+    ])
+        .config(config);
 })(StreamStats || (StreamStats = {})); //end module 
 //# sourceMappingURL=config.js.map
