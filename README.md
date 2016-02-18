@@ -15,7 +15,7 @@ This will install the following packages globally
 ```bash
 npm install -g bower
 npm install -g gulp
-npm install -g tsd
+npm install -g typings
 ```
 
 #### 2.  Update/add packages
@@ -26,8 +26,8 @@ Inside of your project folder (after git fork and clone):
 npm install
 bower install
 typings install 
-[upgrade from tsd to typings] (https://github.com/DefinitelyTyped/tsd/issues/269)
 ```
+[upgrade from tsd to typings] (https://github.com/DefinitelyTyped/tsd/issues/269)
 
 ------
 
