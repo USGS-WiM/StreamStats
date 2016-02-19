@@ -38,6 +38,7 @@ var StreamStats;
                 this.drawElevationProfile = false;
                 this.drawMeasurement = false;
                 this.showElevationChart = false;
+                this.allowStreamgageQuery = false;
                 this.measurementData = '';
             }
             //Methods

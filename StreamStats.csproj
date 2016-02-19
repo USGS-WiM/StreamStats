@@ -64,7 +64,6 @@
     <Content Include="src\Assets\images\usgs_logo.png" />
     <Content Include="src\css\main.css" />
     <Content Include="src\css\wim.css" />
-    <Content Include="src\Views\Exploration\exploration.html" />
     <Content Include="src\Views\Legend\legend.html" />
     <Content Include="src\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="src\images\arrows.gif" />
@@ -105,7 +104,6 @@
     <TypeScriptCompile Include="src\Controllers\Navbarcontroller.ts" />
     <TypeScriptCompile Include="src\Controllers\ReportController.ts" />
     <TypeScriptCompile Include="src\Controllers\SidebarController.ts" />
-    <TypeScriptCompile Include="src\Directives\explorationTools.ts" />
     <TypeScriptCompile Include="src\Events\StudyAreaEvents.ts" />
     <TypeScriptCompile Include="src\Models\RegulationParameter.ts" />
     <TypeScriptCompile Include="src\Models\StudyArea.ts" />

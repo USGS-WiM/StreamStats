@@ -31,6 +31,7 @@ module StreamStats.Services {
         elevationProfileGeoJSON: any;
         showElevationChart: boolean;
         measurementData: string;
+        allowStreamgageQuery: boolean;
         
     }
     class ExplorationService extends WiM.Services.HTTPServiceBase implements IExplorationService {
@@ -45,7 +46,7 @@ module StreamStats.Services {
         public elevationProfileGeoJSON: any;
         public showElevationChart: boolean;
         public measurementData: string;
-        
+        public allowStreamgageQuery: boolean;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -56,6 +57,7 @@ module StreamStats.Services {
             this.drawElevationProfile = false;
             this.drawMeasurement = false;
             this.showElevationChart = false;
+            this.allowStreamgageQuery = false;
             this.measurementData = '';
 
         }

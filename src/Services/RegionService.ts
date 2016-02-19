@@ -38,7 +38,6 @@ module StreamStats.Services {
         clearRegion();
         regionMapLayerList: any;
         nationalMapLayerList: any;
-        allowStreamgageQuery: boolean;
         streamStatsAvailable: boolean;
         regionMapLayerListLoaded: boolean;
     }
@@ -110,7 +109,6 @@ module StreamStats.Services {
         public nationalMapLayerList: any;
         public streamStatsAvailable: boolean;
         public regionMapLayerListLoaded: boolean;
-        public allowStreamgageQuery: boolean;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -122,7 +120,6 @@ module StreamStats.Services {
             this.masterRegionList = configuration.regions;
             this.loadNationalMapLayers();
             this.streamStatsAvailable = false;
-            this.allowStreamgageQuery = false;
             this.eventManager.AddEvent<WiM.Event.EventArgs>(onSelectedRegionChanged);
         }
 
@@ -135,7 +132,6 @@ module StreamStats.Services {
             this.regionMapLayerList = [];
             this.selectedRegion = null;
             this.regionMapLayerListLoaded = false;
-            this.allowStreamgageQuery = false;
         }
         public loadRegionListByExtent(xmin:number,xmax:number,ymin:number,ymax:number, sr:number=4326) {
         //    clear List

@@ -120,11 +120,11 @@ var StreamStats;
                     if (studyArea.doDelineateFlag)
                         _this.checkDelineatePoint(args.leafletEvent.latlng);
                     //query streamgages
-                    //console.log('map click listener: ', region.allowStreamgageQuery);
-                    if (region.allowStreamgageQuery)
+                    //console.log('map click listener: ', exploration.allowStreamgageQuery);
+                    if (exploration.allowStreamgageQuery)
                         _this.queryStreamgages(args.leafletEvent);
                     //state or region layer query
-                    if (!region.selectedRegion && !exploration.drawElevationProfile && !exploration.drawMeasurement && !region.allowStreamgageQuery)
+                    if (!region.selectedRegion && !exploration.drawElevationProfile && !exploration.drawMeasurement && !exploration.allowStreamgageQuery)
                         _this.queryNationalMapLayers(args.leafletEvent);
                 });
                 $scope.$watch(function () { return _this.bounds; }, function (newval, oldval) { return _this.mapBoundsChange(oldval, newval); });
@@ -292,6 +292,10 @@ var StreamStats;
                     });
                 });
             };
+            MapController.prototype.initiateStreamgageQuery = function () {
+                //change cursor here if needed
+                this.explorationService.allowStreamgageQuery = !this.explorationService.allowStreamgageQuery;
+            };
             MapController.prototype.queryStreamgages = function (evt) {
                 var _this = this;
                 //console.log('in query regional layers');
@@ -398,6 +402,8 @@ var StreamStats;
                 var _this = this;
                 if (!enable) {
                     this.drawControl.disable();
+                    this.drawControl = undefined;
+                    console.log('removing drawControl', this.drawControl);
                     return;
                 }
                 this.leafletData.getMap().then(function (map) {
@@ -406,8 +412,8 @@ var StreamStats;
                 });
             };
             MapController.prototype.displayElevationProfile = function () {
-                var el;
                 //get reference to elevation control
+                var el;
                 this.controls.custom.forEach(function (control) {
                     if (control._container && control._container.className.indexOf("elevation") > -1)
                         el = control;
@@ -422,8 +428,6 @@ var StreamStats;
                     },
                     onEachFeature: el.addData.bind(el)
                 };
-                //show the div
-                //angular.element(document.querySelector('.elevation')).css('display', 'block');
                 this.leafletData.getMap().then(function (map) {
                     var container = el.onAdd(map);
                     document.getElementById('elevation-div').innerHTML = '';
@@ -433,8 +437,8 @@ var StreamStats;
                 this.cursorStyle = 'pointer';
             };
             MapController.prototype.showLocation = function () {
+                //get reference to location control
                 var lc;
-                //get reference to elevation control
                 this.controls.custom.forEach(function (control) {
                     if (control._container.className.indexOf("leaflet-control-locate") > -1)
                         lc = control;
@@ -453,7 +457,7 @@ var StreamStats;
                 document.getElementById('measurement-div').innerHTML = '';
                 if (this.drawControl)
                     this.drawController({}, false);
-                this.regionServices.allowStreamgageQuery = false;
+                this.explorationService.allowStreamgageQuery = false;
                 this.explorationService.drawMeasurement = false;
                 this.explorationService.measurementData = '';
                 this.explorationService.drawElevationProfile = false;
