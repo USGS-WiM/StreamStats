@@ -230,6 +230,11 @@ var StreamStats;
                 //send watershed to map service query that returns list of regression regions that overlap the watershed
                 this.studyAreaService.queryRegressionRegions();
             };
+            SidebarController.prototype.queryStatisticsGroupTypes = function () {
+                this.nssService.loadStatisticsGroupTypes(this.regionService.selectedRegion.RegionID, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) {
+                    return elem.code;
+                }).join(","));
+            };
             SidebarController.prototype.onSelectedStatisticsGroupChanged = function () {
                 //console.log('StatisticsGroup param list changed.  loaded ', this.nssService.selectedStatisticsGroupList);
                 var _this = this;

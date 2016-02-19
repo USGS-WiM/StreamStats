@@ -435,7 +435,10 @@ module StreamStats.Services {
                         this.selectedStudyArea.Features.push(response.data["featurecollection"][0]);
                         this.regulationCheckResults = response.data;
                         //this.loadRegulatedParameterResults(this.regulationCheckResults.parameters);
-                        this.Disclaimers['isRegulated'] = true;                      
+                        this.Disclaimers['isRegulated'] = true;     
+                         
+                        //only raise event if true
+                        this.eventManager.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);                    
                     }
                     else {
                         //alert("No regulation found");
@@ -452,7 +455,7 @@ module StreamStats.Services {
                 }).finally(() => {
                     //this.toaster.clear();
                     this.regulationCheckComplete = true;
-                    this.eventManager.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);    
+                     
 
             });
         }
