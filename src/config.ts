@@ -52,7 +52,7 @@ module StreamStats {
         'leaflet-directive',
         'StreamStats.Services',
         'StreamStats.Controllers',
-        'WiM.Services','WiM.Event', 'wim_angular'
+        'WiM.Services', 'WiM.Event', 'wim_angular', 'rzModule'
         ])
         .config(config);
 }//end module 

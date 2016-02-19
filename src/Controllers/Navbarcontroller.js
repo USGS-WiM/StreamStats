@@ -28,11 +28,11 @@ var StreamStats;
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             NavbarController.prototype.openReport = function () {
-                this.reportService.openReport();
+                this.reportService.openReport(StreamStats.Services.SSModalType.e_report);
             };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
-            NavbarController.$inject = ['$scope', 'StreamStats.Services.ReportService', 'StreamStats.Services.StudyAreaService'];
+            NavbarController.$inject = ['$scope', 'StreamStats.Services.ModalService', 'StreamStats.Services.StudyAreaService'];
             return NavbarController;
         })(); //end class
         angular.module('StreamStats.Controllers')

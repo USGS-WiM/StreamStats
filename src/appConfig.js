@@ -35,7 +35,9 @@ configuration.queryparams =
     'regionService': '/arcgis/rest/services/ss_studyAreas_prod/MapServer/identify',
     'NLCDQueryService': '/LandCover/USGS_EROS_LandCover_NLCD/MapServer/4',
     'regulationService': '/arcgis/rest/services/Regulation/{0}RegulationSites/MapServer/exts/RegulationRESTSOE/Regulation',
-    'RegressionRegionQueryService': '/arcgis/rest/services/NSS/regions/MapServer/exts/PercentOverlayRESTSOE/PercentOverlay'
+    'RegressionRegionQueryService': '/arcgis/rest/services/NSS/regions/MapServer/exts/PercentOverlayRESTSOE/PercentOverlay',
+    'Wateruse': '/streamstatsservices/wateruse.json?rcode={0}&workspaceID={1}&startyear={2}&endyear={3}'
+
 }
 
 configuration.basemaps =
@@ -299,7 +301,14 @@ configuration.regions = [
     { "RegionID": "NC", "Name": "North Carolina", "Bounds": [[33.844467, -84.320968], [36.589008, -75.459503]], "Layers": {}, "Applications": [], "ScenariosAvailable": false },
     { "RegionID": "ND", "Name": "North Dakota", "Bounds": [[45.93505, -104.049591], [49.001316, -96.555152]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "MP", "Name": "Northern Mariana Islands", "Bounds": [[14.105276, 144.89859], [20.556385, 145.870788]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
-    { "RegionID": "OH", "Name": "Ohio", "Bounds": [[38.4025, -84.819931], [42.324424, -80.51387]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
+     {
+         "RegionID": "OH",
+         "Name": "Ohio",
+         "Bounds": [[38.4025, -84.819931], [42.324424, -80.51387]],
+         "Layers": {},
+         "Applications": ["Wateruse"],
+         "ScenariosAvailable": true
+     },
     { "RegionID": "OK", "Name": "Oklahoma", "Bounds": [[33.615253, -103.000869], [37.00093, -94.430702]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "OR", "Name": "Oregon", "Bounds": [[41.992462, -124.566024], [46.285762, -116.461639]], "Layers": {}, "Applications": [], "ScenariosAvailable": false },
     { "RegionID": "PA", "Name": "Pennsylvania", "Bounds": [[39.719429, -80.519561], [42.510452, -74.690032]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
