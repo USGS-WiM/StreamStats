@@ -147,6 +147,11 @@ var StreamStats;
                         _this.addRegionOverlayLayers(_this.regionServices.selectedRegion.RegionID);
                     }
                 });
+                $scope.$watch(function () { return _this.regionServices.resetView; }, function (newval, oldval) {
+                    //console.log('reset view listener ', newval, oldval);
+                    if (newval)
+                        _this.resetMap();
+                });
                 $scope.$on('$locationChangeStart', function () { return _this.updateRegion(); });
                 $scope.$watch(function () { return studyArea.doDelineateFlag; }, function (newval, oldval) { return newval ? _this.cursorStyle = 'crosshair' : _this.cursorStyle = 'pointer'; });
                 // check if region was explicitly set.

@@ -250,6 +250,11 @@ module StreamStats.Controllers {
                 }
             });
 
+            $scope.$watch(() => this.regionServices.resetView, (newval, oldval) => {
+                //console.log('reset view listener ', newval, oldval);
+                if (newval) this.resetMap();
+            });
+
             $scope.$on('$locationChangeStart',() => this.updateRegion());
 
             $scope.$watch(() => studyArea.doDelineateFlag,(newval, oldval) => newval ? this.cursorStyle = 'crosshair' : this.cursorStyle = 'pointer');

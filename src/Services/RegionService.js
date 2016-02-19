@@ -79,6 +79,7 @@ var StreamStats;
                 this.regionMapLayerList = [];
                 this.selectedRegion = null;
                 this.regionMapLayerListLoaded = false;
+                this.resetView = false;
             };
             RegionService.prototype.loadRegionListByExtent = function (xmin, xmax, ymin, ymax, sr) {
                 var _this = this;

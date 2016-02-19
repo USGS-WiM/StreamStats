@@ -5,7 +5,10 @@
                 <a ng-class="vm.selectedProcedure == 1  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(1)">Select a State / Region<h5 ng-show="vm.regionService.selectedRegion.Name"><strong>{{vm.regionService.selectedRegion.Name}}</strong></h5><i ng-class="vm.selectedProcedure == 1 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
 
                 <div class="list-group-body" ng-hide="vm.selectedProcedure != 1">
-                    <div class="wim-alert-info">Click a state or region on the map or use the search box to zoom to an area of interest</div>
+                   <div class="group-wrapper" ng-show="vm.regionService.selectedRegion">
+                        <button class="btn-wim-sm btn-wim-success btn-wim-group-1" ng-click="vm.regionService.resetView = !vm.regionService.resetView"><span><i class="fa fa-undo"></i>&nbsp;&nbsp;Start Over</span></button> 
+                    </div>  
+                    <div class="wim-alert-info">Use the map or the search tool identify an area of interest</div>
 
                     <div class="row">
                         <div class="col-md-9"><div id="sapi_searchTextBoxDiv">Loading Search Bar...</div></div>
@@ -27,7 +30,7 @@
                         </div>
                     </div>
 
-                    <div class="form-group" ng-show="vm.regionService.regionList.length > 0">
+                    <div class="form-group" ng-show="vm.regionService.regionList.length > 0 && !vm.regionService.selectedRegion">
                         <hr />
                         <div class="wim-alert-info">You have zoomed in sufficiently to select a state or regional study area.  Your selection will dictate the data used to perform basin delineation and flow statistics calculation.</div>
                         <label> Select a State or Regional Study Area</label>

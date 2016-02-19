@@ -40,6 +40,7 @@ module StreamStats.Services {
         nationalMapLayerList: any;
         streamStatsAvailable: boolean;
         regionMapLayerListLoaded: boolean;
+        resetView: boolean;
     }
     export interface IRegion {
         RegionID: string;
@@ -109,6 +110,7 @@ module StreamStats.Services {
         public nationalMapLayerList: any;
         public streamStatsAvailable: boolean;
         public regionMapLayerListLoaded: boolean;
+        public resetView: boolean;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -132,6 +134,7 @@ module StreamStats.Services {
             this.regionMapLayerList = [];
             this.selectedRegion = null;
             this.regionMapLayerListLoaded = false;
+            this.resetView = false;
         }
         public loadRegionListByExtent(xmin:number,xmax:number,ymin:number,ymax:number, sr:number=4326) {
         //    clear List
