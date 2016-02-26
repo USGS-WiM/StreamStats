@@ -209,11 +209,11 @@ module StreamStats.Controllers {
             });
 
             $scope.$on('leafletDirectiveMap.drag',(event, args) => {
-                this.cursorStyle = 'grabbing'
+                this.cursorStyle = 'grabbing';
             });
 
             $scope.$on('leafletDirectiveMap.dragend',(event, args) => {
-                this.cursorStyle = 'pointer'
+                this.cursorStyle = 'pointer';
             });
 
             $scope.$on('leafletDirectiveMap.click',(event, args) => {
@@ -221,11 +221,11 @@ module StreamStats.Controllers {
                 if (studyArea.doDelineateFlag) this.checkDelineatePoint(args.leafletEvent.latlng);
 
                 //query streamgages
-                //console.log('map click listener: ', region.allowStreamgageQuery);
-                if (region.allowStreamgageQuery) this.queryStreamgages(args.leafletEvent);
+                //console.log('map click listener: ', exploration.allowStreamgageQuery);
+                if (exploration.allowStreamgageQuery) this.queryStreamgages(args.leafletEvent);
 
                 //state or region layer query
-                if (!region.selectedRegion && !exploration.drawElevationProfile && !exploration.drawMeasurement && !region.allowStreamgageQuery) this.queryNationalMapLayers(args.leafletEvent)
+                if (!region.selectedRegion && !exploration.drawElevationProfile && !exploration.drawMeasurement && !exploration.allowStreamgageQuery) this.queryNationalMapLayers(args.leafletEvent)
             });
 
             $scope.$watch(() => this.bounds,(newval, oldval) => this.mapBoundsChange(oldval, newval));
@@ -248,6 +248,11 @@ module StreamStats.Controllers {
                     //console.log('in regionMapLayerListLoaded watch: ', this.regionServices.selectedRegion);
                     this.addRegionOverlayLayers(this.regionServices.selectedRegion.RegionID);
                 }
+            });
+
+            $scope.$watch(() => this.regionServices.resetView, (newval, oldval) => {
+                //console.log('reset view listener ', newval, oldval);
+                if (newval) this.resetMap();
             });
 
             $scope.$on('$locationChangeStart',() => this.updateRegion());
@@ -419,6 +424,13 @@ module StreamStats.Controllers {
             });
         }
 
+        private initiateStreamgageQuery() {
+
+            //change cursor here if needed
+
+            this.explorationService.allowStreamgageQuery = !this.explorationService.allowStreamgageQuery;  
+        }
+
         private queryStreamgages(evt) {
 
             //console.log('in query regional layers');
@@ -553,8 +565,10 @@ module StreamStats.Controllers {
         private drawController(options: Object, enable: boolean) {
             //console.log('in drawcontroller: ', options, enable);
 
-            if (!enable) {
+            if (!enable) {               
                 this.drawControl.disable();
+                this.drawControl = undefined;
+                console.log('removing drawControl', this.drawControl);
                 return;
             }
             this.leafletData.getMap().then((map: any) => {
@@ -565,9 +579,8 @@ module StreamStats.Controllers {
 
         private displayElevationProfile() {
 
-            var el;
-
             //get reference to elevation control
+            var el;
             this.controls.custom.forEach((control) => {
                 if (control._container && control._container.className.indexOf("elevation") > -1) el = control;
             });
@@ -583,15 +596,11 @@ module StreamStats.Controllers {
                 onEachFeature: el.addData.bind(el)
             }
 
-            //show the div
-            //angular.element(document.querySelector('.elevation')).css('display', 'block');
-
             this.leafletData.getMap().then((map: any) => {
                 var container = el.onAdd(map);
                 document.getElementById('elevation-div').innerHTML = '';
                 document.getElementById('elevation-div').appendChild(container);
             });
-
 
             this.toaster.clear();
             this.cursorStyle = 'pointer'
@@ -599,9 +608,8 @@ module StreamStats.Controllers {
 
         private showLocation() {
 
+            //get reference to location control
             var lc;
-
-            //get reference to elevation control
             this.controls.custom.forEach((control) => {
                 if (control._container.className.indexOf("leaflet-control-locate") > -1) lc = control; 
             });
@@ -619,9 +627,8 @@ module StreamStats.Controllers {
         private resetExplorationTools() {
             document.getElementById('elevation-div').innerHTML = '';
             document.getElementById('measurement-div').innerHTML = '';
-
             if (this.drawControl) this.drawController({ }, false);
-            this.regionServices.allowStreamgageQuery = false;
+            this.explorationService.allowStreamgageQuery = false;
             this.explorationService.drawMeasurement = false;
             this.explorationService.measurementData = '';
             this.explorationService.drawElevationProfile = false;

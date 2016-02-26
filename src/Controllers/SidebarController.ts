@@ -325,6 +325,12 @@ module StreamStats.Controllers {
             this.studyAreaService.queryRegressionRegions();
         }
 
+        private queryStatisticsGroupTypes() {
+            this.nssService.loadStatisticsGroupTypes(this.regionService.selectedRegion.RegionID, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) {
+                return elem.code;
+            }).join(","));
+        }
+
         public onSelectedStatisticsGroupChanged() {
 
             //console.log('StatisticsGroup param list changed.  loaded ', this.nssService.selectedStatisticsGroupList);
