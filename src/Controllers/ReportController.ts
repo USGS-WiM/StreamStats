@@ -219,26 +219,45 @@ module StreamStats.Controllers {
                 var finalVal = '';
      
                 statGroup.RegressionRegions.forEach((regressionRegion) => {
-                    finalVal += statGroup.Name + ' Parameters ' + regressionRegion.PercentWeight.toFixed(0) + ' Percent  ' + regressionRegion.Name.split("_").join(" ") + '\n';
+                    console.log('regression regions loop: ', regressionRegion)
+
+                    //bail if in Area-Averaged section
+                    if (regressionRegion.Name == 'Area-Averaged') return;
+
+                    finalVal += statGroup.Name + ' Parameters, ' + regressionRegion.PercentWeight.toFixed(0) + ' Percent  ' + regressionRegion.Name.split("_").join(" ") + '\n';
                     finalVal += 'Name,Value,Min Limit, Max Limit\n';
 
-                    regressionRegion.Parameters.forEach((item) => {
-                        finalVal += item.Name + ',' + item.Value + ',' + item.Limits.Min.toFixed(2) + ',' + item.Limits.Max.toFixed(2) + '\n';
-                    });
+                    if (regressionRegion.Parameters) {
+                        regressionRegion.Parameters.forEach((item) => {
+                            finalVal += item.Name + ',' + item.Value + ',' + item.Limits.Min.toFixed(2) + ',' + item.Limits.Max.toFixed(2) + '\n';
+                        });
+                    }
                 });
                 return finalVal + '\n';
             };
 
             var processScenarioFlowTable = (statGroup) => {
-                //console.log('here', statGroup);
+                console.log('ScenarioFlowTable statGroup: ', statGroup);
                 var finalVal = '';
 
                 statGroup.RegressionRegions.forEach((regressionRegion) => {
-                    finalVal = statGroup.Name + ' Flow Report\n';
+                    console.log('ScenarioFlowTable regressionRegion: ', regressionRegion);
+                    
+                    var regionPercent;
+                    if (regressionRegion.PercentWeight) regionPercent = regressionRegion.PercentWeight.toFixed(0) + ' Percent ';
+                    else regionPercent = '';
+                    finalVal += statGroup.Name + ' Flow Report, ' + regionPercent + regressionRegion.Name.split("_").join(" ") + '\n';
                     finalVal += 'Name,Value,Unit,Prediction Error\n'
 
                     regressionRegion.Results.forEach((item) => {
-                        finalVal += item.Name + ',' + item.Value.toFixed(0) + ',' + item.Unit.Abbr + ',' + '' + '\n';
+                        console.log('ScenarioFlowTable regressionRegion item: ', item);
+                        var unit;
+                        if (item.Unit) unit = item.Unit.Abbr;
+                        else unit = '';
+                        var errors;
+                        if (item.Errors) errors = item.Errors[0].Value;
+                        else errors = '--';
+                        finalVal += item.Name + ',' + item.Value.toFixed(0) + ',' + unit + ',' + errors + '\n';
                     });
                 });
                 return finalVal + '\n';
