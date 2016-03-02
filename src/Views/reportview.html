@@ -124,7 +124,7 @@
 
 
                     <div ng-repeat="RegressionRegion in StatisticsGroup.RegressionRegions" ng-hide="RegressionRegion.Name == 'Area-Averaged'">
-                        <h4>{{StatisticsGroup.Name}} Parameters<small>&nbsp;&nbsp;{{RegressionRegion.PercentWeight.toFixed(0)}} Percent {{RegressionRegion.Name.split("_").join(" ")}}</small></h4>
+                        <h4>{{StatisticsGroup.Name}} Parameters<small ng-bind="(RegressionRegion.PercentWeight) ? ' [' + RegressionRegion.PercentWeight.toFixed(0) + ' Percent ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h4>
                         <table class="table table-condensed">
                             <thead class="param-table">
                             <tr>
@@ -146,7 +146,7 @@
 
                         <!--Scenario Disclaimers-->
                         <div ng-show="StatisticsGroup.Disclaimers.Warnings || StatisticsGroup.Disclaimers.Errors">
-                            <h4>{{StatisticsGroup.Name}} Disclaimers<small>&nbsp;&nbsp;{{RegressionRegion.PercentWeight.toFixed(0)}} Percent {{RegressionRegion.Name.split("_").join(" ")}}</small></h4>
+                            <h4>{{StatisticsGroup.Name}} Disclaimers<small ng-bind="(RegressionRegion.PercentWeight) ? ' [' + RegressionRegion.PercentWeight.toFixed(0) + ' Percent ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h4>
                             <div class="wim-alert-danger"  ng-repeat="headerMsg in StatisticsGroup.Disclaimers">{{headerMsg}}</div> 
                         </div>
                     </div>
@@ -154,25 +154,28 @@
 
 
                     <!--Flow Report-->
-                    <h4>{{StatisticsGroup.Name}} Flow Report</h4>
-                    <table class="table table-condensed">
-                        <thead class="param-table">
-                        <tr>
-                            <th>Statistic</th>
-                            <th>Value</th> 
-                            <th>Unit</th>
-                            <th>Prediction Error</th>
-                        </tr>
-                        </thead>
-                        <tbody ng-repeat="RegressionRegion in StatisticsGroup.RegressionRegions">
-                            <tr ng-repeat="parameter in RegressionRegion.Results">
-                                <td>{{parameter.Name}} <small>&nbsp;&nbsp;[{{RegressionRegion.PercentWeight.toFixed(0)}} Percent {{RegressionRegion.Name.split("_").join(" ")}}]</small></td>
-                                <td ng-bind="parameter.Value.toFixed(0)"></td>
-                                <td ng-bind="parameter.Unit.Abbr"></td>
-                                <td ng-bind="(parameter.Errors[0].Value) ? parameter.Errors[0].Value : '--'"></td>   <!--  SHOW SOME DASHES IF ERROR IS BLANK -->
+                    <div ng-repeat="RegressionRegion in StatisticsGroup.RegressionRegions">
+
+                        <h4>{{StatisticsGroup.Name}} Flow Report<small ng-bind="(RegressionRegion.PercentWeight) ? ' [' + RegressionRegion.PercentWeight.toFixed(0) + ' Percent ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h4>
+                        <table class="table table-condensed">
+                            <thead class="param-table">
+                            <tr>
+                                <th>Statistic</th>
+                                <th>Value</th> 
+                                <th>Unit</th>
+                                <th>Prediction Error</th>
                             </tr>
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody >
+                                <tr ng-repeat="parameter in RegressionRegion.Results">
+                                    <td>{{parameter.Name}}</td>
+                                    <td ng-bind="parameter.Value.toFixed(0)"></td>
+                                    <td ng-bind="parameter.Unit.Abbr"></td>
+                                    <td ng-bind="(parameter.Errors[0].Value) ? parameter.Errors[0].Value : '--'"></td>   <!--  SHOW SOME DASHES IF ERROR IS BLANK -->
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
  
 
                     <h4>{{StatisticsGroup.Name}} Citations</h4>
