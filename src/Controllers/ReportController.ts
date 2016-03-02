@@ -219,7 +219,7 @@ module StreamStats.Controllers {
                 var finalVal = '';
      
                 statGroup.RegressionRegions.forEach((regressionRegion) => {
-                    console.log('regression regions loop: ', regressionRegion)
+                    //console.log('regression regions loop: ', regressionRegion)
 
                     //bail if in Area-Averaged section
                     if (regressionRegion.Name == 'Area-Averaged') return;
@@ -237,11 +237,11 @@ module StreamStats.Controllers {
             };
 
             var processScenarioFlowTable = (statGroup) => {
-                console.log('ScenarioFlowTable statGroup: ', statGroup);
+                //console.log('ScenarioFlowTable statGroup: ', statGroup);
                 var finalVal = '';
 
                 statGroup.RegressionRegions.forEach((regressionRegion) => {
-                    console.log('ScenarioFlowTable regressionRegion: ', regressionRegion);
+                    //console.log('ScenarioFlowTable regressionRegion: ', regressionRegion);
                     
                     var regionPercent;
                     if (regressionRegion.PercentWeight) regionPercent = regressionRegion.PercentWeight.toFixed(0) + ' Percent ';
@@ -250,7 +250,7 @@ module StreamStats.Controllers {
                     finalVal += 'Name,Value,Unit,Prediction Error\n'
 
                     regressionRegion.Results.forEach((item) => {
-                        console.log('ScenarioFlowTable regressionRegion item: ', item);
+                        //console.log('ScenarioFlowTable regressionRegion item: ', item);
                         var unit;
                         if (item.Unit) unit = item.Unit.Abbr;
                         else unit = '';

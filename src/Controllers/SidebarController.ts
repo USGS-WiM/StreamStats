@@ -143,6 +143,12 @@ module StreamStats.Controllers {
             this.regionService.loadParametersByRegion();
         }
 
+        public openStatePage(region) {
+            var regionParsed = region.replace(' ', '_').toLowerCase();
+            console.log('Open state page for: ', regionParsed);
+            window.open('http://water.usgs.gov/osw/streamstats/' + regionParsed + '.html', '_blank');
+        }
+
         public resetWorkSpace() {
             //this.regionService.clearRegion();
             this.studyAreaService.clearStudyArea();

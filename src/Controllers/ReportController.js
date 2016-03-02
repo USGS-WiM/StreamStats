@@ -155,7 +155,7 @@ var StreamStats;
                 var processScenarioParamTable = function (statGroup) {
                     var finalVal = '';
                     statGroup.RegressionRegions.forEach(function (regressionRegion) {
-                        console.log('regression regions loop: ', regressionRegion);
+                        //console.log('regression regions loop: ', regressionRegion)
                         //bail if in Area-Averaged section
                         if (regressionRegion.Name == 'Area-Averaged')
                             return;
@@ -170,10 +170,10 @@ var StreamStats;
                     return finalVal + '\n';
                 };
                 var processScenarioFlowTable = function (statGroup) {
-                    console.log('ScenarioFlowTable statGroup: ', statGroup);
+                    //console.log('ScenarioFlowTable statGroup: ', statGroup);
                     var finalVal = '';
                     statGroup.RegressionRegions.forEach(function (regressionRegion) {
-                        console.log('ScenarioFlowTable regressionRegion: ', regressionRegion);
+                        //console.log('ScenarioFlowTable regressionRegion: ', regressionRegion);
                         var regionPercent;
                         if (regressionRegion.PercentWeight)
                             regionPercent = regressionRegion.PercentWeight.toFixed(0) + ' Percent ';
@@ -182,7 +182,7 @@ var StreamStats;
                         finalVal += statGroup.Name + ' Flow Report, ' + regionPercent + regressionRegion.Name.split("_").join(" ") + '\n';
                         finalVal += 'Name,Value,Unit,Prediction Error\n';
                         regressionRegion.Results.forEach(function (item) {
-                            console.log('ScenarioFlowTable regressionRegion item: ', item);
+                            //console.log('ScenarioFlowTable regressionRegion item: ', item);
                             var unit;
                             if (item.Unit)
                                 unit = item.Unit.Abbr;
