@@ -20,6 +20,8 @@
 //02.17.2016 jkn - Created
 
 //Import
+declare var d3: any;
+
 module StreamStats.Controllers {
     'use string';
     interface IWateruseControllerScope extends ng.IScope {
@@ -41,14 +43,31 @@ module StreamStats.Controllers {
         private StudyArea: StreamStats.Models.IStudyArea;
         private modalInstance: ng.ui.bootstrap.IModalServiceInstance;
         public showResults: boolean;
-        public StartYear: number;      
-        public EndYear: number;              
+        private _startYear: number; 
+        public get StartYear(): number {
+            return this._startYear;
+        } 
+        public set StartYear(val:number) {
+            if (val <= this.EndYear && val >= this.YearRange.floor)
+                this._startYear = val;
+        }
+           
+        private _endYear: number;  
+        public get EndYear(): number {
+            return this._endYear;
+        }
+        public set EndYear(val: number) {
+            if (val >= this.StartYear && val <= this.YearRange.ceil)
+                this._endYear = val;
+        }          
         private _yearRange: any;
         public get YearRange():any {
             return this._yearRange;
         }
         public CanContiue: boolean;
-        public result: any;
+        public reportOptions: any;
+        public result: Models.IWaterUse;
+        public SelectedTab: Number;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -72,27 +91,61 @@ module StreamStats.Controllers {
             this.Execute(request).then(
                 (response: any) => {                   
                     //sm when complete
-                    this.result = response.data;
+                    this.result = Models.WaterUse.FromJson(response.data);
                     this.showResults = true;
                 }, (error) => {
                     //sm when error
 
                     
                 }).finally(() => {  
-                    this.CanContiue = true;        
+                   this.CanContiue = true;        
                 });
         }
         public Close(): void {
             this.modalInstance.dismiss('cancel')
         }
+     
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {
-            this.StartYear = new Date().getFullYear();
-            this.EndYear = new Date().getFullYear();
-            this._yearRange = { floor: 1980, draggableRange: true, noSwitching: true, showTicks: true, ceil: 2016 };
+            this._startYear = 2005;
+            this._endYear = 2012;
+            this._yearRange = { floor: 2005, draggableRange: true, noSwitching: true, showTicks: false, ceil: 2012 };
             this.CanContiue = true;
             this.showResults = false;
+            this.SelectedTab = 1;
+
+            this.reportOptions = {
+                chart: {
+                    type: 'multiBarHorizontalChart',
+                    height: 450,
+                    visible: true,
+                    stacked: true,
+                    showControls: false,
+                    margin: {
+                        top: 20,
+                        right: 20,
+                        bottom: 60,
+                        left: 55
+                    },
+                    x: function (d) { return d.name.substring(6, 9); },
+                    y: function (d) { return d.value; },
+                    showValues: true,
+                    valueFormat: function (d) {
+                        return d3.format(',.4f')(d);
+                    },
+                    transitionDuration: 500,
+                    xAxis: {
+                        showMaxMin: false
+                    },
+                    yAxis: {
+                        axisLabel: 'Values',
+                        tickFormat: function (d) {
+                            return d3.format(',.3f')(d);
+                        }
+                    }
+                }
+            };
         }
         
     }//end wimLayerControlController class

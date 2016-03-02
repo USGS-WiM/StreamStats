@@ -41,7 +41,6 @@
                 <a ng-class="vm.selectedProcedure == 2  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(2)">Identify a Study Area<h5 ng-show="vm.studyAreaService.selectedStudyArea.Features"><strong>Basin Delineated</strong></h5><i ng-class="vm.selectedProcedure == 2 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
 
                 <div class="list-group-body" ng-show="vm.selectedProcedure == 2">
-
                     <div ng-hide="vm.studyAreaService.selectedStudyArea.Features || !vm.regionService.streamStatsAvailable">
                         <div class="wim-alert-info" ng-hide="vm.studyAreaService.showDelineateButton">Zoom in to level 15 or greater to enable the delineation tool</div>
                         <div class="wim-alert-info" ng-show="vm.studyAreaService.showDelineateButton">Click the 'Delineate' button, then use your mouse or finger to click or tap a blue stream cell on the map</div>

@@ -7,19 +7,6 @@ var __extends = (this && this.__extends) || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-//-------1---------2---------3---------4---------5---------6---------7---------8
-//       01234567890123456789012345678901234567890123456789012345678901234567890
-//-------+---------+---------+---------+---------+---------+---------+---------+
-// copyright:   2016 WiM - USGS
-//    authors:  Jeremy K. Newson USGS Wisconsin Internet Mapping
-//             
-// 
-//   purpose:  
-//          
-//discussion:
-//Comments
-//02.17.2016 jkn - Created
-//Import
 var StreamStats;
 (function (StreamStats) {
     var Controllers;
@@ -34,6 +21,28 @@ var StreamStats;
                 this.StudyArea = studyAreaService.selectedStudyArea;
                 this.init();
             }
+            Object.defineProperty(WateruseController.prototype, "StartYear", {
+                get: function () {
+                    return this._startYear;
+                },
+                set: function (val) {
+                    if (val <= this.EndYear && val >= this.YearRange.floor)
+                        this._startYear = val;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(WateruseController.prototype, "EndYear", {
+                get: function () {
+                    return this._endYear;
+                },
+                set: function (val) {
+                    if (val >= this.StartYear && val <= this.YearRange.ceil)
+                        this._endYear = val;
+                },
+                enumerable: true,
+                configurable: true
+            });
             Object.defineProperty(WateruseController.prototype, "YearRange", {
                 get: function () {
                     return this._yearRange;
@@ -51,7 +60,7 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url);
                 this.Execute(request).then(function (response) {
                     //sm when complete
-                    _this.result = response.data;
+                    _this.result = StreamStats.Models.WaterUse.FromJson(response.data);
                     _this.showResults = true;
                 }, function (error) {
                     //sm when error
@@ -65,11 +74,43 @@ var StreamStats;
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             WateruseController.prototype.init = function () {
-                this.StartYear = new Date().getFullYear();
-                this.EndYear = new Date().getFullYear();
-                this._yearRange = { floor: 1980, draggableRange: true, noSwitching: true, showTicks: true, ceil: 2016 };
+                this._startYear = 2005;
+                this._endYear = 2012;
+                this._yearRange = { floor: 2005, draggableRange: true, noSwitching: true, showTicks: false, ceil: 2012 };
                 this.CanContiue = true;
                 this.showResults = false;
+                this.SelectedTab = 1;
+                this.reportOptions = {
+                    chart: {
+                        type: 'multiBarHorizontalChart',
+                        height: 450,
+                        visible: true,
+                        stacked: true,
+                        showControls: false,
+                        margin: {
+                            top: 20,
+                            right: 20,
+                            bottom: 60,
+                            left: 55
+                        },
+                        x: function (d) { return d.name.substring(6, 9); },
+                        y: function (d) { return d.value; },
+                        showValues: true,
+                        valueFormat: function (d) {
+                            return d3.format(',.4f')(d);
+                        },
+                        transitionDuration: 500,
+                        xAxis: {
+                            showMaxMin: false
+                        },
+                        yAxis: {
+                            axisLabel: 'Values',
+                            tickFormat: function (d) {
+                                return d3.format(',.3f')(d);
+                            }
+                        }
+                    }
+                };
             };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-

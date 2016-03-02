@@ -548,6 +548,9 @@ div.leaflet-top > .elevation {
     ===========================
     ===========================
 */
+.nav-tabs > li {
+    float: right;
+}
 .modal{
     overflow-y: auto;
 }
@@ -733,7 +736,6 @@ div.leaflet-top > .elevation {
         color: #fff;
         border: none;
     }
-
 }
 
 @media only screen and (max-width: 520px) {
