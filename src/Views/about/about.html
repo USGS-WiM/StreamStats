@@ -112,9 +112,14 @@
             <div class="modal-body">
 
                 <ul id="aboutTabs" class="nav nav-tabs">
-                    <li ng-class="{'active':vm.selectedHelpTabName==='submitTicket'}"><a ng-click="vm.selectHelpTab('submitTicket')"><i class="fa fa-exclamation-circle"></i>&nbsp;Submit a Support Request</a></li>
                     <li ng-class="{'active':vm.selectedHelpTabName==='faq'}"><a ng-click="vm.selectHelpTab('faq')"><i class="fa fa-question-circle"></i>&nbsp;Frequently Asked Questions (FAQ)</a></li>
+                    <li ng-class="{'active':vm.selectedHelpTabName==='submitTicket'}"><a ng-click="vm.selectHelpTab('submitTicket')"><i class="fa fa-exclamation-circle"></i>&nbsp;Submit a Support Request</a></li>
                 </ul>
+                <div style="padding-top: 10px;">
+                    <div id="about" ng-if="vm.selectedHelpTabName==='faq'">
+                        <!--<a href="https://streamstats.freshdesk.com/support/solutions" target="_blank">Link to FAQ</a>-->
+                    </div>
+                </div>
 
                 <div style="padding-top: 10px;">
                     <div id="about" ng-if="vm.selectedHelpTabName==='submitTicket'">
@@ -151,11 +156,6 @@
                     </form>-->
                 </div>
               </div>
-              <div style="padding-top: 10px;">
-                    <div id="about" ng-if="vm.selectedHelpTabName==='faq'">
-                        <!--<a href="https://streamstats.freshdesk.com/support/solutions" target="_blank">Link to FAQ</a>-->
-                    </div>
-                </div>
             </div>
             <div class="modal-footer">
                 <button ng-click="vm.toggleHelpSelected()" class="btn-wim-default"><i class="fa fa-close"></i><span >&nbsp;&nbsp;Close</span></button>
