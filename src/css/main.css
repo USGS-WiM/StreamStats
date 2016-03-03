@@ -49,6 +49,11 @@ body {
     ===========================
     ===========================
 */
+
+.legendSwatch {
+    opacity: 0.6;
+}
+
 /* disable some default controls*/
 .leaflet-control-layers.leaflet-control {
     display: none;
@@ -451,7 +456,6 @@ div.leaflet-top > .elevation {
     height:35px;
 
 }
-
 
 .list-group-body {
     background-color:white;

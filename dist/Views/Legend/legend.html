@@ -44,7 +44,7 @@
                         <div ng-repeat="lyr in layer.layerArray ">
                             <label>{{lyr.layerName}}</label>
                             <div ng-repeat="leg in lyr.legend ">
-                                <img alt="Embedded Image"
+                                <img class="legendSwatch" alt="Embedded Image"
                                      src="data:{{leg.contentType}};base64,{{leg.imageData}}" />
                                 <i>{{leg.label}}</i>
                             </div>
