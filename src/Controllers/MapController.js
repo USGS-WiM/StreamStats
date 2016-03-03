@@ -124,8 +124,7 @@ var StreamStats;
                     if (exploration.allowStreamgageQuery)
                         _this.queryStreamgages(args.leafletEvent);
                     //state or region layer query
-                    if (!region.selectedRegion && !exploration.drawElevationProfile && !exploration.drawMeasurement && !exploration.allowStreamgageQuery)
-                        _this.queryNationalMapLayers(args.leafletEvent);
+                    //if (!region.selectedRegion && !exploration.drawElevationProfile && !exploration.drawMeasurement && !exploration.allowStreamgageQuery) this.queryNationalMapLayers(args.leafletEvent)
                 });
                 $scope.$watch(function () { return _this.bounds; }, function (newval, oldval) { return _this.mapBoundsChange(oldval, newval); });
                 $scope.$watch(function () { return _this.explorationService.elevationProfileGeoJSON; }, function (newval, oldval) {
