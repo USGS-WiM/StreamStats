@@ -40,11 +40,11 @@
                     <i ng-class="!layer.isOpen ? 'fa fa-chevron-up pull-right': 'fa fa-chevron-down pull-right'" ng-click="layer.isOpen=(layer.isOpen) ? false : true;"></i>
                 </div>
                 <div ng-hide="layer.isOpen">
-                    <div ng-if="layer.type == 'agsDynamic'">
+                    <div class="legendGroup" ng-if="layer.type == 'agsDynamic'">
                         <div ng-repeat="lyr in layer.layerArray ">
                             <label>{{lyr.layerName}}</label>
                             <div ng-repeat="leg in lyr.legend ">
-                                <img alt="Embedded Image"
+                                <img class="legendSwatch" alt="Embedded Image"
                                      src="data:{{leg.contentType}};base64,{{leg.imageData}}" />
                                 <i>{{leg.label}}</i>
                             </div>
