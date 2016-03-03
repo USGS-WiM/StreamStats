@@ -99,7 +99,9 @@ var StreamStats;
                 //get available parameters
                 this.regionService.loadParametersByRegion();
             };
-            SidebarController.prototype.openStatePage = function (region) {
+            SidebarController.prototype.openStatePage = function (e, region) {
+                e.stopPropagation();
+                e.preventDefault();
                 var regionParsed = region.replace(' ', '_').toLowerCase();
                 console.log('Open state page for: ', regionParsed);
                 window.open('http://water.usgs.gov/osw/streamstats/' + regionParsed + '.html', '_blank');

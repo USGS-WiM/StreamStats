@@ -2,7 +2,7 @@
     <div class="scrollable-content">
         <div class="list-group">
             <div class="sidebar-item">
-                <a ng-class="vm.selectedProcedure == 1  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(1)">Select a State / Region<div></div><h5 ng-show="vm.regionService.selectedRegion.Name"><strong>{{vm.regionService.selectedRegion.Name}}</strong><i ng-click="vm.openStatePage(vm.regionService.selectedRegion.Name)" class="fa fa-question-circle"></i></h5><i ng-class="vm.selectedProcedure == 1 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
+                <a ng-class="vm.selectedProcedure == 1  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(1)">Select a State / Region<div></div><h5 ng-show="vm.regionService.selectedRegion.Name"><strong>{{vm.regionService.selectedRegion.Name}}</strong><i ng-click="vm.openStatePage($event, vm.regionService.selectedRegion.Name)" class="fa fa-info-circle"></i></h5><i ng-class="vm.selectedProcedure == 1 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
 
                 <div class="list-group-body" ng-hide="vm.selectedProcedure != 1">
                    <div class="group-wrapper" ng-show="vm.regionService.selectedRegion">
@@ -16,7 +16,7 @@
                             <div class="row">
                                 <div class="col-md-9"><button ng-class="region.Name === vm.regionService.selectedRegion.Name ? 'btn-wim-info btn-group-justified':'btn-wim-sm btn-wim-default btn-group-justified'" ng-click="vm.setRegion(region)"><span>{{region.Name}} </span></button></div>
                                 <div class="col-md-2">
-                                    <button ng-click="vm.openStatePage(region.Name)" class="btn-wim-sm btn-wim-info"><i class="fa fa-question-circle"></i></button>
+                                    <button ng-click="vm.openStatePage($event, region.Name)" class="btn-wim-sm btn-wim-info"><i class="fa fa-info-circle"></i></button>
                                 </div>
                             </div>
                         </div>
