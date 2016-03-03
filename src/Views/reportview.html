@@ -103,8 +103,8 @@
                                 <td ng-bind="parameter.name"></td>
                                 <td ng-bind="parameter.description"></td>
                                 <td ng-bind="parameter.value"></td>
-                                <td ng-show="vm.studyAreaService.Disclaimers.isRegulated" ng-bind="parameter.unRegulatedValue.toFixed(2)"></td>
-                                <td ng-show="vm.studyAreaService.Disclaimers.isRegulated" ng-bind="parameter.regulatedValue.toFixed(2)"></td>
+                                <td ng-show="vm.studyAreaService.Disclaimers.isRegulated" ng-bind="parameter.unRegulatedValue.toUSGSvalue()"></td>
+                                <td ng-show="vm.studyAreaService.Disclaimers.isRegulated" ng-bind="parameter.regulatedValue.toUSGSvalue()"></td>
                                 <td ng-bind="parameter.unit"></td>
                             </tr>
                         </tbody>
@@ -125,7 +125,7 @@
 
 
                     <div ng-repeat="RegressionRegion in StatisticsGroup.RegressionRegions" ng-hide="RegressionRegion.Name == 'Area-Averaged'">
-                        <h4>{{StatisticsGroup.Name}} Parameters<small ng-bind="(RegressionRegion.PercentWeight) ? ' [' + RegressionRegion.PercentWeight.toFixed(0) + ' Percent ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h4>
+                        <h4>{{StatisticsGroup.Name}} Parameters<small ng-bind="(RegressionRegion.PercentWeight) ? ' [' + RegressionRegion.PercentWeight.toFixed(2) + ' Percent ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h4>
                         <table class="table table-condensed">
                             <thead class="param-table">
                             <tr>
@@ -138,16 +138,16 @@
                             <tbody>
                                 <tr ng-repeat="parameter in RegressionRegion.Parameters">
                                     <td ng-bind="parameter.Name"></td>
-                                    <td ng-bind="parameter.Value" ng-class="(parameter.Value < parameter.Limits.Min) || (parameter.Value > parameter.Limits.Max) ? 'danger' : ''"></td>
-                                    <td ng-bind="parameter.Limits.Min.toFixed(2)"></td>
-                                    <td ng-bind="parameter.Limits.Max.toFixed(2)"></td>
+                                    <td ng-bind="parameter.Value.toUSGSvalue()" ng-class="(parameter.Value < parameter.Limits.Min) || (parameter.Value > parameter.Limits.Max) ? 'danger' : ''"></td>
+                                    <td ng-bind="parameter.Limits.Min.toUSGSvalue()"></td>
+                                    <td ng-bind="parameter.Limits.toUSGSvalue()"></td>
                                 </tr>
                             </tbody>
                         </table>
 
                         <!--Scenario Disclaimers-->
                         <div ng-show="StatisticsGroup.Disclaimers.Warnings || StatisticsGroup.Disclaimers.Errors">
-                            <h4>{{StatisticsGroup.Name}} Disclaimers<small ng-bind="(RegressionRegion.PercentWeight) ? ' [' + RegressionRegion.PercentWeight.toFixed(0) + ' Percent ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h4>
+                            <h4>{{StatisticsGroup.Name}} Disclaimers<small ng-bind="(RegressionRegion.PercentWeight) ? ' [' + RegressionRegion.PercentWeight.toFixed(2) + ' Percent ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h4>
                             <div class="wim-alert-danger"  ng-repeat="headerMsg in StatisticsGroup.Disclaimers">{{headerMsg}}</div> 
                         </div>
                     </div>
@@ -155,7 +155,7 @@
                     <!--Flow Report-->
                     <div ng-repeat="RegressionRegion in StatisticsGroup.RegressionRegions">
 
-                        <h4>{{StatisticsGroup.Name}} Flow Report<small ng-bind="(RegressionRegion.PercentWeight) ? ' [' + RegressionRegion.PercentWeight.toFixed(0) + ' Percent ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h4>
+                        <h4>{{StatisticsGroup.Name}} Flow Report<small ng-bind="(RegressionRegion.PercentWeight) ? ' [' + RegressionRegion.PercentWeight.toFixed(2) + ' Percent ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h4>
                         <table class="table table-condensed">
                             <thead class="param-table">
                             <tr>
@@ -168,7 +168,7 @@
                             <tbody >
                                 <tr ng-repeat="parameter in RegressionRegion.Results">
                                     <td>{{parameter.Name}}</td>
-                                    <td ng-bind="parameter.Value.toFixed(0)"></td>
+                                    <td ng-bind="parameter.Value.toUSGSvalue()"></td>
                                     <td ng-bind="parameter.Unit.Abbr"></td>
                                     <td ng-bind="(parameter.Errors[0].Value) ? parameter.Errors[0].Value : '--'"></td>   <!--  SHOW SOME DASHES IF ERROR IS BLANK -->
                                 </tr>
