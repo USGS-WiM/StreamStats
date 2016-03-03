@@ -143,7 +143,8 @@ module StreamStats.Controllers {
             this.regionService.loadParametersByRegion();
         }
 
-        public openStatePage(region) {
+        public openStatePage(e, region) {
+            e.stopPropagation(); e.preventDefault();
             var regionParsed = region.replace(' ', '_').toLowerCase();
             console.log('Open state page for: ', regionParsed);
             window.open('http://water.usgs.gov/osw/streamstats/' + regionParsed + '.html', '_blank');
