@@ -430,6 +430,10 @@ div.leaflet-top > .elevation {
     ===========================
 */
 
+.sidebar {
+    min-height: 0 !important;
+}
+
 .sidebar-content {
     margin-top:70px;
 }
@@ -440,6 +444,12 @@ div.leaflet-top > .elevation {
 
 .sidebar{
   background-color: #ECEEF4;
+}
+
+#searchSubmit {
+    margin-left:-2px;
+    height:35px;
+
 }
 
 
