@@ -110,6 +110,11 @@ var StreamStats;
                 this.studyAreaService.showDelineateButton = true;
                 this.nssService.clearNSSdata();
             };
+            SidebarController.prototype.startSearch = function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                $("#sapi-searchTextBox").trigger($.Event("keyup", { "keyCode": 13 }));
+            };
             SidebarController.prototype.startDelineate = function () {
                 var _this = this;
                 this.leafletData.getMap().then(function (map) {

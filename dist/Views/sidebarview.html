@@ -27,12 +27,21 @@
                         <div class="wim-alert">Use the map or the search tool identify an area of interest</div>
 
                         <div class="row">
-                            <div class="col-md-9"><div id="sapi_searchTextBoxDiv">Loading Search Bar...</div></div>
+                            <div class="col-md-9">
+
+                                <div class="input-group">
+                                  <div id="sapi_searchTextBoxDiv">Loading Search Bar...</div>
+                                  <span class="input-group-btn">
+                                    <button class="btn-wim-sm btn-wim-default" type="button" ng-click="vm.startSearch($event)">Go!</button>
+                                  </span>
+                                </div><!-- /input-group -->
+                                </div>
                             <div class="col-md-2"><button class="btn-wim-sm btn-wim-info" ng-click="vm.showSearchHelp = !vm.showSearchHelp"><i class="fa fa-question-circle"></i></button></div>
                         </div>
                         <div ng-init="vm.showSearchHelp = false" ng-show="vm.showSearchHelp">
                             <div class="wim-alert">
                                 <h6 class="wim-list-header">Supported search strings:</h6>
+                                <p>Use 'enter' key or "Go!" button to submit</p>
                                 <ul>
                                     <li>GNIS locations</li>
                                     <li>USGS Sites</li>

@@ -156,6 +156,11 @@ module StreamStats.Controllers {
             this.nssService.clearNSSdata();
         }
 
+        public startSearch(e) {
+            e.stopPropagation(); e.preventDefault();
+            $("#sapi-searchTextBox").trigger($.Event("keyup", { "keyCode": 13 }));
+        }
+
         public startDelineate() {
 
             this.leafletData.getMap().then((map: any) => {
