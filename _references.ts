@@ -1,5 +1,6 @@
 ﻿/// <reference path="typings/main.d.ts" />
 /// <reference path="bower_components/wim_angular/dist/src/Extensions/String.d.ts" />
+/// <reference path="bower_components/wim_angular/dist/src/Extensions/SurveyRound.d.ts" />
 /// <reference path="bower_components/wim_angular/dist/src/Models/Point.d.ts" />
 /// <reference path="bower_components/wim_angular/dist/src/Models/Parameter.d.ts" />
 /// <reference path="bower_components/wim_angular/dist/src/Services/Helpers/RequestInfo.d.ts" />
