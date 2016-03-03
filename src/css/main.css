@@ -54,6 +54,10 @@ body {
     opacity: 0.6;
 }
 
+.legendGroup {
+    padding:10px
+}
+
 /* disable some default controls*/
 .leaflet-control-layers.leaflet-control {
     display: none;
