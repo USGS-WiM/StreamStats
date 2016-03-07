@@ -20,8 +20,8 @@
 //02.17.2016 jkn - Created
 
 //Import
+declare var Highcharts: any;
 declare var d3: any;
-
 module StreamStats.Controllers {
     'use string';
     interface IWateruseControllerScope extends ng.IScope {
@@ -66,8 +66,12 @@ module StreamStats.Controllers {
         }
         public CanContiue: boolean;
         public reportOptions: any;
-        public result: Models.IWaterUse;
-        public SelectedTab: Number;
+        public highchartConfig: any;
+        public result: any;
+        public SelectedTab: WaterUseTabType;
+        public SelectedWaterUseType: WaterUseType; 
+        public GraphData: Array<any>;
+        public TableData: Array<any>;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -85,18 +89,19 @@ module StreamStats.Controllers {
         public GetWaterUse() {
             this.CanContiue = false;
             //http://ssdev.cr.usgs.gov/streamstatsservices/wateruse.json?rcode=OH&workspaceID=OH20160217071851546000&startyear=2005&endyear=2009
-            var url = configuration.queryparams['Wateruse'].format(this.StudyArea.RegionID, this.StudyArea.WorkspaceID,this.StartYear, this.EndYear);
-            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url);
+            //var url = configuration.queryparams['Wateruse'].format(this.StudyArea.RegionID, this.StudyArea.WorkspaceID, this.StartYear, this.EndYear);
+            var url = "wateruse.js";
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url,true);
 
             this.Execute(request).then(
                 (response: any) => {                   
                     //sm when complete
-                    this.result = Models.WaterUse.FromJson(response.data);
+                    this.result = response.data;
+                    this.GraphData = this.GetGraphData();
+                    this.TableData = this.GetTableData();
                     this.showResults = true;
                 }, (error) => {
-                    //sm when error
-
-                    
+                    //sm when error                    
                 }).finally(() => {  
                    this.CanContiue = true;        
                 });
@@ -104,7 +109,79 @@ module StreamStats.Controllers {
         public Close(): void {
             this.modalInstance.dismiss('cancel')
         }
-     
+        
+        public GetGraphData(): Array<any> {
+            if (!this.result.hasOwnProperty("DailyMonthlyAveWithdrawalsByCode")) return;
+            var results: Array<any> = this.result.DailyMonthlyAveWithdrawalsByCode.map((elem) => {
+                return {
+                    "key": elem[0].name.slice(-2),
+                    "values": elem.map(function (values) {
+
+                        return {
+                            "label": values.name.substring(6, 9),
+                            "stack":values.type,
+                            "value": values.value
+                        }
+
+                    })
+                };
+            });
+
+            return results;
+        }
+        public GetTableData(): any {
+            var tableFields: Array<string> = [];
+            tableFields.push("Month");
+
+            var monthlyValues: Array<Array<any>> = [];
+            for (var i = 0; i < 12; i++) {
+                monthlyValues[i] = [this.getMonth(i)];
+            }
+
+
+            if (this.result.hasOwnProperty("MonthlyWaterUseCoeff")) {
+                var avereturn = this.result.AveReturns.value;
+                var monthlyReturns: Array<any> = [];
+                tableFields.push("Returns");
+                var index = 0;
+                (<Array<any>>this.result.MonthlyWaterUseCoeff).forEach((item) => {
+                    if (item.name === "Total Returns" && item.unit === "MGD") {
+                        monthlyValues[index].push(item);
+                        index++;
+                    }
+                });//next
+
+            }//end if
+
+            if (this.result.hasOwnProperty("DailyMonthlyAveWithdrawalsByCode")) {
+                tableFields.push("Total");
+                this.result.DailyMonthlyAveWithdrawalsByCode.forEach((item) => {
+                    tableFields.push(item[0].name.slice(-2))
+                    monthlyValues[0].push(item[0]);
+                    monthlyValues[1].push(item[1]);
+                    monthlyValues[2].push(item[2]);
+                    monthlyValues[3].push(item[3]);
+                    monthlyValues[4].push(item[4]);
+                    monthlyValues[5].push(item[5]);
+                    monthlyValues[6].push(item[6]);
+                    monthlyValues[7].push(item[7]);
+                    monthlyValues[8].push(item[8]);
+                    monthlyValues[9].push(item[9]);
+                    monthlyValues[10].push(item[10]);
+                    monthlyValues[11].push(item[11]);
+                });//next item  
+            }
+            return {
+                "values": monthlyValues,
+                "Fields":tableFields
+            };
+        
+        }
+        public Reduce(array: Array<any>) {
+            return array.reduce((a, b) =>
+                Number(a) + Number(b.value)
+                , 0);
+        }
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {
@@ -113,8 +190,9 @@ module StreamStats.Controllers {
             this._yearRange = { floor: 2005, draggableRange: true, noSwitching: true, showTicks: false, ceil: 2012 };
             this.CanContiue = true;
             this.showResults = false;
-            this.SelectedTab = 1;
-
+            this.SelectedTab = WaterUseTabType.Graph;
+            this.SelectedWaterUseType = WaterUseType.Annual;
+            //http://stackoverflow.com/questions/31740108/angular-nvd3-multibar-chart-with-dual-y-axis-to-showup-only-line-using-json-data
             this.reportOptions = {
                 chart: {
                     type: 'multiBarHorizontalChart',
@@ -128,13 +206,13 @@ module StreamStats.Controllers {
                         bottom: 60,
                         left: 55
                     },
-                    x: function (d) { return d.name.substring(6, 9); },
+                    x: function (d) { return d.label; },
                     y: function (d) { return d.value; },
-                    showValues: true,
+                    showValues: false,
                     valueFormat: function (d) {
                         return d3.format(',.4f')(d);
                     },
-                    transitionDuration: 500,
+                    
                     xAxis: {
                         showMaxMin: false
                     },
@@ -144,12 +222,42 @@ module StreamStats.Controllers {
                             return d3.format(',.3f')(d);
                         }
                     }
-                }
-            };
-        }
-        
-    }//end wimLayerControlController class
+                    
 
+                },title: {
+                        enable: true,
+                        text: "Average Water Use By Month",
+                        
+                    }
+            };
+          
+        }
+        private getMonth(index: number): string {
+            switch (index) {
+                case 0: return "Jan";
+                case 1: return "Feb";
+                case 2: return "Mar";
+                case 3: return "Apr";
+                case 4: return "May";
+                case 5: return "Jun";
+                case 6: return "Jul";
+                case 7: return "Aug";
+                case 8: return "Sep";
+                case 9: return "Oct";
+                case 10: return "Nov";
+                case 11: return "Dec";
+            }
+
+        }        
+    }//end wimLayerControlController class
+    enum WaterUseType {
+        Annual = 1,
+        Monthly =2
+    }
+    enum WaterUseTabType {
+        Graph = 1,
+        Table = 2
+    }
 
     angular.module('StreamStats.Controllers')
         .controller('StreamStats.Controllers.WateruseController', WateruseController);

@@ -1,51 +1,4 @@
-﻿<div id="print-content">
-    <style>
-        @media print {
-            body * {
-                visibility: hidden;
-            }
-
-            .hidden-print {
-                display: none !important;
-            }
-
-            #print-content * {
-                visibility: visible;
-            }
-
-            .modal {
-                position: absolute;
-                left: 0;
-                top: 0;
-                margin: 0;
-                padding-right: 20px;
-                /*padding: 0;*/
-                min-height: 550px;
-                visibility: visible;
-                /**Remove scrollbar for printing.**/
-                overflow: visible !important;
-            }
-
-            .modal-dialog {
-                width: 100%;
-                padding: 0;
-                margin: 20px;
-                visibility: visible !important;
-                /**Remove scrollbar for printing.**/
-                overflow: visible !important;
-            }
-
-            .modal-footer {
-                border-top: 0;
-            }
-
-            .leaflet-control-container {
-                display: none !important;
-            }
-        }
-    </style>
-
-    <!-- Modal -->
+﻿    <!-- Modal -->
 
     <div class="modal-header hidden-print">
         <button type="button" class="close" ng-click="vm.Close()"><span aria-hidden="true">&times;</span></button>
@@ -53,8 +6,8 @@
     </div>
     <div class="modal-body">
         <input type="text" class="form-control" ng-model="vm.reportTitle" placeholder="Title">
-        <div ng-hide="vm.StudyArea">A study area is needed before viewing the report</div>
-        <div ng-show="vm.StudyArea">
+        <div ng-hide="!vm.StudyArea">A study area is needed before viewing the report</div>
+        <div ng-show="!vm.StudyArea">
             <div class="form-group hidden-print">
                 <div class="wim-alert-info">Select a start and end year. Then continue, to estimate the water use for the study area.</div>
                 <div class="group-wrapper">
@@ -66,7 +19,6 @@
 
                     <rzslider rz-slider-model="vm.StartYear" rz-slider-high="vm.EndYear" rz-slider-options="vm.YearRange"></rzslider>
 
-
                     <button type="button" class="btn-wim-sm btn-wim-success btn-wim-group-1" ng-click="vm.GetWaterUse()" ng-disabled="!vm.CanContiue"><span ng-class="vm.CanContiue ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></span>&nbsp;&nbsp;Continue</button>
                 </div>
             </div>
@@ -77,22 +29,32 @@
                 </ul>
                 <div class="tabs">
                     <div ng-if="vm.SelectedTab == 1">
-                        <nvd3 options='vm.reportOptions' data='vm.result.Withdrawals.Monthly.WaterUse'></nvd3>
+                        <nvd3 options='vm.reportOptions' data='vm.GraphData'></nvd3>                        
                     </div>
                     <div ng-if="vm.SelectedTab == 2">
-                        <div class="well well-sm">                            
-                            <h4>Average Water Use By Month</h4>
+                        <div class="well well-sm">
+                            <center>
+                                <h3>Average Water-Use By Month</h3>
+                                <header>reported in million gallons/day</header>
+                            </center>                            
+                           
                             <table class="table table-condensed">
                                 <thead class="param-table">
                                     <tr>
-                                        <th>Month</th>
-                                        <th ng-repeat ="item in vm.result.Withdrawals.Monthly.Fields">{{item}}</th>
+                                        <th colspan="2">bla</th>
+                                        <th colspan="{{vm.TableData.Withdrawals.Monthly.Fields.length - 2}}">WithDrawals</th>
+                                           
+                                    </tr>
+                                </thead>
+                                <thead class="param-table">
+                                    <tr>
+                                        <th ng-repeat="item in vm.TableData.Fields">{{item}}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr ng-repeat="item in vm.result.Withdrawals.Monthly.WaterUse">
-                                        <td> {{item[0].name.substring(6, 9)}}</td>
-                                        <td ng-repeat="columns in item">{{columns.value.toFixed(3)}}</td>
+                                    <tr ng-repeat="item in vm.TableData">
+                                        <td>{{item[0]}}</td>
+                                        <td>{{item[1].value.toFixed(3)}}</td>
                                     </tr>
                                 </tbody>
                             </table>
