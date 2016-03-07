@@ -34,12 +34,12 @@ module StreamStats.Controllers {
     class NavbarController implements INavbarController {
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
-        private reportService: Services.IreportService;
+        private reportService: Services.IModalService;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', 'StreamStats.Services.ReportService', 'StreamStats.Services.StudyAreaService'];
-        constructor($scope: INavbarControllerScope, report: Services.IreportService, studyArea: Services.IStudyAreaService) {
+        static $inject = ['$scope', 'StreamStats.Services.ModalService', 'StreamStats.Services.StudyAreaService'];
+        constructor($scope: INavbarControllerScope, report: Services.IModalService, studyArea: Services.IStudyAreaService) {
             $scope.vm = this;
             this.reportService = report;
 
@@ -48,7 +48,7 @@ module StreamStats.Controllers {
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         public openReport(): void {
-            this.reportService.openReport();
+            this.reportService.openReport(Services.SSModalType.e_report);
         }
 
         //Helper Methods

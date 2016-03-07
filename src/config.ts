@@ -45,14 +45,14 @@ module StreamStats {
     }//end class
 
     angular.module('StreamStats',[
-        'ui.router', 'ui.bootstrap', 'ui.checkbox',
+        'ui.router', 'ui.bootstrap','ui.checkbox',
         'mobile-angular-ui',
         'angulartics', 'angulartics.google.analytics',
         'toaster', 'ngAnimate',
         'leaflet-directive',
         'StreamStats.Services',
         'StreamStats.Controllers',
-        'WiM.Services','WiM.Event', 'wim_angular'
+        'WiM.Services', 'WiM.Event', 'wim_angular', 'rzModule','nvd3'
         ])
         .config(config);
 }//end module 

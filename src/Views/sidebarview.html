@@ -13,11 +13,10 @@
                         <div class="wim-alert">You have zoomed in sufficiently to select a state or regional study area.  Your selection will dictate the data used to perform basin delineation and flow statistics calculation.</div>
                         <label> Select a State or Regional Study Area</label>
                         <div ng-repeat="region in vm.regionService.regionList track by $index">
-                            <div class="row">
-                                <div class="col-md-9"><button ng-class="region.Name === vm.regionService.selectedRegion.Name ? 'btn-wim-info btn-group-justified':'btn-wim-sm btn-wim-default btn-group-justified'" ng-click="vm.setRegion(region)"><span>{{region.Name}} </span></button></div>
-                                <div class="col-md-2">
-                                    <button ng-click="vm.openStatePage($event, region.Name)" class="btn-wim-sm btn-wim-info"><i class="fa fa-info-circle"></i></button>
-                                </div>
+                    <div class="row">
+                        <div class="col-md-9"><div id="sapi_searchTextBoxDiv">Loading Search Bar...</div></div>
+                        <div class="col-md-2"><button class="btn-wim-sm btn-wim-info" ng-click="vm.showSearchHelp = !vm.showSearchHelp"><i class="fa fa-question-circle"></i></button></div>
+                    </div>
                             </div>
                         </div>
                         <hr />
@@ -38,21 +37,21 @@
                                 </div>
                             <div class="col-md-2"><button class="btn-wim-sm btn-wim-info" ng-click="vm.showSearchHelp = !vm.showSearchHelp"><i class="fa fa-question-circle"></i></button></div>
                         </div>
-                        <div ng-init="vm.showSearchHelp = false" ng-show="vm.showSearchHelp">
+                    <div ng-init="vm.showSearchHelp = false" ng-show="vm.showSearchHelp">
                             <div class="wim-alert">
-                                <h6 class="wim-list-header">Supported search strings:</h6>
+                            <h6 class="wim-list-header">Supported search strings:</h6>
                                 <p>Use 'enter' key or "Go!" button to submit</p>
-                                <ul>
-                                    <li>GNIS locations</li>
-                                    <li>USGS Sites</li>
-                                    <li>Zip Codes</li>
-                                    <li>Area Codes</li>
-                                    <li>States</li>
-                                    <li>Lat/Long (ie. '43.9,-72.1')</li>
-                                    <li>Street Address</li>
-                                </ul>
-                            </div>
+                            <ul>
+                                <li>GNIS locations</li>
+                                <li>USGS Sites</li>
+                                <li>Zip Codes</li>
+                                <li>Area Codes</li>
+                                <li>States</li>
+                                <li>Lat/Long (ie. '43.9,-72.1')</li>
+                                <li>Street Address</li>
+                            </ul>
                         </div>
+                    </div>
                     </div>
 
 
@@ -63,9 +62,9 @@
 
                 <div class="list-group-body" ng-show="vm.selectedProcedure == 2">
 
-                    <div ng-hide="vm.studyAreaService.selectedStudyArea.Features || !vm.regionService.streamStatsAvailable || !vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint">
-                        <div class="wim-alert" ng-hide="vm.studyAreaService.showDelineateButton">Zoom in to level 15 or greater to enable the delineation tool</div>
-                        <div class="wim-alert" ng-show="vm.studyAreaService.showDelineateButton">Click the 'Delineate' button, then use your mouse or finger to click or tap a blue stream cell on the map</div>
+                    <div ng-hide="vm.studyAreaService.selectedStudyArea.Features || !vm.regionService.streamStatsAvailable">
+                        <div class="wim-alert-info" ng-hide="vm.studyAreaService.showDelineateButton">Zoom in to level 15 or greater to enable the delineation tool</div>
+                        <div class="wim-alert-info" ng-show="vm.studyAreaService.showDelineateButton">Click the 'Delineate' button, then use your mouse or finger to click or tap a blue stream cell on the map</div>
                     </div>
 
                     <!--<div class="wim-alert-warning" ng-hide="vm.regionService.streamStatsAvailable">StreamStats is not available here at this time</div>-->
@@ -116,11 +115,12 @@
                             </div>
                         </div>
 
-                        <div class="well well-sm" ng-show="vm.regionService.selectedRegion.Applications.indexOf('Regulation') != -1">
+                        <div class="well well-sm" ng-show="vm.regionService.selectedRegion.Applications.length > 0">
                             <strong>State/Region Specific Functions</strong>
                             <p>The following additional functions area available for {{vm.regionService.selectedRegion.Name}}.</p>
                             <div class="group-wrapper">
-                                <button ng-click="vm.checkRegulation()" type="button" class="btn-wim-sm btn-wim-info btn-wim-group-1" ng-disabled="!vm.studyAreaService.regulationCheckComplete"><i ng-class="vm.studyAreaService.regulationCheckComplete ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Check for upstream regulation</button>
+                                <button ng-show="vm.regionService.selectedRegion.Applications.indexOf('Regulation') != -1" ng-click=" vm.checkregulation()" type="button" class="btn-wim-sm btn-wim-info btn-wim-group-1" ng-disabled="!vm.studyAreaService.regulationCheckComplete"><i ng-class="vm.studyAreaService.regulationCheckComplete ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Check for upstream regulation</button>
+                                <button ng-show="vm.regionService.selectedRegion.Applications.indexOf('Wateruse') != -1" ng-click=" vm.OpenWateruse()" type="button" class="btn-wim-sm btn-wim-info btn-wim-group-1"><i class="fa fa-empire"></i>&nbsp;&nbsp;Check for Wateruse</button>
                             </div>
 
                             <div class="wim-alert-success" ng-show="vm.studyAreaService.Disclaimers.isRegulated == true || vm.studyAreaService.Disclaimers.isRegulated == false">Upstream Regulation check has been completed.  There is <strong ng-show="vm.studyAreaService.Disclaimers.isRegulated">{{vm.studyAreaService.regulationCheckResults.percentarearegulated.toFixed(2)}} percent</strong><strong ng-show="!vm.studyAreaService.Disclaimers.isRegulated">NO</strong> regulation in this watershed.</div>
