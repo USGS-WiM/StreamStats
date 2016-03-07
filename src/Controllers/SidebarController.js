@@ -99,11 +99,23 @@ var StreamStats;
                 //get available parameters
                 this.regionService.loadParametersByRegion();
             };
+            SidebarController.prototype.openStatePage = function (e, region) {
+                e.stopPropagation();
+                e.preventDefault();
+                var regionParsed = region.replace(' ', '_').toLowerCase();
+                console.log('Open state page for: ', regionParsed);
+                window.open('http://water.usgs.gov/osw/streamstats/' + regionParsed + '.html', '_blank');
+            };
             SidebarController.prototype.resetWorkSpace = function () {
                 //this.regionService.clearRegion();
                 this.studyAreaService.clearStudyArea();
                 this.studyAreaService.showDelineateButton = true;
                 this.nssService.clearNSSdata();
+            };
+            SidebarController.prototype.startSearch = function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                $("#sapi-searchTextBox").trigger($.Event("keyup", { "keyCode": 13 }));
             };
             SidebarController.prototype.startDelineate = function () {
                 var _this = this;
@@ -229,6 +241,11 @@ var StreamStats;
                 this.nssService.queriedRegions = true;
                 //send watershed to map service query that returns list of regression regions that overlap the watershed
                 this.studyAreaService.queryRegressionRegions();
+            };
+            SidebarController.prototype.queryStatisticsGroupTypes = function () {
+                this.nssService.loadStatisticsGroupTypes(this.regionService.selectedRegion.RegionID, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) {
+                    return elem.code;
+                }).join(","));
             };
             SidebarController.prototype.onSelectedStatisticsGroupChanged = function () {
                 //console.log('StatisticsGroup param list changed.  loaded ', this.nssService.selectedStatisticsGroupList);

@@ -143,11 +143,23 @@ module StreamStats.Controllers {
             this.regionService.loadParametersByRegion();
         }
 
+        public openStatePage(e, region) {
+            e.stopPropagation(); e.preventDefault();
+            var regionParsed = region.replace(' ', '_').toLowerCase();
+            console.log('Open state page for: ', regionParsed);
+            window.open('http://water.usgs.gov/osw/streamstats/' + regionParsed + '.html', '_blank');
+        }
+
         public resetWorkSpace() {
             //this.regionService.clearRegion();
             this.studyAreaService.clearStudyArea();
             this.studyAreaService.showDelineateButton = true;
             this.nssService.clearNSSdata();
+        }
+
+        public startSearch(e) {
+            e.stopPropagation(); e.preventDefault();
+            $("#sapi-searchTextBox").trigger($.Event("keyup", { "keyCode": 13 }));
         }
 
         public startDelineate() {
@@ -323,6 +335,12 @@ module StreamStats.Controllers {
 
             //send watershed to map service query that returns list of regression regions that overlap the watershed
             this.studyAreaService.queryRegressionRegions();
+        }
+
+        private queryStatisticsGroupTypes() {
+            this.nssService.loadStatisticsGroupTypes(this.regionService.selectedRegion.RegionID, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) {
+                return elem.code;
+            }).join(","));
         }
 
         public onSelectedStatisticsGroupChanged() {

@@ -64,7 +64,6 @@
     <Content Include="src\Assets\images\usgs_logo.png" />
     <Content Include="src\css\main.css" />
     <Content Include="src\css\wim.css" />
-    <Content Include="src\Views\Exploration\exploration.html" />
     <Content Include="src\Views\Legend\legend.html" />
     <Content Include="src\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="src\images\arrows.gif" />
@@ -83,10 +82,8 @@
     <Content Include="src\Views\SidebarComponents\locationTemplate.html" />
     <Content Include="src\Views\SidebarComponents\studyareaview.html" />
     <Content Include="src\Views\sidebarview.html" />
-    <Content Include="src\Views\wateruse.html" />
     <Content Include="web.config" />
     <Content Include="typings.json" />
-    <Content Include="src\wateruse.js" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
@@ -107,17 +104,14 @@
     <TypeScriptCompile Include="src\Controllers\Navbarcontroller.ts" />
     <TypeScriptCompile Include="src\Controllers\ReportController.ts" />
     <TypeScriptCompile Include="src\Controllers\SidebarController.ts" />
-    <TypeScriptCompile Include="src\Controllers\WateruseController.ts" />
-    <TypeScriptCompile Include="src\Directives\explorationTools.ts" />
     <TypeScriptCompile Include="src\Events\StudyAreaEvents.ts" />
     <TypeScriptCompile Include="src\Models\RegulationParameter.ts" />
     <TypeScriptCompile Include="src\Models\StudyArea.ts" />
     <TypeScriptCompile Include="src\Models\WatershedEDL.ts" />
-    <TypeScriptCompile Include="src\Models\WaterUse.ts" />
     <TypeScriptCompile Include="src\Services\ExplorationService.ts" />
     <TypeScriptCompile Include="src\Services\nssService.ts" />
     <TypeScriptCompile Include="src\Services\RegionService.ts" />
-    <TypeScriptCompile Include="src\Services\ModalService.ts" />
+    <TypeScriptCompile Include="src\Services\ReportService.ts" />
     <TypeScriptCompile Include="src\Services\service.module.ts" />
     <TypeScriptCompile Include="src\Services\StudyAreaService.ts" />
     <TypeScriptCompile Include="_references.ts">

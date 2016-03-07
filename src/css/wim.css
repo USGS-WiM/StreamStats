@@ -761,7 +761,7 @@ ol li {
   transition: 0.15s;
   cursor: pointer;
 }
-.wim-alert-info {
+.wim-alert-default {
   display: block;
   width: 100%;
   box-sizing: border-box;
@@ -775,13 +775,13 @@ ol li {
   font-weight: 400;
   background-color: #00a6d2;
 }
-.wim-alert-info .ion-close-round {
+.wim-alert-default .ion-close-round {
   float: right;
   margin: 0 0 0 10px;
   color: rgba(255, 255, 255, 0.5);
   transition: 0.15s;
 }
-.wim-alert-info .ion-close-round:hover {
+.wim-alert-default .ion-close-round:hover {
   color: rgba(255, 255, 255, 0.9);
   transition: 0.15s;
   cursor: pointer;

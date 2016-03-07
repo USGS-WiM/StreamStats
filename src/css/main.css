@@ -49,6 +49,15 @@ body {
     ===========================
     ===========================
 */
+
+.legendSwatch {
+    opacity: 0.6;
+}
+
+.legendGroup {
+    padding:10px
+}
+
 /* disable some default controls*/
 .leaflet-control-layers.leaflet-control {
     display: none;
@@ -384,6 +393,7 @@ div.leaflet-top > .elevation {
     padding: 6px 12px !important; 
     margin-left: 0px !important;
     border-radius: 2px !important;
+    border: 2px solid rgba(45, 49, 70, 0.23) !important;
 }
 
 .sapi .ui-autocomplete {
@@ -429,6 +439,10 @@ div.leaflet-top > .elevation {
     ===========================
 */
 
+.sidebar {
+    min-height: 0 !important;
+}
+
 .sidebar-content {
     margin-top:70px;
 }
@@ -441,6 +455,11 @@ div.leaflet-top > .elevation {
   background-color: #ECEEF4;
 }
 
+#searchSubmit {
+    margin-left:-2px;
+    height:35px;
+
+}
 
 .list-group-body {
     background-color:white;
@@ -635,6 +654,54 @@ div.leaflet-top > .elevation {
         z-index: 9999 !important;
     }
 
+/*
+    ===========================
+    ===========================
+           Print Styles
+    ===========================
+    ===========================
+*/
+
+        @media print{
+        body * {
+            visibility: hidden;
+            -webkit-print-color-adjust: exact; 
+        }
+        .hidden-print {
+            display: none !important;
+        }
+        #print-content * {
+            visibility: visible;
+        }
+        .modal{
+            position: absolute;
+            left: 0;
+            top: 0;
+            margin: 0;
+            padding-right:20px;
+            /*padding: 0;*/
+            min-height:550px;
+            visibility: visible;
+            /**Remove scrollbar for printing.**/
+            overflow: visible !important;
+        }
+        .modal-dialog {
+            
+            width: 100%;
+            padding: 0;
+            margin:20px;
+                
+            visibility: visible !important;
+            /**Remove scrollbar for printing.**/
+            overflow: visible !important;
+        }
+        .modal-footer {
+            border-top:0;
+        }
+        .leaflet-control-container{
+            display: none!important;
+        }
+    }
 
 /*
     ===========================

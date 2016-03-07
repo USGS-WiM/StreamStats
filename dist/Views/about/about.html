@@ -27,9 +27,7 @@
 
                             <p>StreamStats also includes several tools that rely on searching along the stream network upstream or downstream from user-selected sites to identify stream reaches and water-related activities along the streams, such as dams and point discharges, and obtain information about those activities. In addition, users can obtain elevation profiles along stream channels and between points on the land surface.</p>
 
-                            <p>Separate applications have been established for each state that has implemented StreamStats. The State Applications link at the left provides access to a web page that shows where StreamStats is available and where it is being implemented. Users can select an individual state application from the map or the pull-down list on the State Applications page to view an introductory page for the state, which contains a link to the StreamStats user interface. The introductory pages explain any unique functionality that is available for the state and provides citations to reports that document the methods implemented for the state.</p>
-
-                            <p>Information for each state and regional application can be found by visiting the StreamStats state/region applications page here: <a href="http://water.usgs.gov/osw/streamstats/ssonline.html" target="_blank">http://water.usgs.gov/osw/streamstats/ssonline.html</a>
+                            <p>Introductory pages that explain any unique functionality, outline the general implementation level, and provide citations to reports documenting the methods implemented for each state and region are available here: <a href="http://water.usgs.gov/osw/streamstats/ssonline.html" target="_blank">http://water.usgs.gov/osw/streamstats/ssonline.html</a>
                             </p>
 
                             <p>The StreamStats 4.0 interface was developed by the Wisconsin Internet Mapping (WiM) group in collaboration with the Office of Surface Water StreamStats team working with USGS Water Science Centers across the nation.</p>
@@ -92,9 +90,6 @@
             </div>
 
             <div class="modal-footer">
-                <p style="color:black; margin-left:35px;text-align:left">
-                    For more information about StreamStats 4.0 please contact <a href="http://wim.usgs.gov/" target="_blank"><img src="images/wimvectorxs.png" id="wim_logo"></a> 
-                </p>
                 <button ng-click="vm.toggleAboutSelected()" class="btn-wim-default"><i class="fa fa-close"></i><span >&nbsp;&nbsp;Close</span></button>
             </div>
         </div>
@@ -115,55 +110,52 @@
             <div class="modal-body">
 
                 <ul id="aboutTabs" class="nav nav-tabs">
-                    <li ng-class="{'active':vm.selectedHelpTabName==='submitTicket'}"><a ng-click="vm.selectHelpTab('submitTicket')"><i class="fa fa-exclamation-circle"></i>&nbsp;Submit a Support Request</a></li>
                     <li ng-class="{'active':vm.selectedHelpTabName==='faq'}"><a ng-click="vm.selectHelpTab('faq')"><i class="fa fa-question-circle"></i>&nbsp;Frequently Asked Questions (FAQ)</a></li>
+                    <li ng-class="{'active':vm.selectedHelpTabName==='submitTicket'}"><a ng-click="vm.selectHelpTab('submitTicket')"><i class="fa fa-exclamation-circle"></i>&nbsp;Submit a Support Request</a></li>
                 </ul>
+                <div style="padding-top: 10px;">
+                    <div id="about" ng-if="vm.selectedHelpTabName==='faq'">
+                        <!--<a href="https://streamstats.freshdesk.com/support/solutions" target="_blank">Link to FAQ</a>-->
+                    </div>
+                </div>
 
                 <div style="padding-top: 10px;">
                     <div id="about" ng-if="vm.selectedHelpTabName==='submitTicket'">
 
                     <span>Use the form below to get support on a specific issue. Please include as much information as possible.</span> 
                                        
+                    <!--<iframe src="https://docs.google.com/forms/d/1Kc--HCYhgFuZoConh5uH7_VXgM1oYKrP1RErAirN8wQ/viewform?embedded=true" width="100%" height="850" frameborder="0" marginheight="0" marginwidth="0">Loading...</iframe>-->
 
-                    <iframe src="https://docs.google.com/a/usgs.gov/forms/d/1Kc--HCYhgFuZoConh5uH7_VXgM1oYKrP1RErAirN8wQ/viewform?embedded=true" width="100%" height="820" frameborder="0" marginheight="0" marginwidth="0">Loading...</iframe>
-                    <!--<form id="ticketForm" novalidate>
+                    <form id="ticketForm" novalidate>
                         <div class="well well-sm">
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label for="email">Email:</label>
-                                        <input type="email" class="form-control" id="email" ng-model="vm.freshdeskTicketData.email" required>
+                                        <input type="email" class="form-control" id="email" ng-model="vm.SupportTicketData.email" required>
                                     </div>
                                     <div class="form-group">
                                         <label for="title">Subject:</label>
-                                        <input class="form-control" id="title" ng-model="vm.freshdeskTicketData.subject" required>
+                                        <input class="form-control" id="title" ng-model="vm.SupportTicketData.subject" required>
                                     </div>
                                     <div class="form-group">
                                         <label for="message">Description:</label>
-                                        <textarea class="form-control" rows="6" id="description" ng-model="vm.freshdeskTicketData.description" required></textarea>
+                                        <textarea class="form-control" rows="6" id="description" ng-model="vm.SupportTicketData.comment" required></textarea>
                                     </div>
-                                    <span class="btn-wim-default btn-file">
+                                    <!--<span class="btn-wim-default btn-file">
                                         <i class="fa fa-upload"></i><span >&nbsp;&nbsp;Upload attachment... </span>
                                         <input type="file" select-file="vm.uploadFile()" >
-                                    </span>
+                                    </span>-->
                                     <button type="submit" class="btn-wim-default" ng-click="vm.submitTicket()" ><i class="fa fa-check"></i><span >&nbsp;&nbsp;Submit</span></button>
                                 </div>
                             </div>
                         </div>
                         <span ng-model="vm.displayMessage"></span>
-                    </form>-->
+                    </form>
                 </div>
               </div>
-              <div style="padding-top: 10px;">
-                    <div id="about" ng-if="vm.selectedHelpTabName==='faq'">
-                        <!--<a href="https://streamstats.freshdesk.com/support/solutions" target="_blank">Link to FAQ</a>-->
-                    </div>
-                </div>
             </div>
             <div class="modal-footer">
-                <p style="color:black; margin-left:35px;text-align:left">
-                    For more information about StreamStats 4.0 please contact <a href="http://wim.usgs.gov/" target="_blank"><img src="images/wimvectorxs.png" id="wim_logo"></a> 
-                </p>
                 <button ng-click="vm.toggleHelpSelected()" class="btn-wim-default"><i class="fa fa-close"></i><span >&nbsp;&nbsp;Close</span></button>
             </div>
         </div>

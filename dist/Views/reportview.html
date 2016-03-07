@@ -1,49 +1,5 @@
 <div id="print-content">   
-    <style>
-    @media print{
-        body * {
-            visibility: hidden;
-        }
-        .hidden-print {
-            display: none !important;
-        }
-        #print-content * {
-            visibility: visible;
-        }
-        .modal{
-            position: absolute;
-            left: 0;
-            top: 0;
-            margin: 0;
-            padding-right:20px;
-            /*padding: 0;*/
-            min-height:550px;
-            visibility: visible;
-            /**Remove scrollbar for printing.**/
-            overflow: visible !important;
-        }
-        .modal-dialog {
-            
-            width: 100%;
-            padding: 0;
-            margin:20px;
-                
-            visibility: visible !important;
-            /**Remove scrollbar for printing.**/
-            overflow: visible !important;
-        }
-        .modal-footer {
-            border-top:0;
-        }
-        .leaflet-control-container{
-            display: none!important;
-        }
-    }
-
-    </style>
-
     <!-- Modal -->
-    
     <div class="modal-header hidden-print">
         <button type="button" class="close" ng-click="vm.close()"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title">Report</h4>
@@ -53,7 +9,7 @@
      <div ng-show="vm.studyAreaService.selectedStudyArea">
             <div class="form-group hidden-print">
 
-                <div class="wim-alert-info" >Enter a report title and/or comments here that will display on the printed report.  Use the print button below.</div>
+                <div class="wim-alert" >Enter a report title and/or comments here that will display on the printed report.  Use the print button below.</div>
  
                 <label >Enter report title:</label>
                 <input type="text" class="form-control" ng-model="vm.reportTitle" placeholder="Title">
@@ -102,8 +58,8 @@
                                 <td ng-bind="parameter.name"></td>
                                 <td ng-bind="parameter.description"></td>
                                 <td ng-bind="parameter.value"></td>
-                                <td ng-show="vm.studyAreaService.Disclaimers.isRegulated" ng-bind="parameter.unRegulatedValue.toFixed(2)"></td>
-                                <td ng-show="vm.studyAreaService.Disclaimers.isRegulated" ng-bind="parameter.regulatedValue.toFixed(2)"></td>
+                                <td ng-show="vm.studyAreaService.Disclaimers.isRegulated" ng-bind="parameter.unRegulatedValue.toUSGSvalue()"></td>
+                                <td ng-show="vm.studyAreaService.Disclaimers.isRegulated" ng-bind="parameter.regulatedValue.toUSGSvalue()"></td>
                                 <td ng-bind="parameter.unit"></td>
                             </tr>
                         </tbody>
@@ -124,7 +80,7 @@
 
 
                     <div ng-repeat="RegressionRegion in StatisticsGroup.RegressionRegions" ng-hide="RegressionRegion.Name == 'Area-Averaged'">
-                        <h4>{{StatisticsGroup.Name}} Parameters<small>&nbsp;&nbsp;{{RegressionRegion.PercentWeight.toFixed(0)}} Percent {{RegressionRegion.Name.split("_").join(" ")}}</small></h4>
+                        <h4>{{StatisticsGroup.Name}} Parameters<small ng-bind="(RegressionRegion.PercentWeight) ? ' [' + RegressionRegion.PercentWeight.toFixed(2) + ' Percent ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h4>
                         <table class="table table-condensed">
                             <thead class="param-table">
                             <tr>
@@ -137,42 +93,43 @@
                             <tbody>
                                 <tr ng-repeat="parameter in RegressionRegion.Parameters">
                                     <td ng-bind="parameter.Name"></td>
-                                    <td ng-bind="parameter.Value" ng-class="(parameter.Value < parameter.Limits.Min) || (parameter.Value > parameter.Limits.Max) ? 'danger' : ''"></td>
-                                    <td ng-bind="parameter.Limits.Min.toFixed(2)"></td>
-                                    <td ng-bind="parameter.Limits.Max.toFixed(2)"></td>
+                                    <td ng-bind="parameter.Value.toUSGSvalue()" ng-class="(parameter.Value < parameter.Limits.Min) || (parameter.Value > parameter.Limits.Max) ? 'danger' : ''"></td>
+                                    <td ng-bind="parameter.Limits.Min.toUSGSvalue()"></td>
+                                    <td ng-bind="parameter.Limits.toUSGSvalue()"></td>
                                 </tr>
                             </tbody>
                         </table>
 
                         <!--Scenario Disclaimers-->
                         <div ng-show="StatisticsGroup.Disclaimers.Warnings || StatisticsGroup.Disclaimers.Errors">
-                            <h4>{{StatisticsGroup.Name}} Disclaimers<small>&nbsp;&nbsp;{{RegressionRegion.PercentWeight.toFixed(0)}} Percent {{RegressionRegion.Name.split("_").join(" ")}}</small></h4>
+                            <h4>{{StatisticsGroup.Name}} Disclaimers<small ng-bind="(RegressionRegion.PercentWeight) ? ' [' + RegressionRegion.PercentWeight.toFixed(2) + ' Percent ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h4>
                             <div class="wim-alert-danger"  ng-repeat="headerMsg in StatisticsGroup.Disclaimers">{{headerMsg}}</div> 
                         </div>
                     </div>
 
-
-
                     <!--Flow Report-->
-                    <h4>{{StatisticsGroup.Name}} Flow Report</h4>
-                    <table class="table table-condensed">
-                        <thead class="param-table">
-                        <tr>
-                            <th>Statistic</th>
-                            <th>Value</th> 
-                            <th>Unit</th>
-                            <th>Prediction Error</th>
-                        </tr>
-                        </thead>
-                        <tbody ng-repeat="RegressionRegion in StatisticsGroup.RegressionRegions">
-                            <tr ng-repeat="parameter in RegressionRegion.Results">
-                                <td>{{parameter.Name}} <small>&nbsp;&nbsp;[{{RegressionRegion.PercentWeight.toFixed(0)}} Percent {{RegressionRegion.Name.split("_").join(" ")}}]</small></td>
-                                <td ng-bind="parameter.Value.toFixed(0)"></td>
-                                <td ng-bind="parameter.Unit.Abbr"></td>
-                                <td ng-bind="(parameter.Errors[0].Value) ? parameter.Errors[0].Value : '--'"></td>   <!--  SHOW SOME DASHES IF ERROR IS BLANK -->
+                    <div ng-repeat="RegressionRegion in StatisticsGroup.RegressionRegions">
+
+                        <h4>{{StatisticsGroup.Name}} Flow Report<small ng-bind="(RegressionRegion.PercentWeight) ? ' [' + RegressionRegion.PercentWeight.toFixed(2) + ' Percent ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h4>
+                        <table class="table table-condensed">
+                            <thead class="param-table">
+                            <tr>
+                                <th>Statistic</th>
+                                <th>Value</th> 
+                                <th>Unit</th>
+                                <th>Prediction Error</th>
                             </tr>
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody >
+                                <tr ng-repeat="parameter in RegressionRegion.Results">
+                                    <td>{{parameter.Name}}</td>
+                                    <td ng-bind="parameter.Value.toUSGSvalue()"></td>
+                                    <td ng-bind="parameter.Unit.Abbr"></td>
+                                    <td ng-bind="(parameter.Errors[0].Value) ? parameter.Errors[0].Value : '--'"></td>   <!--  SHOW SOME DASHES IF ERROR IS BLANK -->
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
  
 
                     <h4>{{StatisticsGroup.Name}} Citations</h4>
@@ -200,8 +157,10 @@
                     </li>
                     </ul>
                 </div>
-                <button type="button" class="btn-wim-sm btn-wim-default" ng-click="vm.downloadCSV()" ><span><i class="fa fa-download"></i>&nbsp;&nbsp;Download CSV</span></button>
-                <!--<button type="button" class="btn-wim-sm btn-wim-default" ng-click="vm.downloadPDF()" ><span><i class="fa fa-download"></i>&nbsp;&nbsp;Download PDF</span></button>-->
+                <div class="btn-group wim-btn-group">
+                    <button type="button" class="btn-wim-sm btn-wim-default" ng-click="vm.downloadCSV()" ><span><i class="fa fa-download"></i>&nbsp;&nbsp;Download CSV</span></button>
+                     <!--<button type="button" class="btn-wim-sm btn-wim-default" ng-click="vm.downloadPDF()" ><span><i class="fa fa-download"></i>&nbsp;&nbsp;Download PDF</span></button>-->
+                </div>
             </div>
         </div>
        
