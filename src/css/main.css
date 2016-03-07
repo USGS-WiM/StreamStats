@@ -567,7 +567,7 @@ div.leaflet-top > .elevation {
     ===========================
     ===========================
 */
-.nav-tabs > li {
+.wateruseTabs {
     float: right;
 }
 .modal{
@@ -652,6 +652,46 @@ div.leaflet-top > .elevation {
     }
     .modal.windowZ {
         z-index: 9999 !important;
+    }
+
+    .btn-file {
+        position: relative;
+        overflow: hidden;
+        box-sizing: border-box;
+        padding: 8px 17px;
+        background-color: #FFFFFF;
+        border-radius: 2px;
+        border: 2px solid rgba(45, 49, 70, 0.23);
+        color: rgba(45, 49, 70, 0.8);
+        letter-spacing: 0.75px;
+        font-family: "Source Sans Pro", sans;
+        font-weight: 600;
+        display: inline-block;
+        font-size: 12pt;
+        transition: 0.15s;
+        margin: 5px 0;
+    }
+
+    .btn-file:hover {
+      cursor: pointer;
+      border: 2px solid rgba(45, 49, 70, 0.3);
+      transition: 0.15s;
+      background-color: rgba(45, 49, 70, 0.05);
+    }
+    .btn-file input[type=file] {
+        position: absolute;
+        top: 0;
+        right: 0;
+        min-width: 100%;
+        min-height: 100%;
+        font-size: 100px;
+        text-align: right;
+        filter: alpha(opacity=0);
+        opacity: 0;
+        outline: none;
+        background: white;
+        cursor: inherit;
+        display: block;
     }
 
 /*
