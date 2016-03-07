@@ -567,14 +567,12 @@ div.leaflet-top > .elevation {
     ===========================
     ===========================
 */
-.nav-tabs > li {
+.wateruseTabs {
     float: right;
 }
 .modal{
     overflow-y: auto;
 }
-
-
 
 .modal-title{
   color: #6E7490;
