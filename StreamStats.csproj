@@ -64,6 +64,8 @@
     <Content Include="src\Assets\images\usgs_logo.png" />
     <Content Include="src\css\main.css" />
     <Content Include="src\css\wim.css" />
+    <Content Include="src\Views\help.html" />
+    <Content Include="src\Views\about.html" />
     <Content Include="src\Views\Legend\legend.html" />
     <Content Include="src\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="src\images\arrows.gif" />
@@ -74,7 +76,6 @@
     <Content Include="src\images\usgs_logo.png" />
     <Content Include="src\index.html" />
     <Content Include="bower.json" />
-    <Content Include="src\Views\about\about.html" />
     <Content Include="src\Views\mapview.html" />
     <Content Include="src\Views\navigationview.html" />
     <Content Include="src\Views\Reports\searchPopup.html" />
@@ -82,6 +83,7 @@
     <Content Include="src\Views\SidebarComponents\locationTemplate.html" />
     <Content Include="src\Views\SidebarComponents\studyareaview.html" />
     <Content Include="src\Views\sidebarview.html" />
+    <Content Include="src\Views\wateruse.html" />
     <Content Include="web.config" />
     <Content Include="typings.json" />
     <None Include="web.Debug.config">
@@ -99,7 +101,9 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="src\config.ts" />
+    <TypeScriptCompile Include="src\Controllers\HelpController.ts" />
     <TypeScriptCompile Include="src\Controllers\controller.module.ts" />
+    <TypeScriptCompile Include="src\Controllers\AboutController.ts" />
     <TypeScriptCompile Include="src\Controllers\MapController.ts" />
     <TypeScriptCompile Include="src\Controllers\Navbarcontroller.ts" />
     <TypeScriptCompile Include="src\Controllers\ReportController.ts" />

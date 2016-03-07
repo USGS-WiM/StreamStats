@@ -21,7 +21,7 @@ var StreamStats;
     (function (Controllers) {
         'use strinct';
         var SidebarController = (function () {
-            function SidebarController($scope, toaster, $analytics, service, region, studyArea, StatisticsGroup, report, leafletData, exploration, EventManager) {
+            function SidebarController($scope, toaster, $analytics, service, region, studyArea, StatisticsGroup, modal, leafletData, exploration, EventManager) {
                 var _this = this;
                 this.EventManager = EventManager;
                 $scope.vm = this;
@@ -34,7 +34,7 @@ var StreamStats;
                 this.regionService = region;
                 this.nssService = StatisticsGroup;
                 this.studyAreaService = studyArea;
-                this.reportService = report;
+                this.modalService = modal;
                 this.leafletData = leafletData;
                 this.multipleParameterSelectorAdd = true;
                 this.explorationService = exploration;
@@ -226,7 +226,7 @@ var StreamStats;
                 if (this.nssService.selectedStatisticsGroupList.length > 0 && this.nssService.showFlowsTable) {
                     this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList, this.regionService.selectedRegion.RegionID, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) { return elem.code; }).join(","));
                 }
-                this.reportService.openReport(StreamStats.Services.SSModalType.e_report);
+                this.modalService.openModal(StreamStats.Services.SSModalType.e_report);
                 this.studyAreaService.reportGenerated = true;
             };
             SidebarController.prototype.checkRegulation = function () {
@@ -276,7 +276,7 @@ var StreamStats;
                 });
             };
             SidebarController.prototype.OpenWateruse = function () {
-                this.reportService.openReport(StreamStats.Services.SSModalType.e_wateruse);
+                this.modalService.openModal(StreamStats.Services.SSModalType.e_wateruse);
             };
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+-

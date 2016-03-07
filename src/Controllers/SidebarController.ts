@@ -57,7 +57,7 @@ module StreamStats.Controllers {
         private regionService: Services.IRegionService;
         private nssService: Services.InssService;
         private studyAreaService: Services.IStudyAreaService;       
-        private reportService: Services.IModalService;    
+        private modalService: Services.IModalService;    
         private leafletData: ILeafletData;
         private multipleParameterSelectorAdd: boolean;
         private explorationService: Services.IExplorationService;
@@ -65,7 +65,7 @@ module StreamStats.Controllers {
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', 'toaster', '$analytics', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ModalService', 'leafletData', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager'];
-        constructor($scope: ISidebarControllerScope, toaster, $analytics, service: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, report: Services.IModalService, leafletData: ILeafletData, exploration: Services.IExplorationService, private EventManager:WiM.Event.IEventManager) {
+        constructor($scope: ISidebarControllerScope, toaster, $analytics, service: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, modal: Services.IModalService, leafletData: ILeafletData, exploration: Services.IExplorationService, private EventManager:WiM.Event.IEventManager) {
             $scope.vm = this;
             this.init();
 
@@ -77,7 +77,7 @@ module StreamStats.Controllers {
             this.regionService = region;
             this.nssService = StatisticsGroup;
             this.studyAreaService = studyArea;
-            this.reportService = report;
+            this.modalService = modal;
             this.leafletData = leafletData;
             this.multipleParameterSelectorAdd = true;
             this.explorationService = exploration;
@@ -313,7 +313,7 @@ module StreamStats.Controllers {
                 this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList, this.regionService.selectedRegion.RegionID, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) { return elem.code; }).join(","));
             }
 
-            this.reportService.openReport(Services.SSModalType.e_report);
+            this.modalService.openModal(Services.SSModalType.e_report);
             this.studyAreaService.reportGenerated = true;
 
         }
@@ -382,7 +382,7 @@ module StreamStats.Controllers {
         }
 
         public OpenWateruse() {
-            this.reportService.openReport(Services.SSModalType.e_wateruse);
+            this.modalService.openModal(Services.SSModalType.e_wateruse);
         }
 
         //Helper Methods

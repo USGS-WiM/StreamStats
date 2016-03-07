@@ -46,7 +46,7 @@ var StreamStats;
         'ui.router', 'ui.bootstrap', 'ui.checkbox',
         'mobile-angular-ui',
         'angulartics', 'angulartics.google.analytics',
-        'toaster', 'ngAnimate', 'ngFileUpload',
+        'toaster', 'ngAnimate', 'angularFileUpload',
         'leaflet-directive',
         'StreamStats.Services',
         'StreamStats.Controllers',
