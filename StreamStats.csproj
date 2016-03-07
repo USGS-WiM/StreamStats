@@ -109,9 +109,9 @@
     <TypeScriptCompile Include="src\Models\StudyArea.ts" />
     <TypeScriptCompile Include="src\Models\WatershedEDL.ts" />
     <TypeScriptCompile Include="src\Services\ExplorationService.ts" />
+    <TypeScriptCompile Include="src\Services\ModalService.ts" />
     <TypeScriptCompile Include="src\Services\nssService.ts" />
     <TypeScriptCompile Include="src\Services\RegionService.ts" />
-    <TypeScriptCompile Include="src\Services\ReportService.ts" />
     <TypeScriptCompile Include="src\Services\service.module.ts" />
     <TypeScriptCompile Include="src\Services\StudyAreaService.ts" />
     <TypeScriptCompile Include="_references.ts">
