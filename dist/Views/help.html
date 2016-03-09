@@ -30,7 +30,6 @@
         <form id="ticketForm" name="form">
 
             <div class="well well-sm">
-                <h3>{{vm.getBrowser()}}<small> browser detected</small></h3>
                 <div class="row">
                     <div class="col-md-12">
                             <div class="form-group">
@@ -52,8 +51,6 @@
                                 </span>  
                                 <br /><span ng-show="vm.freshdeskTicketData.attachment"><i class="fa fa-check" style="color:green"></i>&nbsp;&nbsp;{{vm.freshdeskTicketData.attachment.name}}<button class="close removeItem" style="" ng-click="vm.freshdeskTicketData.attachment = null">&times;</button></span>
                             </div>
-
-                            
 
                         <button type="submit" class="btn-wim-default" ng-click="vm.submitFreshDeskTicket(form.$valid)"><i class="fa fa-share"></i><span >&nbsp;&nbsp;Submit Support Request</span></button>
 

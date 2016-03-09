@@ -104,11 +104,10 @@ module StreamStats.Controllers {
             formdata.append('helpdesk_ticket[description]', 'sample description');
             formdata.append('helpdesk_ticket[email]', 'demo@freshdesk.com');
             formdata.append('helpdesk_ticket[subject]', 'Test subject');
-            //formdata.append('helpdesk_ticket[WorkspaceID]',  'testID1234' );
-            //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "WorkspaceID": "testID1234" }));
-            //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "Server": "testID1234" }));
-            //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "Browser": "testID1234" }));
-            //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "SoftwareVersion": "testID1234" }));
+            //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "WorkspaceID": this.StudyArea.WorkspaceID }));
+            //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "Server": "test1234" }));
+            //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "Browser": getBrowser() }));
+            //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "SoftwareVersion": configuration.appVersion }));
 
             //formdata.append('helpdesk_ticket[email]', this.freshdeskTicketData.email);
             //formdata.append('helpdesk_ticket[subject]', this.freshdeskTicketData.subject);
@@ -157,19 +156,14 @@ module StreamStats.Controllers {
 
             // Opera 8.0+
             if ((!!(<any>window).opr && !!opr.addons) || !!(<any>window).opera || navigator.userAgent.indexOf(' OPR/') >= 0) return "Opera";
-
             // Firefox 1.0+
             if (typeof InstallTrigger !== 'undefined') return "Firefox";
-
             // At least Safari 3+: "[object HTMLElementConstructor]"
             if (Object.prototype.toString.call((<any>window).HTMLElement).indexOf('Constructor') > 0) return "Safari";
-
             // Chrome 1+
             if (!!(<any>window).chrome && !!(<any>window).chrome.webstore) return "Chrome";
-
             // Edge 20+
             if (!(/*@cc_on!@*/false || !!(<any>document).documentMode) && !!(<any>window).StyleMedia) return "Edge";
-
             // Internet Explorer 6-11
             if (/*@cc_on!@*/false || !!(<any>document).documentMode) return "IE";
         }
