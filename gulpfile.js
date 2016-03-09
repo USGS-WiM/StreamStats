@@ -25,7 +25,7 @@ function inc(importance) {
     var newVer = semver.inc(version, importance);
 
     // get all the files to bump version in 
-    var task1 = gulp.src(['src/appConfig.json', 'dist/appConfig.json'])
+    var task1 = gulp.src(['src/appConfig.js', 'dist/appConfig.js'])
         // bump the version number in those files 
         .pipe(bump({ type: importance, key: 'configuration.appVersion' }))
         // save it back to filesystem 
