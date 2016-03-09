@@ -1,5 +1,4 @@
 ﻿var configuration = {}
-configuration.appVersion = "4.0.0";
 configuration.baseurls =
 {   
     'MercuryService': 'http://54.174.81.42/mercuryservices',

@@ -56,6 +56,8 @@ module StreamStats.Controllers {
         public token: string;
         public freshdeskTicketData: FreshdeskTicketData;
         public showSuccessAlert: boolean;
+        public appVersion: string;
+        public browser: string;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -106,8 +108,8 @@ module StreamStats.Controllers {
             formdata.append('helpdesk_ticket[subject]', 'Test subject');
             //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "WorkspaceID": this.StudyArea.WorkspaceID }));
             //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "Server": "test1234" }));
-            //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "Browser": getBrowser() }));
-            //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "SoftwareVersion": configuration.appVersion }));
+            //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "Browser": this.getBrowser() }));
+            //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "SoftwareVersion": this.getAppVersion() }));
 
             //formdata.append('helpdesk_ticket[email]', this.freshdeskTicketData.email);
             //formdata.append('helpdesk_ticket[subject]', this.freshdeskTicketData.subject);
@@ -148,7 +150,7 @@ module StreamStats.Controllers {
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {
-          
+            this.getAppVersion();
         }
 
         private getBrowser() {
@@ -167,6 +169,13 @@ module StreamStats.Controllers {
             // Internet Explorer 6-11
             if (/*@cc_on!@*/false || !!(<any>document).documentMode) return "IE";
         }
+
+        private getAppVersion() {
+            $.getJSON("version.js", (data) => {
+                this.appVersion = data.version;
+            });
+        }
+
       
     }//end  class
 
