@@ -89,7 +89,7 @@ module StreamStats.Controllers {
 
         public submitFreshDeskTicket(isValid): void {
 
-            //if (!isValid) return;
+            if (!isValid) return;
 
             var url = 'https://streamstats.freshdesk.com/helpdesk/tickets.json';
 
@@ -100,18 +100,18 @@ module StreamStats.Controllers {
             //}
 
             /*  TESTING DATA  */
-            formdata.append('helpdesk_ticket[description]', 'sample description');
-            formdata.append('helpdesk_ticket[email]', 'demo@freshdesk.com');
-            formdata.append('helpdesk_ticket[subject]', 'Test subject');
+            //formdata.append('helpdesk_ticket[description]', 'sample description');
+            //formdata.append('helpdesk_ticket[email]', 'demo@freshdesk.com');
+            //formdata.append('helpdesk_ticket[subject]', 'Test subject');
             //formdata.append('helpdesk_ticket[WorkspaceID]',  'testID1234' );
             //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "WorkspaceID": "testID1234" }));
             //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "Server": "testID1234" }));
             //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "Browser": "testID1234" }));
             //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "SoftwareVersion": "testID1234" }));
 
-            //formdata.append('helpdesk_ticket[email]', this.freshdeskTicketData.email);
-            //formdata.append('helpdesk_ticket[subject]', this.freshdeskTicketData.subject);
-            //formdata.append('helpdesk_ticket[description]', this.freshdeskTicketData.description);  
+            formdata.append('helpdesk_ticket[email]', this.freshdeskTicketData.email);
+            formdata.append('helpdesk_ticket[subject]', this.freshdeskTicketData.subject);
+            formdata.append('helpdesk_ticket[description]', this.freshdeskTicketData.description);  
 
             //can loop over an opject and keep appending attachments here
             if (this.freshdeskTicketData.attachment) formdata.append('helpdesk_ticket[attachments][][resource]', this.freshdeskTicketData.attachment, this.freshdeskTicketData.attachment.name);
