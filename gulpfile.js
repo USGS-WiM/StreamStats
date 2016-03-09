@@ -12,9 +12,10 @@ var gulp = require('gulp'),
     connect = require('gulp-connect'),
     autoprefixer = require('gulp-autoprefixer'),
     filter = require('gulp-filter'),
-    del= require('del'),
+    del = require('del'),
     open = require('open'),
     semver = require('semver');
+
 
 //get current app version
 var version = require('./package.json').version;
@@ -25,26 +26,20 @@ function inc(importance) {
     var newVer = semver.inc(version, importance);
 
     // get all the files to bump version in 
-    var task1 = gulp.src(['src/appConfig.js', 'dist/appConfig.js'])
+    gulp.src(['package.json', 'bower.json', 'src/version.js', 'dist/version.js'])
         // bump the version number in those files 
-        .pipe(bump({ type: importance, key: 'configuration.appVersion' }))
+        .pipe(bump({ type: importance }))
         // save it back to filesystem 
-        .pipe(gulp.dest('./'))
-
-    //var task2 = gulp.src(['./package.json', './bower.json'])
-    //    // bump the version number in those files 
-    //    .pipe(bump({ type: importance }))
-    //    // save it back to filesystem 
-    //    .pipe(gulp.dest('./'))
-    //    // commit the changed version number 
-    //    .pipe(git.commit('Release v' + newVer))
-    //    // **tag it in the repository** 
-    //    //.pipe(git.tag('v' + newVer));
-    //    .pipe(git.tag('v' + newVer, 'Version message', function (err) {
-    //        if (err) throw err;
-    //    }));
-
-    return merge(task1,task2)
+        .pipe(gulp.dest(function(file) {
+            return file.base;
+        }))
+        // commit the changed version number 
+        .pipe(git.commit('Release v' + newVer))
+        // **tag it in the repository** 
+        //.pipe(git.tag('v' + newVer));
+        .pipe(git.tag('v' + newVer, 'Version message', function (err) {
+            if (err) throw err;
+        }));
 }
 
 //tasks for version tags

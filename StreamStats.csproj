@@ -33,7 +33,9 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>55481</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:55482/</IISUrl>
+          <IISUrl>http://localhost:55482</IISUrl>
+          <OverrideIISAppRootUrl>True</OverrideIISAppRootUrl>
+          <IISAppRootUrl>http://localhost:55482/</IISAppRootUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
@@ -84,7 +86,9 @@
     <Content Include="src\Views\SidebarComponents\studyareaview.html" />
     <Content Include="src\Views\sidebarview.html" />
     <Content Include="src\Views\wateruse.html" />
-    <Content Include="web.config" />
+    <Content Include="web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="typings.json" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
@@ -123,6 +127,8 @@
       <SubType>Code</SubType>
     </TypeScriptCompile>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="dist\" />
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
 </Project>

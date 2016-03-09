@@ -53,8 +53,8 @@ var StreamStats;
                 formdata.append('helpdesk_ticket[subject]', 'Test subject');
                 //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "WorkspaceID": this.StudyArea.WorkspaceID }));
                 //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "Server": "test1234" }));
-                //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "Browser": getBrowser() }));
-                //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "SoftwareVersion": configuration.appVersion }));
+                //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "Browser": this.getBrowser() }));
+                //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "SoftwareVersion": this.getAppVersion() }));
                 //formdata.append('helpdesk_ticket[email]', this.freshdeskTicketData.email);
                 //formdata.append('helpdesk_ticket[subject]', this.freshdeskTicketData.subject);
                 //formdata.append('helpdesk_ticket[description]', this.freshdeskTicketData.description);  
@@ -85,6 +85,7 @@ var StreamStats;
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             HelpController.prototype.init = function () {
+                this.getAppVersion();
             };
             HelpController.prototype.getBrowser = function () {
                 //modified from http://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browser
@@ -106,6 +107,12 @@ var StreamStats;
                 // Internet Explorer 6-11
                 if (false || !!document.documentMode)
                     return "IE";
+            };
+            HelpController.prototype.getAppVersion = function () {
+                var _this = this;
+                $.getJSON("version.js", function (data) {
+                    _this.appVersion = data.version;
+                });
             };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
