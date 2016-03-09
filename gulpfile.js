@@ -25,18 +25,26 @@ function inc(importance) {
     var newVer = semver.inc(version, importance);
 
     // get all the files to bump version in 
-    return gulp.src(['./package.json', './bower.json'])
+    var task1 = gulp.src(['src/appConfig.json', 'dist/appConfig.json'])
         // bump the version number in those files 
-        .pipe(bump({ type: importance }))
+        .pipe(bump({ type: importance, key: 'configuration.appVersion' }))
         // save it back to filesystem 
         .pipe(gulp.dest('./'))
-        // commit the changed version number 
-        .pipe(git.commit('Release v' + newVer))
-        // **tag it in the repository** 
-        //.pipe(git.tag('v' + newVer));
-        .pipe(git.tag('v' + newVer, 'Version message', function (err) {
-            if (err) throw err;
-        }));
+
+    //var task2 = gulp.src(['./package.json', './bower.json'])
+    //    // bump the version number in those files 
+    //    .pipe(bump({ type: importance }))
+    //    // save it back to filesystem 
+    //    .pipe(gulp.dest('./'))
+    //    // commit the changed version number 
+    //    .pipe(git.commit('Release v' + newVer))
+    //    // **tag it in the repository** 
+    //    //.pipe(git.tag('v' + newVer));
+    //    .pipe(git.tag('v' + newVer, 'Version message', function (err) {
+    //        if (err) throw err;
+    //    }));
+
+    return merge(task1,task2)
 }
 
 //tasks for version tags
