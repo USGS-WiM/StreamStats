@@ -6,19 +6,6 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-//-------1---------2---------3---------4---------5---------6---------7---------8
-//       01234567890123456789012345678901234567890123456789012345678901234567890
-//-------+---------+---------+---------+---------+---------+---------+---------+
-// copyright:   2016 WiM - USGS
-//    authors:  Martyn J. Smith USGS Wisconsin Internet Mapping
-//             
-// 
-//   purpose:  
-//          
-//discussion:
-//Comments
-//03.07.2016 mjs - Created
-//Import
 var StreamStats;
 (function (StreamStats) {
     var Controllers;
@@ -53,26 +40,25 @@ var StreamStats;
                 this.modalInstance.dismiss('cancel');
             };
             HelpController.prototype.submitFreshDeskTicket = function (isValid) {
+                //if (!isValid) return;
                 var _this = this;
-                if (!isValid)
-                    return;
                 var url = 'https://streamstats.freshdesk.com/helpdesk/tickets.json';
                 var formdata = new FormData();
                 //for (var key in this.freshdeskTicketData) {
                 //    formdata.append(key, this.freshdeskTicketData[key]);
                 //}
                 /*  TESTING DATA  */
-                //formdata.append('helpdesk_ticket[description]', 'sample description');
-                //formdata.append('helpdesk_ticket[email]', 'demo@freshdesk.com');
-                //formdata.append('helpdesk_ticket[subject]', 'Test subject');
+                formdata.append('helpdesk_ticket[description]', 'sample description');
+                formdata.append('helpdesk_ticket[email]', 'demo@freshdesk.com');
+                formdata.append('helpdesk_ticket[subject]', 'Test subject');
                 //formdata.append('helpdesk_ticket[WorkspaceID]',  'testID1234' );
                 //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "WorkspaceID": "testID1234" }));
                 //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "Server": "testID1234" }));
                 //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "Browser": "testID1234" }));
                 //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "SoftwareVersion": "testID1234" }));
-                formdata.append('helpdesk_ticket[email]', this.freshdeskTicketData.email);
-                formdata.append('helpdesk_ticket[subject]', this.freshdeskTicketData.subject);
-                formdata.append('helpdesk_ticket[description]', this.freshdeskTicketData.description);
+                //formdata.append('helpdesk_ticket[email]', this.freshdeskTicketData.email);
+                //formdata.append('helpdesk_ticket[subject]', this.freshdeskTicketData.subject);
+                //formdata.append('helpdesk_ticket[description]', this.freshdeskTicketData.description);  
                 //can loop over an opject and keep appending attachments here
                 if (this.freshdeskTicketData.attachment)
                     formdata.append('helpdesk_ticket[attachments][][resource]', this.freshdeskTicketData.attachment, this.freshdeskTicketData.attachment.name);
@@ -96,27 +82,31 @@ var StreamStats;
                 if (this.selectedHelpTabName == tabname)
                     return;
                 this.selectedHelpTabName = tabname;
-                //console.log('selected tab: ' + tabname);
             };
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             HelpController.prototype.init = function () {
             };
             HelpController.prototype.getBrowser = function () {
-                //// Opera 8.0+
-                //var isOpera = (!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
-                //// Firefox 1.0+
-                //var isFirefox = typeof InstallTrigger !== 'undefined';
-                //// At least Safari 3+: "[object HTMLElementConstructor]"
-                //var isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0;
-                //// Internet Explorer 6-11
-                //var isIE = /*@cc_on!@*/false || !!document.documentMode;
-                //// Edge 20+
-                //var isEdge = !isIE && !!window.StyleMedia;
-                //// Chrome 1+
-                //var isChrome = !!window.chrome && !!window.chrome.webstore;
-                //// Blink engine detection
-                //var isBlink = (isChrome || isOpera) && !!window.CSS;
+                //modified from http://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browser
+                // Opera 8.0+
+                if ((!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0)
+                    return "Opera";
+                // Firefox 1.0+
+                if (typeof InstallTrigger !== 'undefined')
+                    return "Firefox";
+                // At least Safari 3+: "[object HTMLElementConstructor]"
+                if (Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0)
+                    return "Safari";
+                // Chrome 1+
+                if (!!window.chrome && !!window.chrome.webstore)
+                    return "Chrome";
+                // Edge 20+
+                if (!(false || !!document.documentMode) && !!window.StyleMedia)
+                    return "Edge";
+                // Internet Explorer 6-11
+                if (false || !!document.documentMode)
+                    return "IE";
             };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
