@@ -89,9 +89,9 @@ module StreamStats.Controllers {
 
         public submitFreshDeskTicket(isValid): void {
 
-            //if (!isValid) return;
+            if (!isValid) return;
 
-            var url = 'https://clhimages.freshdesk.com/helpdesk/tickets.json';
+            var url = 'https://streamstats.freshdesk.com/helpdesk/tickets.json';
 
             var formdata = new FormData();
 
@@ -99,14 +99,25 @@ module StreamStats.Controllers {
             //    formdata.append(key, this.freshdeskTicketData[key]);
             //}
 
-            formdata.append('helpdesk_ticket[description]', 'sample description');
-            formdata.append('helpdesk_ticket[email]', 'demo@freshdesk.com');
-            formdata.append('helpdesk_ticket[subject]', 'Test subject');
-            formdata.append('helpdesk_ticket[custom_field]', angular.toJson({"WorkspaceID":"testID1234"}));
-            //if (this.freshdeskTicketData.attachment) formdata.append('helpdesk_ticket[attachments][][resource]', this.freshdeskTicketData.attachment, this.freshdeskTicketData.attachment.name);
+            /*  TESTING DATA  */
+            //formdata.append('helpdesk_ticket[description]', 'sample description');
+            //formdata.append('helpdesk_ticket[email]', 'demo@freshdesk.com');
+            //formdata.append('helpdesk_ticket[subject]', 'Test subject');
+            //formdata.append('helpdesk_ticket[WorkspaceID]',  'testID1234' );
+            //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "WorkspaceID": "testID1234" }));
+            //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "Server": "testID1234" }));
+            //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "Browser": "testID1234" }));
+            //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "SoftwareVersion": "testID1234" }));
+
+            formdata.append('helpdesk_ticket[email]', this.freshdeskTicketData.email);
+            formdata.append('helpdesk_ticket[subject]', this.freshdeskTicketData.subject);
+            formdata.append('helpdesk_ticket[description]', this.freshdeskTicketData.description);  
+
+            //can loop over an opject and keep appending attachments here
+            if (this.freshdeskTicketData.attachment) formdata.append('helpdesk_ticket[attachments][][resource]', this.freshdeskTicketData.attachment, this.freshdeskTicketData.attachment.name);
 
             var headers = {
-                "Authorization": "Basic " + btoa('Z5xWbeVI7HEPg2Wb9mii' + ":" + 'X'),
+                "Authorization": "Basic " + btoa('yxAClTZwexFeIxpRR6g' + ":" + 'X'),
                 "Content-Type": undefined
             };
 
@@ -128,10 +139,30 @@ module StreamStats.Controllers {
             //console.log('selected tab: ' + tabname);
         }
 
+
+
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {
           
+        }
+
+        private getBrowser() {
+
+            //// Opera 8.0+
+            //var isOpera = (!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
+            //// Firefox 1.0+
+            //var isFirefox = typeof InstallTrigger !== 'undefined';
+            //// At least Safari 3+: "[object HTMLElementConstructor]"
+            //var isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0;
+            //// Internet Explorer 6-11
+            //var isIE = /*@cc_on!@*/false || !!document.documentMode;
+            //// Edge 20+
+            //var isEdge = !isIE && !!window.StyleMedia;
+            //// Chrome 1+
+            //var isChrome = !!window.chrome && !!window.chrome.webstore;
+            //// Blink engine detection
+            //var isBlink = (isChrome || isOpera) && !!window.CSS;
         }
       
     }//end  class
