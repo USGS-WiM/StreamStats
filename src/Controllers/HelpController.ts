@@ -35,105 +35,90 @@ module StreamStats.Controllers {
         selectedHelpTabName: string;
     }
 
-    class SupportTicketData {
-        public name: string;
-        public email: string;
-        public subject: string;
-        public comment: string;
-        public attachments: any;
-    }
-
-    class GitHubIssueData {
-        public firstName: string;
-        public lastName: string;
+    class FreshdeskTicketData {
         public email: string;
         public description: string;
-        public type: string;
-        public labels: Array<string>;
+        public subject: string;
+        public attachment: any;
+        public custom_field: Object;
     }
 
     class HelpController extends WiM.Services.HTTPServiceBase implements IHelpController {
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
         private StudyArea: StreamStats.Models.IStudyArea;
+        public Upload: any;
+        public http: any;
         private modalInstance: ng.ui.bootstrap.IModalServiceInstance;
         public selectedHelpTabName: string;
-        public gitHubIssues: GitHubIssueData;
-        public SupportTicketData: SupportTicketData;
         public displayMessage: string;
         public isValid: boolean;
         public uploader: any;
+        public user: string;
+        public token: string;
+        public freshdeskTicketData: FreshdeskTicketData;
+        public picFile: any;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance', 'FileUploader'];
-        constructor($scope: IHelpControllerScope, $http: ng.IHttpService, studyAreaService: StreamStats.Services.IStudyAreaService, modal: ng.ui.bootstrap.IModalServiceInstance, uploader: any) {
-            super($http, 'http://ssdev.cr.usgs.gov');
+        static $inject = ['$scope', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance', 'Upload'];
+        constructor($scope: IHelpControllerScope, $http: ng.IHttpService, studyAreaService: StreamStats.Services.IStudyAreaService, modal: ng.ui.bootstrap.IModalServiceInstance, Upload) {
+            super($http, '');
             $scope.vm = this;
-            this.uploader = uploader;
+            this.StudyArea = studyAreaService.selectedStudyArea;
+            this.Upload = Upload;
+            this.http = $http;
+
             this.modalInstance = modal;
             this.StudyArea = studyAreaService.selectedStudyArea;
+            this.freshdeskTicketData = new FreshdeskTicketData();
             this.selectedHelpTabName = "faq";
+
+            this.user = 'marsmith@usgs.gov';
+            this.token = '7hwJo1vC8WXCCM8UtsGc5U8tj4gYedRlpnK0nrBb';
+
             this.init();  
+
         }  
         
         //Methods  
         //-+-+-+-+-+-+-+-+-+-+-+-
-
         public Close(): void {
             this.modalInstance.dismiss('cancel')
         }
 
-        //public submitGitHubIssue(): void {
-        //    var url = 'https://api.github.com/repos/USGS-WIM/StreamStats/issues';
-
-        //    if (this.gitHubIssueData.type) {
-        //        this.gitHubIssueData.labels.push(this.gitHubIssueData.type)
-        //    }
-        //    this.gitHubIssueData.body = 'First Name: ' + this.gitHubIssueData.firstName + '\nLast Name: ' + this.gitHubIssueData.lastName + '\nEmail: ' + this.gitHubIssueData.email + '\nDescription: ' + this.gitHubIssueData.description;
-        //    var data = angular.toJson(this.gitHubIssueData);
-        //    var headers = {
-        //        'Authorization': 'token 6991db72b598a37339260c9f4ef28a6fe20a1c4b'
-        //    };
-        //    var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url,true,Services.Helpers.methodType.POST,'json',data, headers);
-
-        //    this.Execute(request).then(
-        //        (response: any) => {
-        //            console.log('Got a response: ', response.statusText);
-        //            //sm when complete
-        //        },(error) => {
-        //            //sm when error
-        //        }).finally(() => {
-        //            this.toggleAboutSelected();
-        //    });
-        //}
-
-        public submitTicket(isValid: boolean): void {
-
-            //console.log("ticket form validity: ", isValid);
+        public submitFreshDeskTicket(isValid): void {
 
             //if (!isValid) return;
-            var url = 'https://streamstatshelp.zendesk.com/api/v2/tickets.json ';
-            var data = angular.toJson({ "ticket": this.SupportTicketData });
-            var user = 'marsmith@usgs.gov';
-            var token = 'bCkA8dLeVkzs5mTPamt1g7zv8EMKUCuTRpPkW7Ez';
 
-            //console.log('ticket data',data);
+            var url = 'https://clhimages.freshdesk.com/helpdesk/tickets.json';
+
+            var formdata = new FormData();
+
+            //for (var key in this.freshdeskTicketData) {
+            //    formdata.append(key, this.freshdeskTicketData[key]);
+            //}
+
+            formdata.append('helpdesk_ticket[description]', 'sample description');
+            formdata.append('helpdesk_ticket[email]', 'demo@freshdesk.com');
+            formdata.append('helpdesk_ticket[subject]', 'Test subject');
+            formdata.append('helpdesk_ticket[custom_field]', angular.toJson({"WorkspaceID":"testID1234"}));
+            //if (this.freshdeskTicketData.attachment) formdata.append('helpdesk_ticket[attachments][][resource]', this.freshdeskTicketData.attachment, this.freshdeskTicketData.attachment.name);
+
             var headers = {
-                "Authorization": "Basic " + btoa(user + '/token:' + token)
+                "Authorization": "Basic " + btoa('Z5xWbeVI7HEPg2Wb9mii' + ":" + 'X'),
+                "Content-Type": undefined
             };
-            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', data, headers);
+
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', formdata, headers, angular.identity );
 
             this.Execute(request).then(
                 (response: any) => {
-                    //console.log('Got a response: ', response);
-                    alert("Your request has been submitted.  Your request will be addressed as soon as possible");
-                    this.SupportTicketData = new SupportTicketData();
+                    console.log('Got a response: ', response);
                     //sm when complete
                 }, (error) => {
                     //sm when error
                 }).finally(() => {
-
                 });
         }
 
