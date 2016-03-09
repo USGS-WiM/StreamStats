@@ -51,13 +51,10 @@ module StreamStats.Controllers {
         public http: any;
         private modalInstance: ng.ui.bootstrap.IModalServiceInstance;
         public selectedHelpTabName: string;
-        public displayMessage: string;
-        public isValid: boolean;
-        public uploader: any;
         public user: string;
         public token: string;
         public freshdeskTicketData: FreshdeskTicketData;
-        public picFile: any;
+        public showSuccessAlert: boolean;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -77,6 +74,8 @@ module StreamStats.Controllers {
             this.user = 'marsmith@usgs.gov';
             this.token = '7hwJo1vC8WXCCM8UtsGc5U8tj4gYedRlpnK0nrBb';
 
+            this.showSuccessAlert = false;
+
             this.init();  
 
         }  
@@ -84,7 +83,8 @@ module StreamStats.Controllers {
         //Methods  
         //-+-+-+-+-+-+-+-+-+-+-+-
         public Close(): void {
-            this.modalInstance.dismiss('cancel')
+            this.showSuccessAlert = false;
+            this.modalInstance.dismiss('cancel');
         }
 
         public submitFreshDeskTicket(isValid): void {
@@ -125,11 +125,18 @@ module StreamStats.Controllers {
 
             this.Execute(request).then(
                 (response: any) => {
-                    console.log('Got a response: ', response);
-                    //sm when complete
+                    console.log('Successfully submitted help ticket: ', response);
+                    
+                    //clear out fields
+                    this.freshdeskTicketData = new FreshdeskTicketData();
+
+                    //show user feedback
+                    this.showSuccessAlert = true;
+
                 }, (error) => {
                     //sm when error
                 }).finally(() => {
+                    
                 });
         }
 

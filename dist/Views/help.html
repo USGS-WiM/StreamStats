@@ -1,0 +1,66 @@
+<!-- Modal -->
+
+<div class="modal-header">
+    <button class="close"
+            ng-click="vm.Close()">
+        &times;
+    </button>
+    <h4 class="modal-title">Help</h4>
+</div>
+<div class="modal-body">
+
+    <ul id="aboutTabs" class="nav nav-tabs">
+        <li ng-class="{'active':vm.selectedHelpTabName==='faq'}"><a ng-click="vm.selectHelpTab('faq')"><i class="fa fa-question-circle"></i>&nbsp;Frequently Asked Questions (FAQ)</a></li>
+        <li ng-class="{'active':vm.selectedHelpTabName==='submitTicket'}"><a ng-click="vm.selectHelpTab('submitTicket')"><i class="fa fa-exclamation-circle"></i>&nbsp;Submit a Support Request</a></li>
+    </ul>
+    <div style="padding-top: 10px;">
+        <div id="about" ng-if="vm.selectedHelpTabName==='faq'">
+            <!--<a href="https://streamstats.freshdesk.com/support/solutions" target="_blank">Link to FAQ</a>-->
+        </div>
+    </div>
+
+    <div style="padding-top: 10px;">
+        <div id="about" ng-if="vm.selectedHelpTabName==='submitTicket'">
+
+        <span>Use the form below to get support on a specific issue. Please include as much information as possible.</span> 
+                                       
+        <!--<iframe src="https://docs.google.com/forms/d/1Kc--HCYhgFuZoConh5uH7_VXgM1oYKrP1RErAirN8wQ/viewform?embedded=true" width="100%" height="850" frameborder="0" marginheight="0" marginwidth="0">Loading...</iframe>-->
+
+        <form id="ticketForm" name="form">
+            <div class="well well-sm">
+                <div class="row">
+                    <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="email">Email:</label>
+                                <input type="email" class="form-control" id="email" ng-model="vm.freshdeskTicketData.email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="title">Subject:</label>
+                                <input class="form-control" id="title" ng-model="vm.freshdeskTicketData.subject" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="message">Description:</label>
+                                <textarea class="form-control" rows="6" id="description" ng-model="vm.freshdeskTicketData.description" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="title">Upload an Attachment (optional):</label><br />
+                                <span class="btn-file">
+                                    <i class="fa fa-paperclip"></i>&nbsp;&nbsp;Attach File <input type="file" ngf-select ng-model="vm.freshdeskTicketData.attachment" name="file" ngf-accept="'image/*'">
+                                </span>  
+                                <br /><span ng-show="vm.freshdeskTicketData.attachment"><i class="fa fa-check" style="color:green"></i>&nbsp;&nbsp;{{vm.freshdeskTicketData.attachment.name}}<button class="close removeItem" style="" ng-click="vm.freshdeskTicketData.attachment = null">&times;</button></span>
+                            </div>
+
+                        <button type="submit" class="btn-wim-default" ng-click="vm.submitFreshDeskTicket(form.$valid)"><i class="fa fa-share"></i><span >&nbsp;&nbsp;Submit Support Request</span></button>
+
+                        <div class="wim-alert-info" ng-show="vm.showSuccessAlert">Your support request has been successfully submitted.  A member of the Streamstats team will contact you as soon as possible.</div>
+                    </div>
+                </div>
+            </div>
+            <span ng-model="vm.displayMessage"></span>
+        </form>
+    </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button ng-click="vm.Close()" class="btn-wim-default"><i class="fa fa-close"></i><span >&nbsp;&nbsp;Close</span></button>
+</div>

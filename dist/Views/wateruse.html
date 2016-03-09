@@ -1,0 +1,74 @@
+    <!-- Modal -->
+
+    <div class="modal-header hidden-print">
+        <button type="button" class="close" ng-click="vm.Close()"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Study Area Water-Use Summary</h4>
+    </div>
+    <div class="modal-body">
+        <input type="text" class="form-control" ng-model="vm.reportTitle" placeholder="Title">
+        <div ng-hide="!vm.StudyArea">A study area is needed before viewing the report</div>
+        <div ng-show="!vm.StudyArea">
+            <div class="form-group hidden-print">
+                <div class="wim-alert-info">Select a start and end year. Then continue, to estimate the water use for the study area.</div>
+                <div class="group-wrapper">
+                    <label>Start Year:</label>
+                    <input type="number" name="sdate" ng-model="vm.StartYear" min="vm.YearRange.floor" max="vm.YearRange.ceil" required>
+
+                    <label>End Year:</label>
+                    <input type="number" name="edate" ng-model="vm.EndYear" min="vm.YearRange.floor" max="vm.YearRange.ceil" required>
+
+                    <rzslider rz-slider-model="vm.StartYear" rz-slider-high="vm.EndYear" rz-slider-options="vm.YearRange"></rzslider>
+
+                    <button type="button" class="btn-wim-sm btn-wim-success btn-wim-group-1" ng-click="vm.GetWaterUse()" ng-disabled="!vm.CanContiue"><span ng-class="vm.CanContiue ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></span>&nbsp;&nbsp;Continue</button>
+                </div>
+            </div>
+            <div ng-if="vm.showResults">
+                <ul class="nav nav-tabs">
+                    <li ng-class="{'active': vm.SelectedTab == 2}"><a ng-click="vm.SelectedTab =2">Water-Use table</a></li>
+                    <li ng-class="{'active': vm.SelectedTab == 1}"><a ng-click="vm.SelectedTab=1">Water-Use Graph</a></li>
+                </ul>
+                <div class="tabs">
+                    <div ng-if="vm.SelectedTab == 1">
+                        <nvd3 options='vm.reportOptions' data='vm.GraphData'></nvd3>                        
+                    </div>
+                    <div ng-if="vm.SelectedTab == 2">
+                        <div class="well well-sm">
+                            <center>
+                                <h3>Average Water-Use By Month</h3>
+                                <header>reported in million gallons/day</header>
+                            </center>                            
+                           
+                            <table class="table table-condensed">
+                                <thead class="param-table">
+                                    <tr>
+                                        <th colspan="2">bla</th>
+                                        <th colspan="{{vm.TableData.Withdrawals.Monthly.Fields.length - 2}}">WithDrawals</th>
+                                           
+                                    </tr>
+                                </thead>
+                                <thead class="param-table">
+                                    <tr>
+                                        <th ng-repeat="item in vm.TableData.Fields">{{item}}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="item in vm.TableData">
+                                        <td>{{item[0]}}</td>
+                                        <td>{{item[1].value.toFixed(3)}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        <div class="modal-footer hidden-print">
+            <div class="btn-group">
+                <button class="btn-wim-default" ng-click="vm.Close()"><i class="fa fa-close"></i>&nbsp;&nbsp;Close</button>
+            </div>
+        </div>
+
+        
+</div>
