@@ -12,9 +12,10 @@ var gulp = require('gulp'),
     connect = require('gulp-connect'),
     autoprefixer = require('gulp-autoprefixer'),
     filter = require('gulp-filter'),
-    del= require('del'),
+    del = require('del'),
     open = require('open'),
     semver = require('semver');
+
 
 //get current app version
 var version = require('./package.json').version;
@@ -25,11 +26,13 @@ function inc(importance) {
     var newVer = semver.inc(version, importance);
 
     // get all the files to bump version in 
-    return gulp.src(['./package.json', './bower.json'])
+    gulp.src(['package.json', 'bower.json', 'src/version.js', 'dist/version.js'])
         // bump the version number in those files 
         .pipe(bump({ type: importance }))
         // save it back to filesystem 
-        .pipe(gulp.dest('./'))
+        .pipe(gulp.dest(function(file) {
+            return file.base;
+        }))
         // commit the changed version number 
         .pipe(git.commit('Release v' + newVer))
         // **tag it in the repository** 
