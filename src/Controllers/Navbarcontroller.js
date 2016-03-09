@@ -21,14 +21,20 @@ var StreamStats;
     (function (Controllers) {
         'use strict';
         var NavbarController = (function () {
-            function NavbarController($scope, report, studyArea) {
+            function NavbarController($scope, modal, studyArea) {
                 $scope.vm = this;
-                this.reportService = report;
+                this.modalService = modal;
             }
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             NavbarController.prototype.openReport = function () {
-                this.reportService.openReport(StreamStats.Services.SSModalType.e_report);
+                this.modalService.openModal(StreamStats.Services.SSModalType.e_report);
+            };
+            NavbarController.prototype.openAbout = function () {
+                this.modalService.openModal(StreamStats.Services.SSModalType.e_about);
+            };
+            NavbarController.prototype.openHelp = function () {
+                this.modalService.openModal(StreamStats.Services.SSModalType.e_help);
             };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-

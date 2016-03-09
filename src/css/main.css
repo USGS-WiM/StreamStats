@@ -444,7 +444,12 @@ div.leaflet-top > .elevation {
 }
 
 .sidebar-content {
-    margin-top:70px;
+    box-sizing:border-box;
+    padding-top: 70px;
+}
+
+.scrollable-content {
+    overflow-x:hidden;
 }
 
 .well {
@@ -692,6 +697,17 @@ div.leaflet-top > .elevation {
         background: white;
         cursor: inherit;
         display: block;
+    }
+
+    .my-drop-zone {
+	    border: dotted 3px lightgray;
+    }
+    .nv-file-over { border: dotted 3px red; } /* Default class applied to drop zones on over */
+
+    .removeItem {
+	    float: left;
+	    position: absolute;
+	    margin: 0px 0px 0px 8px;
     }
 
 /*
