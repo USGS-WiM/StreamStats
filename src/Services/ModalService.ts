@@ -1,5 +1,5 @@
 ﻿//------------------------------------------------------------------------------
-//----- reportService -----------------------------------------------------
+//----- modalService -----------------------------------------------------
 //------------------------------------------------------------------------------
 
 //-------1---------2---------3---------4---------5---------6---------7---------8
@@ -26,7 +26,7 @@
 module StreamStats.Services {
     'use strict'
     export interface IModalService {
-        openReport(mType: SSModalType);
+        openModal(mType: SSModalType);
     }
 
     class ModalService implements IModalService{       
@@ -46,7 +46,7 @@ module StreamStats.Services {
 
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
-        public openReport(mType:SSModalType) {
+        public openModal(mType:SSModalType) {
             //console.log('in report open function');
             this.modal.open(this.getModalSettings(mType));
         }  
@@ -76,6 +76,24 @@ module StreamStats.Services {
                             size: 'lg',
                             backdropClass: 'backdropZ',
                             backdrop:'static',
+                            windowClass: 'windowZ'
+                        };
+                    case SSModalType.e_about:
+                        return {
+                            templateUrl: 'Views/about.html',
+                            controller: 'StreamStats.Controllers.AboutController',
+                            size: 'lg',
+                            backdropClass: 'backdropZ',
+                            backdrop: 'static',
+                            windowClass: 'windowZ'
+                        };
+                    case SSModalType.e_help:
+                        return {
+                            templateUrl: 'Views/help.html',
+                            controller: 'StreamStats.Controllers.HelpController',
+                            size: 'lg',
+                            backdropClass: 'backdropZ',
+                            backdrop: 'static',
                             windowClass: 'windowZ'
                         };
      
