@@ -231,6 +231,7 @@ var StreamStats;
                 this.studyAreaService.reportGenerated = true;
             };
             SidebarController.prototype.checkRegulation = function () {
+                console.log('checking for regulation');
                 this.studyAreaService.upstreamRegulation();
             };
             SidebarController.prototype.queryRegressionRegions = function () {
