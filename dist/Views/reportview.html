@@ -58,8 +58,8 @@
                                 <td ng-bind="parameter.name"></td>
                                 <td ng-bind="parameter.description"></td>
                                 <td ng-bind="parameter.value"></td>
-                                <td ng-show="vm.studyAreaService.Disclaimers.isRegulated" ng-bind="parameter.unRegulatedValue"></td>
-                                <td ng-show="vm.studyAreaService.Disclaimers.isRegulated" ng-bind="parameter.regulatedValue"></td>
+                                <td ng-show="vm.studyAreaService.Disclaimers.isRegulated" ng-bind="parameter.unRegulatedValue.toFixed(3)"></td>
+                                <td ng-show="vm.studyAreaService.Disclaimers.isRegulated" ng-bind="parameter.regulatedValue.toFixed(3)"></td>
                                 <td ng-bind="parameter.unit"></td>
                             </tr>
                         </tbody>
@@ -70,7 +70,7 @@
                 <div class="well well-sm" ng-show="vm.studyAreaService.Disclaimers.parametersEdited || vm.studyAreaService.Disclaimers.isRegulated || vm.studyAreaService.Disclaimers.isEdited || vm.studyAreaService.Disclaimers.isInExclusionArea">
                     <h4>General Disclaimers</h4>
                     <div class="wim-alert-danger" ng-show="vm.studyAreaService.Disclaimers.parametersEdited">Parameter values have been edited, computed flows may not apply.</div>
-                    <div class="wim-alert-danger" ng-show="vm.studyAreaService.Disclaimers.isRegulated">This watershed is regulated, computed flows may not apply.</div>
+                    <div class="wim-alert-danger" ng-show="vm.studyAreaService.Disclaimers.isRegulated">This watershed is {{vm.studyAreaService.regulationCheckResults.percentarearegulated.toFixed(2)}} percent regulated, computed flows may not apply.</div>
                     <div class="wim-alert-danger" ng-show="vm.studyAreaService.Disclaimers.isEdited">This watershed has been edited, computed flows may not apply.</div>
                     <div class="wim-alert-danger" ng-show="vm.studyAreaService.Disclaimers.isInExclusionArea">This watershed is in an exclusion area.</div>
                 </div>
