@@ -56,8 +56,6 @@ module StreamStats.Controllers {
         public token: string;
         public freshdeskTicketData: FreshdeskTicketData;
         public showSuccessAlert: boolean;
-        public appVersion: string;
-        public browser: string;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -150,7 +148,7 @@ module StreamStats.Controllers {
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {
-            this.getAppVersion();
+          
         }
 
         private getBrowser() {
@@ -171,8 +169,9 @@ module StreamStats.Controllers {
         }
 
         private getAppVersion() {
-            $.getJSON("version.js", (data) => {
-                this.appVersion = data.version;
+            console.log('getting app version')
+            $.getJSON("version.json", function (data) {
+                return data.version;
             });
         }
 
