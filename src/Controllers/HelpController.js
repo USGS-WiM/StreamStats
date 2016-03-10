@@ -28,8 +28,6 @@ var StreamStats;
                 this.StudyArea = studyAreaService.selectedStudyArea;
                 this.freshdeskTicketData = new FreshdeskTicketData();
                 this.selectedHelpTabName = "faq";
-                this.user = 'marsmith@usgs.gov';
-                this.token = '7hwJo1vC8WXCCM8UtsGc5U8tj4gYedRlpnK0nrBb';
                 this.showSuccessAlert = false;
                 this.init();
             }
@@ -51,10 +49,10 @@ var StreamStats;
                 formdata.append('helpdesk_ticket[description]', 'sample description');
                 formdata.append('helpdesk_ticket[email]', 'demo@freshdesk.com');
                 formdata.append('helpdesk_ticket[subject]', 'Test subject');
-                //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "WorkspaceID": this.StudyArea.WorkspaceID }));
-                //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "Server": "test1234" }));
-                //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "Browser": this.getBrowser() }));
-                //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "SoftwareVersion": this.getAppVersion() }));
+                formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "WorkspaceID": this.WorkspaceID }));
+                formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "Server": "test1234" }));
+                formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "Browser": this.Browser }));
+                formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "SoftwareVersion": this.AppVersion }));
                 //formdata.append('helpdesk_ticket[email]', this.freshdeskTicketData.email);
                 //formdata.append('helpdesk_ticket[subject]', this.freshdeskTicketData.subject);
                 //formdata.append('helpdesk_ticket[description]', this.freshdeskTicketData.description);  
@@ -86,32 +84,37 @@ var StreamStats;
             //-+-+-+-+-+-+-+-+-+-+-+-
             HelpController.prototype.init = function () {
                 this.getAppVersion();
+                this.getBrowser();
+                if (this.StudyArea && this.StudyArea.WorkspaceID)
+                    this.WorkspaceID = this.StudyArea.WorkspaceID;
+                else
+                    this.WorkspaceID = '';
             };
             HelpController.prototype.getBrowser = function () {
                 //modified from http://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browser
                 // Opera 8.0+
                 if ((!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0)
-                    return "Opera";
+                    this.Browser = "Opera";
                 // Firefox 1.0+
                 if (typeof InstallTrigger !== 'undefined')
-                    return "Firefox";
+                    this.Browser = "Firefox";
                 // At least Safari 3+: "[object HTMLElementConstructor]"
                 if (Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0)
-                    return "Safari";
+                    this.Browser = "Safari";
                 // Chrome 1+
                 if (!!window.chrome && !!window.chrome.webstore)
-                    return "Chrome";
+                    this.Browser = "Chrome";
                 // Edge 20+
                 if (!(false || !!document.documentMode) && !!window.StyleMedia)
-                    return "Edge";
+                    this.Browser = "Edge";
                 // Internet Explorer 6-11
                 if (false || !!document.documentMode)
-                    return "IE";
+                    this.Browser = "IE";
             };
             HelpController.prototype.getAppVersion = function () {
                 var _this = this;
                 $.getJSON("version.js", function (data) {
-                    _this.appVersion = data.version;
+                    _this.AppVersion = data.version;
                 });
             };
             //Constructor
