@@ -26,11 +26,13 @@ var StreamStats;
         'use string';
         var AboutController = (function (_super) {
             __extends(AboutController, _super);
-            function AboutController($scope, $http, studyAreaService, modal) {
+            function AboutController($scope, $http, modalService, region, studyAreaService, modal) {
                 _super.call(this, $http, 'http://ssdev.cr.usgs.gov');
                 $scope.vm = this;
                 this.modalInstance = modal;
+                this.modalService = modalService;
                 this.StudyArea = studyAreaService.selectedStudyArea;
+                this.regionService = region;
                 this.selectedAboutTabName = "about";
                 this.init();
             }
@@ -45,13 +47,51 @@ var StreamStats;
                 this.selectedAboutTabName = tabname;
                 //console.log('selected tab: '+tabname);
             };
+            AboutController.prototype.getRegionHelpArticle = function () {
+                $('#supportContent').html('<h3>No State or Region Selected</h3>');
+                var regionID;
+                if (this.modalService.modalOptions) {
+                    if (this.modalService.modalOptions.tabName)
+                        this.selectAboutTab(this.modalService.modalOptions.tabName);
+                    regionID = this.modalService.modalOptions.regionID;
+                }
+                if (this.regionService.selectedRegion)
+                    regionID = this.regionService.selectedRegion.Name;
+                if (!regionID)
+                    return;
+                console.log("Trying to open help page for: ", regionID);
+                var headers = {
+                    "Authorization": "Basic " + btoa('***REMOVED***' + ":" + 'X'),
+                };
+                var url = 'https://streamstats.freshdesk.com/solution/categories/9000028363/folders/9000163015.json';
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
+                this.Execute(request).then(function (response) {
+                    console.log('Successfully retrieved support desk request: ', response);
+                    response.data.folder.articles.forEach(function (article) {
+                        if (article.title == regionID) {
+                            console.log("Help article found for : ", regionID);
+                            $('#supportContent').html('<h3>StreamStats for ' + regionID + '</h3>' + article.description);
+                            return;
+                        }
+                        else {
+                            console.log("No help article found");
+                            $('#supportContent').html('<h3>No help article found for ' + regionID + '</h3>');
+                        }
+                    });
+                }, function (error) {
+                    //sm when error
+                }).finally(function () {
+                });
+            };
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             AboutController.prototype.init = function () {
+                console.log("in about controller");
+                this.getRegionHelpArticle();
             };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
-            AboutController.$inject = ['$scope', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance'];
+            AboutController.$inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', '$modalInstance'];
             return AboutController;
         })(WiM.Services.HTTPServiceBase); //end  class
         angular.module('StreamStats.Controllers')

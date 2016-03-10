@@ -1,7 +1,3 @@
-<button id="aboutButton" class="btn-default navbar-btn pull-right navBarButton" ng-click="vm.toggleAboutSelected()">
-    <i class="fa fa-info"></i><span class="hidden-xs">&nbsp;&nbsp;About</span>
-</button>
-
 <!-- Modal -->
 
 <div class="modal-header">
@@ -14,7 +10,7 @@
 <div class="modal-body">
         <ul id="aboutTabs" class="nav nav-tabs">
             <li ng-class="{'active':vm.selectedAboutTabName==='about'}"><a ng-click="vm.selectAboutTab('about')"><i class="fa fa-question-circle"></i>&nbsp;About the project</a></li>
-            <li ng-class="{'active':vm.selectedAboutTabName==='disclaimer'}"><a ng-click="vm.selectAboutTab('disclaimer')"><i class="fa fa-exclamation-circle"></i>&nbsp;Limitations</a></li>
+            <li ng-class="{'active':vm.selectedAboutTabName==='disclaimer'}"><a ng-click="vm.selectAboutTab('disclaimer')"><i class="fa fa-exclamation-circle"></i>&nbsp;State / Regional Info</a></li>
         </ul>
         <div style="padding-top: 10px;">
             <div id="about" ng-if="vm.selectedAboutTabName==='about'">
@@ -25,16 +21,18 @@
                 <p>Introductory pages that explain any unique functionality, outline the general implementation level, and provide citations to reports documenting the methods implemented for each state and region are available here: <a href="http://water.usgs.gov/osw/streamstats/ssonline.html" target="_blank">http://water.usgs.gov/osw/streamstats/ssonline.html</a>
                 </p>
 
-                <p>The StreamStats 4.0 interface was developed by the Wisconsin Internet Mapping (WiM) group in collaboration with the Office of Surface Water StreamStats team working with USGS Water Science Centers across the nation.</p>
-
-            </div>
-            <div id="disclaimer" ng-show="vm.selectedAboutTabName==='disclaimer'" >
                 <h4>This application is currently in BETA</h4>
 
                 <p>Absolutely no accuracy or completeness guarantee is implied or intended. The U.S. Geological Survey expressly disclaims responsibility for damages or liability that may arise from use of these data.</p>
 
                 <p>Please view the comprehensive explanation of limitations of StreamStats here: <a href="http://water.usgs.gov/osw/streamstats/ssdis.html" target="_blank">http://water.usgs.gov/osw/streamstats/ssdis.html</a></p>
-                            
+
+                <p>The StreamStats 4.0 interface was developed by the Wisconsin Internet Mapping (WiM) group in collaboration with the Office of Surface Water StreamStats team working with USGS Water Science Centers across the nation.</p>
+
+            </div>
+            <div id="disclaimer" ng-show="vm.selectedAboutTabName==='disclaimer'" >
+                <div id="supportContent" ><h3>No State or Region Selected</h3></div>
+                     
             </div>
                         
             <div id="contact" ng-show="vm.selectedAboutTabName === 'contact'">

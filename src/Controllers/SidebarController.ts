@@ -145,9 +145,12 @@ module StreamStats.Controllers {
 
         public openStatePage(e, region) {
             e.stopPropagation(); e.preventDefault();
-            var regionParsed = region.replace(' ', '_').toLowerCase();
-            console.log('Open state page for: ', regionParsed);
-            window.open('http://water.usgs.gov/osw/streamstats/' + regionParsed + '.html', '_blank');
+            
+            console.log('Opening state page for: ', region);
+            this.modalService.openModal(Services.SSModalType.e_about, { "tabName": "disclaimer", "regionID": region});
+            
+            //var regionParsed = region.replace(' ', '_').toLowerCase();
+            //window.open('http://water.usgs.gov/osw/streamstats/' + regionParsed + '.html', '_blank');
         }
 
         public resetWorkSpace() {

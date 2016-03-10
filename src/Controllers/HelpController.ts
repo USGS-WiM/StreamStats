@@ -74,10 +74,6 @@ module StreamStats.Controllers {
             this.StudyArea = studyAreaService.selectedStudyArea;
             this.freshdeskTicketData = new FreshdeskTicketData();
             this.selectedHelpTabName = "faq";
-
-            this.user = 'marsmith@usgs.gov';
-            this.token = '7hwJo1vC8WXCCM8UtsGc5U8tj4gYedRlpnK0nrBb';
-
             this.showSuccessAlert = false;
 
             this.init();

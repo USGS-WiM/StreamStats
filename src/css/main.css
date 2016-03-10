@@ -710,6 +710,10 @@ div.leaflet-top > .elevation {
 	    margin: 0px 0px 0px 8px;
     }
 
+    #supportContent p {
+        font-size: 14px;
+    }
+
 /*
     ===========================
     ===========================
