@@ -322,7 +322,7 @@ module StreamStats.Controllers {
         }
 
         public checkRegulation() {
-
+            console.log('checking for regulation');
             this.studyAreaService.upstreamRegulation();
         }
 
