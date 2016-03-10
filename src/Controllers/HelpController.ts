@@ -29,9 +29,9 @@ module StreamStats.Controllers {
     }
 
     interface IModal {
-        Close():void
+        Close(): void
     }
-    
+
     interface IHelpController extends IModal {
         selectedHelpTabName: string;
     }
@@ -56,6 +56,9 @@ module StreamStats.Controllers {
         public token: string;
         public freshdeskTicketData: FreshdeskTicketData;
         public showSuccessAlert: boolean;
+        public WorkspaceID: string; 
+        public AppVersion: string;
+        public Browser: string;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -77,7 +80,7 @@ module StreamStats.Controllers {
 
             this.showSuccessAlert = false;
 
-            this.init();  
+            this.init();
 
         }  
         
@@ -104,10 +107,10 @@ module StreamStats.Controllers {
             formdata.append('helpdesk_ticket[description]', 'sample description');
             formdata.append('helpdesk_ticket[email]', 'demo@freshdesk.com');
             formdata.append('helpdesk_ticket[subject]', 'Test subject');
-            //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "WorkspaceID": this.StudyArea.WorkspaceID }));
-            //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "Server": "test1234" }));
-            //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "Browser": this.getBrowser() }));
-            //formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "SoftwareVersion": this.getAppVersion() }));
+            formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "WorkspaceID": this.WorkspaceID }));
+            formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "Server": "test1234" }));
+            formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "Browser": this.Browser }));
+            formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "SoftwareVersion": this.AppVersion }));
 
             //formdata.append('helpdesk_ticket[email]', this.freshdeskTicketData.email);
             //formdata.append('helpdesk_ticket[subject]', this.freshdeskTicketData.subject);
@@ -121,7 +124,7 @@ module StreamStats.Controllers {
                 "Content-Type": undefined
             };
 
-            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', formdata, headers, angular.identity );
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', formdata, headers, angular.identity);
 
             this.Execute(request).then(
                 (response: any) => {
@@ -136,7 +139,7 @@ module StreamStats.Controllers {
                 }, (error) => {
                     //sm when error
                 }).finally(() => {
-                    
+
                 });
         }
 
@@ -148,34 +151,36 @@ module StreamStats.Controllers {
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {
-          
+            this.getAppVersion();
+            this.getBrowser();
+            if (this.StudyArea && this.StudyArea.WorkspaceID) this.WorkspaceID = this.StudyArea.WorkspaceID;
+            else this.WorkspaceID = '';
         }
 
         private getBrowser() {
             //modified from http://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browser
 
             // Opera 8.0+
-            if ((!!(<any>window).opr && !!opr.addons) || !!(<any>window).opera || navigator.userAgent.indexOf(' OPR/') >= 0) return "Opera";
+            if ((!!(<any>window).opr && !!opr.addons) || !!(<any>window).opera || navigator.userAgent.indexOf(' OPR/') >= 0) this.Browser = "Opera";
             // Firefox 1.0+
-            if (typeof InstallTrigger !== 'undefined') return "Firefox";
+            if (typeof InstallTrigger !== 'undefined') this.Browser = "Firefox";
             // At least Safari 3+: "[object HTMLElementConstructor]"
-            if (Object.prototype.toString.call((<any>window).HTMLElement).indexOf('Constructor') > 0) return "Safari";
+            if (Object.prototype.toString.call((<any>window).HTMLElement).indexOf('Constructor') > 0) this.Browser = "Safari";
             // Chrome 1+
-            if (!!(<any>window).chrome && !!(<any>window).chrome.webstore) return "Chrome";
+            if (!!(<any>window).chrome && !!(<any>window).chrome.webstore) this.Browser = "Chrome";
             // Edge 20+
-            if (!(/*@cc_on!@*/false || !!(<any>document).documentMode) && !!(<any>window).StyleMedia) return "Edge";
+            if (!(/*@cc_on!@*/false || !!(<any>document).documentMode) && !!(<any>window).StyleMedia) this.Browser = "Edge";
             // Internet Explorer 6-11
-            if (/*@cc_on!@*/false || !!(<any>document).documentMode) return "IE";
+            if (/*@cc_on!@*/false || !!(<any>document).documentMode) this.Browser = "IE";
         }
 
         private getAppVersion() {
-            console.log('getting app version')
-            $.getJSON("version.json", function (data) {
-                return data.version;
+            $.getJSON("version.js", (data) => {
+                this.AppVersion = data.version;
             });
         }
 
-      
+
     }//end  class
 
     angular.module('StreamStats.Controllers')
