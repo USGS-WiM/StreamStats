@@ -85,7 +85,6 @@ var StreamStats;
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             HelpController.prototype.init = function () {
-                this.getAppVersion();
             };
             HelpController.prototype.getBrowser = function () {
                 //modified from http://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browser
@@ -109,9 +108,9 @@ var StreamStats;
                     return "IE";
             };
             HelpController.prototype.getAppVersion = function () {
-                var _this = this;
-                $.getJSON("version.js", function (data) {
-                    _this.appVersion = data.version;
+                console.log('getting app version');
+                $.getJSON("version.json", function (data) {
+                    return data.version;
                 });
             };
             //Constructor
