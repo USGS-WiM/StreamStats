@@ -58,8 +58,8 @@
                                 <td ng-bind="parameter.name"></td>
                                 <td ng-bind="parameter.description"></td>
                                 <td ng-bind="parameter.value"></td>
-                                <td ng-show="vm.studyAreaService.Disclaimers.isRegulated" ng-bind="parameter.unRegulatedValue.toUSGSvalue()"></td>
-                                <td ng-show="vm.studyAreaService.Disclaimers.isRegulated" ng-bind="parameter.regulatedValue.toUSGSvalue()"></td>
+                                <td ng-show="vm.studyAreaService.Disclaimers.isRegulated" ng-bind="parameter.unRegulatedValue"></td>
+                                <td ng-show="vm.studyAreaService.Disclaimers.isRegulated" ng-bind="parameter.regulatedValue"></td>
                                 <td ng-bind="parameter.unit"></td>
                             </tr>
                         </tbody>
@@ -93,9 +93,9 @@
                             <tbody>
                                 <tr ng-repeat="parameter in RegressionRegion.Parameters">
                                     <td ng-bind="parameter.Name"></td>
-                                    <td ng-bind="parameter.Value.toUSGSvalue()" ng-class="(parameter.Value < parameter.Limits.Min) || (parameter.Value > parameter.Limits.Max) ? 'danger' : ''"></td>
-                                    <td ng-bind="parameter.Limits.Min.toUSGSvalue()"></td>
-                                    <td ng-bind="parameter.Limits.toUSGSvalue()"></td>
+                                    <td ng-bind="parameter.Value" ng-class="(parameter.Value < parameter.Limits.Min) || (parameter.Value > parameter.Limits.Max) ? 'danger' : ''"></td>
+                                    <td ng-bind="parameter.Limits.Min"></td>
+                                    <td ng-bind="parameter.Limits.Max"></td>
                                 </tr>
                             </tbody>
                         </table>

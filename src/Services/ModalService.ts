@@ -26,7 +26,13 @@
 module StreamStats.Services {
     'use strict'
     export interface IModalService {
-        openModal(mType: SSModalType);
+        openModal(mType: SSModalType, options?: IModalOptions);
+        modalOptions: IModalOptions;
+    }
+
+    export interface IModalOptions {
+        tabName: string;
+        regionID: string;
     }
 
     class ModalService implements IModalService{       
@@ -37,6 +43,7 @@ module StreamStats.Services {
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
         public modal: ng.ui.bootstrap.IModalService;
+        public modalOptions: IModalOptions;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -46,8 +53,12 @@ module StreamStats.Services {
 
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
-        public openModal(mType:SSModalType) {
-            //console.log('in report open function');
+        public openModal(mType: SSModalType, options: IModalOptions = null) {
+            
+            if (options) {
+                this.modalOptions = options
+                console.log('in modal open function', this.modalOptions);
+            }
             this.modal.open(this.getModalSettings(mType));
         }  
 
