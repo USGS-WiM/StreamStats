@@ -31,54 +31,8 @@
 
             </div>
             <div id="disclaimer" ng-show="vm.selectedAboutTabName==='disclaimer'" >
-                <div id="supportContent" ><h3>No State or Region Selected</h3></div>
-                     
-            </div>
-                        
-            <div id="contact" ng-show="vm.selectedAboutTabName === 'contact'">
-                <h3>Submit a GitHub issue</h3>
-                <form id="contact-form">
-                    <div class="well well-sm">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="first-name">First Name:</label>
-                                    <input type="text" class="form-control" id="first-name" ng-model="vm.gitHubIssueData.firstName">
-                                </div>
-                                <div class="form-group">
-                                    <label for="last-name">Last Name:</label>
-                                    <input type="text" class="form-control" id="last-name" ng-model="vm.gitHubIssueData.lastName">
-                                </div>
-                                <div class="form-group">
-                                    <label for="email">Email:</label>
-                                    <input type="email" class="form-control" id="email" ng-model="vm.gitHubIssueData.email">
-                                </div>
-
-                            </div>
-                            <div class="col-md-8">
-                                <div class="form-group">
-                                    <label for="title">Title:</label>
-                                    <input class="form-control" id="title" ng-model="vm.gitHubIssueData.title" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="message">Description:</label>
-                                    <textarea class="form-control" rows="6" id="description" ng-model="vm.gitHubIssueData.description"></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label for="email">Issue Type: </label>
-                                    <input type="radio" ng-model="vm.gitHubIssueData.type" value="Bug" /><label for="Bug">Bug</label>
-                                    <input type="radio" ng-model="vm.gitHubIssueData.type" value="Enhancement" /><label for="Enhancement">Enhancement</label>
-                                </div>
-                            </div>
-                            <div class="col-md-12">
-
-                                <button type="submit" class="btn-wim-info pull-right" ng-click="vm.submitGitHubIssue()"><i class="fa fa-check"></i><span >&nbsp;&nbsp;Submit</span></button>
-         
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
+                <div id="supportContent" ><h3>No State or Region Selected</h3></div>  
+            </div>       
         </div>
 </div>
 
