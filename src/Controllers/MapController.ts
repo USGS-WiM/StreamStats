@@ -28,7 +28,7 @@ module StreamStats.Controllers {
     declare var greinerHormann;
     declare var ga;
 
-    //'use strict';
+    'use strict';
     interface ILeafletData {
         getMap(): ng.IPromise<any>;
         getLayers(): ng.IPromise<any>;

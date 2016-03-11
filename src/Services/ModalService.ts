@@ -42,6 +42,7 @@ module StreamStats.Services {
         //-+-+-+-+-+-+-+-+-+-+-+-
         constructor($modal: ng.ui.bootstrap.IModalService) {
             this.modal = $modal;
+            
         }
 
         //Methods

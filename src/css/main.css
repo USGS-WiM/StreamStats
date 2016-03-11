@@ -567,7 +567,7 @@ div.leaflet-top > .elevation {
     ===========================
     ===========================
 */
-.wateruseTabs {
+.wateruseTabs > li {
     float: right;
 }
 .modal{
