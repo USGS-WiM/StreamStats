@@ -9,7 +9,7 @@
         <div ng-hide="vm.StudyArea">A study area is needed before viewing the report</div>
         <div ng-show="vm.StudyArea">
             <div ng-if="!vm.showResults" class="form-group hidden-print">
-                <div class="wim-alert-info">Select a start and end year. Then continue, to estimate the water use for the study area.</div>
+                <div class="wim-alert">Select a start and end year. Then continue, to estimate the water use for the study area.</div>
                 <div class="group-wrapper">
                     <label>Start Year:</label>
                     <input type="number" name="sdate" ng-model="vm.StartYear" min="vm.YearRange.floor" max="vm.YearRange.ceil" required>
