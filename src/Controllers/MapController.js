@@ -19,6 +19,7 @@ var StreamStats;
 (function (StreamStats) {
     var Controllers;
     (function (Controllers) {
+        'use strict';
         var MapPoint = (function () {
             function MapPoint() {
                 this.lat = 0;
