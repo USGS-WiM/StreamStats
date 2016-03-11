@@ -438,8 +438,8 @@ module StreamStats.Services {
                         //this.loadRegulatedParameterResults(this.regulationCheckResults.parameters);
                         this.Disclaimers['isRegulated'] = true;     
                          
-                        //only raise event if true
-                        this.eventManager.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);                    
+                        //COMMENT OUT ONSELECTEDSTUDYAREA changed event 3/11/16
+                        //this.eventManager.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);                    
                     }
                     else {
                         //alert("No regulation found");
