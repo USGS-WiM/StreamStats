@@ -64,8 +64,8 @@ var StreamStats;
                 var _this = this;
                 this.CanContiue = false;
                 //http://ssdev.cr.usgs.gov/streamstatsservices/wateruse.json?rcode=OH&workspaceID=OH20160217071851546000&startyear=2005&endyear=2009
-                //var url = configuration.queryparams['Wateruse'].format(this.StudyArea.RegionID, this.StudyArea.WorkspaceID, this.StartYear, this.EndYear);
-                var url = "wateruse.js";
+                var url = configuration.queryparams['Wateruse'].format(this.StudyArea.RegionID, this.StudyArea.WorkspaceID, this.StartYear, this.EndYear);
+                //var url = "wateruse.js";
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     _this.showResults = true;
@@ -205,15 +205,31 @@ var StreamStats;
             //-+-+-+-+-+-+-+-+-+-+-+-
             WateruseController.prototype.init = function () {
                 var _this = this;
+                //http://ssdev.cr.usgs.gov/streamstatsservices/wateruse.json?rcode=OH&workspaceID=OH20160217071851546000&startyear=2005&endyear=2009
+                var url = configuration.queryparams['Wateruse'].format(this.StudyArea.RegionID);
+                //var url = "wateruse.js";
+                var request = new WiM.Services.Helpers.RequestInfo(url);
+                this.Execute(request).then(function (response) {
+                    _this.showResults = true;
+                    //sm when complete
+                    _this.result = response.data;
+                    _this.GetGraphData(WaterUseType.Monthly);
+                    _this.GetGraphData(WaterUseType.Annual);
+                    _this.ReportData.Monthly.Table = _this.GetTableData(WaterUseType.Monthly);
+                    _this.ReportData.Annual.Table = _this.GetTableData(WaterUseType.Annual);
+                }, function (error) {
+                    //sm when error                    
+                }).finally(function () {
+                    _this.CanContiue = true;
+                });
                 this._startYear = 2005;
                 this._endYear = 2012;
                 this._yearRange = { floor: 2005, draggableRange: true, noSwitching: true, showTicks: false, ceil: 2012 };
-                this.CanContiue = true;
+                this.CanContiue = false;
                 this.showResults = false;
                 this.SelectedTab = WaterUseTabType.Graph;
                 this.SelectedWaterUseType = WaterUseType.Annual;
                 this.ReportData = new WaterUseReportable();
-                //http://stackoverflow.com/questions/31740108/angular-nvd3-multibar-chart-with-dual-y-axis-to-showup-only-line-using-json-data
                 this.MonthlyReportOptions = {
                     chart: {
                         type: 'multiBarHorizontalChart',
