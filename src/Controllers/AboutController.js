@@ -86,7 +86,7 @@ var StreamStats;
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             AboutController.prototype.init = function () {
-                console.log("in about controller");
+                //console.log("in about controller");
                 this.getRegionHelpArticle();
             };
             //Constructor
