@@ -63,7 +63,7 @@ var StreamStats;
                 var headers = {
                     "Authorization": "Basic " + btoa('yxAClTZwexFeIxpRR6g' + ":" + 'X'),
                 };
-                var url = 'https://streamstats.freshdesk.com/solution/categories/9000028363/folders/9000163015.json';
+                var url = 'https://streamstats.freshdesk.com/solution/categories/9000106501/folders/9000163157.json';
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
                 this.Execute(request).then(function (response) {
                     console.log('Successfully retrieved support desk request: ', response);
