@@ -23,7 +23,7 @@
 declare var Highcharts: any;
 declare var d3: any;
 module StreamStats.Controllers {
-    'use string';
+    'use strict';
     interface IWateruseControllerScope extends ng.IScope {
         vm: IWateruseController;
     }
@@ -31,7 +31,24 @@ module StreamStats.Controllers {
     interface IModal {
         Close():void
     }
+    interface IReportable {
+        Graph: any;
+        Table: any;
+    }
+    interface IWaterUseReportable {
+        Annual: IReportable;
+        Monthly: IReportable;
+    }
     
+    class WaterUseReportable implements IWaterUseReportable{
+        public Annual: IReportable;
+        public Monthly: IReportable;
+        public constructor() {
+            this.Annual = { Graph: {}, Table: {}};
+            this.Monthly = { Graph: { withdrawals: null, returns: null}, Table: {} };
+        }
+
+    }
     interface IWateruseController extends IModal {
         StartYear: number;
         EndYear: number; 
@@ -65,23 +82,23 @@ module StreamStats.Controllers {
             return this._yearRange;
         }
         public CanContiue: boolean;
-        public reportOptions: any;
-        public highchartConfig: any;
+        public MonthlyReportOptions: any;
+        public MonthlyReturnReportOptions: any;
+        public AnnualReportOptions: any;
         public result: any;
         public SelectedTab: WaterUseTabType;
         public SelectedWaterUseType: WaterUseType; 
-        public GraphData: Array<any>;
-        public TableData: Array<any>;
+        public ReportData: IWaterUseReportable;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance'];
-        constructor($scope: IWateruseControllerScope, $http: ng.IHttpService, studyAreaService: StreamStats.Services.IStudyAreaService, modal:ng.ui.bootstrap.IModalServiceInstance) {
+        static $inject = ['$scope', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance', '$timeout'];
+        constructor($scope: IWateruseControllerScope, $http: ng.IHttpService, studyAreaService: StreamStats.Services.IStudyAreaService, modal:ng.ui.bootstrap.IModalServiceInstance, public $timeout:ng.ITimeoutService) {
             super($http, 'http://ssdev.cr.usgs.gov');
             $scope.vm = this;
             this.modalInstance = modal;
             this.StudyArea = studyAreaService.selectedStudyArea;
-            this.init();  
+            this.init();              
         }  
         
         //Methods  
@@ -89,17 +106,22 @@ module StreamStats.Controllers {
         public GetWaterUse() {
             this.CanContiue = false;
             //http://ssdev.cr.usgs.gov/streamstatsservices/wateruse.json?rcode=OH&workspaceID=OH20160217071851546000&startyear=2005&endyear=2009
-            //var url = configuration.queryparams['Wateruse'].format(this.StudyArea.RegionID, this.StudyArea.WorkspaceID, this.StartYear, this.EndYear);
-            var url = "wateruse.js";
-            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url,true);
+            var url = configuration.queryparams['Wateruse'].format(this.StudyArea.RegionID, this.StudyArea.WorkspaceID, this.StartYear, this.EndYear);
+            //var url = "wateruse.js";
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url);
 
             this.Execute(request).then(
-                (response: any) => {                   
+                (response: any) => {  
+                    this.showResults = true;                 
                     //sm when complete
                     this.result = response.data;
-                    this.GraphData = this.GetGraphData();
-                    this.TableData = this.GetTableData();
-                    this.showResults = true;
+                    this.GetGraphData(WaterUseType.Monthly);
+                    this.GetGraphData(WaterUseType.Annual);
+
+                    this.ReportData.Monthly.Table = this.GetTableData(WaterUseType.Monthly);                    
+                    this.ReportData.Annual.Table = this.GetTableData(WaterUseType.Annual);
+
+                    
                 }, (error) => {
                     //sm when error                    
                 }).finally(() => {  
@@ -109,70 +131,134 @@ module StreamStats.Controllers {
         public Close(): void {
             this.modalInstance.dismiss('cancel')
         }
-        
-        public GetGraphData(): Array<any> {
-            if (!this.result.hasOwnProperty("DailyMonthlyAveWithdrawalsByCode")) return;
-            var results: Array<any> = this.result.DailyMonthlyAveWithdrawalsByCode.map((elem) => {
-                return {
-                    "key": elem[0].name.slice(-2),
-                    "values": elem.map(function (values) {
-
-                        return {
-                            "label": values.name.substring(6, 9),
-                            "stack":values.type,
-                            "value": values.value
-                        }
-
-                    })
-                };
-            });
-
-            return results;
+        public Reset(): void {
+            this.init();
         }
-        public GetTableData(): any {
+        public Print(): void {
+            window.print();
+        }
+        
+        public GetGraphData(useType: WaterUseType): void {
+            
+            switch (useType) {               
+                case WaterUseType.Monthly:
+                    this.ReportData.Monthly.Graph.withdrawals = [];
+                    if (!this.result.hasOwnProperty("DailyMonthlyAveWithdrawalsByCode")) return;
+                    this.ReportData.Monthly.Graph.withdrawals = this.result.DailyMonthlyAveWithdrawalsByCode.map((elem) => {
+                        return {
+                            "key": elem[0].name.slice(-2),
+                            "values": elem.map(function (values) {
+
+                                return {
+                                    "label": values.name.substring(6, 9),
+                                    "stack": values.type,
+                                    "value": values.value
+                                }
+
+                            })
+                        };
+                    });
+
+                    this.ReportData.Monthly.Graph.returns = [];
+                    var values = [];
+                    if (this.result.hasOwnProperty("MonthlyWaterUseCoeff")) {
+                        
+                        (<Array<any>>this.result.MonthlyWaterUseCoeff).forEach((item) => {
+                            if (item.name === "Total Returns" && item.unit === "MGD") {
+                                values.push({ "label": item.type, "stack": item.name, "value": item.value });
+                            }
+                        });//next
+
+                        this.ReportData.Monthly.Graph.returns.push({
+                            "key": "Returns",
+                            "values": values,
+                            "color": "#ff7f0e"
+                        });
+                        
+
+                    }//end if
+                    break;
+                case WaterUseType.Annual:
+                    this.ReportData.Annual.Graph = [];
+                    if (this.result.hasOwnProperty("AveGWWithdrawals"))
+                        this.ReportData.Annual.Graph.push({ name: "Groundwater withdrawal", value: this.result.AveGWWithdrawals.value});
+                    if (this.result.hasOwnProperty("AveSWWithdrawals"))
+                        this.ReportData.Annual.Graph.push({ name: "Surface water withdrawal", value: this.result.AveSWWithdrawals.value });
+                    if (this.result.hasOwnProperty("AveReturns"));
+                    this.ReportData.Annual.Graph.push({ name: "Surface water return", value: this.result.AveReturns.value });
+                    break;
+
+            }//end switch
+            
+        }
+        public GetTableData(useType: WaterUseType): any {
             var tableFields: Array<string> = [];
-            tableFields.push("Month");
-
-            var monthlyValues: Array<Array<any>> = [];
-            for (var i = 0; i < 12; i++) {
-                monthlyValues[i] = [this.getMonth(i)];
-            }
-
-
-            if (this.result.hasOwnProperty("MonthlyWaterUseCoeff")) {
-                var avereturn = this.result.AveReturns.value;
-                var monthlyReturns: Array<any> = [];
-                tableFields.push("Returns");
-                var index = 0;
-                (<Array<any>>this.result.MonthlyWaterUseCoeff).forEach((item) => {
-                    if (item.name === "Total Returns" && item.unit === "MGD") {
-                        monthlyValues[index].push(item);
-                        index++;
+            var tableValues: Array<any> = [];
+            switch (useType) {
+                case WaterUseType.Monthly:           
+                    //init table
+                    for (var i = 0; i < 12; i++) {
+                        tableValues.push({ "month": this.getMonth(i), "returns": {}, "withdrawals": [] });
                     }
-                });//next
 
-            }//end if
+                    if (this.result.hasOwnProperty("MonthlyWaterUseCoeff")) {
+                        var avereturn = this.result.AveReturns.value;
 
-            if (this.result.hasOwnProperty("DailyMonthlyAveWithdrawalsByCode")) {
-                tableFields.push("Total");
-                this.result.DailyMonthlyAveWithdrawalsByCode.forEach((item) => {
-                    tableFields.push(item[0].name.slice(-2))
-                    monthlyValues[0].push(item[0]);
-                    monthlyValues[1].push(item[1]);
-                    monthlyValues[2].push(item[2]);
-                    monthlyValues[3].push(item[3]);
-                    monthlyValues[4].push(item[4]);
-                    monthlyValues[5].push(item[5]);
-                    monthlyValues[6].push(item[6]);
-                    monthlyValues[7].push(item[7]);
-                    monthlyValues[8].push(item[8]);
-                    monthlyValues[9].push(item[9]);
-                    monthlyValues[10].push(item[10]);
-                    monthlyValues[11].push(item[11]);
-                });//next item  
-            }
+                        var index = 0;
+                        (<Array<any>>this.result.MonthlyWaterUseCoeff).forEach((item) => {
+                            if (item.name === "Total Returns" && item.unit === "MGD") {
+                                tableValues[index].returns = item;
+                                index++;
+                            }
+                        });//next
+
+                    }//end if
+
+                    if (this.result.hasOwnProperty("DailyMonthlyAveWithdrawalsByCode")) {
+
+                        this.result.DailyMonthlyAveWithdrawalsByCode.forEach((item) => {
+                            tableFields.push(item[0].name.slice(-2))
+                            tableValues[0].withdrawals.push(item[0]);
+                            tableValues[1].withdrawals.push(item[1]);
+                            tableValues[2].withdrawals.push(item[2]);
+                            tableValues[3].withdrawals.push(item[3]);
+                            tableValues[4].withdrawals.push(item[4]);
+                            tableValues[5].withdrawals.push(item[5]);
+                            tableValues[6].withdrawals.push(item[6]);
+                            tableValues[7].withdrawals.push(item[7]);
+                            tableValues[8].withdrawals.push(item[8]);
+                            tableValues[9].withdrawals.push(item[9]);
+                            tableValues[10].withdrawals.push(item[10]);
+                            tableValues[11].withdrawals.push(item[11]);
+                        });//next item  
+                    }
+                    break;
+
+
+                case WaterUseType.Annual:
+                    tableFields =["","Average Return", "Average Withdrawal"];
+                    if (this.result.hasOwnProperty("AveSWWithdrawals"))
+                        tableValues.push({ name: "Surface Water", aveReturn: "---", aveWithdrawal: this.result.AveSWWithdrawals.value.toFixed(3), unit:"MGD"});
+                    if (this.result.hasOwnProperty("AveGWWithdrawals"))
+                        tableValues.push({ name: "Groundwater", aveReturn: "---", aveWithdrawal: this.result.AveGWWithdrawals.value.toFixed(3), unit: "MGD" });
+                    if (this.result.hasOwnProperty("AveReturns"))
+                        tableValues.push({ name: "Total", aveReturn: this.result.AveReturns.value.toFixed(3), aveWithdrawal: (this.result.AveSWWithdrawals.value + this.result.AveGWWithdrawals.value).toFixed(3), unit: "MGD" });
+
+                    tableValues.push({ name: "", aveReturn: "", aveWithdrawal:""});
+                    if (this.result.hasOwnProperty("TotalTempStats")) {
+                        tableValues.push({ name: "Temporary water-use registrations (surface water)", aveReturn: "", aveWithdrawal: this.result.TotalTempStats[2].value.toFixed(3), unit: "MGD" });
+                        tableValues.push({ name: "Temporary water-use registrations (groundwater)", aveReturn: "", aveWithdrawal: this.result.TotalTempStats[1].value.toFixed(3), unit: "MGD" });
+                        tableValues.push({ name: "Temporary water-use registrations (total)", aveReturn: "", aveWithdrawal: this.result.TotalTempStats[0].value.toFixed(3), unit: "MGD" });
+                        tableValues.push({ name: "", aveReturn: "", aveWithdrawal: "" });
+                        tableValues.push({ name: "Water-use index (dimensionless) without temporary registrations:", aveReturn: "", aveWithdrawal: this.result.TotalTempStats[4].value.toFixed(3), unit: "Dimensionless" });
+                        tableValues.push({ name: "Water-use index (dimensionless) with temporary registrations:", aveReturn: "", aveWithdrawal: this.result.TotalTempStats[3].value.toFixed(3), unit: "Dimensionless" });
+                    }//end if
+
+                    break;
+            }//end switch
+
             return {
-                "values": monthlyValues,
+                "values": tableValues,
                 "Fields":tableFields
             };
         
@@ -182,18 +268,42 @@ module StreamStats.Controllers {
                 Number(a) + Number(b.value)
                 , 0);
         }
+     
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {
+            //http://ssdev.cr.usgs.gov/streamstatsservices/wateruse.json?rcode=OH&workspaceID=OH20160217071851546000&startyear=2005&endyear=2009
+            var url = configuration.queryparams['Wateruse'].format(this.StudyArea.RegionID);
+            //var url = "wateruse.js";
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url);
+
+            this.Execute(request).then(
+                (response: any) => {
+                    this.showResults = true;                 
+                    //sm when complete
+                    this.result = response.data;
+                    this.GetGraphData(WaterUseType.Monthly);
+                    this.GetGraphData(WaterUseType.Annual);
+
+                    this.ReportData.Monthly.Table = this.GetTableData(WaterUseType.Monthly);
+                    this.ReportData.Annual.Table = this.GetTableData(WaterUseType.Annual);
+
+
+                }, (error) => {
+                    //sm when error                    
+                }).finally(() => {
+                    this.CanContiue = true;
+                });
+
             this._startYear = 2005;
             this._endYear = 2012;
             this._yearRange = { floor: 2005, draggableRange: true, noSwitching: true, showTicks: false, ceil: 2012 };
-            this.CanContiue = true;
+            this.CanContiue = false;
             this.showResults = false;
             this.SelectedTab = WaterUseTabType.Graph;
             this.SelectedWaterUseType = WaterUseType.Annual;
-            //http://stackoverflow.com/questions/31740108/angular-nvd3-multibar-chart-with-dual-y-axis-to-showup-only-line-using-json-data
-            this.reportOptions = {
+            this.ReportData = new WaterUseReportable();
+            this.MonthlyReportOptions = {
                 chart: {
                     type: 'multiBarHorizontalChart',
                     height: 450,
@@ -202,13 +312,29 @@ module StreamStats.Controllers {
                     showControls: false,
                     margin: {
                         top: 20,
-                        right: 20,
+                        right: 30,
                         bottom: 60,
                         left: 55
                     },
                     x: function (d) { return d.label; },
                     y: function (d) { return d.value; },
-                    showValues: false,
+                    dispatch: {
+                        stateChange: () => {
+                            console.log("StateChange");
+                            //must wrap in timer or method executes prematurely
+                            this.$timeout(() => {
+                                this.loadGraphLabels(1);
+                            }, 500);
+                        },
+                        renderEnd: () => {
+                            console.log("renderend");
+                            //must wrap in timer or method executes prematurely
+                            this.$timeout(() => {
+                                this.loadGraphLabels(1);
+                            }, 500);
+                        }
+                    },
+                    showValues: true,
                     valueFormat: function (d) {
                         return d3.format(',.4f')(d);
                     },
@@ -217,20 +343,87 @@ module StreamStats.Controllers {
                         showMaxMin: false
                     },
                     yAxis: {
-                        axisLabel: 'Values',
+                        axisLabel: 'Values in million gallons/day',
                         tickFormat: function (d) {
                             return d3.format(',.3f')(d);
                         }
                     }
                     
 
-                },title: {
+                },
+                title: {
                         enable: true,
-                        text: "Average Water Use By Month",
-                        
-                    }
+                        text: this.StartYear + " - " + this.EndYear + " Average Water-Use Withdrawals By Month",                        
+                }
             };
-          
+
+            this.MonthlyReturnReportOptions = {
+                chart: {
+                    type: 'multiBarHorizontalChart',
+                    height: 450,
+                    visible: true,
+                    stacked: false,
+                    showControls: false,
+                    margin: {
+                        top: 20,
+                        right: 30,
+                        bottom: 60,
+                        left: 55
+                    },
+                    x: function (d) { return d.label; },
+                    y: function (d) { return d.value; },
+                    showValues: true,
+                    valueFormat: function (d) {
+                        return d3.format(',.3f')(d);
+                    },
+
+                    xAxis: {
+                        showMaxMin: false
+                    },
+                    yAxis: {
+                        axisLabel: 'Values in million gallons/day',
+                        tickFormat: function (d) {
+                            return d3.format(',.3f')(d);
+                        }
+                    }
+
+
+                },
+                title: {
+                    enable: true,
+                    text: this.StartYear + " - " + this.EndYear + " Average Water-Use Returns By Month",
+                }
+            };
+
+            this.AnnualReportOptions = {               
+                chart: {
+                    type: 'pieChart',
+                    height: 500,
+                    x: (d)=> { return d.name; },
+                    y: (d)=> { return d.value; },
+                    showLabels: true,
+                    duration: 500,
+                    labelThreshold: 0.01,
+                    labelSunbeamLayout: false,
+                    legend: {
+                        margin: {
+                            top: 5,
+                            right: 35,
+                            bottom: 5,
+                            left: 0
+                        }
+                    }
+                },
+                title: {
+                    enable: true,
+                    text: this.StartYear + " - " + this.EndYear + " Average Water-Use By Source",
+
+                },
+                subtitle: {
+                    enable: true,
+                    text: "reported in million gallons/day",
+                }
+            };
         }
         private getMonth(index: number): string {
             switch (index) {
@@ -248,7 +441,24 @@ module StreamStats.Controllers {
                 case 11: return "Dec";
             }
 
-        }        
+        }  
+        private loadGraphLabels(id): void {
+            var svg = d3.selectAll("g.nv-multibarHorizontal");
+            var lastBarID = svg.selectAll("g.nv-group").map((items: Array<any>) => { return items.length; });
+            var lastBars = svg.selectAll("g.nv-group").filter(
+                function (d, i) {
+                    return i == lastBarID[id] - 1;
+                }).selectAll("g.positive");
+
+            var groupLabels = svg.select("g.nv-barsWrap")
+            lastBars.each(
+                function (d, index) {
+                    var text = d3.select(this).selectAll("text");
+                    text.text(d3.format(',.3f')(d.y1.toFixed(3)));
+                    text.attr("dy", "1.32em");                
+                });
+            
+        }      
     }//end wimLayerControlController class
     enum WaterUseType {
         Annual = 1,
