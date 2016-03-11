@@ -8,9 +8,7 @@
      <div ng-hide="vm.studyAreaService.selectedStudyArea">A study area is needed before viewing the report</div>   
      <div ng-show="vm.studyAreaService.selectedStudyArea">
             <div class="form-group hidden-print">
-
                 <div class="wim-alert" >Enter a report title and/or comments here that will display on the printed report.  Use the print button below.</div>
- 
                 <label >Enter report title:</label>
                 <input type="text" class="form-control" ng-model="vm.reportTitle" placeholder="Title">
 
@@ -19,9 +17,7 @@
             
             </div>
             <div id="printArea">
-            
                 <h2>{{vm.reportTitle}}</h2>
-            
                 <div ng-if="vm.studyAreaService.selectedStudyArea">
                     <dl class="dl-horizontal">
                         <dt>Region ID:</dt><dd>{{vm.studyAreaService.selectedStudyArea.RegionID}}</dd>
@@ -71,10 +67,10 @@
                     <!--Study Area Disclaimers-->  
                     <div class="well well-sm" ng-show="vm.studyAreaService.Disclaimers.parametersEdited || vm.studyAreaService.Disclaimers.isRegulated || vm.studyAreaService.Disclaimers.isEdited || vm.studyAreaService.Disclaimers.isInExclusionArea">
                         <h4>General Disclaimers</h4>
-                        <div class="wim-alert-danger" ng-show="vm.studyAreaService.Disclaimers.parametersEdited">Parameter values have been edited, computed flows may not apply.</div>
-                        <div class="wim-alert-danger" ng-show="vm.studyAreaService.Disclaimers.isRegulated">This watershed is {{vm.studyAreaService.regulationCheckResults.percentarearegulated.toFixed(2)}} percent regulated, computed flows may not apply.</div>
-                        <div class="wim-alert-danger" ng-show="vm.studyAreaService.Disclaimers.isEdited">This watershed has been edited, computed flows may not apply.</div>
-                        <div class="wim-alert-danger" ng-show="vm.studyAreaService.Disclaimers.isInExclusionArea">This watershed is in an exclusion area.</div>
+                        <div class="wim-alert-warning" ng-show="vm.studyAreaService.Disclaimers.parametersEdited">Parameter values have been edited, computed flows may not apply.</div>
+                        <div class="wim-alert-warning" ng-show="vm.studyAreaService.Disclaimers.isRegulated">This watershed is {{vm.studyAreaService.regulationCheckResults.percentarearegulated.toFixed(2)}} percent regulated, computed flows may not apply.</div>
+                        <div class="wim-alert-warning" ng-show="vm.studyAreaService.Disclaimers.isEdited">This watershed has been edited, computed flows may not apply.</div>
+                        <div class="wim-alert-warning" ng-show="vm.studyAreaService.Disclaimers.isInExclusionArea">This watershed is in an exclusion area.</div>
                     </div>
             
                     <!--Parameter Table for Flow Report-->
@@ -95,7 +91,7 @@
                                 <tbody>
                                     <tr ng-repeat="parameter in RegressionRegion.Parameters">
                                         <td ng-bind="parameter.Name"></td>
-                                        <td ng-bind="parameter.Value" ng-class="(parameter.Value < parameter.Limits.Min) || (parameter.Value > parameter.Limits.Max) ? 'danger' : ''"></td>
+                                        <td ng-bind="parameter.Value" ng-class="(parameter.Value < parameter.Limits.Min) || (parameter.Value > parameter.Limits.Max) ? 'wim-warning' : ''"></td>
                                         <td ng-bind="parameter.Limits.Min"></td>
                                         <td ng-bind="parameter.Limits.Max"></td>
                                     </tr>
@@ -105,7 +101,7 @@
                             <!--Scenario Disclaimers-->
                             <div ng-show="StatisticsGroup.Disclaimers.Warnings || StatisticsGroup.Disclaimers.Errors">
                                 <h4>{{StatisticsGroup.Name}} Disclaimers<small ng-bind="(RegressionRegion.PercentWeight) ? ' [' + RegressionRegion.PercentWeight.toFixed(2) + ' Percent ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h4>
-                                <div class="wim-alert-danger"  ng-repeat="headerMsg in StatisticsGroup.Disclaimers">{{headerMsg}}</div> 
+                                <div class="wim-alert-warning"  ng-repeat="headerMsg in StatisticsGroup.Disclaimers">{{headerMsg}}</div> 
                             </div>
                         </div>
 
