@@ -1,5 +1,5 @@
 ﻿//------------------------------------------------------------------------------
-//----- reportService -----------------------------------------------------
+//----- modalService -----------------------------------------------------
 //------------------------------------------------------------------------------
 
 //-------1---------2---------3---------4---------5---------6---------7---------8
@@ -26,7 +26,13 @@
 module StreamStats.Services {
     'use strict'
     export interface IModalService {
-        openReport(mType: SSModalType);
+        openModal(mType: SSModalType, options?: IModalOptions);
+        modalOptions: IModalOptions;
+    }
+
+    export interface IModalOptions {
+        tabName: string;
+        regionID: string;
     }
 
     class ModalService implements IModalService{       
@@ -37,18 +43,22 @@ module StreamStats.Services {
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
         public modal: ng.ui.bootstrap.IModalService;
+        public modalOptions: IModalOptions;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         constructor($modal: ng.ui.bootstrap.IModalService) {
             this.modal = $modal;
-            
         }
 
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
-        public openReport(mType:SSModalType) {
-            //console.log('in report open function');
+        public openModal(mType: SSModalType, options: IModalOptions = null) {
+            
+            if (options) {
+                this.modalOptions = options
+                console.log('in modal open function', this.modalOptions);
+            }
             this.modal.open(this.getModalSettings(mType));
         }  
 
@@ -77,6 +87,24 @@ module StreamStats.Services {
                             size: 'lg',
                             backdropClass: 'backdropZ',
                             backdrop:'static',
+                            windowClass: 'windowZ'
+                        };
+                    case SSModalType.e_about:
+                        return {
+                            templateUrl: 'Views/about.html',
+                            controller: 'StreamStats.Controllers.AboutController',
+                            size: 'lg',
+                            backdropClass: 'backdropZ',
+                            backdrop: 'static',
+                            windowClass: 'windowZ'
+                        };
+                    case SSModalType.e_help:
+                        return {
+                            templateUrl: 'Views/help.html',
+                            controller: 'StreamStats.Controllers.HelpController',
+                            size: 'lg',
+                            backdropClass: 'backdropZ',
+                            backdrop: 'static',
                             windowClass: 'windowZ'
                         };
      

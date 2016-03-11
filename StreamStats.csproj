@@ -33,7 +33,9 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>55481</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:55482/</IISUrl>
+          <IISUrl>http://localhost:55482</IISUrl>
+          <OverrideIISAppRootUrl>True</OverrideIISAppRootUrl>
+          <IISAppRootUrl>http://localhost:55482/</IISAppRootUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
@@ -64,6 +66,8 @@
     <Content Include="src\Assets\images\usgs_logo.png" />
     <Content Include="src\css\main.css" />
     <Content Include="src\css\wim.css" />
+    <Content Include="src\Views\help.html" />
+    <Content Include="src\Views\about.html" />
     <Content Include="src\Views\Legend\legend.html" />
     <Content Include="src\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="src\images\arrows.gif" />
@@ -74,7 +78,6 @@
     <Content Include="src\images\usgs_logo.png" />
     <Content Include="src\index.html" />
     <Content Include="bower.json" />
-    <Content Include="src\Views\about\about.html" />
     <Content Include="src\Views\mapview.html" />
     <Content Include="src\Views\navigationview.html" />
     <Content Include="src\Views\Reports\searchPopup.html" />
@@ -100,7 +103,9 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="src\config.ts" />
+    <TypeScriptCompile Include="src\Controllers\HelpController.ts" />
     <TypeScriptCompile Include="src\Controllers\controller.module.ts" />
+    <TypeScriptCompile Include="src\Controllers\AboutController.ts" />
     <TypeScriptCompile Include="src\Controllers\MapController.ts" />
     <TypeScriptCompile Include="src\Controllers\Navbarcontroller.ts" />
     <TypeScriptCompile Include="src\Controllers\ReportController.ts" />
@@ -121,6 +126,8 @@
       <SubType>Code</SubType>
     </TypeScriptCompile>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="dist\" />
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
 </Project>
