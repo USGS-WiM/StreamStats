@@ -184,6 +184,7 @@ module StreamStats.Services {
 
             this.Execute(request).then(
                 (response: any) => {  
+                    //console.log('delineation response headers: ', response.headers());
                     this.selectedStudyArea.Features = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"] : null;
                     this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
                     this.selectedStudyArea.Date = new Date();
@@ -437,8 +438,8 @@ module StreamStats.Services {
                         //this.loadRegulatedParameterResults(this.regulationCheckResults.parameters);
                         this.Disclaimers['isRegulated'] = true;     
                          
-                        //only raise event if true
-                        this.eventManager.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);                    
+                        //COMMENT OUT ONSELECTEDSTUDYAREA changed event 3/11/16
+                        //this.eventManager.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);                    
                     }
                     else {
                         //alert("No regulation found");

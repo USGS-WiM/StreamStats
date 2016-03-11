@@ -14,6 +14,10 @@ html, body, .angular-leaflet-map {
    overflow-y:hidden;
    font-family: "Source Sans Pro", sans;
 }
+h1, h2, h3, h4, h5, h6 {
+	font-family: "Source Sans Pro", sans;
+}
+
 body {
     padding-top: 18px;
 }
@@ -444,7 +448,12 @@ div.leaflet-top > .elevation {
 }
 
 .sidebar-content {
-    margin-top:70px;
+    box-sizing:border-box;
+    padding-top: 70px;
+}
+
+.scrollable-content {
+    overflow-x:hidden;
 }
 
 .well {
@@ -618,35 +627,6 @@ div.leaflet-top > .elevation {
       font-size: 9pt;
     }
 
-  #contact-form{
-    margin-top: 15px;
-  }
-
-    #contact-form .well{
-    margin-bottom: 0;
-    /*background-color: #ECEEF4;*/
-    border-radius: 0;
-    border: none; box-shadow: none;
-    box-sizing: border-box;
-    padding: 15px;
-    }
-    #contact-form .well .form-group{
-    padding: 0;
-    }
-    #contact-form .well label{
-        font-size: 9pt;
-        font-weight: 400;
-        opacity: 0.5;
-    }
-
-    #contact-form input,
-    #contact-form textarea{
-        border-radius: 0;
-    }
-    #contact-form textarea{
-        height: 150px;
-    }
-
     .modal-backdrop.backdropZ {
     z-index: 9998 !important;
     }
@@ -694,6 +674,20 @@ div.leaflet-top > .elevation {
         display: block;
     }
 
+    .removeItem {
+	    float: left;
+	    position: absolute;
+	    margin: 0px 0px 0px 8px;
+    }
+
+    #supportContent p {
+        font-size: 14px;
+    }
+
+    .wim-warning {
+       background-color: #fdb81e !important;
+     }
+
 /*
     ===========================
     ===========================
@@ -705,7 +699,13 @@ div.leaflet-top > .elevation {
         @media print{
         body * {
             visibility: hidden;
-            -webkit-print-color-adjust: exact; 
+            -webkit-print-color-adjust: exact !important; 
+        }
+        .wim-alert-warning {
+            background-color: #fdb81e !important;
+        }
+        table .wim-warning {
+            background-color: #fdb81e !important;
         }
         .hidden-print {
             display: none !important;

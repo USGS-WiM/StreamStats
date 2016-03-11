@@ -8,9 +8,7 @@
      <div ng-hide="vm.studyAreaService.selectedStudyArea">A study area is needed before viewing the report</div>   
      <div ng-show="vm.studyAreaService.selectedStudyArea">
             <div class="form-group hidden-print">
-
                 <div class="wim-alert" >Enter a report title and/or comments here that will display on the printed report.  Use the print button below.</div>
- 
                 <label >Enter report title:</label>
                 <input type="text" class="form-control" ng-model="vm.reportTitle" placeholder="Title">
 
@@ -19,9 +17,7 @@
             
             </div>
             <div id="printArea">
-            
                 <h2>{{vm.reportTitle}}</h2>
-            
                 <div ng-if="vm.studyAreaService.selectedStudyArea">
                     <dl class="dl-horizontal">
                         <dt>Region ID:</dt><dd>{{vm.studyAreaService.selectedStudyArea.RegionID}}</dd>
@@ -39,125 +35,121 @@
                     <p>{{vm.reportComments}}</p>
                 </div>
 
-                <!--Parameter Table if just basin chars-->
-                <div class="well well-sm" ng-show="vm.nssService.showBasinCharacteristicsTable">
-                    <h4>Basin Characteristics</h4>
-                    <table class="table table-condensed">
-                        <thead class="param-table">
-                            <tr>
-                                <th>Parameter Code</th>
-                                <th>Parameter Description</th>
-                                <th>Value</th> 
-                                <th ng-show="vm.studyAreaService.Disclaimers.isRegulated">Unregulated Value</th>
-                                <th ng-show="vm.studyAreaService.Disclaimers.isRegulated">Regulated Value</th>
-                                <th>Unit</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList">
-                                <td ng-bind="parameter.name"></td>
-                                <td ng-bind="parameter.description"></td>
-                                <td ng-bind="parameter.value"></td>
-                                <td ng-show="vm.studyAreaService.Disclaimers.isRegulated" ng-bind="parameter.unRegulatedValue.toUSGSvalue()"></td>
-                                <td ng-show="vm.studyAreaService.Disclaimers.isRegulated" ng-bind="parameter.regulatedValue.toUSGSvalue()"></td>
-                                <td ng-bind="parameter.unit"></td>
-                            </tr>
-                        </tbody>
-                    </table> 
-                </div>
+                <div ng-show="vm.studyAreaService.parametersLoaded">
 
-                <!--Study Area Disclaimers-->  
-                <div class="well well-sm" ng-show="vm.studyAreaService.Disclaimers.parametersEdited || vm.studyAreaService.Disclaimers.isRegulated || vm.studyAreaService.Disclaimers.isEdited || vm.studyAreaService.Disclaimers.isInExclusionArea">
-                    <h4>General Disclaimers</h4>
-                    <div class="wim-alert-danger" ng-show="vm.studyAreaService.Disclaimers.parametersEdited">Parameter values have been edited, computed flows may not apply.</div>
-                    <div class="wim-alert-danger" ng-show="vm.studyAreaService.Disclaimers.isRegulated">This watershed is regulated, computed flows may not apply.</div>
-                    <div class="wim-alert-danger" ng-show="vm.studyAreaService.Disclaimers.isEdited">This watershed has been edited, computed flows may not apply.</div>
-                    <div class="wim-alert-danger" ng-show="vm.studyAreaService.Disclaimers.isInExclusionArea">This watershed is in an exclusion area.</div>
-                </div>
-            
-                <!--Parameter Table for Flow Report-->
-                <div class="well well-sm" ng-show="vm.nssService.showFlowsTable" ng-repeat="StatisticsGroup in vm.nssService.selectedStatisticsGroupList">
-
-
-                    <div ng-repeat="RegressionRegion in StatisticsGroup.RegressionRegions" ng-hide="RegressionRegion.Name == 'Area-Averaged'">
-                        <h4>{{StatisticsGroup.Name}} Parameters<small ng-bind="(RegressionRegion.PercentWeight) ? ' [' + RegressionRegion.PercentWeight.toFixed(2) + ' Percent ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h4>
+                    <!--Parameter Table if just basin chars-->
+                    <div class="well well-sm" ng-show="vm.nssService.showBasinCharacteristicsTable">
+                        <h4>Basin Characteristics</h4>
                         <table class="table table-condensed">
                             <thead class="param-table">
-                            <tr>
-                                <th>Parameter</th>
-                                <th>Value</th> 
-                                <th>Min Limit</th>
-                                <th>Max Limit</th>
-                            </tr>
+                                <tr>
+                                    <th>Parameter Code</th>
+                                    <th>Parameter Description</th>
+                                    <th>Value</th> 
+                                    <th ng-show="vm.studyAreaService.Disclaimers.isRegulated">Unregulated Value</th>
+                                    <th ng-show="vm.studyAreaService.Disclaimers.isRegulated">Regulated Value</th>
+                                    <th>Unit</th>
+                                </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat="parameter in RegressionRegion.Parameters">
-                                    <td ng-bind="parameter.Name"></td>
-                                    <td ng-bind="parameter.Value.toUSGSvalue()" ng-class="(parameter.Value < parameter.Limits.Min) || (parameter.Value > parameter.Limits.Max) ? 'danger' : ''"></td>
-                                    <td ng-bind="parameter.Limits.Min.toUSGSvalue()"></td>
-                                    <td ng-bind="parameter.Limits.toUSGSvalue()"></td>
+                                <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList">
+                                    <td ng-bind="parameter.name"></td>
+                                    <td ng-bind="parameter.description"></td>
+                                    <td ng-bind="parameter.value"></td>
+                                    <td ng-show="vm.studyAreaService.Disclaimers.isRegulated" ng-bind="parameter.unRegulatedValue.toFixed(3)"></td>
+                                    <td ng-show="vm.studyAreaService.Disclaimers.isRegulated" ng-bind="parameter.regulatedValue.toFixed(3)"></td>
+                                    <td ng-bind="parameter.unit"></td>
                                 </tr>
                             </tbody>
-                        </table>
+                        </table> 
+                    </div>
 
-                        <!--Scenario Disclaimers-->
-                        <div ng-show="StatisticsGroup.Disclaimers.Warnings || StatisticsGroup.Disclaimers.Errors">
-                            <h4>{{StatisticsGroup.Name}} Disclaimers<small ng-bind="(RegressionRegion.PercentWeight) ? ' [' + RegressionRegion.PercentWeight.toFixed(2) + ' Percent ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h4>
-                            <div class="wim-alert-danger"  ng-repeat="headerMsg in StatisticsGroup.Disclaimers">{{headerMsg}}</div> 
+                    <!--Study Area Disclaimers-->  
+                    <div class="well well-sm" ng-show="vm.studyAreaService.Disclaimers.parametersEdited || vm.studyAreaService.Disclaimers.isRegulated || vm.studyAreaService.Disclaimers.isEdited || vm.studyAreaService.Disclaimers.isInExclusionArea">
+                        <h4>General Disclaimers</h4>
+                        <div class="wim-alert-warning" ng-show="vm.studyAreaService.Disclaimers.parametersEdited">Parameter values have been edited, computed flows may not apply.</div>
+                        <div class="wim-alert-warning" ng-show="vm.studyAreaService.Disclaimers.isRegulated">This watershed is {{vm.studyAreaService.regulationCheckResults.percentarearegulated.toFixed(2)}} percent regulated, computed flows may not apply.</div>
+                        <div class="wim-alert-warning" ng-show="vm.studyAreaService.Disclaimers.isEdited">This watershed has been edited, computed flows may not apply.</div>
+                        <div class="wim-alert-warning" ng-show="vm.studyAreaService.Disclaimers.isInExclusionArea">This watershed is in an exclusion area.</div>
+                    </div>
+            
+                    <!--Parameter Table for Flow Report-->
+                    <div class="well well-sm" ng-show="vm.nssService.showFlowsTable" ng-repeat="StatisticsGroup in vm.nssService.selectedStatisticsGroupList">
+
+
+                        <div ng-repeat="RegressionRegion in StatisticsGroup.RegressionRegions" ng-hide="RegressionRegion.Name == 'Area-Averaged'">
+                            <h4>{{StatisticsGroup.Name}} Parameters<small ng-bind="(RegressionRegion.PercentWeight) ? ' [' + RegressionRegion.PercentWeight.toFixed(2) + ' Percent ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h4>
+                            <table class="table table-condensed">
+                                <thead class="param-table">
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Value</th> 
+                                    <th>Min Limit</th>
+                                    <th>Max Limit</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="parameter in RegressionRegion.Parameters">
+                                        <td ng-bind="parameter.Name"></td>
+                                        <td ng-bind="parameter.Value" ng-class="(parameter.Value < parameter.Limits.Min) || (parameter.Value > parameter.Limits.Max) ? 'wim-warning' : ''"></td>
+                                        <td ng-bind="parameter.Limits.Min"></td>
+                                        <td ng-bind="parameter.Limits.Max"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!--Scenario Disclaimers-->
+                            <div ng-show="StatisticsGroup.Disclaimers.Warnings || StatisticsGroup.Disclaimers.Errors">
+                                <h4>{{StatisticsGroup.Name}} Disclaimers<small ng-bind="(RegressionRegion.PercentWeight) ? ' [' + RegressionRegion.PercentWeight.toFixed(2) + ' Percent ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h4>
+                                <div class="wim-alert-warning"  ng-repeat="headerMsg in StatisticsGroup.Disclaimers">{{headerMsg}}</div> 
+                            </div>
                         </div>
-                    </div>
 
-                    <!--Flow Report-->
-                    <div ng-repeat="RegressionRegion in StatisticsGroup.RegressionRegions">
+                        <!--Flow Report-->
+                        <div ng-repeat="RegressionRegion in StatisticsGroup.RegressionRegions">
 
-                        <h4>{{StatisticsGroup.Name}} Flow Report<small ng-bind="(RegressionRegion.PercentWeight) ? ' [' + RegressionRegion.PercentWeight.toFixed(2) + ' Percent ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h4>
-                        <table class="table table-condensed">
-                            <thead class="param-table">
-                            <tr>
-                                <th>Statistic</th>
-                                <th>Value</th> 
-                                <th>Unit</th>
-                                <th>Prediction Error</th>
-                            </tr>
-                            </thead>
-                            <tbody >
-                                <tr ng-repeat="parameter in RegressionRegion.Results">
-                                    <td>{{parameter.Name}}</td>
-                                    <td ng-bind="parameter.Value.toUSGSvalue()"></td>
-                                    <td ng-bind="parameter.Unit.Abbr"></td>
-                                    <td ng-bind="(parameter.Errors[0].Value) ? parameter.Errors[0].Value : '--'"></td>   <!--  SHOW SOME DASHES IF ERROR IS BLANK -->
+                            <h4>{{StatisticsGroup.Name}} Flow Report<small ng-bind="(RegressionRegion.PercentWeight) ? ' [' + RegressionRegion.PercentWeight.toFixed(2) + ' Percent ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h4>
+                            <table class="table table-condensed">
+                                <thead class="param-table">
+                                <tr>
+                                    <th>Statistic</th>
+                                    <th>Value</th> 
+                                    <th>Unit</th>
+                                    <th>Prediction Error</th>
                                 </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody >
+                                    <tr ng-repeat="parameter in RegressionRegion.Results">
+                                        <td>{{parameter.Name}}</td>
+                                        <td ng-bind="parameter.Value.toUSGSvalue()"></td>
+                                        <td ng-bind="parameter.Unit.Abbr"></td>
+                                        <td ng-bind="(parameter.Errors[0].Value) ? parameter.Errors[0].Value : '--'"></td>   <!--  SHOW SOME DASHES IF ERROR IS BLANK -->
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
  
 
-                    <h4>{{StatisticsGroup.Name}} Citations</h4>
-                    <div ng-repeat="citation in StatisticsGroup.Citations">
-                        <a href="{{citation.CitationURL}}" target="_blank">{{citation.Author}}{{citation.Title}}</a>
-                    </div>
+                        <h4>{{StatisticsGroup.Name}} Citations</h4>
+                        <div ng-repeat="citation in StatisticsGroup.Citations">
+                            <a href="{{citation.CitationURL}}" target="_blank">{{citation.Author}}{{citation.Title}}</a>
+                        </div>
 
+                    </div>
                 </div>
             </div>
 
             <div id="downloadButtons" class="hidden-print">
-                <div class="btn-group wim-btn-group">
-                    <button type="button" class="btn-wim-sm btn-wim-default dropdown-toggle" ui-turn-on='downloadBasinDropdown' ><span class="fa fa-download"></span>&nbsp;&nbsp;Download Basin</button>
-                    <ul 
-                    class="dropdown-menu"
-                    ui-outer-click="Ui.turnOff('downloadBasinDropdown')"
-                    ui-outer-click-if="Ui.active('downloadBasinDropdown')"
-                    role="menu"
-                    ui-show="downloadBasinDropdown" 
-                    ui-state="downloadBasinDropdown"
-                    ui-turn-off="downloadBasinDropdown">
-
-                    <li><a href="{{vm.studyAreaService.servicesURL}}/streamstatsservices/download?workspaceID={{vm.studyAreaService.selectedStudyArea.WorkspaceID}}&format=Shape" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="Shapefile">Shapefile</a></li>
-                    <li><a href="{{vm.studyAreaService.servicesURL}}/streamstatsservices/download?workspaceID={{vm.studyAreaService.selectedStudyArea.WorkspaceID}}" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="File GDB">ESRI File GDB</a>
-                    </li>
-                    </ul>
+                <div class="btn-group wim-btn-group" dropdown is-open="status.isopen">
+                  <button type="button" class="btn-wim-sm btn-wim-default dropdown-toggle" dropdown-toggle ng-disabled="disabled">
+                    Download Basin <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="{{vm.studyAreaService.servicesURL}}/streamstatsservices/download?workspaceID={{vm.studyAreaService.selectedStudyArea.WorkspaceID}}&format=Shape" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="Shapefile"><span class="fa fa-download"></span>&nbsp;&nbsp;Shapefile</a></li>
+                    <li><a href="{{vm.studyAreaService.servicesURL}}/streamstatsservices/download?workspaceID={{vm.studyAreaService.selectedStudyArea.WorkspaceID}}" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="File GDB"><span class="fa fa-download"></span>&nbsp;&nbsp;ESRI File GDB</a></li>
+                  </ul>
                 </div>
-                <div class="btn-group wim-btn-group">
+                <div class="btn-group wim-btn-group" ng-show="vm.studyAreaService.parametersLoaded">
                     <button type="button" class="btn-wim-sm btn-wim-default" ng-click="vm.downloadCSV()" ><span><i class="fa fa-download"></i>&nbsp;&nbsp;Download CSV</span></button>
                      <!--<button type="button" class="btn-wim-sm btn-wim-default" ng-click="vm.downloadPDF()" ><span><i class="fa fa-download"></i>&nbsp;&nbsp;Download PDF</span></button>-->
                 </div>

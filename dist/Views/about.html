@@ -1,0 +1,41 @@
+<!-- Modal -->
+
+<div class="modal-header">
+    <button class="close"
+            ng-click="vm.Close()">
+        &times;
+    </button>
+    <h4 class="modal-title">About</h4>
+</div>
+<div class="modal-body">
+        <ul id="aboutTabs" class="nav nav-tabs">
+            <li ng-class="{'active':vm.selectedAboutTabName==='about'}"><a ng-click="vm.selectAboutTab('about')"><i class="fa fa-question-circle"></i>&nbsp;About the project</a></li>
+            <li ng-class="{'active':vm.selectedAboutTabName==='disclaimer'}"><a ng-click="vm.selectAboutTab('disclaimer')"><i class="fa fa-exclamation-circle"></i>&nbsp;State / Regional Info</a></li>
+        </ul>
+        <div style="padding-top: 10px;">
+            <div id="about" ng-if="vm.selectedAboutTabName==='about'">
+                <p>StreamStats is a Web application that incorporates a Geographic Information System (GIS) to provide users with access to an assortment of analytical tools that are useful for a variety of water-resources planning and management purposes, and for engineering and design purposes. StreamStats users can select USGS data-collection station locations shown on a map and obtain previously published information for the stations. Users also can select any location along a stream and obtain the drainage-basin boundary, basin characteristics, and estimates of streamflow statistics for the location. The streamflow statistics that StreamStats can provide for data-collection stations and for user-selected ungaged sites vary among the states that are implemented in StreamStats and among data-collection stations within states. Estimates obtained for ungaged sites assume natural flow conditions at the site.</p>
+
+                <p>StreamStats also includes several tools that rely on searching along the stream network upstream or downstream from user-selected sites to identify stream reaches and water-related activities along the streams, such as dams and point discharges, and obtain information about those activities. In addition, users can obtain elevation profiles along stream channels and between points on the land surface.</p>
+
+                <p>Introductory pages that explain any unique functionality, outline the general implementation level, and provide citations to reports documenting the methods implemented for each state and region are available here: <a href="http://water.usgs.gov/osw/streamstats/ssonline.html" target="_blank">http://water.usgs.gov/osw/streamstats/ssonline.html</a>
+                </p>
+
+                <h4>This application is currently in BETA</h4>
+
+                <p>Absolutely no accuracy or completeness guarantee is implied or intended. The U.S. Geological Survey expressly disclaims responsibility for damages or liability that may arise from use of these data.</p>
+
+                <p>Please view the comprehensive explanation of limitations of StreamStats here: <a href="http://water.usgs.gov/osw/streamstats/ssdis.html" target="_blank">http://water.usgs.gov/osw/streamstats/ssdis.html</a></p>
+
+                <p>The StreamStats 4.0 interface was developed by the Wisconsin Internet Mapping (WiM) group in collaboration with the Office of Surface Water StreamStats team working with USGS Water Science Centers across the nation.</p>
+
+            </div>
+            <div id="disclaimer" ng-show="vm.selectedAboutTabName==='disclaimer'" >
+                <div id="supportContent" ><h3>No State or Region Selected</h3></div>  
+            </div>       
+        </div>
+</div>
+
+<div class="modal-footer">
+    <button ng-click="vm.Close()" class="btn-wim-default"><i class="fa fa-close"></i><span >&nbsp;&nbsp;Close</span></button>
+</div>
