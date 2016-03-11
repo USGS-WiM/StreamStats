@@ -62,8 +62,8 @@
                 <div class="list-group-body" ng-show="vm.selectedProcedure == 2">
 
                     <div ng-hide="vm.studyAreaService.selectedStudyArea.Features || !vm.regionService.streamStatsAvailable">
-                        <div class="wim-alert-info" ng-hide="vm.studyAreaService.showDelineateButton">Zoom in to level 15 or greater to enable the delineation tool</div>
-                        <div class="wim-alert-info" ng-show="vm.studyAreaService.showDelineateButton">Click the 'Delineate' button, then use your mouse or finger to click or tap a blue stream cell on the map</div>
+                        <div class="wim-alert" ng-hide="vm.studyAreaService.showDelineateButton">Zoom in to level 15 or greater to enable the delineation tool</div>
+                        <div class="wim-alert" ng-show="vm.studyAreaService.showDelineateButton">Click the 'Delineate' button, then use your mouse or finger to click or tap a blue stream cell on the map</div>
                     </div>
 
                     <!--<div class="wim-alert-warning" ng-hide="vm.regionService.streamStatsAvailable">StreamStats is not available here at this time</div>-->
