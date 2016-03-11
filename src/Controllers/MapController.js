@@ -402,8 +402,8 @@ var StreamStats;
                 });
             };
             MapController.prototype.drawController = function (options, enable) {
-                //console.log('in drawcontroller: ', options, enable);
                 var _this = this;
+                console.log('in drawcontroller: ', options, enable);
                 if (!enable) {
                     this.drawControl.disable();
                     this.drawControl = undefined;
@@ -411,6 +411,7 @@ var StreamStats;
                     return;
                 }
                 this.leafletData.getMap().then(function (map) {
+                    console.log('enable drawControl');
                     _this.drawControl = new L.Draw.Polyline(map, options);
                     _this.drawControl.enable();
                 });
@@ -469,21 +470,17 @@ var StreamStats;
             };
             MapController.prototype.measurement = function () {
                 var _this = this;
+                console.log('in measurement tool');
                 document.getElementById('elevation-div').innerHTML = '';
                 //user affordance
                 this.explorationService.measurementData = 'Click the map to begin\nDouble click to end the Drawing';
                 //report ga event
                 this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'measurement' });
                 this.leafletData.getMap().then(function (map) {
+                    console.log('got map: ', map);
                     _this.leafletData.getLayers().then(function (maplayers) {
+                        console.log('got maplayers: ', maplayers);
                         var stopclick = false; //to prevent more than one click listener
-                        //var polyline = new (<any>L).Draw.Polyline(map, {
-                        //    shapeOptions: {
-                        //        color: 'blue'
-                        //    },
-                        //    metric: false
-                        //});
-                        //polyline.enable();
                         _this.drawController({ shapeOptions: { color: 'blue' }, metric: false }, true);
                         var drawnItems = maplayers.overlays.draw;
                         drawnItems.clearLayers();

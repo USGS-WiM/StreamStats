@@ -125,7 +125,7 @@ module StreamStats.Controllers {
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {   
-            console.log("in about controller");
+            //console.log("in about controller");
             this.getRegionHelpArticle();
         }
       

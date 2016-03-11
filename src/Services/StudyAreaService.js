@@ -325,8 +325,6 @@ var StreamStats;
                         _this.regulationCheckResults = response.data;
                         //this.loadRegulatedParameterResults(this.regulationCheckResults.parameters);
                         _this.Disclaimers['isRegulated'] = true;
-                        //only raise event if true
-                        _this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, _this, StudyAreaEventArgs.Empty);
                     }
                     else {
                         //alert("No regulation found");
