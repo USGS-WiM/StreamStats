@@ -161,6 +161,7 @@ module StreamStats.Controllers {
         public angulartics: any;
         public nomnimalZoomLevel: string;
 
+
         //Constructro
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService','WiM.Event.EventManager'];
@@ -563,7 +564,7 @@ module StreamStats.Controllers {
         }
 
         private drawController(options: Object, enable: boolean) {
-            //console.log('in drawcontroller: ', options, enable);
+            console.log('in drawcontroller: ', options, enable);
 
             if (!enable) {               
                 this.drawControl.disable();
@@ -572,6 +573,7 @@ module StreamStats.Controllers {
                 return;
             }
             this.leafletData.getMap().then((map: any) => {
+                console.log('enable drawControl');
                 this.drawControl = new (<any>L).Draw.Polyline(map, options);
                 this.drawControl.enable();
             });
@@ -637,6 +639,8 @@ module StreamStats.Controllers {
 
         private measurement() {
 
+            console.log('in measurement tool');
+
             document.getElementById('elevation-div').innerHTML = '';
             //user affordance
             this.explorationService.measurementData = 'Click the map to begin\nDouble click to end the Drawing';
@@ -645,17 +649,10 @@ module StreamStats.Controllers {
             this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'measurement' });
 
             this.leafletData.getMap().then((map: any) => {
+                console.log('got map: ', map);
                 this.leafletData.getLayers().then((maplayers: any) => {
-
+                    console.log('got maplayers: ', maplayers);
                     var stopclick = false; //to prevent more than one click listener
-
-                    //var polyline = new (<any>L).Draw.Polyline(map, {
-                    //    shapeOptions: {
-                    //        color: 'blue'
-                    //    },
-                    //    metric: false
-                    //});
-                    //polyline.enable();
 
                     this.drawController({shapeOptions: { color: 'blue' }, metric: false }, true);
 
