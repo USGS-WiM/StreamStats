@@ -14,6 +14,10 @@ html, body, .angular-leaflet-map {
    overflow-y:hidden;
    font-family: "Source Sans Pro", sans;
 }
+h1, h2, h3, h4, h5, h6 {
+	font-family: "Source Sans Pro", sans;
+}
+
 body {
     padding-top: 18px;
 }
@@ -623,7 +627,7 @@ div.leaflet-top > .elevation {
       font-size: 9pt;
     }
 
-  #contact-form{
+  /*#contact-form{
     margin-top: 15px;
   }
 
@@ -650,7 +654,7 @@ div.leaflet-top > .elevation {
     }
     #contact-form textarea{
         height: 150px;
-    }
+    }*/
 
     .modal-backdrop.backdropZ {
     z-index: 9998 !important;
