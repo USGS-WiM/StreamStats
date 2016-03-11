@@ -6,9 +6,9 @@
     </div>
     <div class="modal-body">
         <input type="text" class="form-control" ng-model="vm.reportTitle" placeholder="Title">
-        <div ng-hide="!vm.StudyArea">A study area is needed before viewing the report</div>
-        <div ng-show="!vm.StudyArea">
-            <div class="form-group hidden-print">
+        <div ng-hide="vm.StudyArea">A study area is needed before viewing the report</div>
+        <div ng-show="vm.StudyArea">
+            <div ng-if="!vm.showResults" class="form-group hidden-print">
                 <div class="wim-alert-info">Select a start and end year. Then continue, to estimate the water use for the study area.</div>
                 <div class="group-wrapper">
                     <label>Start Year:</label>
@@ -23,50 +23,84 @@
                 </div>
             </div>
             <div ng-if="vm.showResults">
-                <ul class="nav nav-tabs">
-                    <li ng-class="{'active': vm.SelectedTab == 2}"><a ng-click="vm.SelectedTab =2">Water-Use table</a></li>
+                <ul class="nav nav-tabs wateruseTabs">
+                    <li ng-class="{'active': vm.SelectedTab == 2}"><a ng-click="vm.SelectedTab =2">Water-Use Table</a></li>
                     <li ng-class="{'active': vm.SelectedTab == 1}"><a ng-click="vm.SelectedTab=1">Water-Use Graph</a></li>
                 </ul>
                 <div class="tabs">
                     <div ng-if="vm.SelectedTab == 1">
-                        <nvd3 options='vm.reportOptions' data='vm.GraphData'></nvd3>                        
+
+                        <nvd3 options='vm.AnnualReportOptions' data='vm.ReportData.Annual.Graph'></nvd3>   
+                        <nvd3 options='vm.MonthlyReturnReportOptions' data='vm.ReportData.Monthly.Graph.returns'></nvd3>  
+                        <nvd3 id="monthlyreturns" options='vm.MonthlyReportOptions' data='vm.ReportData.Monthly.Graph.withdrawals'></nvd3>  
+                                            
                     </div>
                     <div ng-if="vm.SelectedTab == 2">
                         <div class="well well-sm">
                             <center>
-                                <h3>Average Water-Use By Month</h3>
+                                <h3>{{vm.StartYear}}-{{vm.EndYear}} Average Annual Water-Use</h3>
                                 <header>reported in million gallons/day</header>
-                            </center>                            
-                           
+                            </center>
+
                             <table class="table table-condensed">
                                 <thead class="param-table">
                                     <tr>
-                                        <th colspan="2">bla</th>
-                                        <th colspan="{{vm.TableData.Withdrawals.Monthly.Fields.length - 2}}">WithDrawals</th>
-                                           
-                                    </tr>
-                                </thead>
-                                <thead class="param-table">
-                                    <tr>
-                                        <th ng-repeat="item in vm.TableData.Fields">{{item}}</th>
+                                        <th ng-repeat="item in vm.ReportData.Annual.Table.Fields">{{item}}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr ng-repeat="item in vm.TableData">
-                                        <td>{{item[0]}}</td>
-                                        <td>{{item[1].value.toFixed(3)}}</td>
+                                    <tr ng-repeat="item in vm.ReportData.Annual.Table.values">
+                                        <td>{{item.name}}</td>
+                                        <td>{{item.aveReturn}}</td>
+                                        <td>{{item.aveWithdrawal}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="well well-sm">
+                            <center>
+                                <h3>{{vm.StartYear}}-{{vm.EndYear}} Average Water-Use by Month</h3>
+                                <header>reported in million gallons/day</header>
+                            </center>
+
+                            <table class="table table-condensed">
+                                <thead class="param-table">
+                                    <tr>
+                                        <th></th>
+                                        <th>Returns</th>
+                                        <th colspan="{{vm.ReportData.Monthly.Table.Fields.length}}">Withdrawals</th>
+                                    </tr>
+
+                                    <tr>
+                                        <th>Month</th>
+                                        <th>Total</th>
+                                        <th>Total</th>
+                                        <th ng-repeat="item in vm.ReportData.Monthly.Table.Fields">{{item}}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="item in vm.ReportData.Monthly.Table.values">
+                                        <td>{{item.month}}</td>
+                                        <td>{{item.returns.value.toFixed(3)}}</td>
+                                        <td>{{vm.Reduce(item.withdrawals).toFixed(3)}}</td>
+                                        <td ng-repeat="wthdls in item.withdrawals">{{wthdls.value.toFixed(3)}}</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
+
+                    
                 </div>
             </div>
             
         </div>
         <div class="modal-footer hidden-print">
             <div class="btn-group">
+                <button ng-if="vm.showResults" class="btn-wim-default" ng-click="vm.Reset()"><i class="fa fa-reset"></i>&nbsp;&nbsp;Reset</button>
                 <button class="btn-wim-default" ng-click="vm.Close()"><i class="fa fa-close"></i>&nbsp;&nbsp;Close</button>
+                <!--<button ng-if="vm.showResults" class="btn-wim-default" ng-click="vm.Print()"><i class="fa fa-print"></i> Print </button>-->
             </div>
         </div>
 
