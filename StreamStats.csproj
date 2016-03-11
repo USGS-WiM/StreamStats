@@ -86,9 +86,7 @@
     <Content Include="src\Views\SidebarComponents\studyareaview.html" />
     <Content Include="src\Views\sidebarview.html" />
     <Content Include="src\Views\wateruse.html" />
-    <Content Include="web.config">
-      <SubType>Designer</SubType>
-    </Content>
+    <Content Include="web.config" />
     <Content Include="typings.json" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
@@ -113,6 +111,7 @@
     <TypeScriptCompile Include="src\Controllers\ReportController.ts" />
     <TypeScriptCompile Include="src\Controllers\SidebarController.ts" />
     <TypeScriptCompile Include="src\Controllers\WateruseController.ts" />
+    <TypeScriptCompile Include="src\Directives\wateruseBarChart.ts" />
     <TypeScriptCompile Include="src\Events\StudyAreaEvents.ts" />
     <TypeScriptCompile Include="src\Models\RegulationParameter.ts" />
     <TypeScriptCompile Include="src\Models\StudyArea.ts" />
