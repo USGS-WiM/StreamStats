@@ -627,35 +627,6 @@ div.leaflet-top > .elevation {
       font-size: 9pt;
     }
 
-  /*#contact-form{
-    margin-top: 15px;
-  }
-
-    #contact-form .well{
-    margin-bottom: 0;
-    /*background-color: #ECEEF4;*/
-    border-radius: 0;
-    border: none; box-shadow: none;
-    box-sizing: border-box;
-    padding: 15px;
-    }
-    #contact-form .well .form-group{
-    padding: 0;
-    }
-    #contact-form .well label{
-        font-size: 9pt;
-        font-weight: 400;
-        opacity: 0.5;
-    }
-
-    #contact-form input,
-    #contact-form textarea{
-        border-radius: 0;
-    }
-    #contact-form textarea{
-        height: 150px;
-    }*/
-
     .modal-backdrop.backdropZ {
     z-index: 9998 !important;
     }
@@ -703,11 +674,6 @@ div.leaflet-top > .elevation {
         display: block;
     }
 
-    .my-drop-zone {
-	    border: dotted 3px lightgray;
-    }
-    .nv-file-over { border: dotted 3px red; } /* Default class applied to drop zones on over */
-
     .removeItem {
 	    float: left;
 	    position: absolute;
@@ -717,6 +683,10 @@ div.leaflet-top > .elevation {
     #supportContent p {
         font-size: 14px;
     }
+
+    .wim-warning {
+       background-color: #fdb81e !important;
+     }
 
 /*
     ===========================
@@ -729,7 +699,13 @@ div.leaflet-top > .elevation {
         @media print{
         body * {
             visibility: hidden;
-            -webkit-print-color-adjust: exact; 
+            -webkit-print-color-adjust: exact !important; 
+        }
+        .wim-alert-warning {
+            background-color: #fdb81e !important;
+        }
+        table .wim-warning {
+            background-color: #fdb81e !important;
         }
         .hidden-print {
             display: none !important;
