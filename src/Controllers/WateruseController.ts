@@ -20,7 +20,6 @@
 //02.17.2016 jkn - Created
 
 //Import
-declare var Highcharts: any;
 declare var d3: any;
 module StreamStats.Controllers {
     'use strict';
@@ -138,60 +137,78 @@ module StreamStats.Controllers {
             window.print();
         }
         
-        public GetGraphData(useType: WaterUseType): void {
+        private GetGraphData(useType: WaterUseType): void {
             
             switch (useType) {               
                 case WaterUseType.Monthly:
                     this.ReportData.Monthly.Graph.withdrawals = [];
-                    if (!this.result.hasOwnProperty("DailyMonthlyAveWithdrawalsByCode")) return;
-                    this.ReportData.Monthly.Graph.withdrawals = this.result.DailyMonthlyAveWithdrawalsByCode.map((elem) => {
-                        return {
-                            "key": elem[0].name.slice(-2),
-                            "values": elem.map(function (values) {
+                    if (this.result.hasOwnProperty("DailyMonthlyAveWithdrawalsByCode")) {
+                        this.ReportData.Monthly.Graph.withdrawals = this.result.DailyMonthlyAveWithdrawalsByCode.map((elem) => {
+                            return {
+                                "key": this.getWUText(elem[0].name.slice(-2)),
+                                "values": elem.map(function (values) {
 
-                                return {
-                                    "label": values.name.substring(6, 9),
-                                    "stack": values.type,
-                                    "value": values.value
-                                }
+                                    return {
+                                        "label": values.name.substring(6, 9),
+                                        "stack": values.type,
+                                        "value": values.value
+                                    }
 
-                            })
-                        };
-                    });
+                                })
+                            };
+                        });                        
+                    }//end if
+                   
 
                     this.ReportData.Monthly.Graph.returns = [];
                     var values = [];
                     if (this.result.hasOwnProperty("MonthlyWaterUseCoeff")) {
-                        
                         (<Array<any>>this.result.MonthlyWaterUseCoeff).forEach((item) => {
                             if (item.name === "Total Returns" && item.unit === "MGD") {
                                 values.push({ "label": item.type, "stack": item.name, "value": item.value });
                             }
                         });//next
-
-                        this.ReportData.Monthly.Graph.returns.push({
-                            "key": "Returns",
-                            "values": values,
-                            "color": "#ff7f0e"
-                        });
-                        
-
                     }//end if
+                    else if (this.result.hasOwnProperty("DailyMonthlyAveDischarges")){
+                        values = this.result.DailyMonthlyAveDischarges.map((elem) => {
+                            return {
+                                "label": elem.name.substring(6, 9),
+                                "stack": elem.type,
+                                "value": elem.value
+                            };
+                        });
+                    }//end if
+
+                    this.ReportData.Monthly.Graph.returns.push({
+                        "key": "Returns",
+                        "values": values,
+                        "color": "#ff7f0e"
+                    });
+
                     break;
                 case WaterUseType.Annual:
                     this.ReportData.Annual.Graph = [];
                     if (this.result.hasOwnProperty("AveGWWithdrawals"))
-                        this.ReportData.Annual.Graph.push({ name: "Groundwater withdrawal", value: this.result.AveGWWithdrawals.value});
+                        this.ReportData.Annual.Graph.push({ name: "Groundwater withdrawal", value: this.result.AveGWWithdrawals.value });
+                    else if (this.result.hasOwnProperty("DailyAnnualAveGWWithdrawal"))
+                        this.ReportData.Annual.Graph.push({ name: "Groundwater withdrawal", value: this.result.DailyAnnualAveGWWithdrawal.value });
+
                     if (this.result.hasOwnProperty("AveSWWithdrawals"))
                         this.ReportData.Annual.Graph.push({ name: "Surface water withdrawal", value: this.result.AveSWWithdrawals.value });
-                    if (this.result.hasOwnProperty("AveReturns"));
-                    this.ReportData.Annual.Graph.push({ name: "Surface water return", value: this.result.AveReturns.value });
+                    else if (this.result.hasOwnProperty("DailyAnnualAveSWWithdrawal"))
+                        this.ReportData.Annual.Graph.push({ name: "Surface water withdrawal", value: this.result.DailyAnnualAveSWWithdrawal.value });
+
+                    if (this.result.hasOwnProperty("AveReturns"))
+                        this.ReportData.Annual.Graph.push({ name: "Surface water return", value: this.result.AveReturns.value });
+                    else if (this.result.hasOwnProperty("DailyAnnualAveDischarge"))
+                        this.ReportData.Annual.Graph.push({ name: "Surface water return", value: this.result.DailyAnnualAveDischarge.value });
+
                     break;
 
             }//end switch
             
         }
-        public GetTableData(useType: WaterUseType): any {
+        private GetTableData(useType: WaterUseType): any {
             var tableFields: Array<string> = [];
             var tableValues: Array<any> = [];
             switch (useType) {
@@ -202,22 +219,24 @@ module StreamStats.Controllers {
                     }
 
                     if (this.result.hasOwnProperty("MonthlyWaterUseCoeff")) {
-                        var avereturn = this.result.AveReturns.value;
 
                         var index = 0;
-                        (<Array<any>>this.result.MonthlyWaterUseCoeff).forEach((item) => {
-                            if (item.name === "Total Returns" && item.unit === "MGD") {
+                        (<Array<any>>this.result.DailyMonthlyAveDischarges).forEach((item) => {
+                            if (item.type === "Discharge" && item.unit === "MGD") {
                                 tableValues[index].returns = item;
                                 index++;
                             }
                         });//next
+                    }
+                    else if (this.result.hasOwnProperty("MonthlyWaterUseCoeff")){
+
 
                     }//end if
 
                     if (this.result.hasOwnProperty("DailyMonthlyAveWithdrawalsByCode")) {
 
                         this.result.DailyMonthlyAveWithdrawalsByCode.forEach((item) => {
-                            tableFields.push(item[0].name.slice(-2))
+                            tableFields.push(this.getWUText(item[0].name.slice(-2)));
                             tableValues[0].withdrawals.push(item[0]);
                             tableValues[1].withdrawals.push(item[1]);
                             tableValues[2].withdrawals.push(item[2]);
@@ -272,158 +291,136 @@ module StreamStats.Controllers {
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {
-            //http://ssdev.cr.usgs.gov/streamstatsservices/wateruse.json?rcode=OH&workspaceID=OH20160217071851546000&startyear=2005&endyear=2009
-            var url = configuration.queryparams['Wateruse'].format(this.StudyArea.RegionID);
+            //http://ssdev.cr.usgs.gov/streamstatsservices/wateruse.json?rcode=OH
+            var url = configuration.queryparams['WateruseConfig'].format(this.StudyArea.RegionID);
             //var url = "wateruse.js";
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url);
-
             this.Execute(request).then(
                 (response: any) => {
-                    this.showResults = true;                 
-                    //sm when complete
-                    this.result = response.data;
-                    this.GetGraphData(WaterUseType.Monthly);
-                    this.GetGraphData(WaterUseType.Annual);
+                    var result = response.data;
+                    this._startYear = result.syear;
 
-                    this.ReportData.Monthly.Table = this.GetTableData(WaterUseType.Monthly);
-                    this.ReportData.Annual.Table = this.GetTableData(WaterUseType.Annual);
+                    this._endYear = result.eyear?result.eyear: 2012;
+                    this._yearRange = { floor: result.syear, draggableRange: true, noSwitching: true, showTicks: false, ceil: result.eyear };
 
-
-                }, (error) => {
+                }, (error) => {;
+                    this._startYear = 2005;
+                    this._endYear = 2012;
+                    this._yearRange = { floor: 2005, draggableRange: true, noSwitching: true, showTicks: false, ceil: 2012 };
                     //sm when error                    
                 }).finally(() => {
                     this.CanContiue = true;
+                    this.showResults = false;
+                    this.SelectedTab = WaterUseTabType.Graph;
+                    this.SelectedWaterUseType = WaterUseType.Annual;
+                    this.ReportData = new WaterUseReportable();
+                    this.MonthlyReportOptions = {
+                        chart: {
+                            type: 'multiBarHorizontalChart',
+                            height: 450,
+                            visible: true,
+                            stacked: true,
+                            showControls: false,
+                            margin: {
+                                top: 20,
+                                right: 30,
+                                bottom: 60,
+                                left: 55
+                            },
+                            x: function (d) { return d.label; },
+                            y: function (d) { return d.value; },
+                            dispatch: {
+                                stateChange: () => {
+                                    console.log("StateChange");
+                                    //must wrap in timer or method executes prematurely
+                                    this.$timeout(() => {
+                                        this.loadGraphLabels(1);
+                                    }, 500);
+                                },
+                                renderEnd: () => {
+                                    console.log("renderend");
+                                    //must wrap in timer or method executes prematurely
+                                    this.$timeout(() => {
+                                        this.loadGraphLabels(1);
+                                    }, 500);
+                                }
+                            },
+                            showValues: true,
+                            valueFormat: function (d) {
+                                return d3.format(',.4f')(d);
+                            },
+
+                            xAxis: {
+                                showMaxMin: false
+                            },
+                            yAxis: {
+                                axisLabel: 'Values in million gallons/day',
+                                tickFormat: function (d) {
+                                    return d3.format(',.3f')(d);
+                                }
+                            },
+                            refreshDataOnly: true
+                        }
+                    };
+                    this.MonthlyReturnReportOptions = {
+                        chart: {
+                            type: 'multiBarHorizontalChart',
+                            height: 450,
+                            visible: true,
+                            stacked: false,
+                            showControls: false,
+                            margin: {
+                                top: 20,
+                                right: 30,
+                                bottom: 60,
+                                left: 55
+                            },
+                            x: function (d) { return d.label; },
+                            y: function (d) { return d.value; },
+                            showValues: true,
+                            valueFormat: function (d) {
+                                return d3.format(',.3f')(d);
+                            },
+
+                            xAxis: {
+                                showMaxMin: false
+                            },
+                            yAxis: {
+                                axisLabel: 'Values in million gallons/day',
+                                tickFormat: function (d) {
+                                    return d3.format(',.3f')(d);
+                                }
+                            }
+
+
+                        }
+
+                    };
+                    this.AnnualReportOptions = {
+                        chart: {
+                            type: 'pieChart',
+                            height: 500,
+                            x: (d) => { return d.name; },
+                            y: (d) => { return d.value; },
+                            showLabels: true,
+                            duration: 500,
+                            labelThreshold: 0.01,
+                            labelSunbeamLayout: false,
+                            legend: {
+                                margin: {
+                                    top: 5,
+                                    right: 35,
+                                    bottom: 5,
+                                    left: 0
+                                }
+                            }
+                        }
+                    };
+               
                 });
 
-            this._startYear = 2005;
-            this._endYear = 2012;
-            this._yearRange = { floor: 2005, draggableRange: true, noSwitching: true, showTicks: false, ceil: 2012 };
-            this.CanContiue = false;
-            this.showResults = false;
-            this.SelectedTab = WaterUseTabType.Graph;
-            this.SelectedWaterUseType = WaterUseType.Annual;
-            this.ReportData = new WaterUseReportable();
-            this.MonthlyReportOptions = {
-                chart: {
-                    type: 'multiBarHorizontalChart',
-                    height: 450,
-                    visible: true,
-                    stacked: true,
-                    showControls: false,
-                    margin: {
-                        top: 20,
-                        right: 30,
-                        bottom: 60,
-                        left: 55
-                    },
-                    x: function (d) { return d.label; },
-                    y: function (d) { return d.value; },
-                    dispatch: {
-                        stateChange: () => {
-                            console.log("StateChange");
-                            //must wrap in timer or method executes prematurely
-                            this.$timeout(() => {
-                                this.loadGraphLabels(1);
-                            }, 500);
-                        },
-                        renderEnd: () => {
-                            console.log("renderend");
-                            //must wrap in timer or method executes prematurely
-                            this.$timeout(() => {
-                                this.loadGraphLabels(1);
-                            }, 500);
-                        }
-                    },
-                    showValues: true,
-                    valueFormat: function (d) {
-                        return d3.format(',.4f')(d);
-                    },
-                    
-                    xAxis: {
-                        showMaxMin: false
-                    },
-                    yAxis: {
-                        axisLabel: 'Values in million gallons/day',
-                        tickFormat: function (d) {
-                            return d3.format(',.3f')(d);
-                        }
-                    }
-                    
-
-                },
-                title: {
-                        enable: true,
-                        text: this.StartYear + " - " + this.EndYear + " Average Water-Use Withdrawals By Month",                        
-                }
-            };
-
-            this.MonthlyReturnReportOptions = {
-                chart: {
-                    type: 'multiBarHorizontalChart',
-                    height: 450,
-                    visible: true,
-                    stacked: false,
-                    showControls: false,
-                    margin: {
-                        top: 20,
-                        right: 30,
-                        bottom: 60,
-                        left: 55
-                    },
-                    x: function (d) { return d.label; },
-                    y: function (d) { return d.value; },
-                    showValues: true,
-                    valueFormat: function (d) {
-                        return d3.format(',.3f')(d);
-                    },
-
-                    xAxis: {
-                        showMaxMin: false
-                    },
-                    yAxis: {
-                        axisLabel: 'Values in million gallons/day',
-                        tickFormat: function (d) {
-                            return d3.format(',.3f')(d);
-                        }
-                    }
-
-
-                },
-                title: {
-                    enable: true,
-                    text: this.StartYear + " - " + this.EndYear + " Average Water-Use Returns By Month",
-                }
-            };
-
-            this.AnnualReportOptions = {               
-                chart: {
-                    type: 'pieChart',
-                    height: 500,
-                    x: (d)=> { return d.name; },
-                    y: (d)=> { return d.value; },
-                    showLabels: true,
-                    duration: 500,
-                    labelThreshold: 0.01,
-                    labelSunbeamLayout: false,
-                    legend: {
-                        margin: {
-                            top: 5,
-                            right: 35,
-                            bottom: 5,
-                            left: 0
-                        }
-                    }
-                },
-                title: {
-                    enable: true,
-                    text: this.StartYear + " - " + this.EndYear + " Average Water-Use By Source",
-
-                },
-                subtitle: {
-                    enable: true,
-                    text: "reported in million gallons/day",
-                }
-            };
+            
+            
         }
         private getMonth(index: number): string {
             switch (index) {
@@ -441,7 +438,30 @@ module StreamStats.Controllers {
                 case 11: return "Dec";
             }
 
-        }  
+        } 
+        private getWUText(wtype: string): string {
+            switch (wtype.toUpperCase()) {
+                case "AQ": return "Aquaculture";
+                case "CO": return "Commercial";
+                case "DO": return "Domestic";
+                case "PH": return "Hydro Electric";
+                case "IN": return "Industrial";
+                case "IR": return "Irrigation";
+                case "LV": return "Livestock";
+                case "MI": return "Mining";
+                case "RM": return "Remediation";
+                case "TE": return "Thermoelectric";
+                case "ST": return "Waste Water Treatment";
+                case "WS": return "Public Supply";
+                case "MF": return "Hydrofracturing"
+                case "CW": return "Wetland augmentation";
+                case "PC": return "Thermoelectric (closed cycle)";
+                case "PO": return "Thermoelectric (once through)";
+            
+            }//End Switch
+            
+            return wtype.toUpperCase();
+        }
         private loadGraphLabels(id): void {
             var svg = d3.selectAll("g.nv-multibarHorizontal");
             var lastBarID = svg.selectAll("g.nv-group").map((items: Array<any>) => { return items.length; });
@@ -459,6 +479,7 @@ module StreamStats.Controllers {
                 });
             
         }      
+
     }//end wimLayerControlController class
     enum WaterUseType {
         Annual = 1,
