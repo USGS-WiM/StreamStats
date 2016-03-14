@@ -61,9 +61,9 @@ var StreamStats;
                     return;
                 console.log("Trying to open help page for: ", regionID);
                 var headers = {
-                    "Authorization": "Basic " + btoa('yxAClTZwexFeIxpRR6g' + ":" + 'X'),
+                    "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
                 };
-                var url = 'https://streamstats.freshdesk.com/solution/categories/9000106501/folders/9000163157.json';
+                var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.RegionInfo;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
                 this.Execute(request).then(function (response) {
                     console.log('Successfully retrieved support desk request: ', response);
