@@ -5,7 +5,7 @@
         <h4 class="modal-title">Study Area Water-Use Summary</h4>
     </div>
     <div class="modal-body">
-        <input type="text" class="form-control" ng-model="vm.reportTitle" placeholder="Title">
+        <input ng-if="false" type="text" class="form-control" ng-model="vm.reportTitle" placeholder="Title">
         <div ng-hide="vm.StudyArea">A study area is needed before viewing the report</div>
         <div ng-show="vm.StudyArea">
             <div ng-if="!vm.showResults" class="form-group hidden-print">
@@ -29,11 +29,13 @@
                 </ul>
                 <div class="tabs">
                     <div ng-if="vm.SelectedTab == 1">
+                        <center><h3>{{vm.StartYear}}-{{vm.EndYear}} Average Water-Use By Source</h3></center>
+                            <nvd3 options='vm.AnnualReportOptions' data='vm.ReportData.Annual.Graph'></nvd3>
+                        <center><h3>{{vm.StartYear}}-{{vm.EndYear}} Average Water-Use Returns By Month</h3></center>
+                            <nvd3 options='vm.MonthlyReturnReportOptions' data='vm.ReportData.Monthly.Graph.returns'></nvd3>
+                        <center><h3>{{vm.StartYear}}-{{vm.EndYear}} Average Water-Use Withdrawals By Month</h3></center>
+                            <nvd3 id="monthlyreturns" options='vm.MonthlyReportOptions' data='vm.ReportData.Monthly.Graph.withdrawals'></nvd3>
 
-                        <nvd3 options='vm.AnnualReportOptions' data='vm.ReportData.Annual.Graph'></nvd3>   
-                        <nvd3 options='vm.MonthlyReturnReportOptions' data='vm.ReportData.Monthly.Graph.returns'></nvd3>  
-                        <nvd3 id="monthlyreturns" options='vm.MonthlyReportOptions' data='vm.ReportData.Monthly.Graph.withdrawals'></nvd3>  
-                                            
                     </div>
                     <div ng-if="vm.SelectedTab == 2">
                         <div class="well well-sm">
@@ -76,7 +78,7 @@
                                         <th>Month</th>
                                         <th>Total</th>
                                         <th>Total</th>
-                                        <th ng-repeat="item in vm.ReportData.Monthly.Table.Fields">{{item}}</th>
+                                        <th ng-repeat="item in vm.ReportData.Monthly.Table.Fields track by $index">{{item}}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
