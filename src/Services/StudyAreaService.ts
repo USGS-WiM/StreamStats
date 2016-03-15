@@ -184,7 +184,8 @@ module StreamStats.Services {
 
             this.Execute(request).then(
                 (response: any) => {  
-                    //console.log('delineation response headers: ', response.headers());
+                    console.log('delineation response headers: ', response.headers());
+                    this.selectedStudyArea.Server = response.headers()['usgswim-hostname'];
                     this.selectedStudyArea.Features = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"] : null;
                     this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
                     this.selectedStudyArea.Date = new Date();
