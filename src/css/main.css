@@ -689,6 +689,10 @@ div.leaflet-top > .elevation {
        background-color: #fdb81e !important;
      }
 
+    .ticketForm {
+        overflow-x: hidden;
+    }
+
 /*
     ===========================
     ===========================

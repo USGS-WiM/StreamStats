@@ -61,6 +61,7 @@ module StreamStats.Controllers {
         public RegionID: string; 
         public AppVersion: string;
         public Browser: string;
+        public Server: string;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -113,7 +114,7 @@ module StreamStats.Controllers {
 
             formdata.append('helpdesk_ticket[custom_field][regionid_' + configuration.SupportTicketService.AccountID + ']', this.RegionID);
             formdata.append('helpdesk_ticket[custom_field][workspaceid_' + configuration.SupportTicketService.AccountID + ']', this.WorkspaceID);
-            formdata.append('helpdesk_ticket[custom_field][server_' + configuration.SupportTicketService.AccountID + ']', window.location.host);
+            formdata.append('helpdesk_ticket[custom_field][server_' + configuration.SupportTicketService.AccountID + ']', this.Server);
             formdata.append('helpdesk_ticket[custom_field][browser_' + configuration.SupportTicketService.AccountID + ']', this.Browser);
             formdata.append('helpdesk_ticket[custom_field][softwareversion_' + configuration.SupportTicketService.AccountID + ']', this.AppVersion);
 
@@ -160,6 +161,8 @@ module StreamStats.Controllers {
             else this.WorkspaceID = '';
             if (this.StudyArea && this.StudyArea.RegionID) this.RegionID = this.StudyArea.RegionID;
             else this.RegionID = '';
+            if (this.StudyArea && this.StudyArea.Server) this.Server = this.StudyArea.Server;
+            else this.Server = '';
         }
 
         private getBrowser() {
