@@ -4,8 +4,7 @@
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var StreamStats;
 (function (StreamStats) {
@@ -57,7 +56,7 @@ var StreamStats;
                 formdata.append('helpdesk_ticket[description]', this.freshdeskTicketData.description);
                 formdata.append('helpdesk_ticket[custom_field][regionid_' + configuration.SupportTicketService.AccountID + ']', this.RegionID);
                 formdata.append('helpdesk_ticket[custom_field][workspaceid_' + configuration.SupportTicketService.AccountID + ']', this.WorkspaceID);
-                formdata.append('helpdesk_ticket[custom_field][server_' + configuration.SupportTicketService.AccountID + ']', window.location.host);
+                formdata.append('helpdesk_ticket[custom_field][server_' + configuration.SupportTicketService.AccountID + ']', this.Server);
                 formdata.append('helpdesk_ticket[custom_field][browser_' + configuration.SupportTicketService.AccountID + ']', this.Browser);
                 formdata.append('helpdesk_ticket[custom_field][softwareversion_' + configuration.SupportTicketService.AccountID + ']', this.AppVersion);
                 //can loop over an opject and keep appending attachments here
@@ -99,6 +98,10 @@ var StreamStats;
                     this.RegionID = this.StudyArea.RegionID;
                 else
                     this.RegionID = '';
+                if (this.StudyArea && this.StudyArea.Server)
+                    this.Server = this.StudyArea.Server;
+                else
+                    this.Server = '';
             };
             HelpController.prototype.getBrowser = function () {
                 //modified from http://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browser
