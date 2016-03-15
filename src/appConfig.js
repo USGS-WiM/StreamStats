@@ -14,7 +14,6 @@ configuration.baseurls =
     'FARefGage': 'http://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowAnywhere/MapServer',
     'GISserver': 'http://54.164.188.167',
     'NationalMapRasterServices': 'http://raster.nationalmap.gov/arcgis/rest/services'
-
 }
 
 configuration.queryparams =
@@ -39,6 +38,12 @@ configuration.queryparams =
     'Wateruse': '/streamstatsservices/wateruse.json?rcode={0}&workspaceID={1}&startyear={2}&endyear={3}',
     'WateruseConfig': '/streamstatsservices/wateruse.json?rcode={0}'
 
+configuration.SupportTicketService = {
+    'BaseURL': 'https://streamstats.freshdesk.com',
+    'CreateTicket': '/helpdesk/tickets.json',
+    'RegionInfo': '/solution/categories/9000106501/folders/9000163157.json',
+    'Token': 'yxAClTZwexFeIxpRR6g',
+    'AccountID': '303973'
 }
 
 configuration.basemaps =
