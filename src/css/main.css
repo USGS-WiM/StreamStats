@@ -458,7 +458,7 @@ div.leaflet-top > .elevation {
 
 .well {
     margin-top:10px;
-    overflow:auto;
+    overflow-x:hidden;
 }
 
 .sidebar{
@@ -688,10 +688,6 @@ div.leaflet-top > .elevation {
     .wim-warning {
        background-color: #fdb81e !important;
      }
-
-    .ticketForm {
-        overflow-x: hidden;
-    }
 
 /*
     ===========================
