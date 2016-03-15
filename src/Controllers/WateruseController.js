@@ -34,6 +34,8 @@ var StreamStats;
                     return this._startYear;
                 },
                 set: function (val) {
+                    if (!this.spanYear)
+                        this.EndYear = val;
                     if (val <= this.EndYear && val >= this.YearRange.floor)
                         this._startYear = val;
                 },
@@ -162,14 +164,21 @@ var StreamStats;
                         }
                         if (this.result.hasOwnProperty("MonthlyWaterUseCoeff")) {
                             var index = 0;
+                            this.result.MonthlyWaterUseCoeff.forEach(function (item) {
+                                if (item.name === "Total Returns" && item.unit === "MGD") {
+                                    tableValues[index].returns = item;
+                                    index++;
+                                }
+                            }); //next
+                        }
+                        else if (this.result.hasOwnProperty("DailyMonthlyAveDischarges")) {
+                            var index = 0;
                             this.result.DailyMonthlyAveDischarges.forEach(function (item) {
                                 if (item.type === "Discharge" && item.unit === "MGD") {
                                     tableValues[index].returns = item;
                                     index++;
                                 }
                             }); //next
-                        }
-                        else if (this.result.hasOwnProperty("MonthlyWaterUseCoeff")) {
                         } //end if
                         if (this.result.hasOwnProperty("DailyMonthlyAveWithdrawalsByCode")) {
                             this.result.DailyMonthlyAveWithdrawalsByCode.forEach(function (item) {
@@ -193,10 +202,16 @@ var StreamStats;
                         tableFields = ["", "Average Return", "Average Withdrawal"];
                         if (this.result.hasOwnProperty("AveSWWithdrawals"))
                             tableValues.push({ name: "Surface Water", aveReturn: "---", aveWithdrawal: this.result.AveSWWithdrawals.value.toFixed(3), unit: "MGD" });
+                        else if (this.result.hasOwnProperty("DailyAnnualAveSWWithdrawal"))
+                            tableValues.push({ name: "Surface Water", aveReturn: "---", aveWithdrawal: this.result.DailyAnnualAveSWWithdrawal.value.toFixed(3), unit: "MGD" });
                         if (this.result.hasOwnProperty("AveGWWithdrawals"))
                             tableValues.push({ name: "Groundwater", aveReturn: "---", aveWithdrawal: this.result.AveGWWithdrawals.value.toFixed(3), unit: "MGD" });
+                        else if (this.result.hasOwnProperty("DailyAnnualAveSWWithdrawal"))
+                            tableValues.push({ name: "Groundwater", aveReturn: "---", aveWithdrawal: this.result.DailyAnnualAveGWWithdrawal.value.toFixed(3), unit: "MGD" });
                         if (this.result.hasOwnProperty("AveReturns"))
                             tableValues.push({ name: "Total", aveReturn: this.result.AveReturns.value.toFixed(3), aveWithdrawal: (this.result.AveSWWithdrawals.value + this.result.AveGWWithdrawals.value).toFixed(3), unit: "MGD" });
+                        else if (this.result.hasOwnProperty("DailyAnnualAveDischarge"))
+                            tableValues.push({ name: "Total", aveReturn: this.result.DailyAnnualAveDischarge.value.toFixed(3), aveWithdrawal: (this.result.DailyAnnualAveGWWithdrawal.value + this.result.DailyAnnualAveSWWithdrawal.value).toFixed(3), unit: "MGD" });
                         tableValues.push({ name: "", aveReturn: "", aveWithdrawal: "" });
                         if (this.result.hasOwnProperty("TotalTempStats")) {
                             tableValues.push({ name: "Temporary water-use registrations (surface water)", aveReturn: "", aveWithdrawal: this.result.TotalTempStats[2].value.toFixed(3), unit: "MGD" });
@@ -228,8 +243,9 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url);
                 this.Execute(request).then(function (response) {
                     var result = response.data;
+                    _this.spanYear = result.yearspan;
                     _this._startYear = result.syear;
-                    _this._endYear = result.eyear ? result.eyear : 2012;
+                    _this._endYear = (_this.spanYear) ? result.eyear : result.syear;
                     _this._yearRange = { floor: result.syear, draggableRange: true, noSwitching: true, showTicks: false, ceil: result.eyear };
                 }, function (error) {
                     ;
