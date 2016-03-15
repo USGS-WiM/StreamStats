@@ -79,6 +79,7 @@ module StreamStats.Controllers {
         public center: ICenter = null;
         public bounds: any;
         public layers: IMapLayers = null;
+        public defaults: any;
         private leafletData: ILeafletData;
         public reportTitle: string;
         public reportComments: string;
@@ -123,6 +124,13 @@ module StreamStats.Controllers {
                 overlays: {}
             }
             L.Icon.Default.imagePath = 'images';
+            this.defaults = {
+                scrollWheelZoom: false,
+                touchZoom: false,
+                doubleClickZoom: false,
+                boxZoom: false,
+                keyboard: false
+            }
         } 
 
         private showFeatures(): void { 
@@ -156,14 +164,6 @@ module StreamStats.Controllers {
                         map.invalidateSize();
                         //console.log('in getmap: ', bbox);
                         map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
-
-                        //map.dragging.disable();
-                        map.touchZoom.disable();
-                        map.doubleClickZoom.disable();
-                        map.scrollWheelZoom.disable();
-                        map.boxZoom.disable();
-                        map.keyboard.disable();
-                        if (map.tap) map.tap.disable();
                     });
                 }
                 if (item.name == 'globalwatershedpoint') {
