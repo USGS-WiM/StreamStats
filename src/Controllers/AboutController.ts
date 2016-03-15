@@ -90,10 +90,10 @@ module StreamStats.Controllers {
             console.log("Trying to open help page for: ", regionID);
 
             var headers = {
-                "Authorization": "Basic " + btoa('***REMOVED***' + ":" + 'X'),
+                "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
             };
 
-            var url = 'https://streamstats.freshdesk.com/solution/categories/9000028363/folders/9000163015.json';
+            var url = configuration.SupportTicketService.BaseURL  + configuration.SupportTicketService.RegionInfo;
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
 
             this.Execute(request).then(

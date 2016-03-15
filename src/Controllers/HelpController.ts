@@ -56,7 +56,9 @@ module StreamStats.Controllers {
         public token: string;
         public freshdeskTicketData: FreshdeskTicketData;
         public showSuccessAlert: boolean;
+        public submittingSupportTicket: boolean;
         public WorkspaceID: string; 
+        public RegionID: string; 
         public AppVersion: string;
         public Browser: string;
 
@@ -75,6 +77,7 @@ module StreamStats.Controllers {
             this.freshdeskTicketData = new FreshdeskTicketData();
             this.selectedHelpTabName = "faq";
             this.showSuccessAlert = false;
+            this.submittingSupportTicket = false;
 
             this.init();
 
@@ -89,9 +92,9 @@ module StreamStats.Controllers {
 
         public submitFreshDeskTicket(isValid): void {
 
-            //if (!isValid) return;
+            if (!isValid) return;
 
-            var url = 'https://streamstats.freshdesk.com/helpdesk/tickets.json';
+            var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.CreateTicket;
 
             var formdata = new FormData();
 
@@ -100,27 +103,31 @@ module StreamStats.Controllers {
             //}
 
             /*  TESTING DATA  */
-            formdata.append('helpdesk_ticket[description]', 'sample description');
-            formdata.append('helpdesk_ticket[email]', 'demo@freshdesk.com');
-            formdata.append('helpdesk_ticket[subject]', 'Test subject');
-            formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "WorkspaceID": this.WorkspaceID }));
-            formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "Server": "test1234" }));
-            formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "Browser": this.Browser }));
-            formdata.append('helpdesk_ticket[custom_field]', angular.toJson({ "SoftwareVersion": this.AppVersion }));
+            //formdata.append('helpdesk_ticket[description]', 'sample description');
+            //formdata.append('helpdesk_ticket[email]', 'demo@freshdesk.com');
+            //formdata.append('helpdesk_ticket[subject]', 'Test subject');
 
-            //formdata.append('helpdesk_ticket[email]', this.freshdeskTicketData.email);
-            //formdata.append('helpdesk_ticket[subject]', this.freshdeskTicketData.subject);
-            //formdata.append('helpdesk_ticket[description]', this.freshdeskTicketData.description);  
+            formdata.append('helpdesk_ticket[email]', this.freshdeskTicketData.email);
+            formdata.append('helpdesk_ticket[subject]', this.freshdeskTicketData.subject);
+            formdata.append('helpdesk_ticket[description]', this.freshdeskTicketData.description);  
+
+            formdata.append('helpdesk_ticket[custom_field][regionid_' + configuration.SupportTicketService.AccountID + ']', this.RegionID);
+            formdata.append('helpdesk_ticket[custom_field][workspaceid_' + configuration.SupportTicketService.AccountID + ']', this.WorkspaceID);
+            formdata.append('helpdesk_ticket[custom_field][server_' + configuration.SupportTicketService.AccountID + ']', window.location.host);
+            formdata.append('helpdesk_ticket[custom_field][browser_' + configuration.SupportTicketService.AccountID + ']', this.Browser);
+            formdata.append('helpdesk_ticket[custom_field][softwareversion_' + configuration.SupportTicketService.AccountID + ']', this.AppVersion);
 
             //can loop over an opject and keep appending attachments here
             if (this.freshdeskTicketData.attachment) formdata.append('helpdesk_ticket[attachments][][resource]', this.freshdeskTicketData.attachment, this.freshdeskTicketData.attachment.name);
 
             var headers = {
-                "Authorization": "Basic " + btoa('***REMOVED***' + ":" + 'X'),
+                "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
                 "Content-Type": undefined
             };
 
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', formdata, headers, angular.identity);
+
+            this.submittingSupportTicket = true;
 
             this.Execute(request).then(
                 (response: any) => {
@@ -135,7 +142,7 @@ module StreamStats.Controllers {
                 }, (error) => {
                     //sm when error
                 }).finally(() => {
-
+                    this.submittingSupportTicket = false;
                 });
         }
 
@@ -151,6 +158,8 @@ module StreamStats.Controllers {
             this.getBrowser();
             if (this.StudyArea && this.StudyArea.WorkspaceID) this.WorkspaceID = this.StudyArea.WorkspaceID;
             else this.WorkspaceID = '';
+            if (this.StudyArea && this.StudyArea.RegionID) this.RegionID = this.StudyArea.RegionID;
+            else this.RegionID = '';
         }
 
         private getBrowser() {
