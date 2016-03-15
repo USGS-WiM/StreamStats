@@ -36,7 +36,7 @@ configuration.queryparams =
     'regulationService': '/arcgis/rest/services/Regulation/{0}RegulationSites/MapServer/exts/RegulationRESTSOE/Regulation',
     'RegressionRegionQueryService': '/arcgis/rest/services/NSS/regions/MapServer/exts/PercentOverlayRESTSOE/PercentOverlay',
     'Wateruse': '/streamstatsservices/wateruse.json?rcode={0}&workspaceID={1}&startyear={2}&endyear={3}',
-}
+    'WateruseConfig': '/streamstatsservices/wateruse.json?rcode={0}'
 
 configuration.SupportTicketService = {
     'BaseURL': 'https://streamstats.freshdesk.com',
@@ -333,7 +333,7 @@ configuration.regions = [
     { "RegionID": "WI", "Name": "Wisconsin", "Bounds": [[42.494701, -92.885391], [47.302532, -86.249565]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "WY", "Name": "Wyoming", "Bounds": [[40.996269, -111.055137], [45.004203, -104.051986]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "CRB", "Name": "Connecticut River Basin", "Bounds": [[43, -70.5], [44, -74.5]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
-    { "RegionID": "DRB", "Name": "Delaware River Basin", "Bounds": [[38.5, -73], [42.5, -77]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
+    { "RegionID": "DRB", "Name": "Delaware River Basin", "Bounds": [[38.5, -73], [42.5, -77]], "Layers": {}, "Applications": ["Wateruse"], "ScenariosAvailable": true },
     { "RegionID": "RRB", "Name": "Rainy River Basin", "Bounds": [[47.3, -89.5], [50, -96]], "Layers": {}, "Applications": [], "ScenariosAvailable": true }
 
 ]//end regions
