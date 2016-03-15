@@ -59,13 +59,17 @@ module StreamStats.Controllers {
         private StudyArea: StreamStats.Models.IStudyArea;
         private modalInstance: ng.ui.bootstrap.IModalServiceInstance;
         public showResults: boolean;
+        public spanYear: boolean;
         private _startYear: number; 
         public get StartYear(): number {
             return this._startYear;
         } 
-        public set StartYear(val:number) {
+        public set StartYear(val: number) {
+            if (!this.spanYear) this.EndYear = val;
             if (val <= this.EndYear && val >= this.YearRange.floor)
                 this._startYear = val;
+            
+
         }
            
         private _endYear: number;  
@@ -219,7 +223,15 @@ module StreamStats.Controllers {
                     }
 
                     if (this.result.hasOwnProperty("MonthlyWaterUseCoeff")) {
-
+                        var index = 0;
+                        (<Array<any>>this.result.MonthlyWaterUseCoeff).forEach((item) => {
+                            if (item.name === "Total Returns" && item.unit === "MGD") {
+                                tableValues[index].returns = item;
+                                index++;
+                            }
+                        });//next
+                    }
+                    else if (this.result.hasOwnProperty("DailyMonthlyAveDischarges")){
                         var index = 0;
                         (<Array<any>>this.result.DailyMonthlyAveDischarges).forEach((item) => {
                             if (item.type === "Discharge" && item.unit === "MGD") {
@@ -227,9 +239,6 @@ module StreamStats.Controllers {
                                 index++;
                             }
                         });//next
-                    }
-                    else if (this.result.hasOwnProperty("MonthlyWaterUseCoeff")){
-
 
                     }//end if
 
@@ -257,13 +266,22 @@ module StreamStats.Controllers {
                 case WaterUseType.Annual:
                     tableFields =["","Average Return", "Average Withdrawal"];
                     if (this.result.hasOwnProperty("AveSWWithdrawals"))
-                        tableValues.push({ name: "Surface Water", aveReturn: "---", aveWithdrawal: this.result.AveSWWithdrawals.value.toFixed(3), unit:"MGD"});
+                        tableValues.push({ name: "Surface Water", aveReturn: "---", aveWithdrawal: this.result.AveSWWithdrawals.value.toFixed(3), unit: "MGD" });
+                    else if (this.result.hasOwnProperty("DailyAnnualAveSWWithdrawal"))
+                        tableValues.push({ name: "Surface Water", aveReturn: "---", aveWithdrawal: this.result.DailyAnnualAveSWWithdrawal.value.toFixed(3), unit: "MGD" });
+
                     if (this.result.hasOwnProperty("AveGWWithdrawals"))
                         tableValues.push({ name: "Groundwater", aveReturn: "---", aveWithdrawal: this.result.AveGWWithdrawals.value.toFixed(3), unit: "MGD" });
+                    else if (this.result.hasOwnProperty("DailyAnnualAveSWWithdrawal"))
+                        tableValues.push({ name: "Groundwater", aveReturn: "---", aveWithdrawal: this.result.DailyAnnualAveGWWithdrawal.value.toFixed(3), unit: "MGD" });
+
                     if (this.result.hasOwnProperty("AveReturns"))
                         tableValues.push({ name: "Total", aveReturn: this.result.AveReturns.value.toFixed(3), aveWithdrawal: (this.result.AveSWWithdrawals.value + this.result.AveGWWithdrawals.value).toFixed(3), unit: "MGD" });
+                    else if (this.result.hasOwnProperty("DailyAnnualAveDischarge"))
+                        tableValues.push({ name: "Total", aveReturn: this.result.DailyAnnualAveDischarge.value.toFixed(3), aveWithdrawal: (this.result.DailyAnnualAveGWWithdrawal.value + this.result.DailyAnnualAveSWWithdrawal.value).toFixed(3), unit: "MGD" });
 
-                    tableValues.push({ name: "", aveReturn: "", aveWithdrawal:""});
+
+                    tableValues.push({ name: "", aveReturn: "", aveWithdrawal: "" });
                     if (this.result.hasOwnProperty("TotalTempStats")) {
                         tableValues.push({ name: "Temporary water-use registrations (surface water)", aveReturn: "", aveWithdrawal: this.result.TotalTempStats[2].value.toFixed(3), unit: "MGD" });
                         tableValues.push({ name: "Temporary water-use registrations (groundwater)", aveReturn: "", aveWithdrawal: this.result.TotalTempStats[1].value.toFixed(3), unit: "MGD" });
@@ -298,10 +316,12 @@ module StreamStats.Controllers {
             this.Execute(request).then(
                 (response: any) => {
                     var result = response.data;
+                    this.spanYear = result.yearspan;
                     this._startYear = result.syear;
-
-                    this._endYear = result.eyear?result.eyear: 2012;
+                    this._endYear = (this.spanYear)? result.eyear:result.syear;
                     this._yearRange = { floor: result.syear, draggableRange: true, noSwitching: true, showTicks: false, ceil: result.eyear };
+                    
+                    
 
                 }, (error) => {;
                     this._startYear = 2005;
