@@ -458,7 +458,7 @@ div.leaflet-top > .elevation {
 
 .well {
     margin-top:10px;
-    overflow:auto;
+    overflow-x:hidden;
 }
 
 .sidebar{
