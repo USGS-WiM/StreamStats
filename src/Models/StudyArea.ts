@@ -31,6 +31,7 @@ module StreamStats.Models {
         Features: Array<any>;
         RegressionRegions: Array<any>;
         WorkspaceID: string;
+        Server: string;
         Date: Date;
         Parameters: Array<WiM.Models.IParameter>;
         Disclaimers: Object;
@@ -45,6 +46,7 @@ module StreamStats.Models {
         public Features: Array<any>;
         public RegressionRegions: Array<any>;
         public WorkspaceID: string;
+        public Server: string
         public Date: Date;
         public Parameters: Array<WiM.Models.IParameter>;
         public Disclaimers: Object;
