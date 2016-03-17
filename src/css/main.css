@@ -580,6 +580,9 @@ div.leaflet-top > .elevation {
 .wateruseTabs > li {
     float: right;
 }
+.overflowTable {
+ overflow-x:auto;
+}
 .modal{
     overflow-y: auto;
 }
