@@ -50,6 +50,7 @@ module StreamStats.Controllers {
         private StudyArea: StreamStats.Models.IStudyArea;
         public Upload: any;
         public http: any;
+        public sce: any;
         private modalInstance: ng.ui.bootstrap.IModalServiceInstance;
         public selectedHelpTabName: string;
         public user: string;
@@ -62,23 +63,25 @@ module StreamStats.Controllers {
         public AppVersion: string;
         public Browser: string;
         public Server: string;
+        public faqArticles: Object;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance', 'Upload'];
-        constructor($scope: IHelpControllerScope, $http: ng.IHttpService, studyAreaService: StreamStats.Services.IStudyAreaService, modal: ng.ui.bootstrap.IModalServiceInstance, Upload) {
+        static $inject = ['$scope', '$http', '$sce', 'StreamStats.Services.StudyAreaService', '$modalInstance', 'Upload'];
+        constructor($scope: IHelpControllerScope, $http: ng.IHttpService, $sce: any, studyAreaService: StreamStats.Services.IStudyAreaService, modal: ng.ui.bootstrap.IModalServiceInstance, Upload) {
             super($http, '');
             $scope.vm = this;
             this.StudyArea = studyAreaService.selectedStudyArea;
             this.Upload = Upload;
             this.http = $http;
+            this.sce = $sce;
 
             this.modalInstance = modal;
             this.StudyArea = studyAreaService.selectedStudyArea;
             this.freshdeskTicketData = new FreshdeskTicketData();
             this.selectedHelpTabName = "faq";
             this.showSuccessAlert = false;
-            this.submittingSupportTicket = false;
+            this.submittingSupportTicket = false; 
 
             this.init();
 
@@ -147,6 +150,35 @@ module StreamStats.Controllers {
                 });
         }
 
+        public getFAQarticles() {
+
+            console.log("Trying to open faq articles");
+
+            var headers = {
+                "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
+            };
+
+            var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.FAQarticles;
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
+
+            this.Execute(request).then(
+                (response: any) => {
+                    console.log('Successfully retrieved faq articles');
+
+                    this.faqArticles = response.data.folder.articles;
+
+                }, (error) => {
+                    //sm when error
+                }).finally(() => {
+
+                });
+
+        }
+
+        public convertUnsafe(x:string) {
+            return this.sce.trustAsHtml(x);
+        };
+
         public selectHelpTab(tabname: string): void {
             if (this.selectedHelpTabName == tabname) return;
             this.selectedHelpTabName = tabname;
@@ -157,6 +189,7 @@ module StreamStats.Controllers {
         private init(): void {
             this.getAppVersion();
             this.getBrowser();
+            this.getFAQarticles()
             if (this.StudyArea && this.StudyArea.WorkspaceID) this.WorkspaceID = this.StudyArea.WorkspaceID;
             else this.WorkspaceID = '';
             if (this.StudyArea && this.StudyArea.RegionID) this.RegionID = this.StudyArea.RegionID;

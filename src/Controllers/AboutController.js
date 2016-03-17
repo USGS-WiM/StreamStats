@@ -26,9 +26,10 @@ var StreamStats;
         'use string';
         var AboutController = (function (_super) {
             __extends(AboutController, _super);
-            function AboutController($scope, $http, modalService, region, studyAreaService, modal) {
+            function AboutController($scope, $http, $sce, modalService, region, studyAreaService, modal) {
                 _super.call(this, $http, 'http://ssdev.cr.usgs.gov');
                 $scope.vm = this;
+                this.sce = $sce;
                 this.modalInstance = modal;
                 this.modalService = modalService;
                 this.StudyArea = studyAreaService.selectedStudyArea;
@@ -47,7 +48,24 @@ var StreamStats;
                 this.selectedAboutTabName = tabname;
                 //console.log('selected tab: '+tabname);
             };
+            AboutController.prototype.getAboutArticle = function () {
+                var _this = this;
+                console.log("Trying to open about page");
+                var headers = {
+                    "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
+                };
+                var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.AboutPage;
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
+                this.Execute(request).then(function (response) {
+                    console.log('Successfully retrieved about page');
+                    _this.aboutArticle = response.data.article.description;
+                }, function (error) {
+                    //sm when error
+                }).finally(function () {
+                });
+            };
             AboutController.prototype.getRegionHelpArticle = function () {
+                var _this = this;
                 $('#supportContent').html('<h3>No State or Region Selected</h3>');
                 var regionID;
                 if (this.modalService.modalOptions) {
@@ -70,12 +88,11 @@ var StreamStats;
                     response.data.folder.articles.forEach(function (article) {
                         if (article.title == regionID) {
                             console.log("Help article found for : ", regionID);
-                            $('#supportContent').html('<h3>StreamStats for ' + regionID + '</h3>' + article.description);
+                            _this.regionArticle = article;
                             return;
                         }
                         else {
                             console.log("No help article found");
-                            $('#supportContent').html('<h3>No help article found for ' + regionID + '</h3>');
                         }
                     });
                 }, function (error) {
@@ -83,15 +100,20 @@ var StreamStats;
                 }).finally(function () {
                 });
             };
+            AboutController.prototype.convertUnsafe = function (x) {
+                return this.sce.trustAsHtml(x);
+            };
+            ;
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             AboutController.prototype.init = function () {
                 //console.log("in about controller");
+                this.getAboutArticle();
                 this.getRegionHelpArticle();
             };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
-            AboutController.$inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', '$modalInstance'];
+            AboutController.$inject = ['$scope', '$http', '$sce', 'StreamStats.Services.ModalService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', '$modalInstance'];
             return AboutController;
         })(WiM.Services.HTTPServiceBase); //end  class
         angular.module('StreamStats.Controllers')

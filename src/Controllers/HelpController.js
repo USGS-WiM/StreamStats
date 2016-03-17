@@ -18,12 +18,13 @@ var StreamStats;
         })();
         var HelpController = (function (_super) {
             __extends(HelpController, _super);
-            function HelpController($scope, $http, studyAreaService, modal, Upload) {
+            function HelpController($scope, $http, $sce, studyAreaService, modal, Upload) {
                 _super.call(this, $http, '');
                 $scope.vm = this;
                 this.StudyArea = studyAreaService.selectedStudyArea;
                 this.Upload = Upload;
                 this.http = $http;
+                this.sce = $sce;
                 this.modalInstance = modal;
                 this.StudyArea = studyAreaService.selectedStudyArea;
                 this.freshdeskTicketData = new FreshdeskTicketData();
@@ -80,6 +81,26 @@ var StreamStats;
                     _this.submittingSupportTicket = false;
                 });
             };
+            HelpController.prototype.getFAQarticles = function () {
+                var _this = this;
+                console.log("Trying to open faq articles");
+                var headers = {
+                    "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
+                };
+                var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.FAQarticles;
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
+                this.Execute(request).then(function (response) {
+                    console.log('Successfully retrieved faq articles');
+                    _this.faqArticles = response.data.folder.articles;
+                }, function (error) {
+                    //sm when error
+                }).finally(function () {
+                });
+            };
+            HelpController.prototype.convertUnsafe = function (x) {
+                return this.sce.trustAsHtml(x);
+            };
+            ;
             HelpController.prototype.selectHelpTab = function (tabname) {
                 if (this.selectedHelpTabName == tabname)
                     return;
@@ -90,6 +111,7 @@ var StreamStats;
             HelpController.prototype.init = function () {
                 this.getAppVersion();
                 this.getBrowser();
+                this.getFAQarticles();
                 if (this.StudyArea && this.StudyArea.WorkspaceID)
                     this.WorkspaceID = this.StudyArea.WorkspaceID;
                 else
@@ -132,7 +154,7 @@ var StreamStats;
             };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
-            HelpController.$inject = ['$scope', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance', 'Upload'];
+            HelpController.$inject = ['$scope', '$http', '$sce', 'StreamStats.Services.StudyAreaService', '$modalInstance', 'Upload'];
             return HelpController;
         })(WiM.Services.HTTPServiceBase); //end  class
         angular.module('StreamStats.Controllers')
