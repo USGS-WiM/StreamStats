@@ -37,6 +37,7 @@ module StreamStats.Controllers {
     class AboutController extends WiM.Services.HTTPServiceBase implements IAboutController {
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
+        public sce: any;
         private regionService: Services.IRegionService;
         private StudyArea: StreamStats.Models.IStudyArea;
         private modalInstance: ng.ui.bootstrap.IModalServiceInstance;
@@ -45,13 +46,16 @@ module StreamStats.Controllers {
         public displayMessage: string;
         public isValid: boolean;
         public regionSupportArticle: any;
+        public aboutArticle: string;
+        public regionArticle: Object;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', '$modalInstance'];
-        constructor($scope: IAboutControllerScope, $http: ng.IHttpService, modalService: Services.IModalService, region: Services.IRegionService, studyAreaService: StreamStats.Services.IStudyAreaService, modal:ng.ui.bootstrap.IModalServiceInstance) {
+        static $inject = ['$scope', '$http', '$sce', 'StreamStats.Services.ModalService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', '$modalInstance'];
+        constructor($scope: IAboutControllerScope, $http: ng.IHttpService, $sce: any, modalService: Services.IModalService, region: Services.IRegionService, studyAreaService: StreamStats.Services.IStudyAreaService, modal:ng.ui.bootstrap.IModalServiceInstance) {
             super($http, 'http://ssdev.cr.usgs.gov');
             $scope.vm = this;
+            this.sce = $sce;
             this.modalInstance = modal;
             this.modalService = modalService;
             this.StudyArea = studyAreaService.selectedStudyArea;
@@ -71,6 +75,31 @@ module StreamStats.Controllers {
             if (this.selectedAboutTabName == tabname) return;
             this.selectedAboutTabName = tabname;
             //console.log('selected tab: '+tabname);
+        }
+
+        public getAboutArticle() {
+
+            console.log("Trying to open about page");
+
+            var headers = {
+                "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
+            };
+
+            var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.AboutPage;
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
+
+            this.Execute(request).then(
+                (response: any) => {
+                    console.log('Successfully retrieved about page');
+
+                    this.aboutArticle = response.data.article.description;
+
+                }, (error) => {
+                    //sm when error
+                }).finally(() => {
+
+                });
+
         }
 
         public getRegionHelpArticle() {
@@ -103,13 +132,11 @@ module StreamStats.Controllers {
                     response.data.folder.articles.forEach((article) => {
                         if (article.title == regionID) {
                             console.log("Help article found for : ", regionID);
-                            $('#supportContent').html('<h3>StreamStats for ' + regionID + '</h3>' + article.description);
+                            this.regionArticle = article;
                             return;
-
                         }
                         else {
                             console.log("No help article found");
-                            $('#supportContent').html('<h3>No help article found for ' + regionID + '</h3>');
                         }
 
                     });
@@ -119,13 +146,17 @@ module StreamStats.Controllers {
                 }).finally(() => {
 
                 });
-
         }
+
+        public convertUnsafe(x: string) {
+            return this.sce.trustAsHtml(x);
+        };
         
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {   
             //console.log("in about controller");
+            this.getAboutArticle();
             this.getRegionHelpArticle();
         }
       

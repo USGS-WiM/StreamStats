@@ -15,7 +15,17 @@
     </ul>
     <div style="padding-top: 10px;">
         <div id="about" ng-if="vm.selectedHelpTabName==='faq'">
-            <!--<a href="https://streamstats.freshdesk.com/support/solutions" target="_blank">Link to FAQ</a>-->
+            <div id="faqContent" >
+             <accordion id="faqArticles">
+                <accordion-group ng-repeat="article in vm.faqArticles">
+                  <accordion-heading><i class="glyphicon glyphicon-credit-card"></i> {{article.title}}</accordion-heading>
+                  <div class="row">
+                    <div class="col-sm-12" ng-bind-html="vm.convertUnsafe(article.description)">
+                    </div>
+                  </div>
+                </accordion-group>
+              </accordion>
+            </div> 
         </div>
     </div>
 
