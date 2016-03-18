@@ -87,7 +87,7 @@ var StreamStats;
                 var headers = {
                     "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
                 };
-                var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.FAQarticles;
+                var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.FAQarticlesFolder;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
                 this.Execute(request).then(function (response) {
                     console.log('Successfully retrieved faq articles');

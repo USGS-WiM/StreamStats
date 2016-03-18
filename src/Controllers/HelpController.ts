@@ -158,7 +158,7 @@ module StreamStats.Controllers {
                 "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
             };
 
-            var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.FAQarticles;
+            var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.FAQarticlesFolder;
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
 
             this.Execute(request).then(
