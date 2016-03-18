@@ -31,7 +31,7 @@
                           <accordion-heading><i ng-class="vm.activeNewsArticles[$index].open ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i> {{article.title}}</accordion-heading>
                           <div class="row">
                             <div class="col-sm-12" ng-bind-html="vm.convertUnsafe(article.description)"> </div>
-                            <div class="col-sm-12">
+                            <div class="col-sm-12" ng-hide="vm.readCookie(article.id)">
                                 <button ng-click="vm.createCookie(article.id, true, 30);article.open = false" class="btn-wim-default"><i class="fa fa-close"></i><span >&nbsp;&nbsp;Dismiss this news item permenantly</span></button>
                             </div>
                           </div>
