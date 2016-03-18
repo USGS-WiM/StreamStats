@@ -24,8 +24,8 @@
                 </div>  
             </div>   
             <div id="news" ng-show="vm.selectedAboutTabName==='news'" >
-                <div id="activeNewsContent" >
-                    <h3 ng-hide="vm.regionArticle">Active News</h3>
+                <div id="activeNewsContent" ng-hide="vm.activeNewsArticles == 0">
+                    <h3>Active News</h3>
                       <accordion id="activeNewsArticles" close-others="false">
                         <accordion-group ng-repeat="article in vm.activeNewsArticles" ng-init="article.open = true" is-open="article.open" >
                           <accordion-heading><i ng-class="vm.activeNewsArticles[$index].open ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i> {{article.title}}</accordion-heading>
@@ -38,8 +38,8 @@
                         </accordion-group>
                       </accordion>
                 </div>  
-                <div id="pastNewsContent" >
-                    <h3 ng-hide="vm.regionArticle">Past News</h3>
+                <div id="pastNewsContent" ng-hide="vm.pastNewsArticles == 0">
+                    <h3>Past News</h3>
                       <accordion id="pastNewsArticles">
                         <accordion-group ng-repeat="article in vm.pastNewsArticles" is-open="article.open">
                           <accordion-heading><i ng-class="vm.pastNewsArticles[$index].open ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i> {{article.title}}</accordion-heading>
