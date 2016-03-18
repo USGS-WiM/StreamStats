@@ -48,13 +48,45 @@ var StreamStats;
                 this.selectedAboutTabName = tabname;
                 //console.log('selected tab: '+tabname);
             };
+            AboutController.prototype.getActiveNews = function () {
+                var _this = this;
+                console.log("Trying to open active news articles");
+                var headers = {
+                    "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
+                };
+                var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.ActiveNewsFolder;
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
+                this.Execute(request).then(function (response) {
+                    console.log('Successfully retrieved active news articles');
+                    _this.activeNewsArticles = response.data.folder.articles;
+                }, function (error) {
+                    //sm when error
+                }).finally(function () {
+                });
+            };
+            AboutController.prototype.getPastNews = function () {
+                var _this = this;
+                console.log("Trying to open past news articles");
+                var headers = {
+                    "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
+                };
+                var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.PastNewsFolder;
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
+                this.Execute(request).then(function (response) {
+                    console.log('Successfully retrieved past news articles');
+                    _this.pastNewsArticles = response.data.folder.articles;
+                }, function (error) {
+                    //sm when error
+                }).finally(function () {
+                });
+            };
             AboutController.prototype.getAboutArticle = function () {
                 var _this = this;
                 console.log("Trying to open about page");
                 var headers = {
                     "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
                 };
-                var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.AboutPage;
+                var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.AboutArticle;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
                 this.Execute(request).then(function (response) {
                     console.log('Successfully retrieved about page');
@@ -66,7 +98,6 @@ var StreamStats;
             };
             AboutController.prototype.getRegionHelpArticle = function () {
                 var _this = this;
-                $('#supportContent').html('<h3>No State or Region Selected</h3>');
                 var regionID;
                 if (this.modalService.modalOptions) {
                     if (this.modalService.modalOptions.tabName)
@@ -81,8 +112,10 @@ var StreamStats;
                 var headers = {
                     "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
                 };
-                var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.RegionInfo;
+                var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.RegionInfoFolder;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
+                //clear article
+                this.regionArticle = null;
                 this.Execute(request).then(function (response) {
                     console.log('Successfully retrieved support desk request: ', response);
                     response.data.folder.articles.forEach(function (article) {
@@ -107,6 +140,18 @@ var StreamStats;
                 //console.log("in about controller");
                 this.getAboutArticle();
                 this.getRegionHelpArticle();
+                this.getActiveNews();
+                this.getPastNews();
+            };
+            AboutController.prototype.createCookie = function (name, value, days) {
+                if (days) {
+                    var date = new Date();
+                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                    var expires = "; expires=" + date.toUTCString();
+                }
+                else
+                    var expires = "";
+                document.cookie = name + "=" + value + expires + "; path=/";
             };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-

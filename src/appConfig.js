@@ -41,10 +41,11 @@ configuration.queryparams =
 configuration.SupportTicketService = {
     'BaseURL': 'https://streamstats.freshdesk.com',
     'CreateTicket': '/helpdesk/tickets.json',
-    'RegionInfo': '/solution/categories/9000106501/folders/9000163157.json',
-    'FAQarticles': '/solution/categories/9000028363/folders/9000042932.json',
-    'AboutPage': '/solution/categories/9000106503/folders/9000163536/articles/9000052344.json',
-
+    'AboutArticle': '/solution/categories/9000106503/folders/9000163536/articles/9000052344.json',
+    'RegionInfoFolder': '/solution/categories/9000106501/folders/9000163157.json',
+    'FAQarticlesFolder': '/solution/categories/9000028363/folders/9000042932.json',
+    'ActiveNewsFolder': '/solution/categories/9000028363/folders/9000163894.json',
+    'PastNewsFolder': '/solution/categories/9000028363/folders/9000163895.json',
     'Token': 'yxAClTZwexFeIxpRR6g',
     'AccountID': '303973'
 }
