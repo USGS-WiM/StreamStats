@@ -103,7 +103,7 @@ var StreamStats;
                 e.stopPropagation();
                 e.preventDefault();
                 console.log('Opening state page for: ', region);
-                this.modalService.openModal(StreamStats.Services.SSModalType.e_about, { "tabName": "disclaimer", "regionID": region });
+                this.modalService.openModal(StreamStats.Services.SSModalType.e_about, { "tabName": "regionInfo", "regionID": region });
                 //var regionParsed = region.replace(' ', '_').toLowerCase();
                 //window.open('http://water.usgs.gov/osw/streamstats/' + regionParsed + '.html', '_blank');
             };

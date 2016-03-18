@@ -48,6 +48,8 @@ module StreamStats.Controllers {
         public regionSupportArticle: any;
         public aboutArticle: string;
         public regionArticle: Object;
+        public activeNewsArticles: Object;
+        public pastNewsArticles: Object;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -77,6 +79,56 @@ module StreamStats.Controllers {
             //console.log('selected tab: '+tabname);
         }
 
+        public getActiveNews() {
+
+            console.log("Trying to open active news articles");
+
+            var headers = {
+                "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
+            };
+
+            var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.ActiveNewsFolder;
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
+
+            this.Execute(request).then(
+                (response: any) => {
+                    console.log('Successfully retrieved active news articles');
+
+                    this.activeNewsArticles = response.data.folder.articles;
+
+                }, (error) => {
+                    //sm when error
+                }).finally(() => {
+
+                });
+
+        }
+
+        public getPastNews() {
+
+            console.log("Trying to open past news articles");
+
+            var headers = {
+                "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
+            };
+
+            var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.PastNewsFolder;
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
+
+            this.Execute(request).then(
+                (response: any) => {
+                    console.log('Successfully retrieved past news articles');
+
+                    this.pastNewsArticles = response.data.folder.articles;
+
+                }, (error) => {
+                    //sm when error
+                }).finally(() => {
+
+                });
+
+        }
+
         public getAboutArticle() {
 
             console.log("Trying to open about page");
@@ -85,7 +137,7 @@ module StreamStats.Controllers {
                 "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
             };
 
-            var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.AboutPage;
+            var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.AboutArticle;
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
 
             this.Execute(request).then(
@@ -104,7 +156,6 @@ module StreamStats.Controllers {
 
         public getRegionHelpArticle() {
 
-            $('#supportContent').html('<h3>No State or Region Selected</h3>');
             var regionID;
 
             if (this.modalService.modalOptions) {
@@ -122,8 +173,11 @@ module StreamStats.Controllers {
                 "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
             };
 
-            var url = configuration.SupportTicketService.BaseURL  + configuration.SupportTicketService.RegionInfo;
+            var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.RegionInfoFolder;
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
+
+            //clear article
+            this.regionArticle = null;
 
             this.Execute(request).then(
                 (response: any) => {
@@ -154,6 +208,18 @@ module StreamStats.Controllers {
             //console.log("in about controller");
             this.getAboutArticle();
             this.getRegionHelpArticle();
+            this.getActiveNews();
+            this.getPastNews();
+        }
+
+        public createCookie(name, value, days) {
+            if (days) {
+                var date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                var expires = "; expires=" + date.toUTCString();
+            }
+            else var expires = "";
+            document.cookie = name + "=" + value + expires + "; path=/";
         }
       
     }//end  class

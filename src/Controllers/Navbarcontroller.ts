@@ -31,21 +31,60 @@ module StreamStats.Controllers {
     interface INavbarController {
     }
 
-    class NavbarController implements INavbarController {
+    class NavbarController extends WiM.Services.HTTPServiceBase implements INavbarController {
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
         private modalService: Services.IModalService;
+        private cookies: any;
+        private newArticleCount: number;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', 'StreamStats.Services.ModalService', 'StreamStats.Services.StudyAreaService'];
-        constructor($scope: INavbarControllerScope, modal: Services.IModalService, studyArea: Services.IStudyAreaService) {
+        static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.StudyAreaService'];
+        constructor($scope: INavbarControllerScope, $http: ng.IHttpService, modal: Services.IModalService, studyArea: Services.IStudyAreaService) {
+            super($http, 'http://ssdev.cr.usgs.gov');
             $scope.vm = this;
             this.modalService = modal;
+            this.checkActiveNews();
+            this.newArticleCount = 0;
         }
 
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
+        public checkActiveNews() {
+            console.log("Checking for active news articles");
+
+            var headers = {
+                "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
+            };
+
+            var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.ActiveNewsFolder;
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
+
+            this.Execute(request).then(
+                (response: any) => {
+                    console.log('Successfully retrieved active news articles page');
+
+                    if (response.data.folder.articles.length > 0) {
+                        response.data.folder.articles.forEach((article) => {
+                            console.log('article: ', article, this.readCookie(article.id));
+                            //check if a cookie exists for this article;
+                            if (this.readCookie(article.id) == null) this.newArticleCount += 1
+                        });
+
+                        console.log('active news article count: ', this.newArticleCount);
+                        if (this.newArticleCount > 0) this.modalService.openModal(Services.SSModalType.e_about, { "tabName": "news", "regionID": '' })
+                    }
+
+
+
+                }, (error) => {
+                    //sm when error
+                }).finally(() => {
+
+                });
+        }
+
         public openReport(): void {
             this.modalService.openModal(Services.SSModalType.e_report);
         }
@@ -60,6 +99,16 @@ module StreamStats.Controllers {
 
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
+        public readCookie(name) {
+            var nameEQ = name + "=";
+            var ca = document.cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
 
     }//end class
     angular.module('StreamStats.Controllers')
