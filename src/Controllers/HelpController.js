@@ -70,7 +70,7 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', formdata, headers, angular.identity);
                 this.submittingSupportTicket = true;
                 this.Execute(request).then(function (response) {
-                    console.log('Successfully submitted help ticket: ', response);
+                    //console.log('Successfully submitted help ticket: ', response);
                     //clear out fields
                     _this.freshdeskTicketData = new FreshdeskTicketData();
                     //show user feedback
@@ -82,15 +82,15 @@ var StreamStats;
                 });
             };
             HelpController.prototype.getFAQarticles = function () {
+                //console.log("Trying to open faq articles folder");
                 var _this = this;
-                console.log("Trying to open faq articles");
                 var headers = {
                     "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
                 };
                 var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.FAQarticlesFolder;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
                 this.Execute(request).then(function (response) {
-                    console.log('Successfully retrieved faq articles');
+                    //console.log('Successfully retrieved faq articles folder');
                     _this.faqArticles = response.data.folder.articles;
                 }, function (error) {
                     //sm when error

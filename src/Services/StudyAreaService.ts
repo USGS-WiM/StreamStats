@@ -127,7 +127,7 @@ module StreamStats.Services {
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         public editBasin(selection) {
-            console.log('in editbasin, selection: ', selection);
+            //console.log('in editbasin, selection: ', selection);
             this.Disclaimers['isEdited']=true;
             this.drawControlOption = selection;
             this.eventManager.RaiseEvent(onEditClick,this,WiM.Event.EventArgs.Empty)

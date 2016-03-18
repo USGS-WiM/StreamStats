@@ -35,7 +35,6 @@ var StreamStats;
                 if (options === void 0) { options = null; }
                 if (options) {
                     this.modalOptions = options;
-                    console.log('in modal open function', this.modalOptions);
                 }
                 this.modal.open(this.getModalSettings(mType));
             };

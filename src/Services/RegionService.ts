@@ -199,7 +199,7 @@ module StreamStats.Services {
                     //return layerArray;
                        
                 },(error) => {
-                    //console.log('No national map layers found');
+                    console.log('No national map layers found');
                     return this.$q.reject(error.data)
                 });
         }
