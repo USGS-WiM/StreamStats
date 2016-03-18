@@ -67,16 +67,12 @@ module StreamStats.Controllers {
 
                     if (response.data.folder.articles.length > 0) {
                         response.data.folder.articles.forEach((article) => {
-                            console.log('article: ', article, this.readCookie(article.id));
                             //check if a cookie exists for this article;
                             if (this.readCookie(article.id) == null) this.newArticleCount += 1
                         });
 
-                        console.log('active news article count: ', this.newArticleCount);
                         if (this.newArticleCount > 0) this.modalService.openModal(Services.SSModalType.e_about, { "tabName": "news", "regionID": '' })
                     }
-
-
 
                 }, (error) => {
                     //sm when error

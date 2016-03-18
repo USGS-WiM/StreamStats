@@ -48,12 +48,10 @@ var StreamStats;
                     console.log('Successfully retrieved active news articles page');
                     if (response.data.folder.articles.length > 0) {
                         response.data.folder.articles.forEach(function (article) {
-                            console.log('article: ', article, _this.readCookie(article.id));
                             //check if a cookie exists for this article;
                             if (_this.readCookie(article.id) == null)
                                 _this.newArticleCount += 1;
                         });
-                        console.log('active news article count: ', _this.newArticleCount);
                         if (_this.newArticleCount > 0)
                             _this.modalService.openModal(StreamStats.Services.SSModalType.e_about, { "tabName": "news", "regionID": '' });
                     }
