@@ -49,8 +49,11 @@ var StreamStats;
                     if (response.data.folder.articles.length > 0) {
                         response.data.folder.articles.forEach(function (article) {
                             //check if a cookie exists for this article;
-                            if (_this.readCookie(article.id) == null)
+                            if (_this.readCookie(article.id) == null) {
+                                console.log('New news article found: ', article);
                                 _this.newArticleCount += 1;
+                                _this.createCookie(article.id, true, 30);
+                            }
                         });
                         if (_this.newArticleCount > 0)
                             _this.modalService.openModal(StreamStats.Services.SSModalType.e_about, { "tabName": "news", "regionID": '' });
@@ -82,6 +85,16 @@ var StreamStats;
                         return c.substring(nameEQ.length, c.length);
                 }
                 return null;
+            };
+            NavbarController.prototype.createCookie = function (name, value, days) {
+                if (days) {
+                    var date = new Date();
+                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                    var expires = "; expires=" + date.toUTCString();
+                }
+                else
+                    var expires = "";
+                document.cookie = name + "=" + value + expires + "; path=/";
             };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-

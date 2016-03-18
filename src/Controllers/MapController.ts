@@ -564,16 +564,16 @@ module StreamStats.Controllers {
         }
 
         private drawController(options: Object, enable: boolean) {
-            console.log('in drawcontroller: ', options, enable);
+            //console.log('in drawcontroller: ', options, enable);
 
             if (!enable) {               
                 this.drawControl.disable();
                 this.drawControl = undefined;
-                console.log('removing drawControl', this.drawControl);
+                //console.log('removing drawControl', this.drawControl);
                 return;
             }
             this.leafletData.getMap().then((map: any) => {
-                console.log('enable drawControl');
+                //console.log('enable drawControl');
                 this.drawControl = new (<any>L).Draw.Polyline(map, options);
                 this.drawControl.enable();
             });
@@ -639,7 +639,7 @@ module StreamStats.Controllers {
 
         private measurement() {
 
-            console.log('in measurement tool');
+            //console.log('in measurement tool');
 
             document.getElementById('elevation-div').innerHTML = '';
             //user affordance
@@ -649,9 +649,9 @@ module StreamStats.Controllers {
             this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'measurement' });
 
             this.leafletData.getMap().then((map: any) => {
-                console.log('got map: ', map);
+                //console.log('got map: ', map);
                 this.leafletData.getLayers().then((maplayers: any) => {
-                    console.log('got maplayers: ', maplayers);
+                    //console.log('got maplayers: ', maplayers);
                     var stopclick = false; //to prevent more than one click listener
 
                     this.drawController({shapeOptions: { color: 'blue' }, metric: false }, true);

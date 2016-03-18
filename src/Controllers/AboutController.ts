@@ -81,7 +81,7 @@ module StreamStats.Controllers {
 
         public getActiveNews() {
 
-            console.log("Trying to open active news articles");
+            //console.log("Trying to open active news articles folder");
 
             var headers = {
                 "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
@@ -92,9 +92,11 @@ module StreamStats.Controllers {
 
             this.Execute(request).then(
                 (response: any) => {
-                    console.log('Successfully retrieved active news articles');
+                    //console.log('Successfully retrieved active news articles folder');
 
-                    this.activeNewsArticles = response.data.folder.articles;
+                    if (response.data.folder.articles.length) {
+                        this.activeNewsArticles = response.data.folder.articles;                        
+                    }
 
                 }, (error) => {
                     //sm when error
@@ -106,7 +108,7 @@ module StreamStats.Controllers {
 
         public getPastNews() {
 
-            console.log("Trying to open past news articles");
+            //console.log("Trying to open past news articles folder");
 
             var headers = {
                 "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
@@ -117,7 +119,7 @@ module StreamStats.Controllers {
 
             this.Execute(request).then(
                 (response: any) => {
-                    console.log('Successfully retrieved past news articles');
+                    //console.log('Successfully retrieved past news articles folder');
 
                     this.pastNewsArticles = response.data.folder.articles;
 
@@ -131,7 +133,7 @@ module StreamStats.Controllers {
 
         public getAboutArticle() {
 
-            console.log("Trying to open about page");
+            //console.log("Trying to open about article");
 
             var headers = {
                 "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
@@ -142,7 +144,7 @@ module StreamStats.Controllers {
 
             this.Execute(request).then(
                 (response: any) => {
-                    console.log('Successfully retrieved about page');
+                    //console.log('Successfully retrieved about article');
 
                     this.aboutArticle = response.data.article.description;
 
@@ -167,7 +169,7 @@ module StreamStats.Controllers {
             if (this.regionService.selectedRegion) regionID = this.regionService.selectedRegion.Name;
 
             if (!regionID) return;
-            console.log("Trying to open help page for: ", regionID);
+            //console.log("Trying to open help article for: ", regionID);
 
             var headers = {
                 "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
@@ -181,11 +183,10 @@ module StreamStats.Controllers {
 
             this.Execute(request).then(
                 (response: any) => {
-                    console.log('Successfully retrieved support desk request: ', response);
 
                     response.data.folder.articles.forEach((article) => {
                         if (article.title == regionID) {
-                            console.log("Help article found for : ", regionID);
+                            //console.log("Help article found for : ", regionID);
                             this.regionArticle = article;
                             return;
                         }
