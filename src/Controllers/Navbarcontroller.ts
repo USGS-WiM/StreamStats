@@ -68,7 +68,11 @@ module StreamStats.Controllers {
                     if (response.data.folder.articles.length > 0) {
                         response.data.folder.articles.forEach((article) => {
                             //check if a cookie exists for this article;
-                            if (this.readCookie(article.id) == null) this.newArticleCount += 1
+                            if (this.readCookie(article.id) == null) {
+                                console.log('New news article found: ', article);
+                                this.newArticleCount += 1;
+                                this.createCookie(article.id, true, 30);
+                            }
                         });
 
                         if (this.newArticleCount > 0) this.modalService.openModal(Services.SSModalType.e_about, { "tabName": "news", "regionID": '' })
@@ -104,6 +108,16 @@ module StreamStats.Controllers {
                 if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
             }
             return null;
+        }
+
+        public createCookie(name, value, days) {
+            if (days) {
+                var date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                var expires = "; expires=" + date.toUTCString();
+            }
+            else var expires = "";
+            document.cookie = name + "=" + value + expires + "; path=/";
         }
 
     }//end class

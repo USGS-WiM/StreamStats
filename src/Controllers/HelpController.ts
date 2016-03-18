@@ -135,7 +135,7 @@ module StreamStats.Controllers {
 
             this.Execute(request).then(
                 (response: any) => {
-                    console.log('Successfully submitted help ticket: ', response);
+                    //console.log('Successfully submitted help ticket: ', response);
                     
                     //clear out fields
                     this.freshdeskTicketData = new FreshdeskTicketData();
@@ -152,7 +152,7 @@ module StreamStats.Controllers {
 
         public getFAQarticles() {
 
-            console.log("Trying to open faq articles");
+            //console.log("Trying to open faq articles folder");
 
             var headers = {
                 "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
@@ -163,7 +163,7 @@ module StreamStats.Controllers {
 
             this.Execute(request).then(
                 (response: any) => {
-                    console.log('Successfully retrieved faq articles');
+                    //console.log('Successfully retrieved faq articles folder');
 
                     this.faqArticles = response.data.folder.articles;
 

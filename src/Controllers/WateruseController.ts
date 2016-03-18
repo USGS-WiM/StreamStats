@@ -351,14 +351,14 @@ module StreamStats.Controllers {
                     y: function (d) { return d.value; },
                     dispatch: {
                         stateChange: () => {
-                            console.log("StateChange");
+                            //console.log("StateChange");
                             //must wrap in timer or method executes prematurely
                             this.$timeout(() => {
                                 this.loadGraphLabels(1);
                             }, 500);
                         },
                         renderEnd: () => {
-                            console.log("renderend");
+                            //console.log("renderend");
                             //must wrap in timer or method executes prematurely
                             this.$timeout(() => {
                                 this.loadGraphLabels(1);

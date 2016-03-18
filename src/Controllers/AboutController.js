@@ -49,31 +49,33 @@ var StreamStats;
                 //console.log('selected tab: '+tabname);
             };
             AboutController.prototype.getActiveNews = function () {
+                //console.log("Trying to open active news articles folder");
                 var _this = this;
-                console.log("Trying to open active news articles");
                 var headers = {
                     "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
                 };
                 var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.ActiveNewsFolder;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
                 this.Execute(request).then(function (response) {
-                    console.log('Successfully retrieved active news articles');
-                    _this.activeNewsArticles = response.data.folder.articles;
+                    //console.log('Successfully retrieved active news articles folder');
+                    if (response.data.folder.articles.length) {
+                        _this.activeNewsArticles = response.data.folder.articles;
+                    }
                 }, function (error) {
                     //sm when error
                 }).finally(function () {
                 });
             };
             AboutController.prototype.getPastNews = function () {
+                //console.log("Trying to open past news articles folder");
                 var _this = this;
-                console.log("Trying to open past news articles");
                 var headers = {
                     "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
                 };
                 var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.PastNewsFolder;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
                 this.Execute(request).then(function (response) {
-                    console.log('Successfully retrieved past news articles');
+                    //console.log('Successfully retrieved past news articles folder');
                     _this.pastNewsArticles = response.data.folder.articles;
                 }, function (error) {
                     //sm when error
@@ -81,15 +83,15 @@ var StreamStats;
                 });
             };
             AboutController.prototype.getAboutArticle = function () {
+                //console.log("Trying to open about article");
                 var _this = this;
-                console.log("Trying to open about page");
                 var headers = {
                     "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
                 };
                 var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.AboutArticle;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
                 this.Execute(request).then(function (response) {
-                    console.log('Successfully retrieved about page');
+                    //console.log('Successfully retrieved about article');
                     _this.aboutArticle = response.data.article.description;
                 }, function (error) {
                     //sm when error
@@ -108,7 +110,7 @@ var StreamStats;
                     regionID = this.regionService.selectedRegion.Name;
                 if (!regionID)
                     return;
-                console.log("Trying to open help page for: ", regionID);
+                //console.log("Trying to open help article for: ", regionID);
                 var headers = {
                     "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
                 };
@@ -117,10 +119,9 @@ var StreamStats;
                 //clear article
                 this.regionArticle = null;
                 this.Execute(request).then(function (response) {
-                    console.log('Successfully retrieved support desk request: ', response);
                     response.data.folder.articles.forEach(function (article) {
                         if (article.title == regionID) {
-                            console.log("Help article found for : ", regionID);
+                            //console.log("Help article found for : ", regionID);
                             _this.regionArticle = article;
                             return;
                         }
