@@ -135,10 +135,6 @@ module StreamStats.Controllers {
                             this.regionArticle = article;
                             return;
                         }
-                        else {
-                            console.log("No help article found");
-                        }
-
                     });
 
                 }, (error) => {
