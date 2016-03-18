@@ -17,8 +17,8 @@
         <div id="about" ng-if="vm.selectedHelpTabName==='faq'">
             <div id="faqContent" >
              <accordion id="faqArticles">
-                <accordion-group ng-repeat="article in vm.faqArticles">
-                  <accordion-heading><i class="glyphicon glyphicon-credit-card"></i> {{article.title}}</accordion-heading>
+                <accordion-group ng-repeat="article in vm.faqArticles" is-open="article.open">
+                  <accordion-heading><i ng-class="vm.faqArticles[$index].open ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i> {{article.title}}</accordion-heading>
                   <div class="row">
                     <div class="col-sm-12" ng-bind-html="vm.convertUnsafe(article.description)">
                     </div>
