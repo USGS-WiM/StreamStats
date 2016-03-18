@@ -91,9 +91,6 @@ var StreamStats;
                             _this.regionArticle = article;
                             return;
                         }
-                        else {
-                            console.log("No help article found");
-                        }
                     });
                 }, function (error) {
                     //sm when error
