@@ -57,7 +57,7 @@ module StreamStats.Services {
             
             if (options) {
                 this.modalOptions = options
-                console.log('in modal open function', this.modalOptions);
+                //console.log('in modal open function', this.modalOptions);
             }
             this.modal.open(this.getModalSettings(mType));
         }  
