@@ -85,7 +85,7 @@ var StreamStats;
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             StudyAreaService.prototype.editBasin = function (selection) {
-                console.log('in editbasin, selection: ', selection);
+                //console.log('in editbasin, selection: ', selection);
                 this.Disclaimers['isEdited'] = true;
                 this.drawControlOption = selection;
                 this.eventManager.RaiseEvent(Services.onEditClick, this, WiM.Event.EventArgs.Empty);

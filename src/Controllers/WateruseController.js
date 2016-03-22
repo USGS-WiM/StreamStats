@@ -275,14 +275,14 @@ var StreamStats;
                             y: function (d) { return d.value; },
                             dispatch: {
                                 stateChange: function () {
-                                    console.log("StateChange");
+                                    //console.log("StateChange");
                                     //must wrap in timer or method executes prematurely
                                     _this.$timeout(function () {
                                         _this.loadGraphLabels(1);
                                     }, 500);
                                 },
                                 renderEnd: function () {
-                                    console.log("renderend");
+                                    //console.log("renderend");
                                     //must wrap in timer or method executes prematurely
                                     _this.$timeout(function () {
                                         _this.loadGraphLabels(1);
