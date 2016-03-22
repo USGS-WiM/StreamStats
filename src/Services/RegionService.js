@@ -140,7 +140,7 @@ var StreamStats;
                     //console.log('list of national map layers', this.nationalMapLayerList);
                     //return layerArray;
                 }, function (error) {
-                    //console.log('No national map layers found');
+                    console.log('No national map layers found');
                     return _this.$q.reject(error.data);
                 });
             };
