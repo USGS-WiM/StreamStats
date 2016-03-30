@@ -121,6 +121,12 @@ gulp.task('leaflet', function () {
         .pipe(size());
 });
 
+// appConfig
+gulp.task('appConfig', function () {
+    return gulp.src(['src/appConfig.js', 'src/version.js'])
+        .pipe(gulp.dest('dist/'))
+});
+
 // Clean
 gulp.task('clean', function (cb) {
     del([
@@ -133,7 +139,7 @@ gulp.task('clean', function (cb) {
 });
 
 // build dist
-gulp.task('dist', ['html', 'images', 'leaflet']);
+gulp.task('dist', ['html', 'images', 'leaflet', 'appConfig']);
 
 // Default task
 gulp.task('default', ['clean'], function () {
