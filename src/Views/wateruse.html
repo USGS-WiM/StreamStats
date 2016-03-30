@@ -30,11 +30,12 @@
                 <div class="tabs">
                     <div ng-if="vm.SelectedTab == 1">
                         <center><h3>{{vm.StartYear}}-{{vm.EndYear}} Average Water-Use By Source</h3></center>
-                        <nvd3 options='vm.AnnualReportOptions' data='vm.ReportData.Annual.Graph'></nvd3>   
-                        <center><h3>{{vm.StartYear}}-{{vm.EndYear}} Average Water-Use Returns By Month</h3></center>
-                        <nvd3 options='vm.MonthlyReturnReportOptions' data='vm.ReportData.Monthly.Graph.returns'></nvd3>  
+                        <nvd3 options='vm.AnnualReportOptions' data='vm.ReportData.Annual.Graph'></nvd3>                     
                         <center><h3>{{vm.StartYear}}-{{vm.EndYear}} Average Water-Use Withdrawals By Month</h3></center>
-                        <nvd3 id="monthlyreturns" options='vm.MonthlyReportOptions' data='vm.ReportData.Monthly.Graph.withdrawals'></nvd3>  
+                        <nvd3 id="monthlyreturns" options='vm.MonthlyReportOptions' data='vm.ReportData.Monthly.Graph.withdrawals'></nvd3>
+
+                        <center><h3>{{vm.StartYear}}-{{vm.EndYear}} Average Water-Use Returns By Month</h3></center>
+                        <nvd3 options='vm.MonthlyReturnReportOptions' data='vm.ReportData.Monthly.Graph.returns'></nvd3> 
                                             
                     </div>
                     <div ng-if="vm.SelectedTab == 2">
@@ -71,13 +72,14 @@
                                     <tr>
                                         <th></th>
                                         <th>Returns</th>
-                                        <th colspan="{{vm.ReportData.Monthly.Table.Fields.length}}">Withdrawals</th>
+                                        <th colspan="{{vm.ReportData.Monthly.Table.Fields.length+1}}">Withdrawals</th>
                                     </tr>
 
                                     <tr>
                                         <th>Month</th>
                                         <th>Total</th>
                                         <th>Total</th>
+                                        <th>Net</th>
                                         <th ng-repeat="item in vm.ReportData.Monthly.Table.Fields track by $index">{{item}}</th>
                                     </tr>
                                 </thead>
@@ -86,6 +88,7 @@
                                         <td>{{item.month}}</td>
                                         <td>{{item.returns.value.toFixed(3)}}</td>
                                         <td>{{vm.Reduce(item.withdrawals).toFixed(3)}}</td>
+                                        <td>{{(vm.Reduce(item.withdrawals)-item.returns.value).toFixed(3)}}</td>
                                         <td ng-repeat="wthdls in item.withdrawals">{{wthdls.value.toFixed(3)}}</td>
                                     </tr>
                                 </tbody>

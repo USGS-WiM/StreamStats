@@ -118,6 +118,7 @@ module StreamStats.Controllers {
                     this.showResults = true;                 
                     //sm when complete
                     this.result = response.data;
+                    if (this.result.Messages === 'Wateruse not available at specified site.') alert(this.result.Messages);
                     this.GetGraphData(WaterUseType.Monthly);
                     this.GetGraphData(WaterUseType.Annual);
 
@@ -202,12 +203,7 @@ module StreamStats.Controllers {
                     else if (this.result.hasOwnProperty("DailyAnnualAveSWWithdrawal"))
                         this.ReportData.Annual.Graph.push({ name: "Surface water withdrawal", value: this.result.DailyAnnualAveSWWithdrawal.value });
 
-                    if (this.result.hasOwnProperty("AveReturns"))
-                    this.ReportData.Annual.Graph.push({ name: "Surface water return", value: this.result.AveReturns.value });
-                    else if (this.result.hasOwnProperty("DailyAnnualAveDischarge"))
-                        this.ReportData.Annual.Graph.push({ name: "Surface water return", value: this.result.DailyAnnualAveDischarge.value });
-
-                    break;
+                   break;
 
             }//end switch
             
@@ -354,20 +350,23 @@ module StreamStats.Controllers {
                             //console.log("StateChange");
                             //must wrap in timer or method executes prematurely
                             this.$timeout(() => {
-                                this.loadGraphLabels(1);
+                                this.loadGraphLabels(0);
                             }, 500);
                         },
                         renderEnd: () => {
                             //console.log("renderend");
                             //must wrap in timer or method executes prematurely
                             this.$timeout(() => {
-                                this.loadGraphLabels(1);
+                                this.loadGraphLabels(0);
                             }, 500);
                         }
                     },
                     showValues: true,
                     valueFormat: function (d) {
                         return d3.format(',.4f')(d);
+                    },
+                    tooltip: {
+                        valueFormatter: function (d) { return d3.format(',.4f')(d) + " million gal/day"; }
                     },
                     
                     xAxis: {
@@ -401,6 +400,10 @@ module StreamStats.Controllers {
                     valueFormat: function (d) {
                         return d3.format(',.3f')(d);
                     },
+                    tooltip: {
+                        valueFormatter: function (d) {
+                            return d3.format(',.4f')(d) +" million gal/day"; }
+                    },
 
                     xAxis: {
                         showMaxMin: false
@@ -420,9 +423,12 @@ module StreamStats.Controllers {
                 chart: {
                     type: 'pieChart',
                     height: 500,
-                            x: (d) => { return d.name; },
-                            y: (d) => { return d.value; },
+                    x: (d) => { return d.name; },
+                    y: (d) => { return d.value; },
                     showLabels: true,
+                    tooltip: {
+                        valueFormatter: function (d) { return d3.format(',.4f')(d) + " million gal/day"; }
+                    },
                     duration: 500,
                     labelThreshold: 0.01,
                     labelSunbeamLayout: false,
