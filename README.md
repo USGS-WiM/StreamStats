@@ -33,6 +33,7 @@ typings install
 
 ## Building a release
 
+**Commit, Sync, and Merge Pull Request on any current project changes.  The steps below require a clean git status.**
 
 ##### Step 1.
 Bump the version.  Run only one of the below commands.  
