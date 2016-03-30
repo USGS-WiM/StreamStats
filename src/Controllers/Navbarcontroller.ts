@@ -42,7 +42,7 @@ module StreamStats.Controllers {
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.StudyAreaService'];
         constructor($scope: INavbarControllerScope, $http: ng.IHttpService, modal: Services.IModalService, studyArea: Services.IStudyAreaService) {
-            super($http, 'http://ssdev.cr.usgs.gov');
+            super($http, configuration.baseurls.StreamStatsServices);
             $scope.vm = this;
             this.modalService = modal;
             this.checkActiveNews();
