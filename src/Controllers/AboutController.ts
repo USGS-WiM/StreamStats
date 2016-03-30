@@ -55,7 +55,7 @@ module StreamStats.Controllers {
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$http', '$sce', 'StreamStats.Services.ModalService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', '$modalInstance'];
         constructor($scope: IAboutControllerScope, $http: ng.IHttpService, $sce: any, modalService: Services.IModalService, region: Services.IRegionService, studyAreaService: StreamStats.Services.IStudyAreaService, modal:ng.ui.bootstrap.IModalServiceInstance) {
-            super($http, 'http://ssdev.cr.usgs.gov');
+            super($http, configuration.baseurls.StreamStatsServices);
             $scope.vm = this;
             this.sce = $sce;
             this.modalInstance = modal;
