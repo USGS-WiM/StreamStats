@@ -28,7 +28,7 @@ var StreamStats;
         var AboutController = (function (_super) {
             __extends(AboutController, _super);
             function AboutController($scope, $http, $sce, modalService, region, studyAreaService, modal) {
-                _super.call(this, $http, 'http://ssdev.cr.usgs.gov');
+                _super.call(this, $http, configuration.baseurls.StreamStatsServices);
                 $scope.vm = this;
                 this.sce = $sce;
                 this.modalInstance = modal;

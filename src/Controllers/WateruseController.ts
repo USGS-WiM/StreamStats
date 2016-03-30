@@ -97,7 +97,7 @@ module StreamStats.Controllers {
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance', '$timeout'];
         constructor($scope: IWateruseControllerScope, $http: ng.IHttpService, studyAreaService: StreamStats.Services.IStudyAreaService, modal:ng.ui.bootstrap.IModalServiceInstance, public $timeout:ng.ITimeoutService) {
-            super($http, 'http://ssdev.cr.usgs.gov');
+            super($http, configuration.baseurls.StreamStatsServices);
             $scope.vm = this;
             this.modalInstance = modal;
             this.StudyArea = studyAreaService.selectedStudyArea;
@@ -118,6 +118,7 @@ module StreamStats.Controllers {
                     this.showResults = true;                 
                     //sm when complete
                     this.result = response.data;
+                    if (this.result.Messages === 'Wateruse not available at specified site.') alert(this.result.Messages);
                     this.GetGraphData(WaterUseType.Monthly);
                     this.GetGraphData(WaterUseType.Annual);
 

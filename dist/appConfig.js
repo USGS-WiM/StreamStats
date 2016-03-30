@@ -1,4 +1,4 @@
-﻿var configuration = {}
+var configuration = {}
 configuration.baseurls =
 {   
     'MercuryService': 'http://54.174.81.42/mercuryservices',
