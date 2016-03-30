@@ -22,7 +22,7 @@ var StreamStats;
         var WateruseController = (function (_super) {
             __extends(WateruseController, _super);
             function WateruseController($scope, $http, studyAreaService, modal, $timeout) {
-                _super.call(this, $http, 'http://ssdev.cr.usgs.gov');
+                _super.call(this, $http, configuration.baseurls.StreamStatsServices);
                 this.$timeout = $timeout;
                 $scope.vm = this;
                 this.modalInstance = modal;
@@ -73,6 +73,8 @@ var StreamStats;
                     _this.showResults = true;
                     //sm when complete
                     _this.result = response.data;
+                    if (_this.result.Messages === 'Wateruse not available at specified site.')
+                        alert(_this.result.Messages);
                     _this.GetGraphData(WaterUseType.Monthly);
                     _this.GetGraphData(WaterUseType.Annual);
                     _this.ReportData.Monthly.Table = _this.GetTableData(WaterUseType.Monthly);

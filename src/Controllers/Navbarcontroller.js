@@ -29,7 +29,7 @@ var StreamStats;
         var NavbarController = (function (_super) {
             __extends(NavbarController, _super);
             function NavbarController($scope, $http, modal, studyArea) {
-                _super.call(this, $http, 'http://ssdev.cr.usgs.gov');
+                _super.call(this, $http, configuration.baseurls.StreamStatsServices);
                 $scope.vm = this;
                 this.modalService = modal;
                 this.checkActiveNews();
