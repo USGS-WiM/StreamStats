@@ -4,7 +4,8 @@
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    __.prototype = b.prototype;
+    d.prototype = new __();
 };
 var StreamStats;
 (function (StreamStats) {
@@ -72,6 +73,8 @@ var StreamStats;
                     _this.showResults = true;
                     //sm when complete
                     _this.result = response.data;
+                    if (_this.result.Messages === 'Wateruse not available at specified site.')
+                        alert(_this.result.Messages);
                     _this.GetGraphData(WaterUseType.Monthly);
                     _this.GetGraphData(WaterUseType.Annual);
                     _this.ReportData.Monthly.Table = _this.GetTableData(WaterUseType.Monthly);
@@ -144,10 +147,6 @@ var StreamStats;
                             this.ReportData.Annual.Graph.push({ name: "Surface water withdrawal", value: this.result.AveSWWithdrawals.value });
                         else if (this.result.hasOwnProperty("DailyAnnualAveSWWithdrawal"))
                             this.ReportData.Annual.Graph.push({ name: "Surface water withdrawal", value: this.result.DailyAnnualAveSWWithdrawal.value });
-                        if (this.result.hasOwnProperty("AveReturns"))
-                            this.ReportData.Annual.Graph.push({ name: "Surface water return", value: this.result.AveReturns.value });
-                        else if (this.result.hasOwnProperty("DailyAnnualAveDischarge"))
-                            this.ReportData.Annual.Graph.push({ name: "Surface water return", value: this.result.DailyAnnualAveDischarge.value });
                         break;
                 } //end switch
             };
@@ -278,20 +277,23 @@ var StreamStats;
                                     //console.log("StateChange");
                                     //must wrap in timer or method executes prematurely
                                     _this.$timeout(function () {
-                                        _this.loadGraphLabels(1);
+                                        _this.loadGraphLabels(0);
                                     }, 500);
                                 },
                                 renderEnd: function () {
                                     //console.log("renderend");
                                     //must wrap in timer or method executes prematurely
                                     _this.$timeout(function () {
-                                        _this.loadGraphLabels(1);
+                                        _this.loadGraphLabels(0);
                                     }, 500);
                                 }
                             },
                             showValues: true,
                             valueFormat: function (d) {
                                 return d3.format(',.4f')(d);
+                            },
+                            tooltip: {
+                                valueFormatter: function (d) { return d3.format(',.4f')(d) + " million gal/day"; }
                             },
                             xAxis: {
                                 showMaxMin: false
@@ -324,6 +326,11 @@ var StreamStats;
                             valueFormat: function (d) {
                                 return d3.format(',.3f')(d);
                             },
+                            tooltip: {
+                                valueFormatter: function (d) {
+                                    return d3.format(',.4f')(d) + " million gal/day";
+                                }
+                            },
                             xAxis: {
                                 showMaxMin: false
                             },
@@ -342,6 +349,9 @@ var StreamStats;
                             x: function (d) { return d.name; },
                             y: function (d) { return d.value; },
                             showLabels: true,
+                            tooltip: {
+                                valueFormatter: function (d) { return d3.format(',.4f')(d) + " million gal/day"; }
+                            },
                             duration: 500,
                             labelThreshold: 0.01,
                             labelSunbeamLayout: false,
