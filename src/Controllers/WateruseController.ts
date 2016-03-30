@@ -97,7 +97,7 @@ module StreamStats.Controllers {
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance', '$timeout'];
         constructor($scope: IWateruseControllerScope, $http: ng.IHttpService, studyAreaService: StreamStats.Services.IStudyAreaService, modal:ng.ui.bootstrap.IModalServiceInstance, public $timeout:ng.ITimeoutService) {
-            super($http, 'http://ssdev.cr.usgs.gov');
+            super($http, configuration.baseurls.StreamStatsServices);
             $scope.vm = this;
             this.modalInstance = modal;
             this.StudyArea = studyAreaService.selectedStudyArea;

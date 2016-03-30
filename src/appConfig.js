@@ -342,11 +342,6 @@ configuration.regions = [
 
 ]//end regions
 
-//configuration.alwaysSelectedParameters = [
-//    { "name": "DRNAREA", "description": "Area that drains to a point on a stream", "code": "DRNAREA", "unit": "square miles", "checked": true, "toggleable":false }
-//]
-
-
 function USGSRound(x) {
     var precision;
     if ((x > 100000) && (x < 1000000)) precision = 1000;
