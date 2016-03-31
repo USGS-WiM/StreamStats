@@ -80,10 +80,7 @@
     <Content Include="bower.json" />
     <Content Include="src\Views\mapview.html" />
     <Content Include="src\Views\navigationview.html" />
-    <Content Include="src\Views\Reports\searchPopup.html" />
     <Content Include="src\Views\reportview.html" />
-    <Content Include="src\Views\SidebarComponents\locationTemplate.html" />
-    <Content Include="src\Views\SidebarComponents\studyareaview.html" />
     <Content Include="src\Views\sidebarview.html" />
     <Content Include="src\Views\wateruse.html" />
     <Content Include="web.config" />
@@ -111,8 +108,6 @@
     <TypeScriptCompile Include="src\Controllers\ReportController.ts" />
     <TypeScriptCompile Include="src\Controllers\SidebarController.ts" />
     <TypeScriptCompile Include="src\Controllers\WateruseController.ts" />
-    <TypeScriptCompile Include="src\Directives\wateruseBarChart.ts" />
-    <TypeScriptCompile Include="src\Events\StudyAreaEvents.ts" />
     <TypeScriptCompile Include="src\Models\RegulationParameter.ts" />
     <TypeScriptCompile Include="src\Models\StudyArea.ts" />
     <TypeScriptCompile Include="src\Models\WatershedEDL.ts" />
