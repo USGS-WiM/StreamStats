@@ -123,7 +123,7 @@ gulp.task('leaflet', function () {
 
 // appConfig
 gulp.task('appConfig', function () {
-    return gulp.src(['src/appConfig.js', 'src/version.js'])
+    return gulp.src(['src/appConfig.js', 'src/version.js', 'web.config'])
         .pipe(gulp.dest('dist/'))
 });
 
