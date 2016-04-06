@@ -13,6 +13,8 @@ configuration.baseurls =
     'SearchAPI': 'http://txpub.usgs.gov/DSS/search_api/1.1/dataService/dataService.ashx',
     'FARefGage': 'http://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowAnywhere/MapServer',
     'GISserver': 'http://54.164.188.167',
+    //'NodeServer': 'http://nss.wim.usgs.gov',
+    'NodeServer': 'http://puff.ddns.net',
     'NationalMapRasterServices': 'http://raster.nationalmap.gov/arcgis/rest/services'
 }
 
@@ -34,7 +36,8 @@ configuration.queryparams =
     'regionService': '/arcgis/rest/services/ss_studyAreas_prod/MapServer/identify',
     'NLCDQueryService': '/LandCover/USGS_EROS_LandCover_NLCD/MapServer/4',
     'regulationService': '/arcgis/rest/services/Regulation/{0}RegulationSites/MapServer/exts/RegulationRESTSOE/Regulation',
-    'RegressionRegionQueryService': '/arcgis/rest/services/NSS/regions/MapServer/exts/PercentOverlayRESTSOE/PercentOverlay',
+    //'RegressionRegionQueryService': '/arcgis/rest/services/NSS/regions/MapServer/exts/PercentOverlayRESTSOE/PercentOverlay',
+    'RegressionRegionQueryService': ':3000/percentOverlay',
     'Wateruse': '/streamstatsservices/wateruse.json?rcode={0}&workspaceID={1}&startyear={2}&endyear={3}',
     'WateruseConfig': '/streamstatsservices/wateruse.json?rcode={0}'
 }

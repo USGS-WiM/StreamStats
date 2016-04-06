@@ -4,8 +4,7 @@
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 //-------1---------2---------3---------4---------5---------6---------7---------8
 //       01234567890123456789012345678901234567890123456789012345678901234567890
@@ -279,8 +278,14 @@ var StreamStats;
                 this.regressionRegionQueryLoading = true;
                 this.regressionRegionQueryComplete = false;
                 var watershed = angular.toJson(this.selectedStudyArea.Features[1].feature, null);
-                var url = configuration.baseurls['GISserver'] + configuration.queryparams['RegressionRegionQueryService'];
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', { geometry: watershed, f: 'json' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
+                var url = configuration.baseurls['NodeServer'] + configuration.queryparams['RegressionRegionQueryService'];
+                //var url = configuration.baseurls['GISserver'] + configuration.queryparams['RegressionRegionQueryService'];
+                //var request: WiM.Services.Helpers.RequestInfo =
+                //    new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST,
+                //        'json', { geometry: watershed, f: 'json' },
+                //        { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+                //        WiM.Services.Helpers.paramsTransform);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', watershed);
                 this.Execute(request).then(function (response) {
                     //console.log(response.data);
                     _this.toaster.clear();
