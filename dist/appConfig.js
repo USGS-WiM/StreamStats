@@ -13,8 +13,8 @@ configuration.baseurls =
     'SearchAPI': 'http://txpub.usgs.gov/DSS/search_api/1.1/dataService/dataService.ashx',
     'FARefGage': 'http://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowAnywhere/MapServer',
     'GISserver': 'http://54.164.188.167',
-    //'NodeServer': 'http://nss.wim.usgs.gov',
-    'NodeServer': 'http://puff.ddns.net',
+    'NodeServer': 'http://nss.wim.usgs.gov',
+    //'NodeServer': 'http://puff.ddns.net',
     'NationalMapRasterServices': 'http://raster.nationalmap.gov/arcgis/rest/services'
 }
 
