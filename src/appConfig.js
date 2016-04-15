@@ -14,7 +14,6 @@ configuration.baseurls =
     'FARefGage': 'http://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowAnywhere/MapServer',
     'GISserver': 'http://54.164.188.167',
     'NodeServer': 'http://nss.wim.usgs.gov',
-    //'NodeServer': 'http://puff.ddns.net',
     'NationalMapRasterServices': 'http://raster.nationalmap.gov/arcgis/rest/services'
 }
 
@@ -36,8 +35,8 @@ configuration.queryparams =
     'regionService': '/arcgis/rest/services/ss_studyAreas_prod/MapServer/identify',
     'NLCDQueryService': '/LandCover/USGS_EROS_LandCover_NLCD/MapServer/4',
     'regulationService': '/arcgis/rest/services/Regulation/{0}RegulationSites/MapServer/exts/RegulationRESTSOE/Regulation',
-    //'RegressionRegionQueryService': '/arcgis/rest/services/NSS/regions/MapServer/exts/PercentOverlayRESTSOE/PercentOverlay',
-    'RegressionRegionQueryService': ':3000/percentOverlay',
+    'RegressionRegionQueryService': '/arcgis/rest/services/NSS/regions/MapServer/exts/PercentOverlayRESTSOE/PercentOverlay',
+    //'RegressionRegionQueryService': ':3000/percentOverlay',
     'Wateruse': '/streamstatsservices/wateruse.json?rcode={0}&workspaceID={1}&startyear={2}&endyear={3}',
     'WateruseConfig': '/streamstatsservices/wateruse.json?rcode={0}'
 }
@@ -234,7 +233,7 @@ configuration.regions = [
     { "RegionID": "FL", "Name": "Florida", "Bounds": [[24.518321, -87.637229], [31.002105, -80.029022]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "GA", "Name": "Georgia", "Bounds": [[30.35713, -85.605514], [35.002037, -80.841957]], "Layers": {}, "Applications": [], "ScenariosAvailable": false },
     { "RegionID": "GU", "Name": "Guam", "Bounds": [[13.234996, 144.634155], [13.65361, 144.953308]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
-    { "RegionID": "HA", "Name": "Hawaii", "Bounds": [[18.915493, -160.236068], [22.234394, -154.798583]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
+    { "RegionID": "HI", "Name": "Hawaii", "Bounds": [[18.915493, -160.236068], [22.234394, -154.798583]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "ID", "Name": "Idaho", "Bounds": [[41.989837, -117.240196], [49.001522, -111.043617]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "IL", "Name": "Illinois", "Bounds": [[36.971115, -91.512626], [42.509479, -87.018081]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "IN", "Name": "Indiana", "Bounds": [[37.773048, -88.089744], [41.762321, -84.787673]], "Layers": {}, "Applications": [], "ScenariosAvailable": false },
