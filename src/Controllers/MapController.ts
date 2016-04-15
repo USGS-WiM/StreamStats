@@ -722,6 +722,8 @@ module StreamStats.Controllers {
                 if (item[0].toLowerCase() == "area of limited functionality" || item[0].toLowerCase() == "areas of limited functionality") queryString += String(item[1]);
             });
 
+            //console.log('query string: ', queryString);
+
             this.leafletData.getMap().then((map: any) => {
                 this.leafletData.getLayers().then((maplayers: any) => {
 
@@ -748,6 +750,7 @@ module StreamStats.Controllers {
 
                         //otherwise parse exclude Codes
                         else {
+                            //console.log('exlude code: ', results.features); 
                             this.studyArea.Disclaimers['isInExclusionArea'] = true;
                             this.studyArea.checkingDelineatedPoint = false;
                             var excludeCode = results.features[0].properties.ExcludeCode;
