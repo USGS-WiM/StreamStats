@@ -369,15 +369,16 @@ module StreamStats.Services {
             this.regressionRegionQueryComplete = false;
 
             var watershed = angular.toJson(this.selectedStudyArea.Features[1].feature, null);
-            var url = configuration.baseurls['NodeServer'] + configuration.queryparams['RegressionRegionQueryService'];
-            //var url = configuration.baseurls['GISserver'] + configuration.queryparams['RegressionRegionQueryService'];
-            //var request: WiM.Services.Helpers.RequestInfo =
-            //    new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST,
-            //        'json', { geometry: watershed, f: 'json' },
-            //        { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
-            //        WiM.Services.Helpers.paramsTransform);
 
-            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', watershed);
+            //var url = configuration.baseurls['NodeServer'] + configuration.queryparams['RegressionRegionQueryService'];
+            //var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', watershed);
+
+            var url = configuration.baseurls['GISserver'] + configuration.queryparams['RegressionRegionQueryService'];
+            var request: WiM.Services.Helpers.RequestInfo =
+                new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST,
+                    'json', { geometry: watershed, f: 'json' },
+                    { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+                    WiM.Services.Helpers.paramsTransform);          
 
             this.Execute(request).then(
                 (response: any) => {
