@@ -276,9 +276,7 @@ var StreamStats;
                 };
                 // all coords and widths are in jsPDF instance's declared units
                 // 'inches' in this case
-                pdf.fromHTML(source, // HTML string or DOM elem ref.
-                margins.left, // x coord
-                margins.top, {
+                pdf.fromHTML(source, margins.left, margins.top, {
                     'width': margins.width,
                     'elementHandlers': specialElementHandlers
                 }, function (dispose) {
