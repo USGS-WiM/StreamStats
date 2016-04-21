@@ -68,7 +68,6 @@
     <Content Include="src\css\wim.css" />
     <Content Include="src\Views\help.html" />
     <Content Include="src\Views\about.html" />
-    <Content Include="src\Views\Legend\legend.html" />
     <Content Include="src\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="src\images\arrows.gif" />
     <Content Include="src\images\multi_sw_act.png" />
@@ -85,6 +84,8 @@
     <Content Include="src\Views\wateruse.html" />
     <Content Include="web.config" />
     <Content Include="typings.json" />
+    <Content Include=".gitattributes" />
+    <Content Include=".gitignore" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
@@ -122,6 +123,7 @@
     </TypeScriptCompile>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="bower_components\" />
     <Folder Include="dist\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
