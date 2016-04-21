@@ -126,5 +126,6 @@
     <Folder Include="bower_components\" />
     <Folder Include="dist\" />
   </ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
 </Project>
