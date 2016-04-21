@@ -28,7 +28,7 @@
     "leaflet.locatecontrol": "~0.40.0",
     "leaflet-draw": "~0.2.4",
     "leaflet.zoomhome": "~0.1.0",
-    "wim_angular": "https://github.com/USGS-WiM/wim_angular.git",
+    "wim_angular": "https://github.com/USGS-WiM/wim_angular.git#master",
     "GreinerHormann": "greiner-hormann#~1.3.0",
     "mobileangularui-checkbox": "~1.0.0",
     "d3": "~3.5.12",
