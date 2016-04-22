@@ -26,7 +26,7 @@ var StreamStats;
                 this.lng = 0;
             }
             return MapPoint;
-        })();
+        }());
         var Center = (function () {
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
@@ -36,7 +36,7 @@ var StreamStats;
                 this.zoom = zm;
             }
             return Center;
-        })();
+        }());
         var Layer = (function () {
             function Layer(nm, ul, ty, vis, op) {
                 if (op === void 0) { op = undefined; }
@@ -47,7 +47,7 @@ var StreamStats;
                 this.layerOptions = op;
             }
             return Layer;
-        })();
+        }());
         var MapDefault = (function () {
             function MapDefault(mxZm, mnZm, zmCtrl) {
                 if (mxZm === void 0) { mxZm = null; }
@@ -58,7 +58,7 @@ var StreamStats;
                 this.zoomControl = zmCtrl;
             }
             return MapDefault;
-        })();
+        }());
         var MapController = (function () {
             function MapController($scope, toaster, $analytics, $location, $stateParams, leafletBoundsHelper, leafletData, search, region, studyArea, StatisticsGroup, exploration, eventManager) {
                 var _this = this;
@@ -538,7 +538,6 @@ var StreamStats;
                     if (item[0].toLowerCase() == "area of limited functionality" || item[0].toLowerCase() == "areas of limited functionality")
                         queryString += String(item[1]);
                 });
-                //console.log('query string: ', queryString);
                 this.leafletData.getMap().then(function (map) {
                     _this.leafletData.getLayers().then(function (maplayers) {
                         _this.angulartics.eventTrack('delineationClick', { category: 'Map', label: _this.regionServices.selectedRegion.Name });
@@ -875,7 +874,7 @@ var StreamStats;
             //-+-+-+-+-+-+-+-+-+-+-+-
             MapController.$inject = ['$scope', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager'];
             return MapController;
-        })(); //end class
+        }()); //end class
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.MapController', MapController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));

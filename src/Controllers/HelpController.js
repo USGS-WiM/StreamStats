@@ -15,7 +15,7 @@ var StreamStats;
             function FreshdeskTicketData() {
             }
             return FreshdeskTicketData;
-        })();
+        }());
         var HelpController = (function (_super) {
             __extends(HelpController, _super);
             function HelpController($scope, $http, $sce, studyAreaService, modal, Upload) {
@@ -156,7 +156,7 @@ var StreamStats;
             //-+-+-+-+-+-+-+-+-+-+-+-
             HelpController.$inject = ['$scope', '$http', '$sce', 'StreamStats.Services.StudyAreaService', '$modalInstance', 'Upload'];
             return HelpController;
-        })(WiM.Services.HTTPServiceBase); //end  class
+        }(WiM.Services.HTTPServiceBase)); //end  class
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.HelpController', HelpController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));
