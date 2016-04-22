@@ -36,7 +36,7 @@ var StreamStats;
                 _super.call(this);
             }
             return StudyAreaEventArgs;
-        })(WiM.Event.EventArgs);
+        }(WiM.Event.EventArgs));
         Services.StudyAreaEventArgs = StudyAreaEventArgs;
         var StudyAreaService = (function (_super) {
             __extends(StudyAreaService, _super);
@@ -412,7 +412,7 @@ var StreamStats;
                 this.queryRegressionRegions();
             };
             return StudyAreaService;
-        })(WiM.Services.HTTPServiceBase); //end class
+        }(WiM.Services.HTTPServiceBase)); //end class
         factory.$inject = ['$http', '$q', 'WiM.Event.EventManager', 'toaster'];
         function factory($http, $q, eventManager, toaster) {
             return new StudyAreaService($http, $q, eventManager, toaster);
