@@ -84,7 +84,6 @@ var StreamStats;
             //intersect method modified from
             //http://stackoverflow.com/questions/2752349/fast-rectangle-to-rectangle-intersection
             RegionService.prototype.intersect = function (a, b) {
-                console.log('comparing: ', (Math.max(a.left, b.left) < Math.min(a.right, b.right)), (Math.min(a.top, b.top) > Math.max(a.bottom, a.bottom)));
                 return Math.max(a.left, b.left) < Math.min(a.right, b.right) &&
                     Math.min(a.top, b.top) > Math.max(a.bottom, a.bottom);
             };
@@ -92,46 +91,12 @@ var StreamStats;
                 var _this = this;
                 if (sr === void 0) { sr = 4326; }
                 this.regionList.length = 0;
-                console.log('bounds: ', xmin, xmax, ymin, ymax);
                 var a = { "top": ymax, "bottom": ymin, "left": xmax, "right": xmin };
                 configuration.regions.forEach(function (value, key) {
                     var b = { "top": value.Bounds[1][0], "bottom": value.Bounds[0][0], "left": value.Bounds[0][1], "right": value.Bounds[1][1] };
                     if (_this.intersect(a, b))
                         _this.regionList.push(value);
                 });
-                //this.regionList.length = 0;//clear array
-                //var input = {
-                //    f: 'json',
-                //    geometry: { "xmin": xmin, "ymin": ymin, "xmax": xmax, "ymax": ymax, "spatialReference": { "wkid": sr } },
-                //    tolerance: 2,
-                //    returnGeometry: false,
-                //    mapExtent: { "xmin": xmin, "ymin": ymin, "xmax": xmax, "ymax": ymax, "spatialReference": { "wkid": sr } },
-                //    imageDisplay: "1647, 457,96",
-                //    geometryType:"esriGeometryEnvelope",
-                //    sr:sr,
-                //    layers:"all: 4"
-                //}
-                //var url = configuration.baseurls['StreamStats'] + configuration.queryparams['regionService'];
-                //var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
-                //request.params = input;
-                //this.Execute(request).then(
-                //    (response: any) => {
-                //        //console.log(response);
-                //        if (response.data.results.length < 1) {
-                //            this.toaster.pop('warning', "No State/Regional Study Areas available here", "", 5000);
-                //        }
-                //        response.data.results.map((item) => {          
-                //            try {
-                //                var region = this.getRegion(item.attributes.st_abbr);
-                //                if (region != null && this.regionList.indexOf(region) == -1) this.regionList.push(region);
-                //            }
-                //            catch (e) {
-                //                alert(e);
-                //            }
-                //        });
-                //    },(error) => {
-                //        return this.$q.reject(error.data)
-                //    });
             };
             RegionService.prototype.loadRegionListByRegion = function (regionid) {
                 this.regionList.length = 0; //clear array;

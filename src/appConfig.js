@@ -5,9 +5,8 @@ configuration.baseurls =
     'MercuryAuth': 'http://54.174.81.42/mercuryauth',
     'RegressionService': 'http://commons.wim.usgs.gov/regressionservice/models',
     'KrigService': 'http://commons.wim.usgs.gov/krigservice',
-    "NWISurl": 'http://waterservices.usgs.gov/nwis',
+    'NWISurl': 'http://waterservices.usgs.gov/nwis',
     'StreamStats': 'http://streamstats09.cr.usgs.gov',
-    //'StreamStatsServices': 'http://streamstatsags.cr.usgs.gov',
     'StreamStatsServices':'http://ssdev.cr.usgs.gov',
     'NSS': 'http://commons.wim.usgs.gov/nssservices',
     'SearchAPI': 'http://txpub.usgs.gov/DSS/search_api/1.1/dataService/dataService.ashx',
@@ -16,6 +15,9 @@ configuration.baseurls =
     'NodeServer': 'http://nss.wim.usgs.gov',
     'NationalMapRasterServices': 'http://raster.nationalmap.gov/arcgis/rest/services'
 }
+
+//override streamstats services URL if on production
+if (window.location.origin == 'http://streamstatsags.cr.usgs.gov') configuration.baseurls.StreamStatsServices = 'http://streamstatsags.cr.usgs.gov';
 
 configuration.queryparams =
 {
@@ -332,14 +334,3 @@ configuration.regions = [
     { "RegionID": "RRB", "Name": "Rainy River Basin", "Bounds": [[47.268377,-95.64855],[50.054196,-89.766532]], "Layers": {}, "Applications": [], "ScenariosAvailable": true }
 
 ]//end regions
-
-function USGSRound(x) {
-    var precision;
-    if ((x > 100000) && (x < 1000000)) precision = 1000;
-    if ((x > 10000) && (x < 100000)) precision = 100;
-    if ((x > 1000) && (x < 10000)) precision = 10;
-    if ((x > 100) && (x < 1000)) precision = 1;
-
-    return parseInt((((x + (precision * .5)) / precision)) * precision);
-
-}
