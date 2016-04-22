@@ -538,7 +538,6 @@ var StreamStats;
                     if (item[0].toLowerCase() == "area of limited functionality" || item[0].toLowerCase() == "areas of limited functionality")
                         queryString += String(item[1]);
                 });
-                //console.log('query string: ', queryString);
                 this.leafletData.getMap().then(function (map) {
                     _this.leafletData.getLayers().then(function (maplayers) {
                         _this.angulartics.eventTrack('delineationClick', { category: 'Map', label: _this.regionServices.selectedRegion.Name });

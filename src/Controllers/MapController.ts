@@ -699,7 +699,7 @@ module StreamStats.Controllers {
 
             //console.log('in check delineate point');
             this.studyArea.checkingDelineatedPoint = true;
-            
+
             this.toaster.pop("info", "Information", "Validating your clicked point...", 5000);
             this.cursorStyle = 'wait';
             this.markers = {};
@@ -722,17 +722,15 @@ module StreamStats.Controllers {
                 if (item[0].toLowerCase() == "area of limited functionality" || item[0].toLowerCase() == "areas of limited functionality") queryString += String(item[1]);
             });
 
-            //console.log('query string: ', queryString);
-
             this.leafletData.getMap().then((map: any) => {
-                this.leafletData.getLayers().then((maplayers: any) => {
+            this.leafletData.getLayers().then((maplayers: any) => {
 
                     this.angulartics.eventTrack('delineationClick', { category: 'Map', label: this.regionServices.selectedRegion.Name });
 
                     //force map refresh
                     map.invalidateSize();
 
-                    var selectedRegionLayerName = this.regionServices.selectedRegion.RegionID + "_region"
+                    var selectedRegionLayerName = this.regionServices.selectedRegion.RegionID + "_region";
 
                     maplayers.overlays[selectedRegionLayerName].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run((error: any, results: any) => {
 
@@ -741,7 +739,7 @@ module StreamStats.Controllers {
                         //if there are no exclusion area hits
                         if (results.features.length == 0) {
                             //ga event
-                            this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'valid'});
+                            this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'valid' });
 
                             this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000)
                             this.studyArea.checkingDelineatedPoint = false;
@@ -771,8 +769,6 @@ module StreamStats.Controllers {
                     });
                 });
             });
-
-
         }
         private basinEditor() {
 
