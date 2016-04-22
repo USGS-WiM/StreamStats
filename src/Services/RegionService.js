@@ -95,7 +95,6 @@ var StreamStats;
                 console.log('bounds: ', xmin, xmax, ymin, ymax);
                 var a = { "top": ymax, "bottom": ymin, "left": xmax, "right": xmin };
                 configuration.regions.forEach(function (value, key) {
-                    console.log(value);
                     var b = { "top": value.Bounds[1][0], "bottom": value.Bounds[0][0], "left": value.Bounds[0][1], "right": value.Bounds[1][1] };
                     if (_this.intersect(a, b))
                         _this.regionList.push(value);
