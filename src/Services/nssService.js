@@ -61,6 +61,7 @@ var StreamStats;
                 this.canUpdate = true;
                 this.queriedRegions = false;
                 this.loadingParametersByStatisticsGroup = false;
+                this.isDone = false;
             };
             nssService.prototype.loadStatisticsGroupTypes = function (rcode, regressionregions) {
                 var _this = this;
@@ -76,9 +77,8 @@ var StreamStats;
                     //console.log(response.data);
                     if (response.data.length > 0) {
                         _this.loadingStatisticsGroup = false;
-                        var statisticsGroupList = _this.statisticsGroupList;
                         angular.forEach(response.data, function (value, key) {
-                            statisticsGroupList.push(value);
+                            _this.statisticsGroupList.push(value);
                         });
                     }
                     _this.toaster.clear();
@@ -137,8 +137,11 @@ var StreamStats;
                 }).finally(function () {
                 });
             };
-            nssService.prototype.estimateFlows = function (studyAreaParameterList, rcode, regressionregion) {
+            nssService.prototype.estimateFlows = function (studyAreaParameterList, paramValueField, rcode, regressionregion, append) {
                 var _this = this;
+                if (append === void 0) { append = false; }
+                if (this.isDone)
+                    return;
                 this.canUpdate = false;
                 //loop over all selected StatisticsGroups
                 this.selectedStatisticsGroupList.forEach(function (statGroup) {
@@ -153,7 +156,7 @@ var StreamStats;
                                 //console.log('search for matching params ', regressionParam.Code.toLowerCase(), param.code.toLowerCase());
                                 if (regressionParam.Code.toLowerCase() == param.code.toLowerCase()) {
                                     //console.log('updating parameter in scenario object for: ', regressionParam.Code, ' from: ', regressionParam.Value, ' to: ', param.value);
-                                    regressionParam.Value = param.value;
+                                    regressionParam.value = param[paramValueField];
                                 }
                             });
                         });
@@ -167,7 +170,8 @@ var StreamStats;
                         //console.log('estimate flows: ', response.data[0]);
                         //nested requests for citations
                         var citationUrl = response.data[0].Links[0].Href;
-                        var citationResults = _this.getSelectedCitations(citationUrl, statGroup);
+                        if (!append)
+                            _this.getSelectedCitations(citationUrl, statGroup);
                         //get header values
                         if (response.headers()['usgswim-messages']) {
                             var headerMsgs = response.headers()['usgswim-messages'].split(';');
@@ -185,14 +189,46 @@ var StreamStats;
                         //make sure there are some results
                         if (response.data[0].RegressionRegions[0].Results && response.data[0].RegressionRegions[0].Results.length > 0) {
                             _this.toaster.clear();
-                            //get flows
-                            statGroup.RegressionRegions = [];
-                            //overwrite existing Regressions Regions array with new one from request that includes results
-                            statGroup.RegressionRegions = response.data[0].RegressionRegions;
+                            if (!append) {
+                                statGroup.RegressionRegions = [];
+                                statGroup.RegressionRegions = response.data[0].RegressionRegions;
+                            }
+                            else {
+                                //loop over and append params
+                                statGroup.RegressionRegions.forEach(function (rr) {
+                                    rr.Parameters.forEach(function (p) {
+                                        var responseRegions = response.data[0].RegressionRegions;
+                                        for (var i = 0; i < responseRegions.length; i++) {
+                                            if (responseRegions[i].ID === rr.ID) {
+                                                for (var j = 0; j < responseRegions[i].Parameters.length; j++) {
+                                                    if (responseRegions[i].Parameters[j].Code == p.Code) {
+                                                        p[paramValueField] = responseRegions[i].Parameters[j].Value;
+                                                    }
+                                                } //next j
+                                            } //end if
+                                        }
+                                        ; //next i
+                                    }); //end p
+                                    rr.Results.forEach(function (r) {
+                                        var responseRegions = response.data[0].RegressionRegions;
+                                        for (var i = 0; i < responseRegions.length; i++) {
+                                            if (responseRegions[i].ID === rr.ID) {
+                                                for (var j = 0; j < responseRegions[i].Results.length; j++) {
+                                                    if (responseRegions[i].Results[j].code == r.code) {
+                                                        r[paramValueField] = responseRegions[i].Results[j].Value;
+                                                    }
+                                                } //next j
+                                            } //end if
+                                        }
+                                        ; //next i
+                                    }); //end r
+                                }); //end rr
+                            }
                         }
                         else {
                             _this.toaster.clear();
                             _this.toaster.pop('error', "There was an error Estimating Flows", "No results were returned", 5000);
+                            _this.isDone = true;
                         }
                         //sm when complete
                     }, function (error) {

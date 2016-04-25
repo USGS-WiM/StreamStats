@@ -328,6 +328,8 @@ var StreamStats;
                         _this.regulationCheckResults = response.data;
                         //this.loadRegulatedParameterResults(this.regulationCheckResults.parameters);
                         _this.Disclaimers['isRegulated'] = true;
+                        //COMMENT OUT ONSELECTEDSTUDYAREA changed event 3/11/16
+                        _this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, _this, StudyAreaEventArgs.Empty);
                     }
                     else {
                         //alert("No regulation found");
@@ -407,7 +409,7 @@ var StreamStats;
             //-+-+-+-+-+-+-+-+-+-+-+- 
             StudyAreaService.prototype.onStudyAreaChanged = function (sender, e) {
                 //console.log('in onStudyAreaChanged');
-                if (!this.selectedStudyArea || !this.selectedStudyArea.Features)
+                if (!this.selectedStudyArea || !this.selectedStudyArea.Features || this.regressionRegionQueryComplete)
                     return;
                 this.queryRegressionRegions();
             };
