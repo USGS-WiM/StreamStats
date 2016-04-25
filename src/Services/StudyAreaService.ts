@@ -444,7 +444,7 @@ module StreamStats.Services {
                         this.Disclaimers['isRegulated'] = true;     
                          
                         //COMMENT OUT ONSELECTEDSTUDYAREA changed event 3/11/16
-                        //this.eventManager.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);                    
+                        this.eventManager.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);                    
                     }
                     else {
                         //alert("No regulation found");
@@ -545,7 +545,7 @@ module StreamStats.Services {
         //-+-+-+-+-+-+-+-+-+-+-+- 
         private onStudyAreaChanged(sender: any, e: StudyAreaEventArgs) {
             //console.log('in onStudyAreaChanged');
-            if (!this.selectedStudyArea || !this.selectedStudyArea.Features) return;
+            if (!this.selectedStudyArea || !this.selectedStudyArea.Features || this.regressionRegionQueryComplete) return;
             this.queryRegressionRegions();
         }
 
