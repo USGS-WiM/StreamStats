@@ -28,14 +28,14 @@ module StreamStats.Services {
     export interface InssService {
         onSelectedStatisticsGroupChanged: WiM.Event.Delegate<WiM.Event.EventArgs>;
         selectedStatisticsGroupList: Array<IStatisticsGroup>;
-        loadStatisticsGroupTypes(rcode: string, regressionregion: string);
+        loadStatisticsGroupTypes(rcode: string, regressionregion: string):Array<any>;
         loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregion: string, percentWeights: any);
-        estimateFlows(studyAreaParameterList: any, rcode: string, regressionregion: string)
+        estimateFlows(studyAreaParameterList: Array<IParameter>, paramValueField: string, rcode: string, regressionregion: string, append?: boolean)
         showBasinCharacteristicsTable: boolean;
         showFlowsTable: boolean;
         clearNSSdata();
         queriedRegions: boolean;
-        loadingParametersByStatisticsGroup: boolean;
+        loadingParametersByStatisticsGroup: boolean;        
     }
     export interface IStatisticsGroup {
         ID: string;
@@ -76,6 +76,7 @@ module StreamStats.Services {
         public showFlowsTable: boolean;
         public queriedRegions: boolean;
         public loadingParametersByStatisticsGroup: boolean;
+        public isDone: boolean;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -95,9 +96,10 @@ module StreamStats.Services {
             this.canUpdate = true;
             this.queriedRegions = false;
             this.loadingParametersByStatisticsGroup = false;
+            this.isDone = false;
         }
 
-        public loadStatisticsGroupTypes(rcode: string, regressionregions: string) {
+        public loadStatisticsGroupTypes(rcode: string, regressionregions: string):Array<any> {
 
             this.toaster.pop('info', "Loading Available Scenarios", "Please wait...", 0);
             //console.log('in load StatisticsGroups', rcode, regressionregions);
@@ -115,9 +117,8 @@ module StreamStats.Services {
                     if (response.data.length > 0) {
                         this.loadingStatisticsGroup = false;
                         
-                        var statisticsGroupList = this.statisticsGroupList;
-                        angular.forEach(response.data, function (value, key) {
-                            statisticsGroupList.push(value);
+                        angular.forEach(response.data, (value, key) =>  {
+                            this.statisticsGroupList.push(value);
                         });
                     }
                     this.toaster.clear();
@@ -128,6 +129,7 @@ module StreamStats.Services {
                 }).finally(() => {
                     this.loadingStatisticsGroup = false;
                 });
+
         }
 
         public checkArrayForObj(arr, obj) {
@@ -188,10 +190,10 @@ module StreamStats.Services {
                 });
         }
 
-        public estimateFlows(studyAreaParameterList: any, rcode: string, regressionregion: string) {
-      
+        public estimateFlows(studyAreaParameterList: Array<IParameter>, paramValueField:string, rcode: string, regressionregion: string, append:boolean = false) {
+
+            if (this.isDone) return;
             this.canUpdate = false;
-            
             //loop over all selected StatisticsGroups
             this.selectedStatisticsGroupList.forEach((statGroup) => {
 
@@ -208,7 +210,7 @@ module StreamStats.Services {
                             //console.log('search for matching params ', regressionParam.Code.toLowerCase(), param.code.toLowerCase());
                             if (regressionParam.Code.toLowerCase() == param.code.toLowerCase()) {
                                 //console.log('updating parameter in scenario object for: ', regressionParam.Code, ' from: ', regressionParam.Value, ' to: ', param.value);
-                                regressionParam.Value = param.value;
+                                regressionParam.value = param[paramValueField];
                             }
                         });
                     });
@@ -228,7 +230,7 @@ module StreamStats.Services {
 
                         //nested requests for citations
                         var citationUrl = response.data[0].Links[0].Href;
-                        var citationResults = this.getSelectedCitations(citationUrl, statGroup);
+                        if(!append) this.getSelectedCitations(citationUrl, statGroup);
 
                         //get header values
                         if (response.headers()['usgswim-messages']) {
@@ -249,16 +251,51 @@ module StreamStats.Services {
                         if (response.data[0].RegressionRegions[0].Results && response.data[0].RegressionRegions[0].Results.length > 0) {
 
                             this.toaster.clear();
+                            if (!append) {
+                                statGroup.RegressionRegions = [];
+                                statGroup.RegressionRegions = response.data[0].RegressionRegions;
+                            }
+                            else {
+                                //loop over and append params
+                                statGroup.RegressionRegions.forEach((rr) => {
+                                    rr.Parameters.forEach((p) => {
+                                        var responseRegions = response.data[0].RegressionRegions;
+                                        for (var i = 0; i < responseRegions.length; i++){
+                                            if (responseRegions[i].ID === rr.ID) {
+                                                for (var j = 0; j < responseRegions[i].Parameters.length; j++) {
+                                                    if (responseRegions[i].Parameters[j].Code == p.Code) {
+                                                        p[paramValueField] = responseRegions[i].Parameters[j].Value;
+                                                    }
+                                                }//next j
+                                            }//end if
+                                        };//next i
+                                        
+                                    });//end p
+                                    rr.Results.forEach((r) => {
+                                        var responseRegions = response.data[0].RegressionRegions;
+                                        for (var i = 0; i < responseRegions.length; i++) {
+                                            if (responseRegions[i].ID === rr.ID) {
+                                                for (var j = 0; j < responseRegions[i].Results.length; j++) {
+                                                    if (responseRegions[i].Results[j].code == r.code) {
+                                                        r[paramValueField] = responseRegions[i].Results[j].Value;
+                                                    }
+                                                }//next j
+                                            }//end if
+                                        };//next i
 
-                            //get flows
-                            statGroup.RegressionRegions = [];
+                                    });//end r
+                                });//end rr
+                                //loop over and append statistic
+                            }
+                                                     
                             //overwrite existing Regressions Regions array with new one from request that includes results
-                            statGroup.RegressionRegions = response.data[0].RegressionRegions;
+                            
 
                         }
                         else {
                             this.toaster.clear();
                             this.toaster.pop('error', "There was an error Estimating Flows", "No results were returned", 5000);
+                            this.isDone = true;
                             //console.log("Zero length flow response, check equations in NSS service");
                         }
               
