@@ -32,7 +32,7 @@ var StreamStats;
             function StatisticsGroup() {
             }
             return StatisticsGroup;
-        }());
+        })();
         Services.StatisticsGroup = StatisticsGroup; //end class
         var nssService = (function (_super) {
             __extends(nssService, _super);
@@ -259,7 +259,7 @@ var StreamStats;
                 });
             };
             return nssService;
-        }(WiM.Services.HTTPServiceBase)); //end class
+        })(WiM.Services.HTTPServiceBase); //end class
         factory.$inject = ['$http', '$q', 'toaster'];
         function factory($http, $q, toaster) {
             return new nssService($http, $q, toaster);
