@@ -170,7 +170,7 @@ var StreamStats;
             //-+-+-+-+-+-+-+-+-+-+-+-
             AboutController.$inject = ['$scope', '$http', '$sce', 'StreamStats.Services.ModalService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', '$modalInstance'];
             return AboutController;
-        }(WiM.Services.HTTPServiceBase)); //end  class
+        })(WiM.Services.HTTPServiceBase); //end  class
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.AboutController', AboutController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));

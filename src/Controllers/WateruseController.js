@@ -17,7 +17,7 @@ var StreamStats;
                 this.Monthly = { Graph: { withdrawals: null, returns: null }, Table: {} };
             }
             return WaterUseReportable;
-        }());
+        })();
         var WateruseController = (function (_super) {
             __extends(WateruseController, _super);
             function WateruseController($scope, $http, studyAreaService, modal, $timeout) {
@@ -211,12 +211,12 @@ var StreamStats;
                             tableValues.push({ name: "Total", aveReturn: this.result.DailyAnnualAveDischarge.value.toFixed(3), aveWithdrawal: (this.result.DailyAnnualAveGWWithdrawal.value + this.result.DailyAnnualAveSWWithdrawal.value).toFixed(3), unit: "MGD" });
                         tableValues.push({ name: "", aveReturn: "", aveWithdrawal: "" });
                         if (this.result.hasOwnProperty("TotalTempStats")) {
-                            tableValues.push({ name: "Temporary water-use registrations (surface water)", aveReturn: "", aveWithdrawal: this.result.TotalTempStats[2].value.toFixed(3), unit: "MGD" });
-                            tableValues.push({ name: "Temporary water-use registrations (groundwater)", aveReturn: "", aveWithdrawal: this.result.TotalTempStats[1].value.toFixed(3), unit: "MGD" });
-                            tableValues.push({ name: "Temporary water-use registrations (total)", aveReturn: "", aveWithdrawal: this.result.TotalTempStats[0].value.toFixed(3), unit: "MGD" });
+                            tableValues.push({ name: "Temporary water use registrations (surface water)", aveReturn: "", aveWithdrawal: this.result.TotalTempStats[2].value.toFixed(3), unit: "MGD" });
+                            tableValues.push({ name: "Temporary water use registrations (groundwater)", aveReturn: "", aveWithdrawal: this.result.TotalTempStats[1].value.toFixed(3), unit: "MGD" });
+                            tableValues.push({ name: "Temporary water use registrations (total)", aveReturn: "", aveWithdrawal: this.result.TotalTempStats[0].value.toFixed(3), unit: "MGD" });
                             tableValues.push({ name: "", aveReturn: "", aveWithdrawal: "" });
-                            tableValues.push({ name: "Water-use index (dimensionless) without temporary registrations:", aveReturn: "", aveWithdrawal: this.result.TotalTempStats[4].value.toFixed(3), unit: "Dimensionless" });
-                            tableValues.push({ name: "Water-use index (dimensionless) with temporary registrations:", aveReturn: "", aveWithdrawal: this.result.TotalTempStats[3].value.toFixed(3), unit: "Dimensionless" });
+                            tableValues.push({ name: "Water use index (dimensionless) without temporary registrations:", aveReturn: "", aveWithdrawal: this.result.TotalTempStats[4].value.toFixed(3), unit: "Dimensionless" });
+                            tableValues.push({ name: "Water use index (dimensionless) with temporary registrations:", aveReturn: "", aveWithdrawal: this.result.TotalTempStats[3].value.toFixed(3), unit: "Dimensionless" });
                         } //end if
                         break;
                 } //end switch
@@ -420,7 +420,7 @@ var StreamStats;
             //-+-+-+-+-+-+-+-+-+-+-+-
             WateruseController.$inject = ['$scope', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance', '$timeout'];
             return WateruseController;
-        }(WiM.Services.HTTPServiceBase)); //end wimLayerControlController class
+        })(WiM.Services.HTTPServiceBase); //end wimLayerControlController class
         var WaterUseType;
         (function (WaterUseType) {
             WaterUseType[WaterUseType["Annual"] = 1] = "Annual";
