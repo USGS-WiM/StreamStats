@@ -100,7 +100,7 @@ var StreamStats;
             //-+-+-+-+-+-+-+-+-+-+-+-
             NavbarController.$inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.StudyAreaService'];
             return NavbarController;
-        }(WiM.Services.HTTPServiceBase)); //end class
+        })(WiM.Services.HTTPServiceBase); //end class
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.NavbarController', NavbarController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));

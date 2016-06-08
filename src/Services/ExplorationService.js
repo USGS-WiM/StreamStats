@@ -66,7 +66,7 @@ var StreamStats;
                 });
             };
             return ExplorationService;
-        }(WiM.Services.HTTPServiceBase)); //end class
+        })(WiM.Services.HTTPServiceBase); //end class
         factory.$inject = ['$http', '$q', 'toaster'];
         function factory($http, $q, toaster) {
             return new ExplorationService($http, $q, toaster);

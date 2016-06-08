@@ -54,7 +54,6 @@ module StreamStats.Services {
         public RegressionRegions: Array<any>;
         public Citations: any;
         public Disclaimers: any;
-
     }//end class
 
 
