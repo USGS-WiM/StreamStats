@@ -1,9 +1,9 @@
 {
   "name": "StreamStats",
-  "version": "4.0.5",
+  "version": "4.0.4",
   "homepage": "https://github.com/USGS-WiM/StreamStats",
   "authors": [
-    "Jeremy Newson <jknewson@usgs.gov>",
+    "Jeremy Newson <jknewson@usgs.gov>", 
     "Martyn Smith <marsmith@usgs.gov>"
   ],
   "license": "MIT",

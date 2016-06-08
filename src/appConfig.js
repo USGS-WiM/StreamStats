@@ -8,10 +8,10 @@ configuration.baseurls =
     'NWISurl': 'http://waterservices.usgs.gov/nwis',
     'StreamStats': 'http://streamstats09.cr.usgs.gov',
     'StreamStatsServices':'http://ssdev.cr.usgs.gov',
-    'NSS': 'http://commons.wim.usgs.gov/nssservices',
+    'NSS': 'http://toad.wim.usgs.gov/nssservices',
     'SearchAPI': 'http://txpub.usgs.gov/DSS/search_api/1.1/dataService/dataService.ashx',
     'FARefGage': 'http://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowAnywhere/MapServer',
-    'GISserver': 'http://54.164.188.167',
+    'GISserver': 'http://gis.wim.usgs.gov',
     'NodeServer': 'http://nss.wim.usgs.gov',
     'NationalMapRasterServices': 'http://raster.nationalmap.gov/arcgis/rest/services'
 }
