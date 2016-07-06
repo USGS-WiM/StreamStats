@@ -160,7 +160,13 @@ module StreamStats.Controllers {
         public toaster: any;
         public angulartics: any;
         public nomnimalZoomLevel: string;
-
+        public get selectedExplorationMethodType(): Services.ExplorationMethodType {
+            if (this.explorationService.selectedMethod == null) return 0;
+            return this.explorationService.selectedMethod.ModelType;
+        }
+        public set selectedExplorationMethodType(val: Services.ExplorationMethodType) {            
+            this.explorationService.setMethod(val);
+        }
 
         //Constructro
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -225,6 +231,22 @@ module StreamStats.Controllers {
                 //console.log('map click listener: ', exploration.allowStreamgageQuery);
                 if (exploration.allowStreamgageQuery) this.queryStreamgages(args.leafletEvent);
 
+                if (exploration.selectedMethod != null) {
+                    exploration.selectedMethod.addLocation(new WiM.Models.Point(args.leafletEvent.latlng.lat, args.leafletEvent.latlng.lng, '4326'));
+                   
+                    for (var i: number = 0; i < exploration.selectedMethod.locations.length; i++){ 
+                        var item = exploration.selectedMethod.locations[i];
+                        this.markers['netnav_'+i] = {
+                            lat: item.Latitude,
+                            lng: item.Longitude,
+                            message:exploration.GetToolName(exploration.selectedMethod.ModelType)+ " "+ i,
+                            focus: true,
+                            draggable: false                            
+                        };
+
+                    }//next i
+                }
+
                 //state or region layer query
                 //if (!region.selectedRegion && !exploration.drawElevationProfile && !exploration.drawMeasurement && !exploration.allowStreamgageQuery) this.queryNationalMapLayers(args.leafletEvent)
             });
@@ -258,7 +280,9 @@ module StreamStats.Controllers {
 
             $scope.$on('$locationChangeStart',() => this.updateRegion());
 
-            $scope.$watch(() => studyArea.doDelineateFlag,(newval, oldval) => newval ? this.cursorStyle = 'crosshair' : this.cursorStyle = 'pointer');
+            $scope.$watch(() => studyArea.doDelineateFlag, (newval, oldval) => newval ? this.cursorStyle = 'crosshair' : this.cursorStyle = 'pointer');
+
+            $scope.$watch(() => this.explorationService.selectedMethod!= null ? this.cursorStyle = 'crosshair' : this.cursorStyle = 'pointer');
 
             // check if region was explicitly set.
             if ($stateParams.rcode) {
@@ -282,7 +306,37 @@ module StreamStats.Controllers {
 
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
-        
+        public setExplorationMethodType(val: number) {
+            //check if can select
+            this.removeMarkerLayers("netnav_", true);
+            if (!this.canSelectExplorationTool(val)) return
+            this.selectedExplorationMethodType = val;
+            
+            //then select
+
+
+            //send messages if needed
+        }
+        public toggleLimitExplorationMethodToStudyArea(): void {
+            if (this.studyArea.selectedStudyArea !== null && this.studyArea.selectedStudyArea.WorkspaceID !== '') {
+                if ((<Models.Path2Outlet>this.explorationService.selectedMethod).workspaceID !== '') (<Models.Path2Outlet>this.explorationService.selectedMethod).workspaceID = ''
+                else {
+                    (<Models.Path2Outlet>this.explorationService.selectedMethod).workspaceID = this.studyArea.selectedStudyArea.WorkspaceID;
+                    this.toaster.pop("info", "Information", "Ensure your selected point resides within the basin", 5000);
+                }
+            }                 
+        }
+        public ExecuteNav(): void {
+            //validate request
+            if (this.explorationService.selectedMethod.locations.length != this.explorationService.selectedMethod.requiredLocationLength) {
+                this.toaster.pop("warning", "Warning", "You must select at least " + this.explorationService.selectedMethod.requiredLocationLength + " points.", 10000);
+                return;
+            }
+
+            this.explorationService.ExecuteSelectedModel();
+
+
+        }
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         private init(): void { 
@@ -844,7 +898,33 @@ module StreamStats.Controllers {
                 });
             });
         }
+        private canSelectExplorationTool(methodval: Services.ExplorationMethodType): boolean {
+            
+            switch (methodval) {
+                case Services.ExplorationMethodType.FINDPATHBETWEENPOINTS:
+                    if (this.regionServices.selectedRegion == null) {
+                        this.toaster.pop("warning", "Warning", "you must first select a state or region to use this tool", 5000);
+                        return false;
+                    }
+                    break;
+                case Services.ExplorationMethodType.FINDPATH2OUTLET:
+                    if (this.regionServices.selectedRegion == null) {
+                        this.toaster.pop("warning", "Warning", "you must first select a state or region to use this tool", 5000);
+                        return false;
+                    }
+                    break;
+                case Services.ExplorationMethodType.GETNETWORKREPORT:
+                    if (this.regionServices.selectedRegion == null) {
+                        this.toaster.pop("warning", "Warning", "you must first select a state or region to use this tool", 5000);
+                        return false;
+                    }
+                    break;
+                default:
+                    return false;
+            }//end switch
 
+            return true;
+        }
         private onSelectedAreaOfInterestChanged(sender: any, e: WiM.Services.SearchAPIEventArgs) {
 
             //ga event
@@ -1095,7 +1175,16 @@ module StreamStats.Controllers {
                 delete this.layers.overlays[item];
             });
         }
+        private removeMarkerLayers(name: string, isPartial: boolean = false) {
+            var layeridList: Array<string>;
 
+            layeridList = this.getLayerIdsByID(name, this.markers, isPartial);
+
+            layeridList.forEach((item) => {
+                //console.log('removing map overlay layer: ', item);
+                delete this.markers[item];
+            });
+        }
         private getLayerIdsByName(name: string, layerObj: Object, isPartial: boolean): Array<string> {
             var layeridList: Array<string> = [];
 

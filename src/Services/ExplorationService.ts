@@ -32,7 +32,25 @@ module StreamStats.Services {
         showElevationChart: boolean;
         measurementData: string;
         allowStreamgageQuery: boolean;
+        selectedMethod: Models.INetworkNav;
+        setMethod(methodtype: ExplorationMethodType)
+        GetToolName(methodID: number): String
+        ExecuteSelectedModel():void
+
+
         
+    }
+    export var onSelectedMethodExecuteComplete: string = "onSelectedMethodExecuteComplete";
+
+    export class EplorationServiceEventArgs extends WiM.Event.EventArgs {
+        //properties
+        public features: Array<any>
+        public report: string;
+
+        constructor() {
+            super();
+        }
+
     }
     class ExplorationService extends WiM.Services.HTTPServiceBase implements IExplorationService {
         //Events
@@ -47,10 +65,24 @@ module StreamStats.Services {
         public showElevationChart: boolean;
         public measurementData: string;
         public allowStreamgageQuery: boolean;
+        //private _selectedMethod: ExplorationMethodType;
+        //public get selectedMethod(): ExplorationMethodType {
+        //    return this._selectedMethod;
+        //}
+        //public set selectedMethod(val: ExplorationMethodType) {            
+        //    if (val > 0) {
+        //        if (val === this._selectedMethod) val = ExplorationMethodType.undefined;
+        //        this._selectedMethod = val;
+        //    }
+        //}
+        public _selectedMethod: Models.INetworkNav
+        public get selectedMethod(): Models.INetworkNav {
+            return this._selectedMethod;
+        }
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        constructor($http: ng.IHttpService, private $q: ng.IQService, toaster) {
+        constructor($http: ng.IHttpService, private $q: ng.IQService, toaster, private eventManager: WiM.Event.IEventManager, private regionservice:Services.IRegionService) {
             super($http, configuration.baseurls['StreamStats'])
 
             this.toaster = toaster;
@@ -59,6 +91,8 @@ module StreamStats.Services {
             this.showElevationChart = false;
             this.allowStreamgageQuery = false;
             this.measurementData = '';
+            this._selectedMethod = null;
+            eventManager.AddEvent<StudyAreaEventArgs>(onSelectedStudyAreaChanged);
 
         }
         //Methods
@@ -96,12 +130,65 @@ module StreamStats.Services {
 
             });
         }
+        public setMethod(methodtype: ExplorationMethodType) {
+            if (this._selectedMethod != null && methodtype === this._selectedMethod.ModelType) methodtype = ExplorationMethodType.undefined;
+            switch (methodtype) {
+                case ExplorationMethodType.FINDPATH2OUTLET:
+                    this._selectedMethod = new Models.Path2Outlet();
+                    break;
+                case ExplorationMethodType.FINDPATHBETWEENPOINTS:                
+                    this._selectedMethod = new Models.PathBetweenPoints();
+                    break;
+                case ExplorationMethodType.GETNETWORKREPORT:
+                    this._selectedMethod = new Models.NetworkReport();
+                    break
+                default:
+                    this._selectedMethod = null;
+                    break;
+            }//end switch
+        }
+        public GetToolName(methodID: ExplorationMethodType): String {
+            switch (methodID) {
+                case ExplorationMethodType.FINDPATHBETWEENPOINTS:
+                    return "Find path between two points";
+                case ExplorationMethodType.FINDPATH2OUTLET:
+                    return "Find path to outlet";
+                case ExplorationMethodType.GETNETWORKREPORT:
+                    return "Get network report";
+                default:
+                    return "";
 
+            }//end switch
+
+        }
+        public ExecuteSelectedModel(): void {
+            //build url
+            //streamstatsservices/navigation / { 0}.geojson ? rcode = { 1}& startpoint={ 2}& endpoint={ 3 }&crs={ 4 }&workspaceID={ 5 }&direction={ 6 }&layers={ 7 }
+            var urlParams: Array<string> = [];
+            urlParams.push("startpoint=" + JSON.stringify(new Array(this.selectedMethod.locations[0].Longitude, this.selectedMethod.locations[0].Latitude)));
+            if (this.selectedMethod.locations.length > 1) urlParams.push("endpoint=" + JSON.stringify(new Array(this.selectedMethod.locations[1].Longitude, this.selectedMethod.locations[1].Latitude)));
+            urlParams.push("crs="+this.selectedMethod.locations[0].crs);
+            if (this.selectedMethod.hasOwnProperty("workspaceID") && (<any>this.selectedMethod).workspaceID !== '') urlParams.push("workspaceID=" +(<any>this.selectedMethod).workspaceID);
+            if (this.selectedMethod.hasOwnProperty("selectedDirectionType")) urlParams.push("direction="+(<any>this.selectedMethod).selectedDirectionType);
+            if (this.selectedMethod.hasOwnProperty("selectedLayers")) urlParams.push("layers="+(<any>this.selectedMethod).selectedLayers.join(';'));
+
+            var url: string = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSNavigationServices']
+                .format(this.selectedMethod.ModelType, this.regionservice.selectedRegion.RegionID)+urlParams.join("&");
+            puke()
+
+
+            this.eventManager.RaiseEvent(onSelectedMethodExecuteComplete, this, EplorationServiceEventArgs.Empty);
+        }
     }//end class
-
-    factory.$inject = ['$http', '$q', 'toaster'];
-    function factory($http: ng.IHttpService, $q: ng.IQService, toaster: any) {
-        return new ExplorationService($http, $q, toaster)
+    export enum ExplorationMethodType {
+        undefined =0,
+        FINDPATHBETWEENPOINTS = 1,
+        FINDPATH2OUTLET =2,
+        GETNETWORKREPORT = 3
+    }
+    factory.$inject = ['$http', '$q', 'toaster', 'WiM.Event.EventManager', 'StreamStats.Services.RegionService'];
+    function factory($http: ng.IHttpService, $q: ng.IQService, toaster: any,eventmngr, regionservice) {
+        return new ExplorationService($http, $q, toaster,eventmngr,regionservice)
     }
     angular.module('StreamStats.Services')
         .factory('StreamStats.Services.ExplorationService', factory)
