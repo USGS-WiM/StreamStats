@@ -27,20 +27,40 @@ var StreamStats;
     var Services;
     (function (Services) {
         'use strict';
+        Services.onSelectedMethodExecuteComplete = "onSelectedMethodExecuteComplete";
+        var EplorationServiceEventArgs = (function (_super) {
+            __extends(EplorationServiceEventArgs, _super);
+            function EplorationServiceEventArgs() {
+                _super.call(this);
+            }
+            return EplorationServiceEventArgs;
+        })(WiM.Event.EventArgs);
+        Services.EplorationServiceEventArgs = EplorationServiceEventArgs;
         var ExplorationService = (function (_super) {
             __extends(ExplorationService, _super);
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
-            function ExplorationService($http, $q, toaster) {
+            function ExplorationService($http, $q, toaster, eventManager, regionservice) {
                 _super.call(this, $http, configuration.baseurls['StreamStats']);
                 this.$q = $q;
+                this.eventManager = eventManager;
+                this.regionservice = regionservice;
                 this.toaster = toaster;
                 this.drawElevationProfile = false;
                 this.drawMeasurement = false;
                 this.showElevationChart = false;
                 this.allowStreamgageQuery = false;
                 this.measurementData = '';
+                this._selectedMethod = null;
+                eventManager.AddEvent(Services.onSelectedStudyAreaChanged);
             }
+            Object.defineProperty(ExplorationService.prototype, "selectedMethod", {
+                get: function () {
+                    return this._selectedMethod;
+                },
+                enumerable: true,
+                configurable: true
+            });
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             ExplorationService.prototype.elevationProfile = function (esriJSON) {
@@ -65,11 +85,66 @@ var StreamStats;
                 }).finally(function () {
                 });
             };
+            ExplorationService.prototype.setMethod = function (methodtype) {
+                if (this._selectedMethod != null && methodtype === this._selectedMethod.ModelType)
+                    methodtype = ExplorationMethodType.undefined;
+                switch (methodtype) {
+                    case ExplorationMethodType.FINDPATH2OUTLET:
+                        this._selectedMethod = new StreamStats.Models.Path2Outlet();
+                        break;
+                    case ExplorationMethodType.FINDPATHBETWEENPOINTS:
+                        this._selectedMethod = new StreamStats.Models.PathBetweenPoints();
+                        break;
+                    case ExplorationMethodType.GETNETWORKREPORT:
+                        this._selectedMethod = new StreamStats.Models.NetworkReport();
+                        break;
+                    default:
+                        this._selectedMethod = null;
+                        break;
+                } //end switch
+            };
+            ExplorationService.prototype.GetToolName = function (methodID) {
+                switch (methodID) {
+                    case ExplorationMethodType.FINDPATHBETWEENPOINTS:
+                        return "Find path between two points";
+                    case ExplorationMethodType.FINDPATH2OUTLET:
+                        return "Find path to outlet";
+                    case ExplorationMethodType.GETNETWORKREPORT:
+                        return "Get network report";
+                    default:
+                        return "";
+                } //end switch
+            };
+            ExplorationService.prototype.ExecuteSelectedModel = function () {
+                //build url
+                //streamstatsservices/navigation / { 0}.geojson ? rcode = { 1}& startpoint={ 2}& endpoint={ 3 }&crs={ 4 }&workspaceID={ 5 }&direction={ 6 }&layers={ 7 }
+                var urlParams = [];
+                urlParams.push("startpoint=" + JSON.stringify(new Array(this.selectedMethod.locations[0].Latitude, this.selectedMethod.locations[0].Latitude)));
+                if (this.selectedMethod.locations.length > 1)
+                    urlParams.push("endpoint=" + JSON.stringify(new Array(this.selectedMethod.locations[1].Latitude, this.selectedMethod.locations[1].Latitude)));
+                urlParams.push("crs=" + this.selectedMethod.locations[0].crs);
+                if (this.selectedMethod.hasOwnProperty("workspaceID") && this.selectedMethod.workspaceID !== '')
+                    urlParams.push("workspaceID=" + this.selectedMethod.workspaceID);
+                if (this.selectedMethod.hasOwnProperty("selectedDirectionType"))
+                    urlParams.push("direction=" + this.selectedMethod.selectedDirectionType);
+                if (this.selectedMethod.hasOwnProperty("selectedLayers"))
+                    urlParams.push("layers=" + this.selectedMethod.selectedLayers.join(';'));
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSNavigationServices']
+                    .format(this.selectedMethod.ModelType, this.regionservice.selectedRegion.RegionID) + urlParams.join("&");
+                this.eventManager.RaiseEvent(Services.onSelectedMethodExecuteComplete, this, EplorationServiceEventArgs.Empty);
+            };
             return ExplorationService;
         })(WiM.Services.HTTPServiceBase); //end class
-        factory.$inject = ['$http', '$q', 'toaster'];
-        function factory($http, $q, toaster) {
-            return new ExplorationService($http, $q, toaster);
+        (function (ExplorationMethodType) {
+            ExplorationMethodType[ExplorationMethodType["undefined"] = 0] = "undefined";
+            ExplorationMethodType[ExplorationMethodType["FINDPATHBETWEENPOINTS"] = 1] = "FINDPATHBETWEENPOINTS";
+            ExplorationMethodType[ExplorationMethodType["FINDPATH2OUTLET"] = 2] = "FINDPATH2OUTLET";
+            ExplorationMethodType[ExplorationMethodType["GETNETWORKREPORT"] = 3] = "GETNETWORKREPORT";
+        })(Services.ExplorationMethodType || (Services.ExplorationMethodType = {}));
+        var ExplorationMethodType = Services.ExplorationMethodType;
+        factory.$inject = ['$http', '$q', 'toaster', 'WiM.Event.EventManager', 'StreamStats.Services.RegionService'];
+        function factory($http, $q, toaster, eventmngr, regionservice) {
+            return new ExplorationService($http, $q, toaster, eventmngr, regionservice);
         }
         angular.module('StreamStats.Services')
             .factory('StreamStats.Services.ExplorationService', factory);
