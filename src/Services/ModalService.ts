@@ -31,8 +31,9 @@ module StreamStats.Services {
     }
 
     export interface IModalOptions {
-        tabName: string;
-        regionID: string;
+        tabName?: string;
+        regionID?: string;
+        placeholder?:any
     }
 
     class ModalService implements IModalService{       
@@ -107,6 +108,15 @@ module StreamStats.Services {
                             backdrop: 'static',
                             windowClass: 'windowZ'
                         };
+                    case SSModalType.e_navreport:
+                        return {
+                            templateUrl: 'Views/navreportmodal.html',
+                            controller: 'StreamStats.Controllers.NavigationReportModalController',
+                            size: 'lg',
+                            backdropClass: 'backdropZ',
+                            backdrop: 'static',
+                            windowClass: 'windowZ'
+                        };
      
                     default:
                         return false;
@@ -123,7 +133,8 @@ module StreamStats.Services {
         e_report = 1,
         e_wateruse = 2,
         e_about = 3,
-        e_help =4
+        e_help = 4,
+        e_navreport=5
         
     }
 

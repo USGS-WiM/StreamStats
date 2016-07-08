@@ -81,6 +81,15 @@ var StreamStats;
                                 backdrop: 'static',
                                 windowClass: 'windowZ'
                             };
+                        case SSModalType.e_navreport:
+                            return {
+                                templateUrl: 'Views/navreportmodal.html',
+                                controller: 'StreamStats.Controllers.NavigationReportModalController',
+                                size: 'lg',
+                                backdropClass: 'backdropZ',
+                                backdrop: 'static',
+                                windowClass: 'windowZ'
+                            };
                         default:
                             return false;
                     } //end switch          
@@ -97,6 +106,7 @@ var StreamStats;
             SSModalType[SSModalType["e_wateruse"] = 2] = "e_wateruse";
             SSModalType[SSModalType["e_about"] = 3] = "e_about";
             SSModalType[SSModalType["e_help"] = 4] = "e_help";
+            SSModalType[SSModalType["e_navreport"] = 5] = "e_navreport";
         })(Services.SSModalType || (Services.SSModalType = {}));
         var SSModalType = Services.SSModalType;
         factory.$inject = ['$modal'];
