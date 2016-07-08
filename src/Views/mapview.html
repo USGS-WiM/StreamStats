@@ -26,13 +26,13 @@
                     <div id="elevation-div" class="leaflet-control elevation"></div>
                 </div>
                 <!-- Network Navigation -->
-                <button ng-class="vm.selectedExplorationMethodType !== 1? 'btn-wim-sm btn-wim-primary btn-wim-group-1':'btn-wim-sm btn-wim-warning btn-wim-group-1'" ng-click="vm.setExplorationMethodType(1)"><span><i class="fa fa-share-alt"></i>&nbsp;&nbsp;Find Path Between Two Points</span></button>
+                <button ng-disabled="vm.center.zoom < 10" ng-class="vm.selectedExplorationMethodType !== 1? 'btn-wim-sm btn-wim-primary btn-wim-group-1':'btn-wim-sm btn-wim-warning btn-wim-group-1'" ng-click="vm.setExplorationMethodType(1)"><span><i class="fa fa-share-alt"></i>&nbsp;&nbsp;Find Path Between Two Points</span></button>
                 <div ng-show="vm.selectedExplorationMethodType === 1" class="wim-alert row">
                     Select two locations near the stream network, then select 'Go' to dislplay how the two points are hydrologically connected.
-                    <button ng-click=" vm.ExecuteNav()" type="button" class="btn-wim-sm btn-wim-success btn-wim-group-1"><i class="fa fa-share-alt"></i>&nbsp;&nbsp;Go</button>
+                    <button ng-disabled="vm.center.zoom < 10 || vm.explorationMethodBusy" ng-click=" vm.ExecuteNav()" type="button" class="btn-wim-sm btn-wim-success btn-wim-group-1"><i ng-class="vm.explorationMethodBusy? 'fa fa-refresh fa-spin':'fa fa-share-alt'"></i>&nbsp;&nbsp;Go</button>
                 </div>
                 
-                <button ng-class="vm.selectedExplorationMethodType !== 2? 'btn-wim-sm btn-wim-primary btn-wim-group-1':'btn-wim-sm btn-wim-warning btn-wim-group-1'" ng-click="vm.setExplorationMethodType(2)"><span><i class="fa fa-tint"></i>&nbsp;&nbsp;Find Path to Outlet</span></button>
+                <button ng-disabled="vm.center.zoom < 10"  ng-class="vm.selectedExplorationMethodType !== 2? 'btn-wim-sm btn-wim-primary btn-wim-group-1':'btn-wim-sm btn-wim-warning btn-wim-group-1'" ng-click="vm.setExplorationMethodType(2)"><span><i class="fa fa-tint"></i>&nbsp;&nbsp;Find Path to Outlet</span></button>
                 <div ng-show="vm.selectedExplorationMethodType === 2" class="wim-alert row">
                     Select a location within your area of interest to find that water flows down hill.
 
@@ -41,13 +41,28 @@
                         <i ng-class="(vm.explorationService.selectedMethod.workspaceID !== '')?'fa fa-check-square-o':'fa fa-square-o'"></i>&nbsp;&nbsp;Limit to study area.
                     </button>                   
 
-                    <button ng-click="vm.ExecuteNav()" type="button" class="btn-wim-sm btn-wim-success btn-wim-group-1"><i class="fa fa-tint"></i>&nbsp;&nbsp;Go</button>
+                    <button ng-disabled="vm.center.zoom < 10 || vm.explorationMethodBusyy" ng-click="vm.ExecuteNav()" type="button" class="btn-wim-sm btn-wim-success btn-wim-group-1"><i ng-class="vm.explorationMethodBusy? 'fa fa-refresh fa-spin':'fa fa-tint'"></i>&nbsp;&nbsp;Go</button>
                 </div>
                
-                <button ng-class="vm.selectedExplorationMethodType !== 3? 'btn-wim-sm btn-wim-primary btn-wim-group-1':'btn-wim-sm btn-wim-warning btn-wim-group-1'" ng-click="vm.setExplorationMethodType(3)"><span><i class="fa fa-sitemap fa-rotate-90"></i>&nbsp;&nbsp;Get Network Report</span></button>
+                <button ng-disabled="vm.center.zoom < 10" ng-class="vm.selectedExplorationMethodType !== 3? 'btn-wim-sm btn-wim-primary btn-wim-group-1':'btn-wim-sm btn-wim-warning btn-wim-group-1'" ng-click="vm.setExplorationMethodType(3)"><span><i class="fa fa-sitemap fa-rotate-90"></i>&nbsp;&nbsp;Get Network Report</span></button>
                 <div ng-show="vm.selectedExplorationMethodType === 3" class="wim-alert row">
                     Select a location within your area of interest then configure the information that you would like included in your network report.
-                    <button ng-click=" vm.ExecuteNav()" type="button" class="btn-wim-sm btn-wim-success btn-wim-group-1"><i class="fa fa-sitemap fa-rotate-90"></i>&nbsp;&nbsp;Go</button>
+                    <br />
+                    <select class="btn-wim-sm" ng-model="vm.explorationService.selectedMethod.selectedDirectionType">
+                        <option ng-repeat="item in vm.explorationService.selectedMethod.DirectionOptions" value="{{item}}">Search {{item}}</option>
+                    </select>
+                    <!--<div class="well well-sm">-->
+                        <table class="table table-condensed">
+                            <tbody ng-repeat="item in vm.explorationService.selectedMethod.layerOptions">
+                                <tr>
+                                    <td><checkbox ng-model="item.selected"></checkbox></td>
+                                    <td><span>&nbsp;&nbsp;{{item.name}}</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    <!--</div>-->
+
+                    <button ng-disabled="vm.center.zoom < 10 || vm.explorationMethodBusy" ng-click=" vm.ExecuteNav()" type="button" class="btn-wim-sm btn-wim-success btn-wim-group-1"><i ng-class="vm.explorationMethodBusy? 'fa fa-refresh fa-spin':'fa fa-sitemap fa-rotate-90'"></i>&nbsp;&nbsp;Go</button>
                 </div>
               
 

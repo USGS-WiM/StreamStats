@@ -85,21 +85,15 @@ module StreamStats.Models {
     export class NetworkReport extends NetworkNav {
         //http://ssdev.cr.usgs.gov/streamstatsservices/navigation/4.geojson?rcode=RRB&startpoint=[-94.719923,48.47219]&crs=4326&direction=Upstream&layers=NHDFlowline
         //properties
-        public selectedDirectionType: string
-        private _selectedLayers: Array<string>;
-        public get selectedLayers(): Array<string> {
-            return this._selectedLayers;
-        }
+        public layerOptions: Array<any> = [{ name: "NHDFlowline", selected: true }, { name: "Gage", selected: false  }, { name: "Dam", selected:false  }];
+        public DirectionOptions: Array<string> = ["Upstream", "Downstream"];
+        public selectedDirectionType: string;
+        public reportplaceholder: string;
+
         //Constructor
         constructor() {
             super(3, 1);
-            this._selectedLayers = [];
-            this.selectedDirectionType = "Downstream"
-        }
-        //Methods
-        public AddLayer(lyr: string) {
-            if (this._selectedLayers.indexOf(lyr) > 0)
-                this._selectedLayers.push(lyr);
+            this.selectedDirectionType = this.DirectionOptions[1];
         }
 
     }//end class

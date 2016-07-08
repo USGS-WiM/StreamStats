@@ -111,7 +111,7 @@ div.leaflet-top > .elevation {
     margin-bottom:50px;
     margin-left:9px;
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.65);
-    
+    z-index:99999;
 }
 
 .exploration-tools-header {
@@ -149,9 +149,9 @@ div.leaflet-top > .elevation {
 .exploration-tools-collapsed {
     position: absolute;
     background: white;
-    z-index: 1001;
+    z-index: 100;
     left: 10px;
-    top: 70px;
+    top: 130px;
     transition: all .2s;
     font-size: 12pt;
     box-sizing: border-box;
@@ -168,10 +168,10 @@ div.leaflet-top > .elevation {
 .exploration-tools-expanded {
     position: absolute;
     background: white;
-    z-index: 1001;
+    z-index: 100;
     width:200px;
     left: 10px;
-    top: 70px;
+    top: 130px;
     box-shadow: 1px 1px 5px #333;
     padding: 10px;
     transition: all .2s;
