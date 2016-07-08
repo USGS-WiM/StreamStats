@@ -42,7 +42,7 @@ module StreamStats.Services {
     }
     export var onSelectedMethodExecuteComplete: string = "onSelectedMethodExecuteComplete";
 
-    export class EplorationServiceEventArgs extends WiM.Event.EventArgs {
+    export class ExplorationServiceEventArgs extends WiM.Event.EventArgs {
         //properties
         public features: Array<any>
         public report: string;
@@ -65,20 +65,11 @@ module StreamStats.Services {
         public showElevationChart: boolean;
         public measurementData: string;
         public allowStreamgageQuery: boolean;
-        //private _selectedMethod: ExplorationMethodType;
-        //public get selectedMethod(): ExplorationMethodType {
-        //    return this._selectedMethod;
-        //}
-        //public set selectedMethod(val: ExplorationMethodType) {            
-        //    if (val > 0) {
-        //        if (val === this._selectedMethod) val = ExplorationMethodType.undefined;
-        //        this._selectedMethod = val;
-        //    }
-        //}
         public _selectedMethod: Models.INetworkNav
         public get selectedMethod(): Models.INetworkNav {
             return this._selectedMethod;
         }
+        
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -168,16 +159,42 @@ module StreamStats.Services {
             urlParams.push("startpoint=" + JSON.stringify(new Array(this.selectedMethod.locations[0].Longitude, this.selectedMethod.locations[0].Latitude)));
             if (this.selectedMethod.locations.length > 1) urlParams.push("endpoint=" + JSON.stringify(new Array(this.selectedMethod.locations[1].Longitude, this.selectedMethod.locations[1].Latitude)));
             urlParams.push("crs="+this.selectedMethod.locations[0].crs);
-            if (this.selectedMethod.hasOwnProperty("workspaceID") && (<any>this.selectedMethod).workspaceID !== '') urlParams.push("workspaceID=" +(<any>this.selectedMethod).workspaceID);
+            if ("workspaceID" in this.selectedMethod && (<any>this.selectedMethod).workspaceID !== '') urlParams.push("workspaceID=" +(<any>this.selectedMethod).workspaceID);
             if (this.selectedMethod.hasOwnProperty("selectedDirectionType")) urlParams.push("direction="+(<any>this.selectedMethod).selectedDirectionType);
-            if (this.selectedMethod.hasOwnProperty("selectedLayers")) urlParams.push("layers="+(<any>this.selectedMethod).selectedLayers.join(';'));
+            if (this.selectedMethod.hasOwnProperty("layerOptions")) {
+                var itemstring = (<any>this.selectedMethod).layerOptions.map((elem) => {
+                    if (elem.selected)
+                        return elem.name;
+                }).join(";");
 
-            var url: string = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSNavigationServices']
+                    urlParams.push("layers=" + itemstring)
+            }//endif
+
+            var url: string = configuration.baseurls['StreamStatsServices']+configuration.queryparams['SSNavigationServices']
                 .format(this.selectedMethod.ModelType, this.regionservice.selectedRegion.RegionID)+urlParams.join("&");
-            puke()
+            
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url,true);
 
+            this.Execute(request).then(
+                (response: any) => {
+                    var results = response.data;
+                    var evtarg = new ExplorationServiceEventArgs();
+                    evtarg.features = results.hasOwnProperty("featurecollection")? results["featurecollection"]: null;
+                    evtarg.report = results.hasOwnProperty("Report") ? results["Report"] : null;
 
-            this.eventManager.RaiseEvent(onSelectedMethodExecuteComplete, this, EplorationServiceEventArgs.Empty);
+                    this.eventManager.RaiseEvent(onSelectedMethodExecuteComplete, this, evtarg);
+
+                    //sm when complete
+                }, (error) => {
+                    //sm when error                    
+                    this.toaster.pop("error", "Error processing request, please try again", 0);
+                    this.eventManager.RaiseEvent(onSelectedMethodExecuteComplete, this, ExplorationServiceEventArgs.Empty);
+
+                }).finally(() => {
+                    //busy
+                });
+
+            
         }
     }//end class
     export enum ExplorationMethodType {

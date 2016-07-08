@@ -1,0 +1,20 @@
+﻿<!-- Modal -->
+<div class="modal-header">
+    <button class="close"
+            ng-click="vm.Close()">
+        &times;
+    </button>
+    <h4 class="modal-title"> Network Report</h4>
+</div>
+<div class="modal-body">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div ng-bind-html="vm.convertUnsafe(vm.pagecontent)"> </div>
+        </div>
+    </div>
+
+</div>
+<div class="modal-footer">
+    <button ng-click="vm.Close()" class="btn-wim-default"><i class="fa fa-close"></i><span>&nbsp;&nbsp;Close</span></button>
+</div>

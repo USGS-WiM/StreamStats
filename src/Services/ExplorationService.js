@@ -28,14 +28,14 @@ var StreamStats;
     (function (Services) {
         'use strict';
         Services.onSelectedMethodExecuteComplete = "onSelectedMethodExecuteComplete";
-        var EplorationServiceEventArgs = (function (_super) {
-            __extends(EplorationServiceEventArgs, _super);
-            function EplorationServiceEventArgs() {
+        var ExplorationServiceEventArgs = (function (_super) {
+            __extends(ExplorationServiceEventArgs, _super);
+            function ExplorationServiceEventArgs() {
                 _super.call(this);
             }
-            return EplorationServiceEventArgs;
+            return ExplorationServiceEventArgs;
         })(WiM.Event.EventArgs);
-        Services.EplorationServiceEventArgs = EplorationServiceEventArgs;
+        Services.ExplorationServiceEventArgs = ExplorationServiceEventArgs;
         var ExplorationService = (function (_super) {
             __extends(ExplorationService, _super);
             //Constructor
@@ -116,22 +116,42 @@ var StreamStats;
                 } //end switch
             };
             ExplorationService.prototype.ExecuteSelectedModel = function () {
+                var _this = this;
                 //build url
                 //streamstatsservices/navigation / { 0}.geojson ? rcode = { 1}& startpoint={ 2}& endpoint={ 3 }&crs={ 4 }&workspaceID={ 5 }&direction={ 6 }&layers={ 7 }
                 var urlParams = [];
-                urlParams.push("startpoint=" + JSON.stringify(new Array(this.selectedMethod.locations[0].Latitude, this.selectedMethod.locations[0].Latitude)));
+                urlParams.push("startpoint=" + JSON.stringify(new Array(this.selectedMethod.locations[0].Longitude, this.selectedMethod.locations[0].Latitude)));
                 if (this.selectedMethod.locations.length > 1)
-                    urlParams.push("endpoint=" + JSON.stringify(new Array(this.selectedMethod.locations[1].Latitude, this.selectedMethod.locations[1].Latitude)));
+                    urlParams.push("endpoint=" + JSON.stringify(new Array(this.selectedMethod.locations[1].Longitude, this.selectedMethod.locations[1].Latitude)));
                 urlParams.push("crs=" + this.selectedMethod.locations[0].crs);
-                if (this.selectedMethod.hasOwnProperty("workspaceID") && this.selectedMethod.workspaceID !== '')
+                if ("workspaceID" in this.selectedMethod && this.selectedMethod.workspaceID !== '')
                     urlParams.push("workspaceID=" + this.selectedMethod.workspaceID);
                 if (this.selectedMethod.hasOwnProperty("selectedDirectionType"))
                     urlParams.push("direction=" + this.selectedMethod.selectedDirectionType);
-                if (this.selectedMethod.hasOwnProperty("selectedLayers"))
-                    urlParams.push("layers=" + this.selectedMethod.selectedLayers.join(';'));
+                if (this.selectedMethod.hasOwnProperty("layerOptions")) {
+                    var itemstring = this.selectedMethod.layerOptions.map(function (elem) {
+                        if (elem.selected)
+                            return elem.name;
+                    }).join(";");
+                    urlParams.push("layers=" + itemstring);
+                } //endif
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSNavigationServices']
                     .format(this.selectedMethod.ModelType, this.regionservice.selectedRegion.RegionID) + urlParams.join("&");
-                this.eventManager.RaiseEvent(Services.onSelectedMethodExecuteComplete, this, EplorationServiceEventArgs.Empty);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                this.Execute(request).then(function (response) {
+                    var results = response.data;
+                    var evtarg = new ExplorationServiceEventArgs();
+                    evtarg.features = results.hasOwnProperty("featurecollection") ? results["featurecollection"] : null;
+                    evtarg.report = results.hasOwnProperty("Report") ? results["Report"] : null;
+                    _this.eventManager.RaiseEvent(Services.onSelectedMethodExecuteComplete, _this, evtarg);
+                    //sm when complete
+                }, function (error) {
+                    //sm when error                    
+                    _this.toaster.pop("error", "Error processing request, please try again", 0);
+                    _this.eventManager.RaiseEvent(Services.onSelectedMethodExecuteComplete, _this, ExplorationServiceEventArgs.Empty);
+                }).finally(function () {
+                    //busy
+                });
             };
             return ExplorationService;
         })(WiM.Services.HTTPServiceBase); //end class

@@ -60,9 +60,10 @@ var StreamStats;
             return MapDefault;
         })();
         var MapController = (function () {
-            function MapController($scope, toaster, $analytics, $location, $stateParams, leafletBoundsHelper, leafletData, search, region, studyArea, StatisticsGroup, exploration, eventManager) {
+            function MapController($scope, toaster, $analytics, $location, $stateParams, leafletBoundsHelper, leafletData, search, region, studyArea, StatisticsGroup, exploration, eventManager, modal) {
                 var _this = this;
                 this.$scope = $scope;
+                this.modal = modal;
                 this.center = null;
                 this.layers = null;
                 this.mapDefaults = null;
@@ -73,6 +74,7 @@ var StreamStats;
                 this.events = null;
                 this.layercontrol = null;
                 this.regionLayer = null;
+                this.explorationMethodBusy = false;
                 $scope.vm = this;
                 this.init();
                 this.toaster = toaster;
@@ -105,6 +107,9 @@ var StreamStats;
                 this.eventManager.SubscribeToEvent(StreamStats.Services.onStudyAreaReset, new WiM.Event.EventHandler(function () {
                     _this.removeGeoJson();
                 }));
+                this.eventManager.SubscribeToEvent(StreamStats.Services.onSelectedMethodExecuteComplete, new WiM.Event.EventHandler(function (sender, e) {
+                    _this.onExplorationMethodComplete(sender, e);
+                }));
                 $scope.$on('leafletDirectiveMap.mousemove', function (event, args) {
                     var latlng = args.leafletEvent.latlng;
                     _this.mapPoint.lat = latlng.lat;
@@ -131,7 +136,7 @@ var StreamStats;
                             _this.markers['netnav_' + i] = {
                                 lat: item.Latitude,
                                 lng: item.Longitude,
-                                message: exploration.GetToolName(exploration.selectedMethod.ModelType) + " " + i,
+                                message: exploration.GetToolName(exploration.selectedMethod.ModelType) + " point",
                                 focus: true,
                                 draggable: false
                             };
@@ -204,6 +209,7 @@ var StreamStats;
             MapController.prototype.setExplorationMethodType = function (val) {
                 //check if can select
                 this.removeMarkerLayers("netnav_", true);
+                this.removeGeoJsonLayers("netnav_", true);
                 if (!this.canSelectExplorationTool(val))
                     return;
                 this.selectedExplorationMethodType = val;
@@ -226,6 +232,22 @@ var StreamStats;
                     this.toaster.pop("warning", "Warning", "You must select at least " + this.explorationService.selectedMethod.requiredLocationLength + " points.", 10000);
                     return;
                 }
+                var isOK = false;
+                if (this.selectedExplorationMethodType == StreamStats.Services.ExplorationMethodType.GETNETWORKREPORT) {
+                    for (var i = 0; i < this.explorationService.selectedMethod.layerOptions.length; i++) {
+                        var item = this.explorationService.selectedMethod.layerOptions[i];
+                        if (item.selected) {
+                            isOK = true;
+                            break;
+                        }
+                        ;
+                    } //next i
+                    if (!isOK) {
+                        this.toaster.pop("warning", "Warning", "You must select at least one configuration item", 10000);
+                        return;
+                    }
+                } //end if
+                this.explorationMethodBusy = true;
                 this.explorationService.ExecuteSelectedModel();
             };
             //Helper Methods
@@ -509,6 +531,7 @@ var StreamStats;
                 this.studyArea.clearStudyArea();
                 this.nssService.clearNSSdata();
                 this.removeOverlayLayers("_region", true);
+                this.markers = {};
                 this.center = new Center(39, -100, 3);
             };
             MapController.prototype.resetExplorationTools = function () {
@@ -693,10 +716,18 @@ var StreamStats;
                             this.toaster.pop("warning", "Warning", "you must first select a state or region to use this tool", 5000);
                             return false;
                         }
+                        if (this.center.zoom < 10) {
+                            this.toaster.pop("warning", "Warning", "you must be zoomed into at least a zoomlevel of 10 to use this tool", 5000);
+                            return false;
+                        }
                         break;
                     case StreamStats.Services.ExplorationMethodType.FINDPATH2OUTLET:
                         if (this.regionServices.selectedRegion == null) {
                             this.toaster.pop("warning", "Warning", "you must first select a state or region to use this tool", 5000);
+                            return false;
+                        }
+                        if (this.center.zoom < 10) {
+                            this.toaster.pop("warning", "Warning", "you must be zoomed into at least a zoomlevel of 10 to use this tool", 5000);
                             return false;
                         }
                         break;
@@ -705,11 +736,28 @@ var StreamStats;
                             this.toaster.pop("warning", "Warning", "you must first select a state or region to use this tool", 5000);
                             return false;
                         }
+                        if (this.center.zoom < 10) {
+                            this.toaster.pop("warning", "Warning", "you must be zoomed into at least a zoomlevel of 10 to use this tool", 5000);
+                            return false;
+                        }
                         break;
                     default:
                         return false;
                 } //end switch
                 return true;
+            };
+            MapController.prototype.onExplorationMethodComplete = function (sender, e) {
+                var _this = this;
+                this.explorationMethodBusy = false;
+                if (e.features != null && e.features.length > 0) {
+                    e.features.forEach(function (layer) {
+                        var item = angular.fromJson(angular.toJson(layer));
+                        _this.addGeoJSON("netnav_" + item.name, item.feature);
+                    });
+                } //end if
+                if (e.report != null && e.report != '') {
+                    this.modal.openModal(StreamStats.Services.SSModalType.e_navreport, { placeholder: e.report });
+                } //end if
             };
             MapController.prototype.onSelectedAreaOfInterestChanged = function (sender, e) {
                 //ga event
@@ -829,6 +877,12 @@ var StreamStats;
                             }
                         };
                 }
+                else {
+                    this.geojson[LayerName] =
+                        {
+                            data: feature,
+                        };
+                }
             };
             MapController.prototype.onLayerChanged = function (sender, e) {
                 if (e.PropertyName === "visible") {
@@ -934,6 +988,16 @@ var StreamStats;
                     delete _this.markers[item];
                 });
             };
+            MapController.prototype.removeGeoJsonLayers = function (name, isPartial) {
+                var _this = this;
+                if (isPartial === void 0) { isPartial = false; }
+                var layeridList;
+                layeridList = this.getLayerIdsByID(name, this.geojson, isPartial);
+                layeridList.forEach(function (item) {
+                    //console.log('removing map overlay layer: ', item);
+                    delete _this.geojson[item];
+                });
+            };
             MapController.prototype.getLayerIdsByName = function (name, layerObj, isPartial) {
                 var layeridList = [];
                 for (var variable in layerObj) {
@@ -960,7 +1024,7 @@ var StreamStats;
             };
             //Constructro
             //-+-+-+-+-+-+-+-+-+-+-+-
-            MapController.$inject = ['$scope', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager'];
+            MapController.$inject = ['$scope', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService'];
             return MapController;
         })(); //end class
         angular.module('StreamStats.Controllers')

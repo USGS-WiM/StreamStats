@@ -79,6 +79,7 @@
     <Content Include="bower.json" />
     <Content Include="src\Views\mapview.html" />
     <Content Include="src\Views\navigationview.html" />
+    <Content Include="src\Views\navreportmodal.html" />
     <Content Include="src\Views\reportview.html" />
     <Content Include="src\Views\sidebarview.html" />
     <Content Include="src\Views\wateruse.html" />
@@ -107,6 +108,7 @@
     <TypeScriptCompile Include="src\Controllers\AboutController.ts" />
     <TypeScriptCompile Include="src\Controllers\MapController.ts" />
     <TypeScriptCompile Include="src\Controllers\Navbarcontroller.ts" />
+    <TypeScriptCompile Include="src\Controllers\NavigationReportModalController.ts" />
     <TypeScriptCompile Include="src\Controllers\ReportController.ts" />
     <TypeScriptCompile Include="src\Controllers\SidebarController.ts" />
     <TypeScriptCompile Include="src\Controllers\WateruseController.ts" />
