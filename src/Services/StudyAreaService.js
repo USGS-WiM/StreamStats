@@ -119,7 +119,7 @@ var StreamStats;
                 this.showEditToolbar = false;
                 this.WatershedEditDecisionList = new StreamStats.Models.WatershedEditDecisionList();
                 this.selectedStudyArea = null;
-                this.showDelineateButton = false;
+                this.showDelineateButton = true;
                 this.reportGenerated = false;
                 this.regressionRegionQueryComplete = false;
                 this.regressionRegionQueryLoading = false;
@@ -133,19 +133,28 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     //console.log('delineation response headers: ', response.headers());
-                    _this.selectedStudyArea.Server = response.headers()['usgswim-hostname'];
-                    _this.selectedStudyArea.Features = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"] : null;
-                    _this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
-                    _this.selectedStudyArea.Date = new Date();
-                    _this.toaster.clear();
+                    //tests
+                    //response.data.featurecollection[1].feature.features.length = 0;
+                    if (response.data.featurecollection && response.data.featurecollection[1].feature.features.length > 0) {
+                        _this.selectedStudyArea.Server = response.headers()['usgswim-hostname'];
+                        _this.selectedStudyArea.Features = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"] : null;
+                        _this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
+                        _this.selectedStudyArea.Date = new Date();
+                        _this.toaster.clear();
+                        _this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, _this, StudyAreaEventArgs.Empty);
+                        _this.canUpdate = true;
+                    }
+                    else {
+                        _this.clearStudyArea();
+                        _this.toaster.clear();
+                        _this.toaster.pop("error", "Error Delineating Basin", "Please retry", 5000);
+                    }
                     //sm when complete
                 }, function (error) {
                     //sm when error
                     _this.toaster.clear();
                     _this.toaster.pop("error", "Error Delineating Basin", "Please retry", 5000);
                 }).finally(function () {
-                    _this.canUpdate = true;
-                    _this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, _this, StudyAreaEventArgs.Empty);
                 });
             };
             StudyAreaService.prototype.loadWatershed = function (rcode, workspaceID) {
@@ -285,7 +294,8 @@ var StreamStats;
                 this.Execute(request).then(function (response) {
                     //console.log(response.data);
                     _this.toaster.clear();
-                    _this.regressionRegionQueryComplete = true;
+                    //tests
+                    //response.data.error = true;
                     if (response.data.error) {
                         //console.log('query error');
                         _this.toaster.pop('error', "There was an error querying regression regions", response.data.error.message, 5000);
@@ -298,6 +308,7 @@ var StreamStats;
                     }
                     if (response.data.length > 0) {
                         //console.log('query success');
+                        _this.regressionRegionQueryComplete = true;
                         _this.selectedStudyArea.RegressionRegions = response.data;
                         _this.toaster.pop('success', "Regression regions were succcessfully queried", "Please continue", 5000);
                     }

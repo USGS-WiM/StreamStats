@@ -165,7 +165,7 @@ module StreamStats.Services {
             this.showEditToolbar = false;
             this.WatershedEditDecisionList = new Models.WatershedEditDecisionList();
             this.selectedStudyArea = null;
-            this.showDelineateButton = false;
+            this.showDelineateButton = true;
             this.reportGenerated = false;
             this.regressionRegionQueryComplete = false;
             this.regressionRegionQueryLoading = false;
@@ -177,7 +177,7 @@ module StreamStats.Services {
 
             this.toaster.pop("info", "Delineating Basin", "Please wait...", 0);
             this.canUpdate = false;
-            
+
             var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(),
                 this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString(), false)
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
@@ -185,19 +185,31 @@ module StreamStats.Services {
             this.Execute(request).then(
                 (response: any) => {  
                     //console.log('delineation response headers: ', response.headers());
-                    this.selectedStudyArea.Server = response.headers()['usgswim-hostname'];
-                    this.selectedStudyArea.Features = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"] : null;
-                    this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
-                    this.selectedStudyArea.Date = new Date();
-                    this.toaster.clear();
+
+                    //tests
+                    //response.data.featurecollection[1].feature.features.length = 0;
+
+                    if (response.data.featurecollection && response.data.featurecollection[1].feature.features.length > 0) {
+                        this.selectedStudyArea.Server = response.headers()['usgswim-hostname'];
+                        this.selectedStudyArea.Features = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"] : null;
+                        this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
+                        this.selectedStudyArea.Date = new Date();
+                        this.toaster.clear();
+                        this.eventManager.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);
+                        this.canUpdate = true;
+                    }
+                    else {
+                        this.clearStudyArea();
+                        this.toaster.clear();
+                        this.toaster.pop("error", "Error Delineating Basin", "Please retry", 5000);
+                    }
                     //sm when complete
                 },(error) => {
                     //sm when error
                     this.toaster.clear();
                     this.toaster.pop("error", "Error Delineating Basin", "Please retry", 5000);
                 }).finally(() => {
-                    this.canUpdate = true;
-                    this.eventManager.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);    
+                    
             });
         }
 
@@ -384,7 +396,9 @@ module StreamStats.Services {
                 (response: any) => {
                     //console.log(response.data);
                     this.toaster.clear();
-                    this.regressionRegionQueryComplete = true;
+                    
+                    //tests
+                    //response.data.error = true;
 
                     if (response.data.error) {
                         //console.log('query error');
@@ -400,6 +414,7 @@ module StreamStats.Services {
 
                     if (response.data.length > 0) {
                         //console.log('query success');
+                        this.regressionRegionQueryComplete = true;
                         this.selectedStudyArea.RegressionRegions = response.data;
                         this.toaster.pop('success', "Regression regions were succcessfully queried", "Please continue", 5000);
                     }
