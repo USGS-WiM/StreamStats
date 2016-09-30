@@ -32,13 +32,13 @@ var StreamStats;
             function Region() {
             }
             return Region;
-        })();
+        }());
         Services.Region = Region; //end class
         var Parameter = (function () {
             function Parameter() {
             }
             return Parameter;
-        })();
+        }());
         Services.Parameter = Parameter; //end class
         Services.onSelectedRegionChanged = "onSelectedRegionChanged";
         var RegionService = (function (_super) {
@@ -214,7 +214,7 @@ var StreamStats;
                 }
             };
             return RegionService;
-        })(WiM.Services.HTTPServiceBase); //end class
+        }(WiM.Services.HTTPServiceBase)); //end class
         factory.$inject = ['$http', '$q', 'toaster', 'WiM.Event.EventManager'];
         function factory($http, $q, toaster, eventManager) {
             return new RegionService($http, $q, toaster, eventManager);

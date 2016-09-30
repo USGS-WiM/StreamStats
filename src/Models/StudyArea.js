@@ -27,7 +27,7 @@ var StreamStats;
                 this.Pourpoint = point;
             }
             return StudyArea;
-        })();
+        }());
         Models.StudyArea = StudyArea; //end class
     })(Models = StreamStats.Models || (StreamStats.Models = {}));
 })(StreamStats || (StreamStats = {})); //end module 
