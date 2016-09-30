@@ -34,7 +34,7 @@ var StreamStats;
                 _super.call(this);
             }
             return ExplorationServiceEventArgs;
-        })(WiM.Event.EventArgs);
+        }(WiM.Event.EventArgs));
         Services.ExplorationServiceEventArgs = ExplorationServiceEventArgs;
         var ExplorationService = (function (_super) {
             __extends(ExplorationService, _super);
@@ -154,7 +154,7 @@ var StreamStats;
                 });
             };
             return ExplorationService;
-        })(WiM.Services.HTTPServiceBase); //end class
+        }(WiM.Services.HTTPServiceBase)); //end class
         (function (ExplorationMethodType) {
             ExplorationMethodType[ExplorationMethodType["undefined"] = 0] = "undefined";
             ExplorationMethodType[ExplorationMethodType["FINDPATHBETWEENPOINTS"] = 1] = "FINDPATHBETWEENPOINTS";

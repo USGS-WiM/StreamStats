@@ -74,7 +74,7 @@ var StreamStats;
             //-+-+-+-+-+-+-+-+-+-+-+-
             NavigationReportModalController.$inject = ['$scope', '$sce', '$modalInstance', 'StreamStats.Services.ModalService'];
             return NavigationReportModalController;
-        })(); //end  class
+        }()); //end  class
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.NavigationReportModalController', NavigationReportModalController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));

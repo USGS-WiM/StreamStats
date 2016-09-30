@@ -17,7 +17,7 @@ var StreamStats;
                 this.Monthly = { Graph: { withdrawals: null, returns: null }, Table: {} };
             }
             return WaterUseReportable;
-        })();
+        }());
         var WateruseController = (function (_super) {
             __extends(WateruseController, _super);
             function WateruseController($scope, $http, studyAreaService, modal, $timeout) {
@@ -420,7 +420,7 @@ var StreamStats;
             //-+-+-+-+-+-+-+-+-+-+-+-
             WateruseController.$inject = ['$scope', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance', '$timeout'];
             return WateruseController;
-        })(WiM.Services.HTTPServiceBase); //end wimLayerControlController class
+        }(WiM.Services.HTTPServiceBase)); //end wimLayerControlController class
         var WaterUseType;
         (function (WaterUseType) {
             WaterUseType[WaterUseType["Annual"] = 1] = "Annual";

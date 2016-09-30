@@ -47,7 +47,7 @@ var StreamStats;
                     this._locations.shift();
             };
             return NetworkNav;
-        })(); //end class
+        }()); //end class
         var PathBetweenPoints = (function (_super) {
             __extends(PathBetweenPoints, _super);
             //http://ssdev.cr.usgs.gov/streamstatsservices/navigation/1.geojson?rcode=RRB&startpoint=[-94.311504,48.443681]&endpoint=[-94.349721,48.450215]&crs=4326
@@ -57,7 +57,7 @@ var StreamStats;
                 _super.call(this, 1, 2);
             }
             return PathBetweenPoints;
-        })(NetworkNav);
+        }(NetworkNav));
         Models.PathBetweenPoints = PathBetweenPoints; //end class
         var Path2Outlet = (function (_super) {
             __extends(Path2Outlet, _super);
@@ -77,7 +77,7 @@ var StreamStats;
                 configurable: true
             });
             return Path2Outlet;
-        })(NetworkNav);
+        }(NetworkNav));
         Models.Path2Outlet = Path2Outlet; //end class
         var NetworkReport = (function (_super) {
             __extends(NetworkReport, _super);
@@ -91,7 +91,7 @@ var StreamStats;
                 this.selectedDirectionType = this.DirectionOptions[1];
             }
             return NetworkReport;
-        })(NetworkNav);
+        }(NetworkNav));
         Models.NetworkReport = NetworkReport; //end class
     })(Models = StreamStats.Models || (StreamStats.Models = {}));
 })(StreamStats || (StreamStats = {})); //end namespace

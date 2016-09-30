@@ -100,7 +100,7 @@ var StreamStats;
                 }
             };
             return ModalService;
-        })(); //end class
+        }()); //end class
         (function (SSModalType) {
             SSModalType[SSModalType["e_report"] = 1] = "e_report";
             SSModalType[SSModalType["e_wateruse"] = 2] = "e_wateruse";
