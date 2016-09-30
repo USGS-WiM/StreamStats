@@ -8,10 +8,10 @@ configuration.baseurls =
     'NWISurl': 'http://waterservices.usgs.gov/nwis',
     'StreamStats': 'http://streamstats09.cr.usgs.gov',
     'StreamStatsServices':'http://ssdev.cr.usgs.gov',
-    'NSS': 'http://commons.wim.usgs.gov/nssservices',
+    'NSS': 'http://toad.wim.usgs.gov/nssservices',
     'SearchAPI': 'http://txpub.usgs.gov/DSS/search_api/1.1/dataService/dataService.ashx',
     'FARefGage': 'http://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowAnywhere/MapServer',
-    'GISserver': 'http://54.164.188.167',
+    'GISserver': 'http://gis.wim.usgs.gov',
     'NodeServer': 'http://nss.wim.usgs.gov',
     'NationalMapRasterServices': 'http://raster.nationalmap.gov/arcgis/rest/services'
 }
@@ -38,7 +38,7 @@ configuration.queryparams =
     'NLCDQueryService': '/LandCover/USGS_EROS_LandCover_NLCD/MapServer/4',
     'regulationService': '/arcgis/rest/services/Regulation/{0}RegulationSites/MapServer/exts/RegulationRESTSOE/Regulation',
     'RegressionRegionQueryService': '/arcgis/rest/services/NSS/regions/MapServer/exts/PercentOverlayRESTSOE/PercentOverlay',
-    //'RegressionRegionQueryService': ':3000/percentOverlay',
+    'SSNavigationServices': '/streamstatsservices/navigation/{0}.geojson?rcode={1}&',
     'Wateruse': '/streamstatsservices/wateruse.json?rcode={0}&workspaceID={1}&startyear={2}&endyear={3}',
     'WateruseConfig': '/streamstatsservices/wateruse.json?rcode={0}'
 }
@@ -56,46 +56,46 @@ configuration.SupportTicketService = {
 
 configuration.basemaps =
 {
-    "tnmBaseMap": {
-        "name": "USGS National Map",
-        "visible": true,
-        "type": 'group',
-        "layerOptions": {
-            "layers": [
-                {
-                    "name": "tiles",
-                    "url": "http://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer",
-                    "type": 'agsTiled',
-                    "layerOptions": {
-                        "opacity": 0.8,
-                        "minZoom": 0,
-                        "maxZoom": 15,
-                        "attribution": "<a href='http://www.doi.gov'>U.S. Department of the Interior</a> | <a href='http://www.usgs.gov'>U.S. Geological Survey</a> | <a href='http://www.usgs.gov/laws/policies_notices.html'>Policies</a>"
-                    }
-                },
-                {
-                    "name": "dynamic",
-                    "url": "http://services.nationalmap.gov/arcgis/rest/services/USGSTopoLarge/MapServer",
-                    "type": 'agsDynamic',
-                    "layerOptions": {
-                        "format": "png8",
-                        "f": "image",
-                        "position": "back",
-                        "opacity": 0.7,
-                        "zIndex": -100,
-                        "minZoom": 16,
-                        "maxZoom": 20,
-                        "attribution": "<a href='http://www.doi.gov'>U.S. Department of the Interior</a> | <a href='http://www.usgs.gov'>U.S. Geological Survey</a> | <a href='http://www.usgs.gov/laws/policies_notices.html'>Policies</a>"
-                    }
-                }
-            ]
-        }
-    },
+    //"tnmBaseMap": {
+    //    "name": "USGS National Map",
+    //    "visible": true,
+    //    "type": 'group',
+    //    "layerOptions": {
+    //        "layers": [
+    //            {
+    //                "name": "tiles",
+    //                "url": "http://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer",
+    //                "type": 'agsTiled',
+    //                "layerOptions": {
+    //                    "opacity": 0.8,
+    //                    "minZoom": 0,
+    //                    "maxZoom": 15,
+    //                    "attribution": "<a href='http://www.doi.gov'>U.S. Department of the Interior</a> | <a href='http://www.usgs.gov'>U.S. Geological Survey</a> | <a href='http://www.usgs.gov/laws/policies_notices.html'>Policies</a>"
+    //                }
+    //            },
+    //            {
+    //                "name": "dynamic",
+    //                "url": "http://services.nationalmap.gov/arcgis/rest/services/USGSTopoLarge/MapServer",
+    //                "type": 'agsDynamic',
+    //                "layerOptions": {
+    //                    "format": "png8",
+    //                    "f": "image",
+    //                    "position": "back",
+    //                    "opacity": 0.7,
+    //                    "zIndex": -100,
+    //                    "minZoom": 16,
+    //                    "maxZoom": 20,
+    //                    "attribution": "<a href='http://www.doi.gov'>U.S. Department of the Interior</a> | <a href='http://www.usgs.gov'>U.S. Geological Survey</a> | <a href='http://www.usgs.gov/laws/policies_notices.html'>Policies</a>"
+    //                }
+    //            }
+    //        ]
+    //    }
+    //},
     national: {
         name: "National Geographic",
         type: "agsBase",
         layer: "NationalGeographic",
-        visible: false
+        visible: true
     },
     streets: {
         name: "ESRI Streets",

@@ -29,7 +29,7 @@ var StreamStats;
                 this.zoom = zm;
             }
             return Center;
-        })();
+        }());
         var ReportController = (function () {
             function ReportController($scope, $analytics, $modalInstance, studyArea, StatisticsGroup, leafletData) {
                 var _this = this;
@@ -291,7 +291,7 @@ var StreamStats;
             //-+-+-+-+-+-+-+-+-+-+-+-
             ReportController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData'];
             return ReportController;
-        })(); //end class
+        }()); //end class
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.ReportController', ReportController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));

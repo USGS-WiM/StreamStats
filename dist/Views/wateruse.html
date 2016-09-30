@@ -2,7 +2,7 @@
 
     <div class="modal-header hidden-print">
         <button type="button" class="close" ng-click="vm.Close()"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Study Area Water-Use Summary</h4>
+        <h4 class="modal-title">Study Area Water Use Summary</h4>
     </div>
     <div class="modal-body">
         <input ng-if="false" type="text" class="form-control" ng-model="vm.reportTitle" placeholder="Title">
@@ -24,24 +24,24 @@
             </div>
             <div ng-if="vm.showResults">
                 <ul class="nav nav-tabs wateruseTabs">
-                    <li ng-class="{'active': vm.SelectedTab == 2}"><a ng-click="vm.SelectedTab =2">Water-Use Table</a></li>
-                    <li ng-class="{'active': vm.SelectedTab == 1}"><a ng-click="vm.SelectedTab=1">Water-Use Graph</a></li>
+                    <li ng-class="{'active': vm.SelectedTab == 2}"><a ng-click="vm.SelectedTab =2">Water Use Table</a></li>
+                    <li ng-class="{'active': vm.SelectedTab == 1}"><a ng-click="vm.SelectedTab=1">Water Use Graph</a></li>
                 </ul>
                 <div class="tabs">
                     <div ng-if="vm.SelectedTab == 1">
-                        <center><h3>{{vm.StartYear}}-{{vm.EndYear}} Average Water-Use By Source</h3></center>
+                        <center><h3>{{vm.StartYear}}-{{vm.EndYear}} Average Water Use By Source</h3></center>
                         <nvd3 options='vm.AnnualReportOptions' data='vm.ReportData.Annual.Graph'></nvd3>                     
-                        <center><h3>{{vm.StartYear}}-{{vm.EndYear}} Average Water-Use Withdrawals By Month</h3></center>
+                        <center><h3>{{vm.StartYear}}-{{vm.EndYear}} Average Water Use Withdrawals By Month</h3></center>
                         <nvd3 id="monthlyreturns" options='vm.MonthlyReportOptions' data='vm.ReportData.Monthly.Graph.withdrawals'></nvd3>
 
-                        <center><h3>{{vm.StartYear}}-{{vm.EndYear}} Average Water-Use Returns By Month</h3></center>
+                        <center><h3>{{vm.StartYear}}-{{vm.EndYear}} Average Water Use Returns By Month</h3></center>
                         <nvd3 options='vm.MonthlyReturnReportOptions' data='vm.ReportData.Monthly.Graph.returns'></nvd3> 
                                             
                     </div>
                     <div ng-if="vm.SelectedTab == 2">
                         <div class="overflowTable well well-sm">
                             <center>
-                                <h3>{{vm.StartYear}}-{{vm.EndYear}} Average Annual Water-Use</h3>
+                                <h3>{{vm.StartYear}}-{{vm.EndYear}} Average Annual Water Use</h3>
                                 <header>reported in million gallons/day</header>
                             </center>
 
@@ -63,7 +63,7 @@
 
                         <div class="overflowTable well well-sm">
                             <center>
-                                <h3>{{vm.StartYear}}-{{vm.EndYear}} Average Water-Use by Month</h3>
+                                <h3>{{vm.StartYear}}-{{vm.EndYear}} Average Water Use by Month</h3>
                                 <header>reported in million gallons/day</header>
                             </center>
 
