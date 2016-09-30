@@ -113,6 +113,10 @@ module StreamStats.Services {
             this.Execute(request).then(
                 (response: any) => {
                     //console.log(response.data);
+
+                    //tests
+                    //response.data.length = 0;
+
                     if (response.data.length > 0) {
                         this.loadingStatisticsGroup = false;
                         

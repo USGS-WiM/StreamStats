@@ -75,6 +75,8 @@ var StreamStats;
                 this.statisticsGroupList = [];
                 this.Execute(request).then(function (response) {
                     //console.log(response.data);
+                    //tests
+                    //response.data.length = 0;
                     if (response.data.length > 0) {
                         _this.loadingStatisticsGroup = false;
                         angular.forEach(response.data, function (value, key) {
