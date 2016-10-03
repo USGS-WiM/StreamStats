@@ -151,7 +151,7 @@ div.leaflet-top > .elevation {
     background: white;
     z-index: 100;
     left: 10px;
-    top: 130px;
+    top: 80px;
     transition: all .2s;
     font-size: 12pt;
     box-sizing: border-box;
