@@ -218,6 +218,8 @@ module StreamStats.Controllers {
                 var latlng = args.leafletEvent.latlng;
                 this.mapPoint.lat = latlng.lat;
                 this.mapPoint.lng = latlng.lng;
+                //change cursor after delienate button click
+                if (this.studyArea.doDelineateFlag) this.cursorStyle = 'crosshair';
             });
 
             $scope.$on('leafletDirectiveMap.drag',(event, args) => {
@@ -233,7 +235,6 @@ module StreamStats.Controllers {
                 if (studyArea.doDelineateFlag) this.checkDelineatePoint(args.leafletEvent.latlng);
 
                 //query streamgages
-                //console.log('map click listener: ', exploration.allowStreamgageQuery);
                 if (exploration.allowStreamgageQuery) this.queryStreamgages(args.leafletEvent);
 
                 if (exploration.selectedMethod != null) {
@@ -250,9 +251,6 @@ module StreamStats.Controllers {
                         };
                     }//next i
                 }
-
-                //state or region layer query
-                //if (!region.selectedRegion && !exploration.drawElevationProfile && !exploration.drawMeasurement && !exploration.allowStreamgageQuery) this.queryNationalMapLayers(args.leafletEvent)
             });
 
             $scope.$watch(() => this.bounds,(newval, oldval) => this.mapBoundsChange(oldval, newval));
@@ -284,9 +282,9 @@ module StreamStats.Controllers {
 
             $scope.$on('$locationChangeStart',() => this.updateRegion());
 
-            $scope.$watch(() => studyArea.doDelineateFlag, (newval, oldval) => newval ? this.cursorStyle = 'crosshair' : this.cursorStyle = 'pointer');
-
-            $scope.$watch(() => this.explorationService.selectedMethod!= null ? this.cursorStyle = 'crosshair' : this.cursorStyle = 'pointer');
+            //commented out, causing issues
+            //$scope.$watch(() => studyArea.doDelineateFlag, (newval, oldval) => newval ? this.cursorStyle = 'crosshair' : this.cursorStyle = 'pointer');
+            //$scope.$watch(() => this.explorationService.selectedMethod!= null ? this.cursorStyle = 'crosshair' : this.cursorStyle = 'pointer');
 
             // check if region was explicitly set.
             if ($stateParams.rcode) {
