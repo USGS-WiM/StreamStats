@@ -114,6 +114,9 @@ var StreamStats;
                     var latlng = args.leafletEvent.latlng;
                     _this.mapPoint.lat = latlng.lat;
                     _this.mapPoint.lng = latlng.lng;
+                    //change cursor after delienate button click
+                    if (_this.studyArea.doDelineateFlag)
+                        _this.cursorStyle = 'crosshair';
                 });
                 $scope.$on('leafletDirectiveMap.drag', function (event, args) {
                     _this.cursorStyle = 'grabbing';
@@ -126,7 +129,6 @@ var StreamStats;
                     if (studyArea.doDelineateFlag)
                         _this.checkDelineatePoint(args.leafletEvent.latlng);
                     //query streamgages
-                    //console.log('map click listener: ', exploration.allowStreamgageQuery);
                     if (exploration.allowStreamgageQuery)
                         _this.queryStreamgages(args.leafletEvent);
                     if (exploration.selectedMethod != null) {
@@ -142,8 +144,6 @@ var StreamStats;
                             };
                         } //next i
                     }
-                    //state or region layer query
-                    //if (!region.selectedRegion && !exploration.drawElevationProfile && !exploration.drawMeasurement && !exploration.allowStreamgageQuery) this.queryNationalMapLayers(args.leafletEvent)
                 });
                 $scope.$watch(function () { return _this.bounds; }, function (newval, oldval) { return _this.mapBoundsChange(oldval, newval); });
                 $scope.$watch(function () { return _this.explorationService.elevationProfileGeoJSON; }, function (newval, oldval) {
@@ -171,8 +171,9 @@ var StreamStats;
                         _this.resetMap();
                 });
                 $scope.$on('$locationChangeStart', function () { return _this.updateRegion(); });
-                $scope.$watch(function () { return studyArea.doDelineateFlag; }, function (newval, oldval) { return newval ? _this.cursorStyle = 'crosshair' : _this.cursorStyle = 'pointer'; });
-                $scope.$watch(function () { return _this.explorationService.selectedMethod != null ? _this.cursorStyle = 'crosshair' : _this.cursorStyle = 'pointer'; });
+                //commented out, causing issues
+                //$scope.$watch(() => studyArea.doDelineateFlag, (newval, oldval) => newval ? this.cursorStyle = 'crosshair' : this.cursorStyle = 'pointer');
+                //$scope.$watch(() => this.explorationService.selectedMethod!= null ? this.cursorStyle = 'crosshair' : this.cursorStyle = 'pointer');
                 // check if region was explicitly set.
                 if ($stateParams.rcode) {
                     this.regionServices.loadParametersByRegion();
