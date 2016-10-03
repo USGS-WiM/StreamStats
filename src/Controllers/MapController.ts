@@ -187,6 +187,7 @@ module StreamStats.Controllers {
             this.nssService = StatisticsGroup;
             this.explorationService = exploration;
             this.eventManager = eventManager;
+            this.cursorStyle = 'pointer';
 
             //subscribe to Events
             this.eventManager.SubscribeToEvent(Services.onSelectedStudyAreaChanged, new WiM.Event.EventHandler<Services.StudyAreaEventArgs>(() => {
