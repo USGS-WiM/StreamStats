@@ -88,7 +88,6 @@
     <Content Include=".gitattributes" />
     <Content Include=".gitignore" />
     <None Include="manual.pubxml" />
-    <Content Include="src\.bowerrc" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>

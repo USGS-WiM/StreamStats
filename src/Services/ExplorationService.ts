@@ -94,7 +94,7 @@ module StreamStats.Services {
 
             var request: WiM.Services.Helpers.RequestInfo =
                 new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST,
-                    'json', { InputLineFeatures: esriJSON, returnZ: true, f: 'json'},
+                    'json', { InputLineFeatures: esriJSON, MaximumSampleDistanceUnits: 'feet', returnZ: true, f: 'json'},
                     { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
                     WiM.Services.Helpers.paramsTransform);
 						
