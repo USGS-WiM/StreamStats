@@ -91,7 +91,7 @@ configuration.basemaps =
     //        ]
     //    }
     //},
-    national: {
+    natgeo: {
         name: "National Geographic",
         type: "agsBase",
         layer: "NationalGeographic",
@@ -126,57 +126,6 @@ configuration.basemaps =
         type: "agsBase",
         layer: "Imagery",
         visible: false
-    },
-    "MapquestOAM": {
-        "name": "Mapquest Areal",
-        "url": "http://{s}.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.png",
-        "visible": false,
-        "type": 'xyz',
-        "layerOptions": {
-            "maxZoom": 19,
-            "subdomains": ['oatile1', 'oatile2', 'oatile3', 'oatile4'],
-            "attribution": 'Tiles courtesy of <a href="http://www.mapquest.com/" target="_blank">MapQuest</a>. Portions Courtesy NASA/JPL-Caltech and U.S. Depart. of Agriculture, Farm Service Agency'
-        }
-    },
-    "MapquestHYB": {
-        "name": "Mapquest Hybrid",
-        "type": 'group',
-        "visible": false,
-        "layerOptions": {
-            "maxZoom": 19,
-            "layers": [
-                {
-                    "name": "tiles",
-                    "url": "http://{s}.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.jpg",
-                    "type": 'xyz',
-                    "layerOptions": {
-                        "maxZoom": 19,
-                        "subdomains": ['oatile1', 'oatile2', 'oatile3', 'oatile4']
-                    }
-                },
-                {
-                    "name": "roads",
-                    "url": "http://{s}.mqcdn.com/tiles/1.0.0/hyb/{z}/{x}/{y}.png",
-                    "type": 'xyz',
-                    "layerOptions": {
-                        "maxZoom": 19,
-                        "subdomains": ['oatile1', 'oatile2', 'oatile3', 'oatile4'],
-                        "attribution": 'Labels courtesy of <a href="http://www.mapquest.com/" target="_blank">MapQuest</a> <img src="http://developer.mapquest.com/content/osm/mq_logo.png">. Map data (c) <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> contributors, CC-BY-SA. Portions Courtesy NASA/JPL-Caltech and U.S. Depart. of Agriculture, Farm Service Agency'
-                    }
-                }
-            ],
-        }
-    },
-    "mapquestOSM": {
-        "name": "Mapquest Streets",
-        "url": "http://{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png",
-        "visible": false,
-        "type": 'xyz',
-        "layerOptions": {
-            "maxZoom": 19,
-            "subdomains": ['otile1', 'otile2', 'otile3', 'otile4'],
-            "attribution": "Tiles courtesy of <a href='http://www.mapquest.com/' target='_blank'>MapQuest</a> <img src='http://developer.mapquest.com/content/osm/mq_logo.png'>. Map data (c) <a href='http://www.openstreetmap.org/' target='_blank'>OpenStreetMap</a> contributors, CC-BY-SA."
-        }
     }
 }// end baselayer
 

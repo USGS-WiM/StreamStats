@@ -49,6 +49,7 @@ module StreamStats.Services {
         queryRegressionRegions();
         regressionRegionQueryComplete: boolean;
         Disclaimers: Object;
+        baseMap: Object;
     }
 
     export var onSelectedStudyAreaChanged: string = "onSelectedStudyAreaChanged";
@@ -103,6 +104,7 @@ module StreamStats.Services {
         public regressionRegionQueryLoading: boolean;
         public servicesURL: string;
         public Disclaimers: Object;
+        public baseMap: Object;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -189,7 +191,7 @@ module StreamStats.Services {
                     //tests
                     //response.data.featurecollection[1].feature.features.length = 0;
 
-                    if (response.data.featurecollection && response.data.featurecollection[1].feature.features.length > 0) {
+                    if (response.data.featurecollection && response.data.featurecollection[1] && response.data.featurecollection[1].feature.features.length > 0) {
                         this.selectedStudyArea.Server = response.headers()['usgswim-hostname'];
                         this.selectedStudyArea.Features = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"] : null;
                         this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
