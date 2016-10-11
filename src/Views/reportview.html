@@ -80,7 +80,8 @@
                             <table class="table table-condensed">
                                 <thead class="param-table">
                                 <tr>
-                                    <th>Parameter</th>
+                                    <th>Parameter Code</th>
+                                    <th>Parameter Description</th>
                                     <th>Value</th>
                                     <th ng-show="vm.studyAreaService.Disclaimers.isRegulated">Unregulated Value</th> 
                                     <th>Min Limit</th>
@@ -89,6 +90,7 @@
                                 </thead>
                                 <tbody>
                                     <tr ng-repeat="parameter in RegressionRegion.Parameters">
+                                        <td ng-bind="parameter.Code"></td>
                                         <td ng-bind="parameter.Name"></td>
                                         <td ng-bind="parameter.Value" ng-class="(parameter.Value < parameter.Limits.Min) || (parameter.Value > parameter.Limits.Max) ? 'wim-warning' : ''"></td>
                                         <td ng-show="vm.studyAreaService.Disclaimers.isRegulated" ng-bind="parameter.unRegulatedValue" ng-class="(parameter.Value < parameter.Limits.Min) || (parameter.Value > parameter.Limits.Max) ? 'wim-warning' : ''"></td>
