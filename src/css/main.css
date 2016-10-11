@@ -49,6 +49,25 @@ body {
 /*
     ===========================
     ===========================
+       WimLegend.css Overrides
+    ===========================
+    ===========================
+*/
+
+.sidebar-item [type=checkbox]:checked + label, [type=checkbox]:not(:checked) + label, [type=radio]:checked + label, [type=radio]:not(:checked) + label {
+    padding-left: 25px !important;
+}
+[type="checkbox"]:not(:checked) + label:after, [type="checkbox"]:checked + label:after {
+    display: none;
+}
+[type="checkbox"]:not(:checked) + label, [type="checkbox"]:checked + label {
+    padding-left: 0px;
+}
+
+
+/*
+    ===========================
+    ===========================
          Leaflet Overrides
     ===========================
     ===========================
