@@ -111,7 +111,7 @@ var StreamStats;
                 this.eventManager.SubscribeToEvent(StreamStats.Services.onSelectedMethodExecuteComplete, new WiM.Event.EventHandler(function (sender, e) {
                     _this.onExplorationMethodComplete(sender, e);
                 }));
-                $scope.$on('leafletDirectiveMap.mousemove', function (event, args) {
+                $scope.$on('leafletDirectiveMap.mainMap.mousemove', function (event, args) {
                     var latlng = args.leafletEvent.latlng;
                     _this.mapPoint.lat = latlng.lat;
                     _this.mapPoint.lng = latlng.lng;
@@ -119,13 +119,14 @@ var StreamStats;
                     if (_this.studyArea.doDelineateFlag)
                         _this.cursorStyle = 'crosshair';
                 });
-                $scope.$on('leafletDirectiveMap.drag', function (event, args) {
+                $scope.$on('leafletDirectiveMap.mainMap.drag', function (event, args) {
                     _this.cursorStyle = 'grabbing';
                 });
-                $scope.$on('leafletDirectiveMap.dragend', function (event, args) {
+                $scope.$on('leafletDirectiveMap.mainMap.dragend', function (event, args) {
                     _this.cursorStyle = 'pointer';
                 });
-                $scope.$on('leafletDirectiveMap.click', function (event, args) {
+                $scope.$on('leafletDirectiveMap.mainMap.click', function (event, args) {
+                    //console.log('click listener: ', studyArea.doDelineateFlag);
                     //listen for delineate click if ready
                     if (studyArea.doDelineateFlag)
                         _this.checkDelineatePoint(args.leafletEvent.latlng);
@@ -166,11 +167,10 @@ var StreamStats;
                         _this.addRegionOverlayLayers(_this.regionServices.selectedRegion.RegionID);
                     }
                 });
-                $scope.$watch(function () { return _this.regionServices.resetView; }, function (newval, oldval) {
-                    //console.log('reset view listener ', newval, oldval);
-                    if (newval)
-                        _this.resetMap();
-                });
+                //$scope.$watch(() => this.regionServices.resetView, (newval, oldval) => {
+                //    //console.log('reset view listener ', newval, oldval);
+                //    if (newval) this.resetMap();
+                //});
                 $scope.$on('$locationChangeStart', function () { return _this.updateRegion(); });
                 //commented out, causing issues
                 //$scope.$watch(() => studyArea.doDelineateFlag, (newval, oldval) => newval ? this.cursorStyle = 'crosshair' : this.cursorStyle = 'pointer');
@@ -316,8 +316,8 @@ var StreamStats;
             };
             MapController.prototype.queryNationalMapLayers = function (evt) {
                 var _this = this;
-                this.leafletData.getMap().then(function (map) {
-                    _this.leafletData.getLayers().then(function (maplayers) {
+                this.leafletData.getMap("mainMap").then(function (map) {
+                    _this.leafletData.getLayers("mainMap").then(function (maplayers) {
                         //turn off if zoomed in too far
                         if (map.getZoom() >= 8)
                             return;
@@ -386,8 +386,8 @@ var StreamStats;
                 this.markers = {};
                 //report ga event
                 this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'queryStreamgages' });
-                this.leafletData.getMap().then(function (map) {
-                    _this.leafletData.getLayers().then(function (maplayers) {
+                this.leafletData.getMap("mainMap").then(function (map) {
+                    _this.leafletData.getLayers("mainMap").then(function (maplayers) {
                         //check to make sure layer is visible
                         if (map.getZoom() <= 8) {
                             _this.cursorStyle = 'pointer';
@@ -450,8 +450,8 @@ var StreamStats;
                 });
                 //report ga event
                 this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'elevationProfile' });
-                this.leafletData.getMap().then(function (map) {
-                    _this.leafletData.getLayers().then(function (maplayers) {
+                this.leafletData.getMap("mainMap").then(function (map) {
+                    _this.leafletData.getLayers("mainMap").then(function (maplayers) {
                         //create draw control
                         var drawnItems = maplayers.overlays.draw;
                         drawnItems.clearLayers();
@@ -488,7 +488,7 @@ var StreamStats;
                     //console.log('removing drawControl', this.drawControl);
                     return;
                 }
-                this.leafletData.getMap().then(function (map) {
+                this.leafletData.getMap("mainMap").then(function (map) {
                     //console.log('enable drawControl');
                     _this.drawControl = new L.Draw.Polyline(map, options);
                     _this.drawControl.enable();
@@ -511,7 +511,7 @@ var StreamStats;
                     },
                     onEachFeature: el.addData.bind(el)
                 };
-                this.leafletData.getMap().then(function (map) {
+                this.leafletData.getMap("mainMap").then(function (map) {
                     var container = el.onAdd(map);
                     document.getElementById('elevation-div').innerHTML = '';
                     document.getElementById('elevation-div').appendChild(container);
@@ -528,14 +528,14 @@ var StreamStats;
                 });
                 lc.start();
             };
-            MapController.prototype.resetMap = function () {
-                this.regionServices.clearRegion();
-                this.studyArea.clearStudyArea();
-                this.nssService.clearNSSdata();
-                this.removeOverlayLayers("_region", true);
-                this.markers = {};
-                this.center = new Center(39, -100, 3);
-            };
+            //private resetMap() {
+            //    this.regionServices.clearRegion();
+            //    this.studyArea.clearStudyArea();
+            //    this.nssService.clearNSSdata();
+            //    this.removeOverlayLayers("_region", true);
+            //    this.markers = {};
+            //    this.center = new Center(39, -100, 3);
+            //}
             MapController.prototype.resetExplorationTools = function () {
                 document.getElementById('elevation-div').innerHTML = '';
                 document.getElementById('measurement-div').innerHTML = '';
@@ -555,9 +555,9 @@ var StreamStats;
                 this.explorationService.measurementData = 'Click the map to begin\nDouble click to end the Drawing';
                 //report ga event
                 this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'measurement' });
-                this.leafletData.getMap().then(function (map) {
+                this.leafletData.getMap("mainMap").then(function (map) {
                     //console.log('got map: ', map);
-                    _this.leafletData.getLayers().then(function (maplayers) {
+                    _this.leafletData.getLayers("mainMap").then(function (maplayers) {
                         //console.log('got maplayers: ', maplayers);
                         var stopclick = false; //to prevent more than one click listener
                         _this.drawController({ shapeOptions: { color: 'blue' }, metric: false }, true);
@@ -616,8 +616,8 @@ var StreamStats;
                     if (item[0].toLowerCase() == "area of limited functionality" || item[0].toLowerCase() == "areas of limited functionality")
                         queryString += String(item[1]);
                 });
-                this.leafletData.getMap().then(function (map) {
-                    _this.leafletData.getLayers().then(function (maplayers) {
+                this.leafletData.getMap("mainMap").then(function (map) {
+                    _this.leafletData.getLayers("mainMap").then(function (maplayers) {
                         _this.angulartics.eventTrack('delineationClick', { category: 'Map', label: _this.regionServices.selectedRegion.Name });
                         //force map refresh
                         map.invalidateSize();
@@ -663,8 +663,8 @@ var StreamStats;
                 var basin = angular.fromJson(angular.toJson(this.geojson['globalwatershed'].data.features[0]));
                 var basinConverted = [];
                 basin.geometry.coordinates[0].forEach(function (item) { basinConverted.push([item[1], item[0]]); });
-                this.leafletData.getMap().then(function (map) {
-                    _this.leafletData.getLayers().then(function (maplayers) {
+                this.leafletData.getMap("mainMap").then(function (map) {
+                    _this.leafletData.getLayers("mainMap").then(function (maplayers) {
                         //console.log('maplayers', map, maplayers);
                         //create draw control
                         var drawnItems = maplayers.overlays.draw;
@@ -778,7 +778,7 @@ var StreamStats;
                     draggable: false
                 };
                 //this.center = new Center(AOI.Latitude, AOI.Longitude, zoomlevel);
-                this.leafletData.getMap().then(function (map) {
+                this.leafletData.getMap("mainMap").then(function (map) {
                     map.setView([AOI.Latitude, AOI.Longitude], zoomlevel);
                 });
             };
@@ -803,7 +803,7 @@ var StreamStats;
                 //clear out this.markers
                 this.markers = {};
                 var bbox = this.geojson['globalwatershed'].data.features[0].bbox;
-                this.leafletData.getMap().then(function (map) {
+                this.leafletData.getMap("mainMap").then(function (map) {
                     map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]], {});
                 });
                 //query basin against regression regions
@@ -952,7 +952,7 @@ var StreamStats;
                     "f": "image"
                 });
                 //override default map service visibility
-                this.leafletData.getLayers().then(function (maplayers) {
+                this.leafletData.getLayers("mainMap").then(function (maplayers) {
                     var regionLayer = maplayers.overlays[regionId + "_region"];
                     var visibleLayers = [];
                     _this.regionServices.regionMapLayerList.forEach(function (item) {

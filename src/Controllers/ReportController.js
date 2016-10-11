@@ -45,7 +45,7 @@ var StreamStats;
                 this.reportTitle = 'StreamStats Report';
                 this.reportComments = 'Some comments here';
                 this.initMap();
-                $scope.$on('leafletDirectiveMap.load', function (event, args) {
+                $scope.$on('leafletDirectiveMap.reportMap.load', function (event, args) {
                     //console.log('report map load');
                     _this.showFeatures();
                 });
@@ -97,7 +97,7 @@ var StreamStats;
                             }
                         };
                         var bbox = _this.layers.overlays[item.name].data.features[0].bbox;
-                        _this.leafletData.getMap().then(function (map) {
+                        _this.leafletData.getMap("reportMap").then(function (map) {
                             //method to reset the map for modal weirdness
                             map.invalidateSize();
                             //console.log('in getmap: ', bbox);
