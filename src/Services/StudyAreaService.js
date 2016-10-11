@@ -135,7 +135,7 @@ var StreamStats;
                     //console.log('delineation response headers: ', response.headers());
                     //tests
                     //response.data.featurecollection[1].feature.features.length = 0;
-                    if (response.data.featurecollection && response.data.featurecollection[1].feature.features.length > 0) {
+                    if (response.data.featurecollection && response.data.featurecollection[1] && response.data.featurecollection[1].feature.features.length > 0) {
                         _this.selectedStudyArea.Server = response.headers()['usgswim-hostname'];
                         _this.selectedStudyArea.Features = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"] : null;
                         _this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
