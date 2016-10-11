@@ -169,7 +169,7 @@ var StreamStats;
                     var request = new WiM.Services.Helpers.RequestInfo(url, true, 1, 'json', updatedScenarioObject);
                     statGroup.Citations = [];
                     _this.Execute(request).then(function (response) {
-                        //console.log('estimate flows: ', response.data[0]);
+                        //console.log('estimate flows: ', response);
                         //nested requests for citations
                         var citationUrl = response.data[0].Links[0].Href;
                         if (!append)
@@ -249,8 +249,11 @@ var StreamStats;
                 var url = citationUrl;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, 0, 'json');
                 this.Execute(request).then(function (response) {
+                    //console.log('get citations: ', response);
                     if (response.data[0] && response.data[0].ID) {
-                        statGroup.Citations.push(response.data[0]);
+                        angular.forEach(response.data, function (value, key) {
+                            statGroup.Citations.push(value);
+                        });
                     }
                     //sm when complete
                 }, function (error) {
