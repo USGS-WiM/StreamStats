@@ -103,6 +103,7 @@ var StreamStats;
             };
             nssService.prototype.loadParametersByStatisticsGroup = function (rcode, statisticsGroupID, regressionregions, percentWeights) {
                 var _this = this;
+                this.toaster.pop('info', "Loading Parameters by Statistics Group", "Please wait...", 0);
                 this.loadingParametersByStatisticsGroup = true;
                 //console.log('in load StatisticsGroup parameters', rcode, statisticsGroupID,regressionregions);
                 if (!rcode && !statisticsGroupID && !regressionregions)
