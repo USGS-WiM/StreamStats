@@ -120,7 +120,8 @@ var StreamStats;
             };
             SidebarController.prototype.startDelineate = function () {
                 var _this = this;
-                this.leafletData.getMap().then(function (map) {
+                //console.log('in startDelineate');
+                this.leafletData.getMap("mainMap").then(function (map) {
                     //console.log('mapzoom', map.getZoom());
                     if (map.getZoom() < 15) {
                         _this.toaster.pop('error', "Delineate", "You must be at or above zoom level 15 to delineate.");

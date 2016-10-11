@@ -32,7 +32,7 @@ module StreamStats.Controllers {
         vm: SidebarController;
     }
     interface ILeafletData {
-        getMap(): ng.IPromise<any>;
+        getMap(mapID:any): ng.IPromise<any>;
     }
     interface ISidebarController {
         sideBarCollapsed: boolean;
@@ -166,8 +166,8 @@ module StreamStats.Controllers {
         }
 
         public startDelineate() {
-
-            this.leafletData.getMap().then((map: any) => {
+            //console.log('in startDelineate');
+            this.leafletData.getMap("mainMap").then((map: any) => {
                 //console.log('mapzoom', map.getZoom());
                 if (map.getZoom() < 15) {
                     this.toaster.pop('error', "Delineate", "You must be at or above zoom level 15 to delineate.");

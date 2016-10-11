@@ -32,7 +32,7 @@ module StreamStats.Controllers {
         vm: ReportController;
     }
     interface ILeafletData {
-        getMap(): ng.IPromise<any>;
+        getMap(mapID:any): ng.IPromise<any>;
     }
     interface IReportController {
     }
@@ -100,7 +100,7 @@ module StreamStats.Controllers {
 
             this.initMap();
 
-            $scope.$on('leafletDirectiveMap.load',(event, args) => {
+            $scope.$on('leafletDirectiveMap.reportMap.load',(event, args) => {
                 //console.log('report map load');
                 this.showFeatures();
             });
@@ -159,7 +159,7 @@ module StreamStats.Controllers {
                     }
 
                     var bbox = this.layers.overlays[item.name].data.features[0].bbox;
-                    this.leafletData.getMap().then((map: any) => {
+                    this.leafletData.getMap("reportMap").then((map: any) => {
                         //method to reset the map for modal weirdness
                         map.invalidateSize();
                         //console.log('in getmap: ', bbox);
