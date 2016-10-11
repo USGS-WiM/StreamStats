@@ -10,7 +10,7 @@
 
                    <div class="form-group" ng-show="vm.regionService.regionList.length > 0 && !vm.regionService.selectedRegion">
                         <div class="wim-alert">You have zoomed in sufficiently to select a state or regional study area.  Your selection will dictate the data used to perform basin delineation and flow statistics calculation.</div>
-                        <label> Select a State or Regional Study Area</label>
+                        <label> Select a State or Regional Study Area Below</label>
                         <div ng-repeat="region in vm.regionService.regionList track by $index">
                             <div class="row">
                                 <div class="col-md-9"><button ng-class="region.Name === vm.regionService.selectedRegion.Name ? 'btn-wim-info btn-group-justified':'btn-wim-sm btn-wim-default btn-group-justified'" ng-click="vm.setRegion(region)"><span>{{region.Name}} </span></button></div>
