@@ -49,6 +49,7 @@ module StreamStats.Services {
         queryRegressionRegions();
         regressionRegionQueryComplete: boolean;
         Disclaimers: Object;
+        baseMap: Object;
     }
 
     export var onSelectedStudyAreaChanged: string = "onSelectedStudyAreaChanged";
@@ -103,6 +104,7 @@ module StreamStats.Services {
         public regressionRegionQueryLoading: boolean;
         public servicesURL: string;
         public Disclaimers: Object;
+        public baseMap: Object;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-

@@ -222,6 +222,7 @@ var StreamStats;
             };
             SidebarController.prototype.generateReport = function () {
                 //console.log('in estimateFlows');
+                var _this = this;
                 //ga event
                 this.angulartics.eventTrack('CalculateFlows', {
                     category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.nssService.selectedStatisticsGroupList.map(function (elem) { return elem.Name; }).join(",") });
@@ -232,6 +233,18 @@ var StreamStats;
                 }
                 this.modalService.openModal(StreamStats.Services.SSModalType.e_report);
                 this.studyAreaService.reportGenerated = true;
+                //pass mainMap basemap to studyAreaService
+                this.leafletData.getMap("mainMap").then(function (map) {
+                    _this.leafletData.getLayers("mainMap").then(function (maplayers) {
+                        for (var key in maplayers.baselayers) {
+                            if (map.hasLayer(maplayers.baselayers[key])) {
+                                console.log("main map baselayer is: ", key, configuration.basemaps[key]);
+                                _this.studyAreaService.baseMap = {};
+                                _this.studyAreaService.baseMap[key] = configuration.basemaps[key];
+                            } //end if
+                        } //next
+                    }); //end getLayers                                
+                }); //end getMap 
             };
             SidebarController.prototype.checkRegulation = function () {
                 console.log('checking for regulation');
