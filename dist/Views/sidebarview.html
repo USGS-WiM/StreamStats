@@ -10,7 +10,7 @@
 
                    <div class="form-group" ng-show="vm.regionService.regionList.length > 0 && !vm.regionService.selectedRegion">
                         <div class="wim-alert">You have zoomed in sufficiently to select a state or regional study area.  Your selection will dictate the data used to perform basin delineation and flow statistics calculation.</div>
-                        <label> Select a State or Regional Study Area</label>
+                        <label> Select a State or Regional Study Area Below</label>
                         <div ng-repeat="region in vm.regionService.regionList track by $index">
                             <div class="row">
                                 <div class="col-md-9"><button ng-class="region.Name === vm.regionService.selectedRegion.Name ? 'btn-wim-info btn-group-justified':'btn-wim-sm btn-wim-default btn-group-justified'" ng-click="vm.setRegion(region)"><span>{{region.Name}} </span></button></div>
@@ -114,7 +114,7 @@
                             <p>The following additional functions area available for {{vm.regionService.selectedRegion.Name}}.</p>
                             <div class="group-wrapper">
                                 <button ng-show="vm.regionService.selectedRegion.Applications.indexOf('Regulation') != -1" ng-click=" vm.checkRegulation()" type="button" class="btn-wim-sm btn-wim-info btn-wim-group-1" ng-disabled="!vm.studyAreaService.regulationCheckComplete"><i ng-class="vm.studyAreaService.regulationCheckComplete ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Check for upstream regulation</button>
-                                <button ng-show="vm.regionService.selectedRegion.Applications.indexOf('Wateruse') != -1" ng-click=" vm.OpenWateruse()" type="button" class="btn-wim-sm btn-wim-info btn-wim-group-1"><i class="fa fa-empire"></i>&nbsp;&nbsp;Check for Wateruse</button>
+                                <button ng-show="vm.regionService.selectedRegion.Applications.indexOf('Wateruse') != -1" ng-click=" vm.OpenWateruse()" type="button" class="btn-wim-sm btn-wim-info btn-wim-group-1"><i class="fa fa-empire"></i>&nbsp;&nbsp;Check for Water Use</button>
                             </div>
 
                             <div class="wim-alert-success" ng-show="vm.studyAreaService.Disclaimers.isRegulated == true || vm.studyAreaService.Disclaimers.isRegulated == false">Upstream Regulation check has been completed.  There is <strong ng-show="vm.studyAreaService.Disclaimers.isRegulated">{{vm.studyAreaService.regulationCheckResults.percentarearegulated.toFixed(2)}} percent</strong><strong ng-show="!vm.studyAreaService.Disclaimers.isRegulated">NO</strong> regulation in this watershed.</div>
@@ -196,7 +196,7 @@
                         <table class="table table-condensed">
                             <thead class="param-table">
                                 <tr>
-                                    <th>Parameter</th>
+                                    <th>Parameter Code</th>
                                     <th ng-hide="vm.studyAreaService.Disclaimers.isRegulated">Value</th>
                                     <th ng-show="vm.studyAreaService.Disclaimers.isRegulated">Unregulated</th>
                                     <th ng-show="vm.studyAreaService.Disclaimers.isRegulated">Regulated</th>

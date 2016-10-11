@@ -144,8 +144,9 @@ module StreamStats.Services {
             return -1;
         }
 
-        public loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregions: string, percentWeights:any) {
+        public loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregions: string, percentWeights: any) {
 
+            this.toaster.pop('info', "Loading Parameters by Statistics Group", "Please wait...", 0);
             this.loadingParametersByStatisticsGroup = true;
 
             //console.log('in load StatisticsGroup parameters', rcode, statisticsGroupID,regressionregions);
@@ -229,7 +230,7 @@ module StreamStats.Services {
                 this.Execute(request).then(
                     (response: any) => {
 
-                        //console.log('estimate flows: ', response.data[0]);
+                        //console.log('estimate flows: ', response);
 
                         //nested requests for citations
                         var citationUrl = response.data[0].Links[0].Href;
@@ -324,9 +325,12 @@ module StreamStats.Services {
             this.Execute(request).then(
                 (response: any) => {            
 
-                    if (response.data[0] && response.data[0].ID) {
-                        statGroup.Citations.push(response.data[0]);
+                    //console.log('get citations: ', response);
 
+                    if (response.data[0] && response.data[0].ID) {
+                        angular.forEach(response.data, (value, key) => {
+                            statGroup.Citations.push(value);
+                        })
                     }
                     //sm when complete
                 },(error) => {

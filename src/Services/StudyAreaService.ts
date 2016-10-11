@@ -201,13 +201,13 @@ module StreamStats.Services {
                     else {
                         this.clearStudyArea();
                         this.toaster.clear();
-                        this.toaster.pop("error", "Error Delineating Basin", "Please retry", 5000);
+                        this.toaster.pop("error", "Error Delineating Basin", "Please retry", 0);
                     }
                     //sm when complete
                 },(error) => {
                     //sm when error
                     this.toaster.clear();
-                    this.toaster.pop("error", "Error Delineating Basin", "Please retry", 5000);
+                    this.toaster.pop("error", "Error Delineating Basin", "Please retry", 0);
                 }).finally(() => {
                     
             });
@@ -246,7 +246,7 @@ module StreamStats.Services {
                     }, (error) => {
                         //sm when error
                         this.toaster.clear();
-                        this.toaster.pop("error", "Error Delineating Basin", "Please retry", 5000);
+                        this.toaster.pop("error", "Error Delineating Basin", "Please retry", 0);
                     }).finally(() => {
                         this.canUpdate = true;
                         this.eventManager.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);    
@@ -279,7 +279,7 @@ module StreamStats.Services {
                 },(error) => {
                     //sm when error
                     this.toaster.clear();
-                    this.toaster.pop("error", "Error Delineating Basin", "Please retry", 5000);
+                    this.toaster.pop("error", "Error Delineating Basin", "Please retry", 0);
                 }).finally(() => {
                 this.canUpdate = true;
                 var evnt = new StudyAreaEventArgs();
@@ -328,7 +328,7 @@ module StreamStats.Services {
                 },(error) => {
                     //sm when error
                     this.toaster.clear();
-                    this.toaster.pop("error", "Error Calculating Basin Characteristics", "Please retry", 5000);
+                    this.toaster.pop("error", "Error Calculating Basin Characteristics", "Please retry", 0);
                 }).finally(() => {
                     //this.canUpdate = true;
                     this.parametersLoading = false;
@@ -365,7 +365,7 @@ module StreamStats.Services {
                 },(error) => {
                     //sm when complete
                     //console.log('Regression query failed, HTTP Error');
-                    this.toaster.pop('error', "There was an HTTP error querying Land Cover", "Please retry", 5000);
+                    this.toaster.pop('error', "There was an HTTP error querying Land Cover", "Please retry", 0);
                     return this.$q.reject(error.data);
 
                 }).finally(() => {
@@ -402,13 +402,13 @@ module StreamStats.Services {
 
                     if (response.data.error) {
                         //console.log('query error');
-                        this.toaster.pop('error', "There was an error querying regression regions", response.data.error.message, 5000);
+                        this.toaster.pop('error', "There was an error querying regression regions", response.data.error.message, 0);
                         return;
                     }
 
                     if (response.data.length == 0) {
                         //console.log('query error');
-                        this.toaster.pop('error', "Regression region query failed", "This type of query may not be supported here at this time", 5000);
+                        this.toaster.pop('error', "Regression region query failed", "This type of query may not be supported here at this time", 0);
                         return;
                     }
 
@@ -424,7 +424,7 @@ module StreamStats.Services {
                 },(error) => {
                     //sm when complete
                     //console.log('Regression query failed, HTTP Error');
-                    this.toaster.pop('error', "There was an HTTP error querying Regression regions", "Please retry", 5000);
+                    this.toaster.pop('error', "There was an HTTP error querying Regression regions", "Please retry", 0);
                     return this.$q.reject(error.data);
                     
                 }).finally(() => {
@@ -472,7 +472,7 @@ module StreamStats.Services {
                 },(error) => {
                     //sm when error
                     this.toaster.clear();
-                    this.toaster.pop('error', "Error Checking for Upstream Regulation", "Please retry", 5000);
+                    this.toaster.pop('error', "Error Checking for Upstream Regulation", "Please retry", 0);
                 }).finally(() => {
                     //this.toaster.clear();
                     this.regulationCheckComplete = true;
