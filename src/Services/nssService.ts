@@ -144,8 +144,9 @@ module StreamStats.Services {
             return -1;
         }
 
-        public loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregions: string, percentWeights:any) {
+        public loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregions: string, percentWeights: any) {
 
+            this.toaster.pop('info', "Loading Parameters by Statistics Group", "Please wait...", 0);
             this.loadingParametersByStatisticsGroup = true;
 
             //console.log('in load StatisticsGroup parameters', rcode, statisticsGroupID,regressionregions);
