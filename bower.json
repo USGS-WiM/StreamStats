@@ -32,12 +32,12 @@
     "GreinerHormann": "greiner-hormann#~1.3.0",
     "mobileangularui-checkbox": "~1.0.0",
     "d3": "~3.5.12",
-    "Leaflet.Elevation": "https://github.com/aaronblondeau/Leaflet.Elevation.git#718286ac51775baf460c7b67f4dffa15280fa3a7",
     "angulartics": "~1.0.3",
     "angulartics-google-analytics": "~0.1.4",
     "angularjs-slider": "^2.9.0",
     "angular-nvd3": "^1.0.5",
     "ng-file-upload": "~12.0.1",
-    "wim-styles": "https://github.com/USGS-WiM/wim-styles.git#^0.0.2"
+    "wim-styles": "https://github.com/USGS-WiM/wim-styles.git#^0.0.2",
+    "Leaflet.Elevation": "https://github.com/aaronblondeau/Leaflet.Elevation.git#718286ac51775baf460c7b67f4dffa15280fa3a7"
   }
 }
