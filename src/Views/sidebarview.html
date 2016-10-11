@@ -114,7 +114,7 @@
                             <p>The following additional functions area available for {{vm.regionService.selectedRegion.Name}}.</p>
                             <div class="group-wrapper">
                                 <button ng-show="vm.regionService.selectedRegion.Applications.indexOf('Regulation') != -1" ng-click=" vm.checkRegulation()" type="button" class="btn-wim-sm btn-wim-info btn-wim-group-1" ng-disabled="!vm.studyAreaService.regulationCheckComplete"><i ng-class="vm.studyAreaService.regulationCheckComplete ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Check for upstream regulation</button>
-                                <button ng-show="vm.regionService.selectedRegion.Applications.indexOf('Wateruse') != -1" ng-click=" vm.OpenWateruse()" type="button" class="btn-wim-sm btn-wim-info btn-wim-group-1"><i class="fa fa-empire"></i>&nbsp;&nbsp;Check for Wateruse</button>
+                                <button ng-show="vm.regionService.selectedRegion.Applications.indexOf('Wateruse') != -1" ng-click=" vm.OpenWateruse()" type="button" class="btn-wim-sm btn-wim-info btn-wim-group-1"><i class="fa fa-empire"></i>&nbsp;&nbsp;Check for Water Use</button>
                             </div>
 
                             <div class="wim-alert-success" ng-show="vm.studyAreaService.Disclaimers.isRegulated == true || vm.studyAreaService.Disclaimers.isRegulated == false">Upstream Regulation check has been completed.  There is <strong ng-show="vm.studyAreaService.Disclaimers.isRegulated">{{vm.studyAreaService.regulationCheckResults.percentarearegulated.toFixed(2)}} percent</strong><strong ng-show="!vm.studyAreaService.Disclaimers.isRegulated">NO</strong> regulation in this watershed.</div>
