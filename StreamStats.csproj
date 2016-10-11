@@ -16,6 +16,7 @@
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>
@@ -65,7 +66,6 @@
     <Content Include="src\Assets\images\usgs-logo.png" />
     <Content Include="src\Assets\images\usgs_logo.png" />
     <Content Include="src\css\main.css" />
-    <Content Include="src\css\wim.css" />
     <Content Include="src\Views\help.html" />
     <Content Include="src\Views\about.html" />
     <Content Include="src\fonts\glyphicons-halflings-regular.svg" />
@@ -88,6 +88,7 @@
     <Content Include=".gitattributes" />
     <Content Include=".gitignore" />
     <None Include="manual.pubxml" />
+    <Content Include="src\.bowerrc" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
