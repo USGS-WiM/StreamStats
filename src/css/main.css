@@ -54,6 +54,11 @@ body {
     ===========================
 */
 
+/*remove stupid powered by Esri logo on map*/
+.esri-leaflet-logo {
+    display:none !important;
+}
+
 .legendSwatch {
     opacity: 0.6;
 }
