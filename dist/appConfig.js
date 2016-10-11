@@ -91,7 +91,7 @@ configuration.basemaps =
     //        ]
     //    }
     //},
-    national: {
+    natgeo: {
         name: "National Geographic",
         type: "agsBase",
         layer: "NationalGeographic",

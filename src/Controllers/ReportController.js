@@ -61,7 +61,7 @@ var StreamStats;
             ReportController.prototype.initMap = function () {
                 this.center = new Center(39, -96, 4);
                 this.layers = {
-                    baselayers: configuration.basemaps,
+                    baselayers: this.studyAreaService.baseMap,
                     overlays: {}
                 };
                 L.Icon.Default.imagePath = 'images';

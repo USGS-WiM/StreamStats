@@ -32,7 +32,8 @@ module StreamStats.Controllers {
         vm: SidebarController;
     }
     interface ILeafletData {
-        getMap(mapID:any): ng.IPromise<any>;
+        getMap(mapID: any): ng.IPromise<any>;
+        getLayers(mapID: any): ng.IPromise<any>;
     }
     interface ISidebarController {
         sideBarCollapsed: boolean;
@@ -322,6 +323,18 @@ module StreamStats.Controllers {
             this.modalService.openModal(Services.SSModalType.e_report);
             this.studyAreaService.reportGenerated = true;
 
+            //pass mainMap basemap to studyAreaService
+            this.leafletData.getMap("mainMap").then((map: any) => {
+                this.leafletData.getLayers("mainMap").then((maplayers: any) => {
+                    for (var key in maplayers.baselayers) {
+                        if (map.hasLayer(maplayers.baselayers[key])) {
+                            console.log("main map baselayer is: ", key, configuration.basemaps[key]);
+                            this.studyAreaService.baseMap = {};
+                            this.studyAreaService.baseMap[key] = configuration.basemaps[key];
+                        }//end if
+                    }//next
+                });//end getLayers                                
+            });//end getMap 
         }
 
         public checkRegulation() {
