@@ -147,7 +147,7 @@ gulp.task('default', ['clean'], function () {
 });
 
 // Watch
-gulp.task('watch', ['connect', 'serve'], function () {
+gulp.task('watch', ['default', 'connect', 'serve'], function () {
     // start up
 });
 
