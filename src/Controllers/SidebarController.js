@@ -65,11 +65,10 @@ var StreamStats;
                 return this.searchService.getLocations(term);
             };
             SidebarController.prototype.setProcedureType = function (pType) {
-                //console.log('in setProcedureType', this.selectedProcedure, pType, !this.canUpdateProcedure(pType));     
+                //console.log('in setProcedureType', this.selectedProcedure, pType, this.canUpdateProcedure(pType));     
                 if (this.selectedProcedure == pType || !this.canUpdateProcedure(pType)) {
                     //capture issues and send notifications here
-                    if (this.selectedProcedure == 3 && (pType == 4))
-                        this.toaster.pop("warning", "Warning", "Make sure you calculate selected basin characteristics before continuing", 5000);
+                    //if (this.selectedProcedure == 3 && (pType == 4 )) this.toaster.pop("warning", "Warning", "Make sure you calculate selected basin characteristics before continuing", 5000);
                     if (this.selectedProcedure == 2 && (pType == 3 || pType == 4))
                         this.toaster.pop("warning", "Warning", "Make sure you have delineated a basin and clicked continue", 5000);
                     return;
@@ -102,13 +101,14 @@ var StreamStats;
             SidebarController.prototype.openStatePage = function (e, region) {
                 e.stopPropagation();
                 e.preventDefault();
-                console.log('Opening state page for: ', region);
+                //console.log('Opening state page for: ', region);
                 this.modalService.openModal(StreamStats.Services.SSModalType.e_about, { "tabName": "regionInfo", "regionID": region });
                 //var regionParsed = region.replace(' ', '_').toLowerCase();
                 //window.open('http://water.usgs.gov/osw/streamstats/' + regionParsed + '.html', '_blank');
             };
             SidebarController.prototype.resetWorkSpace = function () {
                 //this.regionService.clearRegion();
+                this.regionService.clearSelectedParameters();
                 this.studyAreaService.clearStudyArea();
                 this.studyAreaService.showDelineateButton = true;
                 this.nssService.clearNSSdata();
@@ -246,7 +246,7 @@ var StreamStats;
                 }); //end getMap 
             };
             SidebarController.prototype.checkRegulation = function () {
-                console.log('checking for regulation');
+                //console.log('checking for regulation');
                 this.studyAreaService.upstreamRegulation();
             };
             SidebarController.prototype.queryRegressionRegions = function () {

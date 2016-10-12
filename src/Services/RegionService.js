@@ -81,6 +81,11 @@ var StreamStats;
                 this.regionMapLayerListLoaded = false;
                 this.resetView = false;
             };
+            RegionService.prototype.clearSelectedParameters = function () {
+                this.parameterList.forEach(function (parameter) {
+                    parameter.checked = false;
+                });
+            };
             //intersect method modified from
             //http://stackoverflow.com/questions/2752349/fast-rectangle-to-rectangle-intersection
             RegionService.prototype.intersect = function (a, b) {
