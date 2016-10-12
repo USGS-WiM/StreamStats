@@ -541,6 +541,8 @@ module StreamStats.Services {
 
                                 regulatedValue = regulatedParam.value;
                                 totalValue = param.value;
+
+                                //console.log('regulated params: ', regulatedParam.code, totalSum, regulatedSum, regulatedValue, totalValue);
                                 
                                 var tempVal1 = regulatedSum * (regulatedValue / totalSum);
                                 var tempVal2 = totalValue - tempVal1;

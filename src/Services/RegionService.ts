@@ -36,6 +36,7 @@ module StreamStats.Services {
         loadMapLayersByRegion(region: string): boolean;
         loadParametersByRegion();
         clearRegion();
+        clearSelectedParameters();
         regionMapLayerList: any;
         nationalMapLayerList: any;
         streamStatsAvailable: boolean;
@@ -136,6 +137,12 @@ module StreamStats.Services {
             this.regionMapLayerListLoaded = false;
             this.resetView = false;
         }
+
+        public clearSelectedParameters() {
+            this.parameterList.forEach((parameter) => {
+                parameter.checked = false;
+            });
+        }        
 
         //intersect method modified from
         //http://stackoverflow.com/questions/2752349/fast-rectangle-to-rectangle-intersection

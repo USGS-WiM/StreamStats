@@ -109,11 +109,11 @@ module StreamStats.Controllers {
             return this.searchService.getLocations(term);
         }
         public setProcedureType(pType: ProcedureType) {    
-            //console.log('in setProcedureType', this.selectedProcedure, pType, !this.canUpdateProcedure(pType));     
+            //console.log('in setProcedureType', this.selectedProcedure, pType, this.canUpdateProcedure(pType));     
 
             if (this.selectedProcedure == pType || !this.canUpdateProcedure(pType)) {
                 //capture issues and send notifications here
-                if (this.selectedProcedure == 3 && (pType == 4 )) this.toaster.pop("warning", "Warning", "Make sure you calculate selected basin characteristics before continuing", 5000);
+                //if (this.selectedProcedure == 3 && (pType == 4 )) this.toaster.pop("warning", "Warning", "Make sure you calculate selected basin characteristics before continuing", 5000);
                 if (this.selectedProcedure == 2 && (pType == 3 || pType == 4 )) this.toaster.pop("warning", "Warning", "Make sure you have delineated a basin and clicked continue", 5000);
                 return;
             }
@@ -147,7 +147,7 @@ module StreamStats.Controllers {
         public openStatePage(e, region) {
             e.stopPropagation(); e.preventDefault();
             
-            console.log('Opening state page for: ', region);
+            //console.log('Opening state page for: ', region);
             this.modalService.openModal(Services.SSModalType.e_about, { "tabName": "regionInfo", "regionID": region});
             
             //var regionParsed = region.replace(' ', '_').toLowerCase();
@@ -156,6 +156,7 @@ module StreamStats.Controllers {
 
         public resetWorkSpace() {
             //this.regionService.clearRegion();
+            this.regionService.clearSelectedParameters();
             this.studyAreaService.clearStudyArea();
             this.studyAreaService.showDelineateButton = true;
             this.nssService.clearNSSdata();
@@ -328,7 +329,6 @@ module StreamStats.Controllers {
                 this.leafletData.getLayers("mainMap").then((maplayers: any) => {
                     for (var key in maplayers.baselayers) {
                         if (map.hasLayer(maplayers.baselayers[key])) {
-                            console.log("main map baselayer is: ", key, configuration.basemaps[key]);
                             this.studyAreaService.baseMap = {};
                             this.studyAreaService.baseMap[key] = configuration.basemaps[key];
                         }//end if
@@ -338,7 +338,7 @@ module StreamStats.Controllers {
         }
 
         public checkRegulation() {
-            console.log('checking for regulation');
+            //console.log('checking for regulation');
             this.studyAreaService.upstreamRegulation();
         }
 
