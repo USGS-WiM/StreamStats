@@ -238,7 +238,6 @@ var StreamStats;
                     _this.leafletData.getLayers("mainMap").then(function (maplayers) {
                         for (var key in maplayers.baselayers) {
                             if (map.hasLayer(maplayers.baselayers[key])) {
-                                console.log("main map baselayer is: ", key, configuration.basemaps[key]);
                                 _this.studyAreaService.baseMap = {};
                                 _this.studyAreaService.baseMap[key] = configuration.basemaps[key];
                             } //end if

@@ -328,7 +328,6 @@ module StreamStats.Controllers {
                 this.leafletData.getLayers("mainMap").then((maplayers: any) => {
                     for (var key in maplayers.baselayers) {
                         if (map.hasLayer(maplayers.baselayers[key])) {
-                            console.log("main map baselayer is: ", key, configuration.basemaps[key]);
                             this.studyAreaService.baseMap = {};
                             this.studyAreaService.baseMap[key] = configuration.basemaps[key];
                         }//end if
