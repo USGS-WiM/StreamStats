@@ -50,6 +50,8 @@ module StreamStats.Services {
         regressionRegionQueryComplete: boolean;
         Disclaimers: Object;
         baseMap: Object;
+        showModifyBasinCharacterstics: boolean;
+        requestParameterList: Array<any>;
     }
 
     export var onSelectedStudyAreaChanged: string = "onSelectedStudyAreaChanged";
@@ -105,6 +107,8 @@ module StreamStats.Services {
         public servicesURL: string;
         public Disclaimers: Object;
         public baseMap: Object;
+        public showModifyBasinCharacterstics: boolean;
+        public requestParameterList: Array<any>;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -177,7 +181,7 @@ module StreamStats.Services {
 
         public loadStudyBoundary() {
 
-            this.toaster.pop("info", "Delineating Basin", "Please wait...", 0);
+            this.toaster.pop("wait", "Delineating Basin", "Please wait...", 0);
             this.canUpdate = false;
 
             var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(),
@@ -218,7 +222,7 @@ module StreamStats.Services {
         public loadWatershed(rcode: string, workspaceID: string): void {
             try {
 
-                this.toaster.pop("info", "Opening Basin", "Please wait...", 0);
+                this.toaster.pop("wait", "Opening Basin", "Please wait...", 0);
                 var studyArea: Models.IStudyArea = new Models.StudyArea(rcode,null);
                 this.AddStudyArea(studyArea);
 
@@ -262,7 +266,7 @@ module StreamStats.Services {
 
         public loadEditedStudyBoundary() {
 
-            this.toaster.pop("info", "Loading Edited Basin", "Please wait...", 0);
+            this.toaster.pop("wait", "Loading Edited Basin", "Please wait...", 0);
             this.canUpdate = false;
             //Content-Type: application/json
             var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSeditBasin'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID, this.selectedStudyArea.Pourpoint.crs.toString())
@@ -294,7 +298,8 @@ module StreamStats.Services {
 
         public loadParameters() {
 
-            this.toaster.pop('info', "Calculating Selected Basin Characteristics", "Please wait...", 0);
+            this.toaster.clear();
+            this.toaster.pop('wait', "Calculating Selected Basin Characteristics", "Please wait...", 0);
             //console.log('in load parameters');
             //this.canUpdate = false;
             this.parametersLoading = true;
@@ -305,27 +310,61 @@ module StreamStats.Services {
                 return;//sm study area is incomplete
             }
 
-            var requestParameterList = [];
-            this.studyAreaParameterList.map((param) => { requestParameterList.push(param.code); })
+            //if there is any uncomputed parameter, don't recreate the list just use existing
+            if (!this.requestParameterList) {
+                this.requestParameterList = [];
+                this.studyAreaParameterList.map((param) => { this.requestParameterList.push(param.code); })
+            }
 
+            //console.log('request parameter list before: ', this.requestParameterList);
             var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSComputeParams'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID,
-                requestParameterList.join(','));
+                this.requestParameterList.join(','));
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
 
             this.Execute(request).then(
                 (response: any) => {
                     if (response.data.parameters && response.data.parameters.length > 0) {
+
+                        this.toaster.clear();
+
+                        //check each returned parameter for issues
+                        var paramErrors = false;
+                        angular.forEach(response.data.parameters, (parameter, index) => {
+
+                            //for testing
+                            //if (parameter.code == 'DRNAREA') {
+                            //    parameter.value = -999;
+                            //}
+
+                            if (!parameter.hasOwnProperty('value') || parameter.value == -999) {
+                                paramErrors = true;
+                                console.error('Parameter failed to compute: ', parameter.code);
+                                parameter.loaded = false;
+                            }
+                            else {
+                                //remove this param from requestParameterList
+                                var idx = this.requestParameterList.indexOf(parameter.code);
+                                if (idx != -1) this.requestParameterList.splice(idx, 1);
+                                parameter.loaded = true;
+                            }
+                        });
+
+                        //if there is an issue, pop open 
+                        if (paramErrors) {
+                            this.showModifyBasinCharacterstics = true;
+                            this.toaster.pop('error', "One or more basin characteristics failed to compute", "Click the 'Calculate Missing Parameters' button or manually enter parameter values to continue", 0);
+                        }
+
                         var results = response.data.parameters;
                         this.loadParameterResults(results);
                         this.parametersLoaded = true;
-                        
+
                         //do regulation parameter update if needed
                         if (this.Disclaimers['isRegulated']) {
                             this.loadRegulatedParameterResults(this.regulationCheckResults.parameters);
                         }
                     }
 
-                    this.toaster.clear();
                     //sm when complete
                 },(error) => {
                     //sm when error
@@ -339,7 +378,7 @@ module StreamStats.Services {
 
         public queryLandCover() {
 
-            this.toaster.pop('info', "Querying Land Cover Data with your Basin", "Please wait...", 0);
+            this.toaster.pop('wait', "Querying Land Cover Data with your Basin", "Please wait...", 0);
             //console.log('querying land cover');
 
             var esriJSON = '{"geometryType":"esriGeometryPolygon","spatialReference":{"wkid":"4326"},"fields": [],"features":[{"geometry": {"type":"polygon", "rings":[' + JSON.stringify(this.selectedStudyArea.Features[1].feature.features[0].geometry.coordinates) + ']}}]}'
@@ -376,7 +415,7 @@ module StreamStats.Services {
 
         public queryRegressionRegions() {
 
-            this.toaster.pop('info', "Querying regression regions with your Basin", "Please wait...", 0);
+            this.toaster.pop('wait', "Querying regression regions with your Basin", "Please wait...", 0);
             //console.log('in load query regression regions');
 
             this.regressionRegionQueryLoading = true;
@@ -437,7 +476,7 @@ module StreamStats.Services {
         public upstreamRegulation() {
 
             //console.log('upstream regulation');
-            this.toaster.pop('info', "Checking for Upstream Regulation", "Please wait...",0);
+            this.toaster.pop('wait', "Checking for Upstream Regulation", "Please wait...",0);
 
             this.regulationCheckComplete = false;
 
@@ -488,8 +527,7 @@ module StreamStats.Services {
         //-+-+-+-+-+-+-+-+-+-+-+-       
         private loadParameterResults(results: Array<WiM.Models.IParameter>) {
 
-            this.toaster.pop('info', "Loading Basin Characteristics", "Please wait...");
-
+            //this.toaster.pop('wait', "Loading Basin Characteristics", "Please wait...", 0);
             //console.log('in load parameter results');
 
             var paramList = this.studyAreaParameterList;
@@ -497,6 +535,7 @@ module StreamStats.Services {
                 angular.forEach(paramList, function (value, index) {
                     if (val.code.toUpperCase().trim() === value.code.toUpperCase().trim()) {
                         value.value = val.value;
+                        value.loaded = val.loaded;
                         return;//exit loop
                     }//endif
                 });
@@ -506,7 +545,7 @@ module StreamStats.Services {
 
         private loadRegulatedParameterResults(regulatedResults: Array<Models.IRegulationParameter>) {
 
-            this.toaster.pop('info', "Loading Regulated Basin Characteristics", "Please wait...");
+            this.toaster.pop('wait', "Loading Regulated Basin Characteristics", "Please wait...");
 
             //console.log('in load regulated parameter results');
 

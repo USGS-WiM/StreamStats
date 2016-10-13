@@ -46,6 +46,10 @@ body {
     margin-bottom:4px;
 }
 
+.form-control.notloaded {
+    border:1px solid #f00;
+}
+
 /*
     ===========================
     ===========================

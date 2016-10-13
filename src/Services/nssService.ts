@@ -100,7 +100,7 @@ module StreamStats.Services {
 
         public loadStatisticsGroupTypes(rcode: string, regressionregions: string):Array<any> {
 
-            this.toaster.pop('info', "Loading Available Scenarios", "Please wait...", 0);
+            this.toaster.pop('wait', "Loading Available Scenarios", "Please wait...", 0);
             //console.log('in load StatisticsGroups', rcode, regressionregions);
             if (!rcode && !regressionregions) return;
 
@@ -146,7 +146,7 @@ module StreamStats.Services {
 
         public loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregions: string, percentWeights: any) {
 
-            this.toaster.pop('info', "Loading Parameters by Statistics Group", "Please wait...", 0);
+            this.toaster.pop('wait', "Loading Parameters by Statistics Group", "Please wait...", 0);
             this.loadingParametersByStatisticsGroup = true;
 
             //console.log('in load StatisticsGroup parameters', rcode, statisticsGroupID,regressionregions);
@@ -201,26 +201,29 @@ module StreamStats.Services {
             //loop over all selected StatisticsGroups
             this.selectedStatisticsGroupList.forEach((statGroup) => {
 
-                this.toaster.pop('info', "Estimating Flows for " + statGroup.Name, "Please wait...", 0);
+                this.toaster.pop('wait', "Estimating Flows for " + statGroup.Name, "Please wait...", 0);
                 //console.log('in estimate flows method for ', statGroup.Name, statGroup);
 
                 statGroup.RegressionRegions.forEach((regressionRegion) => {
-
-                    //delete results object if it exists
-                    if (regressionRegion.Results) delete regressionRegion.Results;
 
                     regressionRegion.Parameters.forEach((regressionParam) => {
                         studyAreaParameterList.forEach((param) => {
                             //console.log('search for matching params ', regressionParam.Code.toLowerCase(), param.code.toLowerCase());
                             if (regressionParam.Code.toLowerCase() == param.code.toLowerCase()) {
                                 //console.log('updating parameter in scenario object for: ', regressionParam.Code, ' from: ', regressionParam.Value, ' to: ', param.value);
-                                regressionParam.value = param[paramValueField];
+                                regressionParam.Value = param[paramValueField];
                             }
                         });
                     });
                 });
 
-                var updatedScenarioObject = angular.toJson([statGroup], null);
+                //Make a copy of the object and delete any existing results
+                var updatedScenarioObject = angular.fromJson(angular.toJson(statGroup));
+                updatedScenarioObject.RegressionRegions.forEach((regressionRegion) => {
+                    //delete results object if it exists
+                    if (regressionRegion.Results) delete regressionRegion.Results;
+                });
+                updatedScenarioObject = angular.toJson([updatedScenarioObject], null);
 
                 //do request
                 var url = configuration.baseurls['NSS'] + configuration.queryparams['estimateFlows'].format(rcode, statGroup.ID, regressionregion);
@@ -251,6 +254,7 @@ module StreamStats.Services {
                             //console.log('headerMsgs: ', statGroup.Name, statGroup.Disclaimers);
                         }
 
+                        //if (append) console.log('in estimate flows for regulated basins: ', response);
                         //make sure there are some results
                         if (response.data[0].RegressionRegions[0].Results && response.data[0].RegressionRegions[0].Results.length > 0) {
 
@@ -262,6 +266,7 @@ module StreamStats.Services {
                             else {
                                 //loop over and append params
                                 statGroup.RegressionRegions.forEach((rr) => {
+                                    //console.log('in estimate flows for regulated basins: ', rr);
                                     rr.Parameters.forEach((p) => {
                                         var responseRegions = response.data[0].RegressionRegions;
                                         for (var i = 0; i < responseRegions.length; i++){
@@ -318,7 +323,7 @@ module StreamStats.Services {
         private getSelectedCitations(citationUrl: string, statGroup: any): any {
 
             //nested requests for citations
-            this.toaster.pop('info', "Requesting selected citations", "Please wait...", 5000);
+            this.toaster.pop('wait', "Requesting selected citations", "Please wait...", 5000);
             var url = citationUrl;
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, 0, 'json');
 
