@@ -65,7 +65,7 @@ var StreamStats;
             };
             nssService.prototype.loadStatisticsGroupTypes = function (rcode, regressionregions) {
                 var _this = this;
-                this.toaster.pop('info', "Loading Available Scenarios", "Please wait...", 0);
+                this.toaster.pop('wait', "Loading Available Scenarios", "Please wait...", 0);
                 //console.log('in load StatisticsGroups', rcode, regressionregions);
                 if (!rcode && !regressionregions)
                     return;
@@ -103,7 +103,7 @@ var StreamStats;
             };
             nssService.prototype.loadParametersByStatisticsGroup = function (rcode, statisticsGroupID, regressionregions, percentWeights) {
                 var _this = this;
-                this.toaster.pop('info', "Loading Parameters by Statistics Group", "Please wait...", 0);
+                this.toaster.pop('wait', "Loading Parameters by Statistics Group", "Please wait...", 0);
                 this.loadingParametersByStatisticsGroup = true;
                 //console.log('in load StatisticsGroup parameters', rcode, statisticsGroupID,regressionregions);
                 if (!rcode && !statisticsGroupID && !regressionregions)
@@ -148,23 +148,27 @@ var StreamStats;
                 this.canUpdate = false;
                 //loop over all selected StatisticsGroups
                 this.selectedStatisticsGroupList.forEach(function (statGroup) {
-                    _this.toaster.pop('info', "Estimating Flows for " + statGroup.Name, "Please wait...", 0);
+                    _this.toaster.pop('wait', "Estimating Flows for " + statGroup.Name, "Please wait...", 0);
                     //console.log('in estimate flows method for ', statGroup.Name, statGroup);
                     statGroup.RegressionRegions.forEach(function (regressionRegion) {
-                        //delete results object if it exists
-                        if (regressionRegion.Results)
-                            delete regressionRegion.Results;
                         regressionRegion.Parameters.forEach(function (regressionParam) {
                             studyAreaParameterList.forEach(function (param) {
                                 //console.log('search for matching params ', regressionParam.Code.toLowerCase(), param.code.toLowerCase());
                                 if (regressionParam.Code.toLowerCase() == param.code.toLowerCase()) {
                                     //console.log('updating parameter in scenario object for: ', regressionParam.Code, ' from: ', regressionParam.Value, ' to: ', param.value);
-                                    regressionParam.value = param[paramValueField];
+                                    regressionParam.Value = param[paramValueField];
                                 }
                             });
                         });
                     });
-                    var updatedScenarioObject = angular.toJson([statGroup], null);
+                    //Make a copy of the object and delete any existing results
+                    var updatedScenarioObject = angular.fromJson(angular.toJson(statGroup));
+                    updatedScenarioObject.RegressionRegions.forEach(function (regressionRegion) {
+                        //delete results object if it exists
+                        if (regressionRegion.Results)
+                            delete regressionRegion.Results;
+                    });
+                    updatedScenarioObject = angular.toJson([updatedScenarioObject], null);
                     //do request
                     var url = configuration.baseurls['NSS'] + configuration.queryparams['estimateFlows'].format(rcode, statGroup.ID, regressionregion);
                     var request = new WiM.Services.Helpers.RequestInfo(url, true, 1, 'json', updatedScenarioObject);
@@ -189,6 +193,7 @@ var StreamStats;
                                 //if (headerMsg[0] == 'info') statGroup.Disclaimers['Info'] = headerMsg[1].trim();
                             });
                         }
+                        //if (append) console.log('in estimate flows for regulated basins: ', response);
                         //make sure there are some results
                         if (response.data[0].RegressionRegions[0].Results && response.data[0].RegressionRegions[0].Results.length > 0) {
                             _this.toaster.clear();
@@ -199,6 +204,7 @@ var StreamStats;
                             else {
                                 //loop over and append params
                                 statGroup.RegressionRegions.forEach(function (rr) {
+                                    //console.log('in estimate flows for regulated basins: ', rr);
                                     rr.Parameters.forEach(function (p) {
                                         var responseRegions = response.data[0].RegressionRegions;
                                         for (var i = 0; i < responseRegions.length; i++) {
@@ -246,7 +252,7 @@ var StreamStats;
             nssService.prototype.getSelectedCitations = function (citationUrl, statGroup) {
                 var _this = this;
                 //nested requests for citations
-                this.toaster.pop('info', "Requesting selected citations", "Please wait...", 5000);
+                this.toaster.pop('wait', "Requesting selected citations", "Please wait...", 5000);
                 var url = citationUrl;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, 0, 'json');
                 this.Execute(request).then(function (response) {

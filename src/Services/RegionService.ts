@@ -61,6 +61,7 @@ module StreamStats.Services {
         unRegulatedValue: number;
         checked: boolean;
         toggleable: boolean;
+        loaded: boolean;
 
     }
 
@@ -86,6 +87,7 @@ module StreamStats.Services {
         public unRegulatedValue: number;
         public checked: boolean;
         public toggleable: boolean;
+        public loaded: boolean;
 
     }//end class
     export var onSelectedRegionChanged: string = "onSelectedRegionChanged";
