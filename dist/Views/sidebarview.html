@@ -181,7 +181,7 @@
             </div>
 
             <div class="sidebar-item">
-                <a ng-class="vm.selectedProcedure == 4 ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(4)">Build a Report<h5 ng-show="vm.studyAreaService.reportGenerated"><strong>Report Built</strong></h5><i ng-class="vm.selectedProcedure == 4 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
+                <a ng-class="vm.selectedProcedure == 4 ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(4)">Build a Report<h5 ng-show="vm.nssService.reportGenerated"><strong>Report Built</strong></h5><i ng-class="vm.selectedProcedure == 4 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
 
                 <div class="list-group-body" ng-show="vm.selectedProcedure == 4">
                     <div class="wim-alert">You can modify computed basin characteristics here, then select the types of reports you wish to generate.  Then click the "Build Report" button</div>

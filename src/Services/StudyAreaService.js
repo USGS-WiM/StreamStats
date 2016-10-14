@@ -120,7 +120,6 @@ var StreamStats;
                 this.WatershedEditDecisionList = new StreamStats.Models.WatershedEditDecisionList();
                 this.selectedStudyArea = null;
                 this.showDelineateButton = true;
-                this.reportGenerated = false;
                 this.regressionRegionQueryComplete = false;
                 this.regressionRegionQueryLoading = false;
                 this.eventManager.RaiseEvent(Services.onStudyAreaReset, this, WiM.Event.EventArgs.Empty);
