@@ -76,12 +76,15 @@ module StreamStats.Services {
         public queriedRegions: boolean;
         public loadingParametersByStatisticsGroup: boolean;
         public isDone: boolean;
+        public reportGenerated: boolean;
+        private modalService: Services.IModalService;   
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        constructor($http: ng.IHttpService, private $q: ng.IQService, toaster) {
+        constructor($http: ng.IHttpService, private $q: ng.IQService, toaster, modal) {
             super($http, configuration.baseurls['NSS']);
-            this.toaster = toaster
+            this.toaster = toaster;
+            this.modalService = modal;
             this._onSelectedStatisticsGroupChanged = new WiM.Event.Delegate<WiM.Event.EventArgs>();
             this.clearNSSdata();
         }
@@ -96,6 +99,7 @@ module StreamStats.Services {
             this.queriedRegions = false;
             this.loadingParametersByStatisticsGroup = false;
             this.isDone = false;
+            this.reportGenerated = false;
         }
 
         public loadStatisticsGroupTypes(rcode: string, regressionregions: string):Array<any> {
@@ -128,7 +132,7 @@ module StreamStats.Services {
                 },(error) => {
                     //sm when complete
                     this.toaster.clear();
-                    this.toaster.pop('error', "There was an error Loading Available Scenarios", "Please retry", 5000);
+                    this.toaster.pop('error', "There was an error Loading Available Scenarios", "Please retry", 0);
                 }).finally(() => {
                     this.loadingStatisticsGroup = false;
                 });
@@ -188,7 +192,7 @@ module StreamStats.Services {
                 },(error) => {
                     //sm when error
                     this.toaster.clear();
-                    this.toaster.pop('error', "There was an error Loading Parameters by Statistics Group", "Please retry", 5000);
+                    this.toaster.pop('error', "There was an error Loading Parameters by Statistics Group", "Please retry", 0);
                 }).finally(() => {
 
                 });
@@ -258,6 +262,9 @@ module StreamStats.Services {
                         //make sure there are some results
                         if (response.data[0].RegressionRegions[0].Results && response.data[0].RegressionRegions[0].Results.length > 0) {
 
+                            this.modalService.openModal(Services.SSModalType.e_report);
+                            this.reportGenerated = true;
+
                             this.toaster.clear();
                             if (!append) {
                                 statGroup.RegressionRegions = [];
@@ -303,7 +310,7 @@ module StreamStats.Services {
                         }
                         else {
                             this.toaster.clear();
-                            this.toaster.pop('error', "There was an error Estimating Flows", "No results were returned", 5000);
+                            this.toaster.pop('error', "There was an error Estimating Flows", "No results were returned", 0);
                             this.isDone = true;
                             //console.log("Zero length flow response, check equations in NSS service");
                         }
@@ -313,7 +320,7 @@ module StreamStats.Services {
                     },(error) => {
                         //sm when error
                         this.toaster.clear();
-                        this.toaster.pop('error', "There was an error Estimating Flows", "HTTP request error", 5000);
+                        this.toaster.pop('error', "There was an error Estimating Flows", "HTTP request error", 0);
                     }).finally(() => {
                     this.canUpdate = true;
                 });
@@ -341,7 +348,7 @@ module StreamStats.Services {
                 },(error) => {
                     //sm when error
                     this.toaster.clear();
-                    this.toaster.pop('error', "There was an error getting selected Citations", "Please retry", 5000);
+                    this.toaster.pop('error', "There was an error getting selected Citations", "Please retry", 0);
                 }).finally(() => {
             });
         }
@@ -352,9 +359,9 @@ module StreamStats.Services {
 
     }//end class
 
-    factory.$inject = ['$http', '$q', 'toaster'];
-    function factory($http: ng.IHttpService, $q: ng.IQService, toaster:any) {
-        return new nssService($http, $q, toaster)
+    factory.$inject = ['$http', '$q', 'toaster', 'StreamStats.Services.ModalService'];
+    function factory($http: ng.IHttpService, $q: ng.IQService, toaster: any, modal: Services.IModalService) {
+        return new nssService($http, $q, toaster, modal)
     }
     angular.module('StreamStats.Services')
         .factory('StreamStats.Services.nssService', factory)

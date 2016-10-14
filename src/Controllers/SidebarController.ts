@@ -323,8 +323,9 @@ module StreamStats.Controllers {
                 }
             }
 
-            this.modalService.openModal(Services.SSModalType.e_report);
-            this.studyAreaService.reportGenerated = true;
+            //move to nssService
+            //this.modalService.openModal(Services.SSModalType.e_report);
+            //this.studyAreaService.reportGenerated = true;
 
             //pass mainMap basemap to studyAreaService
             this.leafletData.getMap("mainMap").then((map: any) => {
