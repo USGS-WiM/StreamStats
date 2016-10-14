@@ -234,8 +234,9 @@ var StreamStats;
                         }, 500);
                     }
                 }
-                this.modalService.openModal(StreamStats.Services.SSModalType.e_report);
-                this.studyAreaService.reportGenerated = true;
+                //move to nssService
+                //this.modalService.openModal(Services.SSModalType.e_report);
+                //this.studyAreaService.reportGenerated = true;
                 //pass mainMap basemap to studyAreaService
                 this.leafletData.getMap("mainMap").then(function (map) {
                     _this.leafletData.getLayers("mainMap").then(function (maplayers) {

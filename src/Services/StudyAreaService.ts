@@ -45,7 +45,6 @@ module StreamStats.Services {
         showDelineateButton: boolean;
         loadEditedStudyBoundary();
         loadWatershed(rcode:string, workspaceID: string): void
-        reportGenerated: boolean;
         queryRegressionRegions();
         regressionRegionQueryComplete: boolean;
         Disclaimers: Object;
@@ -101,7 +100,6 @@ module StreamStats.Services {
         public WatershedEditDecisionList: Models.IEditDecisionList;
         public regulationCheckResults: any;
         public showDelineateButton: boolean;
-        public reportGenerated: boolean;
         public regressionRegionQueryComplete: boolean;
         public regressionRegionQueryLoading: boolean;
         public servicesURL: string;
@@ -172,7 +170,6 @@ module StreamStats.Services {
             this.WatershedEditDecisionList = new Models.WatershedEditDecisionList();
             this.selectedStudyArea = null;
             this.showDelineateButton = true;
-            this.reportGenerated = false;
             this.regressionRegionQueryComplete = false;
             this.regressionRegionQueryLoading = false;
 

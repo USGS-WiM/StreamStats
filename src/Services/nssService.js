@@ -38,10 +38,11 @@ var StreamStats;
             __extends(nssService, _super);
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
-            function nssService($http, $q, toaster) {
+            function nssService($http, $q, toaster, modal) {
                 _super.call(this, $http, configuration.baseurls['NSS']);
                 this.$q = $q;
                 this.toaster = toaster;
+                this.modalService = modal;
                 this._onSelectedStatisticsGroupChanged = new WiM.Event.Delegate();
                 this.clearNSSdata();
             }
@@ -62,6 +63,7 @@ var StreamStats;
                 this.queriedRegions = false;
                 this.loadingParametersByStatisticsGroup = false;
                 this.isDone = false;
+                this.reportGenerated = false;
             };
             nssService.prototype.loadStatisticsGroupTypes = function (rcode, regressionregions) {
                 var _this = this;
@@ -87,7 +89,7 @@ var StreamStats;
                 }, function (error) {
                     //sm when complete
                     _this.toaster.clear();
-                    _this.toaster.pop('error', "There was an error Loading Available Scenarios", "Please retry", 5000);
+                    _this.toaster.pop('error', "There was an error Loading Available Scenarios", "Please retry", 0);
                 }).finally(function () {
                     _this.loadingStatisticsGroup = false;
                 });
@@ -136,7 +138,7 @@ var StreamStats;
                 }, function (error) {
                     //sm when error
                     _this.toaster.clear();
-                    _this.toaster.pop('error', "There was an error Loading Parameters by Statistics Group", "Please retry", 5000);
+                    _this.toaster.pop('error', "There was an error Loading Parameters by Statistics Group", "Please retry", 0);
                 }).finally(function () {
                 });
             };
@@ -196,6 +198,8 @@ var StreamStats;
                         //if (append) console.log('in estimate flows for regulated basins: ', response);
                         //make sure there are some results
                         if (response.data[0].RegressionRegions[0].Results && response.data[0].RegressionRegions[0].Results.length > 0) {
+                            _this.modalService.openModal(Services.SSModalType.e_report);
+                            _this.reportGenerated = true;
                             _this.toaster.clear();
                             if (!append) {
                                 statGroup.RegressionRegions = [];
@@ -236,14 +240,14 @@ var StreamStats;
                         }
                         else {
                             _this.toaster.clear();
-                            _this.toaster.pop('error', "There was an error Estimating Flows", "No results were returned", 5000);
+                            _this.toaster.pop('error', "There was an error Estimating Flows", "No results were returned", 0);
                             _this.isDone = true;
                         }
                         //sm when complete
                     }, function (error) {
                         //sm when error
                         _this.toaster.clear();
-                        _this.toaster.pop('error', "There was an error Estimating Flows", "HTTP request error", 5000);
+                        _this.toaster.pop('error', "There was an error Estimating Flows", "HTTP request error", 0);
                     }).finally(function () {
                         _this.canUpdate = true;
                     });
@@ -266,15 +270,15 @@ var StreamStats;
                 }, function (error) {
                     //sm when error
                     _this.toaster.clear();
-                    _this.toaster.pop('error', "There was an error getting selected Citations", "Please retry", 5000);
+                    _this.toaster.pop('error', "There was an error getting selected Citations", "Please retry", 0);
                 }).finally(function () {
                 });
             };
             return nssService;
         }(WiM.Services.HTTPServiceBase)); //end class
-        factory.$inject = ['$http', '$q', 'toaster'];
-        function factory($http, $q, toaster) {
-            return new nssService($http, $q, toaster);
+        factory.$inject = ['$http', '$q', 'toaster', 'StreamStats.Services.ModalService'];
+        function factory($http, $q, toaster, modal) {
+            return new nssService($http, $q, toaster, modal);
         }
         angular.module('StreamStats.Services')
             .factory('StreamStats.Services.nssService', factory);
