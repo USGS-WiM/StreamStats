@@ -262,9 +262,6 @@ module StreamStats.Services {
                         //make sure there are some results
                         if (response.data[0].RegressionRegions[0].Results && response.data[0].RegressionRegions[0].Results.length > 0) {
 
-                            this.modalService.openModal(Services.SSModalType.e_report);
-                            this.reportGenerated = true;
-
                             this.toaster.clear();
                             if (!append) {
                                 statGroup.RegressionRegions = [];

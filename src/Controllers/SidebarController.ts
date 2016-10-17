@@ -305,6 +305,10 @@ module StreamStats.Controllers {
             this.setProcedureType(3);
         }
 
+        public refreshWindow() {
+            window.location.reload();
+        }
+
         public generateReport() {
 
             //console.log('in estimateFlows');
@@ -324,8 +328,8 @@ module StreamStats.Controllers {
             }
 
             //move to nssService
-            //this.modalService.openModal(Services.SSModalType.e_report);
-            //this.studyAreaService.reportGenerated = true;
+            this.modalService.openModal(Services.SSModalType.e_report);
+            this.nssService.reportGenerated = true;
 
             //pass mainMap basemap to studyAreaService
             this.leafletData.getMap("mainMap").then((map: any) => {
