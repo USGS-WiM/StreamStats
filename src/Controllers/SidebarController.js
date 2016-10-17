@@ -220,6 +220,9 @@ var StreamStats;
                 //if not, just continue
                 this.setProcedureType(3);
             };
+            SidebarController.prototype.refreshWindow = function () {
+                window.location.reload();
+            };
             SidebarController.prototype.generateReport = function () {
                 //console.log('in estimateFlows');
                 var _this = this;
@@ -235,8 +238,8 @@ var StreamStats;
                     }
                 }
                 //move to nssService
-                //this.modalService.openModal(Services.SSModalType.e_report);
-                //this.studyAreaService.reportGenerated = true;
+                this.modalService.openModal(StreamStats.Services.SSModalType.e_report);
+                this.nssService.reportGenerated = true;
                 //pass mainMap basemap to studyAreaService
                 this.leafletData.getMap("mainMap").then(function (map) {
                     _this.leafletData.getLayers("mainMap").then(function (maplayers) {

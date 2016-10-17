@@ -198,8 +198,8 @@ var StreamStats;
                         //if (append) console.log('in estimate flows for regulated basins: ', response);
                         //make sure there are some results
                         if (response.data[0].RegressionRegions[0].Results && response.data[0].RegressionRegions[0].Results.length > 0) {
-                            _this.modalService.openModal(Services.SSModalType.e_report);
-                            _this.reportGenerated = true;
+                            //this.modalService.openModal(Services.SSModalType.e_report);
+                            //this.reportGenerated = true;
                             _this.toaster.clear();
                             if (!append) {
                                 statGroup.RegressionRegions = [];

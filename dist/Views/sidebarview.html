@@ -5,7 +5,7 @@
                 <a ng-class="vm.selectedProcedure == 1  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(1)">Select a State / Region<div></div><h5 ng-show="vm.regionService.selectedRegion.Name"><strong>{{vm.regionService.selectedRegion.Name}}</strong><i ng-click="vm.openStatePage($event, vm.regionService.selectedRegion.Name)" class="fa fa-info-circle"></i></h5><i ng-class="vm.selectedProcedure == 1 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
                 <div class="list-group-body" ng-hide="vm.selectedProcedure != 1">
                    <div class="group-wrapper" ng-show="vm.regionService.selectedRegion">
-                        <button class="btn-wim-sm btn-wim-success btn-wim-group-1" ng-click="vm.regionService.resetView = !vm.regionService.resetView"><span><i class="fa fa-undo"></i>&nbsp;&nbsp;Start Over</span></button>
+                        <button class="btn-wim-sm btn-wim-success btn-wim-group-1" ng-click="vm.refreshWindow()"><span><i class="fa fa-undo"></i>&nbsp;&nbsp;Start Over</span></button>
                     </div>  
 
                    <div class="form-group" ng-show="vm.regionService.regionList.length > 0 && !vm.regionService.selectedRegion">
