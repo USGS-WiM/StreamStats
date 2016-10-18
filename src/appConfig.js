@@ -153,7 +153,7 @@ configuration.overlayedLayers = {
 }//end overlayedLayers
 
 configuration.regions = [
-	{ "RegionID": "AK", "Name": "Alaska", "Bounds": [[51.583032,-178.217598],[71.406235,-129.992235]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
+	{ "RegionID": "AK", "Name": "Alaska", "Bounds": [[51.583032,-178.217598],[71.406235,-129.992235]], "Layers": {}, "Applications": [], "ScenariosAvailable": false },
     { "RegionID": "AL", "Name": "Alabama", "Bounds": [[30.233604,-88.472952],[35.016033,-84.894016]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "AR", "Name": "Arkansas", "Bounds": [[33.010151,-94.617257],[36.492811,-89.645479]], "Layers": {}, "Applications": [], "ScenariosAvailable": false },
     { "RegionID": "AS", "Name": "American Samoa", "Bounds": [[-14.375555, -170.82611], [-14.166389, -169.438323]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
@@ -226,8 +226,6 @@ configuration.regions = [
 	{ "RegionID": "MA", "Name": "Massachusetts", "Bounds": [[41.238279,-73.49884],[42.886877,-69.91778]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
 	{ "RegionID": "MD", "Name": "Maryland", "Bounds": [[37.970255,-79.489865],[39.725461,-75.045623]], "Layers": {}, "Applications": [], "ScenariosAvailable": false },
     { "RegionID": "ME", "Name": "Maine", "Bounds": [[43.09105,-71.087509],[47.453334,-66.969271]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
-
-
     { "RegionID": "MI", "Name": "Michigan", "Bounds": [[41.697494,-90.4082],[48.173795,-82.419836]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "MN", "Name": "Minnesota", "Bounds": [[43.498102,-97.229436],[49.37173,-89.530673]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
 	{ "RegionID": "MO", "Name": "Missouri", "Bounds": [[35.989656,-95.767479],[40.609784,-89.105034]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
@@ -255,12 +253,12 @@ configuration.regions = [
     { "RegionID": "NE", "Name": "Nebraska", "Bounds": [[39.992595,-104.056219],[43.003062,-95.308697]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "NH", "Name": "New Hampshire", "Bounds": [[42.698603,-72.553428],[45.301469,-70.734139]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "NJ", "Name": "New Jersey", "Bounds": [[38.956682,-75.570234],[41.350573,-73.896148]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
-    { "RegionID": "NM", "Name": "New Mexico", "Bounds": [[31.343453,-109.051346],[36.99976,-102.997401]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
+    { "RegionID": "NM", "Name": "New Mexico", "Bounds": [[31.343453,-109.051346],[36.99976,-102.997401]], "Layers": {}, "Applications": [], "ScenariosAvailable": false },
     { "RegionID": "NV", "Name": "Nevada", "Bounds": [[34.998914,-119.996324],[41.996637,-114.037392]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "NY", "Name": "New York", "Bounds": [[40.506003,-79.763235],[45.006138,-71.869986]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "NX", "Name": "New Mexico", "Bounds": [[31.343453,-109.051346],[36.99976,-102.997401]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "MP", "Name": "Northern Mariana Islands", "Bounds": [[14.105276, 144.89859], [20.556385, 145.870788]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
-    { "RegionID": "OH", "Name": "Ohio", "Bounds": [[38.400511,-84.81207],[41.986872,-80.519996]], "Layers": {}, "Applications": ["Wateruse"], "ScenariosAvailable": true },
+    { "RegionID": "OH", "Name": "Ohio", "Bounds": [[38.400511,-84.81207],[41.986872,-80.519996]], "Layers": {}, "Applications": ["Wateruse"], "ScenariosAvailable": false },
     { "RegionID": "OK", "Name": "Oklahoma", "Bounds": [[33.621136,-102.997709],[37.001478,-94.428552]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "OR", "Name": "Oregon", "Bounds": [[41.987672,-124.559617],[46.236091,-116.470418]], "Layers": {}, "Applications": [], "ScenariosAvailable": false },
     { "RegionID": "PA", "Name": "Pennsylvania", "Bounds": [[39.719313,-80.526045],[42.267327,-74.700062]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
@@ -274,7 +272,7 @@ configuration.regions = [
     { "RegionID": "VA", "Name": "Virginia", "Bounds": [[36.541623,-83.675177],[39.456998,-75.242219]], "Layers": {}, "Applications": [], "ScenariosAvailable": false },	
     { "RegionID": "VT", "Name": "Vermont", "Bounds": [[42.725852,-73.436],[45.013351,-71.505372]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "VI", "Name": "Virgin Islands", "Bounds": [[17.676666, -65.026947], [18.377777, -64.560287]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
-    { "RegionID": "WA", "Name": "Washington", "Bounds": [[45.543092,-124.732769],[48.999931,-116.919132]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
+    { "RegionID": "WA", "Name": "Washington", "Bounds": [[45.543092,-124.732769],[48.999931,-116.919132]], "Layers": {}, "Applications": [], "ScenariosAvailable": false },
     { "RegionID": "WI", "Name": "Wisconsin", "Bounds": [[42.489152,-92.885397],[46.952479,-86.967712]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },	
     { "RegionID": "WV", "Name": "West Virginia", "Bounds": [[37.20491,-82.647158],[40.637203,-77.727467]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "WY", "Name": "Wyoming", "Bounds": [[40.994289,-111.053428],[45.002793,-104.051705]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
