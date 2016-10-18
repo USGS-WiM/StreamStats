@@ -468,7 +468,7 @@ var StreamStats;
                             //convert to esriJSON
                             var esriJSON = '{"geometryType":"esriGeometryPolyline","spatialReference":{"wkid":"4326"},"fields": [],"features":[{"geometry": {"type":"polyline", "paths":[' + JSON.stringify(feature.geometry.coordinates) + ']}}]}';
                             //make the request
-                            _this.cursorStyle = 'wait';
+                            //this.cursorStyle = 'wait';
                             _this.toaster.pop("info", "Information", "Querying the elevation service...", 0);
                             _this.explorationService.elevationProfile(esriJSON);
                             //disable button 
