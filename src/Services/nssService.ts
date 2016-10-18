@@ -35,7 +35,8 @@ module StreamStats.Services {
         showFlowsTable: boolean;
         clearNSSdata();
         queriedRegions: boolean;
-        loadingParametersByStatisticsGroup: boolean;        
+        loadingParametersByStatisticsGroup: boolean;      
+        reportGenerated: boolean;  
     }
     export interface IStatisticsGroup {
         ID: string;

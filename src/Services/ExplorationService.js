@@ -70,18 +70,28 @@ var StreamStats;
                 //do ajax call for future precip layer, needs to happen even if only runoff value is needed for this region
                 this.Execute(request).then(function (response) {
                     //console.log('elevation profile response: ', response.data);
-                    var coords = response.data.results[0].value.features[0].geometry.paths[0];
-                    if (coords.length > 0) {
-                        _this.elevationProfileGeoJSON = {
-                            "name": "NewFeatureType", "type": "FeatureCollection",
-                            "features": [
-                                { "type": "Feature", "geometry": { "type": "LineString", "coordinates": coords }, "properties": "" }
-                            ]
-                        };
+                    if (response.data && response.data.results > 0) {
+                        var coords = response.data.results[0].value.features[0].geometry.paths[0];
+                        if (coords.length > 0) {
+                            _this.elevationProfileGeoJSON = {
+                                "name": "NewFeatureType", "type": "FeatureCollection",
+                                "features": [
+                                    { "type": "Feature", "geometry": { "type": "LineString", "coordinates": coords }, "properties": "" }
+                                ]
+                            };
+                        }
+                    }
+                    else {
+                        console.error("There was a zero length response from the elevation service");
+                        _this.toaster.clear();
+                        _this.toaster.pop("error", "Error", "No elevation results are available here", 0);
                     }
                     //sm when complete
                 }, function (error) {
                     //sm when error
+                    console.error("There was an error requestion the elevation service");
+                    _this.toaster.clear();
+                    _this.toaster.pop("error", "Error processing request", "Please try again", 0);
                 }).finally(function () {
                 });
             };
@@ -147,7 +157,7 @@ var StreamStats;
                     //sm when complete
                 }, function (error) {
                     //sm when error                    
-                    _this.toaster.pop("error", "Error processing request, please try again", 0);
+                    _this.toaster.pop("error", "Error processing request", "Please try again", 0);
                     _this.eventManager.RaiseEvent(Services.onSelectedMethodExecuteComplete, _this, ExplorationServiceEventArgs.Empty);
                 }).finally(function () {
                     //busy

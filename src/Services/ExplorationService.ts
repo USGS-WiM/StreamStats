@@ -102,20 +102,33 @@ module StreamStats.Services {
             this.Execute(request).then(
                 (response: any) => {
                     //console.log('elevation profile response: ', response.data);
-                    var coords = response.data.results[0].value.features[0].geometry.paths[0];
 
-                    if (coords.length > 0) {
+                    if (response.data && response.data.results > 0) {
+                        var coords = response.data.results[0].value.features[0].geometry.paths[0];
 
-                        this.elevationProfileGeoJSON = {
-                            "name": "NewFeatureType", "type": "FeatureCollection"
-                            , "features": [
-                                { "type": "Feature", "geometry": { "type": "LineString", "coordinates": coords }, "properties": "" }
-                            ]
-                        };
+                        if (coords.length > 0) {
+
+                            this.elevationProfileGeoJSON = {
+                                "name": "NewFeatureType", "type": "FeatureCollection"
+                                , "features": [
+                                    { "type": "Feature", "geometry": { "type": "LineString", "coordinates": coords }, "properties": "" }
+                                ]
+                            };
+                        }
                     }
-                    //sm when complete
+
+                    else {
+                        console.error("There was a zero length response from the elevation service");
+                        this.toaster.clear();
+                        this.toaster.pop("error", "Error", "No elevation results are available here", 0);
+                    }
+                        //sm when complete
+
                 },(error) => {
                     //sm when error
+                    console.error("There was an error requestion the elevation service");
+                    this.toaster.clear();
+                    this.toaster.pop("error", "Error processing request", "Please try again", 0);
 
                 }).finally(() => {
 
@@ -187,7 +200,7 @@ module StreamStats.Services {
                     //sm when complete
                 }, (error) => {
                     //sm when error                    
-                    this.toaster.pop("error", "Error processing request, please try again", 0);
+                    this.toaster.pop("error", "Error processing request", "Please try again", 0);
                     this.eventManager.RaiseEvent(onSelectedMethodExecuteComplete, this, ExplorationServiceEventArgs.Empty);
 
                 }).finally(() => {

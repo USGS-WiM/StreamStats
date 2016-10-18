@@ -620,7 +620,7 @@ module StreamStats.Controllers {
                         var esriJSON = '{"geometryType":"esriGeometryPolyline","spatialReference":{"wkid":"4326"},"fields": [],"features":[{"geometry": {"type":"polyline", "paths":[' + JSON.stringify(feature.geometry.coordinates) + ']}}]}'
 
                         //make the request
-                        this.cursorStyle = 'wait'
+                        //this.cursorStyle = 'wait';
                         this.toaster.pop("info", "Information", "Querying the elevation service...", 0);
                         this.explorationService.elevationProfile(esriJSON)
 
@@ -676,7 +676,7 @@ module StreamStats.Controllers {
             });
 
             this.toaster.clear();
-            this.cursorStyle = 'pointer'
+            this.cursorStyle = 'pointer';
         }
 
         private showLocation() {
