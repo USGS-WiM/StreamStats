@@ -118,7 +118,9 @@
                                     <th>Value</th>
                                     <th ng-show ="vm.studyAreaService.Disclaimers.isRegulated">Unregulated Value</th>  
                                     <th>Unit</th>
-                                    <th>Prediction Error</th>
+                                    <th ng-show="RegressionRegion.Results[0].Errors[0].Value">Prediction Error</th>
+                                    <th ng-show="RegressionRegion.Results[0].IntervalBounds.Lower">Lower Prediction Interval</th>
+                                    <th ng-show="RegressionRegion.Results[0].IntervalBounds.Upper">Upper Prediction Interval</th>
                                 </tr>
                                 </thead>
                                 <tbody >
@@ -127,7 +129,9 @@
                                         <td ng-bind="parameter.Value.toUSGSvalue()"></td>
                                         <td ng-show="vm.studyAreaService.Disclaimers.isRegulated" ng-bind="parameter.unRegulatedValue.toUSGSvalue()"></td>
                                         <td ng-bind="parameter.Unit.Abbr"></td>
-                                        <td ng-bind="(parameter.Errors[0].Value) ? parameter.Errors[0].Value : '--'"></td>   <!--  SHOW SOME DASHES IF ERROR IS BLANK -->
+                                        <td ng-show="parameter.Errors[0].Value" ng-bind="(parameter.Errors[0].Value) ? parameter.Errors[0].Value : '--'"></td>   <!--  SHOW SOME DASHES IF ERROR IS BLANK -->
+                                        <td ng-show="parameter.IntervalBounds.Lower" ng-bind="parameter.IntervalBounds.Lower.toUSGSvalue()"></td>
+                                        <td ng-show="parameter.IntervalBounds.Upper" ng-bind="parameter.IntervalBounds.Upper.toUSGSvalue()"></td>
                                     </tr>
                                 </tbody>
                             </table>

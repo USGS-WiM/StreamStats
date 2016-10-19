@@ -248,7 +248,7 @@ module StreamStats.Controllers {
                     if (regressionRegion.PercentWeight) regionPercent = regressionRegion.PercentWeight.toFixed(0) + ' Percent ';
                     else regionPercent = '';
                     finalVal += statGroup.Name + ' Flow Report, ' + regionPercent + regressionRegion.Name.split("_").join(" ") + '\n';
-                    finalVal += 'Name,Value,Unit,Prediction Error\n'
+                    finalVal += 'Name,Value,Unit,Prediction Error,Lower Prediction Interval,Upper Prediction Interval\n'
 
                     regressionRegion.Results.forEach((item) => {
                         //console.log('ScenarioFlowTable regressionRegion item: ', item);
@@ -258,7 +258,12 @@ module StreamStats.Controllers {
                         var errors;
                         if (item.Errors) errors = item.Errors[0].Value;
                         else errors = '--';
-                        finalVal += item.Name + ',' + item.Value.toFixed(0) + ',' + unit + ',' + errors + '\n';
+                        var lowerPredictionInterval;
+                        item.IntervalBounds.Lower ? lowerPredictionInterval = item.IntervalBounds.Lower : lowerPredictionInterval = '--'
+                        var upperPredictionInterval;
+                        item.IntervalBounds.Upper ? upperPredictionInterval = item.IntervalBounds.Upper : upperPredictionInterval = '--'
+
+                        finalVal += item.Name + ',' + item.Value.toUSGSvalue() + ',' + unit + ',' + errors + ',' + lowerPredictionInterval.toUSGSvalue() + ',' + upperPredictionInterval.toUSGSvalue() + '\n';
                     });
                 });
                 return finalVal + '\n';
