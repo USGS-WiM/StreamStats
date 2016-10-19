@@ -215,7 +215,7 @@ configuration.regions = [
 			//}
 		},
 		"Applications": [],
-		"ScenariosAvailable": false
+		"ScenariosAvailable": true
     },
     { "RegionID": "ID", "Name": "Idaho", "Bounds": [[41.994599,-117.236921],[48.99995,-111.046771]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "IL", "Name": "Illinois", "Bounds": [[36.986822,-91.516284],[42.509363,-87.507909]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
