@@ -70,9 +70,10 @@ var StreamStats;
                 //do ajax call for future precip layer, needs to happen even if only runoff value is needed for this region
                 this.Execute(request).then(function (response) {
                     //console.log('elevation profile response: ', response.data);
-                    if (response.data && response.data.results > 0) {
+                    if (response.data && response.data.results) {
                         var coords = response.data.results[0].value.features[0].geometry.paths[0];
                         if (coords.length > 0) {
+                            //console.log('coords: ', coords)
                             _this.elevationProfileGeoJSON = {
                                 "name": "NewFeatureType", "type": "FeatureCollection",
                                 "features": [
