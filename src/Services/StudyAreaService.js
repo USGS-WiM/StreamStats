@@ -140,18 +140,17 @@ var StreamStats;
                         _this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
                         _this.selectedStudyArea.Date = new Date();
                         //check for global
-                        _this.selectedStudyArea.Features.forEach(function (item) {
-                            if (item.name == "globalwatershed") {
-                                angular.forEach(item.feature.features[0].properties, function (i, v) {
-                                    console.log(v, i);
-                                    if (v == "GlobalWshd" && i == 1) {
-                                        _this.selectedStudyArea.isGlobal = true;
-                                    }
-                                    else
-                                        _this.selectedStudyArea.isGlobal = false;
-                                });
-                            }
-                        });
+                        //this.selectedStudyArea.Features.forEach((item) => { 
+                        //    if (item.name == "globalwatershed") {
+                        //        angular.forEach(item.feature.features[0].properties, (i,v) => {
+                        //            console.log(v, i);
+                        //            if (v == "GlobalWshd" && i == 1) {
+                        //                this.selectedStudyArea.isGlobal = true;
+                        //            }
+                        //            else this.selectedStudyArea.isGlobal = false;
+                        //        });
+                        //    }
+                        //});
                         _this.toaster.clear();
                         _this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, _this, StudyAreaEventArgs.Empty);
                         _this.canUpdate = true;
