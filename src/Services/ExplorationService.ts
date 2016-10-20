@@ -103,10 +103,11 @@ module StreamStats.Services {
                 (response: any) => {
                     //console.log('elevation profile response: ', response.data);
 
-                    if (response.data && response.data.results > 0) {
+                    if (response.data && response.data.results) {
                         var coords = response.data.results[0].value.features[0].geometry.paths[0];
 
                         if (coords.length > 0) {
+                            //console.log('coords: ', coords)
 
                             this.elevationProfileGeoJSON = {
                                 "name": "NewFeatureType", "type": "FeatureCollection"
