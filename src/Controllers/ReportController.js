@@ -168,6 +168,14 @@ var StreamStats;
                     });
                     return finalVal + '\n';
                 };
+                var processDisclaimers = function (statGroup) {
+                    //console.log('Process disclaimers statGroup: ', statGroup);
+                    var finalVal = '*** ' + statGroup.Name + ' Disclaimers ***\n';
+                    angular.forEach(statGroup.Disclaimers, function (i, v) {
+                        finalVal += v + ',' + i + '\n';
+                    });
+                    return finalVal + '\n';
+                };
                 var processScenarioFlowTable = function (statGroup) {
                     //console.log('ScenarioFlowTable statGroup: ', statGroup);
                     var finalVal = '';
@@ -182,21 +190,19 @@ var StreamStats;
                         finalVal += 'Name,Value,Unit,Prediction Error,Lower Prediction Interval,Upper Prediction Interval\n';
                         regressionRegion.Results.forEach(function (item) {
                             //console.log('ScenarioFlowTable regressionRegion item: ', item);
-                            var unit;
+                            var unit = '';
                             if (item.Unit)
                                 unit = item.Unit.Abbr;
-                            else
-                                unit = '';
-                            var errors;
+                            var errors = '--';
                             if (item.Errors)
                                 errors = item.Errors[0].Value;
-                            else
-                                errors = '--';
-                            var lowerPredictionInterval;
-                            item.IntervalBounds.Lower ? lowerPredictionInterval = item.IntervalBounds.Lower : lowerPredictionInterval = '--';
-                            var upperPredictionInterval;
-                            item.IntervalBounds.Upper ? upperPredictionInterval = item.IntervalBounds.Upper : upperPredictionInterval = '--';
-                            finalVal += item.Name + ',' + item.Value.toUSGSvalue() + ',' + unit + ',' + errors + ',' + lowerPredictionInterval.toUSGSvalue() + ',' + upperPredictionInterval.toUSGSvalue() + '\n';
+                            var lowerPredictionInterval = '--';
+                            if (item.IntervalBounds && item.IntervalBounds.Lower)
+                                lowerPredictionInterval = item.IntervalBounds.Lower.toPrecision(3);
+                            var upperPredictionInterval = '--';
+                            if (item.IntervalBounds && item.IntervalBounds.Upper)
+                                upperPredictionInterval = item.IntervalBounds.Upper.toPrecision(3);
+                            finalVal += item.Name + ',' + item.Value.toPrecision(3) + ',' + unit + ',' + errors + ',' + lowerPredictionInterval + ',' + upperPredictionInterval + '\n';
                         });
                     });
                     return finalVal + '\n';
@@ -206,6 +212,8 @@ var StreamStats;
                 csvFile += processParameterTable(this.studyAreaService.studyAreaParameterList);
                 this.nssService.selectedStatisticsGroupList.forEach(function (statGroup) {
                     csvFile += processScenarioParamTable(statGroup);
+                    if (statGroup.Disclaimers.Warnings || statGroup.Disclaimers.Errors)
+                        csvFile += processDisclaimers(statGroup);
                     csvFile += processScenarioFlowTable(statGroup);
                 });
                 var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
