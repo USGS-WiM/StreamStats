@@ -19,12 +19,30 @@
             <div id="printArea">
                 <h2>{{vm.reportTitle}}</h2>
                 <div ng-if="vm.studyAreaService.selectedStudyArea">
-                    <dl class="dl-horizontal">
+
+                    <div class="row">
+                        <div class="col-md-7"><strong>Region ID:</strong></div>
+                        <div class="col-md-5">{{vm.studyAreaService.selectedStudyArea.RegionID}}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-7"><strong>Workspace ID:</strong></div>
+                        <div class="col-md-5">{{vm.studyAreaService.selectedStudyArea.WorkspaceID}}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-7"><strong>Clicked Point (Latitude, Longitude):</strong></div>
+                        <div class="col-md-5">{{vm.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5)}}, {{vm.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5)}}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-7"><strong>Time:</strong></div>
+                        <div class="col-md-5">{{vm.studyAreaService.selectedStudyArea.Date | date:'yyyy-MM-dd HH:mm:ss Z'}}</div>
+                    </div>
+
+                    <!--<dl class="dl-horizontal">
                         <dt>Region ID:</dt><dd>{{vm.studyAreaService.selectedStudyArea.RegionID}}</dd>
                         <dt>Workspace ID:</dt><dd>{{vm.studyAreaService.selectedStudyArea.WorkspaceID}}</dd>
-                        <dt>Clicked Point (Latitude, Longitude):</dt><dd>{{vm.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5)}},{{vm.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5)}}</dd>
+                        <dt>Clicked Point (Latitude, Longitude):</dt><dd>{{vm.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5)}}, {{vm.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5)}}</dd>
                         <dt>Time:</dt><dd>{{vm.studyAreaService.selectedStudyArea.Date | date:'yyyy-MM-dd HH:mm:ss Z'}}</dd>
-                    </dl>
+                    </dl>-->
 
                     <leaflet id="reportMap" width="100%" height="400px" layers="vm.layers" center="vm.center" defaults="vm.defaults"></leaflet><br />
 
@@ -126,12 +144,12 @@
                                 <tbody >
                                     <tr ng-repeat="parameter in RegressionRegion.Results">
                                         <td>{{parameter.Name}}</td>
-                                        <td ng-bind="parameter.Value.toUSGSvalue()"></td>
-                                        <td ng-show="vm.studyAreaService.Disclaimers.isRegulated" ng-bind="parameter.unRegulatedValue.toUSGSvalue()"></td>
+                                        <td ng-bind="parameter.Value.toPrecision(3)"></td>
+                                        <td ng-show="vm.studyAreaService.Disclaimers.isRegulated" ng-bind="parameter.unRegulatedValue.toPrecision(3)"></td>
                                         <td ng-bind="parameter.Unit.Abbr"></td>
                                         <td ng-show="parameter.Errors[0].Value" ng-bind="(parameter.Errors[0].Value) ? parameter.Errors[0].Value : '--'"></td>   <!--  SHOW SOME DASHES IF ERROR IS BLANK -->
-                                        <td ng-show="parameter.IntervalBounds.Lower" ng-bind="parameter.IntervalBounds.Lower.toUSGSvalue()"></td>
-                                        <td ng-show="parameter.IntervalBounds.Upper" ng-bind="parameter.IntervalBounds.Upper.toUSGSvalue()"></td>
+                                        <td ng-show="parameter.IntervalBounds.Lower" ng-bind="parameter.IntervalBounds.Lower.toPrecision(3)"></td>
+                                        <td ng-show="parameter.IntervalBounds.Upper" ng-bind="parameter.IntervalBounds.Upper.toPrecision(3)"></td>
                                     </tr>
                                 </tbody>
                             </table>
