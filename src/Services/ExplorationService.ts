@@ -90,11 +90,13 @@ module StreamStats.Services {
         //-+-+-+-+-+-+-+-+-+-+-+-
         public elevationProfile(esriJSON) {
 
+            //ESRI elevation profile tool
+            //Help page: https://elevation.arcgis.com/arcgis/rest/directories/arcgisoutput/Tools/ElevationSync_GPServer/Tools_ElevationSync/Profile.htm
             var url = 'http://elevation.arcgis.com/arcgis/rest/services/Tools/ElevationSync/GPServer/Profile/execute';
 
             var request: WiM.Services.Helpers.RequestInfo =
                 new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST,
-                    'json', { InputLineFeatures: esriJSON, MaximumSampleDistanceUnits: 'feet', returnZ: true, f: 'json'},
+                    'json', { InputLineFeatures: esriJSON, returnZ: true, f: 'json'},
                     { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
                     WiM.Services.Helpers.paramsTransform);
 						
@@ -103,10 +105,23 @@ module StreamStats.Services {
                 (response: any) => {
                     //console.log('elevation profile response: ', response.data);
 
-                    if (response.data && response.data.results > 0) {
+                    if (response.data && response.data.results) {
                         var coords = response.data.results[0].value.features[0].geometry.paths[0];
 
                         if (coords.length > 0) {
+                            //console.log('coords before: ', coords)
+
+                            //convert elevation values if units are meters
+                            var units = 'feet';
+                            response.data.results[0].value.fields.forEach((field) => {
+                                if (field.name == "ProfileLength" && field.alias == "Length Meters") units = 'meters';
+                            });
+
+                            if (units = 'meters') {
+                                coords = coords.map((elem) => {
+                                    return [elem[0], elem[1], elem[2] * 3.28084]
+                                });
+                            }
 
                             this.elevationProfileGeoJSON = {
                                 "name": "NewFeatureType", "type": "FeatureCollection"
