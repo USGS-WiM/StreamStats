@@ -65,15 +65,28 @@ var StreamStats;
             //-+-+-+-+-+-+-+-+-+-+-+-
             ExplorationService.prototype.elevationProfile = function (esriJSON) {
                 var _this = this;
+                //ESRI elevation profile tool
+                //Help page: https://elevation.arcgis.com/arcgis/rest/directories/arcgisoutput/Tools/ElevationSync_GPServer/Tools_ElevationSync/Profile.htm
                 var url = 'http://elevation.arcgis.com/arcgis/rest/services/Tools/ElevationSync/GPServer/Profile/execute';
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', { InputLineFeatures: esriJSON, MaximumSampleDistanceUnits: 'feet', returnZ: true, f: 'json' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', { InputLineFeatures: esriJSON, returnZ: true, f: 'json' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
                 //do ajax call for future precip layer, needs to happen even if only runoff value is needed for this region
                 this.Execute(request).then(function (response) {
                     //console.log('elevation profile response: ', response.data);
                     if (response.data && response.data.results) {
                         var coords = response.data.results[0].value.features[0].geometry.paths[0];
                         if (coords.length > 0) {
-                            //console.log('coords: ', coords)
+                            //console.log('coords before: ', coords)
+                            //convert elevation values if units are meters
+                            var units = 'feet';
+                            response.data.results[0].value.fields.forEach(function (field) {
+                                if (field.name == "ProfileLength" && field.alias == "Length Meters")
+                                    units = 'meters';
+                            });
+                            if (units = 'meters') {
+                                coords = coords.map(function (elem) {
+                                    return [elem[0], elem[1], elem[2] * 3.28084];
+                                });
+                            }
                             _this.elevationProfileGeoJSON = {
                                 "name": "NewFeatureType", "type": "FeatureCollection",
                                 "features": [
