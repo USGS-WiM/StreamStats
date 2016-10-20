@@ -56,46 +56,46 @@ configuration.SupportTicketService = {
 
 configuration.basemaps =
 {
-    //"tnmBaseMap": {
-    //    "name": "USGS National Map",
-    //    "visible": true,
-    //    "type": 'group',
-    //    "layerOptions": {
-    //        "layers": [
-    //            {
-    //                "name": "tiles",
-    //                "url": "http://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer",
-    //                "type": 'agsTiled',
-    //                "layerOptions": {
-    //                    "opacity": 0.8,
-    //                    "minZoom": 0,
-    //                    "maxZoom": 15,
-    //                    "attribution": "<a href='http://www.doi.gov'>U.S. Department of the Interior</a> | <a href='http://www.usgs.gov'>U.S. Geological Survey</a> | <a href='http://www.usgs.gov/laws/policies_notices.html'>Policies</a>"
-    //                }
-    //            },
-    //            {
-    //                "name": "dynamic",
-    //                "url": "http://services.nationalmap.gov/arcgis/rest/services/USGSTopoLarge/MapServer",
-    //                "type": 'agsDynamic',
-    //                "layerOptions": {
-    //                    "format": "png8",
-    //                    "f": "image",
-    //                    "position": "back",
-    //                    "opacity": 0.7,
-    //                    "zIndex": -100,
-    //                    "minZoom": 16,
-    //                    "maxZoom": 20,
-    //                    "attribution": "<a href='http://www.doi.gov'>U.S. Department of the Interior</a> | <a href='http://www.usgs.gov'>U.S. Geological Survey</a> | <a href='http://www.usgs.gov/laws/policies_notices.html'>Policies</a>"
-    //                }
-    //            }
-    //        ]
-    //    }
-    //},
     natgeo: {
         name: "National Geographic",
         type: "agsBase",
         layer: "NationalGeographic",
         visible: true
+    },
+    tnmBaseMap: {
+        "name": "USGS National Map",
+        "visible": false,
+        "type": 'group',
+        "layerOptions": {
+            "layers": [
+                {
+                    "name": "tiles",
+                    "url": "http://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer",
+                    "type": 'agsTiled',
+                    "layerOptions": {
+                        "opacity": 0.8,
+                        "minZoom": 0,
+                        "maxZoom": 15,
+                        "attribution": "<a href='http://www.doi.gov'>U.S. Department of the Interior</a> | <a href='http://www.usgs.gov'>U.S. Geological Survey</a> | <a href='http://www.usgs.gov/laws/policies_notices.html'>Policies</a>"
+                    }
+                },
+                {
+                    "name": "dynamic",
+                    "url": "http://services.nationalmap.gov/arcgis/rest/services/USGSTopoLarge/MapServer",
+                    "type": 'agsDynamic',
+                    "layerOptions": {
+                        "format": "png8",
+                        "f": "image",
+                        "position": "back",
+                        "opacity": 0.7,
+                        "zIndex": -100,
+                        "minZoom": 16,
+                        "maxZoom": 20,
+                        "attribution": "<a href='http://www.doi.gov'>U.S. Department of the Interior</a> | <a href='http://www.usgs.gov'>U.S. Geological Survey</a> | <a href='http://www.usgs.gov/laws/policies_notices.html'>Policies</a>"
+                    }
+                }
+            ]
+        }
     },
     streets: {
         name: "ESRI Streets",
