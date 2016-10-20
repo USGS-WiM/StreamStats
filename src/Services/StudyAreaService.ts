@@ -199,17 +199,17 @@ module StreamStats.Services {
                         this.selectedStudyArea.Date = new Date();
 
                         //check for global
-                        this.selectedStudyArea.Features.forEach((item) => {  //[1].feature.features[0].properties.forEach((i,v) => {
-                            if (item.name == "globalwatershed") {
-                                angular.forEach(item.feature.features[0].properties, (i,v) => {
-                                    console.log(v, i);
-                                    if (v == "GlobalWshd" && i == 1) {
-                                        this.selectedStudyArea.isGlobal = true;
-                                    }
-                                    else this.selectedStudyArea.isGlobal = false;
-                                });
-                            }
-                        });
+                        //this.selectedStudyArea.Features.forEach((item) => { 
+                        //    if (item.name == "globalwatershed") {
+                        //        angular.forEach(item.feature.features[0].properties, (i,v) => {
+                        //            console.log(v, i);
+                        //            if (v == "GlobalWshd" && i == 1) {
+                        //                this.selectedStudyArea.isGlobal = true;
+                        //            }
+                        //            else this.selectedStudyArea.isGlobal = false;
+                        //        });
+                        //    }
+                        //});
 
                         this.toaster.clear();
                         this.eventManager.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);
