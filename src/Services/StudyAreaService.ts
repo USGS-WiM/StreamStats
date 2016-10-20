@@ -197,6 +197,20 @@ module StreamStats.Services {
                         this.selectedStudyArea.Features = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"] : null;
                         this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
                         this.selectedStudyArea.Date = new Date();
+
+                        //check for global
+                        this.selectedStudyArea.Features.forEach((item) => {  //[1].feature.features[0].properties.forEach((i,v) => {
+                            if (item.name == "globalwatershed") {
+                                angular.forEach(item.feature.features[0].properties, (i,v) => {
+                                    console.log(v, i);
+                                    if (v == "GlobalWshd" && i == 1) {
+                                        this.selectedStudyArea.isGlobal = true;
+                                    }
+                                    else this.selectedStudyArea.isGlobal = false;
+                                });
+                            }
+                        });
+
                         this.toaster.clear();
                         this.eventManager.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);
                         this.canUpdate = true;
@@ -230,7 +244,8 @@ module StreamStats.Services {
                     (response: any) => {                        
                         this.selectedStudyArea.Features = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"] : null;                        
                         this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
-                        this.selectedStudyArea.Date = new Date();
+                        this.selectedStudyArea.Date = new Date();                   
+
                         //set point
                         this.selectedStudyArea.Features.forEach((layer) => { 
                             var item = angular.fromJson(angular.toJson(layer));
