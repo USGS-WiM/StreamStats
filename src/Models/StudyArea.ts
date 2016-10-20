@@ -35,6 +35,7 @@ module StreamStats.Models {
         Date: Date;
         Parameters: Array<WiM.Models.IParameter>;
         Disclaimers: Object;
+        isGlobal: boolean;
     }
 
     export class StudyArea implements IStudyArea {
@@ -50,6 +51,7 @@ module StreamStats.Models {
         public Date: Date;
         public Parameters: Array<WiM.Models.IParameter>;
         public Disclaimers: Object;
+        public isGlobal: boolean;
         //public Scenarios: Array<WiM.Models.IScenario>;
 
         constructor(region: string, point: WiM.Models.IPoint) {

@@ -139,6 +139,19 @@ var StreamStats;
                         _this.selectedStudyArea.Features = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"] : null;
                         _this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
                         _this.selectedStudyArea.Date = new Date();
+                        //check for global
+                        _this.selectedStudyArea.Features.forEach(function (item) {
+                            if (item.name == "globalwatershed") {
+                                angular.forEach(item.feature.features[0].properties, function (i, v) {
+                                    console.log(v, i);
+                                    if (v == "GlobalWshd" && i == 1) {
+                                        _this.selectedStudyArea.isGlobal = true;
+                                    }
+                                    else
+                                        _this.selectedStudyArea.isGlobal = false;
+                                });
+                            }
+                        });
                         _this.toaster.clear();
                         _this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, _this, StudyAreaEventArgs.Empty);
                         _this.canUpdate = true;
