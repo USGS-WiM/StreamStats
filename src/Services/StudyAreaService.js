@@ -158,13 +158,14 @@ var StreamStats;
                     else {
                         _this.clearStudyArea();
                         _this.toaster.clear();
-                        _this.toaster.pop("error", "Error Delineating Basin", "Please retry", 0);
+                        _this.toaster.pop("error", "A watershed was not returned from the delineation request", "Please retry", 0);
                     }
                     //sm when complete
                 }, function (error) {
                     //sm when error
+                    _this.clearStudyArea();
                     _this.toaster.clear();
-                    _this.toaster.pop("error", "Error Delineating Basin", "Please retry", 0);
+                    _this.toaster.pop("error", "There was an HTTP error with the delineation request", "Please retry", 0);
                 }).finally(function () {
                 });
             };

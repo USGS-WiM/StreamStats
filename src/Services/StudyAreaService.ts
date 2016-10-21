@@ -218,13 +218,14 @@ module StreamStats.Services {
                     else {
                         this.clearStudyArea();
                         this.toaster.clear();
-                        this.toaster.pop("error", "Error Delineating Basin", "Please retry", 0);
+                        this.toaster.pop("error", "A watershed was not returned from the delineation request", "Please retry", 0);
                     }
                     //sm when complete
                 },(error) => {
                     //sm when error
+                    this.clearStudyArea();
                     this.toaster.clear();
-                    this.toaster.pop("error", "Error Delineating Basin", "Please retry", 0);
+                    this.toaster.pop("error", "There was an HTTP error with the delineation request", "Please retry", 0);
                 }).finally(() => {
                     
             });
