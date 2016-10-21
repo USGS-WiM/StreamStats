@@ -149,17 +149,18 @@ module StreamStats.Services {
         //intersect method modified from
         //http://stackoverflow.com/questions/2752349/fast-rectangle-to-rectangle-intersection
         public intersect(a, b) {
-            return Math.max(a.left, b.left) < Math.min(a.right, b.right) &&
-                Math.min(a.top, b.top) > Math.max(a.bottom, a.bottom);
+            return Math.max(a.left, b.left) < Math.min(a.right, b.right) && Math.min(a.top, b.top) > Math.max(a.bottom, b.bottom);
         }
 
         public loadRegionListByExtent(xmin: number, xmax: number, ymin: number, ymax: number, sr: number = 4326) {
-
-            this.regionList.length = 0;
+            this.regionList = [];
             var a = { "top": ymax, "bottom": ymin, "left": xmax, "right": xmin }
+
             configuration.regions.forEach((value, key) => {
                 var b = { "top": value.Bounds[1][0], "bottom": value.Bounds[0][0], "left": value.Bounds[0][1], "right": value.Bounds[1][1] }
-                if (this.intersect(a, b)) this.regionList.push(value);
+                if (this.intersect(a, b)) {
+                    this.regionList.push(value);
+                }
             });
         }
         public loadRegionListByRegion(regionid: string): boolean{

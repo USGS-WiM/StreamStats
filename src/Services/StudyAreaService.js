@@ -293,7 +293,7 @@ var StreamStats;
                 }, function (error) {
                     //sm when error
                     _this.toaster.clear();
-                    _this.toaster.pop("error", "Error Calculating Basin Characteristics", "Please retry", 0);
+                    _this.toaster.pop("error", "There was an HTTP error calculating basin characteristics", "Please retry", 0);
                 }).finally(function () {
                     //this.canUpdate = true;
                     _this.parametersLoading = false;

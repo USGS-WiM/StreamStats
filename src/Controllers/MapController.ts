@@ -1126,7 +1126,6 @@ module StreamStats.Controllers {
         }
 
         private mapBoundsChange(oldValue, newValue) {
-
             this.nomnimalZoomLevel = this.scaleLookup(this.center.zoom);
 
             if (this.center.zoom >= 8 && oldValue !== newValue) {
