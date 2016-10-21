@@ -382,7 +382,7 @@ module StreamStats.Services {
                 },(error) => {
                     //sm when error
                     this.toaster.clear();
-                    this.toaster.pop("error", "Error Calculating Basin Characteristics", "Please retry", 0);
+                    this.toaster.pop("error", "There was an HTTP error calculating basin characteristics", "Please retry", 0);
                 }).finally(() => {
                     //this.canUpdate = true;
                     this.parametersLoading = false;
