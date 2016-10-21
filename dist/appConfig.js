@@ -229,7 +229,7 @@ configuration.regions = [
     { "RegionID": "MI", "Name": "Michigan", "Bounds": [[41.697494,-90.4082],[48.173795,-82.419836]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "MN", "Name": "Minnesota", "Bounds": [[43.498102,-97.229436],[49.37173,-89.530673]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
 	{ "RegionID": "MO", "Name": "Missouri", "Bounds": [[35.989656,-95.767479],[40.609784,-89.105034]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
-    { "RegionID": "MS", "Name": "Mississippi", "Bounds": [[30.194935,-91.643682],[35.005041,-88.090468]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
+    { "RegionID": "MS", "Name": "Mississippi", "Bounds": [[30.194935,-91.643682],[35.005041,-88.090468]], "Layers": {}, "Applications": [], "ScenariosAvailable": false },
     { "RegionID": "MT", "Name": "Montana", "Bounds": [[44.353639,-116.063531],[49.000026,-104.043072]], "Layers": 
 		{
             "MT_Regulation": {
