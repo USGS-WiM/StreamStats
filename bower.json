@@ -37,7 +37,7 @@
     "angularjs-slider": "^2.9.0",
     "angular-nvd3": "^1.0.5",
     "ng-file-upload": "~12.0.1",
-    "wim-styles": "https://github.com/USGS-WiM/wim-styles.git#^0.0.2",
+    "wim-styles": "https://github.com/USGS-WiM/wim-styles.git#^0.0.3",
     "Leaflet.Elevation": "https://github.com/aaronblondeau/Leaflet.Elevation.git#718286ac51775baf460c7b67f4dffa15280fa3a7"
   }
 }
