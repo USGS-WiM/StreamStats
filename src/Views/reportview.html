@@ -144,12 +144,12 @@
                                 <tbody >
                                     <tr ng-repeat="parameter in RegressionRegion.Results">
                                         <td>{{parameter.Name}}</td>
-                                        <td ng-bind="parameter.Value.toPrecision(3)"></td>
-                                        <td ng-show="vm.studyAreaService.Disclaimers.isRegulated" ng-bind="parameter.unRegulatedValue.toPrecision(3)"></td>
+                                        <td ng-bind="parameter.Value.toUSGSvalue()"></td>
+                                        <td ng-show="vm.studyAreaService.Disclaimers.isRegulated" ng-bind="parameter.unRegulatedValue.toUSGSvalue()"></td>
                                         <td ng-bind="parameter.Unit.Abbr"></td>
                                         <td ng-show="parameter.Errors[0].Value" ng-bind="(parameter.Errors[0].Value) ? parameter.Errors[0].Value : '--'"></td>   <!--  SHOW SOME DASHES IF ERROR IS BLANK -->
-                                        <td ng-show="parameter.IntervalBounds.Lower" ng-bind="parameter.IntervalBounds.Lower.toPrecision(3)"></td>
-                                        <td ng-show="parameter.IntervalBounds.Upper" ng-bind="parameter.IntervalBounds.Upper.toPrecision(3)"></td>
+                                        <td ng-show="parameter.IntervalBounds.Lower" ng-bind="parameter.IntervalBounds.Lower.toUSGSvalue()"></td>
+                                        <td ng-show="parameter.IntervalBounds.Upper" ng-bind="parameter.IntervalBounds.Upper.toUSGSvalue()"></td>
                                     </tr>
                                 </tbody>
                             </table>
