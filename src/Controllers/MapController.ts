@@ -1132,6 +1132,11 @@ module StreamStats.Controllers {
                 //console.log('requesting region list');
                 this.regionServices.loadRegionListByExtent(this.bounds.northEast.lng, this.bounds.southWest.lng,
                     this.bounds.southWest.lat, this.bounds.northEast.lat);
+
+                if (!this.regionServices.selectedRegion) {
+                    this.toaster.clear();
+                    this.toaster.pop("info", "Information", "User input is needed to continue", 5000);
+                }
             }
 
             if (this.center.zoom < 8 && oldValue !== newValue) {
@@ -1140,20 +1145,6 @@ module StreamStats.Controllers {
                 this.regionServices.regionList = [];
             }
             
-            //if a region was selected, and then user zooms back out, clear and start over
-            //if (this.center.zoom <= 5 && oldValue !== newValue) {
-            //    ////console.log('removing region layers', this.layers.overlays);
-
-            //    this.regionServices.clearRegion();
-            //    this.studyArea.clearStudyArea();
-            //    this.nssService.clearNSSdata();
-
-            //    ////THIS IS JUST THROWING AN ANGULAR LEAFLET ERROR EVEN THOUGH SAME AS DOCS
-            //    //// http://tombatossals.github.io/angular-leaflet-directive/examples/0000-viewer.html#/layers/dynamic-addition-example
-            //    //this.removeOverlayLayers("_region", true)
-            //    ////this.onSelectedRegionChanged();
-            //}
-
             if (this.center.zoom >= 15) {
                 this.studyArea.showDelineateButton = true;
             }
