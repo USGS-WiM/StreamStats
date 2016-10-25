@@ -268,11 +268,11 @@ module StreamStats.Controllers {
                         var errors = '--';
                         if (item.Errors) errors = item.Errors[0].Value;
                         var lowerPredictionInterval = '--';
-                        if (item.IntervalBounds && item.IntervalBounds.Lower) lowerPredictionInterval = item.IntervalBounds.Lower.toPrecision(3);
+                        if (item.IntervalBounds && item.IntervalBounds.Lower) lowerPredictionInterval = item.IntervalBounds.Lower.toUSGSvalue();
                         var upperPredictionInterval = '--';
-                        if (item.IntervalBounds && item.IntervalBounds.Upper) upperPredictionInterval = item.IntervalBounds.Upper.toPrecision(3);
+                        if (item.IntervalBounds && item.IntervalBounds.Upper) upperPredictionInterval = item.IntervalBounds.Upper.toUSGSvalue();
 
-                        finalVal += item.Name + ',' + item.Value.toPrecision(3) + ',' + unit + ',' + errors + ',' + lowerPredictionInterval + ',' + upperPredictionInterval + '\n';
+                        finalVal += item.Name + ',' + item.Value.toUSGSvalue() + ',' + unit + ',' + errors + ',' + lowerPredictionInterval + ',' + upperPredictionInterval + '\n';
                     });
                 });
                 return finalVal + '\n';
