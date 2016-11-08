@@ -209,7 +209,7 @@
                             <tbody>
                                 <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList" ng-form="paramaterForm">
                                     <td ng-bind="parameter.name"></td>
-                                    <td ng-hide="vm.studyAreaService.Disclaimers.isRegulated"><input class="form-control" ng-class="{notloaded:!parameter.loaded}" ng-change="vm.studyAreaService.Disclaimers.parametersEdited = true" ng-model="parameter.value" type="text" /></td>
+                                    <td ng-hide="vm.studyAreaService.Disclaimers.isRegulated"><input class="form-control" ng-class="{notloaded:!parameter.loaded}" ng-change="vm.studyAreaService.Disclaimers.parametersEdited = true; vm.updateParameterValue(parameter)" ng-model="parameter.value" type="text" /></td>
                                     <td ng-show="vm.studyAreaService.Disclaimers.isRegulated"><input class="form-control" ng-change="vm.studyAreaService.Disclaimers.parametersEdited = true" ng-model="parameter.unRegulatedValue" type="text" /></td>
                                     <td ng-show="vm.studyAreaService.Disclaimers.isRegulated"><input class="form-control" ng-change="vm.studyAreaService.Disclaimers.parametersEdited = true" ng-model="parameter.regulatedValue" type="text" /></td>
                                     <!--<td ng-hide="parameter.loaded"><button class="btn-wim-sm btn-wim-success" ng-click="vm.calculateParameters()"><i class="fa fa-refresh"></i></button></td>-->
