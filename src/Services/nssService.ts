@@ -35,7 +35,7 @@ module StreamStats.Services {
         showFlowsTable: boolean;
         clearNSSdata();
         queriedRegions: boolean;
-        loadingParametersByStatisticsGroup: boolean;      
+        loadingParametersByStatisticsGroup: number;      
         reportGenerated: boolean;  
     }
     export interface IStatisticsGroup {
@@ -75,7 +75,7 @@ module StreamStats.Services {
         public showBasinCharacteristicsTable: boolean;
         public showFlowsTable: boolean;
         public queriedRegions: boolean;
-        public loadingParametersByStatisticsGroup: boolean;
+        public loadingParametersByStatisticsGroup: number;
         public isDone: boolean;
         public reportGenerated: boolean;
         private modalService: Services.IModalService;   
@@ -94,11 +94,11 @@ module StreamStats.Services {
         //-+-+-+-+-+-+-+-+-+-+-+-
         public clearNSSdata() {
             //console.log('in clear nss data');
+            this.loadingParametersByStatisticsGroup = 0;
             this.selectedStatisticsGroupList = [];
             this.statisticsGroupList = [];
             this.canUpdate = true;
             this.queriedRegions = false;
-            this.loadingParametersByStatisticsGroup = false;
             this.isDone = false;
             this.reportGenerated = false;
         }
@@ -152,7 +152,7 @@ module StreamStats.Services {
         public loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregions: string, percentWeights: any) {
 
             this.toaster.pop('wait', "Loading Parameters by Statistics Group", "Please wait...", 0);
-            this.loadingParametersByStatisticsGroup = true;
+            this.loadingParametersByStatisticsGroup += 1;
 
             //console.log('in load StatisticsGroup parameters', rcode, statisticsGroupID,regressionregions);
             if (!rcode && !statisticsGroupID && !regressionregions) return;
@@ -164,7 +164,7 @@ module StreamStats.Services {
                 (response: any) => {
 
                     //console.log('loadParams: ', response.data[0]);
-                    this.loadingParametersByStatisticsGroup = false;
+                    this.loadingParametersByStatisticsGroup -= 1;
 
                     //check to make sure there is a valid response
                     if (response.data[0].RegressionRegions[0].Parameters && response.data[0].RegressionRegions[0].Parameters.length > 0) {
@@ -238,7 +238,7 @@ module StreamStats.Services {
                 this.Execute(request).then(
                     (response: any) => {
 
-                        //console.log('estimate flows: ', response);
+                        console.log('estimate flows: ', response);
 
                         //nested requests for citations
                         var citationUrl = response.data[0].Links[0].Href;
@@ -261,7 +261,7 @@ module StreamStats.Services {
 
                         //if (append) console.log('in estimate flows for regulated basins: ', response);
                         //make sure there are some results
-                        if (response.data[0].RegressionRegions[0].Results && response.data[0].RegressionRegions[0].Results.length > 0) {
+                        if (response.data[0].RegressionRegions.length > 0 && response.data[0].RegressionRegions[0].Results && response.data[0].RegressionRegions[0].Results.length > 0) {
 
                             this.toaster.clear();
                             if (!append) {
@@ -328,6 +328,7 @@ module StreamStats.Services {
         private getSelectedCitations(citationUrl: string, statGroup: any): any {
 
             //nested requests for citations
+            console.log('citations: ', citationUrl, statGroup);
             this.toaster.pop('wait', "Requesting selected citations", "Please wait...", 5000);
             var url = citationUrl;
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, 0, 'json');
@@ -345,7 +346,7 @@ module StreamStats.Services {
                     //sm when complete
                 },(error) => {
                     //sm when error
-                    this.toaster.clear();
+                    //this.toaster.clear();
                     this.toaster.pop('error', "There was an error getting selected Citations", "Please retry", 0);
                 }).finally(() => {
             });
