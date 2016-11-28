@@ -35,7 +35,7 @@ module StreamStats.Services {
         showFlowsTable: boolean;
         clearNSSdata();
         queriedRegions: boolean;
-        loadingParametersByStatisticsGroup: boolean;      
+        loadingParametersByStatisticsGroup: number;      
         reportGenerated: boolean;  
     }
     export interface IStatisticsGroup {
@@ -75,7 +75,7 @@ module StreamStats.Services {
         public showBasinCharacteristicsTable: boolean;
         public showFlowsTable: boolean;
         public queriedRegions: boolean;
-        public loadingParametersByStatisticsGroup: boolean;
+        public loadingParametersByStatisticsGroup: number;
         public isDone: boolean;
         public reportGenerated: boolean;
         private modalService: Services.IModalService;   
@@ -94,11 +94,11 @@ module StreamStats.Services {
         //-+-+-+-+-+-+-+-+-+-+-+-
         public clearNSSdata() {
             //console.log('in clear nss data');
+            this.loadingParametersByStatisticsGroup = 0;
             this.selectedStatisticsGroupList = [];
             this.statisticsGroupList = [];
             this.canUpdate = true;
             this.queriedRegions = false;
-            this.loadingParametersByStatisticsGroup = false;
             this.isDone = false;
             this.reportGenerated = false;
         }
@@ -152,7 +152,7 @@ module StreamStats.Services {
         public loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregions: string, percentWeights: any) {
 
             this.toaster.pop('wait', "Loading Parameters by Statistics Group", "Please wait...", 0);
-            this.loadingParametersByStatisticsGroup = true;
+            this.loadingParametersByStatisticsGroup += 1;
 
             //console.log('in load StatisticsGroup parameters', rcode, statisticsGroupID,regressionregions);
             if (!rcode && !statisticsGroupID && !regressionregions) return;
@@ -164,7 +164,7 @@ module StreamStats.Services {
                 (response: any) => {
 
                     //console.log('loadParams: ', response.data[0]);
-                    this.loadingParametersByStatisticsGroup = false;
+                    this.loadingParametersByStatisticsGroup -= 1;
 
                     //check to make sure there is a valid response
                     if (response.data[0].RegressionRegions[0].Parameters && response.data[0].RegressionRegions[0].Parameters.length > 0) {
