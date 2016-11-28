@@ -186,7 +186,7 @@ module StreamStats.Controllers {
 
             var checkStatisticsGroup = this.checkArrayForObj(this.nssService.selectedStatisticsGroupList, statisticsGroup);
 
-            //console.log('set stat group: ', checkStatisticsGroup);
+            //console.log('set stat group: ', statisticsGroup, checkStatisticsGroup);
 
             //if toggled remove selected parameter set
             if (checkStatisticsGroup != -1) {
@@ -417,6 +417,34 @@ module StreamStats.Controllers {
 
         public OpenWateruse() {
             this.modalService.openModal(Services.SSModalType.e_wateruse);
+        }
+
+        private downloadGeoJSON() {
+
+            var GeoJSON = angular.toJson(this.studyAreaService.selectedStudyArea.Features[1].feature);
+
+            var filename = 'data.geojson';
+
+            var blob = new Blob([GeoJSON], { type: 'text/csv;charset=utf-8;' });
+            if (navigator.msSaveBlob) { // IE 10+
+                navigator.msSaveBlob(blob, filename);
+            } else {
+                var link = <any>document.createElement("a");
+                var url = URL.createObjectURL(blob);
+                if (link.download !== undefined) { // feature detection
+                    // Browsers that support HTML5 download attribute
+                    link.setAttribute("href", url);
+                    link.setAttribute("download", filename);
+                    link.style.visibility = 'hidden';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+                else {
+                    window.open(url);
+                }
+            }
+
         }
 
         //Helper Methods

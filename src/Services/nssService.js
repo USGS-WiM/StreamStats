@@ -176,7 +176,7 @@ var StreamStats;
                     var request = new WiM.Services.Helpers.RequestInfo(url, true, 1, 'json', updatedScenarioObject);
                     statGroup.Citations = [];
                     _this.Execute(request).then(function (response) {
-                        //console.log('estimate flows: ', response);
+                        console.log('estimate flows: ', response);
                         //nested requests for citations
                         var citationUrl = response.data[0].Links[0].Href;
                         if (!append)
@@ -197,7 +197,7 @@ var StreamStats;
                         }
                         //if (append) console.log('in estimate flows for regulated basins: ', response);
                         //make sure there are some results
-                        if (response.data[0].RegressionRegions[0].Results && response.data[0].RegressionRegions[0].Results.length > 0) {
+                        if (response.data[0].RegressionRegions.length > 0 && response.data[0].RegressionRegions[0].Results && response.data[0].RegressionRegions[0].Results.length > 0) {
                             _this.toaster.clear();
                             if (!append) {
                                 statGroup.RegressionRegions = [];
@@ -254,6 +254,7 @@ var StreamStats;
             nssService.prototype.getSelectedCitations = function (citationUrl, statGroup) {
                 var _this = this;
                 //nested requests for citations
+                console.log('citations: ', citationUrl, statGroup);
                 this.toaster.pop('wait', "Requesting selected citations", "Please wait...", 5000);
                 var url = citationUrl;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, 0, 'json');
@@ -267,7 +268,7 @@ var StreamStats;
                     //sm when complete
                 }, function (error) {
                     //sm when error
-                    _this.toaster.clear();
+                    //this.toaster.clear();
                     _this.toaster.pop('error', "There was an error getting selected Citations", "Please retry", 0);
                 }).finally(function () {
                 });
