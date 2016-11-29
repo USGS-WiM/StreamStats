@@ -466,7 +466,7 @@ var StreamStats;
                 //console.log('in onStudyAreaChanged');
                 if (!this.selectedStudyArea || !this.selectedStudyArea.Features || this.regressionRegionQueryComplete)
                     return;
-                this.queryRegressionRegions();
+                //this.queryRegressionRegions();
             };
             return StudyAreaService;
         }(WiM.Services.HTTPServiceBase)); //end class
