@@ -120,7 +120,7 @@ var StreamStats;
                 //this.regionService.clearRegion();
                 this.regionService.clearSelectedParameters();
                 this.studyAreaService.clearStudyArea();
-                this.studyAreaService.showDelineateButton = true;
+                this.studyAreaService.zoomLevel15 = true;
                 this.nssService.clearNSSdata();
             };
             SidebarController.prototype.startSearch = function (e) {
@@ -130,7 +130,7 @@ var StreamStats;
             };
             SidebarController.prototype.startDelineate = function () {
                 var _this = this;
-                //console.log('in startDelineate');
+                //console.log('in startDelineate', this.studyAreaService.canUpdate, this.studyAreaService.doDelineateFlag);
                 this.leafletData.getMap("mainMap").then(function (map) {
                     //console.log('mapzoom', map.getZoom());
                     if (map.getZoom() < 15) {
@@ -150,6 +150,14 @@ var StreamStats;
                 if (checkStatisticsGroup != -1) {
                     //remove this statisticsGroup from the list
                     this.nssService.selectedStatisticsGroupList.splice(checkStatisticsGroup, 1);
+                    //if no selected scenarios, clear studyareaparameter list
+                    if (this.nssService.selectedStatisticsGroupList.length == 0) {
+                        this.studyAreaService.studyAreaParameterList = [];
+                        this.regionService.parameterList.forEach(function (parameter) {
+                            parameter.checked = false;
+                            parameter.toggleable = true;
+                        });
+                    }
                 }
                 else {
                     this.nssService.selectedStatisticsGroupList.push(statisticsGroup);

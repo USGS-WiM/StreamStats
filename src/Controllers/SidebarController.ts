@@ -168,7 +168,7 @@ module StreamStats.Controllers {
             //this.regionService.clearRegion();
             this.regionService.clearSelectedParameters();
             this.studyAreaService.clearStudyArea();
-            this.studyAreaService.showDelineateButton = true;
+            this.studyAreaService.zoomLevel15 = true;
             this.nssService.clearNSSdata();
         }
 
@@ -178,7 +178,7 @@ module StreamStats.Controllers {
         }
 
         public startDelineate() {
-            //console.log('in startDelineate');
+            //console.log('in startDelineate', this.studyAreaService.canUpdate, this.studyAreaService.doDelineateFlag);
             this.leafletData.getMap("mainMap").then((map: any) => {
                 //console.log('mapzoom', map.getZoom());
                 if (map.getZoom() < 15) {
@@ -203,6 +203,16 @@ module StreamStats.Controllers {
 
                 //remove this statisticsGroup from the list
                 this.nssService.selectedStatisticsGroupList.splice(checkStatisticsGroup, 1);
+
+                //if no selected scenarios, clear studyareaparameter list
+                if (this.nssService.selectedStatisticsGroupList.length == 0) {
+                    this.studyAreaService.studyAreaParameterList = [];
+
+                    this.regionService.parameterList.forEach((parameter) => {
+                        parameter.checked = false;
+                        parameter.toggleable = true;
+                    });
+                }
             }
 
             //add it to the list and get its required parameters
