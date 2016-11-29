@@ -152,7 +152,7 @@ module StreamStats.Services {
         public loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregions: string, percentWeights: any) {
 
             this.toaster.pop('wait', "Loading Parameters by Statistics Group", "Please wait...", 0);
-            this.loadingParametersByStatisticsGroup += 1;
+            this.loadingParametersByStatisticsGroup++;
 
             //console.log('in load StatisticsGroup parameters', rcode, statisticsGroupID,regressionregions);
             if (!rcode && !statisticsGroupID && !regressionregions) return;
@@ -162,9 +162,6 @@ module StreamStats.Services {
 
             this.Execute(request).then(
                 (response: any) => {
-
-                    //console.log('loadParams: ', response.data[0]);
-                    this.loadingParametersByStatisticsGroup -= 1;
 
                     //check to make sure there is a valid response
                     if (response.data[0].RegressionRegions[0].Parameters && response.data[0].RegressionRegions[0].Parameters.length > 0) {
@@ -195,7 +192,7 @@ module StreamStats.Services {
                     this.toaster.clear();
                     this.toaster.pop('error', "There was an error Loading Parameters by Statistics Group", "Please retry", 0);
                 }).finally(() => {
-
+                    this.loadingParametersByStatisticsGroup--;
                 });
         }
 

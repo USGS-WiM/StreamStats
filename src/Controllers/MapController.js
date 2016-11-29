@@ -775,7 +775,7 @@ var StreamStats;
                     lng: AOI.Longitude,
                     message: AOI.Name,
                     focus: true,
-                    draggable: false
+                    draggable: true
                 };
                 //this.center = new Center(AOI.Latitude, AOI.Longitude, zoomlevel);
                 this.leafletData.getMap("mainMap").then(function (map) {
