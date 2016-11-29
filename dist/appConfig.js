@@ -1,4 +1,5 @@
 var configuration = {}
+configuration.appTitle = 'StreamStats [Development Version: Not for public consumption]';
 configuration.baseurls =
 {   
     'MercuryService': 'http://54.174.81.42/mercuryservices',
@@ -17,8 +18,11 @@ configuration.baseurls =
     'NationalMapRasterServices': 'http://raster.nationalmap.gov/arcgis/rest/services'
 }
 
-//override streamstats services URL if on production
-if (window.location.origin == 'http://streamstatsags.cr.usgs.gov') configuration.baseurls.StreamStatsServices = 'http://streamstatsags.cr.usgs.gov';
+//override streamstats arguments if on production
+if (window.location.origin == 'http://streamstatsags.cr.usgs.gov') {
+    configuration.baseurls.StreamStatsServices = 'http://streamstatsags.cr.usgs.gov';
+    configuration.appTitle = 'StreamStats'
+}
 
 configuration.queryparams =
 {
