@@ -782,7 +782,7 @@ module StreamStats.Controllers {
                 lng: latlng.lng,
                 message: 'Your clicked point</br></br><strong>Latitude: </strong>' + latlng.lat.toFixed(5) + '</br><strong>Longitude: </strong>' + latlng.lng.toFixed(5),
                 focus: true,
-                draggable: false
+                draggable: true
             }
 
             //turn off delineate flag
@@ -1146,10 +1146,10 @@ module StreamStats.Controllers {
             }
             
             if (this.center.zoom >= 15) {
-                this.studyArea.showDelineateButton = true;
+                this.studyArea.zoomLevel15 = true;
             }
             else {
-                this.studyArea.showDelineateButton = false;
+                this.studyArea.zoomLevel15 = false;
             }
 
         }

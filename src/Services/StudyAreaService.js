@@ -57,7 +57,6 @@ var StreamStats;
                 this._studyAreaList = [];
                 this.toaster = toaster;
                 this.clearStudyArea();
-                this.showDelineateButton = false;
                 this.servicesURL = configuration.baseurls['StreamStatsServices'];
             }
             Object.defineProperty(StudyAreaService.prototype, "StudyAreaList", {
@@ -119,7 +118,7 @@ var StreamStats;
                 this.showEditToolbar = false;
                 this.WatershedEditDecisionList = new StreamStats.Models.WatershedEditDecisionList();
                 this.selectedStudyArea = null;
-                this.showDelineateButton = true;
+                this.zoomLevel15 = true;
                 this.regressionRegionQueryComplete = false;
                 this.regressionRegionQueryLoading = false;
                 this.eventManager.RaiseEvent(Services.onStudyAreaReset, this, WiM.Event.EventArgs.Empty);

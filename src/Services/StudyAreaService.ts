@@ -42,7 +42,7 @@ module StreamStats.Services {
         drawControlOption: any;
         WatershedEditDecisionList: Models.IEditDecisionList;
         clearStudyArea();
-        showDelineateButton: boolean;
+        zoomLevel15: boolean;
         loadEditedStudyBoundary();
         loadWatershed(rcode:string, workspaceID: string): void
         queryRegressionRegions();
@@ -99,7 +99,7 @@ module StreamStats.Services {
         public drawControlOption: any;
         public WatershedEditDecisionList: Models.IEditDecisionList;
         public regulationCheckResults: any;
-        public showDelineateButton: boolean;
+        public zoomLevel15: boolean;
         public regressionRegionQueryComplete: boolean;
         public regressionRegionQueryLoading: boolean;
         public servicesURL: string;
@@ -121,10 +121,8 @@ module StreamStats.Services {
             eventManager.AddEvent<WiM.Event.EventArgs>(onEditClick);
             this._studyAreaList = [];
 
-
             this.toaster = toaster;
             this.clearStudyArea();
-            this.showDelineateButton = false;
             this.servicesURL = configuration.baseurls['StreamStatsServices'];
            
         }
@@ -169,7 +167,7 @@ module StreamStats.Services {
             this.showEditToolbar = false;
             this.WatershedEditDecisionList = new Models.WatershedEditDecisionList();
             this.selectedStudyArea = null;
-            this.showDelineateButton = true;
+            this.zoomLevel15 = true;
             this.regressionRegionQueryComplete = false;
             this.regressionRegionQueryLoading = false;
 
