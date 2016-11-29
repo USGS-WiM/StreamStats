@@ -37,6 +37,7 @@ module StreamStats.Controllers {
         private modalService: Services.IModalService;
         private cookies: any;
         private newArticleCount: number;
+        private appTitle: string;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -47,6 +48,7 @@ module StreamStats.Controllers {
             this.modalService = modal;
             this.checkActiveNews();
             this.newArticleCount = 0;
+            this.appTitle = configuration.appTitle;
         }
 
         //Methods
