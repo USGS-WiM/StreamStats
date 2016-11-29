@@ -235,7 +235,7 @@ module StreamStats.Services {
                 this.Execute(request).then(
                     (response: any) => {
 
-                        console.log('estimate flows: ', response);
+                        //console.log('estimate flows: ', response);
 
                         //nested requests for citations
                         var citationUrl = response.data[0].Links[0].Href;
@@ -325,7 +325,7 @@ module StreamStats.Services {
         private getSelectedCitations(citationUrl: string, statGroup: any): any {
 
             //nested requests for citations
-            console.log('citations: ', citationUrl, statGroup);
+            //console.log('citations: ', citationUrl, statGroup);
             this.toaster.pop('wait', "Requesting selected citations", "Please wait...", 5000);
             var url = citationUrl;
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, 0, 'json');
