@@ -92,6 +92,14 @@ module StreamStats.Controllers {
                 else this.setProcedureType(2);
             });
 
+            //watch for completion of regression region query
+            $scope.$watch(() => this.studyAreaService.regressionRegionQueryComplete, (newval, oldval) => {
+                if (newval == oldval) return;
+                console.log('regression query watch', oldval, newval);
+                if (newval == null) this.setProcedureType(2);
+                else this.setProcedureType(3);
+            });
+
             //watch for completion of load parameters
             $scope.$watch(() => this.studyAreaService.parametersLoaded,(newval, oldval) => {
                 if (newval == oldval) return;
@@ -99,6 +107,8 @@ module StreamStats.Controllers {
                 if (newval == null) this.setProcedureType(3);
                 else this.setProcedureType(4);
             });
+
+
 
             //$scope.$watch(() => this.studyAreaService.studyAreaParameterList,(newval, oldval) => {
             //    console.log('watch for modify basin chars ', newval, oldval);

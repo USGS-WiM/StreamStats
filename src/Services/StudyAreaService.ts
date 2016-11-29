@@ -617,7 +617,7 @@ module StreamStats.Services {
         private onStudyAreaChanged(sender: any, e: StudyAreaEventArgs) {
             //console.log('in onStudyAreaChanged');
             if (!this.selectedStudyArea || !this.selectedStudyArea.Features || this.regressionRegionQueryComplete) return;
-            this.queryRegressionRegions();
+            //this.queryRegressionRegions();
         }
 
     }//end class
