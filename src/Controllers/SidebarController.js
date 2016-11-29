@@ -47,6 +47,16 @@ var StreamStats;
                     else
                         _this.setProcedureType(2);
                 });
+                //watch for completion of regression region query
+                $scope.$watch(function () { return _this.studyAreaService.regressionRegionQueryComplete; }, function (newval, oldval) {
+                    if (newval == oldval)
+                        return;
+                    console.log('regression query watch', oldval, newval);
+                    if (newval == null)
+                        _this.setProcedureType(2);
+                    else
+                        _this.setProcedureType(3);
+                });
                 //watch for completion of load parameters
                 $scope.$watch(function () { return _this.studyAreaService.parametersLoaded; }, function (newval, oldval) {
                     if (newval == oldval)
