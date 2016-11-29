@@ -8,8 +8,12 @@
                         <button class="btn-wim-sm btn-wim-success btn-wim-group-1" ng-click="vm.refreshWindow()"><span><i class="fa fa-undo"></i>&nbsp;&nbsp;Start Over</span></button>
                     </div>  
 
+                   <div id="step1info" class="wim-alert">
+                       <p ng-hide="vm.regionService.regionList.length > 0 && !vm.regionService.selectedRegion"><strong>Step 1:</strong> Use the map or the search tool identify an area of interest. At zoom level 8 or greater State/Region selection will be enabled</p>
+                       <p ng-show="vm.regionService.regionList.length > 0 && !vm.regionService.selectedRegion"><strong>Step 2:</strong> You have zoomed in sufficiently to select a state or regional study area.  Your selection will dictate the data used to perform basin delineation and flow statistics calculation.</p>
+                   </div>
+
                    <div class="form-group" ng-show="vm.regionService.regionList.length > 0 && !vm.regionService.selectedRegion">
-                        <div class="wim-alert">You have zoomed in sufficiently to select a state or regional study area.  Your selection will dictate the data used to perform basin delineation and flow statistics calculation.</div>
                         <label> Select a State or Regional Study Area Below</label>
                         <div ng-repeat="region in vm.regionService.regionList track by $index">
                             <div class="row">
@@ -19,18 +23,11 @@
                                 </div>
                             </div>
                         </div>
-                        <hr />
                     </div>
 
                     <div id="searchWrapper">
-                        <div class="wim-alert">
-                            <p><strong>Step 1:</strong> Use the map or the search tool identify an area of interest. At zoom level 8 or greater State/Region selection will be enabled</p>
-                            <p><strong>Step 2:</strong> The 'Delineate' button will be enabled at zoom level 15 and greater</p> 
-                        </div>
-
                         <div class="row">
                             <div class="col-md-9">
-
                                 <div class="input-group">
                                   <div id="sapi_searchTextBoxDiv">Loading Search Bar...</div>
                                   <span class="input-group-btn">
@@ -64,31 +61,38 @@
 
                 <div class="list-group-body" ng-show="vm.selectedProcedure == 2">
 
-                    <div ng-hide="vm.studyAreaService.selectedStudyArea.Features || !vm.regionService.streamStatsAvailable">
-                        <div class="wim-alert" ng-hide="vm.studyAreaService.showDelineateButton">Zoom in to level 15 or greater to enable the delineation tool</div>
-                        <div class="wim-alert" ng-show="vm.studyAreaService.showDelineateButton">Click the 'Delineate' button, then use your mouse or finger to click or tap a blue stream cell on the map</div>
+                    <div id="step2info" class="wim-alert" ng-hide="!vm.regionService.streamStatsAvailable">
+                        <p ng-show="!vm.studyAreaService.zoomLevel15"><strong>Step 1:</strong> Zoom in to level 15 or greater to enable the delineation tool</p>
+                        <p ng-show="vm.studyAreaService.zoomLevel15 && !vm.studyAreaService.doDelineateFlag && vm.studyAreaService.canUpdate && !vm.studyAreaService.selectedStudyArea.Features && !vm.studyAreaService.checkingDelineatedPoint"><strong>Step 2:</strong> Click the 'Delineate' button to activate the delineation tool</p>
+                        <p ng-show="vm.studyAreaService.zoomLevel15 && vm.studyAreaService.doDelineateFlag"><strong>Step 3:</strong> Use your mouse or finger to click or tap a blue stream cell on the map</p>
+                        <p ng-show="!vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint"><strong>Step 4:</strong> Wait for delineation process to complete...</p>
+                        <p ng-show="vm.studyAreaService.selectedStudyArea.Features"><strong>Step 5:</strong> Your delineation is complete.  You can now clear, edit, or download your basin, or choose a state or regional study specific function (if available).  Click <strong>continue </strong>when you are ready.</p>
                     </div>
+
+                    <!--<div ng-hide="vm.studyAreaService.selectedStudyArea.Features || !vm.regionService.streamStatsAvailable">
+                        <div class="wim-alert" ng-hide="vm.studyAreaService.zoomLevel15">Zoom in to level 15 or greater to enable the delineation tool</div>
+                        <div class="wim-alert" ng-show="vm.studyAreaService.zoomLevel15">Click the 'Delineate' button, then use your mouse or finger to click or tap a blue stream cell on the map</div>
+                    </div>-->
 
                     <!--<div class="wim-alert-warning" ng-hide="vm.regionService.streamStatsAvailable">StreamStats is not available here at this time</div>-->
 
                     <div class="group-wrapper" ng-hide="vm.studyAreaService.selectedStudyArea.Features">
-                        <button id="delineateButton" type="button" class="btn-wim-sm btn-wim-success btn-wim-group-1" ng-click="vm.startDelineate()" ng-class="vm.studyAreaService.doDelineateFlag ? 'btn-wim-warning' : 'btn-wim-success'" ng-hide="vm.studyAreaService.selectedStudyArea.Features" ng-disabled="!vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint || !vm.studyAreaService.showDelineateButton"><i ng-class="vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint ? 'fa fa-map-marker' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;<span ng-show="vm.studyAreaService.canUpdate">Delineate</span><span ng-show="!vm.studyAreaService.canUpdate">Delineating Basin</span></button>
+                        <button id="delineateButton" type="button" class="btn-wim-sm btn-wim-success btn-wim-group-1" ng-click="vm.startDelineate()" ng-class="vm.studyAreaService.doDelineateFlag ? 'btn-wim-warning' : 'btn-wim-success'" ng-hide="vm.studyAreaService.selectedStudyArea.Features" ng-disabled="!vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint || !vm.studyAreaService.zoomLevel15"><i ng-class="vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint ? 'fa fa-map-marker' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Delineate</button>
                     </div>
 
                     <!--<div ng-show="vm.studyAreaService.regressionRegionQueryComplete">-->
                     <div ng-show="vm.studyAreaService.selectedStudyArea.Features">
 
-                        <div class="wim-alert">Your delineation is complete.  You can now clear your basin, edit your basin, or choose a state or regional study specific function (if available).  Click <strong>continue </strong>when you are ready.</div>
+                        <!--<div class="wim-alert">Your delineation is complete.  You can now clear your basin, edit your basin, or choose a state or regional study specific function (if available).  Click <strong>continue </strong>when you are ready.</div>-->
 
-                        <div class="well well-sm" ng-hide="vm.studyAreaService.showEditToolbar">
-                            <strong>Edit Basin</strong>
-                            <div class="group-wrapper">
-                                <button id="clearDelinationButton" type="button" class="btn-wim-sm btn-wim-info btn-wim-group-1" ng-click="vm.resetWorkSpace()" ng-show="vm.studyAreaService.selectedStudyArea.Features" ng-disabled="!vm.studyAreaService.canUpdate"><span><i class="fa fa-trash-o"></i>&nbsp;&nbsp;Clear Basin</span></button>
-                            </div>
-                            <div class="group-wrapper">
-                                <button type="button" class="btn-wim-sm btn-wim-info btn-wim-group-1" ng-click="vm.studyAreaService.showEditToolbar = !vm.studyAreaService.showEditToolbar" ng-disabled="!vm.studyAreaService.canUpdate"><span class="fa fa-edit"></span>&nbsp;&nbsp;Edit Basin</button>
-                            </div>
+
+                        <div class="group-wrapper">
+                            <button id="clearDelinationButton" type="button" class="btn-wim-sm btn-wim-info btn-wim-group-1" ng-click="vm.resetWorkSpace()" ng-show="vm.studyAreaService.selectedStudyArea.Features" ng-disabled="!vm.studyAreaService.canUpdate"><span><i class="fa fa-trash-o"></i>&nbsp;&nbsp;Clear Basin</span></button>
                         </div>
+                        <div class="group-wrapper">
+                            <button type="button" class="btn-wim-sm btn-wim-info btn-wim-group-1" ng-click="vm.studyAreaService.showEditToolbar = !vm.studyAreaService.showEditToolbar" ng-disabled="!vm.studyAreaService.canUpdate"><span class="fa fa-edit"></span>&nbsp;&nbsp;Edit Basin</button>
+                        </div>
+      
 
                         <div class="well well-sm" ng-show="vm.studyAreaService.showEditToolbar">
                             <p>To edit your basin, first click the 'Add Area' or 'Remove Area' button below.  Use your mouse or finger to draw a polygon.</p><p>If <strong>adding</strong> an area be sure your drawn polygon starts and ends within the yellow basin boundaries</p><p>If <strong>removing</strong> an area, be sure your drawn polygon starts and ends outside of the yellow basin.</p>
@@ -119,9 +123,9 @@
 
                         <div>
                             <div class="group-wrapper">
-                                <div class="btn-group btn-wim-sm btn-wim-group-1" dropdown is-open="status.isopen">
+                                <div class="btn-group btn-wim-sm btn-wim-group-1 wim-dropdown" dropdown is-open="status.isopen">
                                     <button type="button" class="btn-wim-sm btn-wim-success btn-wim-group-1 dropdown-toggle" dropdown-toggle ng-disabled="disabled">
-                                        Download Basin <span class="caret"></span>
+                                        <i class='fa fa-download'></i>&nbsp;&nbsp;Download Basin<span class="caret"></span>
                                     </button>
                                     <ul class="dropdown-menu" role="menu">
                                         <li><a href="#" ng-click="vm.downloadGeoJSON()" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="GeoJSON"><span class="fa fa-download"></span>&nbsp;&nbsp;GeoJSON</a></li>
@@ -130,10 +134,10 @@
                                     </ul>
                                 </div>
                             </div>
-                            <span>OR</span>
+                            <div class="col-md-12 text-center">OR</div>
                             <div class="group-wrapper">
                                 <!--<button type="button" class="btn-wim-sm btn-wim-success btn-wim-group-1" ng-click="vm.selectScenarios()" ng-disabled="!vm.studyAreaService.canUpdate"><span class="fa fa-check-circle"></span>&nbsp;&nbsp;Continue</button>-->
-                                <button type="button" class="btn-wim-sm btn-wim-success btn-wim-group-1" ng-click="vm.queryRegressionRegions();" ng-disabled="vm.studyAreaService.regressionRegionQueryLoading"><span class="fa fa-check-circle"></span>&nbsp;&nbsp;Continue</button>
+                                <button type="button" class="btn-wim-sm btn-wim-success btn-wim-group-1" ng-click="vm.queryRegressionRegions();" ng-disabled="vm.studyAreaService.regressionRegionQueryLoading"><i ng-class="vm.studyAreaService.regressionRegionQueryLoading ? 'fa fa-refresh fa-spin' : 'fa fa-check-circle'"></i>&nbsp;&nbsp;Continue</button>
                             </div>
 
                             <!--<div ng-show="!vm.studyAreaService.regressionRegionQueryLoading && !vm.studyAreaService.regressionRegionQueryComplete && vm.studyAreaService.selectedStudyArea.Features">
@@ -154,7 +158,12 @@
 
                 <div class="list-group-body" ng-show="vm.selectedProcedure == 3">
 
-                    <div class="wim-alert">Select a scenario below, or expand the "Basin Characteristics" panel to select specific basin characteristics. Next, click "Continue" to proceed.</div>
+                    <div id="step3info" class="wim-alert">
+                        <p ng-show="vm.nssService.selectedStatisticsGroupList.length == 0 && vm.studyAreaService.studyAreaParameterList.length == 0"><strong>Step 1:</strong> Select a scenario below, or expand the "Basin Characteristics" panel to select specific basin characteristics.</p>
+                        <p ng-show="vm.nssService.selectedStatisticsGroupList.length > 0 || vm.studyAreaService.studyAreaParameterList.length > 0"><strong>Step 2:</strong> click "Continue" to proceed.</p>
+                    </div>
+
+                    <!--<div class="wim-alert">Select a scenario below, or expand the "Basin Characteristics" panel to select specific basin characteristics. Next, click "Continue" to proceed.</div>-->
 
                     <div class="well well-sm">
                         <div class="row">
@@ -200,7 +209,7 @@
                         <div class="wim-alert-warning" ng-show="vm.studyAreaService.studyAreaParameterList.length < 1">A scenario OR one or more basin characteristics from the dropdown above must be selected to continue</div>
                     </div>
                     <div class="group-wrapper">
-                        <button type="button" class="btn-wim-sm btn-wim-success btn-wim-group-1" ng-click="vm.calculateParameters()" ng-disabled="vm.studyAreaService.parametersLoading || vm.nssService.loadingParametersByStatisticsGroup > 0|| vm.studyAreaService.studyAreaParameterList.length < 1"><i ng-class="vm.studyAreaService.parametersLoading ? 'fa fa-refresh fa-spin' : ''"></i><span ng-show="!vm.studyAreaService.parametersLoading">&nbsp;&nbsp;Continue</span><span ng-show="vm.studyAreaService.parametersLoading">&nbsp;&nbsp;Calculating Basin Characteristics...</span></button>
+                        <button type="button" class="btn-wim-sm btn-wim-success btn-wim-group-1" ng-click="vm.calculateParameters()" ng-disabled="vm.studyAreaService.parametersLoading || vm.nssService.loadingParametersByStatisticsGroup > 0|| vm.studyAreaService.studyAreaParameterList.length < 1"><i ng-class="vm.studyAreaService.parametersLoading ? 'fa fa-refresh fa-spin' : 'fa fa-check-circle'"></i>&nbsp;&nbsp;Continue</button>
                     </div>
                 </div>
             </div>
@@ -209,7 +218,12 @@
                 <a ng-class="vm.selectedProcedure == 4 ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(4)">Build a Report<h5 ng-show="vm.nssService.reportGenerated"><strong>Report Built</strong></h5><i ng-class="vm.selectedProcedure == 4 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
 
                 <div class="list-group-body" ng-show="vm.selectedProcedure == 4">
-                    <div class="wim-alert">You can modify computed basin characteristics here, then select the types of reports you wish to generate.  Then click the "Build Report" button</div>
+
+                    <div id="step4info" class="wim-alert">
+                        <p><strong>Step 1:</strong> You can modify computed basin characteristics here, then select the types of reports you wish to generate.  Then click the "Build Report" button</p>
+                    </div>
+
+                    <!--<div class="wim-alert">You can modify computed basin characteristics here, then select the types of reports you wish to generate.  Then click the "Build Report" button</div>-->
 
                     <div class="group-wrapper">
                         <button class="btn-wim-sm btn-wim-default btn-wim-group-1" ng-click="vm.studyAreaService.showModifyBasinCharacterstics = !vm.studyAreaService.showModifyBasinCharacterstics"><span ng-hide="vm.studyAreaService.showModifyBasinCharacterstics "><i class="fa fa-chevron-down"></i>&nbsp;&nbsp;Show Basin Characteristics</span><span ng-show="vm.studyAreaService.showModifyBasinCharacterstics "><i class="fa fa-chevron-up"></i>&nbsp;&nbsp;Hide Basin Characteristics</span></button>
@@ -255,7 +269,7 @@
 
 
                         <div class="group-wrapper" ng-show="vm.nssService.showBasinCharacteristicsTable || vm.nssService.showFlowsTable">
-                            <button  ng-disabled="vm.studyAreaService.requestParameterList.length > 0" ng-click="vm.generateReport()" type="button" class="btn-wim-sm btn-wim-success btn-wim-group-1"><i ng-class="vm.nssService.canUpdate ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Compute Scenarios</button>
+                            <button  ng-disabled="vm.studyAreaService.requestParameterList.length > 0" ng-click="vm.generateReport()" type="button" class="btn-wim-sm btn-wim-success btn-wim-group-1"><i ng-class="vm.nssService.canUpdate ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Continue</button>
                         </div>
                     </div>
                 </div>
