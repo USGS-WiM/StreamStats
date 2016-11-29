@@ -33,6 +33,7 @@ var StreamStats;
                 this.modalService = modal;
                 this.checkActiveNews();
                 this.newArticleCount = 0;
+                this.appTitle = configuration.appTitle;
             }
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
