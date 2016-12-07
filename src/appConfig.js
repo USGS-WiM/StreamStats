@@ -7,7 +7,7 @@ configuration.baseurls =
     'RegressionService': 'https://commons.wim.usgs.gov/regressionservice/models',
     'KrigService': 'https://commons.wim.usgs.gov/krigservice',
     'NWISurl': 'https://waterservices.usgs.gov/nwis',
-    'StreamStats': 'http://streamstats09.cr.usgs.gov',
+    'StreamStats': 'https://streamstats09.cr.usgs.gov',
     'StreamStatsServices':'https://ssdev.cr.usgs.gov',
     //'NSS': 'https://toad.wim.usgs.gov/nssservices',
     'NSS': 'https://services.wim.usgs.gov/nssservicestest',
