@@ -47,7 +47,6 @@ module StreamStats.Services {
         loadWatershed(rcode:string, workspaceID: string): void
         queryRegressionRegions();
         regressionRegionQueryComplete: boolean;
-        Disclaimers: Object;
         baseMap: Object;
         showModifyBasinCharacterstics: boolean;
         requestParameterList: Array<any>;
@@ -103,7 +102,6 @@ module StreamStats.Services {
         public regressionRegionQueryComplete: boolean;
         public regressionRegionQueryLoading: boolean;
         public servicesURL: string;
-        public Disclaimers: Object;
         public baseMap: Object;
         public showModifyBasinCharacterstics: boolean;
         public requestParameterList: Array<any>;
@@ -130,14 +128,14 @@ module StreamStats.Services {
         //-+-+-+-+-+-+-+-+-+-+-+-
         public editBasin(selection) {
             //console.log('in editbasin, selection: ', selection);
-            this.Disclaimers['isEdited']=true;
+            this.selectedStudyArea.Disclaimers['isEdited']=true;
             this.drawControlOption = selection;
             this.eventManager.RaiseEvent(onEditClick,this,WiM.Event.EventArgs.Empty)
         }
 
         public undoEdit() {
             //console.log('undo edit');
-            delete this.Disclaimers['isEdited'];
+            delete this.selectedStudyArea.Disclaimers['isEdited'];
             this.WatershedEditDecisionList = new Models.WatershedEditDecisionList();
             this.eventManager.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);
         }
@@ -147,6 +145,7 @@ module StreamStats.Services {
             this.clearStudyArea();
             this.StudyAreaList.push(sa);
             this.selectedStudyArea = sa;
+            this.selectedStudyArea.Disclaimers = {};
         }
 
         public RemoveStudyArea() {
@@ -163,7 +162,7 @@ module StreamStats.Services {
             this.checkingDelineatedPoint = false;
             this.studyAreaParameterList = [];  //angular.fromJson(angular.toJson(configuration.alwaysSelectedParameters));
             this.regulationCheckResults = [];
-            this.Disclaimers = {};
+            if (this.selectedStudyArea) this.selectedStudyArea.Disclaimers = {};
             this.showEditToolbar = false;
             this.WatershedEditDecisionList = new Models.WatershedEditDecisionList();
             this.selectedStudyArea = null;
@@ -302,7 +301,7 @@ module StreamStats.Services {
                 var evnt = new StudyAreaEventArgs();
                 evnt.studyArea = this.selectedStudyArea;                
                 this.eventManager.RaiseEvent(onSelectedStudyAreaChanged, this, evnt);
-                this.Disclaimers['isEdited'] = true;
+                this.selectedStudyArea.Disclaimers['isEdited'] = true;
 
             });
         }
@@ -367,11 +366,11 @@ module StreamStats.Services {
                         }
 
                         var results = response.data.parameters;
-                        this.loadParameterResults(results);
+                          this.loadParameterResults(results);
                         this.parametersLoaded = true;
 
                         //do regulation parameter update if needed
-                        if (this.Disclaimers['isRegulated']) {
+                        if (this.selectedStudyArea.Disclaimers['isRegulated']) {
                             this.loadRegulatedParameterResults(this.regulationCheckResults.parameters);
                         }
                     }
@@ -508,14 +507,14 @@ module StreamStats.Services {
                         this.selectedStudyArea.Features.push(response.data["featurecollection"][0]);
                         this.regulationCheckResults = response.data;
                         //this.loadRegulatedParameterResults(this.regulationCheckResults.parameters);
-                        this.Disclaimers['isRegulated'] = true;     
+                        this.selectedStudyArea.Disclaimers['isRegulated'] = true;     
                          
                         //COMMENT OUT ONSELECTEDSTUDYAREA changed event 3/11/16
                         this.eventManager.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);                    
                     }
                     else {
                         //alert("No regulation found");
-                        this.Disclaimers['isRegulated'] = false;
+                        this.selectedStudyArea.Disclaimers['isRegulated'] = false;
                         this.toaster.clear();
                         this.toaster.pop('warning', "No regulation found", "Please continue", 5000);
                         
@@ -606,6 +605,8 @@ module StreamStats.Services {
 
                         return;//exit loop
                     }//endif
+                    else {
+                    }
                 });
             });
             //console.log('regulated params', this.studyAreaParameterList);

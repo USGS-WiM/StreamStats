@@ -57,7 +57,8 @@ var StreamStats;
             //-+-+-+-+-+-+-+-+-+-+-+-
             nssService.prototype.clearNSSdata = function () {
                 //console.log('in clear nss data');
-                this.loadingParametersByStatisticsGroup = 0;
+                this.loadingParametersByStatisticsGroupCounter = 0;
+                this.estimateFlowsCounter = 0;
                 this.selectedStatisticsGroupList = [];
                 this.statisticsGroupList = [];
                 this.canUpdate = true;
@@ -105,8 +106,10 @@ var StreamStats;
             };
             nssService.prototype.loadParametersByStatisticsGroup = function (rcode, statisticsGroupID, regressionregions, percentWeights) {
                 var _this = this;
-                this.toaster.pop('wait', "Loading Parameters by Statistics Group", "Please wait...", 0);
-                this.loadingParametersByStatisticsGroup++;
+                if (this.loadingParametersByStatisticsGroupCounter == 0) {
+                    this.toaster.pop('wait', "Loading Parameters by Statistics Group", "Please wait...", 0);
+                }
+                this.loadingParametersByStatisticsGroupCounter++;
                 //console.log('in load StatisticsGroup parameters', rcode, statisticsGroupID,regressionregions);
                 if (!rcode && !statisticsGroupID && !regressionregions)
                     return;
@@ -131,14 +134,17 @@ var StreamStats;
                             }
                         });
                     }
-                    _this.toaster.clear();
+                    //this.toaster.clear();
                     //sm when complete
                 }, function (error) {
                     //sm when error
                     _this.toaster.clear();
                     _this.toaster.pop('error', "There was an error Loading Parameters by Statistics Group", "Please retry", 0);
                 }).finally(function () {
-                    _this.loadingParametersByStatisticsGroup--;
+                    _this.loadingParametersByStatisticsGroupCounter--;
+                    if (_this.loadingParametersByStatisticsGroupCounter == 0) {
+                        _this.toaster.clear();
+                    }
                 });
             };
             nssService.prototype.estimateFlows = function (studyAreaParameterList, paramValueField, rcode, regressionregion, append) {
@@ -149,7 +155,10 @@ var StreamStats;
                 this.canUpdate = false;
                 //loop over all selected StatisticsGroups
                 this.selectedStatisticsGroupList.forEach(function (statGroup) {
-                    _this.toaster.pop('wait', "Estimating Flows for " + statGroup.Name, "Please wait...", 0);
+                    if (_this.estimateFlowsCounter == 0) {
+                        _this.toaster.pop('wait', "Estimating Flows", "Please wait...", 0);
+                    }
+                    _this.estimateFlowsCounter++;
                     //console.log('in estimate flows method for ', statGroup.Name, statGroup);
                     statGroup.RegressionRegions.forEach(function (regressionRegion) {
                         regressionRegion.Parameters.forEach(function (regressionParam) {
@@ -197,7 +206,11 @@ var StreamStats;
                         //if (append) console.log('in estimate flows for regulated basins: ', response);
                         //make sure there are some results
                         if (response.data[0].RegressionRegions.length > 0 && response.data[0].RegressionRegions[0].Results && response.data[0].RegressionRegions[0].Results.length > 0) {
-                            _this.toaster.clear();
+                            //if success and counter is zero, clear toast
+                            _this.estimateFlowsCounter--;
+                            if (_this.estimateFlowsCounter == 0) {
+                                _this.toaster.clear();
+                            }
                             if (!append) {
                                 statGroup.RegressionRegions = [];
                                 statGroup.RegressionRegions = response.data[0].RegressionRegions;
@@ -237,7 +250,7 @@ var StreamStats;
                         }
                         else {
                             _this.toaster.clear();
-                            _this.toaster.pop('error', "There was an error Estimating Flows", "No results were returned", 0);
+                            _this.toaster.pop('error', "There was an error Estimating Flows for " + statGroup.Name, "No results were returned", 0);
                             _this.isDone = true;
                         }
                         //sm when complete
@@ -251,10 +264,9 @@ var StreamStats;
                 });
             };
             nssService.prototype.getSelectedCitations = function (citationUrl, statGroup) {
+                ////nested requests for citations
+                //console.log('citations: ', citationUrl, statGroup, this.getSelectedCitationsCounter);
                 var _this = this;
-                //nested requests for citations
-                //console.log('citations: ', citationUrl, statGroup);
-                this.toaster.pop('wait', "Requesting selected citations", "Please wait...", 5000);
                 var url = citationUrl;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, 0, 'json');
                 this.Execute(request).then(function (response) {
@@ -267,8 +279,7 @@ var StreamStats;
                     //sm when complete
                 }, function (error) {
                     //sm when error
-                    //this.toaster.clear();
-                    _this.toaster.pop('error', "There was an error getting selected Citations", "Please retry", 0);
+                    _this.toaster.pop('error', "There was an error getting selected Citations for " + statGroup.Name, "No results were returned", 0);
                 }).finally(function () {
                 });
             };

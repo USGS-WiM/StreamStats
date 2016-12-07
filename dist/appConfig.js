@@ -2,25 +2,24 @@ var configuration = {}
 configuration.appTitle = 'StreamStats [Development Version: Not for public consumption]';
 configuration.baseurls =
 {   
-    'MercuryService': 'http://54.174.81.42/mercuryservices',
-    'MercuryAuth': 'http://54.174.81.42/mercuryauth',
-    'RegressionService': 'http://commons.wim.usgs.gov/regressionservice/models',
-    'KrigService': 'http://commons.wim.usgs.gov/krigservice',
-    'NWISurl': 'http://waterservices.usgs.gov/nwis',
+    'MercuryService': 'https://54.174.81.42/mercuryservices',
+    'MercuryAuth': 'https://54.174.81.42/mercuryauth',
+    'RegressionService': 'https://commons.wim.usgs.gov/regressionservice/models',
+    'KrigService': 'https://commons.wim.usgs.gov/krigservice',
+    'NWISurl': 'https://waterservices.usgs.gov/nwis',
     'StreamStats': 'http://streamstats09.cr.usgs.gov',
-    'StreamStatsServices':'http://ssdev.cr.usgs.gov',
-    //'NSS': 'http://toad.wim.usgs.gov/nssservices',
-    'NSS': 'http://services.wim.usgs.gov/nssservicestest',
-    'SearchAPI': 'http://txpub.usgs.gov/DSS/search_api/1.1/dataService/dataService.ashx',
-    'FARefGage': 'http://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowAnywhere/MapServer',
-    'GISserver': 'http://gis.wim.usgs.gov',
-    'NodeServer': 'http://nss.wim.usgs.gov',
-    'NationalMapRasterServices': 'http://raster.nationalmap.gov/arcgis/rest/services'
+    'StreamStatsServices':'https://ssdev.cr.usgs.gov',
+    //'NSS': 'https://toad.wim.usgs.gov/nssservices',
+    'NSS': 'https://services.wim.usgs.gov/nssservicestest',
+    'SearchAPI': 'https://txpub.usgs.gov/DSS/search_api/1.1/dataService/dataService.ashx',
+    'FARefGage': 'https://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowAnywhere/MapServer',
+    'GISserver': 'https://gis.wim.usgs.gov',
+    'NationalMapRasterServices': 'https://raster.nationalmap.gov/arcgis/rest/services'
 }
 
 //override streamstats arguments if on production
-if (window.location.origin == 'http://streamstatsags.cr.usgs.gov') {
-    configuration.baseurls.StreamStatsServices = 'http://streamstatsags.cr.usgs.gov';
+if (window.location.origin.indexOf('streamstatsags.cr.usgs.gov') != -1) {
+    configuration.baseurls.StreamStatsServices = 'https://streamstatsags.cr.usgs.gov';
     configuration.appTitle = 'StreamStats'
 }
 
