@@ -56,15 +56,4 @@ git push origin master
  Create and merge pull request with version incremented (github.com)
 
 ##### Step 4.  
-Get latest version from upstream (all this should be is a commit for the pull request in Step 3.) 
-
-```
-git pull USGS-WiM master
-```
-
-##### Step 5.   
-Run "gulp push" to push the commit with the release tags up to the upstream (WiM) repository.
-
-```
-gulp push
-```
+Create new release on github.com
