@@ -139,12 +139,12 @@ var StreamStats;
                 var filename = 'data.csv';
                 var processParameterTable = function (data) {
                     var finalVal = '\n\nParameters\n';
-                    if (_this.studyAreaService.Disclaimers['isRegulated'])
+                    if (_this.studyAreaService.selectedStudyArea.Disclaimers['isRegulated'])
                         finalVal += 'Name,Value,Reglated Value, Unregulated Value, Unit\n';
                     else
                         finalVal += 'Name,Value,Unit\n';
                     data.forEach(function (item) {
-                        if (_this.studyAreaService.Disclaimers['isRegulated'])
+                        if (_this.studyAreaService.selectedStudyArea.Disclaimers['isRegulated'])
                             finalVal += item.name + ',' + item.value + ',' + item.unRegulatedValue.toFixed(2) + ',' + item.regulatedValue.toFixed(2) + ',' + item.unit + '\n';
                         else
                             finalVal += item.name + ',' + item.value + ',' + item.unit + '\n';

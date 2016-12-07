@@ -228,7 +228,7 @@ var StreamStats;
             SidebarController.prototype.submitBasinEdits = function () {
                 this.studyAreaService.showEditToolbar = false;
                 //check if basin has been edited, if so we need to re-query regression regions
-                if (this.studyAreaService.Disclaimers['isEdited']) {
+                if (this.studyAreaService.selectedStudyArea.Disclaimers['isEdited']) {
                     //clear out any scenarios and other stuff
                     this.nssService.clearNSSdata();
                     this.studyAreaService.loadEditedStudyBoundary();
@@ -250,7 +250,7 @@ var StreamStats;
                     category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.nssService.selectedStatisticsGroupList.map(function (elem) { return elem.Name; }).join(",") });
                 if (this.nssService.selectedStatisticsGroupList.length > 0 && this.nssService.showFlowsTable) {
                     this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList, "value", this.regionService.selectedRegion.RegionID, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) { return elem.code; }).join(","));
-                    if (this.studyAreaService.Disclaimers["isRegulated"]) {
+                    if (this.studyAreaService.selectedStudyArea.Disclaimers["isRegulated"]) {
                         setTimeout(function () {
                             _this.nssService.estimateFlows(_this.studyAreaService.studyAreaParameterList, "unRegulatedValue", _this.regionService.selectedRegion.RegionID, _this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) { return elem.code; }).join(","), true);
                         }, 500);

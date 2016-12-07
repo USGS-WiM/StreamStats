@@ -85,13 +85,13 @@ var StreamStats;
             //-+-+-+-+-+-+-+-+-+-+-+-
             StudyAreaService.prototype.editBasin = function (selection) {
                 //console.log('in editbasin, selection: ', selection);
-                this.Disclaimers['isEdited'] = true;
+                this.selectedStudyArea.Disclaimers['isEdited'] = true;
                 this.drawControlOption = selection;
                 this.eventManager.RaiseEvent(Services.onEditClick, this, WiM.Event.EventArgs.Empty);
             };
             StudyAreaService.prototype.undoEdit = function () {
                 //console.log('undo edit');
-                delete this.Disclaimers['isEdited'];
+                delete this.selectedStudyArea.Disclaimers['isEdited'];
                 this.WatershedEditDecisionList = new StreamStats.Models.WatershedEditDecisionList();
                 this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);
             };
@@ -100,6 +100,7 @@ var StreamStats;
                 this.clearStudyArea();
                 this.StudyAreaList.push(sa);
                 this.selectedStudyArea = sa;
+                this.selectedStudyArea.Disclaimers = {};
             };
             StudyAreaService.prototype.RemoveStudyArea = function () {
                 //remove the study area to studyAreaList
@@ -114,7 +115,8 @@ var StreamStats;
                 this.checkingDelineatedPoint = false;
                 this.studyAreaParameterList = []; //angular.fromJson(angular.toJson(configuration.alwaysSelectedParameters));
                 this.regulationCheckResults = [];
-                this.Disclaimers = {};
+                if (this.selectedStudyArea)
+                    this.selectedStudyArea.Disclaimers = {};
                 this.showEditToolbar = false;
                 this.WatershedEditDecisionList = new StreamStats.Models.WatershedEditDecisionList();
                 this.selectedStudyArea = null;
@@ -229,7 +231,7 @@ var StreamStats;
                     var evnt = new StudyAreaEventArgs();
                     evnt.studyArea = _this.selectedStudyArea;
                     _this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, _this, evnt);
-                    _this.Disclaimers['isEdited'] = true;
+                    _this.selectedStudyArea.Disclaimers['isEdited'] = true;
                 });
             };
             StudyAreaService.prototype.loadParameters = function () {
@@ -284,7 +286,7 @@ var StreamStats;
                         _this.loadParameterResults(results);
                         _this.parametersLoaded = true;
                         //do regulation parameter update if needed
-                        if (_this.Disclaimers['isRegulated']) {
+                        if (_this.selectedStudyArea.Disclaimers['isRegulated']) {
                             _this.loadRegulatedParameterResults(_this.regulationCheckResults.parameters);
                         }
                     }
@@ -379,13 +381,13 @@ var StreamStats;
                         _this.selectedStudyArea.Features.push(response.data["featurecollection"][0]);
                         _this.regulationCheckResults = response.data;
                         //this.loadRegulatedParameterResults(this.regulationCheckResults.parameters);
-                        _this.Disclaimers['isRegulated'] = true;
+                        _this.selectedStudyArea.Disclaimers['isRegulated'] = true;
                         //COMMENT OUT ONSELECTEDSTUDYAREA changed event 3/11/16
                         _this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, _this, StudyAreaEventArgs.Empty);
                     }
                     else {
                         //alert("No regulation found");
-                        _this.Disclaimers['isRegulated'] = false;
+                        _this.selectedStudyArea.Disclaimers['isRegulated'] = false;
                         _this.toaster.clear();
                         _this.toaster.pop('warning', "No regulation found", "Please continue", 5000);
                     }
