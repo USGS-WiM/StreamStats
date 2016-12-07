@@ -633,8 +633,10 @@ var StreamStats;
                                 _this.startDelineate(latlng);
                             }
                             else {
-                                //console.log('exlude code: ', results.features); 
-                                _this.studyArea.Disclaimers['isInExclusionArea'] = true;
+                                //console.log('exlude code1: ', this.studyArea.selectedStudyArea.Disclaimers); 
+                                //this.studyArea.selectedStudyArea.Disclaimers['isInExclusionArea'] = true;
+                                //this.studyArea.Disclaimers.push('isInExclusionArea');
+                                //console.log('exlude code2: ', this.studyArea.selectedStudyArea.Disclaimers); 
                                 _this.studyArea.checkingDelineatedPoint = false;
                                 var excludeCode = results.features[0].properties.ExcludeCode;
                                 var popupMsg = results.features[0].properties.ExcludeReason;
@@ -645,7 +647,7 @@ var StreamStats;
                                 }
                                 else {
                                     _this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", popupMsg, true, 0);
-                                    _this.startDelineate(latlng);
+                                    _this.startDelineate(latlng, true);
                                     _this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'not advised' });
                                 }
                             }
@@ -1011,11 +1013,14 @@ var StreamStats;
                 } //next variable
                 return layeridList;
             };
-            MapController.prototype.startDelineate = function (latlng) {
+            MapController.prototype.startDelineate = function (latlng, isInExclusionArea) {
                 //console.log('in startDelineate', latlng);
                 var studyArea = new StreamStats.Models.StudyArea(this.regionServices.selectedRegion.RegionID, new WiM.Models.Point(latlng.lat, latlng.lng, '4326'));
                 this.studyArea.AddStudyArea(studyArea);
                 this.studyArea.loadStudyBoundary();
+                //add disclaimer here
+                if (isInExclusionArea)
+                    this.studyArea.selectedStudyArea.Disclaimers['isInExclusionArea'] = true;
             };
             //Constructro
             //-+-+-+-+-+-+-+-+-+-+-+-

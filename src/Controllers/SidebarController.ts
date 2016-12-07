@@ -95,7 +95,7 @@ module StreamStats.Controllers {
             //watch for completion of regression region query
             $scope.$watch(() => this.studyAreaService.regressionRegionQueryComplete, (newval, oldval) => {
                 if (newval == oldval) return;
-                console.log('regression query watch', oldval, newval);
+                //console.log('regression query watch', oldval, newval);
                 if (newval == null) this.setProcedureType(2);
                 else this.setProcedureType(3);
             });
@@ -308,7 +308,7 @@ module StreamStats.Controllers {
             this.studyAreaService.showEditToolbar = false;
 
             //check if basin has been edited, if so we need to re-query regression regions
-            if (this.studyAreaService.Disclaimers['isEdited']) {
+            if (this.studyAreaService.selectedStudyArea.Disclaimers['isEdited']) {
 
                 //clear out any scenarios and other stuff
                 this.nssService.clearNSSdata();
@@ -332,6 +332,7 @@ module StreamStats.Controllers {
         public generateReport() {
 
             //console.log('in estimateFlows');
+            this.toaster.pop('wait', "Opening Report", "Please wait...",5000);
 
             //ga event
             this.angulartics.eventTrack('CalculateFlows', {
@@ -340,7 +341,7 @@ module StreamStats.Controllers {
             if (this.nssService.selectedStatisticsGroupList.length > 0 && this.nssService.showFlowsTable) {
 
                 this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList,"value", this.regionService.selectedRegion.RegionID, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) { return elem.code; }).join(","));
-                if (this.studyAreaService.Disclaimers["isRegulated"]) {
+                if (this.studyAreaService.selectedStudyArea.Disclaimers["isRegulated"]) {
                     setTimeout(() => {
                         this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList, "unRegulatedValue", this.regionService.selectedRegion.RegionID, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) { return elem.code; }).join(","), true);
                     }, 500);
