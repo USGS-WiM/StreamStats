@@ -51,7 +51,7 @@ var StreamStats;
                 $scope.$watch(function () { return _this.studyAreaService.regressionRegionQueryComplete; }, function (newval, oldval) {
                     if (newval == oldval)
                         return;
-                    console.log('regression query watch', oldval, newval);
+                    //console.log('regression query watch', oldval, newval);
                     if (newval == null)
                         _this.setProcedureType(2);
                     else
@@ -242,8 +242,9 @@ var StreamStats;
                 window.location.reload();
             };
             SidebarController.prototype.generateReport = function () {
-                //console.log('in estimateFlows');
                 var _this = this;
+                //console.log('in estimateFlows');
+                this.toaster.pop('wait', "Opening Report", "Please wait...", 5000);
                 //ga event
                 this.angulartics.eventTrack('CalculateFlows', {
                     category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.nssService.selectedStatisticsGroupList.map(function (elem) { return elem.Name; }).join(",") });
