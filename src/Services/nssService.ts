@@ -35,7 +35,7 @@ module StreamStats.Services {
         showFlowsTable: boolean;
         clearNSSdata();
         queriedRegions: boolean;
-        loadingParametersByStatisticsGroup: number;      
+
         reportGenerated: boolean;  
     }
     export interface IStatisticsGroup {
@@ -66,7 +66,7 @@ module StreamStats.Services {
         }
 
         //Properties
-        //-+-+-+-+-+-+-+-+-+-+-+-
+        //-+-+-+-+-+-+-+-+-+-+-+-loadingParametersByStatisticsGroupCounter
         public statisticsGroupList: Array<IStatisticsGroup>;
         public loadingStatisticsGroup: boolean;
         public selectedStatisticsGroupList: Array<IStatisticsGroup>;
@@ -75,7 +75,9 @@ module StreamStats.Services {
         public showBasinCharacteristicsTable: boolean;
         public showFlowsTable: boolean;
         public queriedRegions: boolean;
-        public loadingParametersByStatisticsGroup: number;
+        public loadingParametersByStatisticsGroupCounter: number;
+        public estimateFlowsCounter: number;
+        public getSelectedCitationsCounter: number;
         public isDone: boolean;
         public reportGenerated: boolean;
         private modalService: Services.IModalService;   
@@ -94,7 +96,9 @@ module StreamStats.Services {
         //-+-+-+-+-+-+-+-+-+-+-+-
         public clearNSSdata() {
             //console.log('in clear nss data');
-            this.loadingParametersByStatisticsGroup = 0;
+            this.loadingParametersByStatisticsGroupCounter = 0;
+            this.estimateFlowsCounter = 0;
+            this.getSelectedCitationsCounter = 0;
             this.selectedStatisticsGroupList = [];
             this.statisticsGroupList = [];
             this.canUpdate = true;
@@ -151,8 +155,11 @@ module StreamStats.Services {
 
         public loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregions: string, percentWeights: any) {
 
-            this.toaster.pop('wait', "Loading Parameters by Statistics Group", "Please wait...", 0);
-            this.loadingParametersByStatisticsGroup++;
+            if (this.loadingParametersByStatisticsGroupCounter == 0) {
+                this.toaster.pop('wait', "Loading Parameters by Statistics Group", "Please wait...", 0); 
+            }
+
+            this.loadingParametersByStatisticsGroupCounter++;
 
             //console.log('in load StatisticsGroup parameters', rcode, statisticsGroupID,regressionregions);
             if (!rcode && !statisticsGroupID && !regressionregions) return;
@@ -185,14 +192,17 @@ module StreamStats.Services {
                             }
                         });
                     }
-                    this.toaster.clear();
+                    //this.toaster.clear();
                     //sm when complete
                 },(error) => {
                     //sm when error
                     this.toaster.clear();
                     this.toaster.pop('error', "There was an error Loading Parameters by Statistics Group", "Please retry", 0);
                 }).finally(() => {
-                    this.loadingParametersByStatisticsGroup--;
+                    this.loadingParametersByStatisticsGroupCounter--;
+                    if (this.loadingParametersByStatisticsGroupCounter == 0) {
+                        this.toaster.clear();
+                    }
                 });
         }
 
@@ -203,7 +213,11 @@ module StreamStats.Services {
             //loop over all selected StatisticsGroups
             this.selectedStatisticsGroupList.forEach((statGroup) => {
 
-                this.toaster.pop('wait', "Estimating Flows for " + statGroup.Name, "Please wait...", 0);
+                if (this.estimateFlowsCounter == 0) {
+                    this.toaster.pop('wait', "Estimating Flows", "Please wait...", 0);
+                }
+                this.estimateFlowsCounter++;
+                
                 //console.log('in estimate flows method for ', statGroup.Name, statGroup);
 
                 statGroup.RegressionRegions.forEach((regressionRegion) => {
@@ -260,7 +274,12 @@ module StreamStats.Services {
                         //make sure there are some results
                         if (response.data[0].RegressionRegions.length > 0 && response.data[0].RegressionRegions[0].Results && response.data[0].RegressionRegions[0].Results.length > 0) {
 
-                            this.toaster.clear();
+                            //if success and counter is zero, clear toast
+                            this.estimateFlowsCounter--;
+                            if (this.estimateFlowsCounter == 0) {
+                                this.toaster.clear();
+                            }
+
                             if (!append) {
                                 statGroup.RegressionRegions = [];
                                 statGroup.RegressionRegions = response.data[0].RegressionRegions;
@@ -305,7 +324,7 @@ module StreamStats.Services {
                         }
                         else {
                             this.toaster.clear();
-                            this.toaster.pop('error', "There was an error Estimating Flows", "No results were returned", 0);
+                            this.toaster.pop('error', "There was an error Estimating Flows for " + statGroup.Name, "No results were returned", 0);
                             this.isDone = true;
                             //console.log("Zero length flow response, check equations in NSS service");
                         }
@@ -317,16 +336,16 @@ module StreamStats.Services {
                         this.toaster.clear();
                         this.toaster.pop('error', "There was an error Estimating Flows", "HTTP request error", 0);
                     }).finally(() => {
-                    this.canUpdate = true;
-                });
+                        this.canUpdate = true;
+                    });
             });
         }
 
         private getSelectedCitations(citationUrl: string, statGroup: any): any {
 
-            //nested requests for citations
-            //console.log('citations: ', citationUrl, statGroup);
-            this.toaster.pop('wait', "Requesting selected citations", "Please wait...", 5000);
+            ////nested requests for citations
+            //console.log('citations: ', citationUrl, statGroup, this.getSelectedCitationsCounter);
+            
             var url = citationUrl;
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, 0, 'json');
 
@@ -343,10 +362,10 @@ module StreamStats.Services {
                     //sm when complete
                 },(error) => {
                     //sm when error
-                    //this.toaster.clear();
-                    this.toaster.pop('error', "There was an error getting selected Citations", "Please retry", 0);
+                    this.toaster.pop('error', "There was an error getting selected Citations for " + statGroup.Name, "No results were returned", 0);
                 }).finally(() => {
-            });
+
+                });
         }
 
 

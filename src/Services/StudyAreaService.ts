@@ -367,7 +367,7 @@ module StreamStats.Services {
                         }
 
                         var results = response.data.parameters;
-                        this.loadParameterResults(results);
+                          this.loadParameterResults(results);
                         this.parametersLoaded = true;
 
                         //do regulation parameter update if needed
@@ -592,7 +592,7 @@ module StreamStats.Services {
                                 regulatedValue = regulatedParam.value;
                                 totalValue = param.value;
 
-                                //console.log('regulated params: ', regulatedParam.code, totalSum, regulatedSum, regulatedValue, totalValue);
+                                console.log('regulated params: ', regulatedParam.code, totalSum, regulatedSum, regulatedValue, totalValue);
                                 
                                 var tempVal1 = regulatedSum * (regulatedValue / totalSum);
                                 var tempVal2 = totalValue - tempVal1;
@@ -606,6 +606,9 @@ module StreamStats.Services {
 
                         return;//exit loop
                     }//endif
+                    else {
+                        console.log('test3:',regulatedParam.code)
+                    }
                 });
             });
             //console.log('regulated params', this.studyAreaParameterList);

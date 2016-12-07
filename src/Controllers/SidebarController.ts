@@ -95,7 +95,7 @@ module StreamStats.Controllers {
             //watch for completion of regression region query
             $scope.$watch(() => this.studyAreaService.regressionRegionQueryComplete, (newval, oldval) => {
                 if (newval == oldval) return;
-                console.log('regression query watch', oldval, newval);
+                //console.log('regression query watch', oldval, newval);
                 if (newval == null) this.setProcedureType(2);
                 else this.setProcedureType(3);
             });
@@ -332,6 +332,7 @@ module StreamStats.Controllers {
         public generateReport() {
 
             //console.log('in estimateFlows');
+            this.toaster.pop('wait', "Opening Report", "Please wait...",5000);
 
             //ga event
             this.angulartics.eventTrack('CalculateFlows', {
