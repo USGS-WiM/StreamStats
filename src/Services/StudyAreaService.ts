@@ -47,7 +47,6 @@ module StreamStats.Services {
         loadWatershed(rcode:string, workspaceID: string): void
         queryRegressionRegions();
         regressionRegionQueryComplete: boolean;
-        //Disclaimers: Object;
         baseMap: Object;
         showModifyBasinCharacterstics: boolean;
         requestParameterList: Array<any>;
@@ -103,7 +102,6 @@ module StreamStats.Services {
         public regressionRegionQueryComplete: boolean;
         public regressionRegionQueryLoading: boolean;
         public servicesURL: string;
-        //public Disclaimers: Object;
         public baseMap: Object;
         public showModifyBasinCharacterstics: boolean;
         public requestParameterList: Array<any>;
