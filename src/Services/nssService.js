@@ -59,7 +59,6 @@ var StreamStats;
                 //console.log('in clear nss data');
                 this.loadingParametersByStatisticsGroupCounter = 0;
                 this.estimateFlowsCounter = 0;
-                this.getSelectedCitationsCounter = 0;
                 this.selectedStatisticsGroupList = [];
                 this.statisticsGroupList = [];
                 this.canUpdate = true;

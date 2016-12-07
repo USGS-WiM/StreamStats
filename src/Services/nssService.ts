@@ -77,7 +77,6 @@ module StreamStats.Services {
         public queriedRegions: boolean;
         public loadingParametersByStatisticsGroupCounter: number;
         public estimateFlowsCounter: number;
-        public getSelectedCitationsCounter: number;
         public isDone: boolean;
         public reportGenerated: boolean;
         private modalService: Services.IModalService;   
@@ -98,7 +97,6 @@ module StreamStats.Services {
             //console.log('in clear nss data');
             this.loadingParametersByStatisticsGroupCounter = 0;
             this.estimateFlowsCounter = 0;
-            this.getSelectedCitationsCounter = 0;
             this.selectedStatisticsGroupList = [];
             this.statisticsGroupList = [];
             this.canUpdate = true;
