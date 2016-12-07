@@ -118,7 +118,7 @@
                                 <button ng-show="vm.regionService.selectedRegion.Applications.indexOf('Wateruse') != -1" ng-click="vm.OpenWateruse()" type="button" class="btn-wim-sm btn-wim-info btn-wim-group-1"><i class="fa fa-empire"></i>&nbsp;&nbsp;Check for Water Use</button>
                             </div>
 
-                            <div class="wim-alert-success" ng-show="vm.studyAreaService.Disclaimers.isRegulated == true || vm.studyAreaService.Disclaimers.isRegulated == false">Upstream Regulation check has been completed.  There is <strong ng-show="vm.studyAreaService.Disclaimers.isRegulated">{{vm.studyAreaService.regulationCheckResults.percentarearegulated.toFixed(2)}} percent</strong><strong ng-show="!vm.studyAreaService.Disclaimers.isRegulated">NO</strong> regulation in this watershed.</div>
+                            <div class="wim-alert-success" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated == true || vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated == false">Upstream Regulation check has been completed.  There is <strong ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated">{{vm.studyAreaService.regulationCheckResults.percentarearegulated.toFixed(2)}} percent</strong><strong ng-show="!vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated">NO</strong> regulation in this watershed.</div>
                         </div>
 
                         <div>
@@ -240,17 +240,17 @@
                             <thead class="param-table">
                                 <tr>
                                     <th>Parameter Code</th>
-                                    <th ng-hide="vm.studyAreaService.Disclaimers.isRegulated">Value</th>
-                                    <th ng-show="vm.studyAreaService.Disclaimers.isRegulated">Unregulated</th>
-                                    <th ng-show="vm.studyAreaService.Disclaimers.isRegulated">Regulated</th>
+                                    <th ng-hide="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated">Value</th>
+                                    <th ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated">Unregulated</th>
+                                    <th ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated">Regulated</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList" ng-form="paramaterForm">
                                     <td ng-bind="parameter.name"></td>
-                                    <td ng-hide="vm.studyAreaService.Disclaimers.isRegulated"><input class="form-control" ng-class="{notloaded:!parameter.loaded}" ng-change="vm.studyAreaService.Disclaimers.parametersEdited = true; vm.updateParameterValue(parameter)" ng-model="parameter.value" type="text" /></td>
-                                    <td ng-show="vm.studyAreaService.Disclaimers.isRegulated"><input class="form-control" ng-change="vm.studyAreaService.Disclaimers.parametersEdited = true" ng-model="parameter.unRegulatedValue" type="text" /></td>
-                                    <td ng-show="vm.studyAreaService.Disclaimers.isRegulated"><input class="form-control" ng-change="vm.studyAreaService.Disclaimers.parametersEdited = true" ng-model="parameter.regulatedValue" type="text" /></td>
+                                    <td ng-hide="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated"><input class="form-control" ng-class="{notloaded:!parameter.loaded}" ng-change="vm.studyAreaService.selectedStudyArea.Disclaimers.parametersEdited = true; vm.updateParameterValue(parameter)" ng-model="parameter.value" type="text" /></td>
+                                    <td ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated"><input class="form-control" ng-change="vm.studyAreaService.selectedStudyArea.Disclaimers.parametersEdited = true" ng-model="parameter.unRegulatedValue" type="text" /></td>
+                                    <td ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated"><input class="form-control" ng-change="vm.studyAreaService.selectedStudyArea.Disclaimers.parametersEdited = true" ng-model="parameter.regulatedValue" type="text" /></td>
                                     <!--<td ng-hide="parameter.loaded"><button class="btn-wim-sm btn-wim-success" ng-click="vm.calculateParameters()"><i class="fa fa-refresh"></i></button></td>-->
                                 </tr>
                             </tbody>

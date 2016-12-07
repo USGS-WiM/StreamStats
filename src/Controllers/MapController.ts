@@ -820,8 +820,10 @@ module StreamStats.Controllers {
 
                         //otherwise parse exclude Codes
                         else {
-                            //console.log('exlude code: ', results.features); 
-                            this.studyArea.Disclaimers['isInExclusionArea'] = true;
+                            //console.log('exlude code1: ', this.studyArea.selectedStudyArea.Disclaimers); 
+                            //this.studyArea.selectedStudyArea.Disclaimers['isInExclusionArea'] = true;
+                            //this.studyArea.Disclaimers.push('isInExclusionArea');
+                            //console.log('exlude code2: ', this.studyArea.selectedStudyArea.Disclaimers); 
                             this.studyArea.checkingDelineatedPoint = false;
                             var excludeCode = results.features[0].properties.ExcludeCode;
                             var popupMsg = results.features[0].properties.ExcludeReason;
@@ -832,7 +834,7 @@ module StreamStats.Controllers {
                             }
                             else {
                                 this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", popupMsg, true, 0);
-                                this.startDelineate(latlng);
+                                this.startDelineate(latlng, true);
                                 this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'not advised' });
                             }
                         }
@@ -1253,13 +1255,17 @@ module StreamStats.Controllers {
             return layeridList;
         }
 
-        private startDelineate(latlng: any) {
+        private startDelineate(latlng: any, isInExclusionArea?: boolean) {
             //console.log('in startDelineate', latlng);
 
             var studyArea: Models.IStudyArea = new Models.StudyArea(this.regionServices.selectedRegion.RegionID, new WiM.Models.Point(latlng.lat, latlng.lng, '4326'));
 
+
             this.studyArea.AddStudyArea(studyArea);
             this.studyArea.loadStudyBoundary();
+
+            //add disclaimer here
+            if (isInExclusionArea) this.studyArea.selectedStudyArea.Disclaimers['isInExclusionArea'] = true;
         }
     }//end class
 
