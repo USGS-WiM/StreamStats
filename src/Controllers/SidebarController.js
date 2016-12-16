@@ -114,7 +114,7 @@ var StreamStats;
                 //console.log('Opening state page for: ', region);
                 this.modalService.openModal(StreamStats.Services.SSModalType.e_about, { "tabName": "regionInfo", "regionID": region });
                 //var regionParsed = region.replace(' ', '_').toLowerCase();
-                //window.open('http://water.usgs.gov/osw/streamstats/' + regionParsed + '.html', '_blank');
+                //window.open('https://water.usgs.gov/osw/streamstats/' + regionParsed + '.html', '_blank');
             };
             SidebarController.prototype.resetWorkSpace = function () {
                 //this.regionService.clearRegion();

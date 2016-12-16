@@ -126,7 +126,7 @@ var StreamStats;
                     this.Server = '';
             };
             HelpController.prototype.getBrowser = function () {
-                //modified from http://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browser
+                //modified from https://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browser
                 // Opera 8.0+
                 if ((!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0)
                     this.Browser = "Opera";
