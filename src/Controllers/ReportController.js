@@ -187,7 +187,7 @@ var StreamStats;
                         else
                             regionPercent = '';
                         finalVal += statGroup.Name + ' Flow Report, ' + regionPercent + regressionRegion.Name.split("_").join(" ") + '\n';
-                        finalVal += 'Name,Value,Unit,Prediction Error,Lower Prediction Interval,Upper Prediction Interval\n';
+                        finalVal += 'Name,Value,Unit,Prediction Error (percent),Lower Prediction Interval,Upper Prediction Interval\n';
                         regressionRegion.Results.forEach(function (item) {
                             //console.log('ScenarioFlowTable regressionRegion item: ', item);
                             var unit = '';
