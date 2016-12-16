@@ -51,19 +51,19 @@ var StreamStats;
                 //            //change relative URLs
                 //            replaced = this.replaceAll(replaced, 'iframe', 'div')
                 //            replaced = this.replaceAll(replaced, '<td valign="top" width="550">', '<td valign="top" width="550" style="display:none;">')
-                //            replaced = this.replaceAll(replaced, 'src="../', 'src="http://groundwaterwatch.usgs.gov/')
-                //            replaced = this.replaceAll(replaced, 'src="images/', 'src="http://groundwaterwatch.usgs.gov/images/')
-                //            replaced = this.replaceAll(replaced, 'src="../images/', 'src="http://groundwaterwatch.usgs.gov/images/')
-                //            replaced = this.replaceAll(replaced, 'src="BandPlots-small/', 'src="http://groundwaterwatch.usgs.gov/BandPlots-small/')
-                //            replaced = this.replaceAll(replaced, 'src="DVPlotsSmall/', 'src="http://groundwaterwatch.usgs.gov/DVPlotsSmall/')
-                //            replaced = this.replaceAll(replaced, 'src="wlplotssmall/', 'src="http://groundwaterwatch.usgs.gov/wlplotssmall/')
-                //            replaced = this.replaceAll(replaced, 'src="plots-prsmall/', 'src="http://groundwaterwatch.usgs.gov/plots-prsmall/')
+                //            replaced = this.replaceAll(replaced, 'src="../', 'src="https://groundwaterwatch.usgs.gov/')
+                //            replaced = this.replaceAll(replaced, 'src="images/', 'src="https://groundwaterwatch.usgs.gov/images/')
+                //            replaced = this.replaceAll(replaced, 'src="../images/', 'src="https://groundwaterwatch.usgs.gov/images/')
+                //            replaced = this.replaceAll(replaced, 'src="BandPlots-small/', 'src="https://groundwaterwatch.usgs.gov/BandPlots-small/')
+                //            replaced = this.replaceAll(replaced, 'src="DVPlotsSmall/', 'src="https://groundwaterwatch.usgs.gov/DVPlotsSmall/')
+                //            replaced = this.replaceAll(replaced, 'src="wlplotssmall/', 'src="https://groundwaterwatch.usgs.gov/wlplotssmall/')
+                //            replaced = this.replaceAll(replaced, 'src="plots-prsmall/', 'src="https://groundwaterwatch.usgs.gov/plots-prsmall/')
                 //            replaced = this.replaceAll(replaced, 'color="red"', 'color="black"')
                 //            this.pagecontent = replaced;
                 //        }
                 //        else {
                 //            console.log('No page found for this site')
-                //            this.pagecontent = '<div class="alert alert-warning" role="alert">No page found for this site: ' + this.gwwServices.SelectedGWSite['properties']['SITE_NO'] + '<a href = "http://groundwaterwatch.usgs.gov/AWLSites.asp?mt=g&S=' + this.gwwServices.SelectedGWSite['properties']['SITE_NO'] + '&ncd=awl" target="_blank"> GWW Page link </a></div>';
+                //            this.pagecontent = '<div class="alert alert-warning" role="alert">No page found for this site: ' + this.gwwServices.SelectedGWSite['properties']['SITE_NO'] + '<a href = "https://groundwaterwatch.usgs.gov/AWLSites.asp?mt=g&S=' + this.gwwServices.SelectedGWSite['properties']['SITE_NO'] + '&ncd=awl" target="_blank"> GWW Page link </a></div>';
                 //        }
                 //    }, (error) => {
                 //        console.log('No gww sites found');

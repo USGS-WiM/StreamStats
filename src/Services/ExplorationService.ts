@@ -92,7 +92,7 @@ module StreamStats.Services {
 
             //ESRI elevation profile tool
             //Help page: https://elevation.arcgis.com/arcgis/rest/directories/arcgisoutput/Tools/ElevationSync_GPServer/Tools_ElevationSync/Profile.htm
-            var url = 'http://elevation.arcgis.com/arcgis/rest/services/Tools/ElevationSync/GPServer/Profile/execute';
+            var url = 'https://elevation.arcgis.com/arcgis/rest/services/Tools/ElevationSync/GPServer/Profile/execute';
 
             var request: WiM.Services.Helpers.RequestInfo =
                 new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST,
