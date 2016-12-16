@@ -50,7 +50,7 @@ var StreamStats;
         }()); //end class
         var PathBetweenPoints = (function (_super) {
             __extends(PathBetweenPoints, _super);
-            //http://ssdev.cr.usgs.gov/streamstatsservices/navigation/1.geojson?rcode=RRB&startpoint=[-94.311504,48.443681]&endpoint=[-94.349721,48.450215]&crs=4326
+            //https://ssdev.cr.usgs.gov/streamstatsservices/navigation/1.geojson?rcode=RRB&startpoint=[-94.311504,48.443681]&endpoint=[-94.349721,48.450215]&crs=4326
             //properties
             //Constructor
             function PathBetweenPoints() {
@@ -84,7 +84,7 @@ var StreamStats;
             //Constructor
             function NetworkReport() {
                 _super.call(this, 3, 1);
-                //http://ssdev.cr.usgs.gov/streamstatsservices/navigation/4.geojson?rcode=RRB&startpoint=[-94.719923,48.47219]&crs=4326&direction=Upstream&layers=NHDFlowline
+                //https://ssdev.cr.usgs.gov/streamstatsservices/navigation/4.geojson?rcode=RRB&startpoint=[-94.719923,48.47219]&crs=4326&direction=Upstream&layers=NHDFlowline
                 //properties
                 this.layerOptions = [{ name: "NHDFlowline", selected: true }, { name: "Gage", selected: false }, { name: "Dam", selected: false }];
                 this.DirectionOptions = ["Upstream", "Downstream"];

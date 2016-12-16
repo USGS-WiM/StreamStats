@@ -64,7 +64,7 @@ var StreamStats;
             WateruseController.prototype.GetWaterUse = function () {
                 var _this = this;
                 this.CanContiue = false;
-                //http://ssdev.cr.usgs.gov/streamstatsservices/wateruse.json?rcode=OH&workspaceID=OH20160217071851546000&startyear=2005&endyear=2009
+                //https://ssdev.cr.usgs.gov/streamstatsservices/wateruse.json?rcode=OH&workspaceID=OH20160217071851546000&startyear=2005&endyear=2009
                 var url = configuration.queryparams['Wateruse'].format(this.StudyArea.RegionID, this.StudyArea.WorkspaceID, this.StartYear, this.EndYear);
                 //var url = "wateruse.js";
                 var request = new WiM.Services.Helpers.RequestInfo(url);
@@ -234,7 +234,7 @@ var StreamStats;
             //-+-+-+-+-+-+-+-+-+-+-+-
             WateruseController.prototype.init = function () {
                 var _this = this;
-                //http://ssdev.cr.usgs.gov/streamstatsservices/wateruse.json?rcode=OH
+                //https://ssdev.cr.usgs.gov/streamstatsservices/wateruse.json?rcode=OH
                 var url = configuration.queryparams['WateruseConfig'].format(this.StudyArea.RegionID);
                 //var url = "wateruse.js";
                 var request = new WiM.Services.Helpers.RequestInfo(url);

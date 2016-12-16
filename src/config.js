@@ -1,5 +1,5 @@
-//http://lgorithms.blogspot.com/2013/07/angularui-router-as-infrastructure-of.html
-//http://www.funnyant.com/angularjs-ui-router/
+//https://lgorithms.blogspot.com/2013/07/angularui-router-as-infrastructure-of.html
+//https://www.funnyant.com/angularjs-ui-router/
 var StreamStats;
 (function (StreamStats) {
     //'use strict';
