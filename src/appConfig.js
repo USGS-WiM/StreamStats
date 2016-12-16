@@ -75,18 +75,18 @@ configuration.basemaps =
             "layers": [
                 {
                     "name": "tiles",
-                    "url": "http://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer",
+                    "url": "https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer",
                     "type": 'agsTiled',
                     "layerOptions": {
                         "opacity": 0.8,
                         "minZoom": 0,
                         "maxZoom": 15,
-                        "attribution": "<a href='http://www.doi.gov'>U.S. Department of the Interior</a> | <a href='http://www.usgs.gov'>U.S. Geological Survey</a> | <a href='http://www.usgs.gov/laws/policies_notices.html'>Policies</a>"
+                        "attribution": "<a href='https://www.doi.gov'>U.S. Department of the Interior</a> | <a href='https://www.usgs.gov'>U.S. Geological Survey</a> | <a href='https://www.usgs.gov/laws/policies_notices.html'>Policies</a>"
                     }
                 },
                 {
                     "name": "dynamic",
-                    "url": "http://services.nationalmap.gov/arcgis/rest/services/USGSTopoLarge/MapServer",
+                    "url": "https://services.nationalmap.gov/arcgis/rest/services/USGSTopoLarge/MapServer",
                     "type": 'agsDynamic',
                     "layerOptions": {
                         "format": "png8",
@@ -96,7 +96,7 @@ configuration.basemaps =
                         "zIndex": -100,
                         "minZoom": 16,
                         "maxZoom": 20,
-                        "attribution": "<a href='http://www.doi.gov'>U.S. Department of the Interior</a> | <a href='http://www.usgs.gov'>U.S. Geological Survey</a> | <a href='http://www.usgs.gov/laws/policies_notices.html'>Policies</a>"
+                        "attribution": "<a href='https://www.doi.gov'>U.S. Department of the Interior</a> | <a href='https://www.usgs.gov'>U.S. Geological Survey</a> | <a href='https://www.usgs.gov/laws/policies_notices.html'>Policies</a>"
                     }
                 }
             ]
@@ -193,7 +193,7 @@ configuration.regions = [
 		{
 			//'FLA': {
 			//    "name": "Flow Anywhere Model",
-			//    "url": 'http://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowAnywhere/MapServer',
+			//    "url": 'https://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowAnywhere/MapServer',
 			//    "type": 'agsDynamic',
 			//    "visible": true,
 			//    "layerOptions": {
@@ -202,7 +202,7 @@ configuration.regions = [
 			//},
 			//'FDCTM': {
 			//    "name": "Flow Duration Curve Transfer Model",
-			//    "url": 'http://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowDuration2/MapServer',
+			//    "url": 'https://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowDuration2/MapServer',
 			//    "type": 'agsDynamic',
 			//    "visible": true,
 			//    "layerOptions": {
@@ -211,7 +211,7 @@ configuration.regions = [
 			//},
 			//'PRMS': {
 			//    "name": "PRMS",
-			//    "url": 'http://wim.usgs.gov/arcgis/rest/services/IowaPRMSMapper/IOWA_PRMS/MapServer',
+			//    "url": 'https://wim.usgs.gov/arcgis/rest/services/IowaPRMSMapper/IOWA_PRMS/MapServer',
 			//    "type": 'agsDynamic',
 			//    "visible": false,
 			//    "layerOptions": {
@@ -261,7 +261,6 @@ configuration.regions = [
     { "RegionID": "NM", "Name": "New Mexico", "Bounds": [[31.343453,-109.051346],[36.99976,-102.997401]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "NV", "Name": "Nevada", "Bounds": [[34.998914,-119.996324],[41.996637,-114.037392]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "NY", "Name": "New York", "Bounds": [[40.506003,-79.763235],[45.006138,-71.869986]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
-    { "RegionID": "NX", "Name": "New Mexico", "Bounds": [[31.343453,-109.051346],[36.99976,-102.997401]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "MP", "Name": "Northern Mariana Islands", "Bounds": [[14.105276, 144.89859], [20.556385, 145.870788]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "OH", "Name": "Ohio", "Bounds": [[38.400511,-84.81207],[41.986872,-80.519996]], "Layers": {}, "Applications": ["Wateruse"], "ScenariosAvailable": true },
     { "RegionID": "OK", "Name": "Oklahoma", "Bounds": [[33.621136,-102.997709],[37.001478,-94.428552]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },

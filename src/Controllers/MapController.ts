@@ -551,7 +551,7 @@ module StreamStats.Controllers {
                                     if (key == "featureurl") {
 
                                         var siteNo = value.split('site_no=')[1];
-                                        var SSgagepage = 'http://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm'
+                                        var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm'
 
                                         popupContent += '<strong>NWIS page: </strong><a href="' + value + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br>';
 

@@ -87,7 +87,7 @@ var StreamStats;
                 });
             };
             //intersect method modified from
-            //http://stackoverflow.com/questions/2752349/fast-rectangle-to-rectangle-intersection
+            //https://stackoverflow.com/questions/2752349/fast-rectangle-to-rectangle-intersection
             RegionService.prototype.intersect = function (a, b) {
                 return Math.max(a.left, b.left) < Math.min(a.right, b.right) && Math.min(a.top, b.top) > Math.max(a.bottom, b.bottom);
             };
