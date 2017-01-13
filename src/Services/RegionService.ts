@@ -242,7 +242,7 @@ module StreamStats.Services {
             //console.log('in load parameters', this.selectedRegion);
             if (!this.selectedRegion) return;
 
-            var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSAvailableParams'].format(this.selectedRegion.RegionID);
+            var url = configuration.baseurls['StreamStats'] + configuration.queryparams['SSAvailableParams'].format(this.selectedRegion.RegionID);
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
 
             this.Execute(request).then(
