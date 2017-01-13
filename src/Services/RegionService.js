@@ -130,9 +130,10 @@ var StreamStats;
             };
             RegionService.prototype.loadMapLayersByRegion = function (regionid) {
                 var _this = this;
-                //console.log('in loadMapLayersByRegion');
+                console.log('in loadMapLayersByRegion');
                 this.regionMapLayerListLoaded = false;
-                var url = configuration.baseurls['StreamStats'] + configuration.queryparams['SSStateLayers'].format(regionid.toLowerCase());
+                var url = configuration.baseurls['StreamStats'] + configuration.queryparams['SSStateLayers'] + '?f=pjson';
+                //console.log('HERE',url)
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.regionMapLayerList = [];
                 this.Execute(request).then(function (response) {
@@ -140,14 +141,21 @@ var StreamStats;
                         _this.toaster.pop('warning', "No map layers available", "", 5000);
                         return;
                     }
+                    //console.log('layers:', response.data.layers);
                     //set initial visibility array
                     response.data.layers.forEach(function (value, key) {
                         var visible = false;
-                        if (value.name.toLowerCase() == 'stream grid' || value.name.toLowerCase() == 'area of limited functionality') {
-                            visible = true;
+                        if (value.name == regionid) {
+                            //console.log('MATCH FOUND:', value.subLayerIds)
+                            value.subLayerIds.forEach(function (sublayer, sublayerkey) {
+                                //console.log('here',sublayer,sublayerkey)
+                                _this.regionMapLayerList.push([response.data.layers[sublayer].name, response.data.layers[sublayer].id, visible]);
+                            });
                         }
-                        ;
-                        _this.regionMapLayerList.push([value.name, value.id, visible]);
+                        //if (value.name.toLowerCase() == 'stream grid' || value.name.toLowerCase() == 'area of limited functionality') {
+                        //    visible = true
+                        //};
+                        //this.regionMapLayerList.push([value.name, value.id, visible]);
                     });
                     _this.regionMapLayerListLoaded = true;
                 }, function (error) {

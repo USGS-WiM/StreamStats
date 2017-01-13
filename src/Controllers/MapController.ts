@@ -791,7 +791,7 @@ module StreamStats.Controllers {
             //build list of layers to query before delineate
             var queryString = 'visible:'
             this.regionServices.regionMapLayerList.forEach((item) => {
-                if (item[0].toLowerCase() == "area of limited functionality" || item[0].toLowerCase() == "areas of limited functionality") queryString += String(item[1]);
+                queryString += String(item[1]);
             });
 
             this.leafletData.getMap("mainMap").then((map: any) => {
@@ -1173,27 +1173,36 @@ module StreamStats.Controllers {
 
         private addRegionOverlayLayers(regionId: string) {
 
+            console.log('in addRegionOverlayLayers');
+
             if (this.regionServices.regionMapLayerList.length < 1) return;
 
-            this.layers.overlays[regionId + "_region"] = new Layer(regionId + " Map layers", configuration.baseurls['StreamStats'] + "/arcgis/rest/services/{0}_ss/MapServer".format(regionId.toLowerCase()),
+            //make layerlist 
+            var layerList = [];
+            var roots = this.regionServices.regionMapLayerList.map(function (layer) {
+                layerList.push(layer[1])
+            });
+            console.log('test:', layerList)
+
+            this.layers.overlays[regionId + "_region"] = new Layer(regionId + " Map layers", configuration.baseurls['StreamStats'] + configuration.queryparams['SSStateLayers'],
                 "agsDynamic", true, {
                     "opacity": 1,
-                    //"layers": this.regionServices.regionMapLayerList,
+                    "layers": layerList,
                     "format": "png8",
                     "f": "image"
                 });
 
             //override default map service visibility
-            this.leafletData.getLayers("mainMap").then((maplayers: any) => {
-                var regionLayer = maplayers.overlays[regionId + "_region"];
+            //this.leafletData.getLayers("mainMap").then((maplayers: any) => {
+            //    var regionLayer = maplayers.overlays[regionId + "_region"];
 
-                var visibleLayers = [];
-                this.regionServices.regionMapLayerList.forEach((item) => {
-                    if (item[2]) visibleLayers.push(item[1]);
-                });
-                //console.log('visible state/region map layers: ', visibleLayers);
-                regionLayer.setLayers([visibleLayers]);
-            });
+            //    var visibleLayers = [];
+            //    this.regionServices.regionMapLayerList.forEach((item) => {
+            //        if (item[2]) visibleLayers.push(item[1]);
+            //    });
+            //    //console.log('visible state/region map layers: ', visibleLayers);
+            //    regionLayer.setLayers([visibleLayers]);
+            //});
             
             //get any other layers specified in config
             var layers = this.regionServices.selectedRegion.Layers;
