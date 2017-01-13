@@ -43,7 +43,7 @@ module StreamStats.Controllers {
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.StudyAreaService'];
         constructor($scope: INavbarControllerScope, $http: ng.IHttpService, modal: Services.IModalService, studyArea: Services.IStudyAreaService) {
-            super($http, configuration.baseurls.StreamStatsServices);
+            super($http, configuration.baseurls.StreamStats);
             $scope.vm = this;
             this.modalService = modal;
             this.checkActiveNews();

@@ -159,7 +159,7 @@ var StreamStats;
                     }).join(";");
                     urlParams.push("layers=" + itemstring);
                 } //endif
-                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSNavigationServices']
+                var url = configuration.baseurls['StreamStats'] + configuration.queryparams['SSNavigationServices']
                     .format(this.selectedMethod.ModelType, this.regionservice.selectedRegion.RegionID) + urlParams.join("&");
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {

@@ -2,24 +2,17 @@ var configuration = {}
 configuration.appTitle = 'StreamStats [Development Version: Not for public consumption]';
 configuration.baseurls =
 {   
-    'MercuryService': 'https://54.174.81.42/mercuryservices',
-    'MercuryAuth': 'https://54.174.81.42/mercuryauth',
-    'RegressionService': 'https://commons.wim.usgs.gov/regressionservice/models',
-    'KrigService': 'https://commons.wim.usgs.gov/krigservice',
     'NWISurl': 'https://waterservices.usgs.gov/nwis',
     'StreamStats': 'https://streamstatstest.wim.usgs.gov',
-    'StreamStatsServices': 'https://streamstatstest.wim.usgs.gov',
-    //'NSS': 'https://toad.wim.usgs.gov/nssservices',
     'NSS': 'https://services.wim.usgs.gov/nssservicestest',
     'SearchAPI': 'https://txpub.usgs.gov/DSS/search_api/1.1/dataService/dataService.ashx',
-    'FARefGage': 'https://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowAnywhere/MapServer',
     'GISserver': 'https://gis.wim.usgs.gov',
     'NationalMapRasterServices': 'https://raster.nationalmap.gov/arcgis/rest/services'
 }
 
 //override streamstats arguments if on production
 if (window.location.origin.indexOf('streamstatsags.cr.usgs.gov') != -1) {
-    configuration.baseurls.StreamStatsServices = 'https://streamstatsags.cr.usgs.gov';
+    configuration.baseurls.StreamStats = 'https://streamstatsags.cr.usgs.gov';
     configuration.appTitle = 'StreamStats'
 }
 
@@ -37,6 +30,7 @@ configuration.queryparams =
     'SSAvailableParams': '/streamstatsservices/parameters.json?rcode={0}',
     'SSComputeParams': '/streamstatsservices/parameters.json?rcode={0}&workspaceID={1}&includeparameters={2}',
     'SSStateLayers': '/arcgis/rest/services/StreamStats/stateServices/MapServer',
+    'SSNationalLayers': '/arcgis/rest/services/StreamStats/nationalLayers/MapServer',
     'FARefGage': '/2/query?geometry={0}&geometryType=esriGeometryPoint&inSR={1}&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
     'regionService': '/arcgis/rest/services/ss_studyAreas_prod/MapServer/identify',
     'NLCDQueryService': '/LandCover/USGS_EROS_LandCover_NLCD/MapServer/4',
@@ -135,18 +129,18 @@ configuration.basemaps =
 }// end baselayer
 
 configuration.overlayedLayers = {
-    //"SSLayer": {
-    //    "name": "National Layers",
-    //    "url": configuration.baseurls['StreamStats'] + "/arcgis/rest/services/ss_studyAreas_prod/MapServer",
-    //    "type": 'agsDynamic',
-    //    "visible": true,
-    //    "layerOptions": {
-    //        "zIndex": 1,
-    //        "opacity": 0.6,
-    //        "format": "png8",
-    //        "f": "image",
-    //    }
-    //},//end ssLayer    
+    "SSLayer": {
+        "name": "National Layers",
+        "url": configuration.baseurls['StreamStats'] + configuration.queryparams['SSNationalLayers'],
+        "type": 'agsDynamic',
+        "visible": true,
+        "layerOptions": {
+            "zIndex": 1,
+            "opacity": 0.6,
+            "format": "png8",
+            "f": "image",
+        }
+    },//end ssLayer    
     "draw": {
         "name": 'draw',
         "type": 'group',
