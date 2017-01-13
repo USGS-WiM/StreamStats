@@ -194,10 +194,11 @@ module StreamStats.Services {
         }
 
         public loadMapLayersByRegion(regionid: string): any {
-            //console.log('in loadMapLayersByRegion');
+            console.log('in loadMapLayersByRegion');
             this.regionMapLayerListLoaded = false;
 
-            var url = configuration.baseurls['StreamStats'] + configuration.queryparams['SSStateLayers'].format(regionid.toLowerCase());
+            var url = configuration.baseurls['StreamStats'] + configuration.queryparams['SSStateLayers'] + '?f=pjson';
+            //console.log('HERE',url)
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             this.regionMapLayerList= [];
 
@@ -208,12 +209,26 @@ module StreamStats.Services {
                         return;
                     }
 
+                    //console.log('layers:', response.data.layers);
+
                     //set initial visibility array
                     response.data.layers.forEach((value, key) => {
                         var visible = false;
-                        if (value.name.toLowerCase() == 'stream grid' || value.name.toLowerCase() == 'area of limited functionality') { visible = true };
+
+                        if (value.name == regionid) {
+                            //console.log('MATCH FOUND:', value.subLayerIds)
+
+                            value.subLayerIds.forEach((sublayer, sublayerkey) => {
+                                //console.log('here',sublayer,sublayerkey)
+                                this.regionMapLayerList.push([response.data.layers[sublayer].name, response.data.layers[sublayer].id, visible]);
+                            });
+                        }
+
+                        //if (value.name.toLowerCase() == 'stream grid' || value.name.toLowerCase() == 'area of limited functionality') {
+                        //    visible = true
+                        //};
  
-                        this.regionMapLayerList.push([value.name, value.id, visible]);
+                        //this.regionMapLayerList.push([value.name, value.id, visible]);
                     });
                     this.regionMapLayerListLoaded = true;
                 },(error) => {
