@@ -168,6 +168,7 @@ module StreamStats.Controllers {
             this.explorationService.setMethod(val);
         }
         public explorationMethodBusy: boolean = false;
+        private environment: string;
 
         //Constructro
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -188,6 +189,7 @@ module StreamStats.Controllers {
             this.explorationService = exploration;
             this.eventManager = eventManager;
             this.cursorStyle = 'pointer';
+            this.environment = configuration.environment;
 
             //subscribe to Events
             this.eventManager.SubscribeToEvent(Services.onSelectedStudyAreaChanged, new WiM.Event.EventHandler<Services.StudyAreaEventArgs>(() => {
@@ -791,7 +793,7 @@ module StreamStats.Controllers {
             //build list of layers to query before delineate
             var queryString = 'visible:'
             this.regionServices.regionMapLayerList.forEach((item) => {
-                if (item[0].toLowerCase() == "area of limited functionality" || item[0].toLowerCase() == "areas of limited functionality") queryString += String(item[1]);
+                queryString += String(item[1]);
             });
 
             this.leafletData.getMap("mainMap").then((map: any) => {
@@ -1173,27 +1175,47 @@ module StreamStats.Controllers {
 
         private addRegionOverlayLayers(regionId: string) {
 
+            console.log('in addRegionOverlayLayers');
+
             if (this.regionServices.regionMapLayerList.length < 1) return;
 
-            this.layers.overlays[regionId + "_region"] = new Layer(regionId + " Map layers", configuration.baseurls['StreamStats'] + "/arcgis/rest/services/{0}_ss/MapServer".format(regionId.toLowerCase()),
-                "agsDynamic", true, {
-                    "opacity": 1,
-                    //"layers": this.regionServices.regionMapLayerList,
-                    "format": "png8",
-                    "f": "image"
+            //CLOUD
+            if (configuration.cloud) {
+                var layerList = [];
+                var roots = this.regionServices.regionMapLayerList.map(function (layer) {
+                    layerList.push(layer[1])
                 });
 
-            //override default map service visibility
-            this.leafletData.getLayers("mainMap").then((maplayers: any) => {
-                var regionLayer = maplayers.overlays[regionId + "_region"];
+                this.layers.overlays[regionId + "_region"] = new Layer(regionId + " Map layers", configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['SSStateLayers'],
+                    "agsDynamic", true, {
+                        "opacity": 1,
+                        "layers": layerList,
+                        "format": "png8",
+                        "f": "image"
+                    });
+            }
+            //NOT CLOUD
+            else {
+                this.layers.overlays[regionId + "_region"] = new Layer(regionId + " Map layers", configuration.baseurls['StreamStatsMapServices'] + "/arcgis/rest/services/{0}_ss/MapServer".format(regionId.toLowerCase()),
+                    "agsDynamic", true, {
+                        "opacity": 1,
+                        //"layers": this.regionServices.regionMapLayerList,
+                        "format": "png8",
+                        "f": "image"
+                    });
 
-                var visibleLayers = [];
-                this.regionServices.regionMapLayerList.forEach((item) => {
-                    if (item[2]) visibleLayers.push(item[1]);
+                //override default map service visibility
+                this.leafletData.getLayers("mainMap").then((maplayers: any) => {
+                    var regionLayer = maplayers.overlays[regionId + "_region"];
+
+                    var visibleLayers = [];
+                    this.regionServices.regionMapLayerList.forEach((item) => {
+                        if (item[2]) visibleLayers.push(item[1]);
+                    });
+                    //console.log('visible state/region map layers: ', visibleLayers);
+                    regionLayer.setLayers([visibleLayers]);
                 });
-                //console.log('visible state/region map layers: ', visibleLayers);
-                regionLayer.setLayers([visibleLayers]);
-            });
+            }
             
             //get any other layers specified in config
             var layers = this.regionServices.selectedRegion.Layers;

@@ -41,7 +41,7 @@ var StreamStats;
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
             function ExplorationService($http, $q, toaster, eventManager, regionservice) {
-                _super.call(this, $http, configuration.baseurls['StreamStats']);
+                _super.call(this, $http, configuration.baseurls['StreamStatsServices']);
                 this.$q = $q;
                 this.eventManager = eventManager;
                 this.regionservice = regionservice;

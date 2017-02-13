@@ -37,18 +37,18 @@ module StreamStats.Controllers {
         private modalService: Services.IModalService;
         private cookies: any;
         private newArticleCount: number;
-        private appTitle: string;
+        private environment: string;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.StudyAreaService'];
         constructor($scope: INavbarControllerScope, $http: ng.IHttpService, modal: Services.IModalService, studyArea: Services.IStudyAreaService) {
-            super($http, configuration.baseurls.StreamStatsServices);
+            super($http, configuration.baseurls.StreamStats);
             $scope.vm = this;
             this.modalService = modal;
             this.checkActiveNews();
             this.newArticleCount = 0;
-            this.appTitle = configuration.appTitle;
+            this.environment = configuration.environment;
         }
 
         //Methods

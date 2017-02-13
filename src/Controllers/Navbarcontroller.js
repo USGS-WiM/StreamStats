@@ -28,12 +28,12 @@ var StreamStats;
         var NavbarController = (function (_super) {
             __extends(NavbarController, _super);
             function NavbarController($scope, $http, modal, studyArea) {
-                _super.call(this, $http, configuration.baseurls.StreamStatsServices);
+                _super.call(this, $http, configuration.baseurls.StreamStats);
                 $scope.vm = this;
                 this.modalService = modal;
                 this.checkActiveNews();
                 this.newArticleCount = 0;
-                this.appTitle = configuration.appTitle;
+                this.environment = configuration.environment;
             }
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-

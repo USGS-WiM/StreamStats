@@ -44,7 +44,7 @@ var StreamStats;
             //-+-+-+-+-+-+-+-+-+-+-+-
             function StudyAreaService($http, $q, eventManager, toaster) {
                 var _this = this;
-                _super.call(this, $http, configuration.baseurls['StreamStats']);
+                _super.call(this, $http, configuration.baseurls['StreamStatsServices']);
                 this.$http = $http;
                 this.$q = $q;
                 this.eventManager = eventManager;
