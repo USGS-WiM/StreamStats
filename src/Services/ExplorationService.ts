@@ -74,7 +74,7 @@ module StreamStats.Services {
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         constructor($http: ng.IHttpService, private $q: ng.IQService, toaster, private eventManager: WiM.Event.IEventManager, private regionservice:Services.IRegionService) {
-            super($http, configuration.baseurls['StreamStats'])
+            super($http, configuration.baseurls['StreamStatsServices'])
 
             this.toaster = toaster;
             this.drawElevationProfile = false;
@@ -198,7 +198,7 @@ module StreamStats.Services {
                     urlParams.push("layers=" + itemstring)
             }//endif
 
-            var url: string = configuration.baseurls['StreamStats']+configuration.queryparams['SSNavigationServices']
+            var url: string = configuration.baseurls['StreamStatsServices']+configuration.queryparams['SSNavigationServices']
                 .format(this.selectedMethod.ModelType, this.regionservice.selectedRegion.RegionID)+urlParams.join("&");
             
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url,true);

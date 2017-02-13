@@ -46,7 +46,7 @@ var StreamStats;
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
             function RegionService($http, $q, toaster, eventManager) {
-                _super.call(this, $http, configuration.baseurls['StreamStats']);
+                _super.call(this, $http, configuration.baseurls['StreamStatsServices']);
                 this.$q = $q;
                 this.eventManager = eventManager;
                 this.toaster = toaster;
@@ -113,7 +113,7 @@ var StreamStats;
             };
             RegionService.prototype.loadNationalMapLayers = function () {
                 var _this = this;
-                var url = configuration.baseurls['StreamStats'] + "/arcgis/rest/services/ss_studyAreas_prod/MapServer?f=pjson";
+                var url = configuration.baseurls['StreamStatsMapServices'] + "/arcgis/rest/services/ss_studyAreas_prod/MapServer?f=pjson";
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.nationalMapLayerList = [];
                 this.Execute(request).then(function (response) {
@@ -130,46 +130,79 @@ var StreamStats;
             };
             RegionService.prototype.loadMapLayersByRegion = function (regionid) {
                 var _this = this;
-                console.log('in loadMapLayersByRegion');
+                //console.log('in loadMapLayersByRegion');
                 this.regionMapLayerListLoaded = false;
-                var url = configuration.baseurls['StreamStats'] + configuration.queryparams['SSStateLayers'] + '?f=pjson';
-                //console.log('HERE',url)
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
-                this.regionMapLayerList = [];
-                this.Execute(request).then(function (response) {
-                    if (!response.data.layers) {
-                        _this.toaster.pop('warning', "No map layers available", "", 5000);
-                        return;
-                    }
-                    //console.log('layers:', response.data.layers);
-                    //set initial visibility array
-                    response.data.layers.forEach(function (value, key) {
-                        var visible = false;
-                        if (value.name == regionid) {
-                            //console.log('MATCH FOUND:', value.subLayerIds)
-                            value.subLayerIds.forEach(function (sublayer, sublayerkey) {
-                                //console.log('here',sublayer,sublayerkey)
-                                _this.regionMapLayerList.push([response.data.layers[sublayer].name, response.data.layers[sublayer].id, visible]);
-                            });
+                //CLOUD
+                if (configuration.cloud) {
+                    var url = configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['SSStateLayers'] + '?f=pjson';
+                    var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+                    this.regionMapLayerList = [];
+                    this.Execute(request).then(function (response) {
+                        if (!response.data.layers) {
+                            _this.toaster.pop('warning', "No map layers available", "", 5000);
+                            return;
                         }
-                        //if (value.name.toLowerCase() == 'stream grid' || value.name.toLowerCase() == 'area of limited functionality') {
-                        //    visible = true
-                        //};
-                        //this.regionMapLayerList.push([value.name, value.id, visible]);
+                        //console.log('layers:', response.data.layers);
+                        //set initial visibility array
+                        response.data.layers.forEach(function (value, key) {
+                            var visible = false;
+                            if (value.name == regionid) {
+                                //console.log('MATCH FOUND:', value.subLayerIds)
+                                value.subLayerIds.forEach(function (sublayer, sublayerkey) {
+                                    //console.log('here',sublayer,sublayerkey)
+                                    _this.regionMapLayerList.push([response.data.layers[sublayer].name, response.data.layers[sublayer].id, visible]);
+                                });
+                            }
+                            //if (value.name.toLowerCase() == 'stream grid' || value.name.toLowerCase() == 'area of limited functionality') {
+                            //    visible = true
+                            //};
+                            //this.regionMapLayerList.push([value.name, value.id, visible]);
+                        });
+                        _this.regionMapLayerListLoaded = true;
+                    }, function (error) {
+                        console.log('No region map layers found');
+                        return _this.$q.reject(error.data);
+                    }).finally(function () {
                     });
-                    _this.regionMapLayerListLoaded = true;
-                }, function (error) {
-                    console.log('No region map layers found');
-                    return _this.$q.reject(error.data);
-                }).finally(function () {
-                });
+                }
+                else {
+                    var url = configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['SSStateLayers'].format(regionid.toLowerCase());
+                    var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+                    this.regionMapLayerList = [];
+                    this.Execute(request).then(function (response) {
+                        if (!response.data.layers) {
+                            _this.toaster.pop('warning', "No map layers available", "", 5000);
+                            return;
+                        }
+                        //set initial visibility array
+                        response.data.layers.forEach(function (value, key) {
+                            var visible = false;
+                            if (value.name.toLowerCase() == 'stream grid' || value.name.toLowerCase() == 'area of limited functionality') {
+                                visible = true;
+                            }
+                            ;
+                            _this.regionMapLayerList.push([value.name, value.id, visible]);
+                        });
+                        _this.regionMapLayerListLoaded = true;
+                    }, function (error) {
+                        console.log('No region map layers found');
+                        return _this.$q.reject(error.data);
+                    }).finally(function () {
+                    });
+                }
             };
             RegionService.prototype.loadParametersByRegion = function () {
                 var _this = this;
                 //console.log('in load parameters', this.selectedRegion);
                 if (!this.selectedRegion)
                     return;
-                var url = configuration.baseurls['StreamStats'] + configuration.queryparams['SSAvailableParams'].format(this.selectedRegion.RegionID);
+                //CLOUD CHECK
+                if (configuration.cloud) {
+                    var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSAvailableParams'].format(this.selectedRegion.RegionID);
+                }
+                else {
+                    var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSAvailableParams'].format(this.selectedRegion.RegionID);
+                }
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     //console.log(response);

@@ -41,7 +41,7 @@ var StreamStats;
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
             function ExplorationService($http, $q, toaster, eventManager, regionservice) {
-                _super.call(this, $http, configuration.baseurls['StreamStats']);
+                _super.call(this, $http, configuration.baseurls['StreamStatsServices']);
                 this.$q = $q;
                 this.eventManager = eventManager;
                 this.regionservice = regionservice;
@@ -159,7 +159,7 @@ var StreamStats;
                     }).join(";");
                     urlParams.push("layers=" + itemstring);
                 } //endif
-                var url = configuration.baseurls['StreamStats'] + configuration.queryparams['SSNavigationServices']
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSNavigationServices']
                     .format(this.selectedMethod.ModelType, this.regionservice.selectedRegion.RegionID) + urlParams.join("&");
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
