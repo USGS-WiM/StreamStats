@@ -109,7 +109,7 @@ module StreamStats.Services {
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         constructor(public $http: ng.IHttpService, private $q: ng.IQService, private eventManager: WiM.Event.IEventManager, toaster) {
-            super($http, configuration.baseurls['StreamStats'])
+            super($http, configuration.baseurls['StreamStatsServices'])
 
             eventManager.AddEvent<StudyAreaEventArgs>(onSelectedStudyAreaChanged);
             eventManager.AddEvent<StudyAreaEventArgs>(onStudyAreaReset);
@@ -121,7 +121,7 @@ module StreamStats.Services {
 
             this.toaster = toaster;
             this.clearStudyArea();
-            this.servicesURL = configuration.baseurls['StreamStats'];
+            this.servicesURL = configuration.baseurls['StreamStatsServices'];
            
         }
         //Methods
@@ -178,7 +178,7 @@ module StreamStats.Services {
             this.toaster.pop("wait", "Delineating Basin", "Please wait...", 0);
             this.canUpdate = false;
 
-            var url = configuration.baseurls['StreamStats'] + configuration.queryparams['SSdelineation'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(),
+            var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(),
                 this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString(), false)
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
 
@@ -235,7 +235,7 @@ module StreamStats.Services {
                 var studyArea: Models.IStudyArea = new Models.StudyArea(rcode,null);
                 this.AddStudyArea(studyArea);
 
-                var url = configuration.baseurls['StreamStats'] + configuration.queryparams['SSwatershedByWorkspace'].format('geojson', rcode, workspaceID, 4326, false)
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSwatershedByWorkspace'].format('geojson', rcode, workspaceID, 4326, false)
                 var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
 
                 this.Execute(request).then(
@@ -279,7 +279,7 @@ module StreamStats.Services {
             this.toaster.pop("wait", "Loading Edited Basin", "Please wait...", 0);
             this.canUpdate = false;
             //Content-Type: application/json
-            var url = configuration.baseurls['StreamStats'] + configuration.queryparams['SSeditBasin'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID, this.selectedStudyArea.Pourpoint.crs.toString())
+            var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSeditBasin'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID, this.selectedStudyArea.Pourpoint.crs.toString())
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.PUT, 'json', angular.toJson(this.WatershedEditDecisionList), {});
             this.Execute(request).then(
                 (response: any) => {
@@ -327,7 +327,7 @@ module StreamStats.Services {
             }
 
             //console.log('request parameter list before: ', this.requestParameterList);
-            var url = configuration.baseurls['StreamStats'] + configuration.queryparams['SSComputeParams'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID,
+            var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSComputeParams'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID,
                 this.requestParameterList.join(','));
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
 

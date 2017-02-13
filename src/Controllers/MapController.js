@@ -89,6 +89,7 @@ var StreamStats;
                 this.explorationService = exploration;
                 this.eventManager = eventManager;
                 this.cursorStyle = 'pointer';
+                this.environment = configuration.environment;
                 //subscribe to Events
                 this.eventManager.SubscribeToEvent(StreamStats.Services.onSelectedStudyAreaChanged, new WiM.Event.EventHandler(function () {
                     _this.onSelectedStudyAreaChanged();
@@ -936,31 +937,42 @@ var StreamStats;
                 }
             };
             MapController.prototype.addRegionOverlayLayers = function (regionId) {
+                var _this = this;
                 console.log('in addRegionOverlayLayers');
                 if (this.regionServices.regionMapLayerList.length < 1)
                     return;
-                //make layerlist 
-                var layerList = [];
-                var roots = this.regionServices.regionMapLayerList.map(function (layer) {
-                    layerList.push(layer[1]);
-                });
-                console.log('test:', layerList);
-                this.layers.overlays[regionId + "_region"] = new Layer(regionId + " Map layers", configuration.baseurls['StreamStats'] + configuration.queryparams['SSStateLayers'], "agsDynamic", true, {
-                    "opacity": 1,
-                    "layers": layerList,
-                    "format": "png8",
-                    "f": "image"
-                });
-                //override default map service visibility
-                //this.leafletData.getLayers("mainMap").then((maplayers: any) => {
-                //    var regionLayer = maplayers.overlays[regionId + "_region"];
-                //    var visibleLayers = [];
-                //    this.regionServices.regionMapLayerList.forEach((item) => {
-                //        if (item[2]) visibleLayers.push(item[1]);
-                //    });
-                //    //console.log('visible state/region map layers: ', visibleLayers);
-                //    regionLayer.setLayers([visibleLayers]);
-                //});
+                //CLOUD
+                if (configuration.cloud) {
+                    var layerList = [];
+                    var roots = this.regionServices.regionMapLayerList.map(function (layer) {
+                        layerList.push(layer[1]);
+                    });
+                    this.layers.overlays[regionId + "_region"] = new Layer(regionId + " Map layers", configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['SSStateLayers'], "agsDynamic", true, {
+                        "opacity": 1,
+                        "layers": layerList,
+                        "format": "png8",
+                        "f": "image"
+                    });
+                }
+                else {
+                    this.layers.overlays[regionId + "_region"] = new Layer(regionId + " Map layers", configuration.baseurls['StreamStatsMapServices'] + "/arcgis/rest/services/{0}_ss/MapServer".format(regionId.toLowerCase()), "agsDynamic", true, {
+                        "opacity": 1,
+                        //"layers": this.regionServices.regionMapLayerList,
+                        "format": "png8",
+                        "f": "image"
+                    });
+                    //override default map service visibility
+                    this.leafletData.getLayers("mainMap").then(function (maplayers) {
+                        var regionLayer = maplayers.overlays[regionId + "_region"];
+                        var visibleLayers = [];
+                        _this.regionServices.regionMapLayerList.forEach(function (item) {
+                            if (item[2])
+                                visibleLayers.push(item[1]);
+                        });
+                        //console.log('visible state/region map layers: ', visibleLayers);
+                        regionLayer.setLayers([visibleLayers]);
+                    });
+                }
                 //get any other layers specified in config
                 var layers = this.regionServices.selectedRegion.Layers;
                 if (layers == undefined)

@@ -44,7 +44,7 @@ var StreamStats;
             //-+-+-+-+-+-+-+-+-+-+-+-
             function StudyAreaService($http, $q, eventManager, toaster) {
                 var _this = this;
-                _super.call(this, $http, configuration.baseurls['StreamStats']);
+                _super.call(this, $http, configuration.baseurls['StreamStatsServices']);
                 this.$http = $http;
                 this.$q = $q;
                 this.eventManager = eventManager;
@@ -57,7 +57,7 @@ var StreamStats;
                 this._studyAreaList = [];
                 this.toaster = toaster;
                 this.clearStudyArea();
-                this.servicesURL = configuration.baseurls['StreamStats'];
+                this.servicesURL = configuration.baseurls['StreamStatsServices'];
             }
             Object.defineProperty(StudyAreaService.prototype, "StudyAreaList", {
                 get: function () {
@@ -129,7 +129,7 @@ var StreamStats;
                 var _this = this;
                 this.toaster.pop("wait", "Delineating Basin", "Please wait...", 0);
                 this.canUpdate = false;
-                var url = configuration.baseurls['StreamStats'] + configuration.queryparams['SSdelineation'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString(), false);
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString(), false);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     //console.log('delineation response headers: ', response.headers());
@@ -176,7 +176,7 @@ var StreamStats;
                     this.toaster.pop("wait", "Opening Basin", "Please wait...", 0);
                     var studyArea = new StreamStats.Models.StudyArea(rcode, null);
                     this.AddStudyArea(studyArea);
-                    var url = configuration.baseurls['StreamStats'] + configuration.queryparams['SSwatershedByWorkspace'].format('geojson', rcode, workspaceID, 4326, false);
+                    var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSwatershedByWorkspace'].format('geojson', rcode, workspaceID, 4326, false);
                     var request = new WiM.Services.Helpers.RequestInfo(url, true);
                     this.Execute(request).then(function (response) {
                         _this.selectedStudyArea.Features = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"] : null;
@@ -212,7 +212,7 @@ var StreamStats;
                 this.toaster.pop("wait", "Loading Edited Basin", "Please wait...", 0);
                 this.canUpdate = false;
                 //Content-Type: application/json
-                var url = configuration.baseurls['StreamStats'] + configuration.queryparams['SSeditBasin'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID, this.selectedStudyArea.Pourpoint.crs.toString());
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSeditBasin'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID, this.selectedStudyArea.Pourpoint.crs.toString());
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.PUT, 'json', angular.toJson(this.WatershedEditDecisionList), {});
                 this.Execute(request).then(function (response) {
                     //create new study area                    
@@ -252,7 +252,7 @@ var StreamStats;
                     this.studyAreaParameterList.map(function (param) { _this.requestParameterList.push(param.code); });
                 }
                 //console.log('request parameter list before: ', this.requestParameterList);
-                var url = configuration.baseurls['StreamStats'] + configuration.queryparams['SSComputeParams'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID, this.requestParameterList.join(','));
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSComputeParams'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID, this.requestParameterList.join(','));
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     if (response.data.parameters && response.data.parameters.length > 0) {
