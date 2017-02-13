@@ -74,7 +74,7 @@ module StreamStats.Services {
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         constructor($http: ng.IHttpService, private $q: ng.IQService, toaster, private eventManager: WiM.Event.IEventManager, private regionservice:Services.IRegionService) {
-            super($http, configuration.baseurls['StreamStats'])
+            super($http, configuration.baseurls['StreamStatsServices'])
 
             this.toaster = toaster;
             this.drawElevationProfile = false;

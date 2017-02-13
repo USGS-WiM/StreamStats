@@ -109,7 +109,7 @@ module StreamStats.Services {
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         constructor(public $http: ng.IHttpService, private $q: ng.IQService, private eventManager: WiM.Event.IEventManager, toaster) {
-            super($http, configuration.baseurls['StreamStats'])
+            super($http, configuration.baseurls['StreamStatsServices'])
 
             eventManager.AddEvent<StudyAreaEventArgs>(onSelectedStudyAreaChanged);
             eventManager.AddEvent<StudyAreaEventArgs>(onStudyAreaReset);

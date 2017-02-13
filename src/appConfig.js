@@ -1,26 +1,17 @@
 ﻿var configuration = {}
-configuration.appTitle = 'StreamStats [Development Version: Not for public consumption]';
+//main environment variables
+configuration.environment = 'development'
+configuration.cloud = false;
+
 configuration.baseurls =
 {   
-    'MercuryService': 'https://54.174.81.42/mercuryservices',
-    'MercuryAuth': 'https://54.174.81.42/mercuryauth',
-    'RegressionService': 'https://commons.wim.usgs.gov/regressionservice/models',
-    'KrigService': 'https://commons.wim.usgs.gov/krigservice',
     'NWISurl': 'https://waterservices.usgs.gov/nwis',
-    'StreamStats': 'https://streamstats09.cr.usgs.gov',
-    'StreamStatsServices':'https://ssdev.cr.usgs.gov',
-    //'NSS': 'https://toad.wim.usgs.gov/nssservices',
+    'StreamStatsMapServices': 'https://streamstats09.cr.usgs.gov',
+    'StreamStatsServices': 'https://streamstatsags.cr.usgs.gov',
     'NSS': 'https://services.wim.usgs.gov/nssservicestest',
     'SearchAPI': 'https://txpub.usgs.gov/DSS/search_api/1.1/dataService/dataService.ashx',
-    'FARefGage': 'https://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowAnywhere/MapServer',
     'GISserver': 'https://gis.wim.usgs.gov',
     'NationalMapRasterServices': 'https://raster.nationalmap.gov/arcgis/rest/services'
-}
-
-//override streamstats arguments if on production
-if (window.location.origin.indexOf('streamstatsags.cr.usgs.gov') != -1) {
-    configuration.baseurls.StreamStatsServices = 'https://streamstatsags.cr.usgs.gov';
-    configuration.appTitle = 'StreamStats'
 }
 
 configuration.queryparams =
@@ -28,25 +19,41 @@ configuration.queryparams =
     "NWISsite": '/site/?format=mapper,1.0&stateCd={0}&siteType=GL,OC,OC-CO,ES,LK,ST,ST-CA,ST-DCH,ST-TS&hasDataTypeCd=iv',
     'KrigService': '/krig?state={0}&xlocation={1}&ylocation={2}&sr={3}',
     'RegressionScenarios': '/{0}/estimate?state={1}',
-    'statisticsGroupLookup': '/statisticgroups.json?region={0}&regressionregions={1}&unitsystems=2',
-    'statisticsGroupParameterLookup': '/scenarios.json?region={0}&statisticgroups={1}&regressionregions={2}&unitsystems=2',
-    'estimateFlows': '/scenarios/estimate.json?region={0}&statisticgroups={1}&regressionregions={2}&unitsystems=2',
+    'statisticsGroupLookup': '/statisticgroups.json?region={0}&regressionregions={1}',
+    'statisticsGroupParameterLookup': '/scenarios.json?region={0}&statisticgroups={1}&regressionregions={2}&configs=2',
+    'estimateFlows': '/scenarios/estimate.json?region={0}&statisticgroups={1}&regressionregions={2}&configs=2',
     'SSdelineation': '/streamstatsservices/watershed.{0}?rcode={1}&xlocation={2}&ylocation={3}&crs={4}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
     'SSwatershedByWorkspace': '/streamstatsservices/watershed.{0}?rcode={1}&workspaceID={2}&crs={3}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
     'SSeditBasin': '/streamstatsservices/watershed/edit.{0}?rcode={1}&workspaceID={2}&crs={3}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
     'SSAvailableParams': '/streamstatsservices/parameters.json?rcode={0}',
     'SSComputeParams': '/streamstatsservices/parameters.json?rcode={0}&workspaceID={1}&includeparameters={2}',
     'SSStateLayers': '/arcgis/rest/services/{0}_ss/MapServer?f=pjson',
+    'SSNationalLayers': '/arcgis/rest/services/ss_studyAreas_prod/MapServer',
     'FARefGage': '/2/query?geometry={0}&geometryType=esriGeometryPoint&inSR={1}&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
     'regionService': '/arcgis/rest/services/ss_studyAreas_prod/MapServer/identify',
     'NLCDQueryService': '/LandCover/USGS_EROS_LandCover_NLCD/MapServer/4',
     'regulationService': '/arcgis/rest/services/Regulation/{0}RegulationSites/MapServer/exts/RegulationRESTSOE/Regulation',
-    //'RegressionRegionQueryService': '/arcgis/rest/services/NSS/regions/MapServer/exts/PercentOverlayRESTSOE/PercentOverlay',
     'RegressionRegionQueryService': '/arcgis/rest/services/NSS/nssRegions_Test/MapServer/exts/PercentOverlayRESTSOE/PercentOverlay',
     'SSNavigationServices': '/streamstatsservices/navigation/{0}.geojson?rcode={1}&',
     'Wateruse': '/streamstatsservices/wateruse.json?rcode={0}&workspaceID={1}&startyear={2}&endyear={3}',
     'WateruseConfig': '/streamstatsservices/wateruse.json?rcode={0}'
 }
+
+//override streamstats arguments if on production
+if (window.location.origin.indexOf('streamstatsags.cr.usgs.gov') != -1) {
+    configuration.baseurls.StreamStats = 'https://streamstatsags.cr.usgs.gov';
+    configuration.environment = 'production'
+}
+
+//override streamstats arguments if on cloud
+if (configuration.cloud) {
+    configuration.queryparams.SSStateLayers = '/arcgis/rest/services/StreamStats/stateServices/MapServer',
+    configuration.queryparams.SSNationalLayers = '/arcgis/rest/services/StreamStats/nationalLayers/MapServer',
+    configuration.queryparams.RegressionRegionQueryService = '/arcgis/rest/services/NSS/nssRegions_Test/MapServer/exts/PercentOverlayRESTSOE/PercentOverlay',
+    configuration.baseurls.StreamStatsServices = 'https://streamstatstest.wim.usgs.gov'
+    configuration.baseurls.StreamStatsMapServices = configuration.baseurls.StreamStatsServices
+}
+
 configuration.SupportTicketService = {
     'BaseURL': 'https://streamstats.freshdesk.com',
     'CreateTicket': '/helpdesk/tickets.json',
@@ -137,7 +144,7 @@ configuration.basemaps =
 configuration.overlayedLayers = {
     "SSLayer": {
         "name": "National Layers",
-        "url": configuration.baseurls['StreamStats'] + "/arcgis/rest/services/ss_studyAreas_prod/MapServer",
+        "url": configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['SSNationalLayers'],
         "type": 'agsDynamic',
         "visible": true,
         "layerOptions": {
