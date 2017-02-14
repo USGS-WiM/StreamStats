@@ -206,7 +206,7 @@ module StreamStats.Services {
 
         public estimateFlows(studyAreaParameterList: Array<IParameter>, paramValueField:string, rcode: string, regressionregion: string, append:boolean = false) {
 
-            if (this.isDone) return;
+            if (!this.canUpdate) return;
             this.canUpdate = false;
             //loop over all selected StatisticsGroups
             this.selectedStatisticsGroupList.forEach((statGroup) => {
@@ -215,12 +215,11 @@ module StreamStats.Services {
                     this.toaster.pop('wait', "Estimating Flows", "Please wait...", 0);
                 }
                 this.estimateFlowsCounter++;
-                
+                this.cleanRegressionRegions(statGroup.RegressionRegions);
+
                 //console.log('in estimate flows method for ', statGroup.Name, statGroup);
-
-                statGroup.RegressionRegions.forEach((regressionRegion) => {
-
-                    regressionRegion.Parameters.forEach((regressionParam) => {
+                statGroup.RegressionRegions.forEach((regressionRegion) => {                    
+                    regressionRegion.Parameters.forEach((regressionParam) => {                        
                         studyAreaParameterList.forEach((param) => {
                             //console.log('search for matching params ', regressionParam.Code.toLowerCase(), param.code.toLowerCase());
                             if (regressionParam.Code.toLowerCase() == param.code.toLowerCase()) {
@@ -235,7 +234,8 @@ module StreamStats.Services {
                 var updatedScenarioObject = angular.fromJson(angular.toJson(statGroup));
                 updatedScenarioObject.RegressionRegions.forEach((regressionRegion) => {
                     //delete results object if it exists
-                    if (regressionRegion.Results) delete regressionRegion.Results;
+                    if (regressionRegion.Results)
+                        delete regressionRegion.Results;
                 });
                 updatedScenarioObject = angular.toJson([updatedScenarioObject], null);
 
@@ -271,13 +271,6 @@ module StreamStats.Services {
                         //if (append) console.log('in estimate flows for regulated basins: ', response);
                         //make sure there are some results
                         if (response.data[0].RegressionRegions.length > 0 && response.data[0].RegressionRegions[0].Results && response.data[0].RegressionRegions[0].Results.length > 0) {
-
-                            //if success and counter is zero, clear toast
-                            this.estimateFlowsCounter--;
-                            if (this.estimateFlowsCounter == 0) {
-                                this.toaster.clear();
-                            }
-
                             if (!append) {
                                 statGroup.RegressionRegions = [];
                                 statGroup.RegressionRegions = response.data[0].RegressionRegions;
@@ -323,7 +316,7 @@ module StreamStats.Services {
                         else {
                             this.toaster.clear();
                             this.toaster.pop('error', "There was an error Estimating Flows for " + statGroup.Name, "No results were returned", 0);
-                            this.isDone = true;
+                            //this.isDone = true;
                             //console.log("Zero length flow response, check equations in NSS service");
                         }
               
@@ -334,7 +327,14 @@ module StreamStats.Services {
                         this.toaster.clear();
                         this.toaster.pop('error', "There was an error Estimating Flows", "HTTP request error", 0);
                     }).finally(() => {
-                        this.canUpdate = true;
+                        //if success and counter is zero, clear toast
+                        this.estimateFlowsCounter--;
+                        if (this.estimateFlowsCounter < 1) {
+                            this.toaster.clear();
+                            this.estimateFlowsCounter = 0;
+                            this.canUpdate = true;
+                        }//end if                       
+                        
                     });
             });
         }
@@ -369,7 +369,21 @@ module StreamStats.Services {
 
         //HelperMethods
         //-+-+-+-+-+-+-+-+-+-+-+-
+        private cleanRegressionRegions(RegressionRegions:Array<any>): void {
+            for (var i = 0; i < RegressionRegions.length; i++) {
+                var regRegion = RegressionRegions[i];
+                if (regRegion.Name === 'Area-Averaged') {
+                    RegressionRegions.splice(i, 1);
+                    continue;
+                }//end if
 
+                //remove results
+                RegressionRegions.forEach((regressionRegion) => {
+                    //delete results object if it exists
+                    if (regressionRegion.Results) delete regressionRegion.Results;
+                });
+            }//next i
+        }
     }//end class
 
     factory.$inject = ['$http', '$q', 'toaster', 'StreamStats.Services.ModalService'];
