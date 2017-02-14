@@ -40,7 +40,7 @@ configuration.queryparams =
 }
 
 //override streamstats arguments if on production
-if (window.location.origin.indexOf('streamstatsags.cr.usgs.gov') != -1) {
+if (window.location.origin.indexOf('streamstatsags.cr.usgs.gov') !== -1) {
     configuration.baseurls.StreamStats = 'https://streamstatsags.cr.usgs.gov';
     configuration.environment = 'production'
 }
