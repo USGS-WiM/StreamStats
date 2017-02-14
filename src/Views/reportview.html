@@ -101,7 +101,8 @@
                                     <th>Parameter Code</th>
                                     <th>Parameter Description</th>
                                     <th>Value</th>
-                                    <th ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated">Unregulated Value</th> 
+                                    <th ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated">Unregulated Value</th>
+                                    <th>Units</th>
                                     <th>Min Limit</th>
                                     <th>Max Limit</th>
                                 </tr>
@@ -112,6 +113,7 @@
                                         <td ng-bind="parameter.Name"></td>
                                         <td ng-bind="parameter.Value" ng-class="(parameter.Value < parameter.Limits.Min) || (parameter.Value > parameter.Limits.Max) ? 'wim-warning' : ''"></td>
                                         <td ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated" ng-bind="parameter.unRegulatedValue.toFixed(3)" ng-class="(parameter.Value < parameter.Limits.Min) || (parameter.Value > parameter.Limits.Max) ? 'wim-warning' : ''"></td>
+                                        <td ng-bind="parameter.UnitType.Unit"></td>
                                         <td ng-bind="parameter.Limits.Min"></td>
                                         <td ng-bind="parameter.Limits.Max"></td>
                                     </tr>
