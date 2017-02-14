@@ -1,4 +1,4 @@
-﻿/// <reference path="typings/main.d.ts" />
+﻿/// <reference path="typings/index.d.ts" />
 /// <reference path="bower_components/wim_angular/dist/typings/Extensions/String.d.ts" />
 /// <reference path="bower_components/wim_angular/dist/typings/Extensions/SurveyRound.d.ts" />
 /// <reference path="bower_components/wim_angular/dist/typings/Models/Point.d.ts" />
