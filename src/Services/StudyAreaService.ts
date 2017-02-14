@@ -254,11 +254,7 @@ module StreamStats.Services {
                                 this.selectedStudyArea.Pourpoint = new WiM.Models.Point(geom[0], geom[1], item.feature.crs.properties.code);
                                 return;
                             }//end if
-                        });
-                        
-
-                        
-                        //sm when complete
+                        });           
                     }, (error) => {
                         //sm when error
                         this.toaster.clear();

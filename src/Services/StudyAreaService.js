@@ -192,7 +192,6 @@ var StreamStats;
                                 return;
                             } //end if
                         });
-                        //sm when complete
                     }, function (error) {
                         //sm when error
                         _this.toaster.clear();
