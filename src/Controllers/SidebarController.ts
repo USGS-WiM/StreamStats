@@ -62,6 +62,15 @@ module StreamStats.Controllers {
         private leafletData: ILeafletData;
         private multipleParameterSelectorAdd: boolean;
         private explorationService: Services.IExplorationService;
+        private parametersLoaded: boolean;
+        public get ParameterValuesMissing(): boolean {
+            if (!this.studyAreaService.studyAreaParameterList || this.studyAreaService.studyAreaParameterList.length < 1) return true;
+            for (var i = 0; i < this.studyAreaService.studyAreaParameterList.length; i++) {
+                var p = this.studyAreaService.studyAreaParameterList[i];
+                if (!p.value || p.value < 0) return true;
+            }//next i
+            return false;
+        }
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -82,7 +91,7 @@ module StreamStats.Controllers {
             this.leafletData = leafletData;
             this.multipleParameterSelectorAdd = true;
             this.explorationService = exploration;
-
+            
             StatisticsGroup.onSelectedStatisticsGroupChanged.subscribe(this._onSelectedStatisticsGroupChangedHandler);
 
             //watch for map based region changes here
@@ -101,14 +110,18 @@ module StreamStats.Controllers {
             });
 
             //watch for completion of load parameters
-            $scope.$watch(() => this.studyAreaService.parametersLoaded,(newval, oldval) => {
-                if (newval == oldval) return;
-                //console.log('parameters loaded', oldval, newval);
-                if (newval == null) this.setProcedureType(3);
+            //$scope.$watch(() => this.studyAreaService.parametersLoaded,(newval, oldval) => {
+            //    if (newval == oldval) return;
+            //    //console.log('parameters loaded', oldval, newval);
+            //    if (newval == null) this.setProcedureType(3);
+            //    else this.setProcedureType(4);
+            //},true);
+
+            EventManager.SubscribeToEvent(Services.onSelectedStudyParametersLoaded, new WiM.Event.EventHandler<Services.StudyAreaEventArgs>((sender: any, e: Services.StudyAreaEventArgs) => {
+                this.parametersLoaded = e.parameterLoaded;
+                if (!this.parametersLoaded) this.setProcedureType(3);
                 else this.setProcedureType(4);
-            });
-
-
+            }));
 
             //$scope.$watch(() => this.studyAreaService.studyAreaParameterList,(newval, oldval) => {
             //    console.log('watch for modify basin chars ', newval, oldval);
@@ -226,16 +239,6 @@ module StreamStats.Controllers {
                 }).join(","), this.studyAreaService.selectedStudyArea.RegressionRegions);
             }
 
-        }
-
-        //special function for searching arrays but ignoring angular hashkey
-        public checkArrayForObj(arr, obj) {
-            for (var i = 0; i < arr.length; i++) {
-                if (angular.equals(arr[i], obj)) {
-                    return i;
-                }
-            };
-            return -1;
         }
 
         public multipleParameterSelector() {
@@ -391,11 +394,10 @@ module StreamStats.Controllers {
         }
 
         private updateParameterValue(parameter) {
-            console.log('in updateParameterValue: ', parameter, this.studyAreaService.requestParameterList);
-            var paramIndex = this.studyAreaService.requestParameterList.indexOf(parameter.code);
-            if (parameter.value >= 0 && paramIndex != -1) {
-                this.studyAreaService.requestParameterList.splice(paramIndex, 1);
-            }
+            //var paramIndex = this.studyAreaService.requestParameterList.indexOf(parameter.code);
+            //if (parameter.value >= 0 && paramIndex != -1) {
+            //    this.studyAreaService.requestParameterList.splice(paramIndex, 1);
+            //}
         }
 
         public onSelectedStatisticsGroupChanged() {
@@ -416,7 +418,6 @@ module StreamStats.Controllers {
                         statisticsGroup.RegressionRegions.forEach((regressionRegion) => {
 
                             regressionRegion.Parameters.forEach((param) => {
-                                puke()
                                 if (parameter.code.toLowerCase() == param.Code.toLowerCase()) {
 
                                     //configuration.alwaysSelectedParameters.forEach((alwaysSelectedParam) => {
@@ -424,16 +425,18 @@ module StreamStats.Controllers {
                                     //});
 
                                     //turn it on
-                                    if (this.checkArrayForObj(this.studyAreaService.studyAreaParameterList, parameter) == -1) this.studyAreaService.studyAreaParameterList.push(parameter);
-                                    parameter['checked'] = true;
-                                    parameter['toggleable'] = false;
-                                }
+                                    if (this.checkArrayForObj(this.studyAreaService.studyAreaParameterList, parameter) == -1) {
+                                        this.studyAreaService.studyAreaParameterList.push(parameter);
+                                        parameter['checked'] = true;
+                                        parameter['toggleable'] = false;
+                                    }//end if
+                                }//end if
 
-                            });
-                        });
-                    }
-                });
-            });
+                            });// next param
+                        });// next regressionRegion
+                    }//end if
+                });//next statisticgroup
+            });//next parameter
         }
 
         public OpenWateruse() {
@@ -477,6 +480,15 @@ module StreamStats.Controllers {
             });
         }
 
+        //special function for searching arrays but ignoring angular hashkey
+        private checkArrayForObj(arr, obj) {
+            for (var i = 0; i < arr.length; i++) {
+                if (angular.equals(arr[i], obj)) {
+                    return i;
+                }
+            };
+            return -1;
+        }
         private canUpdateProcedure(pType: ProcedureType): boolean {
             //console.log('in canUpdateProcedure');
             //Project flow:
@@ -491,7 +503,7 @@ module StreamStats.Controllers {
                         //proceed if there is a regression region
                         return this.studyAreaService.regressionRegionQueryComplete;
                     case ProcedureType.BUILD:
-                        return this.studyAreaService.parametersLoaded;
+                        return this.parametersLoaded;
                     default:
                         return false;
                 }//end switch          

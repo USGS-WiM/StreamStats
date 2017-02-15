@@ -85,6 +85,14 @@ module StreamStats.Controllers {
         public reportTitle: string;
         public reportComments: string;
         public angulartics: any;
+        public get showReport(): boolean {
+            if (!this.studyAreaService.studyAreaParameterList) return false;
+            for (var i = 0; i < this.studyAreaService.studyAreaParameterList.length; i++) {
+                var param = this.studyAreaService.studyAreaParameterList[i];
+                if (param.value && param.value >= 0) return true;
+            }
+            return false;
+        }
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-

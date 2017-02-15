@@ -33,7 +33,6 @@ module StreamStats.Services {
         RemoveStudyArea();
         doDelineateFlag: boolean;
         parametersLoading: boolean;
-        parametersLoaded: boolean;
         showEditToolbar: boolean;
         checkingDelineatedPoint: boolean;
         canUpdate: boolean;
@@ -49,19 +48,23 @@ module StreamStats.Services {
         regressionRegionQueryComplete: boolean;
         baseMap: Object;
         showModifyBasinCharacterstics: boolean;
-        requestParameterList: Array<any>;
+        //requestParameterList: Array<any>; jkn
     }
 
     export var onSelectedStudyAreaChanged: string = "onSelectedStudyAreaChanged";
+    export var onSelectedStudyParametersLoaded: string = "onSelectedStudyParametersLoaded";
     export var onStudyAreaReset: string = "onStudyAreaReset";
     export var onEditClick: string = "onEditClick";
     export class StudyAreaEventArgs extends WiM.Event.EventArgs {
         //properties
         public studyArea: StreamStats.Models.IStudyArea;
         public studyAreaVisible: boolean;
-
-        constructor() {
+        public parameterLoaded: boolean;
+        constructor(studyArea = null, saVisible = false, paramState = false) {
             super();
+            this.studyArea = studyArea;
+            this.studyAreaVisible = saVisible;
+            this.parameterLoaded = paramState;
         }
 
     }
@@ -72,7 +75,7 @@ module StreamStats.Services {
         public toaster: any;
         public canUpdate: boolean;
         public regulationCheckComplete: boolean
-        public parametersLoaded: boolean;
+        
         public parametersLoading: boolean;
         public checkingDelineatedPoint: boolean;
         private _studyAreaList: Array<Models.IStudyArea>;
@@ -104,13 +107,13 @@ module StreamStats.Services {
         public servicesURL: string;
         public baseMap: Object;
         public showModifyBasinCharacterstics: boolean;
-        public requestParameterList: Array<any>;
+        //public requestParameterList: Array<any>; jkn
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         constructor(public $http: ng.IHttpService, private $q: ng.IQService, private eventManager: WiM.Event.IEventManager, toaster) {
             super($http, configuration.baseurls['StreamStatsServices'])
-
+            eventManager.AddEvent<StudyAreaEventArgs>(onSelectedStudyParametersLoaded);
             eventManager.AddEvent<StudyAreaEventArgs>(onSelectedStudyAreaChanged);
             eventManager.AddEvent<StudyAreaEventArgs>(onStudyAreaReset);
             eventManager.SubscribeToEvent(onSelectedStudyAreaChanged, new WiM.Event.EventHandler<StudyAreaEventArgs>((sender: any, e: StudyAreaEventArgs) => {
@@ -156,7 +159,7 @@ module StreamStats.Services {
             //console.log('in clear study area');
             this.canUpdate = true;
             this.regulationCheckComplete = true;
-            this.parametersLoaded = false;
+            
             this.parametersLoading = false;
             this.doDelineateFlag = false;
             this.checkingDelineatedPoint = false;
@@ -303,28 +306,36 @@ module StreamStats.Services {
         }
 
         public loadParameters() {
-
+            this.parametersLoading = true;
+            var argState = { "isLoaded": false };
+            var requestParameterList = [];
             this.toaster.clear();
             this.toaster.pop('wait', "Calculating Selected Basin Characteristics", "Please wait...", 0);
             //console.log('in load parameters');
             //this.canUpdate = false;
-            this.parametersLoading = true;
-            this.parametersLoaded = false;
+            
+            this.eventManager.RaiseEvent(onSelectedStudyParametersLoaded, this,StudyAreaEventArgs.Empty );
 
             if (!this.selectedStudyArea || !this.selectedStudyArea.WorkspaceID || !this.selectedStudyArea.RegionID) {
                 alert('No Study Area');
-                return;//sm study area is incomplete
-            }
+                return;
+            }//end if
 
-            //if there is any uncomputed parameter, don't recreate the list just use existing
-            if (!this.requestParameterList) {
-                this.requestParameterList = [];
-                this.studyAreaParameterList.map((param) => { this.requestParameterList.push(param.code); })
-            }
+            //only compute missing characteristics
+            requestParameterList = this.studyAreaParameterList.filter((param) => { return (!param.value || param.value < 0) }).map(param => { return param.code; });
+            if (requestParameterList.length < 1) {  
+                let saEvent = new StudyAreaEventArgs();
+                saEvent.parameterLoaded = true;             
+                this.eventManager.RaiseEvent(onSelectedStudyParametersLoaded, this, saEvent);
+                this.toaster.clear();
+                this.parametersLoading = false;
+                return;
+            }//end if
+            
 
             //console.log('request parameter list before: ', this.requestParameterList);
             var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSComputeParams'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID,
-                this.requestParameterList.join(','));
+                requestParameterList.join(','));
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
 
             this.Execute(request).then(
@@ -348,9 +359,9 @@ module StreamStats.Services {
                                 parameter.loaded = false;
                             }
                             else {
-                                //remove this param from requestParameterList
-                                var idx = this.requestParameterList.indexOf(parameter.code);
-                                if (idx != -1) this.requestParameterList.splice(idx, 1);
+                            //    //remove this param from requestParameterList
+                            //    var idx = this.requestParameterList.indexOf(parameter.code);
+                            //    if (idx != -1) this.requestParameterList.splice(idx, 1);
                                 parameter.loaded = true;
                             }
                         });
@@ -362,13 +373,17 @@ module StreamStats.Services {
                         }
 
                         var results = response.data.parameters;
-                          this.loadParameterResults(results);
-                        this.parametersLoaded = true;
+                        this.loadParameterResults(results);
+                          
 
                         //do regulation parameter update if needed
                         if (this.selectedStudyArea.Disclaimers['isRegulated']) {
                             this.loadRegulatedParameterResults(this.regulationCheckResults.parameters);
-                        }
+                          }
+
+                        let saEvent = new StudyAreaEventArgs();
+                        saEvent.parameterLoaded = true;
+                        this.eventManager.RaiseEvent(onSelectedStudyParametersLoaded, this, saEvent);
                     }
 
                     //sm when complete
