@@ -85,6 +85,7 @@ module StreamStats.Controllers {
         public reportTitle: string;
         public reportComments: string;
         public angulartics: any;
+        public DRNAREA: any;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -113,6 +114,12 @@ module StreamStats.Controllers {
             this.print = function () {
                 window.print();
             };
+
+            this.studyAreaService.studyAreaParameterList.forEach((parameter) => {
+                if (parameter.code == 'DRNAREA') {
+                    this.DRNAREA = parameter;
+                }
+            });
 
         }
 
