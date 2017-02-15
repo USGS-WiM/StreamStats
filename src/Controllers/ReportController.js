@@ -61,6 +61,20 @@ var StreamStats;
                     }
                 });
             }
+            Object.defineProperty(ReportController.prototype, "showReport", {
+                get: function () {
+                    if (!this.studyAreaService.studyAreaParameterList)
+                        return false;
+                    for (var i = 0; i < this.studyAreaService.studyAreaParameterList.length; i++) {
+                        var param = this.studyAreaService.studyAreaParameterList[i];
+                        if (param.value && param.value >= 0)
+                            return true;
+                    }
+                    return false;
+                },
+                enumerable: true,
+                configurable: true
+            });
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             ReportController.prototype.initMap = function () {
