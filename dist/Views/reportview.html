@@ -53,7 +53,7 @@
                     <p>{{vm.reportComments}}</p>
                 </div>
 
-                <div ng-show="vm.studyAreaService.parametersLoaded">
+                <div ng-show="vm.showReport">
 
                     <!--Parameter Table if just basin chars-->
                     <div class="well well-sm" ng-show="vm.nssService.showBasinCharacteristicsTable">
@@ -178,7 +178,7 @@
                     <li><a href="{{vm.studyAreaService.servicesURL}}/streamstatsservices/download?workspaceID={{vm.studyAreaService.selectedStudyArea.WorkspaceID}}" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="File GDB"><span class="fa fa-download"></span>&nbsp;&nbsp;ESRI File GDB</a></li>
                   </ul>
                 </div>
-                <div class="btn-group wim-btn-group" ng-show="vm.studyAreaService.parametersLoaded">
+                <div class="btn-group wim-btn-group">
                     <button type="button" class="btn-wim-sm btn-wim-default" ng-click="vm.downloadCSV()" ><span><i class="fa fa-download"></i>&nbsp;&nbsp;Download CSV</span></button>
                      <!--<button type="button" class="btn-wim-sm btn-wim-default" ng-click="vm.downloadPDF()" ><span><i class="fa fa-download"></i>&nbsp;&nbsp;Download PDF</span></button>-->
                 </div>

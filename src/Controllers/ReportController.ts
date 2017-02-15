@@ -283,7 +283,10 @@ module StreamStats.Controllers {
                         var regionPercent = 'n/a';
                         if (regressionRegion.PercentWeight) regionPercent = regressionRegion.PercentWeight.toFixed(0) + ' Percent ';
                         finalVal += statGroup.Name + ' Flow Report, ' + regionPercent + regressionRegion.Name.split("_").join(" ") + '\n';
-                        finalVal += 'Name,Value,Unit,' + regressionRegion.Results[0].Errors[0].Name + ',Lower Prediction Interval,Upper Prediction Interval\n';
+
+                        var errorName = 'Error';
+                        if (regressionRegion.Results[0].Errors) errorName = regressionRegion.Results[0].Errors[0].Name;
+                        finalVal += 'Statistic,Value,Unit,' + errorName + ',Lower Prediction Interval,Upper Prediction Interval\n';
 
                         regressionRegion.Results.forEach((item) => {
                             //console.log('ScenarioFlowTable regressionRegion item: ', item);
