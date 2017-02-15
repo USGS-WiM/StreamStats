@@ -291,6 +291,7 @@ if (configuration.cloud) {
     configuration.baseurls.StreamStatsServices = 'https://streamstatstest.wim.usgs.gov';
     configuration.baseurls.GISserver = configuration.baseurls.StreamStatsServices;
     configuration.baseurls.StreamStatsMapServices = configuration.baseurls.StreamStatsServices;
+    configuration.baseurls.NSS = 'http://streamstatstest.wim.usgs.gov/nssservices'
 
     configuration.queryparams.SSStateLayers = '/arcgis/rest/services/StreamStats/stateServices/MapServer';
     configuration.queryparams.SSNationalLayers = '/arcgis/rest/services/StreamStats/nationalLayers/MapServer';
