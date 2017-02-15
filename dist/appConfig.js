@@ -40,18 +40,9 @@ configuration.queryparams =
 }
 
 //override streamstats arguments if on production
-if (window.location.origin.indexOf('streamstatsags.cr.usgs.gov') != -1) {
+if (window.location.origin.indexOf('streamstatsags.cr.usgs.gov') !== -1) {
     configuration.baseurls.StreamStats = 'https://streamstatsags.cr.usgs.gov';
-    configuration.environment = 'production'
-}
-
-//override streamstats arguments if on cloud
-if (configuration.cloud) {
-    configuration.queryparams.SSStateLayers = '/arcgis/rest/services/StreamStats/stateServices/MapServer',
-    configuration.queryparams.SSNationalLayers = '/arcgis/rest/services/StreamStats/nationalLayers/MapServer',
-    configuration.queryparams.RegressionRegionQueryService = '/arcgis/rest/services/NSS/nssRegions_Test/MapServer/exts/PercentOverlayRESTSOE/PercentOverlay',
-    configuration.baseurls.StreamStatsServices = 'https://streamstatstest.wim.usgs.gov'
-    configuration.baseurls.StreamStatsMapServices = configuration.baseurls.StreamStatsServices
+    configuration.environment = 'production';
 }
 
 configuration.SupportTicketService = {
@@ -171,7 +162,9 @@ configuration.regions = [
     { "RegionID": "AS", "Name": "American Samoa", "Bounds": [[-14.375555, -170.82611], [-14.166389, -169.438323]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "AZ", "Name": "Arizona", "Bounds": [[31.335634,-114.821761],[37.003926,-109.045615]], "Layers": {}, "Applications": [], "ScenariosAvailable": true},
     { "RegionID": "CA", "Name": "California", "Bounds": [[32.535781,-124.392638],[42.002191,-114.12523]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
-    { "RegionID": "CO", "Name": "Colorado", "Bounds": [[36.988994,-109.055861],[41.003375,-102.037207]], "Layers": 
+    { "RegionID": "CO", "Name": "Colorado", "Bounds": [[36.988994,-109.055861],[41.003375,-102.037207]], 
+
+        "Layers":
 		{
 			"CO_Regulation":{
 				"name": "Regulation Points",
@@ -292,3 +285,24 @@ configuration.regions = [
     { "RegionID": "RRB", "Name": "Rainy River Basin", "Bounds": [[47.268377,-95.64855],[50.054196,-89.766532]], "Layers": {}, "Applications": [], "ScenariosAvailable": true }
 
 ]//end regions
+
+//override streamstats arguments if on cloud
+if (configuration.cloud) {
+    configuration.baseurls.StreamStatsServices = 'https://streamstatstest.wim.usgs.gov';
+    configuration.baseurls.GISserver = configuration.baseurls.StreamStatsServices;
+    configuration.baseurls.StreamStatsMapServices = configuration.baseurls.StreamStatsServices;
+
+    configuration.queryparams.SSStateLayers = '/arcgis/rest/services/StreamStats/stateServices/MapServer';
+    configuration.queryparams.SSNationalLayers = '/arcgis/rest/services/StreamStats/nationalLayers/MapServer';
+    configuration.queryparams.RegressionRegionQueryService = '/arcgis/rest/services/nss/regions/MapServer/exts/PercentOverlayRESTSOE/PercentOverlay';
+    configuration.queryparams.regulationService = '/arcgis/rest/services/regulations/{0}/MapServer/exts/RegulationRESTSOE/Regulation',
+
+    configuration.regions.forEach(function (value,index) {
+        if (value.RegionID == 'CO') {
+            value.Layers.CO_Regulation.url = configuration.baseurls['GISserver'] + "/arcgis/rest/services/regulations/co/MapServer";
+        }
+        if (value.RegionID == 'MT') {
+            value.Layers.MT_Regulation.url = configuration.baseurls['GISserver'] + "/arcgis/rest/services/regulations/mt/MapServer";
+        }
+    });
+}
