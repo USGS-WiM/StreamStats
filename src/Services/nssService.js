@@ -125,7 +125,7 @@ var StreamStats;
                                 statGroup['StatisticGroupID'] = statGroup.ID;
                                 response.data[0].RegressionRegions.forEach(function (regressionRegion) {
                                     percentWeights.forEach(function (regressionRegionPercentWeight) {
-                                        if (regressionRegion.Name == regressionRegionPercentWeight.name)
+                                        if (regressionRegion.Code == regressionRegionPercentWeight.code)
                                             regressionRegion["PercentWeight"] = regressionRegionPercentWeight.percent;
                                     });
                                 });
