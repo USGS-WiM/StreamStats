@@ -58,19 +58,37 @@ var StreamStats;
                         _this.setProcedureType(3);
                 });
                 //watch for completion of load parameters
-                $scope.$watch(function () { return _this.studyAreaService.parametersLoaded; }, function (newval, oldval) {
-                    if (newval == oldval)
-                        return;
-                    //console.log('parameters loaded', oldval, newval);
-                    if (newval == null)
+                //$scope.$watch(() => this.studyAreaService.parametersLoaded,(newval, oldval) => {
+                //    if (newval == oldval) return;
+                //    //console.log('parameters loaded', oldval, newval);
+                //    if (newval == null) this.setProcedureType(3);
+                //    else this.setProcedureType(4);
+                //},true);
+                EventManager.SubscribeToEvent(StreamStats.Services.onSelectedStudyParametersLoaded, new WiM.Event.EventHandler(function (sender, e) {
+                    _this.parametersLoaded = e.parameterLoaded;
+                    if (!_this.parametersLoaded)
                         _this.setProcedureType(3);
                     else
                         _this.setProcedureType(4);
-                });
+                }));
                 //$scope.$watch(() => this.studyAreaService.studyAreaParameterList,(newval, oldval) => {
                 //    console.log('watch for modify basin chars ', newval, oldval);
                 //});
             }
+            Object.defineProperty(SidebarController.prototype, "ParameterValuesMissing", {
+                get: function () {
+                    if (!this.studyAreaService.studyAreaParameterList || this.studyAreaService.studyAreaParameterList.length < 1)
+                        return true;
+                    for (var i = 0; i < this.studyAreaService.studyAreaParameterList.length; i++) {
+                        var p = this.studyAreaService.studyAreaParameterList[i];
+                        if (!p.value || p.value < 0)
+                            return true;
+                    } //next i
+                    return false;
+                },
+                enumerable: true,
+                configurable: true
+            });
             SidebarController.prototype.getLocations = function (term) {
                 return this.searchService.getLocations(term);
             };
@@ -166,16 +184,6 @@ var StreamStats;
                         return elem.code;
                     }).join(","), this.studyAreaService.selectedStudyArea.RegressionRegions);
                 }
-            };
-            //special function for searching arrays but ignoring angular hashkey
-            SidebarController.prototype.checkArrayForObj = function (arr, obj) {
-                for (var i = 0; i < arr.length; i++) {
-                    if (angular.equals(arr[i], obj)) {
-                        return i;
-                    }
-                }
-                ;
-                return -1;
             };
             SidebarController.prototype.multipleParameterSelector = function () {
                 var _this = this;
@@ -291,11 +299,10 @@ var StreamStats;
                 }).join(","));
             };
             SidebarController.prototype.updateParameterValue = function (parameter) {
-                console.log('in updateParameterValue: ', parameter, this.studyAreaService.requestParameterList);
-                var paramIndex = this.studyAreaService.requestParameterList.indexOf(parameter.code);
-                if (parameter.value >= 0 && paramIndex != -1) {
-                    this.studyAreaService.requestParameterList.splice(paramIndex, 1);
-                }
+                //var paramIndex = this.studyAreaService.requestParameterList.indexOf(parameter.code);
+                //if (parameter.value >= 0 && paramIndex != -1) {
+                //    this.studyAreaService.requestParameterList.splice(paramIndex, 1);
+                //}
             };
             SidebarController.prototype.onSelectedStatisticsGroupChanged = function () {
                 //console.log('StatisticsGroup param list changed.  loaded ', this.nssService.selectedStatisticsGroupList);
@@ -314,16 +321,17 @@ var StreamStats;
                                         //    if (alwaysSelectedParam.name == parameter.code) return;
                                         //});
                                         //turn it on
-                                        if (_this.checkArrayForObj(_this.studyAreaService.studyAreaParameterList, parameter) == -1)
+                                        if (_this.checkArrayForObj(_this.studyAreaService.studyAreaParameterList, parameter) == -1) {
                                             _this.studyAreaService.studyAreaParameterList.push(parameter);
-                                        parameter['checked'] = true;
-                                        parameter['toggleable'] = false;
-                                    }
-                                });
-                            });
-                        }
-                    });
-                });
+                                            parameter['checked'] = true;
+                                            parameter['toggleable'] = false;
+                                        } //end if
+                                    } //end if
+                                }); // next param
+                            }); // next regressionRegion
+                        } //end if
+                    }); //next statisticgroup
+                }); //next parameter
             };
             SidebarController.prototype.OpenWateruse = function () {
                 this.modalService.openModal(StreamStats.Services.SSModalType.e_wateruse);
@@ -361,6 +369,16 @@ var StreamStats;
                     _this.onSelectedStatisticsGroupChanged();
                 });
             };
+            //special function for searching arrays but ignoring angular hashkey
+            SidebarController.prototype.checkArrayForObj = function (arr, obj) {
+                for (var i = 0; i < arr.length; i++) {
+                    if (angular.equals(arr[i], obj)) {
+                        return i;
+                    }
+                }
+                ;
+                return -1;
+            };
             SidebarController.prototype.canUpdateProcedure = function (pType) {
                 //console.log('in canUpdateProcedure');
                 //Project flow:
@@ -375,7 +393,7 @@ var StreamStats;
                             //proceed if there is a regression region
                             return this.studyAreaService.regressionRegionQueryComplete;
                         case ProcedureType.BUILD:
-                            return this.studyAreaService.parametersLoaded;
+                            return this.parametersLoaded;
                         default:
                             return false;
                     } //end switch          
