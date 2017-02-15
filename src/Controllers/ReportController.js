@@ -55,6 +55,11 @@ var StreamStats;
                 this.print = function () {
                     window.print();
                 };
+                this.studyAreaService.studyAreaParameterList.forEach(function (parameter) {
+                    if (parameter.code == 'DRNAREA') {
+                        _this.DRNAREA = parameter;
+                    }
+                });
             }
             Object.defineProperty(ReportController.prototype, "showReport", {
                 get: function () {

@@ -93,6 +93,7 @@ module StreamStats.Controllers {
             }
             return false;
         }
+        public DRNAREA: any;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -121,6 +122,12 @@ module StreamStats.Controllers {
             this.print = function () {
                 window.print();
             };
+
+            this.studyAreaService.studyAreaParameterList.forEach((parameter) => {
+                if (parameter.code == 'DRNAREA') {
+                    this.DRNAREA = parameter;
+                }
+            });
 
         }
 
