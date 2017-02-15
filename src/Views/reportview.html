@@ -130,7 +130,7 @@
                         <!--Flow Report-->
                         <div ng-repeat="RegressionRegion in StatisticsGroup.RegressionRegions">
 
-                            <h4>{{StatisticsGroup.Name}} Flow Report<small ng-bind="(RegressionRegion.PercentWeight) ? ' [' + RegressionRegion.PercentWeight.toFixed(2) + ' Percent ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h4>
+                            <h4>{{StatisticsGroup.Name}} Flow Report<small ng-bind="(RegressionRegion.PercentWeight) ? ' [' + RegressionRegion.PercentWeight.toFixed(2) + ' Percent (' + vm.DRNAREA.value + ' ' + vm.DRNAREA.unit + ')' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h4>
                             <table class="table table-condensed">
                                 <thead class="param-table">
                                 <tr>
