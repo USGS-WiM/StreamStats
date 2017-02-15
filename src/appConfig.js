@@ -6,11 +6,11 @@ configuration.cloud = true;
 configuration.baseurls =
 {   
     'NWISurl': 'https://waterservices.usgs.gov/nwis',
-    'StreamStatsMapServices': 'https://streamstats09.cr.usgs.gov',
-    'StreamStatsServices': 'https://ssdev.cr.usgs.gov',
-    'NSS': 'https://services.wim.usgs.gov/nssservicestest',
+    'StreamStatsMapServices': 'https://streamstatstest.wim.usgs.gov',
+    'StreamStatsServices': 'https://streamstatstest.wim.usgs.gov',
+    'NSS': 'https://streamstatstest.wim.usgs.gov/nssservices',
     'SearchAPI': 'https://txpub.usgs.gov/DSS/search_api/1.1/dataService/dataService.ashx',
-    'GISserver': 'https://gis.wim.usgs.gov',
+    'GISserver': 'https://streamstatstest.wim.usgs.gov',
     'NationalMapRasterServices': 'https://raster.nationalmap.gov/arcgis/rest/services'
 }
 
@@ -40,7 +40,7 @@ configuration.queryparams =
 }
 
 //override streamstats arguments if on production
-if (window.location.origin.indexOf('streamstatsags.cr.usgs.gov') != -1) {
+if (window.location.origin.indexOf('streamstatsags.cr.usgs.gov') !== -1) {
     configuration.baseurls.StreamStats = 'https://streamstatsags.cr.usgs.gov';
     configuration.environment = 'production'
 }
@@ -49,7 +49,7 @@ if (window.location.origin.indexOf('streamstatsags.cr.usgs.gov') != -1) {
 if (configuration.cloud) {
     configuration.queryparams.SSStateLayers = '/arcgis/rest/services/StreamStats/stateServices/MapServer',
     configuration.queryparams.SSNationalLayers = '/arcgis/rest/services/StreamStats/nationalLayers/MapServer',
-    configuration.queryparams.RegressionRegionQueryService = '/arcgis/rest/services/NSS/nssRegions_Test/MapServer/exts/PercentOverlayRESTSOE/PercentOverlay',
+    configuration.queryparams.RegressionRegionQueryService = '/arcgis/rest/services/nss/regions/MapServer/exts/PercentOverlayRESTSOE/PercentOverlay',
     configuration.baseurls.StreamStatsServices = 'https://streamstatstest.wim.usgs.gov'
     configuration.baseurls.StreamStatsMapServices = configuration.baseurls.StreamStatsServices
 }
