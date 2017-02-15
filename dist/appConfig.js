@@ -1,13 +1,13 @@
 var configuration = {}
 //main environment variables
 configuration.environment = 'development'
-configuration.cloud = false;
+configuration.cloud = true;
 
 configuration.baseurls =
 {   
     'NWISurl': 'https://waterservices.usgs.gov/nwis',
     'StreamStatsMapServices': 'https://streamstats09.cr.usgs.gov',
-    'StreamStatsServices': 'https://streamstatsags.cr.usgs.gov',
+    'StreamStatsServices': 'https://ssdev.cr.usgs.gov',
     'NSS': 'https://services.wim.usgs.gov/nssservicestest',
     'SearchAPI': 'https://txpub.usgs.gov/DSS/search_api/1.1/dataService/dataService.ashx',
     'GISserver': 'https://gis.wim.usgs.gov',
