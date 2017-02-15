@@ -173,15 +173,25 @@ var StreamStats;
                 var processScenarioParamTable = function (statGroup) {
                     var finalVal = '';
                     statGroup.RegressionRegions.forEach(function (regressionRegion) {
-                        //console.log('regression regions loop: ', regressionRegion)
+                        console.log('regression regions loop: ', regressionRegion);
                         //bail if in Area-Averaged section
                         if (regressionRegion.Name == 'Area-Averaged')
                             return;
-                        finalVal += statGroup.Name + ' Parameters, ' + regressionRegion.PercentWeight.toFixed(0) + ' Percent  ' + regressionRegion.Name.split("_").join(" ") + '\n';
+                        var regionPercent = 'n/a';
+                        if (regressionRegion.PercentWeight)
+                            regionPercent = regressionRegion.PercentWeight.toFixed(0) + ' Percent ';
+                        finalVal += statGroup.Name + ' Parameters, ' + regionPercent + regressionRegion.Name.split("_").join(" ") + '\n';
                         finalVal += 'Name,Value,Min Limit, Max Limit\n';
                         if (regressionRegion.Parameters) {
                             regressionRegion.Parameters.forEach(function (item) {
-                                finalVal += item.Name + ',' + item.Value + ',' + item.Limits.Min.toFixed(2) + ',' + item.Limits.Max.toFixed(2) + '\n';
+                                console.log('here', item);
+                                var limitMin = 'n/a';
+                                var limitMax = 'n/a';
+                                if (item.Limits) {
+                                    limitMin = item.Limits.Min.toFixed(2);
+                                    limitMax = item.Limits.Max.toFixed(2);
+                                }
+                                finalVal += item.Name + ',' + item.Value + ',' + limitMin + ',' + limitMax + '\n';
                             });
                         }
                     });
@@ -199,30 +209,30 @@ var StreamStats;
                     //console.log('ScenarioFlowTable statGroup: ', statGroup);
                     var finalVal = '';
                     statGroup.RegressionRegions.forEach(function (regressionRegion) {
-                        //console.log('ScenarioFlowTable regressionRegion: ', regressionRegion);
-                        var regionPercent;
-                        if (regressionRegion.PercentWeight)
-                            regionPercent = regressionRegion.PercentWeight.toFixed(0) + ' Percent ';
-                        else
-                            regionPercent = '';
-                        finalVal += statGroup.Name + ' Flow Report, ' + regionPercent + regressionRegion.Name.split("_").join(" ") + '\n';
-                        finalVal += 'Name,Value,Unit,Prediction Error (percent),Lower Prediction Interval,Upper Prediction Interval\n';
-                        regressionRegion.Results.forEach(function (item) {
-                            //console.log('ScenarioFlowTable regressionRegion item: ', item);
-                            var unit = '';
-                            if (item.Unit)
-                                unit = item.Unit.Abbr;
-                            var errors = '--';
-                            if (item.Errors)
-                                errors = item.Errors[0].Value;
-                            var lowerPredictionInterval = '--';
-                            if (item.IntervalBounds && item.IntervalBounds.Lower)
-                                lowerPredictionInterval = item.IntervalBounds.Lower.toUSGSvalue();
-                            var upperPredictionInterval = '--';
-                            if (item.IntervalBounds && item.IntervalBounds.Upper)
-                                upperPredictionInterval = item.IntervalBounds.Upper.toUSGSvalue();
-                            finalVal += item.Name + ',' + item.Value.toUSGSvalue() + ',' + unit + ',' + errors + ',' + lowerPredictionInterval + ',' + upperPredictionInterval + '\n';
-                        });
+                        console.log('ScenarioFlowTable regressionRegion: ', regressionRegion);
+                        if (regressionRegion.Results) {
+                            var regionPercent = 'n/a';
+                            if (regressionRegion.PercentWeight)
+                                regionPercent = regressionRegion.PercentWeight.toFixed(0) + ' Percent ';
+                            finalVal += statGroup.Name + ' Flow Report, ' + regionPercent + regressionRegion.Name.split("_").join(" ") + '\n';
+                            finalVal += 'Name,Value,Unit,' + regressionRegion.Results[0].Errors[0].Name + ',Lower Prediction Interval,Upper Prediction Interval\n';
+                            regressionRegion.Results.forEach(function (item) {
+                                //console.log('ScenarioFlowTable regressionRegion item: ', item);
+                                var unit = '';
+                                if (item.Unit)
+                                    unit = item.Unit.Abbr;
+                                var errors = '--';
+                                if (item.Errors)
+                                    errors = item.Errors[0].Value;
+                                var lowerPredictionInterval = '--';
+                                if (item.IntervalBounds && item.IntervalBounds.Lower)
+                                    lowerPredictionInterval = item.IntervalBounds.Lower.toUSGSvalue();
+                                var upperPredictionInterval = '--';
+                                if (item.IntervalBounds && item.IntervalBounds.Upper)
+                                    upperPredictionInterval = item.IntervalBounds.Upper.toUSGSvalue();
+                                finalVal += item.Name + ',' + item.Value.toUSGSvalue() + ',' + unit + ',' + errors + ',' + lowerPredictionInterval + ',' + upperPredictionInterval + '\n';
+                            });
+                        }
                     });
                     return finalVal + '\n';
                 };
