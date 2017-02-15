@@ -123,7 +123,7 @@ module StreamStats.Services {
             this.regionList = [];
             this.parameterList = [];
             this.masterRegionList = configuration.regions;
-            this.loadNationalMapLayers();
+            //this.loadNationalMapLayers();
             this.streamStatsAvailable = false;
             this.eventManager.AddEvent<WiM.Event.EventArgs>(onSelectedRegionChanged);
         }
