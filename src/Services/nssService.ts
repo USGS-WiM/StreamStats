@@ -180,7 +180,7 @@ module StreamStats.Services {
                                 
                                 response.data[0].RegressionRegions.forEach((regressionRegion) => {
                                     percentWeights.forEach((regressionRegionPercentWeight) => {
-                                        if (regressionRegion.Name == regressionRegionPercentWeight.name) regressionRegion["PercentWeight"] = regressionRegionPercentWeight.percent;
+                                        if (regressionRegion.Code == regressionRegionPercentWeight.code) regressionRegion["PercentWeight"] = regressionRegionPercentWeight.percent;
                                     })
                                 });
 

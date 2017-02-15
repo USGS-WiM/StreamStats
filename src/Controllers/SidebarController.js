@@ -292,7 +292,7 @@ var StreamStats;
             };
             SidebarController.prototype.updateParameterValue = function (parameter) {
                 //console.log('in updateParameterValue: ', parameter, this.studyAreaService.requestParameterList);
-                var paramIndex = this.studyAreaService.requestParameterList.indexOf(parameter.name);
+                var paramIndex = this.studyAreaService.requestParameterList.indexOf(parameter.code);
                 if (parameter.value >= 0 && paramIndex != -1) {
                     this.studyAreaService.requestParameterList.splice(paramIndex, 1);
                 }
