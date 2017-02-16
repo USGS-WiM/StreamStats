@@ -31,8 +31,9 @@ var StreamStats;
             return Center;
         }());
         var ReportController = (function () {
-            function ReportController($scope, $analytics, $modalInstance, studyArea, StatisticsGroup, leafletData) {
+            function ReportController($scope, $analytics, $modalInstance, studyArea, StatisticsGroup, leafletData, regionService) {
                 var _this = this;
+                this.regionService = regionService;
                 this.markers = null;
                 this.overlays = null;
                 this.center = null;
@@ -55,7 +56,36 @@ var StreamStats;
                 this.print = function () {
                     window.print();
                 };
+                this.studyAreaService.studyAreaParameterList.forEach(function (parameter) {
+                    if (parameter.code == 'DRNAREA') {
+                        _this.DRNAREA = parameter;
+                    }
+                });
             }
+            Object.defineProperty(ReportController.prototype, "showReport", {
+                get: function () {
+                    if (!this.studyAreaService.studyAreaParameterList)
+                        return false;
+                    for (var i = 0; i < this.studyAreaService.studyAreaParameterList.length; i++) {
+                        var param = this.studyAreaService.studyAreaParameterList[i];
+                        if (param.value && param.value >= 0)
+                            return true;
+                    }
+                    return false;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(ReportController.prototype, "showRegulation", {
+                get: function () {
+                    if (this.regionService.selectedRegion.Applications.indexOf("RegulationFlows") > -1)
+                        return true;
+                    else
+                        return false;
+                },
+                enumerable: true,
+                configurable: true
+            });
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             ReportController.prototype.initMap = function () {
@@ -154,15 +184,25 @@ var StreamStats;
                 var processScenarioParamTable = function (statGroup) {
                     var finalVal = '';
                     statGroup.RegressionRegions.forEach(function (regressionRegion) {
-                        //console.log('regression regions loop: ', regressionRegion)
+                        console.log('regression regions loop: ', regressionRegion);
                         //bail if in Area-Averaged section
                         if (regressionRegion.Name == 'Area-Averaged')
                             return;
-                        finalVal += statGroup.Name + ' Parameters, ' + regressionRegion.PercentWeight.toFixed(0) + ' Percent  ' + regressionRegion.Name.split("_").join(" ") + '\n';
+                        var regionPercent = 'n/a';
+                        if (regressionRegion.PercentWeight)
+                            regionPercent = regressionRegion.PercentWeight.toFixed(0) + ' Percent ';
+                        finalVal += statGroup.Name + ' Parameters, ' + regionPercent + regressionRegion.Name.split("_").join(" ") + '\n';
                         finalVal += 'Name,Value,Min Limit, Max Limit\n';
                         if (regressionRegion.Parameters) {
                             regressionRegion.Parameters.forEach(function (item) {
-                                finalVal += item.Name + ',' + item.Value + ',' + item.Limits.Min.toFixed(2) + ',' + item.Limits.Max.toFixed(2) + '\n';
+                                console.log('here', item);
+                                var limitMin = 'n/a';
+                                var limitMax = 'n/a';
+                                if (item.Limits) {
+                                    limitMin = item.Limits.Min.toFixed(2);
+                                    limitMax = item.Limits.Max.toFixed(2);
+                                }
+                                finalVal += item.Name + ',' + item.Value + ',' + limitMin + ',' + limitMax + '\n';
                             });
                         }
                     });
@@ -180,30 +220,33 @@ var StreamStats;
                     //console.log('ScenarioFlowTable statGroup: ', statGroup);
                     var finalVal = '';
                     statGroup.RegressionRegions.forEach(function (regressionRegion) {
-                        //console.log('ScenarioFlowTable regressionRegion: ', regressionRegion);
-                        var regionPercent;
-                        if (regressionRegion.PercentWeight)
-                            regionPercent = regressionRegion.PercentWeight.toFixed(0) + ' Percent ';
-                        else
-                            regionPercent = '';
-                        finalVal += statGroup.Name + ' Flow Report, ' + regionPercent + regressionRegion.Name.split("_").join(" ") + '\n';
-                        finalVal += 'Name,Value,Unit,Prediction Error (percent),Lower Prediction Interval,Upper Prediction Interval\n';
-                        regressionRegion.Results.forEach(function (item) {
-                            //console.log('ScenarioFlowTable regressionRegion item: ', item);
-                            var unit = '';
-                            if (item.Unit)
-                                unit = item.Unit.Abbr;
-                            var errors = '--';
-                            if (item.Errors)
-                                errors = item.Errors[0].Value;
-                            var lowerPredictionInterval = '--';
-                            if (item.IntervalBounds && item.IntervalBounds.Lower)
-                                lowerPredictionInterval = item.IntervalBounds.Lower.toUSGSvalue();
-                            var upperPredictionInterval = '--';
-                            if (item.IntervalBounds && item.IntervalBounds.Upper)
-                                upperPredictionInterval = item.IntervalBounds.Upper.toUSGSvalue();
-                            finalVal += item.Name + ',' + item.Value.toUSGSvalue() + ',' + unit + ',' + errors + ',' + lowerPredictionInterval + ',' + upperPredictionInterval + '\n';
-                        });
+                        console.log('ScenarioFlowTable regressionRegion: ', regressionRegion);
+                        if (regressionRegion.Results) {
+                            var regionPercent = 'n/a';
+                            if (regressionRegion.PercentWeight)
+                                regionPercent = regressionRegion.PercentWeight.toFixed(0) + ' Percent ';
+                            finalVal += statGroup.Name + ' Flow Report, ' + regionPercent + regressionRegion.Name.split("_").join(" ") + '\n';
+                            var errorName = 'Error';
+                            if (regressionRegion.Results[0].Errors)
+                                errorName = regressionRegion.Results[0].Errors[0].Name;
+                            finalVal += 'Statistic,Value,Unit,' + errorName + ',Lower Prediction Interval,Upper Prediction Interval\n';
+                            regressionRegion.Results.forEach(function (item) {
+                                //console.log('ScenarioFlowTable regressionRegion item: ', item);
+                                var unit = '';
+                                if (item.Unit)
+                                    unit = item.Unit.Abbr;
+                                var errors = '--';
+                                if (item.Errors)
+                                    errors = item.Errors[0].Value;
+                                var lowerPredictionInterval = '--';
+                                if (item.IntervalBounds && item.IntervalBounds.Lower)
+                                    lowerPredictionInterval = item.IntervalBounds.Lower.toUSGSvalue();
+                                var upperPredictionInterval = '--';
+                                if (item.IntervalBounds && item.IntervalBounds.Upper)
+                                    upperPredictionInterval = item.IntervalBounds.Upper.toUSGSvalue();
+                                finalVal += item.Name + ',' + item.Value.toUSGSvalue() + ',' + unit + ',' + errors + ',' + lowerPredictionInterval + ',' + upperPredictionInterval + '\n';
+                            });
+                        }
                     });
                     return finalVal + '\n';
                 };
@@ -301,7 +344,7 @@ var StreamStats;
             };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
-            ReportController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData'];
+            ReportController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService'];
             return ReportController;
         }()); //end class
         angular.module('StreamStats.Controllers')

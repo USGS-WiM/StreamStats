@@ -125,7 +125,7 @@ var StreamStats;
                                 statGroup['StatisticGroupID'] = statGroup.ID;
                                 response.data[0].RegressionRegions.forEach(function (regressionRegion) {
                                     percentWeights.forEach(function (regressionRegionPercentWeight) {
-                                        if (regressionRegion.Name == regressionRegionPercentWeight.name)
+                                        if (regressionRegion.Code == regressionRegionPercentWeight.code.toUpperCase())
                                             regressionRegion["PercentWeight"] = regressionRegionPercentWeight.percent;
                                     });
                                 });
@@ -150,7 +150,7 @@ var StreamStats;
             nssService.prototype.estimateFlows = function (studyAreaParameterList, paramValueField, rcode, regressionregion, append) {
                 var _this = this;
                 if (append === void 0) { append = false; }
-                if (this.isDone)
+                if (!this.canUpdate && !append)
                     return;
                 this.canUpdate = false;
                 //loop over all selected StatisticsGroups
@@ -159,6 +159,7 @@ var StreamStats;
                         _this.toaster.pop('wait', "Estimating Flows", "Please wait...", 0);
                     }
                     _this.estimateFlowsCounter++;
+                    _this.cleanRegressionRegions(statGroup.RegressionRegions);
                     //console.log('in estimate flows method for ', statGroup.Name, statGroup);
                     statGroup.RegressionRegions.forEach(function (regressionRegion) {
                         regressionRegion.Parameters.forEach(function (regressionParam) {
@@ -206,11 +207,6 @@ var StreamStats;
                         //if (append) console.log('in estimate flows for regulated basins: ', response);
                         //make sure there are some results
                         if (response.data[0].RegressionRegions.length > 0 && response.data[0].RegressionRegions[0].Results && response.data[0].RegressionRegions[0].Results.length > 0) {
-                            //if success and counter is zero, clear toast
-                            _this.estimateFlowsCounter--;
-                            if (_this.estimateFlowsCounter == 0) {
-                                _this.toaster.clear();
-                            }
                             if (!append) {
                                 statGroup.RegressionRegions = [];
                                 statGroup.RegressionRegions = response.data[0].RegressionRegions;
@@ -251,7 +247,6 @@ var StreamStats;
                         else {
                             _this.toaster.clear();
                             _this.toaster.pop('error', "There was an error Estimating Flows for " + statGroup.Name, "No results were returned", 0);
-                            _this.isDone = true;
                         }
                         //sm when complete
                     }, function (error) {
@@ -259,7 +254,13 @@ var StreamStats;
                         _this.toaster.clear();
                         _this.toaster.pop('error', "There was an error Estimating Flows", "HTTP request error", 0);
                     }).finally(function () {
-                        _this.canUpdate = true;
+                        //if success and counter is zero, clear toast
+                        _this.estimateFlowsCounter--;
+                        if (_this.estimateFlowsCounter < 1) {
+                            _this.toaster.clear();
+                            _this.estimateFlowsCounter = 0;
+                            _this.canUpdate = true;
+                        } //end if                       
                     });
                 });
             };
@@ -282,6 +283,23 @@ var StreamStats;
                     _this.toaster.pop('error', "There was an error getting selected Citations for " + statGroup.Name, "No results were returned", 0);
                 }).finally(function () {
                 });
+            };
+            //HelperMethods
+            //-+-+-+-+-+-+-+-+-+-+-+-
+            nssService.prototype.cleanRegressionRegions = function (RegressionRegions) {
+                for (var i = 0; i < RegressionRegions.length; i++) {
+                    var regRegion = RegressionRegions[i];
+                    if (regRegion.Name === 'Area-Averaged') {
+                        RegressionRegions.splice(i, 1);
+                        continue;
+                    } //end if
+                    //remove results
+                    RegressionRegions.forEach(function (regressionRegion) {
+                        //delete results object if it exists
+                        if (regressionRegion.Results)
+                            delete regressionRegion.Results;
+                    });
+                } //next i
             };
             return nssService;
         }(WiM.Services.HTTPServiceBase)); //end class

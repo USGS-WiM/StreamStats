@@ -1,13 +1,13 @@
 var configuration = {}
 //main environment variables
 configuration.environment = 'development'
-configuration.cloud = false;
+configuration.cloud = true;
 
 configuration.baseurls =
 {   
     'NWISurl': 'https://waterservices.usgs.gov/nwis',
     'StreamStatsMapServices': 'https://streamstats09.cr.usgs.gov',
-    'StreamStatsServices': 'https://streamstatsags.cr.usgs.gov',
+    'StreamStatsServices': 'https://ssdev.cr.usgs.gov',
     'NSS': 'https://services.wim.usgs.gov/nssservicestest',
     'SearchAPI': 'https://txpub.usgs.gov/DSS/search_api/1.1/dataService/dataService.ashx',
     'GISserver': 'https://gis.wim.usgs.gov',
@@ -40,18 +40,9 @@ configuration.queryparams =
 }
 
 //override streamstats arguments if on production
-if (window.location.origin.indexOf('streamstatsags.cr.usgs.gov') != -1) {
+if (window.location.origin.indexOf('streamstatsags.cr.usgs.gov') !== -1) {
     configuration.baseurls.StreamStats = 'https://streamstatsags.cr.usgs.gov';
-    configuration.environment = 'production'
-}
-
-//override streamstats arguments if on cloud
-if (configuration.cloud) {
-    configuration.queryparams.SSStateLayers = '/arcgis/rest/services/StreamStats/stateServices/MapServer',
-    configuration.queryparams.SSNationalLayers = '/arcgis/rest/services/StreamStats/nationalLayers/MapServer',
-    configuration.queryparams.RegressionRegionQueryService = '/arcgis/rest/services/NSS/nssRegions_Test/MapServer/exts/PercentOverlayRESTSOE/PercentOverlay',
-    configuration.baseurls.StreamStatsServices = 'https://streamstatstest.wim.usgs.gov'
-    configuration.baseurls.StreamStatsMapServices = configuration.baseurls.StreamStatsServices
+    configuration.environment = 'production';
 }
 
 configuration.SupportTicketService = {
@@ -169,9 +160,11 @@ configuration.regions = [
     { "RegionID": "AL", "Name": "Alabama", "Bounds": [[30.233604,-88.472952],[35.016033,-84.894016]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "AR", "Name": "Arkansas", "Bounds": [[33.010151,-94.617257],[36.492811,-89.645479]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "AS", "Name": "American Samoa", "Bounds": [[-14.375555, -170.82611], [-14.166389, -169.438323]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
-    { "RegionID": "AZ", "Name": "Arizona", "Bounds": [[31.335634,-114.821761],[37.003926,-109.045615]], "Layers": {}, "Applications": [], "ScenariosAvailable": true},
+    { "RegionID": "AZ", "Name": "Arizona", "Bounds": [[31.335634,-114.821761],[37.003926,-109.045615]], "Layers": {}, "Applications": [], "ScenariosAvailable": false},
     { "RegionID": "CA", "Name": "California", "Bounds": [[32.535781,-124.392638],[42.002191,-114.12523]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
-    { "RegionID": "CO", "Name": "Colorado", "Bounds": [[36.988994,-109.055861],[41.003375,-102.037207]], "Layers": 
+    { "RegionID": "CO", "Name": "Colorado", "Bounds": [[36.988994,-109.055861],[41.003375,-102.037207]], 
+
+        "Layers":
 		{
 			"CO_Regulation":{
 				"name": "Regulation Points",
@@ -186,7 +179,7 @@ configuration.regions = [
 				}
 			}
 		},
-        "Applications": ["Regulation"],
+        "Applications": ["Regulation","RegulationFlows"],
         "ScenariosAvailable": true
     },
     { "RegionID": "CT", "Name": "Connecticut", "Bounds": [[40.998392,-73.725237],[42.047428,-71.788249]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
@@ -240,8 +233,9 @@ configuration.regions = [
     { "RegionID": "ME", "Name": "Maine", "Bounds": [[43.09105,-71.087509],[47.453334,-66.969271]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "MI", "Name": "Michigan", "Bounds": [[41.697494,-90.4082],[48.173795,-82.419836]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "MN", "Name": "Minnesota", "Bounds": [[43.498102,-97.229436],[49.37173,-89.530673]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
-	{ "RegionID": "MO", "Name": "Missouri", "Bounds": [[35.989656,-95.767479],[40.609784,-89.105034]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
-    { "RegionID": "MS", "Name": "Mississippi", "Bounds": [[30.194935,-91.643682],[35.005041,-88.090468]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
+	{ "RegionID": "MO", "Name": "Missouri", "Bounds": [[35.989656, -95.767479], [40.609784, -89.105034]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
+    { "RegionID": "MP", "Name": "Northern Mariana Islands", "Bounds": [[14.105276, 144.89859], [20.556385, 145.870788]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
+    { "RegionID": "MS", "Name": "Mississippi", "Bounds": [[30.194935,-91.643682],[35.005041,-88.090468]], "Layers": {}, "Applications": [], "ScenariosAvailable": false },
     { "RegionID": "MT", "Name": "Montana", "Bounds": [[44.353639,-116.063531],[49.000026,-104.043072]], "Layers": 
 		{
             "MT_Regulation": {
@@ -268,14 +262,13 @@ configuration.regions = [
     { "RegionID": "NM", "Name": "New Mexico", "Bounds": [[31.343453,-109.051346],[36.99976,-102.997401]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "NV", "Name": "Nevada", "Bounds": [[34.998914,-119.996324],[41.996637,-114.037392]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "NY", "Name": "New York", "Bounds": [[40.506003,-79.763235],[45.006138,-71.869986]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
-    { "RegionID": "MP", "Name": "Northern Mariana Islands", "Bounds": [[14.105276, 144.89859], [20.556385, 145.870788]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "OH", "Name": "Ohio", "Bounds": [[38.400511,-84.81207],[41.986872,-80.519996]], "Layers": {}, "Applications": ["Wateruse"], "ScenariosAvailable": true },
     { "RegionID": "OK", "Name": "Oklahoma", "Bounds": [[33.621136,-102.997709],[37.001478,-94.428552]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "OR", "Name": "Oregon", "Bounds": [[41.987672,-124.559617],[46.236091,-116.470418]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "PA", "Name": "Pennsylvania", "Bounds": [[39.719313,-80.526045],[42.267327,-74.700062]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "PR", "Name": "Puerto Rico", "Bounds": [[17.922222, -67.938339], [18.519443, -65.241958]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "RI", "Name": "Rhode Island", "Bounds": [[41.322769,-71.866678],[42.013713,-71.117132]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
-    { "RegionID": "SC", "Name": "South Carolina", "Bounds": [[32.068173,-83.350685],[35.208356,-78.579453]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
+    { "RegionID": "SC", "Name": "South Carolina", "Bounds": [[32.068173,-83.350685],[35.208356,-78.579453]], "Layers": {}, "Applications": [], "ScenariosAvailable": false },
     { "RegionID": "SD", "Name": "South Dakota", "Bounds": [[42.488459,-104.061036],[45.943547,-96.439394]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "TN", "Name": "Tennessee", "Bounds": [[34.988759,-90.305448],[36.679683,-81.652272]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "TX", "Name": "Texas", "Bounds": [[25.845557,-106.650062],[36.493912,-93.507389]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
@@ -284,7 +277,7 @@ configuration.regions = [
     { "RegionID": "VT", "Name": "Vermont", "Bounds": [[42.725852,-73.436],[45.013351,-71.505372]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "VI", "Name": "Virgin Islands", "Bounds": [[17.676666, -65.026947], [18.377777, -64.560287]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "WA", "Name": "Washington", "Bounds": [[45.543092,-124.732769],[48.999931,-116.919132]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
-    { "RegionID": "WI", "Name": "Wisconsin", "Bounds": [[42.489152,-92.885397],[46.952479,-86.967712]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },	
+    { "RegionID": "WI", "Name": "Wisconsin", "Bounds": [[42.489152,-92.885397],[46.952479,-86.967712]], "Layers": {}, "Applications": [], "ScenariosAvailable": false },	
     { "RegionID": "WV", "Name": "West Virginia", "Bounds": [[37.20491,-82.647158],[40.637203,-77.727467]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "WY", "Name": "Wyoming", "Bounds": [[40.994289,-111.053428],[45.002793,-104.051705]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "CRB", "Name": "Connecticut River Basin", "Bounds": [[41.227366,-73.254776],[45.305324,-71.059248]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
@@ -292,3 +285,25 @@ configuration.regions = [
     { "RegionID": "RRB", "Name": "Rainy River Basin", "Bounds": [[47.268377,-95.64855],[50.054196,-89.766532]], "Layers": {}, "Applications": [], "ScenariosAvailable": true }
 
 ]//end regions
+
+//override streamstats arguments if on cloud
+if (configuration.cloud) {
+    configuration.baseurls.StreamStatsServices = 'https://streamstatstest.wim.usgs.gov';
+    configuration.baseurls.GISserver = configuration.baseurls.StreamStatsServices;
+    configuration.baseurls.StreamStatsMapServices = configuration.baseurls.StreamStatsServices;
+    configuration.baseurls.NSS = 'https://streamstatstest.wim.usgs.gov/nssservices'
+
+    configuration.queryparams.SSStateLayers = '/arcgis/rest/services/StreamStats/stateServices/MapServer';
+    configuration.queryparams.SSNationalLayers = '/arcgis/rest/services/StreamStats/nationalLayers/MapServer';
+    configuration.queryparams.RegressionRegionQueryService = '/arcgis/rest/services/nss/regions/MapServer/exts/PercentOverlayRESTSOE/PercentOverlay';
+    configuration.queryparams.regulationService = '/arcgis/rest/services/regulations/{0}/MapServer/exts/RegulationRESTSOE/Regulation',
+
+    configuration.regions.forEach(function (value,index) {
+        if (value.RegionID == 'CO') {
+            value.Layers.CO_Regulation.url = configuration.baseurls['GISserver'] + "/arcgis/rest/services/regulations/co/MapServer";
+        }
+        if (value.RegionID == 'MT') {
+            value.Layers.MT_Regulation.url = configuration.baseurls['GISserver'] + "/arcgis/rest/services/regulations/mt/MapServer";
+        }
+    });
+}

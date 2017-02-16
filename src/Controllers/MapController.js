@@ -937,8 +937,8 @@ var StreamStats;
                 }
             };
             MapController.prototype.addRegionOverlayLayers = function (regionId) {
+                //console.log('in addRegionOverlayLayers');
                 var _this = this;
-                console.log('in addRegionOverlayLayers');
                 if (this.regionServices.regionMapLayerList.length < 1)
                     return;
                 //CLOUD

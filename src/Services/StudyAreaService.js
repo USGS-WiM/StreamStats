@@ -28,18 +28,26 @@ var StreamStats;
     (function (Services) {
         'use strict';
         Services.onSelectedStudyAreaChanged = "onSelectedStudyAreaChanged";
+        Services.onSelectedStudyParametersLoaded = "onSelectedStudyParametersLoaded";
         Services.onStudyAreaReset = "onStudyAreaReset";
         Services.onEditClick = "onEditClick";
         var StudyAreaEventArgs = (function (_super) {
             __extends(StudyAreaEventArgs, _super);
-            function StudyAreaEventArgs() {
+            function StudyAreaEventArgs(studyArea, saVisible, paramState) {
+                if (studyArea === void 0) { studyArea = null; }
+                if (saVisible === void 0) { saVisible = false; }
+                if (paramState === void 0) { paramState = false; }
                 _super.call(this);
+                this.studyArea = studyArea;
+                this.studyAreaVisible = saVisible;
+                this.parameterLoaded = paramState;
             }
             return StudyAreaEventArgs;
         }(WiM.Event.EventArgs));
         Services.StudyAreaEventArgs = StudyAreaEventArgs;
         var StudyAreaService = (function (_super) {
             __extends(StudyAreaService, _super);
+            //public requestParameterList: Array<any>; jkn
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
             function StudyAreaService($http, $q, eventManager, toaster) {
@@ -48,6 +56,7 @@ var StreamStats;
                 this.$http = $http;
                 this.$q = $q;
                 this.eventManager = eventManager;
+                eventManager.AddEvent(Services.onSelectedStudyParametersLoaded);
                 eventManager.AddEvent(Services.onSelectedStudyAreaChanged);
                 eventManager.AddEvent(Services.onStudyAreaReset);
                 eventManager.SubscribeToEvent(Services.onSelectedStudyAreaChanged, new WiM.Event.EventHandler(function (sender, e) {
@@ -109,7 +118,6 @@ var StreamStats;
                 //console.log('in clear study area');
                 this.canUpdate = true;
                 this.regulationCheckComplete = true;
-                this.parametersLoaded = false;
                 this.parametersLoading = false;
                 this.doDelineateFlag = false;
                 this.checkingDelineatedPoint = false;
@@ -192,7 +200,6 @@ var StreamStats;
                                 return;
                             } //end if
                         });
-                        //sm when complete
                     }, function (error) {
                         //sm when error
                         _this.toaster.clear();
@@ -236,23 +243,30 @@ var StreamStats;
             };
             StudyAreaService.prototype.loadParameters = function () {
                 var _this = this;
+                this.parametersLoading = true;
+                var argState = { "isLoaded": false };
+                var requestParameterList = [];
                 this.toaster.clear();
                 this.toaster.pop('wait', "Calculating Selected Basin Characteristics", "Please wait...", 0);
                 //console.log('in load parameters');
                 //this.canUpdate = false;
-                this.parametersLoading = true;
-                this.parametersLoaded = false;
+                this.eventManager.RaiseEvent(Services.onSelectedStudyParametersLoaded, this, StudyAreaEventArgs.Empty);
                 if (!this.selectedStudyArea || !this.selectedStudyArea.WorkspaceID || !this.selectedStudyArea.RegionID) {
                     alert('No Study Area');
-                    return; //sm study area is incomplete
-                }
-                //if there is any uncomputed parameter, don't recreate the list just use existing
-                if (!this.requestParameterList) {
-                    this.requestParameterList = [];
-                    this.studyAreaParameterList.map(function (param) { _this.requestParameterList.push(param.code); });
-                }
+                    return;
+                } //end if
+                //only compute missing characteristics
+                requestParameterList = this.studyAreaParameterList.filter(function (param) { return (!param.value || param.value < 0); }).map(function (param) { return param.code; });
+                if (requestParameterList.length < 1) {
+                    var saEvent = new StudyAreaEventArgs();
+                    saEvent.parameterLoaded = true;
+                    this.eventManager.RaiseEvent(Services.onSelectedStudyParametersLoaded, this, saEvent);
+                    this.toaster.clear();
+                    this.parametersLoading = false;
+                    return;
+                } //end if
                 //console.log('request parameter list before: ', this.requestParameterList);
-                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSComputeParams'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID, this.requestParameterList.join(','));
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSComputeParams'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID, requestParameterList.join(','));
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     if (response.data.parameters && response.data.parameters.length > 0) {
@@ -270,10 +284,9 @@ var StreamStats;
                                 parameter.loaded = false;
                             }
                             else {
-                                //remove this param from requestParameterList
-                                var idx = _this.requestParameterList.indexOf(parameter.code);
-                                if (idx != -1)
-                                    _this.requestParameterList.splice(idx, 1);
+                                //    //remove this param from requestParameterList
+                                //    var idx = this.requestParameterList.indexOf(parameter.code);
+                                //    if (idx != -1) this.requestParameterList.splice(idx, 1);
                                 parameter.loaded = true;
                             }
                         });
@@ -284,11 +297,13 @@ var StreamStats;
                         }
                         var results = response.data.parameters;
                         _this.loadParameterResults(results);
-                        _this.parametersLoaded = true;
                         //do regulation parameter update if needed
                         if (_this.selectedStudyArea.Disclaimers['isRegulated']) {
                             _this.loadRegulatedParameterResults(_this.regulationCheckResults.parameters);
                         }
+                        var saEvent = new StudyAreaEventArgs();
+                        saEvent.parameterLoaded = true;
+                        _this.eventManager.RaiseEvent(Services.onSelectedStudyParametersLoaded, _this, saEvent);
                     }
                     //sm when complete
                 }, function (error) {
@@ -372,6 +387,9 @@ var StreamStats;
                 this.regulationCheckComplete = false;
                 var watershed = angular.toJson(this.selectedStudyArea.Features[1].feature, null);
                 var url = configuration.baseurls['GISserver'] + configuration.queryparams['regulationService'].format(this.selectedStudyArea.RegionID);
+                //CLOUD CHECK
+                if (configuration.cloud)
+                    url = configuration.baseurls['GISserver'] + configuration.queryparams['regulationService'].format(this.selectedStudyArea.RegionID.toLowerCase());
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', { watershed: watershed, outputcrs: 4326, f: 'geojson' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
                 this.Execute(request).then(function (response) {
                     //console.log(response);

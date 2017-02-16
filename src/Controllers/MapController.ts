@@ -1175,7 +1175,7 @@ module StreamStats.Controllers {
 
         private addRegionOverlayLayers(regionId: string) {
 
-            console.log('in addRegionOverlayLayers');
+            //console.log('in addRegionOverlayLayers');
 
             if (this.regionServices.regionMapLayerList.length < 1) return;
 
