@@ -31,8 +31,9 @@ var StreamStats;
             return Center;
         }());
         var ReportController = (function () {
-            function ReportController($scope, $analytics, $modalInstance, studyArea, StatisticsGroup, leafletData) {
+            function ReportController($scope, $analytics, $modalInstance, studyArea, StatisticsGroup, leafletData, regionService) {
                 var _this = this;
+                this.regionService = regionService;
                 this.markers = null;
                 this.overlays = null;
                 this.center = null;
@@ -71,6 +72,16 @@ var StreamStats;
                             return true;
                     }
                     return false;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(ReportController.prototype, "showRegulation", {
+                get: function () {
+                    if (this.regionService.selectedRegion.Applications.indexOf("RegulationFlows") > -1)
+                        return true;
+                    else
+                        return false;
                 },
                 enumerable: true,
                 configurable: true
@@ -333,7 +344,7 @@ var StreamStats;
             };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
-            ReportController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData'];
+            ReportController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService'];
             return ReportController;
         }()); //end class
         angular.module('StreamStats.Controllers')
