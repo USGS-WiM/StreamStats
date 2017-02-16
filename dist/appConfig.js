@@ -179,7 +179,7 @@ configuration.regions = [
 				}
 			}
 		},
-        "Applications": ["Regulation"],
+        "Applications": ["Regulation","RegulationFlows"],
         "ScenariosAvailable": true
     },
     { "RegionID": "CT", "Name": "Connecticut", "Bounds": [[40.998392,-73.725237],[42.047428,-71.788249]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
