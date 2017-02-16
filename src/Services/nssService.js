@@ -150,7 +150,7 @@ var StreamStats;
             nssService.prototype.estimateFlows = function (studyAreaParameterList, paramValueField, rcode, regressionregion, append) {
                 var _this = this;
                 if (append === void 0) { append = false; }
-                if (!this.canUpdate)
+                if (!this.canUpdate && !append)
                     return;
                 this.canUpdate = false;
                 //loop over all selected StatisticsGroups
