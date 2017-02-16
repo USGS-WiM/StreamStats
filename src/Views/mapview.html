@@ -26,7 +26,7 @@
                     <div id="elevation-div" class="leaflet-control elevation"></div>
                 </div>
                 <!-- Network Navigation -->
-                <div ng-show="vm.environment == 'development'">
+                <!--<div ng-show="vm.environment == 'development' ">
                     <button ng-disabled="vm.center.zoom < 10" ng-class="vm.selectedExplorationMethodType !== 1? 'btn-wim-sm btn-wim-primary btn-wim-group-1':'btn-wim-sm btn-wim-warning btn-wim-group-1'" ng-click="vm.setExplorationMethodType(1)"><span><i class="fa fa-share-alt"></i>&nbsp;&nbsp;Find Path Between Two Points</span></button>
                     <div ng-show="vm.selectedExplorationMethodType === 1" class="wim-alert row">
                         Select two locations near the stream network, then select 'Go' to dislplay how the two points are hydrologically connected.
@@ -52,7 +52,6 @@
                         <select class="btn-wim-sm" ng-model="vm.explorationService.selectedMethod.selectedDirectionType">
                             <option ng-repeat="item in vm.explorationService.selectedMethod.DirectionOptions" value="{{item}}">Search {{item}}</option>
                         </select>
-                        <!--<div class="well well-sm">-->
                             <table class="table table-condensed">
                                 <tbody ng-repeat="item in vm.explorationService.selectedMethod.layerOptions">
                                     <tr>
@@ -61,11 +60,9 @@
                                     </tr>
                                 </tbody>
                             </table>
-                        <!--</div>-->
-
                         <button ng-disabled="vm.center.zoom < 10 || vm.explorationMethodBusy" ng-click=" vm.ExecuteNav()" type="button" class="btn-wim-sm btn-wim-success btn-wim-group-1"><i ng-class="vm.explorationMethodBusy? 'fa fa-refresh fa-spin':'fa fa-sitemap fa-rotate-90'"></i>&nbsp;&nbsp;Go</button>
                     </div>
-                </div>
+                </div>-->
               
 
                 <button class="btn-wim-sm btn-wim-primary btn-wim-group-1" ng-click="vm.resetExplorationTools(); vm.showLocation()"><span><i class="fa fa-map-marker"></i>&nbsp;&nbsp;Show your location</span></button>
