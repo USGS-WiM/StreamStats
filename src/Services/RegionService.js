@@ -53,7 +53,7 @@ var StreamStats;
                 this.regionList = [];
                 this.parameterList = [];
                 this.masterRegionList = configuration.regions;
-                //this.loadNationalMapLayers();
+                this.loadNationalMapLayers();
                 this.streamStatsAvailable = false;
                 this.eventManager.AddEvent(Services.onSelectedRegionChanged);
             }
@@ -113,7 +113,7 @@ var StreamStats;
             };
             RegionService.prototype.loadNationalMapLayers = function () {
                 var _this = this;
-                var url = configuration.baseurls['StreamStatsMapServices'] + "/arcgis/rest/services/ss_studyAreas_prod/MapServer?f=pjson";
+                var url = configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['SSNationalLayers'] + "?f=pjson";
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.nationalMapLayerList = [];
                 this.Execute(request).then(function (response) {
