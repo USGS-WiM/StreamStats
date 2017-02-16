@@ -206,7 +206,7 @@ module StreamStats.Services {
 
         public estimateFlows(studyAreaParameterList: Array<IParameter>, paramValueField:string, rcode: string, regressionregion: string, append:boolean = false) {
 
-            if (!this.canUpdate) return;
+            if (!this.canUpdate && !append) return;
             this.canUpdate = false;
             //loop over all selected StatisticsGroups
             this.selectedStatisticsGroupList.forEach((statGroup) => {
