@@ -70,7 +70,7 @@
                             </thead>
                             <tbody>
                                 <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList">
-                                    <td ng-bind="parameter.name"></td>
+                                    <td ng-bind="parameter.code"></td>
                                     <td ng-bind="parameter.description"></td>
                                     <td ng-bind="parameter.value"></td>
                                     <td ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated && vm.showRegulation" ng-bind="parameter.unRegulatedValue.toFixed(3)"></td>
