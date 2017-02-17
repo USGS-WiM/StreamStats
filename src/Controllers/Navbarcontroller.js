@@ -34,6 +34,8 @@ var StreamStats;
                 this.checkActiveNews();
                 this.newArticleCount = 0;
                 this.environment = configuration.environment;
+                this.cloud = configuration.cloud;
+                this.getAppVersion();
             }
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
@@ -96,6 +98,12 @@ var StreamStats;
                 else
                     var expires = "";
                 document.cookie = name + "=" + value + expires + "; path=/";
+            };
+            NavbarController.prototype.getAppVersion = function () {
+                var _this = this;
+                $.getJSON("version.js", function (data) {
+                    _this.AppVersion = data.version;
+                });
             };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
