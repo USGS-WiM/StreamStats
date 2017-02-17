@@ -94,7 +94,7 @@
 
 
                         <div ng-repeat="RegressionRegion in StatisticsGroup.RegressionRegions" ng-hide="RegressionRegion.Name == 'Area-Averaged'">
-                            <h4>{{StatisticsGroup.Name}} Parameters<small ng-bind="(RegressionRegion.PercentWeight) ? ' [' + RegressionRegion.PercentWeight.toFixed(0) + ' Percent (' + (+vm.DRNAREA.value * +RegressionRegion.PercentWeight / 100).toUSGSvalue() + ' ' + vm.DRNAREA.unit + ') ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h4>
+                            <h4>{{StatisticsGroup.Name}} Parameters<small ng-bind="(RegressionRegion.PercentWeight) ? ' [' + RegressionRegion.PercentWeight.toFixed(0) + ' Percent (' + (+vm.areaSQMI.toUSGSvalue() * +RegressionRegion.PercentWeight / 100).toUSGSvalue() + ' square miles) ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h4>
                             <table class="table table-condensed">
                                 <thead class="param-table">
                                 <tr>
@@ -122,7 +122,7 @@
 
                             <!--Scenario Disclaimers-->
                             <div ng-show="StatisticsGroup.Disclaimers.Warnings || StatisticsGroup.Disclaimers.Errors">
-                                <h4>{{StatisticsGroup.Name}} Disclaimers<small ng-bind="(RegressionRegion.PercentWeight) ? ' [' + RegressionRegion.PercentWeight.toFixed(0) + ' Percent (' + (+vm.DRNAREA.value * +RegressionRegion.PercentWeight / 100).toUSGSvalue() + ' ' + vm.DRNAREA.unit + ') ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h4>
+                                <h4>{{StatisticsGroup.Name}} Disclaimers<small ng-bind="(RegressionRegion.PercentWeight) ? ' [' + RegressionRegion.PercentWeight.toFixed(0) + ' Percent (' + (+vm.areaSQMI.toUSGSvalue() * +RegressionRegion.PercentWeight / 100).toUSGSvalue() + ' square miles) ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h4>
                                 <div class="wim-alert-warning"  ng-repeat="headerMsg in StatisticsGroup.Disclaimers">{{headerMsg}}</div> 
                             </div>
                         </div>
@@ -130,7 +130,7 @@
                         <!--Flow Report-->
                         <div ng-repeat="RegressionRegion in StatisticsGroup.RegressionRegions">
 
-                            <h4>{{StatisticsGroup.Name}} Flow Report<small ng-bind="(RegressionRegion.PercentWeight) ? ' [' + RegressionRegion.PercentWeight.toFixed(0) + ' Percent (' + (+vm.DRNAREA.value * +RegressionRegion.PercentWeight / 100).toUSGSvalue() + ' ' + vm.DRNAREA.unit + ') ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h4>
+                            <h4>{{StatisticsGroup.Name}} Flow Report<small ng-bind="(RegressionRegion.PercentWeight) ? ' [' + RegressionRegion.PercentWeight.toFixed(0) + ' Percent (' + (+vm.areaSQMI.toUSGSvalue() * +RegressionRegion.PercentWeight / 100).toUSGSvalue() + ' square miles) ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h4>
                             <table class="table table-condensed">
                                 <thead class="param-table">
                                 <tr>
