@@ -93,7 +93,7 @@ module StreamStats.Controllers {
             }
             return false;
         }
-        public DRNAREA: any;
+        public areaSQMI: any
         public get showRegulation(): boolean {
             if (this.regionService.selectedRegion.Applications.indexOf("RegulationFlows") > -1) return true;
             else return false;                
@@ -127,11 +127,7 @@ module StreamStats.Controllers {
                 window.print();
             };
 
-            this.studyAreaService.studyAreaParameterList.forEach((parameter) => {
-                if (parameter.code == 'DRNAREA') {
-                    this.DRNAREA = parameter;
-                }
-            });
+            this.getPercentWeights()
 
         }
 
@@ -152,6 +148,22 @@ module StreamStats.Controllers {
                 keyboard: false
             }
         } 
+
+        private getPercentWeights() {
+
+            this.nssService.selectedStatisticsGroupList.forEach((statGroup) => {
+                //console.log('here1', statGroup)
+                statGroup.RegressionRegions.forEach((regRegion) => {
+                    //console.log('here2', regRegion)
+                    this.studyAreaService.selectedStudyArea.RegressionRegions.forEach((percentOverlay) => {
+                        //console.log('here3', percentOverlay)
+                        if (regRegion.Code == percentOverlay.code.toUpperCase()) {
+                            this.areaSQMI = percentOverlay.areasqmeter * 0.000000386102159;
+                        }
+                    });
+                });
+            });
+        }
 
         private showFeatures(): void { 
 
