@@ -132,29 +132,6 @@ configuration.basemaps =
     }
 }// end baselayer
 
-configuration.overlayedLayers = {
-    "SSLayer": {
-        "name": "National Layers",
-        "url": configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['SSNationalLayers'],
-        "type": 'agsDynamic',
-        "visible": true,
-        "layerOptions": {
-            "zIndex": 1,
-            "opacity": 0.6,
-            "format": "png8",
-            "f": "image",
-        }
-    },//end ssLayer    
-    "draw": {
-        "name": 'draw',
-        "type": 'group',
-        "visible": true,
-        "layerParams": {
-            "showOnSelector": false,
-        }
-    }
-}//end overlayedLayers
-
 configuration.regions = [
 	{ "RegionID": "AK", "Name": "Alaska", "Bounds": [[51.583032,-178.217598],[71.406235,-129.992235]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "AL", "Name": "Alabama", "Bounds": [[30.233604,-88.472952],[35.016033,-84.894016]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
@@ -307,3 +284,26 @@ if (configuration.cloud) {
         }
     });
 }
+
+configuration.overlayedLayers = {
+    "SSLayer": {
+        "name": "National Layers",
+        "url": configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['SSNationalLayers'],
+        "type": 'agsDynamic',
+        "visible": true,
+        "layerOptions": {
+            "zIndex": 1,
+            "opacity": 0.6,
+            "format": "png8",
+            "f": "image",
+        }
+    },//end ssLayer    
+    "draw": {
+        "name": 'draw',
+        "type": 'group',
+        "visible": true,
+        "layerParams": {
+            "showOnSelector": false,
+        }
+    }
+}//end overlayedLayers

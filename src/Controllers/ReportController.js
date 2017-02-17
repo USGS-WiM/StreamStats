@@ -56,11 +56,7 @@ var StreamStats;
                 this.print = function () {
                     window.print();
                 };
-                this.studyAreaService.studyAreaParameterList.forEach(function (parameter) {
-                    if (parameter.code == 'DRNAREA') {
-                        _this.DRNAREA = parameter;
-                    }
-                });
+                this.getPercentWeights();
             }
             Object.defineProperty(ReportController.prototype, "showReport", {
                 get: function () {
@@ -102,6 +98,21 @@ var StreamStats;
                     boxZoom: false,
                     keyboard: false
                 };
+            };
+            ReportController.prototype.getPercentWeights = function () {
+                var _this = this;
+                this.nssService.selectedStatisticsGroupList.forEach(function (statGroup) {
+                    //console.log('here1', statGroup)
+                    statGroup.RegressionRegions.forEach(function (regRegion) {
+                        //console.log('here2', regRegion)
+                        _this.studyAreaService.selectedStudyArea.RegressionRegions.forEach(function (percentOverlay) {
+                            //console.log('here3', percentOverlay)
+                            if (regRegion.Code == percentOverlay.code.toUpperCase()) {
+                                _this.areaSQMI = percentOverlay.areasqmeter * 0.000000386102159;
+                            }
+                        });
+                    });
+                });
             };
             ReportController.prototype.showFeatures = function () {
                 var _this = this;
