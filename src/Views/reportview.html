@@ -139,6 +139,7 @@
                                     <th ng-show ="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated && vm.showRegulation">Unregulated Value</th>  
                                     <th>Unit</th>
                                     <th ng-show="RegressionRegion.Results[0].Errors[0].Value">{{RegressionRegion.Results[0].Errors[0].Name}}</th>
+                                    <th ng-show="RegressionRegion.Results[0].EquivalentYears">Equivalent years of record</th>
                                     <th ng-show="RegressionRegion.Results[0].IntervalBounds.Lower">Lower Prediction Interval</th>
                                     <th ng-show="RegressionRegion.Results[0].IntervalBounds.Upper">Upper Prediction Interval</th>
                                 </tr>
@@ -150,6 +151,7 @@
                                         <td ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated && vm.showRegulation" ng-bind="parameter.unRegulatedValue.toUSGSvalue()"></td>
                                         <td ng-bind="parameter.Unit.Abbr"></td>
                                         <td ng-show="parameter.Errors[0].Value" ng-bind="(parameter.Errors[0].Value) ? parameter.Errors[0].Value : '--'"></td>   <!--  SHOW SOME DASHES IF ERROR IS BLANK -->
+                                        <td ng-show="parameter.EquivalentYears" ng-bind="parameter.EquivalentYears"></td>
                                         <td ng-show="parameter.IntervalBounds.Lower" ng-bind="parameter.IntervalBounds.Lower.toUSGSvalue()"></td>
                                         <td ng-show="parameter.IntervalBounds.Upper" ng-bind="parameter.IntervalBounds.Upper.toUSGSvalue()"></td>
                                     </tr>
