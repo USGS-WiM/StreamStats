@@ -38,8 +38,8 @@ module StreamStats.Controllers {
         private cookies: any;
         private newArticleCount: number;
         private environment: string;
+        private AppVersion: string;
         private cloud: boolean;
-        public AppVersion: string;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -51,8 +51,8 @@ module StreamStats.Controllers {
             this.checkActiveNews();
             this.newArticleCount = 0;
             this.environment = configuration.environment;
+            this.AppVersion = configuration.version;
             this.cloud = configuration.cloud;
-            this.getAppVersion();
         }
 
         //Methods
@@ -126,15 +126,8 @@ module StreamStats.Controllers {
             document.cookie = name + "=" + value + expires + "; path=/";
         }
 
-        private getAppVersion() {
-            $.getJSON("version.js", (data) => {
-                this.AppVersion = data.version;
-            });
-        }
-
     }//end class
     angular.module('StreamStats.Controllers')
         .controller('StreamStats.Controllers.NavbarController', NavbarController)
 
 }//end module
-  

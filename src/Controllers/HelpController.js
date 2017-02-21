@@ -109,8 +109,8 @@ var StreamStats;
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             HelpController.prototype.init = function () {
-                this.getAppVersion();
                 this.getBrowser();
+                this.AppVersion = configuration.version;
                 this.getFAQarticles();
                 if (this.StudyArea && this.StudyArea.WorkspaceID)
                     this.WorkspaceID = this.StudyArea.WorkspaceID;
@@ -145,12 +145,6 @@ var StreamStats;
                 // Internet Explorer 6-11
                 if (false || !!document.documentMode)
                     this.Browser = "IE";
-            };
-            HelpController.prototype.getAppVersion = function () {
-                var _this = this;
-                $.getJSON("version.js", function (data) {
-                    _this.AppVersion = data.version;
-                });
             };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
