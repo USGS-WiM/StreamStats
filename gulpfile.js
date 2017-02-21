@@ -25,10 +25,9 @@ function inc(importance) {
     //get new version number
     var newVer = semver.inc(version, importance);
 
+    //bump appConfig version
     gulp.src('./src/appConfig.js')
         .pipe(replace(/configuration.version="([^"]+)"/g, 'configuration.version="' + newVer + '"'))
-        //works but need to look for key instead
-        //.pipe(replace(version, '0.2.2'))
         .pipe(gulp.dest('./src/'))
 
     // get all the files to bump version in 
