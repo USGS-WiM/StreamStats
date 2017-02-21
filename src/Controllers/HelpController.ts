@@ -58,8 +58,8 @@ module StreamStats.Controllers {
         public freshdeskTicketData: FreshdeskTicketData;
         public showSuccessAlert: boolean;
         public submittingSupportTicket: boolean;
-        public WorkspaceID: string; 
-        public RegionID: string; 
+        public WorkspaceID: string;
+        public RegionID: string;
         public AppVersion: string;
         public Browser: string;
         public Server: string;
@@ -187,8 +187,8 @@ module StreamStats.Controllers {
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {
-            this.getAppVersion();
             this.getBrowser();
+            this.AppVersion = configuration.version;
             this.getFAQarticles()
             if (this.StudyArea && this.StudyArea.WorkspaceID) this.WorkspaceID = this.StudyArea.WorkspaceID;
             else this.WorkspaceID = '';
@@ -214,13 +214,6 @@ module StreamStats.Controllers {
             // Internet Explorer 6-11
             if (/*@cc_on!@*/false || !!(<any>document).documentMode) this.Browser = "IE";
         }
-
-        private getAppVersion() {
-            $.getJSON("version.js", (data) => {
-                this.AppVersion = data.version;
-            });
-        }
-
 
     }//end  class
 

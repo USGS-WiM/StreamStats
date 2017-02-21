@@ -14,8 +14,8 @@ var gulp = require('gulp'),
     filter = require('gulp-filter'),
     del = require('del'),
     open = require('open'),
-    semver = require('semver');
-
+    semver = require('semver'),
+    replace = require('gulp-string-replace');
 
 //get current app version
 var version = require('./package.json').version;
@@ -25,8 +25,13 @@ function inc(importance) {
     //get new version number
     var newVer = semver.inc(version, importance);
 
+    //bump appConfig version
+    gulp.src('./src/appConfig.js')
+        .pipe(replace(/configuration.version="([^"]+)"/g, 'configuration.version="' + newVer + '"'))
+        .pipe(gulp.dest('./src/'))
+
     // get all the files to bump version in 
-    gulp.src(['package.json', 'bower.json', 'src/version.js', 'dist/version.js'])
+    gulp.src(['package.json', 'bower.json'])
         // bump the version number in those files 
         .pipe(bump({ type: importance }))
         // save it back to filesystem 
