@@ -183,12 +183,12 @@ var StreamStats;
                     if (_this.studyAreaService.selectedStudyArea.Disclaimers['isRegulated'])
                         finalVal += 'Name,Value,Reglated Value, Unregulated Value, Unit\n';
                     else
-                        finalVal += 'Name,Value,Unit\n';
+                        finalVal += 'Parameter Code,Parameter Name,Value,Unit\n';
                     data.forEach(function (item) {
                         if (_this.studyAreaService.selectedStudyArea.Disclaimers['isRegulated'])
-                            finalVal += item.name + ',' + item.value + ',' + item.unRegulatedValue.toFixed(2) + ',' + item.regulatedValue.toFixed(2) + ',' + item.unit + '\n';
+                            finalVal += item.code + ',' + item.name + ',' + item.value + ',' + item.unRegulatedValue.toFixed(2) + ',' + item.regulatedValue.toFixed(2) + ',' + item.unit + '\n';
                         else
-                            finalVal += item.name + ',' + item.value + ',' + item.unit + '\n';
+                            finalVal += item.code + ',' + item.name + ',' + item.value + ',' + item.unit + '\n';
                     });
                     return finalVal + '\n';
                 };
@@ -203,7 +203,7 @@ var StreamStats;
                         if (regressionRegion.PercentWeight)
                             regionPercent = regressionRegion.PercentWeight.toFixed(0) + ' Percent ';
                         finalVal += statGroup.Name + ' Parameters, ' + regionPercent + regressionRegion.Name.split("_").join(" ") + '\n';
-                        finalVal += 'Name,Value,Min Limit, Max Limit\n';
+                        finalVal += 'Parameter Code,Parameter Name,Value,Min Limit, Max Limit\n';
                         if (regressionRegion.Parameters) {
                             regressionRegion.Parameters.forEach(function (item) {
                                 console.log('here', item);
@@ -213,7 +213,7 @@ var StreamStats;
                                     limitMin = item.Limits.Min.toFixed(2);
                                     limitMax = item.Limits.Max.toFixed(2);
                                 }
-                                finalVal += item.Name + ',' + item.Value + ',' + limitMin + ',' + limitMax + '\n';
+                                finalVal += item.Code + ',' + item.Name + ',' + item.Value + ',' + limitMin + ',' + limitMax + '\n';
                             });
                         }
                     });

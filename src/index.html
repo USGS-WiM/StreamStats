@@ -9,66 +9,63 @@
     <script>document.write('<base href="' + document.location + '" />');</script>
     <!-- build:css styles/vendor.min.css -->
     <!-- bower:css -->
-    <link rel="stylesheet" href="../bower_components/mobile-angular-ui/dist/css/mobile-angular-ui-hover.css" />
-    <link rel="stylesheet" href="../bower_components/mobile-angular-ui/dist/css/mobile-angular-ui-base.css" />
-    <link rel="stylesheet" href="../bower_components/mobile-angular-ui/dist/css/mobile-angular-ui-desktop.css" />
-    <link rel="stylesheet" href="../bower_components/leaflet/dist/leaflet.css">
-    <link rel="stylesheet" href="../bower_components/font-awesome/css/font-awesome.css"> 
-    <link rel="stylesheet" href="../bower_components/leaflet.locatecontrol/dist/L.Control.Locate.css" />
-    <link rel="stylesheet" href="../bower_components/leaflet.zoomhome/dist/leaflet.zoomhome.css" />
-    <link rel="stylesheet" href="../bower_components/leaflet-draw/dist/leaflet.draw.css" />
-    <link rel="stylesheet" href="../bower_components/Leaflet.Elevation/dist/Leaflet.Elevation-0.0.3.css" />
-    <link rel="stylesheet" href="../bower_components/angularjs-toaster/toaster.css" />
-    <link rel="stylesheet" href="../bower_components/angularjs-slider/dist/rzslider.css" />
-    <link rel="stylesheet" href="../bower_components/nvd3/build/nv.d3.css" />
-    <link rel="stylesheet" href="../bower_components/wim_angular/dist/css/wimLegend.css" />
+    <link rel="stylesheet" href="../node_modules/mobile-angular-ui/dist/css/mobile-angular-ui-hover.css" />
+    <link rel="stylesheet" href="../node_modules/mobile-angular-ui/dist/css/mobile-angular-ui-base.css" />
+    <link rel="stylesheet" href="../node_modules/mobile-angular-ui/dist/css/mobile-angular-ui-desktop.css" />
+    <link rel="stylesheet" href="../node_modules/leaflet/dist/leaflet.css">
+    <link rel="stylesheet" href="../node_modules/font-awesome/css/font-awesome.css"> 
+    <link rel="stylesheet" href="../node_modules/leaflet.locatecontrol/dist/L.Control.Locate.css" />
+    <link rel="stylesheet" href="../node_modules/leaflet-draw/dist/leaflet.draw.css" />
+    <link rel="stylesheet" href="../node_modules/leaflet.elevation/dist/leaflet.elevation-0.0.4.css" />
+    <link rel="stylesheet" href="../node_modules/angularjs-toaster/toaster.css" />
+    <link rel="stylesheet" href="../node_modules/angularjs-slider/dist/rzslider.css" />
+    <link rel="stylesheet" href="../node_modules/nvd3/build/nv.d3.css" />
+    <link rel="stylesheet" href="../node_modules/wim_angular/dist/css/wimLegend.css" />
     <!-- endbuild -->
     <!-- build:css styles/custom.min.css -->
-    <link rel="stylesheet" href="../bower_components/wim-styles/core/css/wim.css" />
+    <link rel="stylesheet" href="../node_modules/wim-styles/core/css/wim.css" />
     <link rel="stylesheet" href="css/main.css" />
     <!-- endbower -->
     <!-- endbuild -->
     <!-- build:js scripts/vendor.min.js -->
     <!-- bower:js -->
-    <script src="../bower_components/angular/angular.js"></script>
-    <script src="../bower_components/angulartics/dist/angulartics.min.js"></script>
-    <script src="../bower_components/angulartics-google-analytics/dist/angulartics-google-analytics.min.js"></script>
-    <script src="../bower_components/angular-animate/angular-animate.js"></script>
-    <script src="../bower_components/angular-bootstrap/ui-bootstrap.js"></script>
-    <script src="../bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
-    <script src="../bower_components/angularjs-toaster/toaster.js"></script>
-    <script src="../bower_components/angular-leaflet-directive/dist/angular-leaflet-directive.js"></script>
-    <script src="../bower_components/angular-ui-router/release/angular-ui-router.js"></script>
-    <script src="../bower_components/mobile-angular-ui/dist/js/mobile-angular-ui.js"></script>   
-    <script src="../bower_components/mobileangularui-checkbox/mobileangularui-checkbox.js"></script>
-    <script src="../bower_components/ng-file-upload/ng-file-upload.js"></script>
-    <script src="../bower_components/leaflet/dist/leaflet.js"></script>
-    <script src="../bower_components/esri-leaflet/dist/esri-leaflet.js"></script>  
-    <script src="../bower_components/leaflet.locatecontrol/dist/L.Control.Locate.min.js"></script>
-    <script src="../bower_components/leaflet-draw/dist/leaflet.draw.js"></script>
-    <script src="../bower_components/leaflet.zoomhome/dist/leaflet.zoomhome.min.js"></script>
-    <script src="../bower_components/Leaflet.Elevation/dist/Leaflet.Elevation-0.0.3.min.js"></script>
-    <script src="../bower_components/GreinerHormann/dist/greiner-hormann.leaflet.js"></script>
-    <script src="../bower_components/d3/d3.js"></script>
-    <script src="../bower_components/nvd3/build/nv.d3.js"></script>
-    <script src="../bower_components/angular-nvd3/dist/angular-nvd3.js"></script>
-    <script src="../bower_components/angularjs-slider/dist/rzslider.min.js"></script>
-    <script src="../bower_components/wim_angular/dist/Directives/directives.module.js"></script>
-    <script src="../bower_components/wim_angular/dist/Extensions/String.js"></script>
-    <script src="../bower_components/wim_angular/dist/Extensions/SurveyRound.js"></script>
-    <script src="../bower_components/wim_angular/dist/Events/Delegate.js"></script>
-    <script src="../bower_components/wim_angular/dist/Events/EventArgs.js"></script>
-    <script src="../bower_components/wim_angular/dist/Events/EventHandler.js"></script>
-    <script src="../bower_components/wim_angular/dist/Models/Point.js"></script>
-    <script src="../bower_components/wim_angular/dist/Models/Parameter.js"></script>
-    <script src="../bower_components/wim_angular/dist/Services/service.module.js"></script>
-    <script src="../bower_components/wim_angular/dist/Services/Helpers/RequestInfo.js"></script>
-    <script src="../bower_components/wim_angular/dist/Services/HTTPServiceBase.js"></script>
-    <script src="../bower_components/wim_angular/dist/Services/SearchAPIService.js"></script>
-    <script src="../bower_components/wim_angular/dist/Services/Helpers/RequestTransform.js"></script>
-    <script src="../bower_components/wim_angular/dist/Events/EventManager.js"></script>
-    <script src="../bower_components/wim_angular/dist/Directives/wimLegend.js"></script>
-
+    <script src="../node_modules/angular/angular.js"></script>
+    <script src="../node_modules/angulartics/dist/angulartics.min.js"></script>
+    <script src="../node_modules/angulartics-google-analytics/dist/angulartics-google-analytics.min.js"></script>
+    <script src="../node_modules/angular-animate/angular-animate.js"></script>
+    <script src="../node_modules/angular-bootstrap/ui-bootstrap.js"></script>
+    <script src="../node_modules/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="../node_modules/angularjs-toaster/toaster.js"></script>
+    <script src="../node_modules/angular-leaflet-directive/dist/angular-leaflet-directive.js"></script>
+    <script src="../node_modules/angular-ui-router/release/angular-ui-router.js"></script>
+    <script src="../node_modules/mobile-angular-ui/dist/js/mobile-angular-ui.js"></script>   
+    <script src="../node_modules/mobileangularui-checkbox/mobileangularui-checkbox.js"></script>
+    <script src="../node_modules/ng-file-upload/dist/ng-file-upload.js"></script>
+    <script src="../node_modules/leaflet/dist/leaflet.js"></script>
+    <script src="../node_modules/esri-leaflet/dist/esri-leaflet.js"></script>  
+    <script src="../node_modules/leaflet.locatecontrol/dist/L.Control.Locate.min.js"></script>
+    <script src="../node_modules/leaflet-draw/dist/leaflet.draw.js"></script>
+    <script src="../node_modules/leaflet.elevation/dist/leaflet.elevation-0.0.4.src.js"></script>
+    <script src="../node_modules/greiner-hormann/dist/greiner-hormann.leaflet.js"></script>
+    <script src="../node_modules/d3/d3.js"></script>
+    <script src="../node_modules/nvd3/build/nv.d3.js"></script>
+    <script src="../node_modules/angular-nvd3/dist/angular-nvd3.js"></script>
+    <script src="../node_modules/angularjs-slider/dist/rzslider.min.js"></script>
+    <script src="../node_modules/wim_angular/dist/Directives/directives.module.js"></script>
+    <script src="../node_modules/wim_angular/dist/Extensions/String.js"></script>
+    <script src="../node_modules/wim_angular/dist/Extensions/SurveyRound.js"></script>
+    <script src="../node_modules/wim_angular/dist/Events/Delegate.js"></script>
+    <script src="../node_modules/wim_angular/dist/Events/EventArgs.js"></script>
+    <script src="../node_modules/wim_angular/dist/Events/EventHandler.js"></script>
+    <script src="../node_modules/wim_angular/dist/Models/Point.js"></script>
+    <script src="../node_modules/wim_angular/dist/Models/Parameter.js"></script>
+    <script src="../node_modules/wim_angular/dist/Services/service.module.js"></script>
+    <script src="../node_modules/wim_angular/dist/Services/Helpers/RequestInfo.js"></script>
+    <script src="../node_modules/wim_angular/dist/Services/HTTPServiceBase.js"></script>
+    <script src="../node_modules/wim_angular/dist/Services/SearchAPIService.js"></script>
+    <script src="../node_modules/wim_angular/dist/Services/Helpers/RequestTransform.js"></script>
+    <script src="../node_modules/wim_angular/dist/Events/EventManager.js"></script>
+    <script src="../node_modules/wim_angular/dist/Directives/wimLegend.js"></script>
     <!-- endbuild -->
     
     <!-- build:js scripts/custom.min.js -->
