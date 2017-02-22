@@ -58,12 +58,13 @@ module StreamStats.Controllers {
         public freshdeskTicketData: FreshdeskTicketData;
         public showSuccessAlert: boolean;
         public submittingSupportTicket: boolean;
-        public WorkspaceID: string; 
-        public RegionID: string; 
+        public WorkspaceID: string;
+        public RegionID: string;
         public AppVersion: string;
         public Browser: string;
         public Server: string;
         public faqArticles: Object;
+        public helpArticles: Object;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -79,7 +80,7 @@ module StreamStats.Controllers {
             this.modalInstance = modal;
             this.StudyArea = studyAreaService.selectedStudyArea;
             this.freshdeskTicketData = new FreshdeskTicketData();
-            this.selectedHelpTabName = "faq";
+            this.selectedHelpTabName = "help";
             this.showSuccessAlert = false;
             this.submittingSupportTicket = false; 
 
@@ -150,29 +151,23 @@ module StreamStats.Controllers {
                 });
         }
 
-        public getFAQarticles() {
-
-            //console.log("Trying to open faq articles folder");
+        public getFreshDeskArticles(folder: string): ng.IPromise<any> {
 
             var headers = {
                 "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
             };
 
-            var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.FAQarticlesFolder;
+            var url = configuration.SupportTicketService.BaseURL + folder;
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
 
-            this.Execute(request).then(
+            return this.Execute(request).then(
                 (response: any) => {
-                    //console.log('Successfully retrieved faq articles folder');
-
-                    this.faqArticles = response.data.folder.articles;
-
+                    return response.data.folder.articles;
                 }, (error) => {
-                    //sm when error
+                    return "There was a problem getting this article"
                 }).finally(() => {
 
                 });
-
         }
 
         public convertUnsafe(x:string) {
@@ -187,9 +182,10 @@ module StreamStats.Controllers {
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {
-            this.getAppVersion();
             this.getBrowser();
-            this.getFAQarticles()
+            this.AppVersion = configuration.version;
+            this.getFreshDeskArticles(configuration.SupportTicketService.FAQarticlesFolder).then(response => { this.faqArticles = response });
+            this.getFreshDeskArticles(configuration.SupportTicketService.UserManualArticlesFolder).then(response => { this.helpArticles = response });
             if (this.StudyArea && this.StudyArea.WorkspaceID) this.WorkspaceID = this.StudyArea.WorkspaceID;
             else this.WorkspaceID = '';
             if (this.StudyArea && this.StudyArea.RegionID) this.RegionID = this.StudyArea.RegionID;
@@ -214,13 +210,6 @@ module StreamStats.Controllers {
             // Internet Explorer 6-11
             if (/*@cc_on!@*/false || !!(<any>document).documentMode) this.Browser = "IE";
         }
-
-        private getAppVersion() {
-            $.getJSON("version.js", (data) => {
-                this.AppVersion = data.version;
-            });
-        }
-
 
     }//end  class
 

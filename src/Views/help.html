@@ -10,9 +10,27 @@
 <div class="modal-body">
 
     <ul id="aboutTabs" class="nav nav-tabs">
+        <li ng-class="{'active':vm.selectedHelpTabName==='help'}"><a ng-click="vm.selectHelpTab('help')"><i class="fa fa-book"></i>&nbsp;User Manual</a></li>
         <li ng-class="{'active':vm.selectedHelpTabName==='faq'}"><a ng-click="vm.selectHelpTab('faq')"><i class="fa fa-question-circle"></i>&nbsp;Frequently Asked Questions (FAQ)</a></li>
         <li ng-class="{'active':vm.selectedHelpTabName==='submitTicket'}"><a ng-click="vm.selectHelpTab('submitTicket')"><i class="fa fa-exclamation-circle"></i>&nbsp;Submit a Support Request</a></li>
     </ul>
+
+    <div style="padding-top: 10px;">
+        <div id="about" ng-if="vm.selectedHelpTabName==='help'">
+            <div id="helpContent">
+                <accordion id="helpArticles">
+                    <accordion-group ng-repeat="article in vm.helpArticles" is-open="article.open">
+                        <accordion-heading><i ng-class="vm.helpArticles[$index].open ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i> {{article.title}}</accordion-heading>
+                        <div class="row">
+                            <div class="col-sm-12" ng-bind-html="vm.convertUnsafe(article.description)">
+                            </div>
+                        </div>
+                    </accordion-group>
+                </accordion>
+            </div>
+        </div>
+    </div>
+
     <div style="padding-top: 10px;">
         <div id="about" ng-if="vm.selectedHelpTabName==='faq'">
             <div id="faqContent" >
@@ -34,9 +52,6 @@
 
         <span>Use the form below to get support on a specific issue. Please include as much information as possible.</span> 
                                        
-        <!--<iframe src="https://docs.google.com/forms/d/1Kc--HCYhgFuZoConh5uH7_VXgM1oYKrP1RErAirN8wQ/viewform?embedded=true" width="100%" height="850" frameborder="0" marginheight="0" marginwidth="0">Loading...</iframe>-->
-
-
         <form id="ticketForm" name="form">
             <div class="well well-sm">
                 <div class="row">

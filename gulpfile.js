@@ -14,8 +14,8 @@ var gulp = require('gulp'),
     filter = require('gulp-filter'),
     del = require('del'),
     open = require('open'),
-    semver = require('semver');
-
+    semver = require('semver'),
+    replace = require('gulp-string-replace');
 
 //get current app version
 var version = require('./package.json').version;
@@ -25,8 +25,17 @@ function inc(importance) {
     //get new version number
     var newVer = semver.inc(version, importance);
 
+    //bump appConfig version
+    gulp.src('./src/appConfig.js')
+        .pipe(replace(/configuration.version="([^"]+)"/g, 'configuration.version="' + newVer + '"'))
+        .pipe(gulp.dest('./src/'))
+
+    gulp.src('./dist/appConfig.js')
+        .pipe(replace(/configuration.version="([^"]+)"/g, 'configuration.version="' + newVer + '"'))
+        .pipe(gulp.dest('./dist/'))
+
     // get all the files to bump version in 
-    gulp.src(['package.json', 'bower.json', 'src/version.js', 'dist/version.js'])
+    gulp.src(['package.json'])
         // bump the version number in those files 
         .pipe(bump({ type: importance }))
         // save it back to filesystem 
@@ -76,7 +85,7 @@ gulp.task('styles', function () {
 
 // Icons
 gulp.task('icons', function () {
-    return gulp.src(['bower_components/bootstrap/dist/fonts/*.*', 'bower_components/font-awesome/fonts/*.*'])
+    return gulp.src(['node_modules/font-awesome/fonts/*.*'])
         .pipe(gulp.dest('dist/fonts'));
 });
 
@@ -116,14 +125,14 @@ gulp.task('images', function () {
 
 // Leaflet
 gulp.task('leaflet', function () {
-    return gulp.src('bower_components/leaflet/dist/images/**/*')
+    return gulp.src('node_modules/leaflet/dist/images/**/*')
         .pipe(gulp.dest('dist/styles/images'))
         .pipe(size());
 });
 
 // appConfig
 gulp.task('appConfig', function () {
-    return gulp.src(['src/appConfig.js', 'src/version.js', 'web.config'])
+    return gulp.src(['src/appConfig.js', 'web.config'])
         .pipe(gulp.dest('dist/'))
 });
 
