@@ -30,6 +30,10 @@ function inc(importance) {
         .pipe(replace(/configuration.version="([^"]+)"/g, 'configuration.version="' + newVer + '"'))
         .pipe(gulp.dest('./src/'))
 
+    gulp.src('./dist/appConfig.js')
+        .pipe(replace(/configuration.version="([^"]+)"/g, 'configuration.version="' + newVer + '"'))
+        .pipe(gulp.dest('./dist/'))
+
     // get all the files to bump version in 
     gulp.src(['package.json'])
         // bump the version number in those files 
