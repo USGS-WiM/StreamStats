@@ -50,6 +50,7 @@ module StreamStats.Controllers {
         public regionArticle: Object;
         public activeNewsArticles: Object;
         public pastNewsArticles: Object;
+        public AppVersion: string;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -207,6 +208,7 @@ module StreamStats.Controllers {
         //-+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {   
             //console.log("in about controller");
+            this.AppVersion = configuration.version;
             this.getAboutArticle();
             this.getRegionHelpArticle();
             this.getActiveNews();
