@@ -13,7 +13,6 @@
 This will install the following packages globally
 
 ```bash
-npm install -g bower
 npm install -g gulp
 npm install -g typings
 ```
@@ -24,10 +23,8 @@ This will install the required dependencies to the project
 Inside of your project folder (after git fork and clone):
 ```bash
 npm install
-bower install
 typings install 
 ```
-[upgrade from tsd to typings] (https://github.com/DefinitelyTyped/tsd/issues/269)
 
 ------
 
@@ -49,11 +46,11 @@ gulp release   # makes v0.2.1 → v1.0.0
  Push the commit that contains the json files with bumped versions to your personal github repo 
  
 ```
-git push origin master
+git push origin staging
 ```
 
 ##### Step 3.   
- Create and merge pull request with version incremented (github.com)
+ Create and merge pull request to master with version incremented (github.com)
 
 ##### Step 4.  
 Create new release on github.com
