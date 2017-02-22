@@ -139,6 +139,7 @@ var StreamStats;
             //-+-+-+-+-+-+-+-+-+-+-+-
             AboutController.prototype.init = function () {
                 //console.log("in about controller");
+                this.AppVersion = configuration.version;
                 this.getAboutArticle();
                 this.getRegionHelpArticle();
                 this.getActiveNews();

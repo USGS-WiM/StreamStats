@@ -34,6 +34,8 @@ var StreamStats;
                 this.checkActiveNews();
                 this.newArticleCount = 0;
                 this.environment = configuration.environment;
+                this.AppVersion = configuration.version;
+                this.cloud = configuration.cloud;
             }
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-

@@ -38,6 +38,8 @@ module StreamStats.Controllers {
         private cookies: any;
         private newArticleCount: number;
         private environment: string;
+        private AppVersion: string;
+        private cloud: boolean;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -49,6 +51,8 @@ module StreamStats.Controllers {
             this.checkActiveNews();
             this.newArticleCount = 0;
             this.environment = configuration.environment;
+            this.AppVersion = configuration.version;
+            this.cloud = configuration.cloud;
         }
 
         //Methods
@@ -127,4 +131,3 @@ module StreamStats.Controllers {
         .controller('StreamStats.Controllers.NavbarController', NavbarController)
 
 }//end module
-  

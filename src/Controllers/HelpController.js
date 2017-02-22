@@ -28,7 +28,7 @@ var StreamStats;
                 this.modalInstance = modal;
                 this.StudyArea = studyAreaService.selectedStudyArea;
                 this.freshdeskTicketData = new FreshdeskTicketData();
-                this.selectedHelpTabName = "faq";
+                this.selectedHelpTabName = "help";
                 this.showSuccessAlert = false;
                 this.submittingSupportTicket = false;
                 this.init();
@@ -81,19 +81,16 @@ var StreamStats;
                     _this.submittingSupportTicket = false;
                 });
             };
-            HelpController.prototype.getFAQarticles = function () {
-                //console.log("Trying to open faq articles folder");
-                var _this = this;
+            HelpController.prototype.getFreshDeskArticles = function (folder) {
                 var headers = {
                     "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
                 };
-                var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.FAQarticlesFolder;
+                var url = configuration.SupportTicketService.BaseURL + folder;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
-                this.Execute(request).then(function (response) {
-                    //console.log('Successfully retrieved faq articles folder');
-                    _this.faqArticles = response.data.folder.articles;
+                return this.Execute(request).then(function (response) {
+                    return response.data.folder.articles;
                 }, function (error) {
-                    //sm when error
+                    return "There was a problem getting this article";
                 }).finally(function () {
                 });
             };
@@ -109,9 +106,11 @@ var StreamStats;
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             HelpController.prototype.init = function () {
-                this.getAppVersion();
+                var _this = this;
                 this.getBrowser();
-                this.getFAQarticles();
+                this.AppVersion = configuration.version;
+                this.getFreshDeskArticles(configuration.SupportTicketService.FAQarticlesFolder).then(function (response) { _this.faqArticles = response; });
+                this.getFreshDeskArticles(configuration.SupportTicketService.UserManualArticlesFolder).then(function (response) { _this.helpArticles = response; });
                 if (this.StudyArea && this.StudyArea.WorkspaceID)
                     this.WorkspaceID = this.StudyArea.WorkspaceID;
                 else
@@ -145,12 +144,6 @@ var StreamStats;
                 // Internet Explorer 6-11
                 if (false || !!document.documentMode)
                     this.Browser = "IE";
-            };
-            HelpController.prototype.getAppVersion = function () {
-                var _this = this;
-                $.getJSON("version.js", function (data) {
-                    _this.AppVersion = data.version;
-                });
             };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
