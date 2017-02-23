@@ -70,6 +70,7 @@ var StreamStats;
                 this.mapPoint = null;
                 this.bounds = null;
                 this.markers = null;
+                this.paths = null;
                 this.geojson = null;
                 this.events = null;
                 this.layercontrol = null;
@@ -264,6 +265,7 @@ var StreamStats;
                 };
                 this.mapDefaults = new MapDefault(null, 3, true);
                 this.markers = {};
+                this.paths = {};
                 this.geojson = {};
                 this.regionLayer = {};
                 this.controls = {
@@ -766,18 +768,30 @@ var StreamStats;
             MapController.prototype.onSelectedAreaOfInterestChanged = function (sender, e) {
                 //ga event
                 this.angulartics.eventTrack('Search', { category: 'Sidebar' });
-                this.markers = {};
+                //this.markers = {};
                 var AOI = e.selectedAreaOfInterest;
                 if (AOI.Category == "U.S. State or Territory")
                     var zoomlevel = 9;
                 else
                     var zoomlevel = 14;
-                this.markers['AOI'] = {
-                    lat: AOI.Latitude,
-                    lng: AOI.Longitude,
-                    message: AOI.Name,
-                    focus: true,
-                    draggable: true
+                //this.markers['AOI'] = {
+                //    lat: AOI.Latitude,
+                //    lng: AOI.Longitude,
+                //    message: AOI.Name,
+                //    focus: true,
+                //    draggable: true
+                //}
+                this.paths = {};
+                this.paths['AOI'] = {
+                    type: "circleMarker",
+                    radius: 15,
+                    color: '#ff0000',
+                    fillOpacity: 0.6,
+                    stroke: false,
+                    latlngs: {
+                        lat: AOI.Latitude,
+                        lng: AOI.Longitude,
+                    }
                 };
                 //this.center = new Center(AOI.Latitude, AOI.Longitude, zoomlevel);
                 this.leafletData.getMap("mainMap").then(function (map) {
