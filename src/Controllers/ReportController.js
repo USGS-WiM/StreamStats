@@ -108,7 +108,7 @@ var StreamStats;
                         _this.studyAreaService.selectedStudyArea.RegressionRegions.forEach(function (percentOverlay) {
                             //console.log('here3', percentOverlay)
                             if (regRegion.Code == percentOverlay.code.toUpperCase()) {
-                                _this.areaSQMI = percentOverlay.areasqmeter * 0.000000386102159;
+                                _this.areaSQMI = percentOverlay.maskareasqmeter * 0.000000386102159;
                             }
                         });
                     });
