@@ -8,14 +8,15 @@ var gulp = require('gulp'),
     size = require('gulp-size'),
     uglify = require('gulp-uglify'),
     useref = require('gulp-useref'),
-    minifyCss = require('gulp-minify-css'),
+    cleanCSS = require('gulp-clean-css'),
     connect = require('gulp-connect'),
     autoprefixer = require('gulp-autoprefixer'),
     filter = require('gulp-filter'),
     del = require('del'),
     open = require('open'),
     semver = require('semver'),
-    replace = require('gulp-string-replace');
+    replace = require('gulp-string-replace'),
+    stylish = require('jshint-stylish');
 
 //get current app version
 var version = require('./package.json').version;
@@ -93,25 +94,23 @@ gulp.task('icons', function () {
 gulp.task('scripts', function () {
     return gulp.src(['src/**/*.js'])
     .pipe(jshint('.jshintrc'))
-    .pipe(jshint.reporter('default'))
+    .pipe(jshint.reporter(stylish))
     .pipe(size());
 });
 
 // HTML
 gulp.task('html', ['styles', 'scripts', 'icons', 'views'], function () {
-    var jsFilter = filter('**/*.js');
-    var cssFilter = filter('**/*.css');
+    var jsFilter = filter('**/*.js', { restore: true });
+    var cssFilter = filter('**/*.css', { restore: true });
 
     return gulp.src('src/*.html')
-        .pipe(useref.assets())
+        .pipe(useref())
         .pipe(jsFilter)
         .pipe(uglify())
-        .pipe(jsFilter.restore())
+        .pipe(jsFilter.restore)
         .pipe(cssFilter)
-        .pipe(minifyCss({ processImport: false }))
-        .pipe(cssFilter.restore())
-        .pipe(useref.restore())
-        .pipe(useref())
+        .pipe(cleanCSS({ processImport: false }))
+        .pipe(cssFilter.restore)
         .pipe(gulp.dest('dist'))
         .pipe(size());
 });

@@ -188,7 +188,7 @@ var StreamStats;
                         if (_this.studyAreaService.selectedStudyArea.Disclaimers['isRegulated'])
                             finalVal += item.code + ',' + item.name + ',' + item.value + ',' + item.unRegulatedValue.toFixed(2) + ',' + item.regulatedValue.toFixed(2) + ',' + item.unit + '\n';
                         else
-                            finalVal += item.code + ',' + item.name + ',' + item.value + ',' + item.unit + '\n';
+                            finalVal += item.code + ',' + item.description + ',' + item.value + ',' + item.unit + '\n';
                     });
                     return finalVal + '\n';
                 };
