@@ -412,8 +412,21 @@ div.leaflet-top > .elevation {
     ===========================
     ===========================
 */
+.search-api-container input:focus {
+	 border: 0px; 
+	 background-color: transparent; 
+}
 
-.search-bar {
+.search-api-container input {
+    height: auto;
+}
+
+.search-api-container {
+    width: 210px;
+    margin-top:6px;
+}
+
+/*.search-bar {
     margin:0px;
     padding-left:0px;
 }
@@ -460,7 +473,7 @@ div.leaflet-top > .elevation {
 .sapi-autocomplete-itemAnnotation {
     font-family: "Source Sans Pro", sans !important;
     font-weight: bold !important;
-}
+}*/
 
 
 /*

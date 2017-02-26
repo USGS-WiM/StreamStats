@@ -21,14 +21,13 @@ var StreamStats;
     (function (Controllers) {
         'use strinct';
         var SidebarController = (function () {
-            function SidebarController($scope, toaster, $analytics, service, region, studyArea, StatisticsGroup, modal, leafletData, exploration, EventManager) {
+            function SidebarController($scope, toaster, $analytics, region, studyArea, StatisticsGroup, modal, leafletData, exploration, EventManager) {
                 var _this = this;
                 this.EventManager = EventManager;
                 $scope.vm = this;
                 this.init();
                 this.toaster = toaster;
                 this.angulartics = $analytics;
-                this.searchService = service;
                 this.sideBarCollapsed = false;
                 this.selectedProcedure = ProcedureType.INIT;
                 this.regionService = region;
@@ -57,13 +56,6 @@ var StreamStats;
                     else
                         _this.setProcedureType(3);
                 });
-                //watch for completion of load parameters
-                //$scope.$watch(() => this.studyAreaService.parametersLoaded,(newval, oldval) => {
-                //    if (newval == oldval) return;
-                //    //console.log('parameters loaded', oldval, newval);
-                //    if (newval == null) this.setProcedureType(3);
-                //    else this.setProcedureType(4);
-                //},true);
                 EventManager.SubscribeToEvent(StreamStats.Services.onSelectedStudyParametersLoaded, new WiM.Event.EventHandler(function (sender, e) {
                     _this.parametersLoaded = e.parameterLoaded;
                     if (!_this.parametersLoaded)
@@ -71,9 +63,6 @@ var StreamStats;
                     else
                         _this.setProcedureType(4);
                 }));
-                //$scope.$watch(() => this.studyAreaService.studyAreaParameterList,(newval, oldval) => {
-                //    console.log('watch for modify basin chars ', newval, oldval);
-                //});
             }
             Object.defineProperty(SidebarController.prototype, "ParameterValuesMissing", {
                 get: function () {
@@ -89,9 +78,6 @@ var StreamStats;
                 enumerable: true,
                 configurable: true
             });
-            SidebarController.prototype.getLocations = function (term) {
-                return this.searchService.getLocations(term);
-            };
             SidebarController.prototype.setProcedureType = function (pType) {
                 //console.log('in setProcedureType', this.selectedProcedure, pType, this.canUpdateProcedure(pType));     
                 if (this.selectedProcedure == pType || !this.canUpdateProcedure(pType)) {
@@ -411,7 +397,7 @@ var StreamStats;
             };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
-            SidebarController.$inject = ['$scope', 'toaster', '$analytics', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ModalService', 'leafletData', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager'];
+            SidebarController.$inject = ['$scope', 'toaster', '$analytics', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ModalService', 'leafletData', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager'];
             return SidebarController;
         }()); //end class
         var ProcedureType;

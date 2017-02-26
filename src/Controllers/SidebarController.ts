@@ -54,7 +54,6 @@ module StreamStats.Controllers {
         public toaster: any;
         public angulartics: any;
         public selectedStatisticsGroupList: Services.IStatisticsGroup;
-        private searchService: WiM.Services.ISearchAPIService;
         private regionService: Services.IRegionService;
         private nssService: Services.InssService;
         private studyAreaService: Services.IStudyAreaService;       
@@ -74,14 +73,13 @@ module StreamStats.Controllers {
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', 'toaster', '$analytics', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ModalService', 'leafletData', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager'];
-        constructor($scope: ISidebarControllerScope, toaster, $analytics, service: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, modal: Services.IModalService, leafletData: ILeafletData, exploration: Services.IExplorationService, private EventManager:WiM.Event.IEventManager) {
+        static $inject = ['$scope', 'toaster', '$analytics', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ModalService', 'leafletData', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager'];
+        constructor($scope: ISidebarControllerScope, toaster, $analytics, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, modal: Services.IModalService, leafletData: ILeafletData, exploration: Services.IExplorationService, private EventManager:WiM.Event.IEventManager) {
             $scope.vm = this;
             this.init();
 
             this.toaster = toaster;
             this.angulartics = $analytics;
-            this.searchService = service;
             this.sideBarCollapsed = false;
             this.selectedProcedure = ProcedureType.INIT;
             this.regionService = region;
@@ -109,28 +107,13 @@ module StreamStats.Controllers {
                 else this.setProcedureType(3);
             });
 
-            //watch for completion of load parameters
-            //$scope.$watch(() => this.studyAreaService.parametersLoaded,(newval, oldval) => {
-            //    if (newval == oldval) return;
-            //    //console.log('parameters loaded', oldval, newval);
-            //    if (newval == null) this.setProcedureType(3);
-            //    else this.setProcedureType(4);
-            //},true);
-
             EventManager.SubscribeToEvent(Services.onSelectedStudyParametersLoaded, new WiM.Event.EventHandler<Services.StudyAreaEventArgs>((sender: any, e: Services.StudyAreaEventArgs) => {
                 this.parametersLoaded = e.parameterLoaded;
                 if (!this.parametersLoaded) this.setProcedureType(3);
                 else this.setProcedureType(4);
             }));
-
-            //$scope.$watch(() => this.studyAreaService.studyAreaParameterList,(newval, oldval) => {
-            //    console.log('watch for modify basin chars ', newval, oldval);
-            //});
         }
 
-        public getLocations(term: string):ng.IPromise<Array<WiM.Services.ISearchAPIOutput>> {
-            return this.searchService.getLocations(term);
-        }
         public setProcedureType(pType: ProcedureType) {    
             //console.log('in setProcedureType', this.selectedProcedure, pType, this.canUpdateProcedure(pType));     
 
