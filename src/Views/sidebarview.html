@@ -28,13 +28,14 @@
                     <div id="searchWrapper">
                         <div class="row">
                             <div class="col-md-9">
-                                <div class="input-group">
-                                  <div id="sapi_searchTextBoxDiv">Loading Search Bar...</div>
+                                <div id="searchBox"></div>
+                                <!--<div class="input-group">
+                                  
                                   <span class="input-group-btn">
                                     <button id="searchSubmit" class="btn-wim-sm btn-wim-success" type="button" ng-click="vm.startSearch($event)">Go!</button>
                                   </span>
-                                </div><!-- /input-group -->
-                                </div>
+                                </div>-->
+                            </div>
                             <div class="col-md-2"><button class="btn-wim-sm btn-wim-info" ng-click="vm.showSearchHelp = !vm.showSearchHelp"><i class="fa fa-question-circle"></i></button></div>
                         </div>
                         <div ng-init="vm.showSearchHelp = false" ng-show="vm.showSearchHelp">
@@ -50,6 +51,7 @@
                                     <li>Lat/Long (ie. '43.9,-72.1')</li>
                                     <li>Street Address</li>
                                 </ul>
+                                <p>Search provided by <a href="https://txpub.usgs.gov/dss/search_api/2.0/" target="_blank">USGS Search JavaScript API</a></p></br>
                             </div>
                         </div>
                     </div>
