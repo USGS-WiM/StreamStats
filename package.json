@@ -23,6 +23,7 @@
     "esri-leaflet": "1.0.4",
     "font-awesome": "~4.3.0",
     "greiner-hormann": "github:w8r/GreinerHormann",
+    "jquery": "^3.1.1",
     "leaflet": "0.7.7",
     "leaflet-draw": "^0.4.9",
     "leaflet.elevation": "github:mrmufflon/Leaflet.Elevation",
@@ -30,6 +31,7 @@
     "mobile-angular-ui": "1.2.1",
     "mobileangularui-checkbox": "github:usgs-wim/mobileangularui-checkbox",
     "ng-file-upload": "~12.0.1",
+    "usgs-search-api": "github:usgs/search_api",
     "wim-styles": "github:usgs-wim/wim-styles#master",
     "wim_angular": "git+https://github.com/USGS-WiM/wim_angular.git#master"
   },
