@@ -84,6 +84,7 @@ var StreamStats;
             RegionService.prototype.clearSelectedParameters = function () {
                 this.parameterList.forEach(function (parameter) {
                     parameter.checked = false;
+                    delete parameter.value;
                 });
             };
             //intersect method modified from
