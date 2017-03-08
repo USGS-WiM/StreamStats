@@ -476,7 +476,8 @@ module StreamStats.Services {
 
                     if (response.data.length > 0) {
                         //console.log('query success');
-                        this.regressionRegionQueryComplete = true;
+                        this.regressionRegionQueryComplete = true; 
+                        response.data.forEach(p => { p.code = p.code.toUpperCase().split(",") });       
                         this.selectedStudyArea.RegressionRegions = response.data;
                         this.toaster.pop('success', "Regression regions were succcessfully queried", "Please continue", 5000);
                     }

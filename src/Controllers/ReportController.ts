@@ -157,7 +157,7 @@ module StreamStats.Controllers {
                     //console.log('here2', regRegion)
                     this.studyAreaService.selectedStudyArea.RegressionRegions.forEach((percentOverlay) => {
                         //console.log('here3', percentOverlay)
-                        if (regRegion.Code == percentOverlay.code.toUpperCase()) {
+                        if (percentOverlay.code.indexOf(regRegion.Code.toUpperCase()) > -1) {
                             this.areaSQMI = percentOverlay.maskareasqmeter * 0.000000386102159;
                         }
                     });
