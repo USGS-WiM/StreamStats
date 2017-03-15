@@ -69,6 +69,7 @@ module StreamStats.Controllers {
         layers: IMapLayers;
         controls: Object;
         markers: Object;
+        paths: Object;
         bounds: Object;
         geojson: Object;
         layercontrol: Object;
@@ -152,6 +153,7 @@ module StreamStats.Controllers {
 
         public controls: any;
         public markers: Object = null;
+        public paths: Object = null;
         public geojson: Object = null;
         public events: Object = null;
         public layercontrol: Object = null;
@@ -368,6 +370,7 @@ module StreamStats.Controllers {
             }
             this.mapDefaults = new MapDefault(null, 3, true);
             this.markers = {};
+            this.paths = {};
             this.geojson = {};
             this.regionLayer = {};     
             this.controls = {
@@ -975,24 +978,32 @@ module StreamStats.Controllers {
             //ga event
             this.angulartics.eventTrack('Search', { category: 'Sidebar' });
 
-            this.markers = {};
+            this.paths = {};
             var AOI = e.selectedAreaOfInterest;
 
-            if (AOI.Category == "U.S. State or Territory") var zoomlevel = 9;
-            else var zoomlevel = 14;
-
-            this.markers['AOI'] = {
-                lat: AOI.Latitude,
-                lng: AOI.Longitude,
-                message: AOI.Name,
-                focus: true,
-                draggable: true
+            this.paths['AOI'] = {
+                type: "circleMarker",
+                radius: 15,
+                color: '#ff0000',
+                fillOpacity: 0.6,
+                stroke: false,
+                latlngs: {
+                    lat: AOI.properties['Lat'],
+                    lng: AOI.properties['Lon'],
+                }
             }
 
-            //this.center = new Center(AOI.Latitude, AOI.Longitude, zoomlevel);
-
             this.leafletData.getMap("mainMap").then((map: any) => {
-                map.setView([AOI.Latitude, AOI.Longitude], zoomlevel)
+                map.fitBounds([ // zoom to location
+                    [AOI.properties['LatMin'], AOI.properties['LonMin']],
+                    [AOI.properties['LatMax'], AOI.properties['LonMax']]
+                ])
+                map.openPopup(  // open popup at location listing all properties
+                    $.map(Object.keys(AOI.properties), function (property) {
+                        return "<b>" + property + ": </b>" + AOI.properties[property];
+                    }).join("<br/>"),
+                    [AOI.properties['Lat'], AOI.properties['Lon']]
+                    );
             });
         }
         private onSelectedRegionChanged() {

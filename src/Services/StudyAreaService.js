@@ -367,6 +367,7 @@ var StreamStats;
                     if (response.data.length > 0) {
                         //console.log('query success');
                         _this.regressionRegionQueryComplete = true;
+                        response.data.forEach(function (p) { p.code = p.code.toUpperCase().split(","); });
                         _this.selectedStudyArea.RegressionRegions = response.data;
                         _this.toaster.pop('success', "Regression regions were succcessfully queried", "Please continue", 5000);
                     }

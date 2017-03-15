@@ -157,8 +157,8 @@ module StreamStats.Controllers {
                     //console.log('here2', regRegion)
                     this.studyAreaService.selectedStudyArea.RegressionRegions.forEach((percentOverlay) => {
                         //console.log('here3', percentOverlay)
-                        if (regRegion.Code == percentOverlay.code.toUpperCase()) {
-                            this.areaSQMI = percentOverlay.areasqmeter * 0.000000386102159;
+                        if (percentOverlay.code.indexOf(regRegion.Code.toUpperCase()) > -1) {
+                            this.areaSQMI = percentOverlay.maskareasqmeter * 0.000000386102159;
                         }
                     });
                 });
@@ -242,7 +242,7 @@ module StreamStats.Controllers {
 
                 data.forEach((item) => {
                     if (this.studyAreaService.selectedStudyArea.Disclaimers['isRegulated']) finalVal += item.code + ',' + item.name + ',' + item.value + ',' + item.unRegulatedValue.toFixed(2) + ',' + item.regulatedValue.toFixed(2) + ',' + item.unit + '\n';
-                    else finalVal += item.code + ',' + item.name + ',' + item.value + ',' + item.unit + '\n';                   
+                    else finalVal += item.code + ',' + item.description + ',' + item.value + ',' + item.unit + '\n';                   
                 });
                 return finalVal + '\n';
             };

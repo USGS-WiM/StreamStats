@@ -143,6 +143,7 @@ module StreamStats.Services {
         public clearSelectedParameters() {
             this.parameterList.forEach((parameter) => {
                 parameter.checked = false;
+                delete parameter.value;
             });
         }        
 
