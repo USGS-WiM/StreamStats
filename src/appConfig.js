@@ -1,7 +1,7 @@
 var configuration = {}
 configuration.version="4.1.1"
 configuration.environment = 'development'
-configuration.cloud = true;
+configuration.cloud = false;
 
 configuration.baseurls =
 {   
