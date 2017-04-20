@@ -31,8 +31,8 @@
     "mobile-angular-ui": "1.2.1",
     "mobileangularui-checkbox": "github:usgs-wim/mobileangularui-checkbox",
     "ng-file-upload": "~12.0.1",
-    "usgs-search-api": "github:usgs/search_api",
-    "wim-styles": "github:usgs-wim/wim-styles#master",
+    "usgs-search-api": "github:usgs/search_api#dev",
+    "wim-styles": "github:usgs-wim/wim-styles#staging",
     "wim_angular": "git+https://github.com/USGS-WiM/wim_angular.git#master"
   },
   "devDependencies": {

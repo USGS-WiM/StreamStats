@@ -130,7 +130,7 @@ var StreamStats;
             SidebarController.prototype.startSearch = function (e) {
                 e.stopPropagation();
                 e.preventDefault();
-                $("#sapi-searchTextBox").trigger($.Event("keyup", { "keyCode": 13 }));
+                $("#searchBox").trigger($.Event("keyup", { "keyCode": 13 }));
             };
             SidebarController.prototype.startDelineate = function () {
                 var _this = this;
