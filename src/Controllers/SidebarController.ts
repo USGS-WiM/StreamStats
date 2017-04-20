@@ -367,6 +367,9 @@ module StreamStats.Controllers {
             this.nssService.queriedRegions = true;
 
             //send watershed to map service query that returns list of regression regions that overlap the watershed
+            if (this.regionService.selectedRegion.Applications.indexOf("CoordinatedReach") != 1) {
+                this.studyAreaService.queryCoordinatedReach();
+            }
             this.studyAreaService.queryRegressionRegions();
         }
 

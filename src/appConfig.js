@@ -1,7 +1,7 @@
 var configuration = {}
 configuration.version="4.1.2"
 configuration.environment = 'development'
-configuration.cloud = false;
+configuration.cloud = true;
 
 configuration.baseurls =
 {   
@@ -36,7 +36,8 @@ configuration.queryparams =
     'RegressionRegionQueryService': '/arcgis/rest/services/NSS/nssRegions_Test/MapServer/exts/PercentOverlayRESTSOE/PercentOverlay',
     'SSNavigationServices': '/streamstatsservices/navigation/{0}.geojson?rcode={1}&',
     'Wateruse': '/streamstatsservices/wateruse.json?rcode={0}&workspaceID={1}&startyear={2}&endyear={3}',
-    'WateruseConfig': '/streamstatsservices/wateruse.json?rcode={0}'
+    'WateruseConfig': '/streamstatsservices/wateruse.json?rcode={0}',
+    'coordinatedReachQueryService':'/arcgis/rest/services/coordinatedreaches/{0}/MapServer/0/query?geometry={1},{2}&geometryType=esriGeometryPoint&inSR={3}&spatialRel=esriSpatialRelIntersects&outFields={4}&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson'
 }
 
 //override streamstats arguments if on production
@@ -202,7 +203,10 @@ configuration.regions = [
     },
     { "RegionID": "ID", "Name": "Idaho", "Bounds": [[41.994599,-117.236921],[48.99995,-111.046771]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "IL", "Name": "Illinois", "Bounds": [[36.986822,-91.516284],[42.509363,-87.507909]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
-    { "RegionID": "IN", "Name": "Indiana", "Bounds": [[37.776224,-88.10149],[41.76554,-84.787446]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
+    {
+        "RegionID": "IN", "Name": "Indiana", "Bounds": [[37.776224, -88.10149], [41.76554, -84.787446]], "Layers": {},
+        "Applications": ["CoordinatedReach"], "ScenariosAvailable": true
+    },
     { "RegionID": "KS", "Name": "Kansas", "Bounds": [[36.988875,-102.051535],[40.002987,-94.601224]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "KY", "Name": "Kentucky", "Bounds": [[36.49657,-89.568231],[39.142063,-81.959575]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "LA", "Name": "Louisiana", "Bounds": [[28.939655,-94.041785],[33.023422,-89.021803]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
@@ -277,10 +281,10 @@ if (configuration.cloud) {
     configuration.queryparams.regulationService = '/arcgis/rest/services/regulations/{0}/MapServer/exts/RegulationRESTSOE/Regulation',
 
     configuration.regions.forEach(function (value,index) {
-        if (value.RegionID == 'CO') {
+        if (value.RegionID === 'CO') {
             value.Layers.CO_Regulation.url = configuration.baseurls['GISserver'] + "/arcgis/rest/services/regulations/co/MapServer";
         }
-        if (value.RegionID == 'MT') {
+        if (value.RegionID === 'MT') {
             value.Layers.MT_Regulation.url = configuration.baseurls['GISserver'] + "/arcgis/rest/services/regulations/mt/MapServer";
         }
     });
