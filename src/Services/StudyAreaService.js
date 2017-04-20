@@ -37,10 +37,11 @@ var StreamStats;
                 if (studyArea === void 0) { studyArea = null; }
                 if (saVisible === void 0) { saVisible = false; }
                 if (paramState === void 0) { paramState = false; }
-                _super.call(this);
-                this.studyArea = studyArea;
-                this.studyAreaVisible = saVisible;
-                this.parameterLoaded = paramState;
+                var _this = _super.call(this) || this;
+                _this.studyArea = studyArea;
+                _this.studyAreaVisible = saVisible;
+                _this.parameterLoaded = paramState;
+                return _this;
             }
             return StudyAreaEventArgs;
         }(WiM.Event.EventArgs));
@@ -51,11 +52,10 @@ var StreamStats;
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
             function StudyAreaService($http, $q, eventManager, toaster) {
-                var _this = this;
-                _super.call(this, $http, configuration.baseurls['StreamStatsServices']);
-                this.$http = $http;
-                this.$q = $q;
-                this.eventManager = eventManager;
+                var _this = _super.call(this, $http, configuration.baseurls['StreamStatsServices']) || this;
+                _this.$http = $http;
+                _this.$q = $q;
+                _this.eventManager = eventManager;
                 eventManager.AddEvent(Services.onSelectedStudyParametersLoaded);
                 eventManager.AddEvent(Services.onSelectedStudyAreaChanged);
                 eventManager.AddEvent(Services.onStudyAreaReset);
@@ -63,10 +63,11 @@ var StreamStats;
                     _this.onStudyAreaChanged(sender, e);
                 }));
                 eventManager.AddEvent(Services.onEditClick);
-                this._studyAreaList = [];
-                this.toaster = toaster;
-                this.clearStudyArea();
-                this.servicesURL = configuration.baseurls['StreamStatsServices'];
+                _this._studyAreaList = [];
+                _this.toaster = toaster;
+                _this.clearStudyArea();
+                _this.servicesURL = configuration.baseurls['StreamStatsServices'];
+                return _this;
             }
             Object.defineProperty(StudyAreaService.prototype, "StudyAreaList", {
                 get: function () {
@@ -336,6 +337,46 @@ var StreamStats;
                     _this.toaster.pop('error', "There was an HTTP error querying Land Cover", "Please retry", 0);
                     return _this.$q.reject(error.data);
                 }).finally(function () {
+                });
+            };
+            StudyAreaService.prototype.queryCoordinatedReach = function () {
+                var _this = this;
+                this.toaster.pop('wait', "Checking if study area is a coordinated reach.", "Please wait...", 0);
+                //console.log('in load query regression regions');
+                var ppt = this.selectedStudyArea.Pourpoint;
+                var url = configuration.baseurls['GISserver'] + configuration.queryparams['coordinatedReachQueryService'];
+                url = url.format(this.selectedStudyArea.RegionID, ppt.Longitude, ppt.Longitude, ppt.crs, "*");
+                var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                this.Execute(request).then(function (response) {
+                    //console.log(response.data);
+                    _this.toaster.clear();
+                    //tests
+                    //response.data.error = true;
+                    if (response.data.error) {
+                        //console.log('query error');
+                        _this.toaster.pop('error', "There was an error querying regression regions", response.data.error.message, 0);
+                        return;
+                    }
+                    if (response.data.length == 0) {
+                        //console.log('query error');
+                        _this.toaster.pop('error', "Regression region query failed", "This type of query may not be supported here at this time", 0);
+                        return;
+                    }
+                    if (response.data.length > 0) {
+                        //console.log('query success');
+                        _this.regressionRegionQueryComplete = true;
+                        response.data.forEach(function (p) { p.code = p.code.toUpperCase().split(","); });
+                        _this.selectedStudyArea.RegressionRegions = response.data;
+                        _this.toaster.pop('success', "Regression regions were succcessfully queried", "Please continue", 5000);
+                    }
+                    //this.queryLandCover();
+                }, function (error) {
+                    //sm when complete
+                    //console.log('Regression query failed, HTTP Error');
+                    _this.toaster.pop('error', "There was an HTTP error querying Regression regions", "Please retry", 0);
+                    return _this.$q.reject(error.data);
+                }).finally(function () {
+                    _this.regressionRegionQueryLoading = false;
                 });
             };
             StudyAreaService.prototype.queryRegressionRegions = function () {

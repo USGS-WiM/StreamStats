@@ -45,6 +45,7 @@ module StreamStats.Services {
         loadEditedStudyBoundary();
         loadWatershed(rcode:string, workspaceID: string): void
         queryRegressionRegions();
+        queryCoordinatedReach();
         regressionRegionQueryComplete: boolean;
         baseMap: Object;
         showModifyBasinCharacterstics: boolean;
@@ -432,6 +433,59 @@ module StreamStats.Services {
 
                 }).finally(() => {
             });
+        }
+
+        public queryCoordinatedReach() {
+
+                this.toaster.pop('wait', "Checking if study area is a coordinated reach.", "Please wait...", 0);
+                           
+                var ppt = this.selectedStudyArea.Pourpoint;
+                var url = configuration.baseurls['GISserver'] + configuration.queryparams['coordinatedReachQueryService'];
+         
+                url = url.format(this.selectedStudyArea.RegionID, ppt.Longitude,ppt.Longitude, ppt.crs, "*");
+                var request: WiM.Services.Helpers.RequestInfo =
+                    new WiM.Services.Helpers.RequestInfo(url, true);
+
+                this.Execute(request).then(
+                    (response: any) => {
+                        //console.log(response.data);
+                        this.toaster.clear();
+
+                        //tests
+                        //response.data.error = true;
+
+                        if (response.data.error) {
+                            //console.log('query error');
+                            this.toaster.pop('error', "There was an error querying regression regions", response.data.error.message, 0);
+                            return;
+                        }
+
+                        if (response.data.length == 0) {
+                            //console.log('query error');
+                            this.toaster.pop('error', "Regression region query failed", "This type of query may not be supported here at this time", 0);
+                            return;
+                        }
+
+                        if (response.data.length > 0) {
+                            //console.log('query success');
+                            this.regressionRegionQueryComplete = true;
+                            response.data.forEach(p => { p.code = p.code.toUpperCase().split(",") });
+                            this.selectedStudyArea.RegressionRegions = response.data;
+                            this.toaster.pop('success', "Regression regions were succcessfully queried", "Please continue", 5000);
+                        }
+
+                        //this.queryLandCover();
+
+                    }, (error) => {
+                        //sm when complete
+                        //console.log('Regression query failed, HTTP Error');
+                        this.toaster.pop('error', "There was an HTTP error querying Regression regions", "Please retry", 0);
+                        return this.$q.reject(error.data);
+
+                    }).finally(() => {
+                        this.regressionRegionQueryLoading = false;
+                    });
+
         }
 
         public queryRegressionRegions() {
