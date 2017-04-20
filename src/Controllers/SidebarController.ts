@@ -170,7 +170,7 @@ module StreamStats.Controllers {
 
         public startSearch(e) {
             e.stopPropagation(); e.preventDefault();
-            $("#sapi-searchTextBox").trigger($.Event("keyup", { "keyCode": 13 }));
+            $("#searchBox").trigger($.Event("keyup", { "keyCode": 13 }));
         }
 
         public startDelineate() {
