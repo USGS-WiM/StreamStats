@@ -188,14 +188,14 @@ var StreamStats;
                         if (_this.studyAreaService.selectedStudyArea.Disclaimers['isRegulated'])
                             finalVal += item.code + ',' + item.name + ',' + item.value + ',' + item.unRegulatedValue.toFixed(2) + ',' + item.regulatedValue.toFixed(2) + ',' + item.unit + '\n';
                         else
-                            finalVal += item.code + ',' + item.description + ',' + item.value + ',' + item.unit + '\n';
+                            finalVal += item.code + ',"' + item.description + '",' + item.value + ',' + item.unit + '\n';
                     });
                     return finalVal + '\n';
                 };
                 var processScenarioParamTable = function (statGroup) {
                     var finalVal = '';
                     statGroup.RegressionRegions.forEach(function (regressionRegion) {
-                        console.log('regression regions loop: ', regressionRegion);
+                        //console.log('regression regions loop: ', regressionRegion)
                         //bail if in Area-Averaged section
                         if (regressionRegion.Name == 'Area-Averaged')
                             return;
@@ -206,7 +206,7 @@ var StreamStats;
                         finalVal += 'Parameter Code,Parameter Name,Value,Min Limit, Max Limit\n';
                         if (regressionRegion.Parameters) {
                             regressionRegion.Parameters.forEach(function (item) {
-                                console.log('here', item);
+                                //console.log('here', item)
                                 var limitMin = 'n/a';
                                 var limitMax = 'n/a';
                                 if (item.Limits) {
@@ -231,14 +231,14 @@ var StreamStats;
                     //console.log('ScenarioFlowTable statGroup: ', statGroup);
                     var finalVal = '';
                     statGroup.RegressionRegions.forEach(function (regressionRegion) {
-                        console.log('ScenarioFlowTable regressionRegion: ', regressionRegion);
+                        //console.log('ScenarioFlowTable regressionRegion: ', regressionRegion);
                         if (regressionRegion.Results) {
-                            var regionPercent = 'n/a';
+                            var regionPercent = '';
                             if (regressionRegion.PercentWeight)
                                 regionPercent = regressionRegion.PercentWeight.toFixed(0) + ' Percent ';
-                            finalVal += statGroup.Name + ' Flow Report, ' + regionPercent + regressionRegion.Name.split("_").join(" ") + '\n';
+                            finalVal += '\n' + statGroup.Name + ' Flow Report,' + regionPercent + regressionRegion.Name.split("_").join(" ") + '\n';
                             var errorName = 'Error';
-                            if (regressionRegion.Results[0].Errors)
+                            if (regressionRegion.Results[0].Errors && regressionRegion.Results[0].Errors > 0)
                                 errorName = regressionRegion.Results[0].Errors[0].Name;
                             finalVal += 'Statistic,Value,Unit,' + errorName + ',Lower Prediction Interval,Upper Prediction Interval\n';
                             regressionRegion.Results.forEach(function (item) {
@@ -247,7 +247,7 @@ var StreamStats;
                                 if (item.Unit)
                                     unit = item.Unit.Abbr;
                                 var errors = '--';
-                                if (item.Errors)
+                                if (item.Errors && item.Errors.length > 0)
                                     errors = item.Errors[0].Value;
                                 var lowerPredictionInterval = '--';
                                 if (item.IntervalBounds && item.IntervalBounds.Lower)
