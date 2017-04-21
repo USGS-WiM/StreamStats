@@ -234,7 +234,6 @@ var StreamStats;
                 csvFile += processMainParameterTable(this.studyAreaService.studyAreaParameterList);
                 //next loop over stat groups
                 this.nssService.selectedStatisticsGroupList.forEach(function (statGroup) {
-                    console.log('csv export', statGroup);
                     csvFile += processScenarioParamTable(statGroup);
                     if (statGroup.Disclaimers.Warnings || statGroup.Disclaimers.Errors)
                         csvFile += processDisclaimers(statGroup);

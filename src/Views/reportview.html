@@ -133,7 +133,6 @@
                             <small ng-show="RegressionRegion.Results[0].IntervalBounds && RegressionRegion.Results[0].Errors && RegressionRegion.Results[0].Errors.length > 0">PIl: Prediction Interval-Upper, PIu: Prediction Interval-Lower, SEe: Standard Error of Estimate, SEp: Standard Error of Prediction, SE: Standard Error (other -- see report)</small>
                             <table id="{{vm.camelize(StatisticsGroup.Name + RegressionRegion.Name + 'ScenarioFlowTable')}}"class="scenarioFlowTable table table-condensed">
                                 <thead class="flow-table">
-
                                 <tr>
                                     <th>Statistic</th>
                                     <th>Value</th>
@@ -142,18 +141,8 @@
                                     <th ng-if="RegressionRegion.Results[0].IntervalBounds.Lower">PIl</th>
                                     <th ng-if="RegressionRegion.Results[0].IntervalBounds.Upper">PIu</th>
                                     <th ng-if="RegressionRegion.Results[0].Errors && RegressionRegion.Results[0].Errors.length > 0" ng-repeat="error in RegressionRegion.Results[0].Errors" ng-bind="error.Code"></th>
-                                    <!--<th ng-if="RegressionRegion.Results[0].Errors && RegressionRegion.Results[0].Errors.length > 0" colspan={{RegressionRegion.Results[0].Errors.length}}>Errors (percent)</th>-->
                                     <th ng-if="RegressionRegion.Results[0].EquivalentYears > 0">Equiv. Yrs.</th>
                                 </tr>
-
-                                <!--<tr ng-if="RegressionRegion.Results[0].Errors || RegressionRegion.Results[0].Errors.length > 0 || RegressionRegion.Results[0].IntervalBounds || RegressionRegion.Results[0].EquivalentYears">
-                                    <th colspan="3"></th>
-                                    <th ng-if="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated && vm.showRegulation"></th>
-                                    <th ng-if="RegressionRegion.Results[0].IntervalBounds">Lower</th>
-                                    <th ng-if="RegressionRegion.Results[0].IntervalBounds">Upper</th>
-                                    <th ng-if="RegressionRegion.Results[0].Errors && RegressionRegion.Results[0].Errors.length > 0" ng-repeat="error in RegressionRegion.Results[0].Errors" ng-bind="error.Code"></th>
-                                    <th ng-if="RegressionRegion.Results[0].EquivalentYears > 0"></th>
-                                </tr>-->
                                 </thead>
                                 <tbody >
                                     <tr ng-repeat="parameter in RegressionRegion.Results">
@@ -169,7 +158,6 @@
                                 </tbody>
                             </table>
                         </div>
- 
 
                         <h4>{{StatisticsGroup.Name}} Citations</h4>
                         <div ng-repeat="citation in StatisticsGroup.Citations">
