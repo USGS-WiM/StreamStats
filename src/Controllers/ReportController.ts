@@ -305,8 +305,6 @@ module StreamStats.Controllers {
 
             //next loop over stat groups
             this.nssService.selectedStatisticsGroupList.forEach((statGroup) => {
-                console.log('csv export',statGroup)
-
                 csvFile += processScenarioParamTable(statGroup);
                 if (statGroup.Disclaimers.Warnings || statGroup.Disclaimers.Errors) csvFile += processDisclaimers(statGroup);
                 csvFile += processScenarioFlowTable(statGroup);
