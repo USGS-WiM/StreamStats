@@ -164,7 +164,7 @@
                         <div class="wim-alert-warning" ng-show="vm.nssService.statisticsGroupList.length == 0"><span ng-show="vm.regionService.selectedRegion.ScenariosAvailable">Failed to load scenarios or no scenarios available</span><span ng-hide="vm.regionService.selectedRegion.ScenariosAvailable">Scenario computation has not been enabled yet for {{vm.regionService.selectedRegion.Name}}</span></div>
 
                         <div class="group-wrapper" ng-if="vm.nssService.statisticsGroupList.length > 0" ng-repeat="statisticsGroup in vm.nssService.statisticsGroupList">
-                            <button class="btn-wim-sm btn-wim-default btn-wim-group-1" ng-class="vm.checkArrayForObj(vm.nssService.selectedStatisticsGroupList, statisticsGroup) != -1 ? 'btn-wim-info': ''" ng-click="vm.setStatisticsGroup(statisticsGroup)"><span>{{statisticsGroup.Name}} </span></button>
+                            <button class="btn-wim-sm btn-wim-default btn-wim-group-1" ng-disabled="vm.studyAreaService.parametersLoading" ng-class="vm.checkArrayForObj(vm.nssService.selectedStatisticsGroupList, statisticsGroup) != -1 ? 'btn-wim-info': ''" ng-click="vm.setStatisticsGroup(statisticsGroup)"><span>{{statisticsGroup.Name}} </span></button>
                         </div>
                     </div>
 
