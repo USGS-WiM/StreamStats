@@ -261,7 +261,7 @@ module StreamStats.Controllers {
 
             $scope.$watch(() => this.bounds,(newval, oldval) => this.mapBoundsChange(oldval, newval));
 
-            $scope.$watch(() => this.explorationService.elevationProfileGeoJSON,(newval, oldval) => {
+            $scope.$watch(() => this.explorationService.elevationProfileGeoJSON, (newval, oldval) => {
                 if (newval) this.displayElevationProfile()
             });
 
@@ -676,8 +676,10 @@ module StreamStats.Controllers {
 
             this.leafletData.getMap("mainMap").then((map: any) => {
                 var container = el.onAdd(map);
-                document.getElementById('elevation-div').innerHTML = '';
-                document.getElementById('elevation-div').appendChild(container);
+
+                this.explorationService.elevationProfileHTML = container.innerHTML;
+                this.modal.openModal(Services.SSModalType.e_exploration);
+
             });
 
             this.toaster.clear();
@@ -704,7 +706,7 @@ module StreamStats.Controllers {
         //}
 
         private resetExplorationTools() {
-            document.getElementById('elevation-div').innerHTML = '';
+            //document.getElementById('elevation-div').innerHTML = '';
             document.getElementById('measurement-div').innerHTML = '';
             if (this.drawControl) this.drawController({ }, false);
             this.explorationService.allowStreamgageQuery = false;
@@ -718,7 +720,7 @@ module StreamStats.Controllers {
 
             //console.log('in measurement tool');
 
-            document.getElementById('elevation-div').innerHTML = '';
+            //document.getElementById('elevation-div').innerHTML = '';
             //user affordance
             this.explorationService.measurementData = 'Click the map to begin\nDouble click to end the Drawing';
 
