@@ -37,7 +37,7 @@ configuration.queryparams =
     'SSNavigationServices': '/streamstatsservices/navigation/{0}.geojson?rcode={1}&',
     'Wateruse': '/streamstatsservices/wateruse.json?rcode={0}&workspaceID={1}&startyear={2}&endyear={3}',
     'WateruseConfig': '/streamstatsservices/wateruse.json?rcode={0}',
-    'coordinatedReachQueryService':'/arcgis/rest/services/coordinatedreaches/{0}/MapServer/0/query?geometry={1},{2}&geometryType=esriGeometryPoint&inSR={3}&spatialRel=esriSpatialRelIntersects&outFields={4}&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson'
+    'coordinatedReachQueryService':'/arcgis/rest/services/coordinatedreaches/{0}/MapServer/0/query?geometry={1},{2},{3},{4}&geometryType=esriGeometryEnvelope&inSR={5}&spatialRel=esriSpatialRelIntersects&outFields={6}&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson'
 }
 
 //override streamstats arguments if on production

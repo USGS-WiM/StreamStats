@@ -130,7 +130,7 @@ var StreamStats;
             SidebarController.prototype.startSearch = function (e) {
                 e.stopPropagation();
                 e.preventDefault();
-                $("#sapi-searchTextBox").trigger($.Event("keyup", { "keyCode": 13 }));
+                $("#searchBox").trigger($.Event("keyup", { "keyCode": 13 }));
             };
             SidebarController.prototype.startDelineate = function () {
                 var _this = this;
@@ -277,7 +277,7 @@ var StreamStats;
                 }
                 this.nssService.queriedRegions = true;
                 //send watershed to map service query that returns list of regression regions that overlap the watershed
-                if (this.regionService.selectedRegion.Applications.indexOf("CoordinatedReach") != 1) {
+                if (this.regionService.selectedRegion.Applications.indexOf("CoordinatedReach") != -1) {
                     this.studyAreaService.queryCoordinatedReach();
                 }
                 this.studyAreaService.queryRegressionRegions();

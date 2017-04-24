@@ -197,7 +197,7 @@ var StreamStats;
                             if (item.name == 'globalwatershedpoint') {
                                 //get and set geometry
                                 var geom = item.feature.features[0].bbox;
-                                _this.selectedStudyArea.Pourpoint = new WiM.Models.Point(geom[0], geom[1], item.feature.crs.properties.code);
+                                _this.selectedStudyArea.Pourpoint = new WiM.Models.Point(geom[1], geom[0], item.feature.crs.properties.code);
                                 return;
                             } //end if
                         });
@@ -342,34 +342,45 @@ var StreamStats;
             StudyAreaService.prototype.queryCoordinatedReach = function () {
                 var _this = this;
                 this.toaster.pop('wait', "Checking if study area is a coordinated reach.", "Please wait...", 0);
-                //console.log('in load query regression regions');
                 var ppt = this.selectedStudyArea.Pourpoint;
-                var url = configuration.baseurls['GISserver'] + configuration.queryparams['coordinatedReachQueryService'];
-                url = url.format(this.selectedStudyArea.RegionID, ppt.Longitude, ppt.Longitude, ppt.crs, "*");
+                var ex = new L.Circle([ppt.Longitude, ppt.Latitude], 50).getBounds();
+                var outFields = "eqWithStrID.BASIN_NAME,eqWithStrID.DVA_EQ_ID,eqWithStrID.a10,eqWithStrID.b10,eqWithStrID.a25,eqWithStrID.b25,eqWithStrID.a50,eqWithStrID.b50,eqWithStrID.a100,eqWithStrID.b100,eqWithStrID.a500,eqWithStrID.b500";
+                var url = configuration.baseurls['GISserver'] + configuration.queryparams['coordinatedReachQueryService']
+                    .format(this.selectedStudyArea.RegionID.toLowerCase(), ex.getNorth(), ex.getWest(), ex.getSouth(), ex.getEast(), ppt.crs, outFields);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
-                    //console.log(response.data);
-                    _this.toaster.clear();
-                    //tests
-                    //response.data.error = true;
                     if (response.data.error) {
                         //console.log('query error');
-                        _this.toaster.pop('error', "There was an error querying regression regions", response.data.error.message, 0);
+                        _this.toaster.pop('error', "There was an error querying coordinated reach", response.data.error.message, 0);
                         return;
                     }
-                    if (response.data.length == 0) {
-                        //console.log('query error');
-                        _this.toaster.pop('error', "Regression region query failed", "This type of query may not be supported here at this time", 0);
-                        return;
-                    }
-                    if (response.data.length > 0) {
+                    //eqWithStrID.a10
+                    //eqWithStrID.a25
+                    //eqWithStrID.a50
+                    //eqWithStrID.a100
+                    //eqWithStrID.a500
+                    //eqWithStrID.b10
+                    //eqWithStrID.b25
+                    //eqWithStrID.b50
+                    //eqWithStrID.b100
+                    //eqWithStrID.b500
+                    if (response.data.features.length > 0) {
+                        var attributes = response.data.features[0].attributes;
                         //console.log('query success');
-                        _this.regressionRegionQueryComplete = true;
-                        response.data.forEach(function (p) { p.code = p.code.toUpperCase().split(","); });
+                        _this.selectedStudyArea.CoordinatedReach = new StreamStats.Models.CoordinatedReach(attributes["eqWithStrID.BASIN_NAME"], attributes["eqWithStrID.DVA_EQ_ID"]);
+                        //remove from arrays
+                        delete attributes["eqWithStrID.BASIN_NAME"];
+                        delete attributes["eqWithStrID.DVA_EQ_ID"];
+                        var feildCount = "eqWithStrID.".length;
+                        var newArra = Object.keys(attributes).map(function (key, index) {
+                            return key.substr(feildCount + 1);
+                        }).filter(function (value, index, self) { return self.indexOf(value) === index; });
+                        for (var attr in newArra) {
+                        } //next attr
+                        response.data.features[0].attributes.forEach(function (p) { p.code = p.code.toUpperCase().split(","); });
                         _this.selectedStudyArea.RegressionRegions = response.data;
                         _this.toaster.pop('success', "Regression regions were succcessfully queried", "Please continue", 5000);
                     }
-                    //this.queryLandCover();
                 }, function (error) {
                     //sm when complete
                     //console.log('Regression query failed, HTTP Error');
