@@ -72,6 +72,15 @@ module StreamStats.Services {
             var msg: string;
             try {
                 switch (mType) {
+                    case SSModalType.e_exploration:
+                        return {
+                            templateUrl: 'Views/explorationview.html',
+                            controller: 'StreamStats.Controllers.ExplorationToolsModalController',
+                            size: 'lg',
+                            backdropClass: 'backdropZ',
+                            windowClass: 'windowZ',
+
+                        };
                     case SSModalType.e_report:
                         return {
                             templateUrl: 'Views/reportview.html',
@@ -134,7 +143,8 @@ module StreamStats.Services {
         e_wateruse = 2,
         e_about = 3,
         e_help = 4,
-        e_navreport=5
+        e_navreport = 5,
+        e_exploration = 6
         
     }
 

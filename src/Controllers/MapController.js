@@ -498,6 +498,7 @@ var StreamStats;
                 });
             };
             MapController.prototype.displayElevationProfile = function () {
+                var _this = this;
                 //get reference to elevation control
                 var el;
                 this.controls.custom.forEach(function (control) {
@@ -516,8 +517,8 @@ var StreamStats;
                 };
                 this.leafletData.getMap("mainMap").then(function (map) {
                     var container = el.onAdd(map);
-                    document.getElementById('elevation-div').innerHTML = '';
-                    document.getElementById('elevation-div').appendChild(container);
+                    _this.explorationService.elevationProfileHTML = container.innerHTML;
+                    _this.modal.openModal(StreamStats.Services.SSModalType.e_exploration);
                 });
                 this.toaster.clear();
                 this.cursorStyle = 'pointer';
@@ -540,7 +541,7 @@ var StreamStats;
             //    this.center = new Center(39, -100, 3);
             //}
             MapController.prototype.resetExplorationTools = function () {
-                document.getElementById('elevation-div').innerHTML = '';
+                //document.getElementById('elevation-div').innerHTML = '';
                 document.getElementById('measurement-div').innerHTML = '';
                 if (this.drawControl)
                     this.drawController({}, false);
@@ -553,7 +554,7 @@ var StreamStats;
             MapController.prototype.measurement = function () {
                 //console.log('in measurement tool');
                 var _this = this;
-                document.getElementById('elevation-div').innerHTML = '';
+                //document.getElementById('elevation-div').innerHTML = '';
                 //user affordance
                 this.explorationService.measurementData = 'Click the map to begin\nDouble click to end the Drawing';
                 //report ga event
