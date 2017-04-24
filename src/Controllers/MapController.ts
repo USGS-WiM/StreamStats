@@ -994,10 +994,17 @@ module StreamStats.Controllers {
             }
 
             this.leafletData.getMap("mainMap").then((map: any) => {
+
                 map.fitBounds([ // zoom to location
                     [AOI.properties['LatMin'], AOI.properties['LonMin']],
                     [AOI.properties['LatMax'], AOI.properties['LonMax']]
                 ])
+
+                //force level 8
+                setTimeout(() => {
+                    if (map.getZoom() < 8) map.setZoom(8);
+                }, 500);
+
                 map.openPopup(  // open popup at location listing all properties
                     $.map(Object.keys(AOI.properties), function (property) {
                         return "<b>" + property + ": </b>" + AOI.properties[property];
