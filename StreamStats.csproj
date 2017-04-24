@@ -111,6 +111,7 @@
     <TypeScriptCompile Include="src\Controllers\ReportController.ts" />
     <TypeScriptCompile Include="src\Controllers\SidebarController.ts" />
     <TypeScriptCompile Include="src\Controllers\WateruseController.ts" />
+    <TypeScriptCompile Include="src\Models\CoordinatedReach.ts" />
     <TypeScriptCompile Include="src\Models\NetworkNavModels.ts" />
     <TypeScriptCompile Include="src\Models\RegulationParameter.ts" />
     <TypeScriptCompile Include="src\Models\StudyArea.ts" />
