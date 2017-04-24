@@ -14,7 +14,7 @@
                    </div>
 
                    <div class="form-group" ng-show="vm.regionService.regionList.length > 0 && !vm.regionService.selectedRegion">
-                        <label> Select a State or Regional Study Area Below</label>
+                        <label> Click to select a State or Regional Study Area</label>
                         <div ng-repeat="region in vm.regionService.regionList track by $index">
                             <div class="row">
                                 <div class="col-md-9"><button ng-class="region.Name === vm.regionService.selectedRegion.Name ? 'btn-wim-info btn-group-justified':'btn-wim-sm btn-wim-success btn-group-justified'" ng-click="vm.setRegion(region)"><span>{{region.Name}} </span></button></div>
