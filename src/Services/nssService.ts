@@ -46,6 +46,24 @@ module StreamStats.Services {
         Citations: any;
         Disclaimers: any;
     }
+    export interface IRegressionRegion {
+        ID: number;
+        Name: string;
+        Code: string;
+        Parameters: Array<IParameter>
+        Results: Array<IRegressionResult>
+    }
+    export interface IRegressionResult {
+        Name: string;
+        Code: string;
+        Description: string;
+        Value: number;
+        Unit: IUnit;
+    }
+    export interface IUnit {
+        Unit: string;
+        Abbr: string;
+    }
 
     export class StatisticsGroup implements IStatisticsGroup {
         //properties
@@ -206,11 +224,10 @@ module StreamStats.Services {
 
         public estimateFlows(studyAreaParameterList: Array<IParameter>, paramValueField:string, rcode: string, regressionregion: string, append:boolean = false) {
 
-            if (!this.canUpdate && !append) return;
-            this.canUpdate = false;
+            if (!this.canUpdate && !append) return;           
             //loop over all selected StatisticsGroups
             this.selectedStatisticsGroupList.forEach((statGroup) => {
-
+                this.canUpdate = false;
                 if (this.estimateFlowsCounter == 0) {
                     this.toaster.pop('wait', "Estimating Flows", "Please wait...", 0);
                 }
