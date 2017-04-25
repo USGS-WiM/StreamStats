@@ -121,10 +121,10 @@
                             </table>
 
                             <!--Scenario Disclaimers-->
-                            <div ng-show="StatisticsGroup.Disclaimers.Warnings.length > 0">
+                            <div ng-show="StatisticsGroup.Disclaimers.Warnings">
                                 <h3>{{StatisticsGroup.Name}} Disclaimers<small ng-bind="(RegressionRegion.PercentWeight) ? ' [' + RegressionRegion.PercentWeight.toFixed(0) + ' Percent (' + (+vm.areaSQMI.toUSGSvalue() * +RegressionRegion.PercentWeight / 100).toUSGSvalue() + ' square miles) ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h3>
                                 <div class="wim-alert-warning" ng-show="StatisticsGroup.Disclaimers.Warnings">{{StatisticsGroup.Disclaimers.Warnings}}</div> 
-                                <div class="wim-alert-warning" ng-show="StatisticsGroup.Disclaimers.Warnings" ng-repeat="headerMsg in StatisticsGroup.Disclaimers.Warnings">{{headerMsg}}</div> 
+                                <div class="wim-alert-warning" ng-show="StatisticsGroup.Disclaimers.Warnings.length > 1" ng-repeat="headerMsg in StatisticsGroup.Disclaimers.Warnings">{{headerMsg}}</div> 
                             </div>
                         </div>
 
