@@ -381,6 +381,68 @@ var StreamStats;
                     _this.regressionRegionQueryLoading = false;
                 });
             };
+            StudyAreaService.prototype.queryKarst = function (regionID, regionMapLayerList) {
+                var _this = this;
+                this.toaster.pop('wait', "Querying for Karst Areas", "Please wait...", 0);
+                //console.log('in load query regression regions');
+                //get layerID of exclude poly
+                var layerID;
+                regionMapLayerList.forEach(function (item) {
+                    if (item[0] == 'ExcludePolys')
+                        layerID = item[1];
+                });
+                this.regressionRegionQueryLoading = true;
+                this.regressionRegionQueryComplete = false;
+                var watershed = '{"rings":' + angular.toJson(this.selectedStudyArea.Features[1].feature.features[0].geometry.coordinates, null) + ',"spatialReference":{"wkid":4326}}';
+                var options = {
+                    where: '1=1',
+                    geometry: watershed,
+                    geometryType: 'esriGeometryPolygon',
+                    inSR: 4326,
+                    spatialRel: 'esriSpatialRelIntersects',
+                    outFields: '*',
+                    returnGeometry: false,
+                    outSR: 4326,
+                    returnIdsOnly: false,
+                    returnCountOnly: false,
+                    returnZ: false,
+                    returnM: false,
+                    returnDistinctValues: false,
+                    returnTrueCurves: false,
+                    f: 'json'
+                };
+                var url = configuration.baseurls.StreamStatsMapServices + configuration.queryparams.SSStateLayers + '/' + layerID + '/query';
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', options, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
+                this.Execute(request).then(function (response) {
+                    _this.toaster.clear();
+                    if (response.status == 200) {
+                        _this.toaster.pop('success', "Karst regions were succcessfully queried", "Please continue", 5000);
+                        var karstFound = false;
+                        if (response.data.features.length > 0) {
+                            response.data.features.forEach(function (exclusionArea) {
+                                if (exclusionArea.attributes.ExcludeCode == 2) {
+                                    karstFound = true;
+                                    _this.toaster.pop("warning", "Warning", exclusionArea.attributes.ExcludeReason, 0);
+                                    _this.selectedStudyArea.Disclaimers['hasKarst'] = exclusionArea.attributes.ExcludeReason;
+                                }
+                            });
+                            if (!karstFound)
+                                _this.toaster.pop('success', "No Karst found", "Please continue", 5000);
+                        }
+                    }
+                    else {
+                        _this.toaster.pop('error', "Error", "Karst region query failed", 0);
+                    }
+                    //this.queryLandCover();
+                }, function (error) {
+                    //sm when complete
+                    //console.log('Regression query failed, HTTP Error');
+                    _this.toaster.pop('error', "There was an HTTP error querying Regression regions", "Please retry", 0);
+                    return _this.$q.reject(error.data);
+                }).finally(function () {
+                    _this.regressionRegionQueryLoading = false;
+                });
+            };
             StudyAreaService.prototype.upstreamRegulation = function () {
                 var _this = this;
                 //console.log('upstream regulation');
