@@ -66,6 +66,8 @@ module StreamStats.Services {
             this.studyArea = studyArea;
             this.studyAreaVisible = saVisible;
             this.parameterLoaded = paramState;
+            var x = (<any>L).esri
+
         }
 
     }
@@ -94,7 +96,7 @@ module StreamStats.Services {
             }
         }
         public get selectedStudyArea(): Models.IStudyArea {
-            return this._selectedStudyArea
+            return this._selectedStudyArea           
         }
         public studyAreaParameterList: Array<IParameter>;
         public drawControl: any;
@@ -455,51 +457,40 @@ module StreamStats.Services {
                             this.toaster.pop('error', "There was an error querying coordinated reach", response.data.error.message, 0);
                             return;
                         }
-                        //eqWithStrID.a10
-                        //eqWithStrID.a25
-                        //eqWithStrID.a50
-                        //eqWithStrID.a100
-                        //eqWithStrID.a500
-                        //eqWithStrID.b10
-                        //eqWithStrID.b25
-                        //eqWithStrID.b50
-                        //eqWithStrID.b100
-                        //eqWithStrID.b500
 
                         if (response.data.features.length > 0) {
                             var attributes = response.data.features[0].attributes
                             //console.log('query success');
 
-                            this.selectedStudyArea.CoordinatedReach = new Models.CoordinatedReach(attributes["eqWithStrID.BASIN_NAME"], attributes["eqWithStrID.DVA_EQ_ID"]); 
+                            this.selectedStudyArea.CoordinatedReach = new Models.CoordinatedReach(attributes["eqWithStrID.BASIN_NAME"], attributes["eqWithStrID.DVA_EQ_ID"]);
                             //remove from arrays
                             delete attributes["eqWithStrID.BASIN_NAME"];
                             delete attributes["eqWithStrID.DVA_EQ_ID"];
 
-                            var feildCount = "eqWithStrID.".length;
-                            var newArra = Object.keys(attributes).map((key, index) => {
-                                return key.substr(feildCount+1);
+                            var feildprecursor = "eqWithStrID.";
+
+                            var pkID = Object.keys(attributes).map((key, index) => {
+                                return key.substr(feildprecursor.length + 1);
                             }).filter((value, index, self) => { return self.indexOf(value) === index; })
 
-                            for (var attr in newArra) {
-                                
+                            for (var i = 0; i < pkID.length; i++) {
+                                var code = pkID[i];
+                                var acoeff = attributes[feildprecursor + "a" + code];
+                                var bcoeff = attributes[feildprecursor + "b" + code];
 
-                            }//next attr
-                            
-                            response.data.features[0].attributes.forEach(p => { p.code = p.code.toUpperCase().split(",") });
-                            this.selectedStudyArea.RegressionRegions = response.data;
-                            this.toaster.pop('success', "Regression regions were succcessfully queried", "Please continue", 5000);
+                                if (acoeff != null && bcoeff != null)
+                                    this.selectedStudyArea.CoordinatedReach.AddFlowCoefficient("PK" + code, acoeff, bcoeff);
+
+                            }//next i
+                            this.toaster.pop('success', "Selected reach is a coordinated reach", "Please continue", 5000);
                         }
 
                     }, (error) => {
                         //sm when complete
                         //console.log('Regression query failed, HTTP Error');
-                        this.toaster.pop('error', "There was an HTTP error querying Regression regions", "Please retry", 0);
-                        return this.$q.reject(error.data);
+                        this.toaster.pop('error', "There was an HTTP error querying coordinated reach", "Please retry", 0);
 
-                    }).finally(() => {
-                        this.regressionRegionQueryLoading = false;
                     });
-
         }
 
         public queryRegressionRegions() {

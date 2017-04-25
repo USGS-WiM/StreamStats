@@ -37,11 +37,11 @@ var StreamStats;
                 if (studyArea === void 0) { studyArea = null; }
                 if (saVisible === void 0) { saVisible = false; }
                 if (paramState === void 0) { paramState = false; }
-                var _this = _super.call(this) || this;
-                _this.studyArea = studyArea;
-                _this.studyAreaVisible = saVisible;
-                _this.parameterLoaded = paramState;
-                return _this;
+                _super.call(this);
+                this.studyArea = studyArea;
+                this.studyAreaVisible = saVisible;
+                this.parameterLoaded = paramState;
+                var x = L.esri;
             }
             return StudyAreaEventArgs;
         }(WiM.Event.EventArgs));
@@ -52,10 +52,11 @@ var StreamStats;
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
             function StudyAreaService($http, $q, eventManager, toaster) {
-                var _this = _super.call(this, $http, configuration.baseurls['StreamStatsServices']) || this;
-                _this.$http = $http;
-                _this.$q = $q;
-                _this.eventManager = eventManager;
+                var _this = this;
+                _super.call(this, $http, configuration.baseurls['StreamStatsServices']);
+                this.$http = $http;
+                this.$q = $q;
+                this.eventManager = eventManager;
                 eventManager.AddEvent(Services.onSelectedStudyParametersLoaded);
                 eventManager.AddEvent(Services.onSelectedStudyAreaChanged);
                 eventManager.AddEvent(Services.onStudyAreaReset);
@@ -63,11 +64,10 @@ var StreamStats;
                     _this.onStudyAreaChanged(sender, e);
                 }));
                 eventManager.AddEvent(Services.onEditClick);
-                _this._studyAreaList = [];
-                _this.toaster = toaster;
-                _this.clearStudyArea();
-                _this.servicesURL = configuration.baseurls['StreamStatsServices'];
-                return _this;
+                this._studyAreaList = [];
+                this.toaster = toaster;
+                this.clearStudyArea();
+                this.servicesURL = configuration.baseurls['StreamStatsServices'];
             }
             Object.defineProperty(StudyAreaService.prototype, "StudyAreaList", {
                 get: function () {
@@ -354,16 +354,6 @@ var StreamStats;
                         _this.toaster.pop('error', "There was an error querying coordinated reach", response.data.error.message, 0);
                         return;
                     }
-                    //eqWithStrID.a10
-                    //eqWithStrID.a25
-                    //eqWithStrID.a50
-                    //eqWithStrID.a100
-                    //eqWithStrID.a500
-                    //eqWithStrID.b10
-                    //eqWithStrID.b25
-                    //eqWithStrID.b50
-                    //eqWithStrID.b100
-                    //eqWithStrID.b500
                     if (response.data.features.length > 0) {
                         var attributes = response.data.features[0].attributes;
                         //console.log('query success');
@@ -371,23 +361,23 @@ var StreamStats;
                         //remove from arrays
                         delete attributes["eqWithStrID.BASIN_NAME"];
                         delete attributes["eqWithStrID.DVA_EQ_ID"];
-                        var feildCount = "eqWithStrID.".length;
-                        var newArra = Object.keys(attributes).map(function (key, index) {
-                            return key.substr(feildCount + 1);
+                        var feildprecursor = "eqWithStrID.";
+                        var pkID = Object.keys(attributes).map(function (key, index) {
+                            return key.substr(feildprecursor.length + 1);
                         }).filter(function (value, index, self) { return self.indexOf(value) === index; });
-                        for (var attr in newArra) {
-                        } //next attr
-                        response.data.features[0].attributes.forEach(function (p) { p.code = p.code.toUpperCase().split(","); });
-                        _this.selectedStudyArea.RegressionRegions = response.data;
-                        _this.toaster.pop('success', "Regression regions were succcessfully queried", "Please continue", 5000);
+                        for (var i = 0; i < pkID.length; i++) {
+                            var code = pkID[i];
+                            var acoeff = attributes[feildprecursor + "a" + code];
+                            var bcoeff = attributes[feildprecursor + "b" + code];
+                            if (acoeff != null && bcoeff != null)
+                                _this.selectedStudyArea.CoordinatedReach.AddFlowCoefficient("PK" + code, acoeff, bcoeff);
+                        } //next i
+                        _this.toaster.pop('success', "Selected reach is a coordinated reach", "Please continue", 5000);
                     }
                 }, function (error) {
                     //sm when complete
                     //console.log('Regression query failed, HTTP Error');
-                    _this.toaster.pop('error', "There was an HTTP error querying Regression regions", "Please retry", 0);
-                    return _this.$q.reject(error.data);
-                }).finally(function () {
-                    _this.regressionRegionQueryLoading = false;
+                    _this.toaster.pop('error', "There was an HTTP error querying coordinated reach", "Please retry", 0);
                 });
             };
             StudyAreaService.prototype.queryRegressionRegions = function () {
