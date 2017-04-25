@@ -797,9 +797,19 @@ module StreamStats.Controllers {
 
             //build list of layers to query before delineate
             var queryString = 'visible:'
-            this.regionServices.regionMapLayerList.forEach((item) => {
-                queryString += String(item[1]);
-            });
+
+            //CLOUD
+            if (configuration.cloud) {
+                queryString += this.regionServices.regionMapLayerList.map(function (elem) {
+                    return elem[1];
+                }).join(",");
+            }
+
+            else {
+                this.regionServices.regionMapLayerList.forEach((item) => {
+                    queryString += String(item[1]);
+                });
+            }
 
             this.leafletData.getMap("mainMap").then((map: any) => {
                 this.leafletData.getLayers("mainMap").then((maplayers: any) => {
@@ -813,7 +823,7 @@ module StreamStats.Controllers {
 
                     maplayers.overlays[selectedRegionLayerName].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run((error: any, results: any) => {
 
-                        //console.log('exclusion area check: ', queryString, results.features); 
+                        //console.log('exclusion area check: ', queryString, results); 
 
                         //if there are no exclusion area hits
                         if (results.features.length == 0) {
@@ -827,10 +837,6 @@ module StreamStats.Controllers {
 
                         //otherwise parse exclude Codes
                         else {
-                            //console.log('exlude code1: ', this.studyArea.selectedStudyArea.Disclaimers); 
-                            //this.studyArea.selectedStudyArea.Disclaimers['isInExclusionArea'] = true;
-                            //this.studyArea.Disclaimers.push('isInExclusionArea');
-                            //console.log('exlude code2: ', this.studyArea.selectedStudyArea.Disclaimers); 
                             this.studyArea.checkingDelineatedPoint = false;
                             var excludeCode = results.features[0].properties.ExcludeCode;
                             var popupMsg = results.features[0].properties.ExcludeReason;
@@ -1045,6 +1051,11 @@ module StreamStats.Controllers {
                 });
             });
 
+            //query basin against Karst
+            if (this.regionServices.selectedRegion.Applications.indexOf("KarstCheck") > -1) {
+                this.studyArea.queryKarst(this.regionServices.selectedRegion.RegionID, this.regionServices.regionMapLayerList);
+            }
+
             //query basin against regression regions
             if (!this.nssService.queriedRegions) {
 
@@ -1059,6 +1070,7 @@ module StreamStats.Controllers {
             }
             
         }
+
         private removeGeoJson(layerName: string = "") {
             for (var k in this.geojson) {
                 if (typeof this.geojson[k] !== 'function') {
@@ -1307,7 +1319,7 @@ module StreamStats.Controllers {
             this.studyArea.loadStudyBoundary();
 
             //add disclaimer here
-            if (isInExclusionArea) this.studyArea.selectedStudyArea.Disclaimers['isInExclusionArea'] = true;
+            if (isInExclusionArea) this.studyArea.selectedStudyArea.Disclaimers['isInExclusionArea'] = 'The delineation point is in an exclusion area.';
         }
     }//end class
 

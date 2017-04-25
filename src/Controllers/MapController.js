@@ -616,9 +616,17 @@ var StreamStats;
                 this.studyArea.doDelineateFlag = false;
                 //build list of layers to query before delineate
                 var queryString = 'visible:';
-                this.regionServices.regionMapLayerList.forEach(function (item) {
-                    queryString += String(item[1]);
-                });
+                //CLOUD
+                if (configuration.cloud) {
+                    queryString += this.regionServices.regionMapLayerList.map(function (elem) {
+                        return elem[1];
+                    }).join(",");
+                }
+                else {
+                    this.regionServices.regionMapLayerList.forEach(function (item) {
+                        queryString += String(item[1]);
+                    });
+                }
                 this.leafletData.getMap("mainMap").then(function (map) {
                     _this.leafletData.getLayers("mainMap").then(function (maplayers) {
                         _this.angulartics.eventTrack('delineationClick', { category: 'Map', label: _this.regionServices.selectedRegion.Name });
@@ -626,7 +634,7 @@ var StreamStats;
                         map.invalidateSize();
                         var selectedRegionLayerName = _this.regionServices.selectedRegion.RegionID + "_region";
                         maplayers.overlays[selectedRegionLayerName].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run(function (error, results) {
-                            //console.log('exclusion area check: ', queryString, results.features); 
+                            //console.log('exclusion area check: ', queryString, results); 
                             //if there are no exclusion area hits
                             if (results.features.length == 0) {
                                 //ga event
@@ -636,10 +644,6 @@ var StreamStats;
                                 _this.startDelineate(latlng);
                             }
                             else {
-                                //console.log('exlude code1: ', this.studyArea.selectedStudyArea.Disclaimers); 
-                                //this.studyArea.selectedStudyArea.Disclaimers['isInExclusionArea'] = true;
-                                //this.studyArea.Disclaimers.push('isInExclusionArea');
-                                //console.log('exlude code2: ', this.studyArea.selectedStudyArea.Disclaimers); 
                                 _this.studyArea.checkingDelineatedPoint = false;
                                 var excludeCode = results.features[0].properties.ExcludeCode;
                                 var popupMsg = results.features[0].properties.ExcludeReason;
@@ -822,6 +826,10 @@ var StreamStats;
                 this.leafletData.getMap("mainMap").then(function (map) {
                     map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]], {});
                 });
+                //query basin against Karst
+                if (this.regionServices.selectedRegion.Applications.indexOf("KarstCheck") > -1) {
+                    this.studyArea.queryKarst(this.regionServices.selectedRegion.RegionID, this.regionServices.regionMapLayerList);
+                }
                 //query basin against regression regions
                 if (!this.nssService.queriedRegions) {
                     //return if this state is not enabled
@@ -1050,7 +1058,7 @@ var StreamStats;
                 this.studyArea.loadStudyBoundary();
                 //add disclaimer here
                 if (isInExclusionArea)
-                    this.studyArea.selectedStudyArea.Disclaimers['isInExclusionArea'] = true;
+                    this.studyArea.selectedStudyArea.Disclaimers['isInExclusionArea'] = 'The delineation point is in an exclusion area.';
             };
             //Constructro
             //-+-+-+-+-+-+-+-+-+-+-+-
