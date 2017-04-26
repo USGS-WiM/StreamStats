@@ -36,6 +36,8 @@ module StreamStats.Models {
         Parameters: Array<WiM.Models.IParameter>;
         Disclaimers: Object;
         isGlobal: boolean;
+        CoordinatedReach: Models.ICoordinatedReach;
+        NSS_StatisticGroups:Array<Services.IStatisticsGroup>
     }
 
     export class StudyArea implements IStudyArea {
@@ -52,11 +54,13 @@ module StreamStats.Models {
         public Parameters: Array<WiM.Models.IParameter>;
         public Disclaimers: Object;
         public isGlobal: boolean;
-        //public Scenarios: Array<WiM.Models.IScenario>;
+        public CoordinatedReach: Models.ICoordinatedReach;
+        public NSS_StatisticGroups: Array<Services.IStatisticsGroup>
 
         constructor(region: string, point: WiM.Models.IPoint) {
             this.RegionID = region;
             this.Pourpoint = point;
+            this.CoordinatedReach = null;
         }
 
     }//end class

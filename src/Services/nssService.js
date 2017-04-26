@@ -152,9 +152,9 @@ var StreamStats;
                 if (append === void 0) { append = false; }
                 if (!this.canUpdate && !append)
                     return;
-                this.canUpdate = false;
                 //loop over all selected StatisticsGroups
                 this.selectedStatisticsGroupList.forEach(function (statGroup) {
+                    _this.canUpdate = false;
                     if (_this.estimateFlowsCounter == 0) {
                         _this.toaster.pop('wait', "Estimating Flows", "Please wait...", 0);
                     }

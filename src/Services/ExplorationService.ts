@@ -35,7 +35,8 @@ module StreamStats.Services {
         selectedMethod: Models.INetworkNav;
         setMethod(methodtype: ExplorationMethodType)
         GetToolName(methodID: number): String
-        ExecuteSelectedModel():void
+        ExecuteSelectedModel(): void
+        elevationProfileHTML: any;
 
 
         
@@ -69,6 +70,7 @@ module StreamStats.Services {
         public get selectedMethod(): Models.INetworkNav {
             return this._selectedMethod;
         }
+        public elevationProfileHTML: any;
         
 
         //Constructor
