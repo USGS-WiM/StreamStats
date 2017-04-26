@@ -41,7 +41,6 @@ var StreamStats;
                 this.studyArea = studyArea;
                 this.studyAreaVisible = saVisible;
                 this.parameterLoaded = paramState;
-                var x = L.esri;
             }
             return StudyAreaEventArgs;
         }(WiM.Event.EventArgs));

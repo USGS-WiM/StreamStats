@@ -22,7 +22,7 @@ var StreamStats;
     (function (Models) {
         var CoordinatedReach = (function () {
             function CoordinatedReach(name, id) {
-                this._name = "Coordinated Reach" + name;
+                this._name = "Coordinated Reach: " + name;
                 this._id = id;
                 this._flowCoefficients = {};
             }
