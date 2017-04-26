@@ -250,7 +250,7 @@ module StreamStats.Controllers {
                     if (regressionRegion.Name == 'Area-Averaged') return;
   
                     //table header
-                    var regionPercent = 'n/a';
+                    var regionPercent = '';
                     if (regressionRegion.PercentWeight) regionPercent = regressionRegion.PercentWeight.toFixed(0) + ' Percent ';
                     finalVal += '\r\n' + statGroup.Name + ' Parameters,' + regionPercent + regressionRegion.Name.split("_").join(" ") + '\r\n';
 
@@ -306,7 +306,7 @@ module StreamStats.Controllers {
             //next loop over stat groups
             this.nssService.selectedStatisticsGroupList.forEach((statGroup) => {
                 csvFile += processScenarioParamTable(statGroup);
-                if (statGroup.Disclaimers.Warnings || statGroup.Disclaimers.Errors) csvFile += processDisclaimers(statGroup);
+                if (statGroup.Disclaimers && (statGroup.Disclaimers.Warnings || statGroup.Disclaimers.Errors)) csvFile += processDisclaimers(statGroup);
                 csvFile += processScenarioFlowTable(statGroup);
             });
 
@@ -421,7 +421,7 @@ module StreamStats.Controllers {
                 // actual delimiter characters for CSV format
                 , colDelim = '","'
                 , rowDelim = '"\r\n"';
-
+            
             // Grab text from table into CSV formatted string
             var csv = '"';
             csv += formatRows($headers.map(grabRow));
