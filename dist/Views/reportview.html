@@ -81,7 +81,7 @@
                     </div>
 
                     <!--Study Area Disclaimers-->  
-                    <div class="well well-sm" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers">
+                    <div class="well well-sm" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers && vm.studyAreaService.selectedStudyArea.Disclaimers.length > 0">
                         <h3>General Disclaimers</h3>
                         <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.parametersEdited">Parameter values have been edited, computed flows may not apply.</div>
                         <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated">This watershed is {{vm.studyAreaService.regulationCheckResults.percentarearegulated.toFixed(2)}} percent regulated, computed flows may not apply.</div>

@@ -190,7 +190,7 @@ var StreamStats;
                         if (regressionRegion.Name == 'Area-Averaged')
                             return;
                         //table header
-                        var regionPercent = 'n/a';
+                        var regionPercent = '';
                         if (regressionRegion.PercentWeight)
                             regionPercent = regressionRegion.PercentWeight.toFixed(0) + ' Percent ';
                         finalVal += '\r\n' + statGroup.Name + ' Parameters,' + regionPercent + regressionRegion.Name.split("_").join(" ") + '\r\n';
@@ -235,7 +235,7 @@ var StreamStats;
                 //next loop over stat groups
                 this.nssService.selectedStatisticsGroupList.forEach(function (statGroup) {
                     csvFile += processScenarioParamTable(statGroup);
-                    if (statGroup.Disclaimers.Warnings || statGroup.Disclaimers.Errors)
+                    if (statGroup.Disclaimers && (statGroup.Disclaimers.Warnings || statGroup.Disclaimers.Errors))
                         csvFile += processDisclaimers(statGroup);
                     csvFile += processScenarioFlowTable(statGroup);
                 });
