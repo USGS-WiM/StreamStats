@@ -104,6 +104,7 @@ module StreamStats.Controllers {
                 if (newval == oldval) return;
                 //console.log('regression query watch', oldval, newval);
                 if (newval == null) this.setProcedureType(2);
+                else if (!this.regionService.selectedRegion.ScenariosAvailable) this.setProcedureType(2);
                 else this.setProcedureType(3);
             });
 
@@ -336,7 +337,7 @@ module StreamStats.Controllers {
                     for (var i = 0; i < this.nssService.selectedStatisticsGroupList.length; i++) {
                         var sg = this.nssService.selectedStatisticsGroupList[i];
                         if (sg.Code.toUpperCase() === "PFS") {
-                            sg.Citations = { Author: "IN DNR,", Title: "Coordinated Discharges of Selected Steams in Indiana.", CitationURL:"http://www.in.gov/dnr/water/4898.htm"}
+                            sg.Citations = [{ Author: "Indiana DNR,", Title: "Coordinated Discharges of Selected Streams in Indiana.", CitationURL: "http://www.in.gov/dnr/water/4898.htm" }];
                             sg.RegressionRegions = [];
                             var result = this.studyAreaService.selectedStudyArea.CoordinatedReach.Execute(this.studyAreaService.studyAreaParameterList.filter(p => { return p.code === "DRNAREA" }))
                             sg.RegressionRegions.push(result); 
@@ -356,7 +357,8 @@ module StreamStats.Controllers {
                 }
 
                 //add it back in.
-                this.nssService.selectedStatisticsGroupList.push(sg);
+                if(sg != null)
+                    this.nssService.selectedStatisticsGroupList.push(sg);
             }
 
             //move to nssService
@@ -386,6 +388,7 @@ module StreamStats.Controllers {
             //return if this state is not enabled
             if (!this.regionService.selectedRegion.ScenariosAvailable) {
                 this.studyAreaService.regressionRegionQueryComplete = true;
+                this.setProcedureType(ProcedureType.SELECT);
                 return;
             }
 

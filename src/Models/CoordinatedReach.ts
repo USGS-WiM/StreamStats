@@ -51,7 +51,7 @@ module StreamStats.Models {
         }
  
         constructor(name: string, id: string) {
-            this._name = "Coordinated Reach" +name;
+            this._name = "Coordinated Reach: " +name;
             this._id = id;
             this._flowCoefficients = {};
         }
