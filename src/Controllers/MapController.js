@@ -618,9 +618,10 @@ var StreamStats;
                 var queryString = 'visible:';
                 //CLOUD
                 if (configuration.cloud) {
-                    queryString += this.regionServices.regionMapLayerList.map(function (elem) {
-                        return elem[1];
-                    }).join(",");
+                    this.regionServices.regionMapLayerList.forEach(function (item) {
+                        if (item[0] == 'ExcludePolys')
+                            queryString += item[1];
+                    });
                 }
                 else {
                     this.regionServices.regionMapLayerList.forEach(function (item) {
