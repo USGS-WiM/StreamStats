@@ -53,6 +53,8 @@ var StreamStats;
                     //console.log('regression query watch', oldval, newval);
                     if (newval == null)
                         _this.setProcedureType(2);
+                    else if (!_this.regionService.selectedRegion.ScenariosAvailable)
+                        _this.setProcedureType(2);
                     else
                         _this.setProcedureType(3);
                 });
@@ -165,6 +167,11 @@ var StreamStats;
                 }
                 else {
                     this.nssService.selectedStatisticsGroupList.push(statisticsGroup);
+                    if (this.studyAreaService.selectedStudyArea.CoordinatedReach != null && statisticsGroup.Code.toUpperCase() == "PFS") {
+                        this.addParameterToStudyAreaList("DRNAREA");
+                        this.nssService.showFlowsTable = true;
+                        return;
+                    } //end if
                     //get list of params for selected StatisticsGroup
                     this.nssService.loadParametersByStatisticsGroup(this.regionService.selectedRegion.RegionID, statisticsGroup.ID, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) {
                         return elem.code;
@@ -243,12 +250,31 @@ var StreamStats;
                 this.angulartics.eventTrack('CalculateFlows', {
                     category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.nssService.selectedStatisticsGroupList.map(function (elem) { return elem.Name; }).join(",") });
                 if (this.nssService.selectedStatisticsGroupList.length > 0 && this.nssService.showFlowsTable) {
+                    var strippedoutStatisticGroups = [];
+                    if (this.studyAreaService.selectedStudyArea.CoordinatedReach != null) {
+                        //first remove from nssservice
+                        for (var i = 0; i < this.nssService.selectedStatisticsGroupList.length; i++) {
+                            var sg = this.nssService.selectedStatisticsGroupList[i];
+                            if (sg.Code.toUpperCase() === "PFS") {
+                                sg.Citations = [{ Author: "Indiana DNR,", Title: "Coordinated Discharges of Selected Streams in Indiana.", CitationURL: "http://www.in.gov/dnr/water/4898.htm" }];
+                                sg.RegressionRegions = [];
+                                var result = this.studyAreaService.selectedStudyArea.CoordinatedReach.Execute(this.studyAreaService.studyAreaParameterList.filter(function (p) { return p.code === "DRNAREA"; }));
+                                sg.RegressionRegions.push(result);
+                                strippedoutStatisticGroups.push(sg);
+                                this.nssService.selectedStatisticsGroupList.splice(i, 1);
+                                break;
+                            } //end if
+                        } //next i
+                    } //end if
                     this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList, "value", this.regionService.selectedRegion.RegionID, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) { return elem.code; }).join(","));
                     if (this.studyAreaService.selectedStudyArea.Disclaimers["isRegulated"]) {
                         setTimeout(function () {
                             _this.nssService.estimateFlows(_this.studyAreaService.studyAreaParameterList, "unRegulatedValue", _this.regionService.selectedRegion.RegionID, _this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) { return elem.code; }).join(","), true);
                         }, 500);
                     }
+                    //add it back in.
+                    if (sg != null)
+                        this.nssService.selectedStatisticsGroupList.push(sg);
                 }
                 //move to nssService
                 this.modalService.openModal(StreamStats.Services.SSModalType.e_report);
@@ -273,10 +299,14 @@ var StreamStats;
                 //return if this state is not enabled
                 if (!this.regionService.selectedRegion.ScenariosAvailable) {
                     this.studyAreaService.regressionRegionQueryComplete = true;
+                    this.setProcedureType(ProcedureType.SELECT);
                     return;
                 }
                 this.nssService.queriedRegions = true;
                 //send watershed to map service query that returns list of regression regions that overlap the watershed
+                if (this.regionService.selectedRegion.Applications.indexOf("CoordinatedReach") != -1) {
+                    this.studyAreaService.queryCoordinatedReach();
+                }
                 this.studyAreaService.queryRegressionRegions();
             };
             SidebarController.prototype.queryStatisticsGroupTypes = function () {
@@ -303,15 +333,7 @@ var StreamStats;
                             statisticsGroup.RegressionRegions.forEach(function (regressionRegion) {
                                 regressionRegion.Parameters.forEach(function (param) {
                                     if (parameter.code.toLowerCase() == param.Code.toLowerCase()) {
-                                        //configuration.alwaysSelectedParameters.forEach((alwaysSelectedParam) => {
-                                        //    if (alwaysSelectedParam.name == parameter.code) return;
-                                        //});
-                                        //turn it on
-                                        if (_this.checkArrayForObj(_this.studyAreaService.studyAreaParameterList, parameter) == -1) {
-                                            _this.studyAreaService.studyAreaParameterList.push(parameter);
-                                            parameter['checked'] = true;
-                                            parameter['toggleable'] = false;
-                                        } //end if
+                                        _this.addParameterToStudyAreaList(parameter.code);
                                     } //end if
                                 }); // next param
                             }); // next regressionRegion
@@ -364,6 +386,22 @@ var StreamStats;
                 }
                 ;
                 return -1;
+            };
+            SidebarController.prototype.addParameterToStudyAreaList = function (paramCode) {
+                try {
+                    for (var i = 0; i < this.regionService.parameterList.length; i++) {
+                        var p = this.regionService.parameterList[i];
+                        if (p.code.toUpperCase() === paramCode && this.checkArrayForObj(this.studyAreaService.studyAreaParameterList, p) == -1) {
+                            this.studyAreaService.studyAreaParameterList.push(p);
+                            p['checked'] = true;
+                            p['toggleable'] = false;
+                            break;
+                        } //endif
+                    } //next i
+                }
+                catch (e) {
+                    return false;
+                }
             };
             SidebarController.prototype.canUpdateProcedure = function (pType) {
                 //console.log('in canUpdateProcedure');

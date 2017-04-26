@@ -46,6 +46,7 @@ module StreamStats.Services {
         loadWatershed(rcode:string, workspaceID: string): void
         queryRegressionRegions();
         queryKarst(regionID: string, regionMapLayerList:any);
+        queryCoordinatedReach();
         regressionRegionQueryComplete: boolean;
         baseMap: Object;
         showModifyBasinCharacterstics: boolean;
@@ -94,7 +95,7 @@ module StreamStats.Services {
             }
         }
         public get selectedStudyArea(): Models.IStudyArea {
-            return this._selectedStudyArea
+            return this._selectedStudyArea           
         }
         public studyAreaParameterList: Array<IParameter>;
         public drawControl: any;
@@ -255,7 +256,7 @@ module StreamStats.Services {
                             if (item.name == 'globalwatershedpoint') {
                                 //get and set geometry
                                 var geom = item.feature.features[0].bbox 
-                                this.selectedStudyArea.Pourpoint = new WiM.Models.Point(geom[0], geom[1], item.feature.crs.properties.code);
+                                this.selectedStudyArea.Pourpoint = new WiM.Models.Point(geom[1], geom[0], item.feature.crs.properties.code);
                                 return;
                             }//end if
                         });           
@@ -433,6 +434,62 @@ module StreamStats.Services {
 
                 }).finally(() => {
             });
+        }
+
+        public queryCoordinatedReach() {
+
+                this.toaster.pop('wait', "Checking if study area is a coordinated reach.", "Please wait...", 0);
+                           
+                var ppt = this.selectedStudyArea.Pourpoint;
+                var ex = new L.Circle([ppt.Longitude, ppt.Latitude], 50).getBounds();
+                var outFields = "eqWithStrID.BASIN_NAME,eqWithStrID.DVA_EQ_ID,eqWithStrID.a10,eqWithStrID.b10,eqWithStrID.a25,eqWithStrID.b25,eqWithStrID.a50,eqWithStrID.b50,eqWithStrID.a100,eqWithStrID.b100,eqWithStrID.a500,eqWithStrID.b500";
+                var url = configuration.baseurls['GISserver'] + configuration.queryparams['coordinatedReachQueryService']
+                    .format(this.selectedStudyArea.RegionID.toLowerCase(), ex.getNorth(), ex.getWest(), ex.getSouth(), ex.getEast(), ppt.crs, outFields);
+
+                var request: WiM.Services.Helpers.RequestInfo =
+                    new WiM.Services.Helpers.RequestInfo(url, true);
+
+                this.Execute(request).then(
+                    (response: any) => {
+                        if (response.data.error) {
+                            //console.log('query error');
+                            this.toaster.pop('error', "There was an error querying coordinated reach", response.data.error.message, 0);
+                            return;
+                        }
+
+                        if (response.data.features.length > 0) {
+                            var attributes = response.data.features[0].attributes
+                            //console.log('query success');
+
+                            this.selectedStudyArea.CoordinatedReach = new Models.CoordinatedReach(attributes["eqWithStrID.BASIN_NAME"], attributes["eqWithStrID.DVA_EQ_ID"]);
+                            //remove from arrays
+                            delete attributes["eqWithStrID.BASIN_NAME"];
+                            delete attributes["eqWithStrID.DVA_EQ_ID"];
+
+                            var feildprecursor = "eqWithStrID.";
+
+                            var pkID = Object.keys(attributes).map((key, index) => {
+                                return key.substr(feildprecursor.length + 1);
+                            }).filter((value, index, self) => { return self.indexOf(value) === index; })
+
+                            for (var i = 0; i < pkID.length; i++) {
+                                var code = pkID[i];
+                                var acoeff = attributes[feildprecursor + "a" + code];
+                                var bcoeff = attributes[feildprecursor + "b" + code];
+
+                                if (acoeff != null && bcoeff != null)
+                                    this.selectedStudyArea.CoordinatedReach.AddFlowCoefficient("PK" + code, acoeff, bcoeff);
+
+                            }//next i
+                            this.toaster.pop('success', "Selected reach is a coordinated reach", "Please continue", 5000);
+                        }
+
+                    }, (error) => {
+                        //sm when complete
+                        //console.log('Regression query failed, HTTP Error');
+                        this.toaster.pop('error', "There was an HTTP error querying coordinated reach", "Please retry", 0);
+
+                    });
         }
 
         public queryRegressionRegions() {

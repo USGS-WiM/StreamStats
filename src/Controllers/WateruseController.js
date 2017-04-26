@@ -21,7 +21,7 @@ var StreamStats;
         var WateruseController = (function (_super) {
             __extends(WateruseController, _super);
             function WateruseController($scope, $http, studyAreaService, modal, $timeout) {
-                _super.call(this, $http, configuration.baseurls.StreamStats);
+                _super.call(this, $http, configuration.baseurls.StreamStatsServices);
                 this.$timeout = $timeout;
                 $scope.vm = this;
                 this.modalInstance = modal;
