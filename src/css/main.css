@@ -745,7 +745,7 @@ div.leaflet-top > .elevation {
     ===========================
 */
 
-        @media print{
+    @media print{
         body * {
             visibility: hidden;
             -webkit-print-color-adjust: exact !important; 

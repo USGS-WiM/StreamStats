@@ -178,54 +178,34 @@ var StreamStats;
                 //ga event
                 this.angulartics.eventTrack('Download', { category: 'Report', label: 'CSV' });
                 var filename = 'data.csv';
-                var processParameterTable = function (data) {
-                    var finalVal = '\n\nParameters\n';
-                    if (_this.studyAreaService.selectedStudyArea.Disclaimers['isRegulated'])
-                        finalVal += 'Name,Value,Reglated Value, Unregulated Value, Unit\n';
-                    else
-                        finalVal += 'Parameter Code,Parameter Name,Value,Unit\n';
-                    data.forEach(function (item) {
-                        if (_this.studyAreaService.selectedStudyArea.Disclaimers['isRegulated'])
-                            finalVal += item.code + ',' + item.name + ',' + item.value + ',' + item.unRegulatedValue.toFixed(2) + ',' + item.regulatedValue.toFixed(2) + ',' + item.unit + '\n';
-                        else
-                            finalVal += item.code + ',"' + item.description + '",' + item.value + ',' + item.unit + '\n';
-                    });
-                    return finalVal + '\n';
+                var processMainParameterTable = function (data) {
+                    var finalVal = 'Basin Characteristics\n';
+                    finalVal += _this.tableToCSV($('#mainParamTable'));
+                    return finalVal + '\r\n';
                 };
                 var processScenarioParamTable = function (statGroup) {
                     var finalVal = '';
                     statGroup.RegressionRegions.forEach(function (regressionRegion) {
-                        //console.log('regression regions loop: ', regressionRegion)
                         //bail if in Area-Averaged section
                         if (regressionRegion.Name == 'Area-Averaged')
                             return;
+                        //table header
                         var regionPercent = 'n/a';
                         if (regressionRegion.PercentWeight)
                             regionPercent = regressionRegion.PercentWeight.toFixed(0) + ' Percent ';
-                        finalVal += statGroup.Name + ' Parameters, ' + regionPercent + regressionRegion.Name.split("_").join(" ") + '\n';
-                        finalVal += 'Parameter Code,Parameter Name,Value,Min Limit, Max Limit\n';
-                        if (regressionRegion.Parameters) {
-                            regressionRegion.Parameters.forEach(function (item) {
-                                //console.log('here', item)
-                                var limitMin = 'n/a';
-                                var limitMax = 'n/a';
-                                if (item.Limits) {
-                                    limitMin = item.Limits.Min.toFixed(2);
-                                    limitMax = item.Limits.Max.toFixed(2);
-                                }
-                                finalVal += item.Code + ',' + item.Name + ',' + item.Value + ',' + limitMin + ',' + limitMax + '\n';
-                            });
-                        }
+                        finalVal += '\r\n' + statGroup.Name + ' Parameters,' + regionPercent + regressionRegion.Name.split("_").join(" ") + '\r\n';
+                        //get this table by ID
+                        finalVal += _this.tableToCSV($('#' + _this.camelize(statGroup.Name + regressionRegion.Name + 'ScenarioParamTable'))) + '\r\n';
                     });
-                    return finalVal + '\n';
+                    return finalVal + '\r\n';
                 };
                 var processDisclaimers = function (statGroup) {
                     //console.log('Process disclaimers statGroup: ', statGroup);
-                    var finalVal = '*** ' + statGroup.Name + ' Disclaimers ***\n';
+                    var finalVal = '*** ' + statGroup.Name + ' Disclaimers ***\r\n';
                     angular.forEach(statGroup.Disclaimers, function (i, v) {
-                        finalVal += v + ',' + i + '\n';
+                        finalVal += v + ',' + i + '\r\n';
                     });
-                    return finalVal + '\n';
+                    return finalVal + '\r\n';
                 };
                 var processScenarioFlowTable = function (statGroup) {
                     //console.log('ScenarioFlowTable statGroup: ', statGroup);
@@ -233,43 +213,33 @@ var StreamStats;
                     statGroup.RegressionRegions.forEach(function (regressionRegion) {
                         //console.log('ScenarioFlowTable regressionRegion: ', regressionRegion);
                         if (regressionRegion.Results) {
+                            //table header
                             var regionPercent = '';
                             if (regressionRegion.PercentWeight)
                                 regionPercent = regressionRegion.PercentWeight.toFixed(0) + ' Percent ';
-                            finalVal += '\n' + statGroup.Name + ' Flow Report,' + regionPercent + regressionRegion.Name.split("_").join(" ") + '\n';
-                            var errorName = 'Error';
-                            if (regressionRegion.Results[0].Errors && regressionRegion.Results[0].Errors > 0)
-                                errorName = regressionRegion.Results[0].Errors[0].Name;
-                            finalVal += 'Statistic,Value,Unit,' + errorName + ',Lower Prediction Interval,Upper Prediction Interval\n';
-                            regressionRegion.Results.forEach(function (item) {
-                                //console.log('ScenarioFlowTable regressionRegion item: ', item);
-                                var unit = '';
-                                if (item.Unit)
-                                    unit = item.Unit.Abbr;
-                                var errors = '--';
-                                if (item.Errors && item.Errors.length > 0)
-                                    errors = item.Errors[0].Value;
-                                var lowerPredictionInterval = '--';
-                                if (item.IntervalBounds && item.IntervalBounds.Lower)
-                                    lowerPredictionInterval = item.IntervalBounds.Lower.toUSGSvalue();
-                                var upperPredictionInterval = '--';
-                                if (item.IntervalBounds && item.IntervalBounds.Upper)
-                                    upperPredictionInterval = item.IntervalBounds.Upper.toUSGSvalue();
-                                finalVal += item.Name + ',' + item.Value.toUSGSvalue() + ',' + unit + ',' + errors + ',' + lowerPredictionInterval + ',' + upperPredictionInterval + '\n';
-                            });
+                            finalVal += statGroup.Name + ' Flow Report,' + regionPercent + regressionRegion.Name.split("_").join(" ") + '\r\n';
+                            //add explanatory row if needed
+                            if (regressionRegion.Results[0].IntervalBounds && regressionRegion.Results[0].Errors && regressionRegion.Results[0].Errors.length > 0)
+                                finalVal +=
+                                    '"PIl: Prediction Interval- Upper, PIu: Prediction Interval- Lower, SEe: Standard Error of Estimate, SEp: Standard Error of Prediction, SE: Standard Error (other-- see report)"\r\n';
+                            //get this table by ID
+                            finalVal += _this.tableToCSV($('#' + _this.camelize(statGroup.Name + regressionRegion.Name + 'ScenarioFlowTable'))) + '\r\n\r\n';
                         }
                     });
-                    return finalVal + '\n';
+                    return finalVal + '\r\n';
                 };
-                var csvFile = 'StreamStats Output Report\n\n' + 'State/Region ID,' + this.studyAreaService.selectedStudyArea.RegionID.toUpperCase() + '\nWorkspace ID,' + this.studyAreaService.selectedStudyArea.WorkspaceID + '\nLatitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + '\nLongitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5) + '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString();
-                //process parametertable
-                csvFile += processParameterTable(this.studyAreaService.studyAreaParameterList);
+                //main file header with site information
+                var csvFile = 'StreamStats Output Report\n\n' + 'State/Region ID,' + this.studyAreaService.selectedStudyArea.RegionID.toUpperCase() + '\nWorkspace ID,' + this.studyAreaService.selectedStudyArea.WorkspaceID + '\nLatitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + '\nLongitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5) + '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n\n';
+                //first write main parameter table
+                csvFile += processMainParameterTable(this.studyAreaService.studyAreaParameterList);
+                //next loop over stat groups
                 this.nssService.selectedStatisticsGroupList.forEach(function (statGroup) {
                     csvFile += processScenarioParamTable(statGroup);
                     if (statGroup.Disclaimers.Warnings || statGroup.Disclaimers.Errors)
                         csvFile += processDisclaimers(statGroup);
                     csvFile += processScenarioFlowTable(statGroup);
                 });
+                //download
                 var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
                 if (navigator.msSaveBlob) {
                     navigator.msSaveBlob(blob, filename);
@@ -352,6 +322,48 @@ var StreamStats;
                     //          this allow the insertion of new lines after html
                     pdf.save('Test.pdf');
                 }, margins);
+            };
+            //Helper Methods
+            //-+-+-+-+-+-+-+-+-+-+-+-
+            ReportController.prototype.tableToCSV = function ($table) {
+                var $headers = $table.find('tr:has(th)'), $rows = $table.find('tr:has(td)'), tmpColDelim = String.fromCharCode(11) // vertical tab character
+                , tmpRowDelim = String.fromCharCode(0) // null character
+                , colDelim = '","', rowDelim = '"\r\n"';
+                // Grab text from table into CSV formatted string
+                var csv = '"';
+                csv += formatRows($headers.map(grabRow));
+                csv += rowDelim;
+                csv += formatRows($rows.map(grabRow)) + '"';
+                return csv;
+                //------------------------------------------------------------
+                // Helper Functions 
+                //------------------------------------------------------------
+                // Format the output so it has the appropriate delimiters
+                function formatRows(rows) {
+                    return rows.get().join(tmpRowDelim)
+                        .split(tmpRowDelim).join(rowDelim)
+                        .split(tmpColDelim).join(colDelim);
+                }
+                // Grab and format a row from the table
+                function grabRow(i, row) {
+                    var $row = $(row);
+                    //for some reason $cols = $row.find('td') || $row.find('th') won't work...
+                    var $cols = $row.find('td');
+                    if (!$cols.length)
+                        $cols = $row.find('th');
+                    return $cols.map(grabCol)
+                        .get().join(tmpColDelim);
+                }
+                // Grab and format a column from the table 
+                function grabCol(j, col) {
+                    var $col = $(col), $text = $col.text();
+                    return $text.replace('"', '""'); // escape double quotes
+                }
+            };
+            ReportController.prototype.camelize = function (str) {
+                return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function (letter, index) {
+                    return index == 0 ? letter.toLowerCase() : letter.toUpperCase();
+                }).replace(/\s+/g, '');
             };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-

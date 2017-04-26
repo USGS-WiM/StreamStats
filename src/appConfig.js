@@ -208,7 +208,7 @@ configuration.regions = [
         "Applications": ["CoordinatedReach"], "ScenariosAvailable": true
     },
     { "RegionID": "KS", "Name": "Kansas", "Bounds": [[36.988875,-102.051535],[40.002987,-94.601224]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
-    { "RegionID": "KY", "Name": "Kentucky", "Bounds": [[36.49657,-89.568231],[39.142063,-81.959575]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
+    { "RegionID": "KY", "Name": "Kentucky", "Bounds": [[36.49657,-89.568231],[39.142063,-81.959575]], "Layers": {}, "Applications": ["KarstCheck"], "ScenariosAvailable": true },
     { "RegionID": "LA", "Name": "Louisiana", "Bounds": [[28.939655,-94.041785],[33.023422,-89.021803]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
 	{ "RegionID": "MA", "Name": "Massachusetts", "Bounds": [[41.238279,-73.49884],[42.886877,-69.91778]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
 	{ "RegionID": "MD", "Name": "Maryland", "Bounds": [[37.970255,-79.489865],[39.725461,-75.045623]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
