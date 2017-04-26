@@ -81,7 +81,7 @@
                     </div>
 
                     <!--Study Area Disclaimers-->  
-                    <div class="well well-sm" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers && vm.studyAreaService.selectedStudyArea.Disclaimers.length > 0">
+                    <div class="well well-sm" ng-show="!equals({}, vm.studyAreaService.selectedStudyArea.Disclaimers)">
                         <h3>General Disclaimers</h3>
                         <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.parametersEdited">Parameter values have been edited, computed flows may not apply.</div>
                         <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated">This watershed is {{vm.studyAreaService.regulationCheckResults.percentarearegulated.toFixed(2)}} percent regulated, computed flows may not apply.</div>
@@ -121,7 +121,7 @@
                             </table>
 
                             <!--Scenario Disclaimers-->
-                            <div ng-show="StatisticsGroup.Disclaimers">
+                            <div ng-show="!equals({}, StatisticsGroup.Disclaimers)">
                                 <h3>{{StatisticsGroup.Name}} Disclaimers<small ng-bind="(RegressionRegion.PercentWeight) ? ' [' + RegressionRegion.PercentWeight.toFixed(0) + ' Percent (' + (+vm.areaSQMI.toUSGSvalue() * +RegressionRegion.PercentWeight / 100).toUSGSvalue() + ' square miles) ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h3>
                                 <div class="wim-alert-warning" ng-show="StatisticsGroup.Disclaimers" ng-repeat="headerMsg in StatisticsGroup.Disclaimers">{{headerMsg}}</div> 
                             </div>
