@@ -45,6 +45,7 @@ module StreamStats.Services {
         loadEditedStudyBoundary();
         loadWatershed(rcode:string, workspaceID: string): void
         queryRegressionRegions();
+        queryKarst(regionID: string, regionMapLayerList:any);
         queryCoordinatedReach();
         regressionRegionQueryComplete: boolean;
         baseMap: Object;
@@ -66,8 +67,6 @@ module StreamStats.Services {
             this.studyArea = studyArea;
             this.studyAreaVisible = saVisible;
             this.parameterLoaded = paramState;
-            var x = (<any>L).esri
-
         }
 
     }
@@ -552,6 +551,88 @@ module StreamStats.Services {
                 }).finally(() => {
                     this.regressionRegionQueryLoading = false;
             });
+        }
+
+        public queryKarst(regionID: string, regionMapLayerList: any) {
+
+            this.toaster.pop('wait', "Querying for Karst Areas", "Please wait...", 0);
+            //console.log('in load query regression regions');
+
+            //get layerID of exclude poly
+            var layerID;
+            regionMapLayerList.forEach((item) => {
+                if (item[0] == 'ExcludePolys') layerID = item[1];
+            });
+
+            this.regressionRegionQueryLoading = true;
+            this.regressionRegionQueryComplete = false;
+
+            var watershed = '{"rings":' + angular.toJson(this.selectedStudyArea.Features[1].feature.features[0].geometry.coordinates, null) + ',"spatialReference":{"wkid":4326}}';
+            var options = {
+                where: '1=1',
+                geometry: watershed,
+                geometryType: 'esriGeometryPolygon',
+                inSR: 4326,
+                spatialRel: 'esriSpatialRelIntersects',
+                outFields: '*',
+                returnGeometry: false,
+                outSR: 4326,
+                returnIdsOnly: false,
+                returnCountOnly: false,
+                returnZ: false,
+                returnM: false,
+                returnDistinctValues: false,
+                returnTrueCurves: false,
+                f: 'json'
+            }
+
+            var url = configuration.baseurls.StreamStatsMapServices + configuration.queryparams.SSStateLayers + '/' + layerID + '/query';
+            var request: WiM.Services.Helpers.RequestInfo =
+                new WiM.Services.Helpers.RequestInfo(
+                    url,
+                    true,
+                    WiM.Services.Helpers.methodType.POST,
+                    'json',
+                    options,
+                    { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+                    WiM.Services.Helpers.paramsTransform
+                );
+
+            this.Execute(request).then(
+                (response: any) => {
+
+                    this.toaster.clear();
+                    if (response.status == 200) {
+                        this.toaster.pop('success', "Karst regions were succcessfully queried", "Please continue", 5000);
+                        var karstFound = false;
+
+                        if (response.data.features.length > 0) {
+                            response.data.features.forEach((exclusionArea) => {
+                                if (exclusionArea.attributes.ExcludeCode == 2) {
+                                    karstFound = true;
+                                    this.toaster.pop("warning", "Warning", exclusionArea.attributes.ExcludeReason, 0);
+                                    this.selectedStudyArea.Disclaimers['hasKarst'] = exclusionArea.attributes.ExcludeReason;
+                                }
+                            });
+                            if (!karstFound) this.toaster.pop('success', "No Karst found", "Please continue", 5000);
+                        }                       
+                    }
+
+                    else {
+                        this.toaster.pop('error', "Error", "Karst region query failed", 0);
+                    }
+
+                    //this.queryLandCover();
+
+                }, (error) => {
+                    //sm when complete
+                    //console.log('Regression query failed, HTTP Error');
+                    this.toaster.pop('error', "There was an HTTP error querying Regression regions", "Please retry", 0);
+                    return this.$q.reject(error.data);
+
+                }).finally(() => {
+                    this.regressionRegionQueryLoading = false;
+                });
         }
 
         public upstreamRegulation() {

@@ -57,14 +57,14 @@
 
                     <!--Parameter Table if just basin chars-->
                     <div class="well well-sm" ng-show="vm.nssService.showBasinCharacteristicsTable">
-                        <h4>Basin Characteristics</h4>
-                        <table class="table table-condensed">
+                        <h3>Basin Characteristics</h3>
+                        <table id="mainParamTable" class="mainParamTable table table-condensed">
                             <thead class="param-table">
                                 <tr>
                                     <th>Parameter Code</th>
                                     <th>Parameter Description</th>
                                     <th>Value</th> 
-                                    <th ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated && vm.showRegulation">Unregulated Value</th>
+                                    <th ng-if="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated && vm.showRegulation">Unregulated Value</th>
                                     <th>Unit</th>
                                 </tr>
                             </thead>
@@ -73,7 +73,7 @@
                                     <td ng-bind="parameter.code"></td>
                                     <td ng-bind="parameter.description"></td>
                                     <td ng-bind="parameter.value"></td>
-                                    <td ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated && vm.showRegulation" ng-bind="parameter.unRegulatedValue.toFixed(3)"></td>
+                                    <td ng-if="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated && vm.showRegulation" ng-bind="parameter.unRegulatedValue.toFixed(3)"></td>
                                     <td ng-bind="parameter.unit"></td>
                                 </tr>
                             </tbody>
@@ -81,27 +81,27 @@
                     </div>
 
                     <!--Study Area Disclaimers-->  
-                    <div class="well well-sm" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.parametersEdited || vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated || vm.studyAreaService.selectedStudyArea.Disclaimers.isEdited || vm.studyAreaService.selectedStudyArea.Disclaimers.isInExclusionArea">
-                        <h4>General Disclaimers</h4>
+                    <div class="well well-sm" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers">
+                        <h3>General Disclaimers</h3>
                         <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.parametersEdited">Parameter values have been edited, computed flows may not apply.</div>
                         <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated">This watershed is {{vm.studyAreaService.regulationCheckResults.percentarearegulated.toFixed(2)}} percent regulated, computed flows may not apply.</div>
                         <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isEdited">This watershed has been edited, computed flows may not apply.</div>
-                        <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isInExclusionArea">This watershed is in an exclusion area.</div>
+                        <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isInExclusionArea">{{vm.studyAreaService.selectedStudyArea.Disclaimers.isInExclusionArea}}</div>
+                        <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.hasKarst">{{vm.studyAreaService.selectedStudyArea.Disclaimers.hasKarst}}</div>
                     </div>
             
                     <!--Parameter Table for Flow Report-->
                     <div class="well well-sm" ng-show="vm.nssService.showFlowsTable" ng-repeat="StatisticsGroup in vm.nssService.selectedStatisticsGroupList">
 
-
-                        <div ng-repeat="RegressionRegion in StatisticsGroup.RegressionRegions" ng-hide="RegressionRegion.Name == 'Area-Averaged'">
-                            <h4>{{StatisticsGroup.Name}} Parameters<small ng-bind="(RegressionRegion.PercentWeight) ? ' [' + RegressionRegion.PercentWeight.toFixed(0) + ' Percent (' + (+vm.areaSQMI.toUSGSvalue() * +RegressionRegion.PercentWeight / 100).toUSGSvalue() + ' square miles) ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h4>
-                            <table class="table table-condensed">
+                        <div ng-repeat="RegressionRegion in StatisticsGroup.RegressionRegions" ng-if="RegressionRegion.Name != 'Area-Averaged'">
+                            <h3>{{StatisticsGroup.Name}} Parameters<small ng-bind="(RegressionRegion.PercentWeight) ? ' [' + RegressionRegion.PercentWeight.toFixed(0) + ' Percent (' + (+vm.areaSQMI.toUSGSvalue() * +RegressionRegion.PercentWeight / 100).toUSGSvalue() + ' square miles) ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h3>
+                            <table id="{{vm.camelize(StatisticsGroup.Name + RegressionRegion.Name + 'ScenarioParamTable')}}" class="scenarioParamTable table table-condensed">
                                 <thead class="param-table">
                                 <tr>
                                     <th>Parameter Code</th>
                                     <th>Parameter Name</th>
                                     <th>Value</th>
-                                    <th ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated && vm.showRegulation">Unregulated Value</th>
+                                    <th ng-if="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated && vm.showRegulation">Unregulated Value</th>
                                     <th>Units</th>
                                     <th>Min Limit</th>
                                     <th>Max Limit</th>
@@ -112,7 +112,7 @@
                                         <td ng-bind="parameter.Code"></td>
                                         <td ng-bind="parameter.Name"></td>
                                         <td ng-bind="parameter.Value" ng-class="(parameter.Value < parameter.Limits.Min) || (parameter.Value > parameter.Limits.Max) ? 'wim-warning' : ''"></td>
-                                        <td ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated && vm.showRegulation" ng-bind="parameter.unRegulatedValue.toFixed(3)" ng-class="(parameter.Value < parameter.Limits.Min) || (parameter.Value > parameter.Limits.Max) ? 'wim-warning' : ''"></td>
+                                        <td ng-if="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated && vm.showRegulation" ng-bind="parameter.unRegulatedValue.toFixed(3)" ng-class="(parameter.Value < parameter.Limits.Min) || (parameter.Value > parameter.Limits.Max) ? 'wim-warning' : ''"></td>
                                         <td ng-bind="parameter.UnitType.Unit"></td>
                                         <td ng-bind="parameter.Limits.Min"></td>
                                         <td ng-bind="parameter.Limits.Max"></td>
@@ -121,44 +121,44 @@
                             </table>
 
                             <!--Scenario Disclaimers-->
-                            <div ng-show="StatisticsGroup.Disclaimers.Warnings || StatisticsGroup.Disclaimers.Errors">
-                                <h4>{{StatisticsGroup.Name}} Disclaimers<small ng-bind="(RegressionRegion.PercentWeight) ? ' [' + RegressionRegion.PercentWeight.toFixed(0) + ' Percent (' + (+vm.areaSQMI.toUSGSvalue() * +RegressionRegion.PercentWeight / 100).toUSGSvalue() + ' square miles) ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h4>
-                                <div class="wim-alert-warning"  ng-repeat="headerMsg in StatisticsGroup.Disclaimers">{{headerMsg}}</div> 
+                            <div ng-show="StatisticsGroup.Disclaimers">
+                                <h3>{{StatisticsGroup.Name}} Disclaimers<small ng-bind="(RegressionRegion.PercentWeight) ? ' [' + RegressionRegion.PercentWeight.toFixed(0) + ' Percent (' + (+vm.areaSQMI.toUSGSvalue() * +RegressionRegion.PercentWeight / 100).toUSGSvalue() + ' square miles) ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h3>
+                                <div class="wim-alert-warning" ng-show="StatisticsGroup.Disclaimers" ng-repeat="headerMsg in StatisticsGroup.Disclaimers">{{headerMsg}}</div> 
                             </div>
                         </div>
 
                         <!--Flow Report-->
                         <div ng-repeat="RegressionRegion in StatisticsGroup.RegressionRegions">
 
-                            <h4>{{StatisticsGroup.Name}} Flow Report<small ng-bind="(RegressionRegion.PercentWeight) ? ' [' + RegressionRegion.PercentWeight.toFixed(0) + ' Percent (' + (+vm.areaSQMI.toUSGSvalue() * +RegressionRegion.PercentWeight / 100).toUSGSvalue() + ' square miles) ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h4>
-                            <table class="table table-condensed">
-                                <thead class="param-table">
+                            <h3>{{StatisticsGroup.Name}} Flow Report<small ng-bind="(RegressionRegion.PercentWeight) ? ' [' + RegressionRegion.PercentWeight.toFixed(0) + ' Percent (' + (+vm.areaSQMI.toUSGSvalue() * +RegressionRegion.PercentWeight / 100).toUSGSvalue() + ' square miles) ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h3>
+                            <small ng-show="RegressionRegion.Results[0].IntervalBounds || RegressionRegion.Results[0].Errors && RegressionRegion.Results[0].Errors.length > 0">PIl: Prediction Interval-Upper, PIu: Prediction Interval-Lower, SEe: Standard Error of Estimate, SEp: Standard Error of Prediction, SE: Standard Error (other -- see report)</small>
+                            <table id="{{vm.camelize(StatisticsGroup.Name + RegressionRegion.Name + 'ScenarioFlowTable')}}"class="scenarioFlowTable table table-condensed">
+                                <thead class="flow-table">
                                 <tr>
                                     <th>Statistic</th>
                                     <th>Value</th>
-                                    <th ng-show ="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated && vm.showRegulation">Unregulated Value</th>  
+                                    <th ng-if="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated && vm.showRegulation">Unregulated Value</th> 
                                     <th>Unit</th>
-                                    <th ng-show="RegressionRegion.Results[0].Errors[0].Value">{{RegressionRegion.Results[0].Errors[0].Name}}</th>
-                                    <th ng-show="RegressionRegion.Results[0].EquivalentYears">Equivalent years of record</th>
-                                    <th ng-show="RegressionRegion.Results[0].IntervalBounds.Lower">Lower Prediction Interval</th>
-                                    <th ng-show="RegressionRegion.Results[0].IntervalBounds.Upper">Upper Prediction Interval</th>
+                                    <th ng-if="RegressionRegion.Results[0].IntervalBounds.Lower">PIl</th>
+                                    <th ng-if="RegressionRegion.Results[0].IntervalBounds.Upper">PIu</th>
+                                    <th ng-if="RegressionRegion.Results[0].Errors && RegressionRegion.Results[0].Errors.length > 0" ng-repeat="error in RegressionRegion.Results[0].Errors" ng-bind="error.Code"></th>
+                                    <th ng-if="RegressionRegion.Results[0].EquivalentYears > 0">Equiv. Yrs.</th>
                                 </tr>
                                 </thead>
                                 <tbody >
                                     <tr ng-repeat="parameter in RegressionRegion.Results">
                                         <td>{{parameter.Name}}</td>
                                         <td ng-bind="parameter.Value.toUSGSvalue()"></td>
-                                        <td ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated && vm.showRegulation" ng-bind="parameter.unRegulatedValue.toUSGSvalue()"></td>
+                                        <td ng-if="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated && vm.showRegulation" ng-bind="parameter.unRegulatedValue.toUSGSvalue()"></td>
                                         <td ng-bind="parameter.Unit.Abbr"></td>
-                                        <td ng-show="parameter.Errors[0].Value" ng-bind="(parameter.Errors[0].Value) ? parameter.Errors[0].Value : '--'"></td>   <!--  SHOW SOME DASHES IF ERROR IS BLANK -->
-                                        <td ng-show="parameter.EquivalentYears" ng-bind="parameter.EquivalentYears"></td>
-                                        <td ng-show="parameter.IntervalBounds.Lower" ng-bind="parameter.IntervalBounds.Lower.toUSGSvalue()"></td>
-                                        <td ng-show="parameter.IntervalBounds.Upper" ng-bind="parameter.IntervalBounds.Upper.toUSGSvalue()"></td>
+                                        <td ng-if="parameter.IntervalBounds.Lower" ng-bind="parameter.IntervalBounds.Lower.toUSGSvalue()"></td>
+                                        <td ng-if="parameter.IntervalBounds.Upper" ng-bind="parameter.IntervalBounds.Upper.toUSGSvalue()"></td>
+                                        <td ng-if="parameter.Errors && parameter.Errors.length > 0" ng-repeat="error in parameter.Errors" ng-bind="(error.Value) ? error.Value.toUSGSvalue() : '--'"></td>
+                                        <td ng-if="parameter.EquivalentYears" ng-bind="parameter.EquivalentYears"></td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
- 
 
                         <h4>{{StatisticsGroup.Name}} Citations</h4>
                         <div ng-repeat="citation in StatisticsGroup.Citations">
