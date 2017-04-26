@@ -21,10 +21,10 @@ var StreamStats;
     var Models;
     (function (Models) {
         var StudyArea = (function () {
-            //public Scenarios: Array<WiM.Models.IScenario>;
             function StudyArea(region, point) {
                 this.RegionID = region;
                 this.Pourpoint = point;
+                this.CoordinatedReach = null;
             }
             return StudyArea;
         }());

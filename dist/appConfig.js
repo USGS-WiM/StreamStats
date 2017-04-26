@@ -1,7 +1,7 @@
 var configuration = {}
-configuration.version="4.1.2"
+configuration.version="4.1.3"
 configuration.environment = 'development'
-configuration.cloud = false;
+configuration.cloud = true;
 
 configuration.baseurls =
 {   
@@ -36,7 +36,8 @@ configuration.queryparams =
     'RegressionRegionQueryService': '/arcgis/rest/services/NSS/nssRegions_Test/MapServer/exts/PercentOverlayRESTSOE/PercentOverlay',
     'SSNavigationServices': '/streamstatsservices/navigation/{0}.geojson?rcode={1}&',
     'Wateruse': '/streamstatsservices/wateruse.json?rcode={0}&workspaceID={1}&startyear={2}&endyear={3}',
-    'WateruseConfig': '/streamstatsservices/wateruse.json?rcode={0}'
+    'WateruseConfig': '/streamstatsservices/wateruse.json?rcode={0}',
+    'coordinatedReachQueryService':'/arcgis/rest/services/coordinatedreaches/{0}/MapServer/0/query?geometry={1},{2},{3},{4}&geometryType=esriGeometryEnvelope&inSR={5}&spatialRel=esriSpatialRelIntersects&outFields={6}&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson'
 }
 
 //override streamstats arguments if on production
@@ -136,7 +137,7 @@ configuration.basemaps =
 configuration.regions = [
 	{ "RegionID": "AK", "Name": "Alaska", "Bounds": [[51.583032,-178.217598],[71.406235,-129.992235]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "AL", "Name": "Alabama", "Bounds": [[30.233604,-88.472952],[35.016033,-84.894016]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
-    { "RegionID": "AR", "Name": "Arkansas", "Bounds": [[33.010151,-94.617257],[36.492811,-89.645479]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
+    { "RegionID": "AR", "Name": "Arkansas", "Bounds": [[33.010151,-94.617257],[36.492811,-89.645479]], "Layers": {}, "Applications": [], "ScenariosAvailable": false },
     { "RegionID": "AS", "Name": "American Samoa", "Bounds": [[-14.375555, -170.82611], [-14.166389, -169.438323]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "AZ", "Name": "Arizona", "Bounds": [[31.335634,-114.821761],[37.003926,-109.045615]], "Layers": {}, "Applications": [], "ScenariosAvailable": false},
     { "RegionID": "CA", "Name": "California", "Bounds": [[32.535781,-124.392638],[42.002191,-114.12523]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
@@ -202,9 +203,12 @@ configuration.regions = [
     },
     { "RegionID": "ID", "Name": "Idaho", "Bounds": [[41.994599,-117.236921],[48.99995,-111.046771]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "IL", "Name": "Illinois", "Bounds": [[36.986822,-91.516284],[42.509363,-87.507909]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
-    { "RegionID": "IN", "Name": "Indiana", "Bounds": [[37.776224,-88.10149],[41.76554,-84.787446]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
+    {
+        "RegionID": "IN", "Name": "Indiana", "Bounds": [[37.776224, -88.10149], [41.76554, -84.787446]], "Layers": {},
+        "Applications": ["CoordinatedReach"], "ScenariosAvailable": true
+    },
     { "RegionID": "KS", "Name": "Kansas", "Bounds": [[36.988875,-102.051535],[40.002987,-94.601224]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
-    { "RegionID": "KY", "Name": "Kentucky", "Bounds": [[36.49657,-89.568231],[39.142063,-81.959575]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
+    { "RegionID": "KY", "Name": "Kentucky", "Bounds": [[36.49657,-89.568231],[39.142063,-81.959575]], "Layers": {}, "Applications": ["KarstCheck"], "ScenariosAvailable": true },
     { "RegionID": "LA", "Name": "Louisiana", "Bounds": [[28.939655,-94.041785],[33.023422,-89.021803]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
 	{ "RegionID": "MA", "Name": "Massachusetts", "Bounds": [[41.238279,-73.49884],[42.886877,-69.91778]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
 	{ "RegionID": "MD", "Name": "Maryland", "Bounds": [[37.970255,-79.489865],[39.725461,-75.045623]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
@@ -254,7 +258,7 @@ configuration.regions = [
     { "RegionID": "VA", "Name": "Virginia", "Bounds": [[36.541623,-83.675177],[39.456998,-75.242219]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },	
     { "RegionID": "VT", "Name": "Vermont", "Bounds": [[42.725852,-73.436],[45.013351,-71.505372]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "VI", "Name": "Virgin Islands", "Bounds": [[17.676666, -65.026947], [18.377777, -64.560287]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
-    { "RegionID": "WA", "Name": "Washington", "Bounds": [[45.543092,-124.732769],[48.999931,-116.919132]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
+    { "RegionID": "WA", "Name": "Washington", "Bounds": [[45.543092,-124.732769],[48.999931,-116.919132]], "Layers": {}, "Applications": [], "ScenariosAvailable": false },
     { "RegionID": "WI", "Name": "Wisconsin", "Bounds": [[42.489152,-92.885397],[46.952479,-86.967712]], "Layers": {}, "Applications": [], "ScenariosAvailable": false },	
     { "RegionID": "WV", "Name": "West Virginia", "Bounds": [[37.20491,-82.647158],[40.637203,-77.727467]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "WY", "Name": "Wyoming", "Bounds": [[40.994289,-111.053428],[45.002793,-104.051705]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
@@ -277,10 +281,10 @@ if (configuration.cloud) {
     configuration.queryparams.regulationService = '/arcgis/rest/services/regulations/{0}/MapServer/exts/RegulationRESTSOE/Regulation',
 
     configuration.regions.forEach(function (value,index) {
-        if (value.RegionID == 'CO') {
+        if (value.RegionID === 'CO') {
             value.Layers.CO_Regulation.url = configuration.baseurls['GISserver'] + "/arcgis/rest/services/regulations/co/MapServer";
         }
-        if (value.RegionID == 'MT') {
+        if (value.RegionID === 'MT') {
             value.Layers.MT_Regulation.url = configuration.baseurls['GISserver'] + "/arcgis/rest/services/regulations/mt/MapServer";
         }
     });

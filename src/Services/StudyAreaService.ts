@@ -45,6 +45,8 @@ module StreamStats.Services {
         loadEditedStudyBoundary();
         loadWatershed(rcode:string, workspaceID: string): void
         queryRegressionRegions();
+        queryKarst(regionID: string, regionMapLayerList:any);
+        queryCoordinatedReach();
         regressionRegionQueryComplete: boolean;
         baseMap: Object;
         showModifyBasinCharacterstics: boolean;
@@ -93,7 +95,7 @@ module StreamStats.Services {
             }
         }
         public get selectedStudyArea(): Models.IStudyArea {
-            return this._selectedStudyArea
+            return this._selectedStudyArea           
         }
         public studyAreaParameterList: Array<IParameter>;
         public drawControl: any;
@@ -254,7 +256,7 @@ module StreamStats.Services {
                             if (item.name == 'globalwatershedpoint') {
                                 //get and set geometry
                                 var geom = item.feature.features[0].bbox 
-                                this.selectedStudyArea.Pourpoint = new WiM.Models.Point(geom[0], geom[1], item.feature.crs.properties.code);
+                                this.selectedStudyArea.Pourpoint = new WiM.Models.Point(geom[1], geom[0], item.feature.crs.properties.code);
                                 return;
                             }//end if
                         });           
@@ -434,6 +436,62 @@ module StreamStats.Services {
             });
         }
 
+        public queryCoordinatedReach() {
+
+                this.toaster.pop('wait', "Checking if study area is a coordinated reach.", "Please wait...", 0);
+                           
+                var ppt = this.selectedStudyArea.Pourpoint;
+                var ex = new L.Circle([ppt.Longitude, ppt.Latitude], 50).getBounds();
+                var outFields = "eqWithStrID.BASIN_NAME,eqWithStrID.DVA_EQ_ID,eqWithStrID.a10,eqWithStrID.b10,eqWithStrID.a25,eqWithStrID.b25,eqWithStrID.a50,eqWithStrID.b50,eqWithStrID.a100,eqWithStrID.b100,eqWithStrID.a500,eqWithStrID.b500";
+                var url = configuration.baseurls['GISserver'] + configuration.queryparams['coordinatedReachQueryService']
+                    .format(this.selectedStudyArea.RegionID.toLowerCase(), ex.getNorth(), ex.getWest(), ex.getSouth(), ex.getEast(), ppt.crs, outFields);
+
+                var request: WiM.Services.Helpers.RequestInfo =
+                    new WiM.Services.Helpers.RequestInfo(url, true);
+
+                this.Execute(request).then(
+                    (response: any) => {
+                        if (response.data.error) {
+                            //console.log('query error');
+                            this.toaster.pop('error', "There was an error querying coordinated reach", response.data.error.message, 0);
+                            return;
+                        }
+
+                        if (response.data.features.length > 0) {
+                            var attributes = response.data.features[0].attributes
+                            //console.log('query success');
+
+                            this.selectedStudyArea.CoordinatedReach = new Models.CoordinatedReach(attributes["eqWithStrID.BASIN_NAME"], attributes["eqWithStrID.DVA_EQ_ID"]);
+                            //remove from arrays
+                            delete attributes["eqWithStrID.BASIN_NAME"];
+                            delete attributes["eqWithStrID.DVA_EQ_ID"];
+
+                            var feildprecursor = "eqWithStrID.";
+
+                            var pkID = Object.keys(attributes).map((key, index) => {
+                                return key.substr(feildprecursor.length + 1);
+                            }).filter((value, index, self) => { return self.indexOf(value) === index; })
+
+                            for (var i = 0; i < pkID.length; i++) {
+                                var code = pkID[i];
+                                var acoeff = attributes[feildprecursor + "a" + code];
+                                var bcoeff = attributes[feildprecursor + "b" + code];
+
+                                if (acoeff != null && bcoeff != null)
+                                    this.selectedStudyArea.CoordinatedReach.AddFlowCoefficient("PK" + code, acoeff, bcoeff);
+
+                            }//next i
+                            this.toaster.pop('success', "Selected reach is a coordinated reach", "Please continue", 5000);
+                        }
+
+                    }, (error) => {
+                        //sm when complete
+                        //console.log('Regression query failed, HTTP Error');
+                        this.toaster.pop('error', "There was an HTTP error querying coordinated reach", "Please retry", 0);
+
+                    });
+        }
+
         public queryRegressionRegions() {
 
             this.toaster.pop('wait', "Querying regression regions with your Basin", "Please wait...", 0);
@@ -493,6 +551,88 @@ module StreamStats.Services {
                 }).finally(() => {
                     this.regressionRegionQueryLoading = false;
             });
+        }
+
+        public queryKarst(regionID: string, regionMapLayerList: any) {
+
+            this.toaster.pop('wait', "Querying for Karst Areas", "Please wait...", 0);
+            //console.log('in load query regression regions');
+
+            //get layerID of exclude poly
+            var layerID;
+            regionMapLayerList.forEach((item) => {
+                if (item[0] == 'ExcludePolys') layerID = item[1];
+            });
+
+            this.regressionRegionQueryLoading = true;
+            this.regressionRegionQueryComplete = false;
+
+            var watershed = '{"rings":' + angular.toJson(this.selectedStudyArea.Features[1].feature.features[0].geometry.coordinates, null) + ',"spatialReference":{"wkid":4326}}';
+            var options = {
+                where: '1=1',
+                geometry: watershed,
+                geometryType: 'esriGeometryPolygon',
+                inSR: 4326,
+                spatialRel: 'esriSpatialRelIntersects',
+                outFields: '*',
+                returnGeometry: false,
+                outSR: 4326,
+                returnIdsOnly: false,
+                returnCountOnly: false,
+                returnZ: false,
+                returnM: false,
+                returnDistinctValues: false,
+                returnTrueCurves: false,
+                f: 'json'
+            }
+
+            var url = configuration.baseurls.StreamStatsMapServices + configuration.queryparams.SSStateLayers + '/' + layerID + '/query';
+            var request: WiM.Services.Helpers.RequestInfo =
+                new WiM.Services.Helpers.RequestInfo(
+                    url,
+                    true,
+                    WiM.Services.Helpers.methodType.POST,
+                    'json',
+                    options,
+                    { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+                    WiM.Services.Helpers.paramsTransform
+                );
+
+            this.Execute(request).then(
+                (response: any) => {
+
+                    this.toaster.clear();
+                    if (response.status == 200) {
+                        this.toaster.pop('success', "Karst regions were succcessfully queried", "Please continue", 5000);
+                        var karstFound = false;
+
+                        if (response.data.features.length > 0) {
+                            response.data.features.forEach((exclusionArea) => {
+                                if (exclusionArea.attributes.ExcludeCode == 2) {
+                                    karstFound = true;
+                                    this.toaster.pop("warning", "Warning", exclusionArea.attributes.ExcludeReason, 0);
+                                    this.selectedStudyArea.Disclaimers['hasKarst'] = exclusionArea.attributes.ExcludeReason;
+                                }
+                            });
+                            if (!karstFound) this.toaster.pop('success', "No Karst found", "Please continue", 5000);
+                        }                       
+                    }
+
+                    else {
+                        this.toaster.pop('error', "Error", "Karst region query failed", 0);
+                    }
+
+                    //this.queryLandCover();
+
+                }, (error) => {
+                    //sm when complete
+                    //console.log('Regression query failed, HTTP Error');
+                    this.toaster.pop('error', "There was an HTTP error querying Regression regions", "Please retry", 0);
+                    return this.$q.reject(error.data);
+
+                }).finally(() => {
+                    this.regressionRegionQueryLoading = false;
+                });
         }
 
         public upstreamRegulation() {

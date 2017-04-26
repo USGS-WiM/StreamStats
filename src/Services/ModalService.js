@@ -46,6 +46,14 @@ var StreamStats;
                 var msg;
                 try {
                     switch (mType) {
+                        case SSModalType.e_exploration:
+                            return {
+                                templateUrl: 'Views/explorationview.html',
+                                controller: 'StreamStats.Controllers.ExplorationToolsModalController',
+                                size: 'lg',
+                                backdropClass: 'backdropZ',
+                                windowClass: 'windowZ',
+                            };
                         case SSModalType.e_report:
                             return {
                                 templateUrl: 'Views/reportview.html',
@@ -107,6 +115,7 @@ var StreamStats;
             SSModalType[SSModalType["e_about"] = 3] = "e_about";
             SSModalType[SSModalType["e_help"] = 4] = "e_help";
             SSModalType[SSModalType["e_navreport"] = 5] = "e_navreport";
+            SSModalType[SSModalType["e_exploration"] = 6] = "e_exploration";
         })(Services.SSModalType || (Services.SSModalType = {}));
         var SSModalType = Services.SSModalType;
         factory.$inject = ['$modal'];
