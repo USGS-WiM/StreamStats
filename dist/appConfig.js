@@ -137,7 +137,7 @@ configuration.basemaps =
 configuration.regions = [
 	{ "RegionID": "AK", "Name": "Alaska", "Bounds": [[51.583032,-178.217598],[71.406235,-129.992235]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "AL", "Name": "Alabama", "Bounds": [[30.233604,-88.472952],[35.016033,-84.894016]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
-    { "RegionID": "AR", "Name": "Arkansas", "Bounds": [[33.010151,-94.617257],[36.492811,-89.645479]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
+    { "RegionID": "AR", "Name": "Arkansas", "Bounds": [[33.010151,-94.617257],[36.492811,-89.645479]], "Layers": {}, "Applications": [], "ScenariosAvailable": false },
     { "RegionID": "AS", "Name": "American Samoa", "Bounds": [[-14.375555, -170.82611], [-14.166389, -169.438323]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "AZ", "Name": "Arizona", "Bounds": [[31.335634,-114.821761],[37.003926,-109.045615]], "Layers": {}, "Applications": [], "ScenariosAvailable": false},
     { "RegionID": "CA", "Name": "California", "Bounds": [[32.535781,-124.392638],[42.002191,-114.12523]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
@@ -258,7 +258,7 @@ configuration.regions = [
     { "RegionID": "VA", "Name": "Virginia", "Bounds": [[36.541623,-83.675177],[39.456998,-75.242219]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },	
     { "RegionID": "VT", "Name": "Vermont", "Bounds": [[42.725852,-73.436],[45.013351,-71.505372]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "VI", "Name": "Virgin Islands", "Bounds": [[17.676666, -65.026947], [18.377777, -64.560287]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
-    { "RegionID": "WA", "Name": "Washington", "Bounds": [[45.543092,-124.732769],[48.999931,-116.919132]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
+    { "RegionID": "WA", "Name": "Washington", "Bounds": [[45.543092,-124.732769],[48.999931,-116.919132]], "Layers": {}, "Applications": [], "ScenariosAvailable": false },
     { "RegionID": "WI", "Name": "Wisconsin", "Bounds": [[42.489152,-92.885397],[46.952479,-86.967712]], "Layers": {}, "Applications": [], "ScenariosAvailable": false },	
     { "RegionID": "WV", "Name": "West Virginia", "Bounds": [[37.20491,-82.647158],[40.637203,-77.727467]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
     { "RegionID": "WY", "Name": "Wyoming", "Bounds": [[40.994289,-111.053428],[45.002793,-104.051705]], "Layers": {}, "Applications": [], "ScenariosAvailable": true },
