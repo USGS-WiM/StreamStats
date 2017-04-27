@@ -72,6 +72,16 @@ var StreamStats;
                 enumerable: true,
                 configurable: true
             });
+            Object.defineProperty(ReportController.prototype, "canShowDisclaimers", {
+                get: function () {
+                    if (this.studyAreaService.selectedStudyArea.Disclaimers == null)
+                        return false;
+                    var canshow = Object.keys(this.studyAreaService.selectedStudyArea.Disclaimers).length > 0;
+                    return canshow;
+                },
+                enumerable: true,
+                configurable: true
+            });
             Object.defineProperty(ReportController.prototype, "showRegulation", {
                 get: function () {
                     if (this.regionService.selectedRegion.Applications.indexOf("RegulationFlows") > -1)
@@ -84,6 +94,12 @@ var StreamStats;
             });
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
+            ReportController.prototype.HasDisclaimers = function (disclaimer) {
+                if (disclaimer == null)
+                    return false;
+                var canshow = Object.keys(disclaimer).length > 0;
+                return canshow;
+            };
             ReportController.prototype.initMap = function () {
                 this.center = new Center(39, -96, 4);
                 this.layers = {
