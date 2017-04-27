@@ -93,6 +93,11 @@ module StreamStats.Controllers {
             }
             return false;
         }
+        public get canShowDisclaimers(): boolean {
+            if (this.studyAreaService.selectedStudyArea.Disclaimers == null) return false;
+            var canshow = Object.keys(this.studyAreaService.selectedStudyArea.Disclaimers).length > 0;            
+            return canshow;            
+        }
         public areaSQMI: any
         public get showRegulation(): boolean {
             if (this.regionService.selectedRegion.Applications.indexOf("RegulationFlows") > -1) return true;
@@ -133,6 +138,12 @@ module StreamStats.Controllers {
 
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
+        public HasDisclaimers(disclaimer: any): boolean {
+            if (disclaimer == null) return false;
+            var canshow = Object.keys(disclaimer).length > 0;
+            return canshow;  
+
+        }
         private initMap(): void {
             this.center = new Center(39, -96, 4);
             this.layers = {
@@ -465,6 +476,7 @@ module StreamStats.Controllers {
                 return index == 0 ? letter.toLowerCase() : letter.toUpperCase();
             }).replace(/\s+/g, '');
         }
+
 
 
     }//end class
