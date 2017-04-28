@@ -398,11 +398,11 @@ div.leaflet-top > .elevation {
     position: relative;
     top:-2px;
     font-weight:300;
+    font-size: 18px;
 }
 
 .navBarButton{
     margin-top:12px;
-    margin-right:12px;
 }
 
 /*
