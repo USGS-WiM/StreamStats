@@ -30,12 +30,12 @@ function inc(importance) {
     gulp.src('./src/appConfig.js')
         .pipe(replace(/configuration.version="([^"]+)"/g, 'configuration.version="' + newVer + '"'))
         .pipe(gulp.dest('./src/'))
-        .pipe(git.add());
+        //.pipe(git.add());
 
     gulp.src('./dist/appConfig.js')
         .pipe(replace(/configuration.version="([^"]+)"/g, 'configuration.version="' + newVer + '"'))
         .pipe(gulp.dest('./dist/'))
-        .pipe(git.add());
+        //.pipe(git.add());
 
     // get all the files to bump version in 
     gulp.src(['package.json'])
