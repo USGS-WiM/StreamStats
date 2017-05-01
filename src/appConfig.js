@@ -1,5 +1,5 @@
 var configuration = {}
-configuration.version="4.1.2"
+configuration.version="4.1.3"
 configuration.environment = 'development'
 configuration.cloud = true;
 
