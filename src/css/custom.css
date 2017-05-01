@@ -1,0 +1,83 @@
+.navbar-btn{
+    font-size: 12px;
+    letter-spacing: 0;
+    position: relative;
+    top: 6px;
+    margin-right: 0 !important;
+}
+.navbar-btn:hover{
+    font-size: 12px;
+}
+
+.navbar-app{
+    height: 71px !important;
+}
+
+.ng-scope.ng-isolate-scope.angular-leaflet-control-layers-collapsed:before {
+    font-size: 14px;
+    display: block;
+    content: 'Layers';
+    background-color: white;
+    letter-spacing: 0.25px;
+    /* height: 10px; */
+    width: 50px;
+    margin-left: -65px;
+    box-sizing: border-box;
+    padding: 7.5px 3px 7.5px 0;
+    text-align: right;
+    margin-top: -15px;
+    /* box-shadow: 1px 1px 5px #333; */
+}
+.angular-leaflet-control-layers-collapsed{
+    box-shadow: none !important;
+}
+
+
+.exploration-tools-collapsed.ng-scope:after {
+    font-size: 14px;
+    display: block;
+    content: 'Exploration Tools';
+    background-color: white;
+    letter-spacing: 0.25px;
+    /* height: 10px; */
+    width: 115px;
+    margin-left: 35px;
+    box-sizing: border-box;
+    padding: 7.5px 3px 7.5px 0;
+    text-align: left;
+    margin-top: 0;
+    /* box-shadow: 1px 1px 5px #333; */
+}
+.exploration-tools-collapsed{
+    box-shadow: none !important;
+    top: 10px !important;
+}
+.exploration-tools-expanded{
+    top: 20px !important;
+    z-index: 1001 !important;
+}
+@media only screen and (max-width: 330px) {
+    .exploration-tools-expanded{
+        width: 89% !important;
+        top: 70px !important;
+    }
+}
+.leaflet-top .leaflet-control{
+    margin-top: 55px !important;
+    box-shadow: none !important;
+}
+
+.leaflet-bar a:first-child{
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+}
+.leaflet-bar a:last-child {
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+
+@media only screen and (max-width: 430px) {
+    .leaflet-top{
+        display: none !important;
+    }
+}
