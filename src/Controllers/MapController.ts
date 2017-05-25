@@ -287,16 +287,7 @@ module StreamStats.Controllers {
                 }
             });
 
-            //$scope.$watch(() => this.regionServices.resetView, (newval, oldval) => {
-            //    //console.log('reset view listener ', newval, oldval);
-            //    if (newval) this.resetMap();
-            //});
-
             $scope.$on('$locationChangeStart',() => this.updateRegion());
-
-            //commented out, causing issues
-            //$scope.$watch(() => studyArea.doDelineateFlag, (newval, oldval) => newval ? this.cursorStyle = 'crosshair' : this.cursorStyle = 'pointer');
-            //$scope.$watch(() => this.explorationService.selectedMethod!= null ? this.cursorStyle = 'crosshair' : this.cursorStyle = 'pointer');
 
             // check if region was explicitly set.
             if ($stateParams.rcode) {
@@ -310,7 +301,6 @@ module StreamStats.Controllers {
 
             //watch for result of regressionregion query
             $scope.$watch(() => this.studyArea.regressionRegionQueryComplete,(newval, oldval) => {
-                //console.log('in regression query watch', newval, oldval);
                 //join codes from regression region object list and run query
                 if (newval && this.studyArea.selectedStudyArea.RegressionRegions) this.nssService.loadStatisticsGroupTypes(this.regionServices.selectedRegion.RegionID, this.studyArea.selectedStudyArea.RegressionRegions.map(function (elem) {
                     return elem.code;
@@ -774,87 +764,95 @@ module StreamStats.Controllers {
 
         private checkDelineatePoint(latlng) {
 
-            //console.log('in check delineate point');
-            this.studyArea.checkingDelineatedPoint = true;
-
-            this.toaster.pop("info", "Information", "Validating your clicked point...", 5000);
-            this.cursorStyle = 'wait';
-            this.markers = {};
-
-            //put pourpoint on the map
-            this.markers['pourpoint'] = {
-                lat: latlng.lat,
-                lng: latlng.lng,
-                message: 'Your clicked point</br></br><strong>Latitude: </strong>' + latlng.lat.toFixed(5) + '</br><strong>Longitude: </strong>' + latlng.lng.toFixed(5),
-                focus: true,
-                draggable: true
-            }
-
-            //turn off delineate flag
-            this.studyArea.doDelineateFlag = false;
-
-            //build list of layers to query before delineate
-            var queryString = 'visible:'
-
-            //CLOUD
-            if (configuration.cloud) {
-                this.regionServices.regionMapLayerList.forEach((item) => {
-                    if (item[0] == 'ExcludePolys') queryString += item[1];
-                });
-            }
-
-            else {
-                this.regionServices.regionMapLayerList.forEach((item) => {
-                    queryString += String(item[1]);
-                });
-            }
-
+            //make sure were still at level 15 or greater
             this.leafletData.getMap("mainMap").then((map: any) => {
                 this.leafletData.getLayers("mainMap").then((maplayers: any) => {
+                    if (map.getZoom() < 15) {
+                        this.toaster.pop("error", "Delineation not allowed at this zoom level", 'Please zoom in to level 15 or greater', 5000);
+                    }
 
-                    this.angulartics.eventTrack('delineationClick', { category: 'Map', label: this.regionServices.selectedRegion.Name });
+                    //good to go
+                    else {
+                        this.toaster.clear();
+                        this.studyArea.checkingDelineatedPoint = true;
 
-                    //force map refresh
-                    map.invalidateSize();
+                        this.toaster.pop("info", "Information", "Validating your clicked point...", 5000);
+                        this.cursorStyle = 'wait';
+                        this.markers = {};
 
-                    var selectedRegionLayerName = this.regionServices.selectedRegion.RegionID + "_region";
-
-                    maplayers.overlays[selectedRegionLayerName].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run((error: any, results: any) => {
-
-                        //console.log('exclusion area check: ', queryString, results); 
-
-                        //if there are no exclusion area hits
-                        if (results.features.length == 0) {
-                            //ga event
-                            this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'valid' });
-
-                            this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000)
-                            this.studyArea.checkingDelineatedPoint = false;
-                            this.startDelineate(latlng);
+                        //put pourpoint on the map
+                        this.markers['pourpoint'] = {
+                            lat: latlng.lat,
+                            lng: latlng.lng,
+                            message: 'Your clicked point</br></br><strong>Latitude: </strong>' + latlng.lat.toFixed(5) + '</br><strong>Longitude: </strong>' + latlng.lng.toFixed(5),
+                            focus: true,
+                            draggable: true
                         }
 
-                        //otherwise parse exclude Codes
+                        //turn off delineate flag
+                        this.studyArea.doDelineateFlag = false;
+
+                        //build list of layers to query before delineate
+                        var queryString = 'visible:'
+
+                        //CLOUD
+                        if (configuration.cloud) {
+                            this.regionServices.regionMapLayerList.forEach((item) => {
+                                if (item[0] == 'ExcludePolys') queryString += item[1];
+                            });
+                        }
+
                         else {
-                            this.studyArea.checkingDelineatedPoint = false;
-                            var excludeCode = results.features[0].properties.ExcludeCode;
-                            var popupMsg = results.features[0].properties.ExcludeReason;
-                            if (excludeCode == 1) {
-                                this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", popupMsg, 0);
-                                //ga event
-                                this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'not allowed' });
-                            }
-                            else {
-                                this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", popupMsg, true, 0);
-                                this.startDelineate(latlng, true);
-                                this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'not advised' });
-                            }
+                            this.regionServices.regionMapLayerList.forEach((item) => {
+                                queryString += String(item[1]);
+                            });
                         }
 
-                        this.cursorStyle = 'pointer';
-                    });
+                        this.angulartics.eventTrack('delineationClick', { category: 'Map', label: this.regionServices.selectedRegion.Name });
+
+                        //force map refresh
+                        map.invalidateSize();
+
+                        var selectedRegionLayerName = this.regionServices.selectedRegion.RegionID + "_region";
+
+                        maplayers.overlays[selectedRegionLayerName].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run((error: any, results: any) => {
+
+                            //console.log('exclusion area check: ', queryString, results); 
+
+                            //if there are no exclusion area hits
+                            if (results.features.length == 0) {
+                                //ga event
+                                this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'valid' });
+
+                                this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000)
+                                this.studyArea.checkingDelineatedPoint = false;
+                                this.startDelineate(latlng);
+                            }
+
+                            //otherwise parse exclude Codes
+                            else {
+                                this.studyArea.checkingDelineatedPoint = false;
+                                var excludeCode = results.features[0].properties.ExcludeCode;
+                                var popupMsg = results.features[0].properties.ExcludeReason;
+                                if (excludeCode == 1) {
+                                    this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", popupMsg, 0);
+                                    //ga event
+                                    this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'not allowed' });
+                                }
+                                else {
+                                    this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", popupMsg, true, 0);
+                                    this.startDelineate(latlng, true);
+                                    this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'not advised' });
+                                }
+                            }
+
+                            this.cursorStyle = 'pointer';
+                        });
+                    }
                 });
             });
         }
+
         private basinEditor() {
 
             if (this.geojson['globalwatershed'].data.features.length > 1) {
