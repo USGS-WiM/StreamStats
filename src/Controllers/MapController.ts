@@ -162,6 +162,7 @@ module StreamStats.Controllers {
         public toaster: any;
         public angulartics: any;
         public nomnimalZoomLevel: string;
+        public userInputToastCount: number;
         public get selectedExplorationMethodType(): Services.ExplorationMethodType {
             if (this.explorationService.selectedMethod == null) return 0;
             return this.explorationService.selectedMethod.ModelType;
@@ -192,6 +193,7 @@ module StreamStats.Controllers {
             this.eventManager = eventManager;
             this.cursorStyle = 'pointer';
             this.environment = configuration.environment;
+            this.userInputToastCount = 0;
 
             //subscribe to Events
             this.eventManager.SubscribeToEvent(Services.onSelectedStudyAreaChanged, new WiM.Event.EventHandler<Services.StudyAreaEventArgs>(() => {
@@ -1170,8 +1172,21 @@ module StreamStats.Controllers {
                     this.bounds.southWest.lat, this.bounds.northEast.lat);
 
                 if (!this.regionServices.selectedRegion) {
-                    this.toaster.clear();
-                    this.toaster.pop("info", "Information", "User input is needed to continue", 5000);
+   
+                    if (this.userInputToastCount === 0) {
+                        this.toaster.pop({
+                            "type": "info",
+                            "title": "Information",
+                            "body": "User input is needed to continue",
+                            "time-out": 5000,
+                            "onShowCallback": () => {
+                                this.userInputToastCount += 1;
+                            },
+                            "onHideCallback": () => {
+                                this.userInputToastCount -= 1;
+                            }
+                        });
+                    }
                 }
             }
 
