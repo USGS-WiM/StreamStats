@@ -138,12 +138,6 @@ module StreamStats.Controllers {
 
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
-        public HasDisclaimers(disclaimer: any): boolean {
-            if (disclaimer == null) return false;
-            var canshow = Object.keys(disclaimer).length > 0;
-            return canshow;  
-
-        }
         private initMap(): void {
             this.center = new Center(39, -96, 4);
             this.layers = {
