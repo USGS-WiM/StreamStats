@@ -91,6 +91,7 @@ var StreamStats;
                 this.eventManager = eventManager;
                 this.cursorStyle = 'pointer';
                 this.environment = configuration.environment;
+                this.userInputToastCount = 0;
                 //subscribe to Events
                 this.eventManager.SubscribeToEvent(StreamStats.Services.onSelectedStudyAreaChanged, new WiM.Event.EventHandler(function () {
                     _this.onSelectedStudyAreaChanged();
@@ -928,13 +929,26 @@ var StreamStats;
                 } //end if
             };
             MapController.prototype.mapBoundsChange = function (oldValue, newValue) {
+                var _this = this;
                 this.nomnimalZoomLevel = this.scaleLookup(this.center.zoom);
                 if (this.center.zoom >= 8 && oldValue !== newValue) {
                     //console.log('requesting region list');
                     this.regionServices.loadRegionListByExtent(this.bounds.northEast.lng, this.bounds.southWest.lng, this.bounds.southWest.lat, this.bounds.northEast.lat);
                     if (!this.regionServices.selectedRegion) {
-                        this.toaster.clear();
-                        this.toaster.pop("info", "Information", "User input is needed to continue", 5000);
+                        if (this.userInputToastCount === 0) {
+                            this.toaster.pop({
+                                "type": "info",
+                                "title": "Information",
+                                "body": "User input is needed to continue",
+                                "time-out": 5000,
+                                "onShowCallback": function () {
+                                    _this.userInputToastCount += 1;
+                                },
+                                "onHideCallback": function () {
+                                    _this.userInputToastCount -= 1;
+                                }
+                            });
+                        }
                     }
                 }
                 if (this.center.zoom < 8 && oldValue !== newValue) {
