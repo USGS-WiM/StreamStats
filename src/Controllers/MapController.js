@@ -129,25 +129,25 @@ var StreamStats;
                     _this.cursorStyle = 'pointer';
                 });
                 $scope.$on('leafletDirectiveMap.mainMap.click', function (event, args) {
-                    //console.log('click listener: ', studyArea.doDelineateFlag);
                     //listen for delineate click if ready
                     if (studyArea.doDelineateFlag)
                         _this.checkDelineatePoint(args.leafletEvent.latlng);
-                    //query streamgages
-                    if (exploration.allowStreamgageQuery)
+                    else {
+                        //query streamgages
                         _this.queryStreamgages(args.leafletEvent);
-                    if (exploration.selectedMethod != null) {
-                        exploration.selectedMethod.addLocation(new WiM.Models.Point(args.leafletEvent.latlng.lat, args.leafletEvent.latlng.lng, '4326'));
-                        for (var i = 0; i < exploration.selectedMethod.locations.length; i++) {
-                            var item = exploration.selectedMethod.locations[i];
-                            _this.markers['netnav_' + i] = {
-                                lat: item.Latitude,
-                                lng: item.Longitude,
-                                message: exploration.GetToolName(exploration.selectedMethod.ModelType) + " point",
-                                focus: true,
-                                draggable: false
-                            };
-                        } //next i
+                        if (exploration.selectedMethod != null) {
+                            exploration.selectedMethod.addLocation(new WiM.Models.Point(args.leafletEvent.latlng.lat, args.leafletEvent.latlng.lng, '4326'));
+                            for (var i = 0; i < exploration.selectedMethod.locations.length; i++) {
+                                var item = exploration.selectedMethod.locations[i];
+                                _this.markers['netnav_' + i] = {
+                                    lat: item.Latitude,
+                                    lng: item.Longitude,
+                                    message: exploration.GetToolName(exploration.selectedMethod.ModelType) + " point",
+                                    focus: true,
+                                    draggable: false
+                                };
+                            } //next i
+                        }
                     }
                 });
                 $scope.$watch(function () { return _this.bounds; }, function (newval, oldval) { return _this.mapBoundsChange(oldval, newval); });
@@ -378,10 +378,6 @@ var StreamStats;
                     });
                 });
             };
-            MapController.prototype.initiateStreamgageQuery = function () {
-                //change cursor here if needed
-                this.explorationService.allowStreamgageQuery = !this.explorationService.allowStreamgageQuery;
-            };
             MapController.prototype.queryStreamgages = function (evt) {
                 var _this = this;
                 //console.log('in query regional layers');
@@ -546,7 +542,6 @@ var StreamStats;
                 document.getElementById('measurement-div').innerHTML = '';
                 if (this.drawControl)
                     this.drawController({}, false);
-                this.explorationService.allowStreamgageQuery = false;
                 this.explorationService.drawMeasurement = false;
                 this.explorationService.measurementData = '';
                 this.explorationService.drawElevationProfile = false;

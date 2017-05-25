@@ -49,7 +49,6 @@ var StreamStats;
                 this.drawElevationProfile = false;
                 this.drawMeasurement = false;
                 this.showElevationChart = false;
-                this.allowStreamgageQuery = false;
                 this.measurementData = '';
                 this._selectedMethod = null;
                 eventManager.AddEvent(Services.onSelectedStudyAreaChanged);

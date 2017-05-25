@@ -31,16 +31,13 @@ module StreamStats.Services {
         elevationProfileGeoJSON: any;
         showElevationChart: boolean;
         measurementData: string;
-        allowStreamgageQuery: boolean;
         selectedMethod: Models.INetworkNav;
         setMethod(methodtype: ExplorationMethodType)
         GetToolName(methodID: number): String
         ExecuteSelectedModel(): void
         elevationProfileHTML: any;
-
-
-        
     }
+
     export var onSelectedMethodExecuteComplete: string = "onSelectedMethodExecuteComplete";
 
     export class ExplorationServiceEventArgs extends WiM.Event.EventArgs {
@@ -65,7 +62,6 @@ module StreamStats.Services {
         public elevationProfileGeoJSON: any;
         public showElevationChart: boolean;
         public measurementData: string;
-        public allowStreamgageQuery: boolean;
         public _selectedMethod: Models.INetworkNav
         public get selectedMethod(): Models.INetworkNav {
             return this._selectedMethod;
@@ -82,7 +78,6 @@ module StreamStats.Services {
             this.drawElevationProfile = false;
             this.drawMeasurement = false;
             this.showElevationChart = false;
-            this.allowStreamgageQuery = false;
             this.measurementData = '';
             this._selectedMethod = null;
             eventManager.AddEvent<StudyAreaEventArgs>(onSelectedStudyAreaChanged);

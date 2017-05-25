@@ -238,27 +238,31 @@ module StreamStats.Controllers {
             });
 
             $scope.$on('leafletDirectiveMap.mainMap.click', (event, args) => {
-                //console.log('click listener: ', studyArea.doDelineateFlag);
+
                 //listen for delineate click if ready
                 if (studyArea.doDelineateFlag) this.checkDelineatePoint(args.leafletEvent.latlng);
 
-                //query streamgages
-                if (exploration.allowStreamgageQuery) this.queryStreamgages(args.leafletEvent);
+                else {
+                    //query streamgages
+                    this.queryStreamgages(args.leafletEvent);
 
-                if (exploration.selectedMethod != null) {
-                    exploration.selectedMethod.addLocation(new WiM.Models.Point(args.leafletEvent.latlng.lat, args.leafletEvent.latlng.lng, '4326'));
-                   
-                    for (var i: number = 0; i < exploration.selectedMethod.locations.length; i++){ 
-                        var item = exploration.selectedMethod.locations[i];
-                        this.markers['netnav_'+i] = {
-                            lat: item.Latitude,
-                            lng: item.Longitude,
-                            message:exploration.GetToolName(exploration.selectedMethod.ModelType)+ " point",
-                            focus: true,
-                            draggable: false                            
-                        };
-                    }//next i
+                    if (exploration.selectedMethod != null) {
+                        exploration.selectedMethod.addLocation(new WiM.Models.Point(args.leafletEvent.latlng.lat, args.leafletEvent.latlng.lng, '4326'));
+
+                        for (var i: number = 0; i < exploration.selectedMethod.locations.length; i++) {
+                            var item = exploration.selectedMethod.locations[i];
+                            this.markers['netnav_' + i] = {
+                                lat: item.Latitude,
+                                lng: item.Longitude,
+                                message: exploration.GetToolName(exploration.selectedMethod.ModelType) + " point",
+                                focus: true,
+                                draggable: false
+                            };
+                        }//next i
+                    }
+
                 }
+
             });
 
             $scope.$watch(() => this.bounds,(newval, oldval) => this.mapBoundsChange(oldval, newval));
@@ -503,13 +507,6 @@ module StreamStats.Controllers {
             });
         }
 
-        private initiateStreamgageQuery() {
-
-            //change cursor here if needed
-
-            this.explorationService.allowStreamgageQuery = !this.explorationService.allowStreamgageQuery;  
-        }
-
         private queryStreamgages(evt) {
 
             //console.log('in query regional layers');
@@ -711,7 +708,6 @@ module StreamStats.Controllers {
             //document.getElementById('elevation-div').innerHTML = '';
             document.getElementById('measurement-div').innerHTML = '';
             if (this.drawControl) this.drawController({ }, false);
-            this.explorationService.allowStreamgageQuery = false;
             this.explorationService.drawMeasurement = false;
             this.explorationService.measurementData = '';
             this.explorationService.drawElevationProfile = false;
