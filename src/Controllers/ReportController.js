@@ -94,12 +94,6 @@ var StreamStats;
             });
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
-            ReportController.prototype.HasDisclaimers = function (disclaimer) {
-                if (disclaimer == null)
-                    return false;
-                var canshow = Object.keys(disclaimer).length > 0;
-                return canshow;
-            };
             ReportController.prototype.initMap = function () {
                 this.center = new Center(39, -96, 4);
                 this.layers = {
