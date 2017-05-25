@@ -64,6 +64,7 @@ module StreamStats.Controllers {
             this.StudyArea = studyAreaService.selectedStudyArea;
             this.regionService = region;
             this.selectedAboutTabName = "about";
+            this.regionArticle = '<h3>No State or Region Selected</h3>';
             this.init();  
         }  
         
@@ -180,7 +181,7 @@ module StreamStats.Controllers {
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
 
             //clear article
-            this.regionArticle = null;
+            this.regionArticle = '<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>';
 
             this.Execute(request).then(
                 (response: any) => {
@@ -188,7 +189,7 @@ module StreamStats.Controllers {
                     response.data.folder.articles.forEach((article) => {
                         if (article.title == regionID) {
                             //console.log("Help article found for : ", regionID);
-                            this.regionArticle = article;
+                            this.regionArticle = article.description;
                             return;
                         }
                     });
