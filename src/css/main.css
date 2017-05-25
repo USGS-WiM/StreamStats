@@ -551,7 +551,7 @@ div.leaflet-top > .elevation {
   padding: 18px;
   letter-spacing: 2px;
   font-weight: 400;
-  color: #6E7490 !important;
+  color: #c0c0c0 !important;
   transition: 0.2s;
 }
   .list-group-item i{
@@ -561,7 +561,7 @@ div.leaflet-top > .elevation {
     width: 50px;
   }
   .list-group-item:hover{
-    color:#000 !important;
+    color:#8c8c8c !important;
     transition: 0.2s;
   }
 
