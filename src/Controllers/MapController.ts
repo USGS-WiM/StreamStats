@@ -528,7 +528,6 @@ module StreamStats.Controllers {
 
                         this.toaster.clear();
                         this.cursorStyle = 'pointer';
-                        //console.log('gage query response', results);
 
                         if (!results.features || results.features.length == 0) {
                             this.toaster.pop("warning", "Warning", "No streamgages were found", 5000);
@@ -538,31 +537,25 @@ module StreamStats.Controllers {
                         results.features.forEach((queryResult) => {
 
                             var popupContent = '';
-                            var popupKeyList = ['latitude', 'longitude', 'sta_id', 'sta_name', 'featureurl', 'drnarea'];
+                            var popupKeyList = [{ name: 'latitude', label: 'Latitude' }, { name: 'longitude', label: 'Longitude' }, { name: 'sta_id', label: 'Station ID' }, { name: 'sta_name', label: 'Station Name' }, { name: 'featureurl', label: 'URL' }];
 
                             angular.forEach(queryResult.properties, function (value, key) {
-                                if (popupKeyList.indexOf(key) != -1) {
-                                    if (key == "featureurl") {
+                                angular.forEach(popupKeyList, function (obj, v) {
 
-                                        var siteNo = value.split('site_no=')[1];
-                                        var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm'
+                                    if (obj.name === key) {
+                                        if (key == "featureurl") {
 
-                                        popupContent += '<strong>NWIS page: </strong><a href="' + value + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br>';
-
+                                            var siteNo = value.split('site_no=')[1];
+                                            var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm'
+                                            popupContent += '<strong>NWIS page: </strong><a href="' + value + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br>';
+                                        }
+                                        else popupContent += '<strong>' + obj.label + ': </strong>' + value + '</br>';
                                     }
-                                    else popupContent += '<strong>' + key + ': </strong>' + value + '</br>';
-                                }
+                                });
                             });
 
-                            this.markers['regionalQueryResult'] = {
-                                lat: evt.latlng.lat,
-                                lng: evt.latlng.lng,
-                                message: popupContent,
-                                focus: true,
-                                draggable: false
-                            };
-
-                            map.panBy([0, 1]);
+                            //show popup
+                            map.openPopup(popupContent,[evt.latlng.lat, evt.latlng.lng])
                             this.toaster.clear();
 
                         });
