@@ -799,7 +799,8 @@ var StreamStats;
                     }, 500);
                     map.openPopup(// open popup at location listing all properties
                     $.map(Object.keys(AOI.properties), function (property) {
-                        return "<b>" + property + ": </b>" + AOI.properties[property];
+                        if (["Label", "ElevFt", "Lat", "Lon", "Source"].indexOf(property) != 0 - 1)
+                            return "<b>" + property + ": </b>" + AOI.properties[property];
                     }).join("<br/>"), [AOI.properties['Lat'], AOI.properties['Lon']]);
                 });
             };
