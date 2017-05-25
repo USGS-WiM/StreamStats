@@ -655,7 +655,9 @@ module StreamStats.Services {
 
             this.Execute(request).then(
                 (response: any) => {
-                    //console.log(response);
+                    //add generic 'regulation has been checked' disclaimer
+                    this.selectedStudyArea.Disclaimers['regulationChecked'] = true;  
+
                     if (response.data.percentarearegulated > 0) {
                         this.toaster.clear();
                         this.toaster.pop('success', "Map updated with Regulated Area", "Continue to 'Modify Basin Characteristics' to see area-weighted basin characteristics", 5000);

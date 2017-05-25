@@ -22,6 +22,11 @@ body {
     padding-top: 18px;
 }
 
+.loadingSpinner {
+    display:block;
+    text-align:center
+}
+
 #toast-container > div {
    opacity: 1 !important; 
 }

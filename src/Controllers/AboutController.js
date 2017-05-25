@@ -35,6 +35,7 @@ var StreamStats;
                 this.StudyArea = studyAreaService.selectedStudyArea;
                 this.regionService = region;
                 this.selectedAboutTabName = "about";
+                this.regionArticle = '<h3>No State or Region Selected</h3>';
                 this.init();
             }
             //Methods  
@@ -117,12 +118,12 @@ var StreamStats;
                 var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.RegionInfoFolder;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
                 //clear article
-                this.regionArticle = null;
+                this.regionArticle = '<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>';
                 this.Execute(request).then(function (response) {
                     response.data.folder.articles.forEach(function (article) {
                         if (article.title == regionID) {
                             //console.log("Help article found for : ", regionID);
-                            _this.regionArticle = article;
+                            _this.regionArticle = article.description;
                             return;
                         }
                     });

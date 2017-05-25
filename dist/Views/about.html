@@ -14,38 +14,41 @@
             <li ng-class="{'active':vm.selectedAboutTabName==='news'}"><a ng-click="vm.selectAboutTab('news')"><i class="fa fa-exclamation-circle"></i>&nbsp;News</a></li>
         </ul>
         <div style="padding-top: 10px;">
+
             <div id="about" ng-if="vm.selectedAboutTabName==='about'">
+                <div ng-hide="vm.aboutArticle"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
                 <div id="aboutContent" ng-bind-html="vm.convertUnsafe(vm.aboutArticle)"></div> 
             </div>
+
             <div id="regionInfo" ng-show="vm.selectedAboutTabName==='regionInfo'" >
                 <div id="supportContent" >
-                    <h3 ng-hide="vm.regionArticle">No State or Region Selected</h3>
-                    <div ng-show="vm.regionArticle" ng-bind-html="vm.convertUnsafe(vm.regionArticle.description)"></div>
+                    <div ng-show="vm.regionArticle" ng-bind-html="vm.convertUnsafe(vm.regionArticle)"></div>
                 </div>  
             </div>   
+
             <div id="news" ng-show="vm.selectedAboutTabName==='news'" >
                 <div id="activeNewsContent" ng-hide="vm.activeNewsArticles == 0">
                     <h3>Active News</h3>
+                      <div ng-hide="vm.activeNewsArticles"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
                       <accordion id="activeNewsArticles" close-others="false">
                         <accordion-group ng-repeat="article in vm.activeNewsArticles" ng-init="article.open = true" is-open="article.open" >
                           <accordion-heading><i ng-class="vm.activeNewsArticles[$index].open ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i> {{article.title}}</accordion-heading>
                           <div class="row">
                             <div class="col-sm-12" ng-bind-html="vm.convertUnsafe(article.description)"> </div>
-                            <!--<div class="col-sm-12" ng-hide="vm.readCookie(article.id)">
-                                <button ng-click="vm.createCookie(article.id, true, 30);article.open = false" class="btn-wim-default"><i class="fa fa-close"></i><span >&nbsp;&nbsp;Dismiss</span></button>
-                            </div>-->
                           </div>
                         </accordion-group>
                       </accordion>
                 </div>  
+
                 <div id="pastNewsContent" ng-hide="vm.pastNewsArticles == 0">
                     <h3>Past News</h3>
+                      <div ng-hide="vm.pastNewsArticles"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
                       <accordion id="pastNewsArticles">
                         <accordion-group ng-repeat="article in vm.pastNewsArticles" is-open="article.open">
                           <accordion-heading><i ng-class="vm.pastNewsArticles[$index].open ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i> {{article.title}}</accordion-heading>
                           <div class="row">
-                            <div class="col-sm-12" ng-bind-html="vm.convertUnsafe(article.description)">
-                            </div>
+                            <div ng-hide="article.description"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
+                            <div class="col-sm-12" ng-bind-html="vm.convertUnsafe(article.description)"></div>
                           </div>
                         </accordion-group>
                       </accordion>

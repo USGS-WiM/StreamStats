@@ -496,7 +496,8 @@ var StreamStats;
                     url = configuration.baseurls['GISserver'] + configuration.queryparams['regulationService'].format(this.selectedStudyArea.RegionID.toLowerCase());
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', { watershed: watershed, outputcrs: 4326, f: 'geojson' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
                 this.Execute(request).then(function (response) {
-                    //console.log(response);
+                    //add generic 'regulation has been checked' disclaimer
+                    _this.selectedStudyArea.Disclaimers['regulationChecked'] = true;
                     if (response.data.percentarearegulated > 0) {
                         _this.toaster.clear();
                         _this.toaster.pop('success', "Map updated with Regulated Area", "Continue to 'Modify Basin Characteristics' to see area-weighted basin characteristics", 5000);
