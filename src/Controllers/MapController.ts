@@ -173,7 +173,7 @@ module StreamStats.Controllers {
         public explorationMethodBusy: boolean = false;
         private environment: string;
 
-        //Constructro
+        //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService'];
         constructor(public $scope: IMapControllerScope, toaster, $analytics, $location: ng.ILocationService, $stateParams, leafletBoundsHelper: any, leafletData: ILeafletData, search: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, exploration: Services.IExplorationService, eventManager: WiM.Event.IEventManager, private modal: Services.IModalService) {
@@ -240,29 +240,37 @@ module StreamStats.Controllers {
             $scope.$on('leafletDirectiveMap.mainMap.click', (event, args) => {
 
                 //listen for delineate click if ready
-                if (studyArea.doDelineateFlag) this.checkDelineatePoint(args.leafletEvent.latlng);
+                if (this.studyArea.doDelineateFlag) {
+                    this.checkDelineatePoint(args.leafletEvent.latlng);
+                    return;
+                }
 
+                //check if in edit mode
+                if (this.studyArea.showEditToolbar) {
+                    return;
+                }
+
+                //query streamgage is default map click action
                 else {
                     //query streamgages
                     this.queryStreamgages(args.leafletEvent);
 
-                    if (exploration.selectedMethod != null) {
-                        exploration.selectedMethod.addLocation(new WiM.Models.Point(args.leafletEvent.latlng.lat, args.leafletEvent.latlng.lng, '4326'));
+                    //if (exploration.selectedMethod != null) {
+                    //    exploration.selectedMethod.addLocation(new WiM.Models.Point(args.leafletEvent.latlng.lat, args.leafletEvent.latlng.lng, '4326'));
 
-                        for (var i: number = 0; i < exploration.selectedMethod.locations.length; i++) {
-                            var item = exploration.selectedMethod.locations[i];
-                            this.markers['netnav_' + i] = {
-                                lat: item.Latitude,
-                                lng: item.Longitude,
-                                message: exploration.GetToolName(exploration.selectedMethod.ModelType) + " point",
-                                focus: true,
-                                draggable: false
-                            };
-                        }//next i
-                    }
+                    //    for (var i: number = 0; i < exploration.selectedMethod.locations.length; i++) {
+                    //        var item = exploration.selectedMethod.locations[i];
+                    //        this.markers['netnav_' + i] = {
+                    //            lat: item.Latitude,
+                    //            lng: item.Longitude,
+                    //            message: exploration.GetToolName(exploration.selectedMethod.ModelType) + " point",
+                    //            focus: true,
+                    //            draggable: false
+                    //        };
+                    //    }//next i
+                    //}
 
                 }
-
             });
 
             $scope.$watch(() => this.bounds,(newval, oldval) => this.mapBoundsChange(oldval, newval));
@@ -848,19 +856,12 @@ module StreamStats.Controllers {
 
         private basinEditor() {
 
-            if (this.geojson['globalwatershed'].data.features.length > 1) {
-                this.toaster.pop("warning", "Warning", "You cannot edit a global watershed", 5000);
-                return;
-            }
-
             var basin = angular.fromJson(angular.toJson(this.geojson['globalwatershed'].data.features[0]));
             var basinConverted = [];
             basin.geometry.coordinates[0].forEach((item) => { basinConverted.push([item[1], item[0]]) });
 
             this.leafletData.getMap("mainMap").then((map: any) => {
                 this.leafletData.getLayers("mainMap").then((maplayers: any) => {
-
-                    //console.log('maplayers', map, maplayers);
 
                     //create draw control
                     var drawnItems = maplayers.overlays.draw;
@@ -920,6 +921,7 @@ module StreamStats.Controllers {
                 });
             });
         }
+
         private canSelectExplorationTool(methodval: Services.ExplorationMethodType): boolean {            
             switch (methodval) {
                 case Services.ExplorationMethodType.FINDPATHBETWEENPOINTS:

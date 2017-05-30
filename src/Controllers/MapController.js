@@ -130,24 +130,17 @@ var StreamStats;
                 });
                 $scope.$on('leafletDirectiveMap.mainMap.click', function (event, args) {
                     //listen for delineate click if ready
-                    if (studyArea.doDelineateFlag)
+                    if (_this.studyArea.doDelineateFlag) {
                         _this.checkDelineatePoint(args.leafletEvent.latlng);
+                        return;
+                    }
+                    //check if in edit mode
+                    if (_this.studyArea.showEditToolbar) {
+                        return;
+                    }
                     else {
                         //query streamgages
                         _this.queryStreamgages(args.leafletEvent);
-                        if (exploration.selectedMethod != null) {
-                            exploration.selectedMethod.addLocation(new WiM.Models.Point(args.leafletEvent.latlng.lat, args.leafletEvent.latlng.lng, '4326'));
-                            for (var i = 0; i < exploration.selectedMethod.locations.length; i++) {
-                                var item = exploration.selectedMethod.locations[i];
-                                _this.markers['netnav_' + i] = {
-                                    lat: item.Latitude,
-                                    lng: item.Longitude,
-                                    message: exploration.GetToolName(exploration.selectedMethod.ModelType) + " point",
-                                    focus: true,
-                                    draggable: false
-                                };
-                            } //next i
-                        }
                     }
                 });
                 $scope.$watch(function () { return _this.bounds; }, function (newval, oldval) { return _this.mapBoundsChange(oldval, newval); });
@@ -655,16 +648,11 @@ var StreamStats;
             };
             MapController.prototype.basinEditor = function () {
                 var _this = this;
-                if (this.geojson['globalwatershed'].data.features.length > 1) {
-                    this.toaster.pop("warning", "Warning", "You cannot edit a global watershed", 5000);
-                    return;
-                }
                 var basin = angular.fromJson(angular.toJson(this.geojson['globalwatershed'].data.features[0]));
                 var basinConverted = [];
                 basin.geometry.coordinates[0].forEach(function (item) { basinConverted.push([item[1], item[0]]); });
                 this.leafletData.getMap("mainMap").then(function (map) {
                     _this.leafletData.getLayers("mainMap").then(function (maplayers) {
-                        //console.log('maplayers', map, maplayers);
                         //create draw control
                         var drawnItems = maplayers.overlays.draw;
                         drawnItems.clearLayers();
@@ -1064,7 +1052,7 @@ var StreamStats;
                 if (isInExclusionArea)
                     this.studyArea.selectedStudyArea.Disclaimers['isInExclusionArea'] = 'The delineation point is in an exclusion area.';
             };
-            //Constructro
+            //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
             MapController.$inject = ['$scope', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService'];
             return MapController;
