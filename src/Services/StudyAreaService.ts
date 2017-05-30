@@ -200,7 +200,10 @@ module StreamStats.Services {
                         this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
                         this.selectedStudyArea.Date = new Date();
 
-                        //check for global
+                        //stub code for global check, but the services need to be updated first
+                        //right now GlobalWshd is always 1
+
+                        //this.selectedStudyArea.isGlobal = false;
                         //this.selectedStudyArea.Features.forEach((item) => { 
                         //    if (item.name == "globalwatershed") {
                         //        angular.forEach(item.feature.features[0].properties, (i,v) => {
@@ -208,7 +211,6 @@ module StreamStats.Services {
                         //            if (v == "GlobalWshd" && i == 1) {
                         //                this.selectedStudyArea.isGlobal = true;
                         //            }
-                        //            else this.selectedStudyArea.isGlobal = false;
                         //        });
                         //    }
                         //});
