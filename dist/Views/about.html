@@ -16,8 +16,9 @@
         <div style="padding-top: 10px;">
 
             <div id="about" ng-if="vm.selectedAboutTabName==='about'">
+                <div class="wim-alert">These data are preliminary or provisional and are subject to revision. They are being provided to meet the need for timely best science. The data have not received final approval by the U.S. Geological Survey (USGS) and are provided on the condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from the authorized or unauthorized use of the data.</div> 
                 <div ng-hide="vm.aboutArticle"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
-                <div id="aboutContent" ng-bind-html="vm.convertUnsafe(vm.aboutArticle)"></div> 
+                <div id="aboutContent" ng-bind-html="vm.convertUnsafe(vm.aboutArticle)"></div>
             </div>
 
             <div id="regionInfo" ng-show="vm.selectedAboutTabName==='regionInfo'" >
