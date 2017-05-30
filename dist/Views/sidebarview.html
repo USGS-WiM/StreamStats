@@ -175,6 +175,13 @@
                                 <button class="btn-wim-sm btn-wim-default btn-wim-group-1" ng-class="vm.multipleParameterSelectorAdd ? '': 'btn-wim-info'" ng-click="vm.multipleParameterSelector()"><span>Select All Basin Characteristics</span></button>
                             </div>
                             <table class="table table-condensed">
+                                <thead class="param-table">
+                                    <tr>
+                                        <th class="col-xs-2">Selected</th>
+                                        <th class="col-xs-4">Parameter</th>
+                                        <th class="col-xs-6">Description</th>
+                                    </tr>
+                                </thead>
                                 <tbody ng-repeat="parameter in vm.regionService.parameterList">
                                     <tr>
                                         <td><checkbox large ng-model="parameter.checked" ng-change="vm.updateStudyAreaParameterList(parameter)"></checkbox></td>
@@ -224,7 +231,7 @@
                             </thead>
                             <tbody ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList" ng-form="paramaterForm">
                                 <tr >
-                                    <td ng-bind="parameter.description"></td>
+                                    <td ng-bind="parameter.code"></td>
                                     <td><input class="form-control" ng-class="{notloaded:!parameter.loaded}" ng-change="vm.studyAreaService.selectedStudyArea.Disclaimers.parametersEdited = true; vm.updateParameterValue(parameter)" ng-model="parameter.value" type="text" /></td>
                                     <td ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated && vm.regionService.selectedRegion.Applications.indexOf('RegulationFlows') != -1"><input class="form-control" ng-change="vm.studyAreaService.selectedStudyArea.Disclaimers.parametersEdited = true" ng-model="parameter.unRegulatedValue" type="text" /></td>
                                     <!--<td ng-hide="parameter.loaded"><button class="btn-wim-sm btn-wim-success" ng-click="vm.calculateParameters()"><i class="fa fa-refresh"></i></button></td>-->
