@@ -315,7 +315,9 @@ module StreamStats.Services {
                                 alert(e);
                             }
                         });
-                        //console.log(this.selectedStatisticsGroupParameterList);
+
+                        //sort the list by code
+                        this.parameterList.sort(function (a, b) { return (a.code > b.code) ? 1 : ((b.code > a.code) ? -1 : 0); }); 
                     }
 
                     else {

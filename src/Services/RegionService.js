@@ -230,6 +230,8 @@ var StreamStats;
                                 alert(e);
                             }
                         });
+                        //sort the list by code
+                        _this.parameterList.sort(function (a, b) { return (a.code > b.code) ? 1 : ((b.code > a.code) ? -1 : 0); });
                     }
                     else {
                         _this.streamStatsAvailable = false;

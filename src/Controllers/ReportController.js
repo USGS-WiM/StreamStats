@@ -94,12 +94,6 @@ var StreamStats;
             });
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
-            ReportController.prototype.HasDisclaimers = function (disclaimer) {
-                if (disclaimer == null)
-                    return false;
-                var canshow = Object.keys(disclaimer).length > 0;
-                return canshow;
-            };
             ReportController.prototype.initMap = function () {
                 this.center = new Center(39, -96, 4);
                 this.layers = {
@@ -237,7 +231,7 @@ var StreamStats;
                             //add explanatory row if needed
                             if (regressionRegion.Results[0].IntervalBounds && regressionRegion.Results[0].Errors && regressionRegion.Results[0].Errors.length > 0)
                                 finalVal +=
-                                    '"PIl: Prediction Interval- Upper, PIu: Prediction Interval- Lower, SEe: Standard Error of Estimate, SEp: Standard Error of Prediction, SE: Standard Error (other-- see report)"\r\n';
+                                    '"PIl: Prediction Interval- Lower, PIu: Prediction Interval- Upper, SEe: Standard Error of Estimate, SEp: Standard Error of Prediction, SE: Standard Error (other-- see report)"\r\n';
                             //get this table by ID
                             finalVal += _this.tableToCSV($('#' + _this.camelize(statGroup.Name + regressionRegion.Name + 'ScenarioFlowTable'))) + '\r\n\r\n';
                         }

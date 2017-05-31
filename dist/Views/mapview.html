@@ -14,8 +14,6 @@
             </div>
             <h6>Exploration Tools</h6>
             <div class="group-wrapper">
-                <button ng-class="!vm.explorationService.allowStreamgageQuery ? 'btn-wim-sm btn-wim-primary btn-wim-group-1':'btn-wim-sm btn-wim-warning btn-wim-group-1'" ng-click="vm.resetExplorationTools(); vm.initiateStreamgageQuery()"><span><i class="fa fa-info-circle"></i>&nbsp;&nbsp;Query Streamgages</span></button>
-
                 <button ng-class="!vm.explorationService.drawMeasurement ? 'btn-wim-sm btn-wim-primary btn-wim-group-1':'btn-wim-sm btn-wim-warning btn-wim-group-1'" ng-click="vm.resetExplorationTools(); vm.explorationService.drawMeasurement = !vm.explorationService.drawMeasurement;"><span><i class="fa fa-arrows-h"></i>&nbsp;&nbsp;Measure Tool</span></button>
                 <div id="measurement-div" class="wim-alert row" ng-show="vm.explorationService.measurementData.length > 0" ng-bind="vm.explorationService.measurementData"></div>
 
