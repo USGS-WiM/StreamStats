@@ -2,14 +2,14 @@
     <div class="scrollable-content">
         <div class="list-group">
             <div class="sidebar-item">
-                <a ng-class="vm.selectedProcedure == 1  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(1)">Select a State / Region<div></div><h5 ng-show="vm.regionService.selectedRegion.Name"><strong>{{vm.regionService.selectedRegion.Name}}</strong><i ng-click="vm.openStatePage($event, vm.regionService.selectedRegion.Name)" class="fa fa-info-circle"></i></h5><i ng-class="vm.selectedProcedure == 1 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
+                <a ng-class="vm.selectedProcedure == 1  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(1)">Select a State / Region<h5 ng-show="vm.regionService.selectedRegion.Name"><strong>{{vm.regionService.selectedRegion.Name}}</strong><i ng-click="vm.openStatePage($event, vm.regionService.selectedRegion.Name)" class="fa fa-info-circle"></i></h5><i ng-class="vm.selectedProcedure == 1 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
                 <div class="list-group-body" ng-hide="vm.selectedProcedure != 1">
                    <div class="group-wrapper" ng-show="vm.regionService.selectedRegion">
                         <button class="btn-wim-sm btn-wim-success btn-wim-group-1" ng-click="vm.refreshWindow()"><span><i class="fa fa-undo"></i>&nbsp;&nbsp;Start Over</span></button>
                     </div>  
 
                    <div id="step1info" class="wim-alert">
-                       <p ng-hide="vm.regionService.regionList.length > 0 && !vm.regionService.selectedRegion"><strong>Step 1:</strong> Use the map or the search tool to identify an area of interest. At zoom level 8 or greater State/Region selection will be enabled</p>
+                       <p ng-hide="vm.regionService.regionList.length > 0 && !vm.regionService.selectedRegion"><strong>Step 1:</strong> Use the map or the search tool to identify an area of interest. At zoom level 8 or greater State/Region selection will be enabled.</p>
                        <p ng-show="vm.regionService.regionList.length > 0 && !vm.regionService.selectedRegion"><strong>Step 2:</strong> You have zoomed in sufficiently to select a state or regional study area.  Your selection will dictate the data used to perform basin delineation and flow statistics calculation.</p>
                    </div>
 
@@ -17,7 +17,7 @@
                         <label> Click to select a State or Regional Study Area</label>
                         <div ng-repeat="region in vm.regionService.regionList track by $index">
                             <div class="row">
-                                <div class="col-md-9"><button ng-class="region.Name === vm.regionService.selectedRegion.Name ? 'btn-wim-info btn-group-justified':'btn-wim-sm btn-wim-success btn-group-justified'" ng-click="vm.setRegion(region)"><span>{{region.Name}} </span></button></div>
+                                <div class="col-md-9"><button ng-class="region.Name === vm.regionService.selectedRegion.Name ? 'btn-wim-info btn-group-justified':'btn-wim-sm btn-wim-success btn-group-justified'" ng-disabled="!region.regionEnabled" ng-click="vm.setRegion(region)"><span>{{region.Name}} </span></button></div>
                                 <div class="col-md-2">
                                     <button ng-click="vm.openStatePage($event, region.Name)" class="btn-wim-sm btn-wim-info"><i class="fa fa-info-circle"></i></button>
                                 </div>
@@ -29,12 +29,6 @@
                         <div class="row">
                             <div class="col-md-9">
                                 <div id="searchBox"></div>
-                                <!--<div class="input-group">
-                                  
-                                  <span class="input-group-btn">
-                                    <button id="searchSubmit" class="btn-wim-sm btn-wim-success" type="button" ng-click="vm.startSearch($event)">Go!</button>
-                                  </span>
-                                </div>-->
                             </div>
                             <div class="col-md-2"><button class="btn-wim-sm btn-wim-info" ng-click="vm.showSearchHelp = !vm.showSearchHelp"><i class="fa fa-question-circle"></i></button></div>
                         </div>
@@ -181,6 +175,13 @@
                                 <button class="btn-wim-sm btn-wim-default btn-wim-group-1" ng-class="vm.multipleParameterSelectorAdd ? '': 'btn-wim-info'" ng-click="vm.multipleParameterSelector()"><span>Select All Basin Characteristics</span></button>
                             </div>
                             <table class="table table-condensed">
+                                <thead class="param-table">
+                                    <tr>
+                                        <th class="col-xs-2">Select</th>
+                                        <th class="col-xs-3">Parameter</th>
+                                        <th class="col-xs-7">Description</th>
+                                    </tr>
+                                </thead>
                                 <tbody ng-repeat="parameter in vm.regionService.parameterList">
                                     <tr>
                                         <td><checkbox large ng-model="parameter.checked" ng-change="vm.updateStudyAreaParameterList(parameter)"></checkbox></td>
@@ -230,7 +231,7 @@
                             </thead>
                             <tbody ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList" ng-form="paramaterForm">
                                 <tr >
-                                    <td ng-bind="parameter.description"></td>
+                                    <td ng-bind="parameter.code"></td>
                                     <td><input class="form-control" ng-class="{notloaded:!parameter.loaded}" ng-change="vm.studyAreaService.selectedStudyArea.Disclaimers.parametersEdited = true; vm.updateParameterValue(parameter)" ng-model="parameter.value" type="text" /></td>
                                     <td ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated && vm.regionService.selectedRegion.Applications.indexOf('RegulationFlows') != -1"><input class="form-control" ng-change="vm.studyAreaService.selectedStudyArea.Disclaimers.parametersEdited = true" ng-model="parameter.unRegulatedValue" type="text" /></td>
                                     <!--<td ng-hide="parameter.loaded"><button class="btn-wim-sm btn-wim-success" ng-click="vm.calculateParameters()"><i class="fa fa-refresh"></i></button></td>-->
