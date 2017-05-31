@@ -17,7 +17,7 @@
                         <label> Click to select a State or Regional Study Area</label>
                         <div ng-repeat="region in vm.regionService.regionList track by $index">
                             <div class="row">
-                                <div class="col-md-9"><button ng-class="region.Name === vm.regionService.selectedRegion.Name ? 'btn-wim-info btn-group-justified':'btn-wim-sm btn-wim-success btn-group-justified'" ng-click="vm.setRegion(region)"><span>{{region.Name}} </span></button></div>
+                                <div class="col-md-9"><button ng-class="region.Name === vm.regionService.selectedRegion.Name ? 'btn-wim-info btn-group-justified':'btn-wim-sm btn-wim-success btn-group-justified'" ng-disabled="!region.regionEnabled" ng-click="vm.setRegion(region)"><span>{{region.Name}} </span></button></div>
                                 <div class="col-md-2">
                                     <button ng-click="vm.openStatePage($event, region.Name)" class="btn-wim-sm btn-wim-info"><i class="fa fa-info-circle"></i></button>
                                 </div>

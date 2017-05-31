@@ -117,19 +117,32 @@ var StreamStats;
                 };
                 var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.RegionInfoFolder;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
-                //clear article
-                this.regionArticle = '<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>';
-                this.Execute(request).then(function (response) {
-                    response.data.folder.articles.forEach(function (article) {
-                        if (article.title == regionID) {
-                            //console.log("Help article found for : ", regionID);
-                            _this.regionArticle = article.description;
-                            return;
+                //check if this state/region is enabled in appConfig.js
+                configuration.regions.forEach(function (value, index) {
+                    //console.log(value.Name, regionID);
+                    //find this state/region
+                    if (value.Name === regionID) {
+                        if (!value.regionEnabled) {
+                            //console.log('MATCH FOUND')
+                            _this.regionArticle = '<div class="wim-alert">StreamStats has not been developed for <strong>' + value.Name + '</strong>.  Please contact the <a href="mailto:support@streamstats.freshdesk.com">streamstats team</a> if you would like StreamStats enabled for this State/Region.</div>';
                         }
-                    });
-                }, function (error) {
-                    //sm when error
-                }).finally(function () {
+                        else {
+                            //clear article
+                            _this.regionArticle = '<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>';
+                            _this.Execute(request).then(function (response) {
+                                response.data.folder.articles.forEach(function (article) {
+                                    if (article.title == regionID) {
+                                        //console.log("Help article found for : ", regionID);
+                                        _this.regionArticle = article.description;
+                                        return;
+                                    }
+                                });
+                            }, function (error) {
+                                //sm when error
+                            }).finally(function () {
+                            });
+                        }
+                    }
                 });
             };
             AboutController.prototype.convertUnsafe = function (x) {
