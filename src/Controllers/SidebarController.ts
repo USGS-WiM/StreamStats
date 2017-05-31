@@ -416,31 +416,58 @@ module StreamStats.Controllers {
 
         public onSelectedStatisticsGroupChanged() {
 
-            //console.log('StatisticsGroup param list changed.  loaded ', this.nssService.selectedStatisticsGroupList);
-
             //toggle show flows checkbox
             this.nssService.selectedStatisticsGroupList.length > 0 ? this.nssService.showFlowsTable = true : this.nssService.showFlowsTable = false;
 
-            this.regionService.parameterList.forEach((parameter) => {
+            //loop over whole statisticsgroups
+            this.nssService.selectedStatisticsGroupList.forEach((statisticsGroup) => {
 
-                //loop over whole statisticsgroups
-                this.nssService.selectedStatisticsGroupList.forEach((statisticsGroup) => {
+                if (statisticsGroup.RegressionRegions) {
 
-                    if (statisticsGroup.RegressionRegions) {
+                    //get their parameters
+                    statisticsGroup.RegressionRegions.forEach((regressionRegion) => {
 
-                        //get their parameters
-                        statisticsGroup.RegressionRegions.forEach((regressionRegion) => {
+                        //loop over list of state/region parameters to see if there is a match
+                        regressionRegion.Parameters.forEach((param) => {
 
-                            regressionRegion.Parameters.forEach((param) => {
+                            var found = false;
+                            this.regionService.parameterList.forEach((parameter) => {
+                                //console.log('test',parameter)
                                 if (parameter.code.toLowerCase() == param.Code.toLowerCase()) {
                                     this.addParameterToStudyAreaList(parameter.code);
+                                    found = true;
+                                    //console.log('PARAM WAS FOUND SUCCESSFULLY', param.Code)
                                 }//end if
+                            });
 
-                            });// next param
-                        });// next regressionRegion
-                    }//end if
-                });//next statisticgroup
-            });//next parameter
+                            if (!found) {
+                                //console.log('PARAM NOT FOUND', param.Code)
+                                this.toaster.pop('warning', "Missing Parameter: " + param.Code, "The selected scenario requires a parameter not available in this State/Region.  The value for this parameter will need to be entered manually.", 0);
+
+                                //add to region parameterList
+                                var newParam = {
+                                    name: param.name,
+                                    description: param.Description,
+                                    code: param.Code,
+                                    unit: param.UnitType.Unit,
+                                    value: null,
+                                    regulatedValue: null,
+                                    unRegulatedValue: null,
+                                    loaded:null,
+                                    checked: false,
+                                    toggleable: true
+                                }
+
+                                //push the param that was not in the original regionService paramaterList
+                                this.regionService.parameterList.push(newParam);
+
+                                //select it
+                                this.addParameterToStudyAreaList(param.Code);
+                            }
+                        });// next param
+                    });// next regressionRegion
+                }//end if
+            });//next statisticgroup
         }
 
         public OpenWateruse() {
