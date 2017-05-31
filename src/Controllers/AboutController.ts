@@ -180,25 +180,43 @@ module StreamStats.Controllers {
             var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.RegionInfoFolder;
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
 
-            //clear article
-            this.regionArticle = '<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>';
+            //check if this state/region is enabled in appConfig.js
+            configuration.regions.forEach((value, index) => {
+                //console.log(value.Name, regionID);
 
-            this.Execute(request).then(
-                (response: any) => {
+                //find this state/region
+                if (value.Name === regionID) {
+                    if (!value.regionEnabled) {
+                        //console.log('MATCH FOUND')
+                        this.regionArticle = '<div class="wim-alert">StreamStats has not been developed for <strong>' + value.Name + '</strong>.  Please contact the <a href="mailto:support@streamstats.freshdesk.com">streamstats team</a> if you would like StreamStats enabled for this State/Region.</div>';
+                    }
 
-                    response.data.folder.articles.forEach((article) => {
-                        if (article.title == regionID) {
-                            //console.log("Help article found for : ", regionID);
-                            this.regionArticle = article.description;
-                            return;
-                        }
-                    });
+                    //otherwise get region help article
+                    else {
+                        //clear article
+                        this.regionArticle = '<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>';
 
-                }, (error) => {
-                    //sm when error
-                }).finally(() => {
+                        this.Execute(request).then(
+                            (response: any) => {
 
-                });
+                                response.data.folder.articles.forEach((article) => {
+                                    if (article.title == regionID) {
+                                        //console.log("Help article found for : ", regionID);
+                                        this.regionArticle = article.description;
+                                        return;
+                                    }
+                                });
+
+                            }, (error) => {
+                                //sm when error
+                            }).finally(() => {
+
+                            });
+                    }
+                }
+            });
+
+
         }
 
         public convertUnsafe(x: string) {
