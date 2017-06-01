@@ -119,11 +119,9 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
                 //check if this state/region is enabled in appConfig.js
                 configuration.regions.forEach(function (value, index) {
-                    //console.log(value.Name, regionID);
                     //find this state/region
                     if (value.Name === regionID) {
                         if (!value.regionEnabled) {
-                            //console.log('MATCH FOUND')
                             _this.regionArticle = '<div class="wim-alert">StreamStats has not been developed for <strong>' + value.Name + '</strong>.  Please contact the <a href="mailto:support@streamstats.freshdesk.com">streamstats team</a> if you would like StreamStats enabled for this State/Region.</div>';
                         }
                         else {
