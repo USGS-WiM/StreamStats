@@ -383,7 +383,7 @@ var StreamStats;
                         var layerString;
                         _this.regionServices.nationalMapLayerList.forEach(function (item) {
                             if (item[0].toLowerCase() == "streamgages")
-                                layerString = '"' + item[1] + '"';
+                                layerString = '"visible:' + item[1] + '"';
                         });
                         maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).layers(layerString).run(function (error, results) {
                             _this.toaster.clear();
