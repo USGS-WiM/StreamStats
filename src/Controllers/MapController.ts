@@ -527,7 +527,7 @@ module StreamStats.Controllers {
                     //get layer to query
                     var layerString;
                     this.regionServices.nationalMapLayerList.forEach((item) => {
-                        if (item[0].toLowerCase() == "streamgages") layerString = '"' + item[1] + '"';
+                        if (item[0].toLowerCase() == "streamgages") layerString = '"visible:' + item[1] + '"';
                     });
 
                     maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).layers(layerString).run((error: any, results: any) => {
