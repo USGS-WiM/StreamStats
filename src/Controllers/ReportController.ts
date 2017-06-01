@@ -259,8 +259,8 @@ module StreamStats.Controllers {
                     if (regressionRegion.PercentWeight) regionPercent = regressionRegion.PercentWeight.toFixed(0) + ' Percent ';
                     finalVal += '\r\n' + statGroup.Name + ' Parameters,' + regionPercent + regressionRegion.Name.split("_").join(" ") + '\r\n';
 
-                    //get this table by ID
-                    finalVal += this.tableToCSV($('#' + this.camelize(statGroup.Name + regressionRegion.Name + 'ScenarioParamTable'))) + '\r\n';
+                    //get this table by ID --need to use this type of selected because jquery doesn't like the possibility of colons in div id
+                    finalVal += this.tableToCSV($(document.getElementById(this.camelize(statGroup.Name + regressionRegion.Name + 'ScenarioParamTable')))) + '\r\n';
                     
                 });
                 return finalVal + '\r\n';
@@ -295,8 +295,8 @@ module StreamStats.Controllers {
                         if (regressionRegion.Results[0].IntervalBounds && regressionRegion.Results[0].Errors && regressionRegion.Results[0].Errors.length > 0) finalVal +=
                          '"PIl: Prediction Interval- Lower, PIu: Prediction Interval- Upper, SEe: Standard Error of Estimate, SEp: Standard Error of Prediction, SE: Standard Error (other-- see report)"\r\n'
 
-                        //get this table by ID
-                        finalVal += this.tableToCSV($('#' + this.camelize(statGroup.Name + regressionRegion.Name + 'ScenarioFlowTable'))) + '\r\n\r\n';
+                        //get this table by ID --need to use this type of selected because jquery doesn't like the possibility of colons in div id
+                        finalVal += this.tableToCSV($(document.getElementById(this.camelize(statGroup.Name + regressionRegion.Name + 'ScenarioFlowTable')))) + '\r\n\r\n';
                     }
                 });
                 return finalVal + '\r\n';
@@ -432,7 +432,6 @@ module StreamStats.Controllers {
             csv += formatRows($headers.map(grabRow));
             csv += rowDelim;
             csv += formatRows($rows.map(grabRow)) + '"';
-
             return csv
 
             //------------------------------------------------------------
