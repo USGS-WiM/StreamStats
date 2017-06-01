@@ -162,7 +162,6 @@ module StreamStats.Controllers {
         public toaster: any;
         public angulartics: any;
         public nomnimalZoomLevel: string;
-        public userInputToastCount: number;
         public get selectedExplorationMethodType(): Services.ExplorationMethodType {
             if (this.explorationService.selectedMethod == null) return 0;
             return this.explorationService.selectedMethod.ModelType;
@@ -193,7 +192,6 @@ module StreamStats.Controllers {
             this.eventManager = eventManager;
             this.cursorStyle = 'pointer';
             this.environment = configuration.environment;
-            this.userInputToastCount = 0;
 
             //subscribe to Events
             this.eventManager.SubscribeToEvent(Services.onSelectedStudyAreaChanged, new WiM.Event.EventHandler<Services.StudyAreaEventArgs>(() => {
@@ -538,7 +536,7 @@ module StreamStats.Controllers {
                         this.cursorStyle = 'pointer';
 
                         if (!results.features || results.features.length == 0) {
-                            this.toaster.pop("warning", "Warning", "No streamgages were found", 5000);
+                            this.toaster.pop("info", "Information", "No streamgages were found at this location", 5000);
                             return;
                         }
 
@@ -1161,21 +1159,7 @@ module StreamStats.Controllers {
                     this.bounds.southWest.lat, this.bounds.northEast.lat);
 
                 if (!this.regionServices.selectedRegion) {
-   
-                    if (this.userInputToastCount === 0) {
-                        this.toaster.pop({
-                            "type": "info",
-                            "title": "Information",
-                            "body": "User input is needed to continue",
-                            "time-out": 5000,
-                            "onShowCallback": () => {
-                                this.userInputToastCount += 1;
-                            },
-                            "onHideCallback": () => {
-                                this.userInputToastCount -= 1;
-                            }
-                        });
-                    }
+                    this.toaster.pop("info", "Information", "User input is needed to continue", 5000);
                 }
             }
 
