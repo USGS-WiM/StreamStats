@@ -171,6 +171,7 @@ module StreamStats.Controllers {
         }
         public explorationMethodBusy: boolean = false;
         private environment: string;
+        public explorationToolsExpanded: boolean = false;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -237,6 +238,8 @@ module StreamStats.Controllers {
 
             $scope.$on('leafletDirectiveMap.mainMap.click', (event, args) => {
 
+                //console.log('test',this.explorationService.drawElevationProfile)
+
                 //listen for delineate click if ready
                 if (this.studyArea.doDelineateFlag) {
                     this.checkDelineatePoint(args.leafletEvent.latlng);
@@ -244,9 +247,13 @@ module StreamStats.Controllers {
                 }
 
                 //check if in edit mode
-                if (this.studyArea.showEditToolbar) {
-                    return;
-                }
+                if (this.studyArea.showEditToolbar) return;
+
+                //check if in measurement mode
+                if (this.explorationService.drawMeasurement) return; 
+
+                //check if in elevation profile mode
+                if (this.explorationService.drawElevationProfile) return; 
 
                 //query streamgage is default map click action
                 else {
@@ -439,7 +446,7 @@ module StreamStats.Controllers {
                     if (map.getZoom() >= 8) return;
 
                     //console.log('in querystates');
-                    this.toaster.pop("info", "Information", "Querying National map layers...", 0);
+                    this.toaster.pop("wait", "Information", "Querying National map layers...", 0);
                     this.cursorStyle = 'wait'; 
 
                     //ga event
@@ -506,7 +513,7 @@ module StreamStats.Controllers {
         private queryStreamgages(evt) {
 
             //console.log('in query regional layers');
-            this.toaster.pop("info", "Information", "Querying Streamgages...", 0);
+            this.toaster.pop("wait", "Information", "Querying Streamgages...", 0);
             this.cursorStyle = 'wait';
             this.markers = {};
 
@@ -613,8 +620,7 @@ module StreamStats.Controllers {
                         var esriJSON = '{"geometryType":"esriGeometryPolyline","spatialReference":{"wkid":"4326"},"fields": [],"features":[{"geometry": {"type":"polyline", "paths":[' + JSON.stringify(feature.geometry.coordinates) + ']}}]}'
 
                         //make the request
-                        //this.cursorStyle = 'wait';
-                        this.toaster.pop("info", "Information", "Querying the elevation service...", 0);
+                        this.toaster.pop("wait", "Information", "Querying the elevation service...", 0);
                         this.explorationService.elevationProfile(esriJSON)
 
                         //disable button 
@@ -622,6 +628,7 @@ module StreamStats.Controllers {
 
                         //force map refresh
                         map.panBy([0, 1]);
+
                     }); 
                 });
             });
@@ -668,6 +675,9 @@ module StreamStats.Controllers {
                 this.explorationService.elevationProfileHTML = container.innerHTML;
                 this.modal.openModal(Services.SSModalType.e_exploration);
 
+                 //delete line
+                delete this.geojson['elevationProfileLine3D'];
+
             });
 
             this.toaster.clear();
@@ -684,30 +694,24 @@ module StreamStats.Controllers {
             lc.start();
         }
 
-        //private resetMap() {
-        //    this.regionServices.clearRegion();
-        //    this.studyArea.clearStudyArea();
-        //    this.nssService.clearNSSdata();
-        //    this.removeOverlayLayers("_region", true);
-        //    this.markers = {};
-        //    this.center = new Center(39, -100, 3);
-        //}
-
         private resetExplorationTools() {
-            //document.getElementById('elevation-div').innerHTML = '';
             document.getElementById('measurement-div').innerHTML = '';
             if (this.drawControl) this.drawController({ }, false);
             this.explorationService.drawMeasurement = false;
             this.explorationService.measurementData = '';
             this.explorationService.drawElevationProfile = false;
             this.explorationService.showElevationChart = false;
+            delete this.geojson['elevationProfileLine3D'];
+            this.leafletData.getMap("mainMap").then((map: any) => {
+                this.leafletData.getLayers("mainMap").then((maplayers: any) => {
+                    var drawnItems = maplayers.overlays.draw;
+                    drawnItems.clearLayers();
+                });
+            });
         }
 
         private measurement() {
 
-            //console.log('in measurement tool');
-
-            //document.getElementById('elevation-div').innerHTML = '';
             //user affordance
             this.explorationService.measurementData = 'Click the map to begin\nDouble click to end the Drawing';
 
@@ -755,7 +759,6 @@ module StreamStats.Controllers {
 
                     map.on("click", measurestart);
                     map.on("draw:created", measurestop);
-
 
                 });
             });
