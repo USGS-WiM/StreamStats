@@ -365,7 +365,7 @@ module StreamStats.Controllers {
         private init(): void { 
 
             //init map           
-            this.center = new Center(39, -100, 3);
+            this.center = new Center(39, -100, 4);
             this.layers = {
                 baselayers: configuration.basemaps,
                 overlays: configuration.overlayedLayers
