@@ -172,6 +172,9 @@ module StreamStats.Controllers {
         public explorationMethodBusy: boolean = false;
         private environment: string;
         public explorationToolsExpanded: boolean = false;
+        public measuremove: any;
+        public measurestart: any;
+        public measurestop: any;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -707,9 +710,11 @@ module StreamStats.Controllers {
                 this.leafletData.getLayers("mainMap").then((maplayers: any) => {
                     var drawnItems = maplayers.overlays.draw;
                     drawnItems.clearLayers();
-                    map.off("click");
-                    map.off("mousemove");
-                    map.off("draw:created");
+
+                     //remove listeners
+                    if (this.measurestart) map.off("click", this.measurestart);
+                    if (this.measuremove) map.off("mousemove", this.measuremove);
+                    if (this.measurestop) map.off("draw:created", this.measurestop);
                 });
             });
         }
@@ -734,18 +739,18 @@ module StreamStats.Controllers {
                     drawnItems.clearLayers();
 			
                     //listeners active during drawing
-                    var measuremove = () => {
+                    this.measuremove = () => {
                         this.explorationService.measurementData = "Total length: " + this.drawControl._getMeasurementString();
                     };
-                    var measurestart = () => {
+                    this.measurestart = () => {
                         if (stopclick == false) {
                             stopclick = true;
                             this.explorationService.measurementData = "Total Length: ";
-                            map.on("mousemove", measuremove);
+                            map.on("mousemove", this.measuremove);
                         };
                     };
 
-                    var measurestop = (e) => {
+                    this.measurestop = (e) => {
                         var layer = e.layer;
                         drawnItems.addLayer(layer);
                         drawnItems.addTo(map);
@@ -753,16 +758,16 @@ module StreamStats.Controllers {
                         //reset button
                         this.explorationService.measurementData = "Total length: " + this.drawControl._getMeasurementString();
                         //remove listeners
-                        map.off("click", measurestart);
-                        map.off("mousemove", measuremove);
-                        map.off("draw:created", measurestop);
+                        map.off("click", this.measurestart);
+                        map.off("mousemove", this.measuremove);
+                        map.off("draw:created", this.measurestop);
 
                         this.drawControl.disable();
                         this.explorationService.drawMeasurement = false;
                     };
 
-                    map.on("click", measurestart);
-                    map.on("draw:created", measurestop);
+                    map.on("click", this.measurestart);
+                    map.on("draw:created", this.measurestop);
 
                 });
             });

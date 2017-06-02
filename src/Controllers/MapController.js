@@ -529,9 +529,13 @@ var StreamStats;
                     _this.leafletData.getLayers("mainMap").then(function (maplayers) {
                         var drawnItems = maplayers.overlays.draw;
                         drawnItems.clearLayers();
-                        map.off("click");
-                        map.off("mousemove");
-                        map.off("draw:created");
+                        //remove listeners
+                        if (_this.measurestart)
+                            map.off("click", _this.measurestart);
+                        if (_this.measuremove)
+                            map.off("mousemove", _this.measuremove);
+                        if (_this.measurestop)
+                            map.off("draw:created", _this.measurestop);
                     });
                 });
             };
@@ -550,32 +554,32 @@ var StreamStats;
                         var drawnItems = maplayers.overlays.draw;
                         drawnItems.clearLayers();
                         //listeners active during drawing
-                        var measuremove = function () {
+                        _this.measuremove = function () {
                             _this.explorationService.measurementData = "Total length: " + _this.drawControl._getMeasurementString();
                         };
-                        var measurestart = function () {
+                        _this.measurestart = function () {
                             if (stopclick == false) {
                                 stopclick = true;
                                 _this.explorationService.measurementData = "Total Length: ";
-                                map.on("mousemove", measuremove);
+                                map.on("mousemove", _this.measuremove);
                             }
                             ;
                         };
-                        var measurestop = function (e) {
+                        _this.measurestop = function (e) {
                             var layer = e.layer;
                             drawnItems.addLayer(layer);
                             drawnItems.addTo(map);
                             //reset button
                             _this.explorationService.measurementData = "Total length: " + _this.drawControl._getMeasurementString();
                             //remove listeners
-                            map.off("click", measurestart);
-                            map.off("mousemove", measuremove);
-                            map.off("draw:created", measurestop);
+                            map.off("click", _this.measurestart);
+                            map.off("mousemove", _this.measuremove);
+                            map.off("draw:created", _this.measurestop);
                             _this.drawControl.disable();
                             _this.explorationService.drawMeasurement = false;
                         };
-                        map.on("click", measurestart);
-                        map.on("draw:created", measurestop);
+                        map.on("click", _this.measurestart);
+                        map.on("draw:created", _this.measurestop);
                     });
                 });
             };
