@@ -301,6 +301,15 @@ configuration.overlayedLayers = {
             "format": "png8",
             "f": "image",
         }
+    },//end maskLayer    
+    "MaskLayer": {
+        "name": "Area of Interest",
+        "url": "https://txpub.usgs.gov/arcgis/rest/services/Mapping/Mask/MapServer",
+        "type": 'agsTiled',
+        "visible": true,
+        "layerOptions": {
+            "opacity": 0.6,
+        }
     },//end ssLayer    
     "draw": {
         "name": 'draw',
