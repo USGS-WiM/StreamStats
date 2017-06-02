@@ -309,6 +309,8 @@ configuration.overlayedLayers = {
         "visible": true,
         "layerOptions": {
             "opacity": 0.6,
+            "maxZoom": 11,
+            "zIndex": 9999,
         }
     },//end ssLayer    
     "draw": {
