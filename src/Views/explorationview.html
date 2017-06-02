@@ -14,8 +14,33 @@
                     <div class="col-sm-12">
                         <h3>Elevation Profile</h3>
                         <div id="elevation-div" class="leaflet-control elevation lime-theme"><div ng-bind-html="vm.convertUnsafe(vm.explorationService.elevationProfileHTML)"> </div></div>
+
+
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-sm-8">
+                        <table id="elevationProfileTable" class="table table-striped text-center" table-condensed">
+                            <thead>
+                                <tr>
+                                    <th>Latitude</th>
+                                    <th>Longitude</th>
+                                    <th>Elevation (ft)</th>
+                                    <th>Distance (ft)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="item in vm.explorationService.coordinateList track by $index">
+                                    <td ng-bind="item[0]"></td>
+                                    <td ng-bind="item[1]"></td>
+                                    <td ng-bind="item[2]"></td>
+                                    <td ng-bind="item[3]"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
                 <p>Elevation data provided by: <a href="https://developers.arcgis.com/rest/elevation/api-reference/profile.htm">ESRI Elevation Analysis services</a></p>
 
                 <div id="downloadButtons" class="hidden-print">
@@ -26,7 +51,7 @@
             </div>
         </div>
 
-    </div>
+            </div>
     <div class="modal-footer  hidden-print">
         <div class="btn-group">
             <button class="btn-wim-default" ng-click="vm.close()"><i class="fa fa-close"></i>&nbsp;&nbsp;Close</button>
