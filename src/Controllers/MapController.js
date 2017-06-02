@@ -260,6 +260,10 @@ var StreamStats;
                 this.paths = {};
                 this.geojson = {};
                 this.regionLayer = {};
+                //for elevation div
+                var width = 600;
+                if ($(window).width() < 768)
+                    width = $(window).width() * 0.7;
                 this.controls = {
                     scale: true,
                     draw: {
@@ -275,7 +279,7 @@ var StreamStats;
                     //zoom home button control
                     //(<any>L.Control).zoomHome({ homeCoordinates: [39, -100], homeZoom: 4 }),
                     //location control
-                    L.control.locate({ follow: false, locateOptions: { "maxZoom": 15 } }), L.control.elevation({ imperial: true }))
+                    L.control.locate({ follow: false, locateOptions: { "maxZoom": 15 } }), L.control.elevation({ imperial: true, width: width }))
                 };
                 this.events = {
                     map: {
@@ -569,8 +573,19 @@ var StreamStats;
                             var layer = e.layer;
                             drawnItems.addLayer(layer);
                             drawnItems.addTo(map);
+                            // Calculating the distance of the polyline, internal funciton '_getMeasurementString' doesn't work on mobile
+                            var tempLatLng = null;
+                            var totalDistance = 0.00000;
+                            $.each(e.layer._latlngs, function (i, latlng) {
+                                if (tempLatLng == null) {
+                                    tempLatLng = latlng;
+                                    return;
+                                }
+                                totalDistance += tempLatLng.distanceTo(latlng);
+                                tempLatLng = latlng;
+                            });
                             //reset button
-                            _this.explorationService.measurementData = "Total length: " + _this.drawControl._getMeasurementString();
+                            _this.explorationService.measurementData = "Total length: " + (totalDistance * 3.28084).toFixed(0) + " ft";
                             //remove listeners
                             map.off("click", _this.measurestart);
                             map.off("mousemove", _this.measuremove);

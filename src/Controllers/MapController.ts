@@ -385,6 +385,10 @@ module StreamStats.Controllers {
             this.paths = {};
             this.geojson = {};
             this.regionLayer = {};     
+
+            //for elevation div
+            var width = 600;
+            if ($(window).width() < 768) width = $(window).width() * 0.7;
             this.controls = {
                 scale: true,
                 draw: {
@@ -403,7 +407,7 @@ module StreamStats.Controllers {
                     //(<any>L.Control).zoomHome({ homeCoordinates: [39, -100], homeZoom: 4 }),
                     //location control
                     (<any>L.control).locate({ follow: false, locateOptions: {"maxZoom": 15} }),
-                    (<any>L.control).elevation({ imperial: true })
+                    (<any>L.control).elevation({ imperial: true, width: width })
                     )
             };
             this.events = {
@@ -754,9 +758,23 @@ module StreamStats.Controllers {
                         var layer = e.layer;
                         drawnItems.addLayer(layer);
                         drawnItems.addTo(map);
-			
+
+                        // Calculating the distance of the polyline, internal funciton '_getMeasurementString' doesn't work on mobile
+                        var tempLatLng = null;
+                        var totalDistance = 0.00000;
+                        $.each(e.layer._latlngs, function (i, latlng) {
+                            if (tempLatLng == null) {
+                                tempLatLng = latlng;
+                                return;
+                            }
+
+                            totalDistance += tempLatLng.distanceTo(latlng);
+                            tempLatLng = latlng;
+                        });
+
                         //reset button
-                        this.explorationService.measurementData = "Total length: " + this.drawControl._getMeasurementString();
+                        this.explorationService.measurementData = "Total length: " + (totalDistance * 3.28084).toFixed(0) + " ft";
+       
                         //remove listeners
                         map.off("click", this.measurestart);
                         map.off("mousemove", this.measuremove);
