@@ -36,6 +36,7 @@ module StreamStats.Services {
         GetToolName(methodID: number): String
         ExecuteSelectedModel(): void
         elevationProfileHTML: any;
+        coordinateList: Array<any>;
     }
 
     export var onSelectedMethodExecuteComplete: string = "onSelectedMethodExecuteComplete";
@@ -67,6 +68,7 @@ module StreamStats.Services {
             return this._selectedMethod;
         }
         public elevationProfileHTML: any;
+        public coordinateList: Array<any>;
         
 
         //Constructor
@@ -119,6 +121,22 @@ module StreamStats.Services {
                                     return [elem[0], elem[1], elem[2] * 3.28084]
                                 });
                             }
+
+                            // build table data and get distance between points
+                            this.coordinateList = []
+                            var tempLatLng = null;
+                            var totalDistance = 0.00000;
+                            coords.forEach((value) => {
+                                var latlng = L.latLng(value[0], value[1]);
+                                if (tempLatLng == null) {
+                                    tempLatLng = latlng;
+                                    return;
+                                }
+                                //distance is in meters
+                                totalDistance += tempLatLng.distanceTo(latlng);
+                                tempLatLng = latlng;
+                                this.coordinateList.push([value[1].toFixed(5), value[0].toFixed(5), value[2].toFixed(2), (totalDistance * 3.28084).toFixed(2)])
+                            });
 
                             this.elevationProfileGeoJSON = {
                                 "name": "NewFeatureType", "type": "FeatureCollection"
