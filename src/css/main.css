@@ -768,23 +768,21 @@ div.leaflet-top > .elevation {
             visibility: visible;
         }
         .modal{
-            position: absolute;
+            /**Remove scrollbar for printing.**/
+            overflow: visible !important;
+            /**Needs to be relative for printing in IE11**/
+            position: relative;
             left: 0;
             top: 0;
             margin: 0;
             padding-right:20px;
-            /*padding: 0;*/
             min-height:550px;
             visibility: visible;
-            /**Remove scrollbar for printing.**/
-            overflow: visible !important;
         }
         .modal-dialog {
-            
             width: 100%;
             padding: 0;
-            margin:20px;
-                
+            margin:20px;   
             visibility: visible !important;
             /**Remove scrollbar for printing.**/
             overflow: visible !important;

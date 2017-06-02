@@ -91,7 +91,6 @@ var StreamStats;
                 this.eventManager = eventManager;
                 this.cursorStyle = 'pointer';
                 this.environment = configuration.environment;
-                this.userInputToastCount = 0;
                 //subscribe to Events
                 this.eventManager.SubscribeToEvent(StreamStats.Services.onSelectedStudyAreaChanged, new WiM.Event.EventHandler(function () {
                     _this.onSelectedStudyAreaChanged();
@@ -384,13 +383,13 @@ var StreamStats;
                         var layerString;
                         _this.regionServices.nationalMapLayerList.forEach(function (item) {
                             if (item[0].toLowerCase() == "streamgages")
-                                layerString = '"' + item[1] + '"';
+                                layerString = '"visible:' + item[1] + '"';
                         });
                         maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).layers(layerString).run(function (error, results) {
                             _this.toaster.clear();
                             _this.cursorStyle = 'pointer';
                             if (!results.features || results.features.length == 0) {
-                                _this.toaster.pop("warning", "Warning", "No streamgages were found", 5000);
+                                _this.toaster.pop("info", "Information", "No streamgages were found at this location", 5000);
                                 return;
                             }
                             results.features.forEach(function (queryResult) {
@@ -905,26 +904,12 @@ var StreamStats;
                 } //end if
             };
             MapController.prototype.mapBoundsChange = function (oldValue, newValue) {
-                var _this = this;
                 this.nomnimalZoomLevel = this.scaleLookup(this.center.zoom);
                 if (this.center.zoom >= 8 && oldValue !== newValue) {
                     //console.log('requesting region list');
                     this.regionServices.loadRegionListByExtent(this.bounds.northEast.lng, this.bounds.southWest.lng, this.bounds.southWest.lat, this.bounds.northEast.lat);
                     if (!this.regionServices.selectedRegion) {
-                        if (this.userInputToastCount === 0) {
-                            this.toaster.pop({
-                                "type": "info",
-                                "title": "Information",
-                                "body": "User input is needed to continue",
-                                "time-out": 5000,
-                                "onShowCallback": function () {
-                                    _this.userInputToastCount += 1;
-                                },
-                                "onHideCallback": function () {
-                                    _this.userInputToastCount -= 1;
-                                }
-                            });
-                        }
+                        this.toaster.pop("info", "Information", "User input is needed to continue", 5000);
                     }
                 }
                 if (this.center.zoom < 8 && oldValue !== newValue) {
