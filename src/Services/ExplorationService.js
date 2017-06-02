@@ -86,6 +86,21 @@ var StreamStats;
                                     return [elem[0], elem[1], elem[2] * 3.28084];
                                 });
                             }
+                            // build table data and get distance between points
+                            _this.coordinateList = [];
+                            var tempLatLng = null;
+                            var totalDistance = 0.00000;
+                            coords.forEach(function (value) {
+                                var latlng = L.latLng(value[0], value[1]);
+                                if (tempLatLng == null) {
+                                    tempLatLng = latlng;
+                                    return;
+                                }
+                                //distance is in meters
+                                totalDistance += tempLatLng.distanceTo(latlng);
+                                tempLatLng = latlng;
+                                _this.coordinateList.push([value[1].toFixed(5), value[0].toFixed(5), value[2].toFixed(2), (totalDistance * 3.28084).toFixed(2)]);
+                            });
                             _this.elevationProfileGeoJSON = {
                                 "name": "NewFeatureType", "type": "FeatureCollection",
                                 "features": [
