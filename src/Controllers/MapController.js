@@ -243,7 +243,7 @@ var StreamStats;
             //-+-+-+-+-+-+-+-+-+-+-+-
             MapController.prototype.init = function () {
                 //init map           
-                this.center = new Center(39, -100, 3);
+                this.center = new Center(39, -100, 4);
                 this.layers = {
                     baselayers: configuration.basemaps,
                     overlays: configuration.overlayedLayers
