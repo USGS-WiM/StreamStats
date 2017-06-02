@@ -231,7 +231,7 @@ var StreamStats;
                             //add explanatory row if needed
                             if (regressionRegion.Results[0].IntervalBounds && regressionRegion.Results[0].Errors && regressionRegion.Results[0].Errors.length > 0)
                                 finalVal +=
-                                    '"PIl: Prediction Interval- Lower, PIu: Prediction Interval- Upper, SEe: Standard Error of Estimate, SEp: Standard Error of Prediction, SE: Standard Error (other-- see report)"\r\n';
+                                    '"PIl: Prediction Interval- Lower, PIu: Prediction Interval- Upper, SEp: Standard Error of Prediction, SE: Standard Error (other-- see report)"\r\n';
                             //get this table by ID --need to use this type of selected because jquery doesn't like the possibility of colons in div id
                             finalVal += _this.tableToCSV($(document.getElementById(_this.camelize(statGroup.Name + regressionRegion.Name + 'ScenarioFlowTable')))) + '\r\n\r\n';
                         }
