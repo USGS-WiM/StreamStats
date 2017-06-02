@@ -697,15 +697,19 @@ module StreamStats.Controllers {
         private resetExplorationTools() {
             document.getElementById('measurement-div').innerHTML = '';
             if (this.drawControl) this.drawController({ }, false);
-            this.explorationService.drawMeasurement = false;
             this.explorationService.measurementData = '';
+
             this.explorationService.drawElevationProfile = false;
-            this.explorationService.showElevationChart = false;
+            this.explorationService.drawMeasurement = false;
+
             delete this.geojson['elevationProfileLine3D'];
             this.leafletData.getMap("mainMap").then((map: any) => {
                 this.leafletData.getLayers("mainMap").then((maplayers: any) => {
                     var drawnItems = maplayers.overlays.draw;
                     drawnItems.clearLayers();
+                    map.off("click");
+                    map.off("mousemove");
+                    map.off("draw:created");
                 });
             });
         }
