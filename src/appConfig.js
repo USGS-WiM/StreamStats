@@ -114,24 +114,82 @@ configuration.basemaps =
         layer: "Topographic",
         visible: false
     },
-    oceans: {
-        name: "ESRI Oceans",
-        type: "agsBase",
-        layer: "Oceans",
-        visible: false
-    },
     gray: {
         name: "ESRI Gray",
-        type: "agsBase",
-        layer: "Gray",
-        visible: false
+        type: "group",
+        visible: false,
+        layerOptions: {
+            layers: [
+                {
+                    name: "gray",
+                    type: "agsBase",
+                    layer: "Gray"
+                },
+                {
+                    name: "graylabel",
+                    type: "agsBase",
+                    layer: "GrayLabels"
+                }
+            ]
+        }
+    },
+    darkgray: {
+        name: "ESRI Dark Gray",
+        type: "group",
+        visible: false,
+        layerOptions: {
+            layers: [
+                {
+                    name: "darkgray",
+                    type: "agsBase",
+                    layer: "DarkGray"
+                },
+                {
+                    name: "darkgraylabel",
+                    type: "agsBase",
+                    layer: "DarkGrayLabels"
+                }
+            ]
+        }
     },
     imagery: {
         name: "ESRI Imagery",
-        type: "agsBase",
-        layer: "Imagery",
-        visible: false
-    }
+        type: "group",
+        visible: false,
+        layerOptions: {
+            layers: [
+                {
+                    name: "Imagery",
+                    type: "agsBase",
+                    layer: "Imagery"
+                },
+                {
+                    name: "Imagerylabel",
+                    type: "agsBase",
+                    layer: "ImageryLabels"
+                }
+            ]
+        }
+    }, 
+    shadeRelief: {
+        name: "ESRI Shade Releif",
+        type: "group",
+        visible: false,
+        layerOptions: {
+            layers: [
+                {
+                    name: "ShadedRelief",
+                    type: "agsBase",
+                    layer: "ShadedRelief"
+                },
+                {
+                    name: "ShadedRelieflabel",
+                    type: "agsBase",
+                    layer: "ShadedReliefLabels"
+                }
+            ]
+        }
+    }, 
 }// end baselayer
 
 configuration.regions = [
@@ -311,6 +369,9 @@ configuration.overlayedLayers = {
             "opacity": 0.6,
             "maxZoom": 11,
             "zIndex": 9999,
+        },
+        "layerParams": {
+            "showOnSelector": false,
         }
     },//end ssLayer    
     "draw": {
