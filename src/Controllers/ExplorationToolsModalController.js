@@ -44,9 +44,9 @@ var StreamStats;
                 this.angulartics.eventTrack('Download', { category: 'ElevationProfile', label: 'CSV' });
                 var filename = 'elevation-profile.csv';
                 //main file header with site information
-                var csvFile = 'long,lat,elevation(feet)\r\n';
+                var csvFile = 'long,lat,elevation(feet),distance(feet)\r\n';
                 //write out values
-                this.explorationService.elevationProfileGeoJSON.features[0].geometry.coordinates.forEach(function (value) {
+                this.explorationService.coordinateList.forEach(function (value) {
                     csvFile += value.join(',') + '\r\n';
                 });
                 //download
