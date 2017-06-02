@@ -53,12 +53,10 @@ module StreamStats.Controllers {
             this.print = function () {
                 window.print();
             };
-
         }  
         
         //Methods  
         //-+-+-+-+-+-+-+-+-+-+-+-
-
         public close(): void {
             this.explorationService.showElevationChart = false;
             this.modalInstance.dismiss('cancel')
@@ -77,10 +75,10 @@ module StreamStats.Controllers {
 
 
             //main file header with site information
-            var csvFile = 'long,lat,elevation(feet)\r\n';
+            var csvFile = 'long,lat,elevation(feet),distance(feet)\r\n';
 
             //write out values
-            this.explorationService.elevationProfileGeoJSON.features[0].geometry.coordinates.forEach((value) => {
+            this.explorationService.coordinateList.forEach((value) => {
                 csvFile += value.join(',') + '\r\n';
             });
             
