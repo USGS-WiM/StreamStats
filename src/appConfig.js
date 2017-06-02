@@ -67,8 +67,8 @@ configuration.basemaps =
         layer: "NationalGeographic",
         visible: true
     },
-    tnmBaseMap: {
-        "name": "USGS National Map",
+    AtnmBaseMap: {
+        "name": "National Map",
         "visible": false,
         "type": 'group',
         "layerOptions": {
@@ -103,19 +103,19 @@ configuration.basemaps =
         }
     },
     streets: {
-        name: "ESRI Streets",
+        name: "Streets",
         type: "agsBase",
         layer: "Streets",
         visible: true
     },
     topo: {
-        name: "ESRI World Topographic",
+        name: "World Topographic",
         type: "agsBase",
         layer: "Topographic",
         visible: false
     },
     gray: {
-        name: "ESRI Gray",
+        name: "Gray",
         type: "group",
         visible: false,
         layerOptions: {
@@ -133,8 +133,8 @@ configuration.basemaps =
             ]
         }
     },
-    darkgray: {
-        name: "ESRI Dark Gray",
+    graydark: {
+        name: "Dark Gray",
         type: "group",
         visible: false,
         layerOptions: {
@@ -153,7 +153,7 @@ configuration.basemaps =
         }
     },
     imagery: {
-        name: "ESRI Imagery",
+        name: "Imagery",
         type: "group",
         visible: false,
         layerOptions: {
@@ -172,7 +172,7 @@ configuration.basemaps =
         }
     }, 
     shadeRelief: {
-        name: "ESRI Shade Releif",
+        name: "Shaded Relief",
         type: "group",
         visible: false,
         layerOptions: {
