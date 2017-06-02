@@ -130,6 +130,7 @@ div.leaflet-top > .elevation {
 #elevation-div {
     background-color:white !important;
     padding:10px;
+    width:100%;
 }
 
 .elevation-close-button {
