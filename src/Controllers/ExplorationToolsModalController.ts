@@ -60,6 +60,7 @@ module StreamStats.Controllers {
         //-+-+-+-+-+-+-+-+-+-+-+-
 
         public close(): void {
+            this.explorationService.showElevationChart = false;
             this.modalInstance.dismiss('cancel')
         }
 

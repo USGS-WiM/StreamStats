@@ -33,6 +33,7 @@ var StreamStats;
             //Methods  
             //-+-+-+-+-+-+-+-+-+-+-+-
             ExplorationToolsModalController.prototype.close = function () {
+                this.explorationService.showElevationChart = false;
                 this.modalInstance.dismiss('cancel');
             };
             ExplorationToolsModalController.prototype.convertUnsafe = function (x) {
