@@ -1050,7 +1050,6 @@ module StreamStats.Controllers {
         }
         private onSelectedStudyAreaChanged() {
 
-            //console.log('in onSelectedStudyAreaChanged');
             this.removeOverlayLayers('globalwatershed', true);
 
             if (!this.studyArea.selectedStudyArea || !this.studyArea.selectedStudyArea.Features) return;

@@ -298,6 +298,8 @@ var StreamStats;
                         }
                         var results = response.data.parameters;
                         _this.loadParameterResults(results);
+                        //get additional features for this workspace
+                        //this.getAdditionalFeatures();                          
                         //do regulation parameter update if needed
                         if (_this.selectedStudyArea.Disclaimers['isRegulated']) {
                             _this.loadRegulatedParameterResults(_this.regulationCheckResults.parameters);
@@ -305,6 +307,24 @@ var StreamStats;
                         var saEvent = new StudyAreaEventArgs();
                         saEvent.parameterLoaded = true;
                         _this.eventManager.RaiseEvent(Services.onSelectedStudyParametersLoaded, _this, saEvent);
+                    }
+                    //sm when complete
+                }, function (error) {
+                    //sm when error
+                    _this.toaster.clear();
+                    _this.toaster.pop("error", "There was an HTTP error calculating basin characteristics", "Please retry", 0);
+                }).finally(function () {
+                    //this.canUpdate = true;
+                    _this.parametersLoading = false;
+                });
+            };
+            StudyAreaService.prototype.getAdditionalFeatures = function () {
+                var _this = this;
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSComputeParams'].format(this.selectedStudyArea.RegionID);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                this.Execute(request).then(function (response) {
+                    if (response.data.parameters && response.data.parameters.length > 0) {
+                        _this.toaster.clear();
                     }
                     //sm when complete
                 }, function (error) {
