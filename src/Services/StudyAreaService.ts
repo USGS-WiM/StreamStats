@@ -50,6 +50,7 @@ module StreamStats.Services {
         regressionRegionQueryComplete: boolean;
         baseMap: Object;
         showModifyBasinCharacterstics: boolean;
+        getAdditionalFeatures();
         //requestParameterList: Array<any>; jkn
     }
 
@@ -77,7 +78,6 @@ module StreamStats.Services {
         public toaster: any;
         public canUpdate: boolean;
         public regulationCheckComplete: boolean
-        
         public parametersLoading: boolean;
         public checkingDelineatedPoint: boolean;
         private _studyAreaList: Array<Models.IStudyArea>;
@@ -378,7 +378,9 @@ module StreamStats.Services {
 
                         var results = response.data.parameters;
                         this.loadParameterResults(results);
-                          
+
+                        //get additional features for this workspace
+                        //this.getAdditionalFeatures();                          
 
                         //do regulation parameter update if needed
                         if (this.selectedStudyArea.Disclaimers['isRegulated']) {
@@ -392,6 +394,29 @@ module StreamStats.Services {
 
                     //sm when complete
                 },(error) => {
+                    //sm when error
+                    this.toaster.clear();
+                    this.toaster.pop("error", "There was an HTTP error calculating basin characteristics", "Please retry", 0);
+                }).finally(() => {
+                    //this.canUpdate = true;
+                    this.parametersLoading = false;
+                });
+        }
+
+        public getAdditionalFeatures() {
+            var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSComputeParams'].format(this.selectedStudyArea.RegionID);
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
+
+            this.Execute(request).then(
+                (response: any) => {
+                    if (response.data.parameters && response.data.parameters.length > 0) {
+
+                        this.toaster.clear();
+
+                    }
+
+                    //sm when complete
+                }, (error) => {
                     //sm when error
                     this.toaster.clear();
                     this.toaster.pop("error", "There was an HTTP error calculating basin characteristics", "Please retry", 0);
