@@ -67,8 +67,8 @@ configuration.basemaps =
         layer: "NationalGeographic",
         visible: true
     },
-    tnmBaseMap: {
-        "name": "USGS National Map",
+    AtnmBaseMap: {
+        "name": "National Map",
         "visible": false,
         "type": 'group',
         "layerOptions": {
@@ -103,35 +103,93 @@ configuration.basemaps =
         }
     },
     streets: {
-        name: "ESRI Streets",
+        name: "Streets",
         type: "agsBase",
         layer: "Streets",
         visible: true
     },
     topo: {
-        name: "ESRI World Topographic",
+        name: "World Topographic",
         type: "agsBase",
         layer: "Topographic",
         visible: false
     },
-    oceans: {
-        name: "ESRI Oceans",
-        type: "agsBase",
-        layer: "Oceans",
-        visible: false
-    },
     gray: {
-        name: "ESRI Gray",
-        type: "agsBase",
-        layer: "Gray",
-        visible: false
+        name: "Gray",
+        type: "group",
+        visible: false,
+        layerOptions: {
+            layers: [
+                {
+                    name: "gray",
+                    type: "agsBase",
+                    layer: "Gray"
+                },
+                {
+                    name: "graylabel",
+                    type: "agsBase",
+                    layer: "GrayLabels"
+                }
+            ]
+        }
+    },
+    graydark: {
+        name: "Dark Gray",
+        type: "group",
+        visible: false,
+        layerOptions: {
+            layers: [
+                {
+                    name: "darkgray",
+                    type: "agsBase",
+                    layer: "DarkGray"
+                },
+                {
+                    name: "darkgraylabel",
+                    type: "agsBase",
+                    layer: "DarkGrayLabels"
+                }
+            ]
+        }
     },
     imagery: {
-        name: "ESRI Imagery",
-        type: "agsBase",
-        layer: "Imagery",
-        visible: false
-    }
+        name: "Imagery",
+        type: "group",
+        visible: false,
+        layerOptions: {
+            layers: [
+                {
+                    name: "Imagery",
+                    type: "agsBase",
+                    layer: "Imagery"
+                },
+                {
+                    name: "Imagerylabel",
+                    type: "agsBase",
+                    layer: "ImageryLabels"
+                }
+            ]
+        }
+    }, 
+    shadeRelief: {
+        name: "Shaded Relief",
+        type: "group",
+        visible: false,
+        layerOptions: {
+            layers: [
+                {
+                    name: "ShadedRelief",
+                    type: "agsBase",
+                    layer: "ShadedRelief"
+                },
+                {
+                    name: "ShadedRelieflabel",
+                    type: "agsBase",
+                    layer: "ShadedReliefLabels"
+                }
+            ]
+        }
+    }, 
 }// end baselayer
 
 configuration.regions = [
@@ -311,6 +369,9 @@ configuration.overlayedLayers = {
             "opacity": 0.6,
             "maxZoom": 11,
             "zIndex": 9999,
+        },
+        "layerParams": {
+            "showOnSelector": false,
         }
     },//end ssLayer    
     "draw": {

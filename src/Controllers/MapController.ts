@@ -554,10 +554,10 @@ module StreamStats.Controllers {
                             return;
                         }
 
-                        results.features.forEach((queryResult) => {
+                        var popupContent = '';
+                        var popupKeyList = [{ name: 'sta_id', label: 'Station ID' }, { name: 'sta_name', label: 'Station Name' }, { name: 'latitude', label: 'Latitude' }, { name: 'longitude', label: 'Longitude' }, { name: 'featureurl', label: 'URL' }];
 
-                            var popupContent = '';
-                            var popupKeyList = [{ name: 'latitude', label: 'Latitude' }, { name: 'longitude', label: 'Longitude' }, { name: 'sta_id', label: 'Station ID' }, { name: 'sta_name', label: 'Station Name' }, { name: 'featureurl', label: 'URL' }];
+                        results.features.forEach((queryResult) => {
 
                             angular.forEach(queryResult.properties, function (value, key) {
                                 angular.forEach(popupKeyList, function (obj, v) {
@@ -573,9 +573,10 @@ module StreamStats.Controllers {
                                     }
                                 });
                             });
+                            popupContent += '<br>';
 
                             //show popup
-                            map.openPopup(popupContent,[evt.latlng.lat, evt.latlng.lng])
+                            map.openPopup(popupContent, [evt.latlng.lat, evt.latlng.lng], { maxHeight: 200});
                             this.toaster.clear();
 
                         });
@@ -1049,7 +1050,6 @@ module StreamStats.Controllers {
         }
         private onSelectedStudyAreaChanged() {
 
-            //console.log('in onSelectedStudyAreaChanged');
             this.removeOverlayLayers('globalwatershed', true);
 
             if (!this.studyArea.selectedStudyArea || !this.studyArea.selectedStudyArea.Features) return;
