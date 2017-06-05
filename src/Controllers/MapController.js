@@ -403,9 +403,9 @@ var StreamStats;
                                 _this.toaster.pop("info", "Information", "No streamgages were found at this location", 5000);
                                 return;
                             }
+                            var popupContent = '';
+                            var popupKeyList = [{ name: 'sta_id', label: 'Station ID' }, { name: 'sta_name', label: 'Station Name' }, { name: 'latitude', label: 'Latitude' }, { name: 'longitude', label: 'Longitude' }, { name: 'featureurl', label: 'URL' }];
                             results.features.forEach(function (queryResult) {
-                                var popupContent = '';
-                                var popupKeyList = [{ name: 'latitude', label: 'Latitude' }, { name: 'longitude', label: 'Longitude' }, { name: 'sta_id', label: 'Station ID' }, { name: 'sta_name', label: 'Station Name' }, { name: 'featureurl', label: 'URL' }];
                                 angular.forEach(queryResult.properties, function (value, key) {
                                     angular.forEach(popupKeyList, function (obj, v) {
                                         if (obj.name === key) {
@@ -419,8 +419,9 @@ var StreamStats;
                                         }
                                     });
                                 });
+                                popupContent += '<br>';
                                 //show popup
-                                map.openPopup(popupContent, [evt.latlng.lat, evt.latlng.lng]);
+                                map.openPopup(popupContent, [evt.latlng.lat, evt.latlng.lng], { maxHeight: 200 });
                                 _this.toaster.clear();
                             });
                         });
