@@ -796,6 +796,14 @@ div.leaflet-top > .elevation {
         }
     }
 
+    @media print and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+        /* IE10+ CSS styles go here */
+        .modal {
+            /**Needs to be relative for printing in IE11**/
+            position: relative;
+        }
+    }
+
 /*
     ===========================
     ===========================
