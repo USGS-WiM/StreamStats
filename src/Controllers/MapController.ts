@@ -198,6 +198,9 @@ module StreamStats.Controllers {
             this.environment = configuration.environment;
 
             //subscribe to Events
+            this.eventManager.SubscribeToEvent(Services.onAdditionalFeaturesLoaded, new WiM.Event.EventHandler<Services.StudyAreaEventArgs>(() => {
+                this.onAdditionalFeaturesLoaded();
+            }));
             this.eventManager.SubscribeToEvent(Services.onSelectedStudyAreaChanged, new WiM.Event.EventHandler<Services.StudyAreaEventArgs>(() => {
                 this.onSelectedStudyAreaChanged();
             }));
@@ -550,7 +553,7 @@ module StreamStats.Controllers {
                         this.cursorStyle = 'pointer';
 
                         if (!results.features || results.features.length == 0) {
-                            this.toaster.pop("info", "Information", "No streamgages were found at this location", 5000);
+                            this.toaster.pop("warning", "Information", "No streamgages were found at this location", 5000);
                             return;
                         }
 
@@ -1048,6 +1051,18 @@ module StreamStats.Controllers {
 
             this.regionServices.loadMapLayersByRegion(this.regionServices.selectedRegion.RegionID)
         }
+        private onAdditionalFeaturesLoaded() {
+
+            if (!this.studyArea.selectedStudyArea || !this.studyArea.selectedStudyArea.Features) return;
+            this.studyArea.selectedStudyArea.Features.forEach((layer) => {
+
+                var item = angular.fromJson(angular.toJson(layer));
+                if (['globalwatershed', 'globalwatershedpoint'].indexOf(item.name) === -1) {
+                    this.addGeoJSON(item.name, item.feature);
+                    this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(item.name, "geojson", this.geojson[item.name].style));
+                }
+            });
+        }
         private onSelectedStudyAreaChanged() {
 
             this.removeOverlayLayers('globalwatershed', true);
@@ -1155,10 +1170,17 @@ module StreamStats.Controllers {
                         }
                     }
             }
+            //additional features get generic styling for now
             else {
                 this.geojson[LayerName] =
                     {
-                        data: feature,                        
+                        data: feature,
+                        visible: false,
+                        style: {
+                            displayName: LayerName,
+                            fillColor: "red",
+                            color: 'red'
+                        }                 
                     }
             }
 
