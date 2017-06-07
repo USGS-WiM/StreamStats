@@ -93,6 +93,9 @@ var StreamStats;
                 this.cursorStyle = 'pointer';
                 this.environment = configuration.environment;
                 //subscribe to Events
+                this.eventManager.SubscribeToEvent(StreamStats.Services.onAdditionalFeaturesLoaded, new WiM.Event.EventHandler(function () {
+                    _this.onAdditionalFeaturesLoaded();
+                }));
                 this.eventManager.SubscribeToEvent(StreamStats.Services.onSelectedStudyAreaChanged, new WiM.Event.EventHandler(function () {
                     _this.onSelectedStudyAreaChanged();
                 }));
@@ -400,12 +403,12 @@ var StreamStats;
                             _this.toaster.clear();
                             _this.cursorStyle = 'pointer';
                             if (!results.features || results.features.length == 0) {
-                                _this.toaster.pop("info", "Information", "No streamgages were found at this location", 5000);
+                                _this.toaster.pop("warning", "Information", "No streamgages were found at this location", 5000);
                                 return;
                             }
+                            var popupContent = '';
+                            var popupKeyList = [{ name: 'sta_id', label: 'Station ID' }, { name: 'sta_name', label: 'Station Name' }, { name: 'latitude', label: 'Latitude' }, { name: 'longitude', label: 'Longitude' }, { name: 'featureurl', label: 'URL' }];
                             results.features.forEach(function (queryResult) {
-                                var popupContent = '';
-                                var popupKeyList = [{ name: 'latitude', label: 'Latitude' }, { name: 'longitude', label: 'Longitude' }, { name: 'sta_id', label: 'Station ID' }, { name: 'sta_name', label: 'Station Name' }, { name: 'featureurl', label: 'URL' }];
                                 angular.forEach(queryResult.properties, function (value, key) {
                                     angular.forEach(popupKeyList, function (obj, v) {
                                         if (obj.name === key) {
@@ -419,8 +422,9 @@ var StreamStats;
                                         }
                                     });
                                 });
+                                popupContent += '<br>';
                                 //show popup
-                                map.openPopup(popupContent, [evt.latlng.lat, evt.latlng.lng]);
+                                map.openPopup(popupContent, [evt.latlng.lat, evt.latlng.lng], { maxHeight: 200 });
                                 _this.toaster.clear();
                             });
                         });
@@ -813,9 +817,20 @@ var StreamStats;
                 this.removeOverlayLayers("_region", true);
                 this.regionServices.loadMapLayersByRegion(this.regionServices.selectedRegion.RegionID);
             };
+            MapController.prototype.onAdditionalFeaturesLoaded = function () {
+                var _this = this;
+                if (!this.studyArea.selectedStudyArea || !this.studyArea.selectedStudyArea.Features)
+                    return;
+                this.studyArea.selectedStudyArea.Features.forEach(function (layer) {
+                    var item = angular.fromJson(angular.toJson(layer));
+                    if (['globalwatershed', 'globalwatershedpoint'].indexOf(item.name) === -1) {
+                        _this.addGeoJSON(item.name, item.feature);
+                        _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(item.name, "geojson", _this.geojson[item.name].style));
+                    }
+                });
+            };
             MapController.prototype.onSelectedStudyAreaChanged = function () {
                 var _this = this;
-                //console.log('in onSelectedStudyAreaChanged');
                 this.removeOverlayLayers('globalwatershed', true);
                 if (!this.studyArea.selectedStudyArea || !this.studyArea.selectedStudyArea.Features)
                     return;
@@ -911,6 +926,12 @@ var StreamStats;
                     this.geojson[LayerName] =
                         {
                             data: feature,
+                            visible: false,
+                            style: {
+                                displayName: LayerName,
+                                fillColor: "red",
+                                color: 'red'
+                            }
                         };
                 }
             };

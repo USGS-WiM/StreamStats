@@ -27,6 +27,8 @@ configuration.queryparams =
     'SSeditBasin': '/streamstatsservices/watershed/edit.{0}?rcode={1}&workspaceID={2}&crs={3}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
     'SSAvailableParams': '/streamstatsservices/parameters.json?rcode={0}',
     'SSComputeParams': '/streamstatsservices/parameters.json?rcode={0}&workspaceID={1}&includeparameters={2}',
+    'SSavailableFeatures': '/streamstatsservices/features.json?workspaceID={0}',
+    'SSfeatures': '/streamstatsservices/features.geojson?workspaceID={0}&crs={1}&includefeatures={2}&simplify=true',
     'SSStateLayers': '/arcgis/rest/services/{0}_ss/MapServer?f=pjson',
     'SSNationalLayers': '/arcgis/rest/services/ss_studyAreas_prod/MapServer',
     'FARefGage': '/2/query?geometry={0}&geometryType=esriGeometryPoint&inSR={1}&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
@@ -67,8 +69,8 @@ configuration.basemaps =
         layer: "NationalGeographic",
         visible: true
     },
-    tnmBaseMap: {
-        "name": "USGS National Map",
+    AtnmBaseMap: {
+        "name": "National Map",
         "visible": false,
         "type": 'group',
         "layerOptions": {
@@ -103,35 +105,93 @@ configuration.basemaps =
         }
     },
     streets: {
-        name: "ESRI Streets",
+        name: "Streets",
         type: "agsBase",
         layer: "Streets",
         visible: true
     },
     topo: {
-        name: "ESRI World Topographic",
+        name: "World Topographic",
         type: "agsBase",
         layer: "Topographic",
         visible: false
     },
-    oceans: {
-        name: "ESRI Oceans",
-        type: "agsBase",
-        layer: "Oceans",
-        visible: false
-    },
     gray: {
-        name: "ESRI Gray",
-        type: "agsBase",
-        layer: "Gray",
-        visible: false
+        name: "Gray",
+        type: "group",
+        visible: false,
+        layerOptions: {
+            layers: [
+                {
+                    name: "gray",
+                    type: "agsBase",
+                    layer: "Gray"
+                },
+                {
+                    name: "graylabel",
+                    type: "agsBase",
+                    layer: "GrayLabels"
+                }
+            ]
+        }
+    },
+    graydark: {
+        name: "Dark Gray",
+        type: "group",
+        visible: false,
+        layerOptions: {
+            layers: [
+                {
+                    name: "darkgray",
+                    type: "agsBase",
+                    layer: "DarkGray"
+                },
+                {
+                    name: "darkgraylabel",
+                    type: "agsBase",
+                    layer: "DarkGrayLabels"
+                }
+            ]
+        }
     },
     imagery: {
-        name: "ESRI Imagery",
-        type: "agsBase",
-        layer: "Imagery",
-        visible: false
-    }
+        name: "Imagery",
+        type: "group",
+        visible: false,
+        layerOptions: {
+            layers: [
+                {
+                    name: "Imagery",
+                    type: "agsBase",
+                    layer: "Imagery"
+                },
+                {
+                    name: "Imagerylabel",
+                    type: "agsBase",
+                    layer: "ImageryLabels"
+                }
+            ]
+        }
+    }, 
+    shadeRelief: {
+        name: "Shaded Relief",
+        type: "group",
+        visible: false,
+        layerOptions: {
+            layers: [
+                {
+                    name: "ShadedRelief",
+                    type: "agsBase",
+                    layer: "ShadedRelief"
+                },
+                {
+                    name: "ShadedRelieflabel",
+                    type: "agsBase",
+                    layer: "ShadedReliefLabels"
+                }
+            ]
+        }
+    }, 
 }// end baselayer
 
 configuration.regions = [
@@ -311,6 +371,9 @@ configuration.overlayedLayers = {
             "opacity": 0.6,
             "maxZoom": 11,
             "zIndex": 9999,
+        },
+        "layerParams": {
+            "showOnSelector": false,
         }
     },//end ssLayer    
     "draw": {

@@ -141,7 +141,7 @@ module StreamStats.Controllers {
         private initMap(): void {
             this.center = new Center(39, -96, 4);
             this.layers = {
-                baselayers: this.studyAreaService.baseMap,
+                baselayers: configuration.basemaps,
                 overlays: {}
             }
             L.Icon.Default.imagePath = 'images';
@@ -203,7 +203,7 @@ module StreamStats.Controllers {
                         map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
                     });
                 }
-                if (item.name == 'globalwatershedpoint') {
+                else if (item.name == 'globalwatershedpoint') {
                     this.layers.overlays[item.name] = {
                         name: 'Basin Clicked Point',
                         type: 'geoJSONShape',
@@ -212,7 +212,7 @@ module StreamStats.Controllers {
                     }
                 }
 
-                if (item.name == 'regulatedWatershed') {
+                else if (item.name == 'regulatedWatershed') {
                     //console.log('showing regulated watershed');
                     this.layers.overlays["globalwatershedregulated"] = {
                         name: 'Basin Boundary (Regulated Area)',
@@ -226,6 +226,21 @@ module StreamStats.Controllers {
                                 opacity: 1,
                                 color: 'white',
                                 fillOpacity: 0.5
+                            }
+                        }
+                    }
+                }
+                //additional features get generic styling for now
+                else {
+                    this.layers.overlays[item.name] = {
+                        name: item.name,
+                        type: 'geoJSONShape',
+                        data: item.feature,
+                        visible: false,
+                        layerOptions: {
+                            style: {
+                                fillColor: "red",
+                                color: 'red'
                             }
                         }
                     }
