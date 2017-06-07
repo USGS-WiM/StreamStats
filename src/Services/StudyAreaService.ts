@@ -417,9 +417,8 @@ module StreamStats.Services {
                     if (response.data.featurecollection && response.data.featurecollection.length > 0) {
                         var features = [];
                         angular.forEach(response.data.featurecollection, (feature, index) => {
-                            if (['globalwatershed', 'globalwatershedpoint'].indexOf(feature.name) === -1) {
+                            if (this.selectedStudyArea.Features.map(f => { return f.name }).indexOf(feature.name) === -1){
                                 features.push(feature.name)
-                                //add to legend jkn
                                 this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(feature.name, "geojson", {displayName: feature.name, imagesrc:null}, false));
                             }                            
                         });//next feature
@@ -450,7 +449,17 @@ module StreamStats.Services {
 
                         angular.forEach(response.data.featurecollection, (feature, index) => {
                             //console.log('test', feature, index);
-                            this.selectedStudyArea.Features.push(feature);
+                            if (feature.feature.features.length < 1) {
+                                //remove from studyarea array                                
+                                for (var i = 0; i < this.selectedStudyArea.Features.length; i++) {
+                                    if (this.selectedStudyArea.Features[i].name === feature.name) {
+                                        this.selectedStudyArea.Features.splice(i, 1);
+                                        break;
+                                    }
+                                }
+                            }
+                            else
+                                this.selectedStudyArea.Features.push(feature);
                         });
                     }
 
