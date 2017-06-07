@@ -97,7 +97,7 @@ var StreamStats;
             ReportController.prototype.initMap = function () {
                 this.center = new Center(39, -96, 4);
                 this.layers = {
-                    baselayers: this.studyAreaService.baseMap,
+                    baselayers: configuration.basemaps,
                     overlays: {}
                 };
                 L.Icon.Default.imagePath = 'images';
@@ -155,7 +155,7 @@ var StreamStats;
                             map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
                         });
                     }
-                    if (item.name == 'globalwatershedpoint') {
+                    else if (item.name == 'globalwatershedpoint') {
                         _this.layers.overlays[item.name] = {
                             name: 'Basin Clicked Point',
                             type: 'geoJSONShape',
@@ -163,7 +163,7 @@ var StreamStats;
                             visible: true,
                         };
                     }
-                    if (item.name == 'regulatedWatershed') {
+                    else if (item.name == 'regulatedWatershed') {
                         //console.log('showing regulated watershed');
                         _this.layers.overlays["globalwatershedregulated"] = {
                             name: 'Basin Boundary (Regulated Area)',
@@ -177,6 +177,20 @@ var StreamStats;
                                     opacity: 1,
                                     color: 'white',
                                     fillOpacity: 0.5
+                                }
+                            }
+                        };
+                    }
+                    else {
+                        _this.layers.overlays[item.name] = {
+                            name: item.name,
+                            type: 'geoJSONShape',
+                            data: item.feature,
+                            visible: false,
+                            layerOptions: {
+                                style: {
+                                    fillColor: "red",
+                                    color: 'red'
                                 }
                             }
                         };

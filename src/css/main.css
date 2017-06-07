@@ -85,7 +85,25 @@ body {
     ===========================
 */
 
-/*remove stupid powered by Esri logo on map*/
+#reportMap .leaflet-control-layers.leaflet-control {
+	display: block;
+}
+
+#reportMap .leaflet-top .leaflet-control {
+    top:0px;
+}
+
+#reportMap [type="checkbox"]:not(:checked), #reportMap [type="checkbox"]:checked {
+	position: relative;
+	left: 0px;
+}
+
+#reportMap [type="radio"]:not(:checked), #reportMap [type="radio"]:checked {
+	position: relative;
+	left: 0px;
+}
+
+/*remove powered by Esri logo on map*/
 .esri-leaflet-logo {
     display:none !important;
 }
@@ -99,11 +117,11 @@ body {
 }
 
 /* disable some default controls*/
-.leaflet-control-layers.leaflet-control {
+#mainMap .leaflet-control-layers.leaflet-control {
     display: none;
 }
 
-.leaflet-control-locate {
+#mainMap .leaflet-control-locate {
     display: none;
 }
 
@@ -775,7 +793,7 @@ div.leaflet-top > .elevation {
             /**Remove scrollbar for printing.**/
             overflow: visible !important;
             /**Needs to be relative for printing in IE11**/
-            position: relative;
+            position: absolute;
             left: 0;
             top: 0;
             margin: 0;
@@ -796,6 +814,14 @@ div.leaflet-top > .elevation {
         }
         .leaflet-control-container{
             display: none!important;
+        }
+    }
+
+    @media print and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+        /* IE10+ CSS styles go here */
+        .modal {
+            /**Needs to be relative for printing in IE11**/
+            position: relative;
         }
     }
 

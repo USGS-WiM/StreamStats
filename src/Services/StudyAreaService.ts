@@ -50,11 +50,14 @@ module StreamStats.Services {
         regressionRegionQueryComplete: boolean;
         baseMap: Object;
         showModifyBasinCharacterstics: boolean;
+        getAdditionalFeatureList();
+        getAdditionalFeatures(featureString:string);
         //requestParameterList: Array<any>; jkn
     }
 
     export var onSelectedStudyAreaChanged: string = "onSelectedStudyAreaChanged";
     export var onSelectedStudyParametersLoaded: string = "onSelectedStudyParametersLoaded";
+    export var onAdditionalFeaturesLoaded: string = "onAdditionalFeaturesLoaded";
     export var onStudyAreaReset: string = "onStudyAreaReset";
     export var onEditClick: string = "onEditClick";
     export class StudyAreaEventArgs extends WiM.Event.EventArgs {
@@ -62,11 +65,13 @@ module StreamStats.Services {
         public studyArea: StreamStats.Models.IStudyArea;
         public studyAreaVisible: boolean;
         public parameterLoaded: boolean;
-        constructor(studyArea = null, saVisible = false, paramState = false) {
+        public additionalFeaturesLoaded: boolean;
+        constructor(studyArea = null, saVisible = false, paramState = false, additionalFeatures = false) {
             super();
             this.studyArea = studyArea;
             this.studyAreaVisible = saVisible;
             this.parameterLoaded = paramState;
+            this.additionalFeaturesLoaded = additionalFeatures;
         }
 
     }
@@ -77,7 +82,6 @@ module StreamStats.Services {
         public toaster: any;
         public canUpdate: boolean;
         public regulationCheckComplete: boolean
-        
         public parametersLoading: boolean;
         public checkingDelineatedPoint: boolean;
         private _studyAreaList: Array<Models.IStudyArea>;
@@ -116,6 +120,7 @@ module StreamStats.Services {
         constructor(public $http: ng.IHttpService, private $q: ng.IQService, private eventManager: WiM.Event.IEventManager, toaster) {
             super($http, configuration.baseurls['StreamStatsServices'])
             eventManager.AddEvent<StudyAreaEventArgs>(onSelectedStudyParametersLoaded);
+            eventManager.AddEvent<StudyAreaEventArgs>(onAdditionalFeaturesLoaded);
             eventManager.AddEvent<StudyAreaEventArgs>(onSelectedStudyAreaChanged);
             eventManager.AddEvent<StudyAreaEventArgs>(onStudyAreaReset);
             eventManager.SubscribeToEvent(onSelectedStudyAreaChanged, new WiM.Event.EventHandler<StudyAreaEventArgs>((sender: any, e: StudyAreaEventArgs) => {
@@ -378,7 +383,9 @@ module StreamStats.Services {
 
                         var results = response.data.parameters;
                         this.loadParameterResults(results);
-                          
+
+                        //get additional features for this workspace
+                        this.getAdditionalFeatureList();                          
 
                         //do regulation parameter update if needed
                         if (this.selectedStudyArea.Disclaimers['isRegulated']) {
@@ -398,6 +405,67 @@ module StreamStats.Services {
                 }).finally(() => {
                     //this.canUpdate = true;
                     this.parametersLoading = false;
+                });
+        }
+
+        public getAdditionalFeatureList() {
+
+            //this.toaster.pop("wait", "Information", "Querying for additional features...", 0);
+            var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSavailableFeatures'].format(this.selectedStudyArea.WorkspaceID);
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
+
+            this.Execute(request).then(
+                (response: any) => {
+                    if (response.data.featurecollection && response.data.featurecollection.length > 0) {
+                        var features = [];
+                        angular.forEach(response.data.featurecollection, (feature, index) => {
+                            if (['globalwatershed','globalwatershedpoint'].indexOf(feature.name) === -1) features.push(feature.name)
+                        });
+                        var featureString = features.join(',');
+                        this.getAdditionalFeatures(featureString);
+                    }
+
+                    //sm when complete
+                }, (error) => {
+                    //sm when error
+                    this.toaster.clear();
+                    this.toaster.pop("error", "There was an HTTP error requesting additional feautres list", "Please retry", 0);
+                }).finally(() => {
+                });
+        }
+
+        public getAdditionalFeatures(featureString: string) {
+            //console.log('downloading additional features...')
+            var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSfeatures'].format(this.selectedStudyArea.WorkspaceID, 4326, featureString);
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
+
+            this.Execute(request).then(
+                (response: any) => {
+
+                    if (response.data.featurecollection && response.data.featurecollection.length > 0) {
+                        this.toaster.clear();
+                        //this.toaster.pop('success', "Additional features found", "Please continue", 5000);
+                        //console.log('additional features:', response);
+
+                        angular.forEach(response.data.featurecollection, (feature, index) => {
+                            //console.log('test', feature, index);
+                            this.selectedStudyArea.Features.push(feature);
+                        });
+
+                        let saEvent = new StudyAreaEventArgs();
+                        saEvent.additionalFeaturesLoaded = true;
+                        this.eventManager.RaiseEvent(onAdditionalFeaturesLoaded, this, saEvent);
+
+                        this.toaster.clear();
+
+                    }
+
+                    //sm when complete
+                }, (error) => {
+                    //sm when error
+                    this.toaster.clear();
+                    this.toaster.pop("error", "There was an HTTP error getting additional feautres", "Please retry", 0);
+                }).finally(() => {
                 });
         }
 

@@ -29,18 +29,21 @@ var StreamStats;
         'use strict';
         Services.onSelectedStudyAreaChanged = "onSelectedStudyAreaChanged";
         Services.onSelectedStudyParametersLoaded = "onSelectedStudyParametersLoaded";
+        Services.onAdditionalFeaturesLoaded = "onAdditionalFeaturesLoaded";
         Services.onStudyAreaReset = "onStudyAreaReset";
         Services.onEditClick = "onEditClick";
         var StudyAreaEventArgs = (function (_super) {
             __extends(StudyAreaEventArgs, _super);
-            function StudyAreaEventArgs(studyArea, saVisible, paramState) {
+            function StudyAreaEventArgs(studyArea, saVisible, paramState, additionalFeatures) {
                 if (studyArea === void 0) { studyArea = null; }
                 if (saVisible === void 0) { saVisible = false; }
                 if (paramState === void 0) { paramState = false; }
+                if (additionalFeatures === void 0) { additionalFeatures = false; }
                 _super.call(this);
                 this.studyArea = studyArea;
                 this.studyAreaVisible = saVisible;
                 this.parameterLoaded = paramState;
+                this.additionalFeaturesLoaded = additionalFeatures;
             }
             return StudyAreaEventArgs;
         }(WiM.Event.EventArgs));
@@ -57,6 +60,7 @@ var StreamStats;
                 this.$q = $q;
                 this.eventManager = eventManager;
                 eventManager.AddEvent(Services.onSelectedStudyParametersLoaded);
+                eventManager.AddEvent(Services.onAdditionalFeaturesLoaded);
                 eventManager.AddEvent(Services.onSelectedStudyAreaChanged);
                 eventManager.AddEvent(Services.onStudyAreaReset);
                 eventManager.SubscribeToEvent(Services.onSelectedStudyAreaChanged, new WiM.Event.EventHandler(function (sender, e) {
@@ -298,6 +302,8 @@ var StreamStats;
                         }
                         var results = response.data.parameters;
                         _this.loadParameterResults(results);
+                        //get additional features for this workspace
+                        _this.getAdditionalFeatureList();
                         //do regulation parameter update if needed
                         if (_this.selectedStudyArea.Disclaimers['isRegulated']) {
                             _this.loadRegulatedParameterResults(_this.regulationCheckResults.parameters);
@@ -314,6 +320,56 @@ var StreamStats;
                 }).finally(function () {
                     //this.canUpdate = true;
                     _this.parametersLoading = false;
+                });
+            };
+            StudyAreaService.prototype.getAdditionalFeatureList = function () {
+                var _this = this;
+                //this.toaster.pop("wait", "Information", "Querying for additional features...", 0);
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSavailableFeatures'].format(this.selectedStudyArea.WorkspaceID);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                this.Execute(request).then(function (response) {
+                    if (response.data.featurecollection && response.data.featurecollection.length > 0) {
+                        var features = [];
+                        angular.forEach(response.data.featurecollection, function (feature, index) {
+                            if (['globalwatershed', 'globalwatershedpoint'].indexOf(feature.name) === -1)
+                                features.push(feature.name);
+                        });
+                        var featureString = features.join(',');
+                        _this.getAdditionalFeatures(featureString);
+                    }
+                    //sm when complete
+                }, function (error) {
+                    //sm when error
+                    _this.toaster.clear();
+                    _this.toaster.pop("error", "There was an HTTP error requesting additional feautres list", "Please retry", 0);
+                }).finally(function () {
+                });
+            };
+            StudyAreaService.prototype.getAdditionalFeatures = function (featureString) {
+                var _this = this;
+                //console.log('downloading additional features...')
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSfeatures'].format(this.selectedStudyArea.WorkspaceID, 4326, featureString);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                this.Execute(request).then(function (response) {
+                    if (response.data.featurecollection && response.data.featurecollection.length > 0) {
+                        _this.toaster.clear();
+                        //this.toaster.pop('success', "Additional features found", "Please continue", 5000);
+                        //console.log('additional features:', response);
+                        angular.forEach(response.data.featurecollection, function (feature, index) {
+                            //console.log('test', feature, index);
+                            _this.selectedStudyArea.Features.push(feature);
+                        });
+                        var saEvent = new StudyAreaEventArgs();
+                        saEvent.additionalFeaturesLoaded = true;
+                        _this.eventManager.RaiseEvent(Services.onAdditionalFeaturesLoaded, _this, saEvent);
+                        _this.toaster.clear();
+                    }
+                    //sm when complete
+                }, function (error) {
+                    //sm when error
+                    _this.toaster.clear();
+                    _this.toaster.pop("error", "There was an HTTP error getting additional feautres", "Please retry", 0);
+                }).finally(function () {
                 });
             };
             StudyAreaService.prototype.queryLandCover = function () {
