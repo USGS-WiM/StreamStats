@@ -57,7 +57,6 @@ module StreamStats.Services {
 
     export var onSelectedStudyAreaChanged: string = "onSelectedStudyAreaChanged";
     export var onSelectedStudyParametersLoaded: string = "onSelectedStudyParametersLoaded";
-    export var onAdditionalFeaturesLoaded: string = "onAdditionalFeaturesLoaded";
     export var onStudyAreaReset: string = "onStudyAreaReset";
     export var onEditClick: string = "onEditClick";
     export class StudyAreaEventArgs extends WiM.Event.EventArgs {
@@ -120,7 +119,6 @@ module StreamStats.Services {
         constructor(public $http: ng.IHttpService, private $q: ng.IQService, private eventManager: WiM.Event.IEventManager, toaster) {
             super($http, configuration.baseurls['StreamStatsServices'])
             eventManager.AddEvent<StudyAreaEventArgs>(onSelectedStudyParametersLoaded);
-            eventManager.AddEvent<StudyAreaEventArgs>(onAdditionalFeaturesLoaded);
             eventManager.AddEvent<StudyAreaEventArgs>(onSelectedStudyAreaChanged);
             eventManager.AddEvent<StudyAreaEventArgs>(onStudyAreaReset);
             eventManager.SubscribeToEvent(onSelectedStudyAreaChanged, new WiM.Event.EventHandler<StudyAreaEventArgs>((sender: any, e: StudyAreaEventArgs) => {
@@ -419,10 +417,13 @@ module StreamStats.Services {
                     if (response.data.featurecollection && response.data.featurecollection.length > 0) {
                         var features = [];
                         angular.forEach(response.data.featurecollection, (feature, index) => {
-                            if (['globalwatershed','globalwatershedpoint'].indexOf(feature.name) === -1) features.push(feature.name)
-                        });
-                        var featureString = features.join(',');
-                        this.getAdditionalFeatures(featureString);
+                            if (['globalwatershed', 'globalwatershedpoint'].indexOf(feature.name) === -1) {
+                                features.push(feature.name)
+                                //add to legend jkn
+                                this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(feature.name, "geojson", {displayName: feature.name, imagesrc:null}, false));
+                            }                            
+                        });//next feature
+                        this.getAdditionalFeatures(features.join(','));
                     }
 
                     //sm when complete
@@ -451,20 +452,13 @@ module StreamStats.Services {
                             //console.log('test', feature, index);
                             this.selectedStudyArea.Features.push(feature);
                         });
-
-                        let saEvent = new StudyAreaEventArgs();
-                        saEvent.additionalFeaturesLoaded = true;
-                        this.eventManager.RaiseEvent(onAdditionalFeaturesLoaded, this, saEvent);
-
-                        this.toaster.clear();
-
                     }
 
                     //sm when complete
                 }, (error) => {
                     //sm when error
                     this.toaster.clear();
-                    this.toaster.pop("error", "There was an HTTP error getting additional feautres", "Please retry", 0);
+                    this.toaster.pop("error", "There was an HTTP error getting additional features", "Please retry", 0);
                 }).finally(() => {
                 });
         }
