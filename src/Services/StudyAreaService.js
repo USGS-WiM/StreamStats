@@ -38,12 +38,11 @@ var StreamStats;
                 if (saVisible === void 0) { saVisible = false; }
                 if (paramState === void 0) { paramState = false; }
                 if (additionalFeatures === void 0) { additionalFeatures = false; }
-                var _this = _super.call(this) || this;
-                _this.studyArea = studyArea;
-                _this.studyAreaVisible = saVisible;
-                _this.parameterLoaded = paramState;
-                _this.additionalFeaturesLoaded = additionalFeatures;
-                return _this;
+                _super.call(this);
+                this.studyArea = studyArea;
+                this.studyAreaVisible = saVisible;
+                this.parameterLoaded = paramState;
+                this.additionalFeaturesLoaded = additionalFeatures;
             }
             return StudyAreaEventArgs;
         }(WiM.Event.EventArgs));
@@ -54,10 +53,11 @@ var StreamStats;
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
             function StudyAreaService($http, $q, eventManager, toaster) {
-                var _this = _super.call(this, $http, configuration.baseurls['StreamStatsServices']) || this;
-                _this.$http = $http;
-                _this.$q = $q;
-                _this.eventManager = eventManager;
+                var _this = this;
+                _super.call(this, $http, configuration.baseurls['StreamStatsServices']);
+                this.$http = $http;
+                this.$q = $q;
+                this.eventManager = eventManager;
                 eventManager.AddEvent(Services.onSelectedStudyParametersLoaded);
                 eventManager.AddEvent(Services.onSelectedStudyAreaChanged);
                 eventManager.AddEvent(Services.onStudyAreaReset);
@@ -65,11 +65,10 @@ var StreamStats;
                     _this.onStudyAreaChanged(sender, e);
                 }));
                 eventManager.AddEvent(Services.onEditClick);
-                _this._studyAreaList = [];
-                _this.toaster = toaster;
-                _this.clearStudyArea();
-                _this.servicesURL = configuration.baseurls['StreamStatsServices'];
-                return _this;
+                this._studyAreaList = [];
+                this.toaster = toaster;
+                this.clearStudyArea();
+                this.servicesURL = configuration.baseurls['StreamStatsServices'];
             }
             Object.defineProperty(StudyAreaService.prototype, "StudyAreaList", {
                 get: function () {
@@ -330,9 +329,8 @@ var StreamStats;
                     if (response.data.featurecollection && response.data.featurecollection.length > 0) {
                         var features = [];
                         angular.forEach(response.data.featurecollection, function (feature, index) {
-                            if (['globalwatershed', 'globalwatershedpoint'].indexOf(feature.name) === -1) {
+                            if (_this.selectedStudyArea.Features.map(function (f) { return f.name; }).indexOf(feature.name) === -1) {
                                 features.push(feature.name);
-                                //add to legend jkn
                                 _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(feature.name, "geojson", { displayName: feature.name, imagesrc: null }, false));
                             }
                         }); //next feature
@@ -358,7 +356,17 @@ var StreamStats;
                         //console.log('additional features:', response);
                         angular.forEach(response.data.featurecollection, function (feature, index) {
                             //console.log('test', feature, index);
-                            _this.selectedStudyArea.Features.push(feature);
+                            if (feature.feature.features.length < 1) {
+                                //remove from studyarea array                                
+                                for (var i = 0; i < _this.selectedStudyArea.Features.length; i++) {
+                                    if (_this.selectedStudyArea.Features[i].name === feature.name) {
+                                        _this.selectedStudyArea.Features.splice(i, 1);
+                                        break;
+                                    }
+                                }
+                            }
+                            else
+                                _this.selectedStudyArea.Features.push(feature);
                         });
                     }
                     //sm when complete
