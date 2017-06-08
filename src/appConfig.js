@@ -5,9 +5,9 @@ configuration.environment='development'
 configuration.baseurls =
 {   
     'NWISurl': 'https://waterservices.usgs.gov/nwis',
-    'StreamStatsServices': 'http://test.streamstats.usgs.gov',
-    'StreamStatsMapServices': 'http://test.streamstats.usgs.gov',
-    'NSS': 'http://test.streamstats.usgs.gov/nssservices',
+    'StreamStatsServices': 'https://test.streamstats.usgs.gov',
+    'StreamStatsMapServices': 'https://test.streamstats.usgs.gov',
+    'NSS': 'https://test.streamstats.usgs.gov/nssservices',
     'NationalMapRasterServices': 'https://raster.nationalmap.gov/arcgis/rest/services'
 }
 
@@ -206,7 +206,7 @@ configuration.regions = [
 		{
 			"CO_Regulation":{
 				"name": "Regulation Points",
-				"url": configuration.baseurls['GISserver'] + "/arcgis/rest/services/regulations/co/MapServer",
+				"url": configuration.baseurls['StreamStatsMapServices'] + "/arcgis/rest/services/regulations/co/MapServer",
 				"type": 'agsDynamic',
 				"visible": true,
 				"layerOptions": {
@@ -279,7 +279,7 @@ configuration.regions = [
 		{
             "MT_Regulation": {
                 "name": "Regulation Points",
-                "url": configuration.baseurls['GISserver'] + "/arcgis/rest/services/regulations/mt/MapServer",
+                "url": configuration.baseurls['StreamStatsMapServices'] + "/arcgis/rest/services/regulations/mt/MapServer",
                 "type": 'agsDynamic',
                 "visible": true,
                 "layerOptions": {
