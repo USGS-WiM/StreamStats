@@ -32,19 +32,20 @@ var StreamStats;
             function StatisticsGroup() {
             }
             return StatisticsGroup;
-        }());
-        Services.StatisticsGroup = StatisticsGroup; //end class
+        }()); //end class
+        Services.StatisticsGroup = StatisticsGroup;
         var nssService = (function (_super) {
             __extends(nssService, _super);
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
             function nssService($http, $q, toaster, modal) {
-                _super.call(this, $http, configuration.baseurls['NSS']);
-                this.$q = $q;
-                this.toaster = toaster;
-                this.modalService = modal;
-                this._onSelectedStatisticsGroupChanged = new WiM.Event.Delegate();
-                this.clearNSSdata();
+                var _this = _super.call(this, $http, configuration.baseurls['NSS']) || this;
+                _this.$q = $q;
+                _this.toaster = toaster;
+                _this.modalService = modal;
+                _this._onSelectedStatisticsGroupChanged = new WiM.Event.Delegate();
+                _this.clearNSSdata();
+                return _this;
             }
             Object.defineProperty(nssService.prototype, "onSelectedStatisticsGroupChanged", {
                 get: function () {

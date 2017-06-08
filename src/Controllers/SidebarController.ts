@@ -345,12 +345,12 @@ module StreamStats.Controllers {
                             this.nssService.selectedStatisticsGroupList.splice(i, 1);
                             break;
                         }//end if
-                    }//next i
+                    }//next
 
                     
                 }//end if
                 this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList,"value", this.regionService.selectedRegion.RegionID, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) { return elem.code; }).join(","));
-                if (this.studyAreaService.selectedStudyArea.Disclaimers["isRegulated"]) {
+                if (this.regionService.selectedRegion.Applications.indexOf("RegulationFlows") !=-1) {
                     setTimeout(() => {
                         this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList, "unRegulatedValue", this.regionService.selectedRegion.RegionID, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) { return elem.code; }).join(","), true);
                     }, 500);

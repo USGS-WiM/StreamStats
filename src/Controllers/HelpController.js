@@ -19,19 +19,20 @@ var StreamStats;
         var HelpController = (function (_super) {
             __extends(HelpController, _super);
             function HelpController($scope, $http, $sce, studyAreaService, modal, Upload) {
-                _super.call(this, $http, '');
-                $scope.vm = this;
-                this.StudyArea = studyAreaService.selectedStudyArea;
-                this.Upload = Upload;
-                this.http = $http;
-                this.sce = $sce;
-                this.modalInstance = modal;
-                this.StudyArea = studyAreaService.selectedStudyArea;
-                this.freshdeskTicketData = new FreshdeskTicketData();
-                this.selectedHelpTabName = "help";
-                this.showSuccessAlert = false;
-                this.submittingSupportTicket = false;
-                this.init();
+                var _this = _super.call(this, $http, '') || this;
+                $scope.vm = _this;
+                _this.StudyArea = studyAreaService.selectedStudyArea;
+                _this.Upload = Upload;
+                _this.http = $http;
+                _this.sce = $sce;
+                _this.modalInstance = modal;
+                _this.StudyArea = studyAreaService.selectedStudyArea;
+                _this.freshdeskTicketData = new FreshdeskTicketData();
+                _this.selectedHelpTabName = "help";
+                _this.showSuccessAlert = false;
+                _this.submittingSupportTicket = false;
+                _this.init();
+                return _this;
             }
             //Methods  
             //-+-+-+-+-+-+-+-+-+-+-+-
@@ -145,11 +146,11 @@ var StreamStats;
                 if (false || !!document.documentMode)
                     this.Browser = "IE";
             };
-            //Constructor
-            //-+-+-+-+-+-+-+-+-+-+-+-
-            HelpController.$inject = ['$scope', '$http', '$sce', 'StreamStats.Services.StudyAreaService', '$modalInstance', 'Upload'];
             return HelpController;
         }(WiM.Services.HTTPServiceBase)); //end  class
+        //Constructor
+        //-+-+-+-+-+-+-+-+-+-+-+-
+        HelpController.$inject = ['$scope', '$http', '$sce', 'StreamStats.Services.StudyAreaService', '$modalInstance', 'Upload'];
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.HelpController', HelpController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));
