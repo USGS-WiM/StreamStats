@@ -517,7 +517,7 @@ module StreamStats.Services {
                 var ppt = this.selectedStudyArea.Pourpoint;
                 var ex = new L.Circle([ppt.Longitude, ppt.Latitude], 50).getBounds();
                 var outFields = "eqWithStrID.BASIN_NAME,eqWithStrID.DVA_EQ_ID,eqWithStrID.a10,eqWithStrID.b10,eqWithStrID.a25,eqWithStrID.b25,eqWithStrID.a50,eqWithStrID.b50,eqWithStrID.a100,eqWithStrID.b100,eqWithStrID.a500,eqWithStrID.b500";
-                var url = configuration.baseurls['GISserver'] + configuration.queryparams['coordinatedReachQueryService']
+                var url = configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['coordinatedReachQueryService']
                     .format(this.selectedStudyArea.RegionID.toLowerCase(), ex.getNorth(), ex.getWest(), ex.getSouth(), ex.getEast(), ppt.crs, outFields);
 
                 var request: WiM.Services.Helpers.RequestInfo =
@@ -580,7 +580,6 @@ module StreamStats.Services {
             //var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', watershed);
 
             var url = configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['RegressionRegionQueryService'];
-            console.log('HERE',url)
             var request: WiM.Services.Helpers.RequestInfo =
                 new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST,
                     'json', { geometry: watershed, f: 'json' },
@@ -719,7 +718,7 @@ module StreamStats.Services {
 
             var watershed = angular.toJson(this.selectedStudyArea.Features[1].feature, null);
 
-            var url = configuration.baseurls['GISserver'] + configuration.queryparams['regulationService'].format(this.selectedStudyArea.RegionID.toLowerCase());
+            var url = configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['regulationService'].format(this.selectedStudyArea.RegionID.toLowerCase());
             var request: WiM.Services.Helpers.RequestInfo =
                 new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST,
                     'json', { watershed: watershed, outputcrs: 4326, f: 'geojson' },
