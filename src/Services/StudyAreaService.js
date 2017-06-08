@@ -346,6 +346,8 @@ var StreamStats;
             };
             StudyAreaService.prototype.getAdditionalFeatures = function (featureString) {
                 var _this = this;
+                if (!featureString)
+                    return;
                 //console.log('downloading additional features...')
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSfeatures'].format(this.selectedStudyArea.WorkspaceID, 4326, featureString);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);

@@ -94,8 +94,8 @@
                     <!--Parameter Table for Flow Report-->
                     <div class="well well-sm" ng-show="vm.nssService.showFlowsTable" ng-repeat="StatisticsGroup in vm.nssService.selectedStatisticsGroupList">
 
-                        <div ng-repeat="RegressionRegion in StatisticsGroup.RegressionRegions" ng-if="RegressionRegion.Name != 'Area-Averaged'">
-                            <h3>{{StatisticsGroup.Name}} Parameters<small ng-bind="(RegressionRegion.PercentWeight) ? ' [' + RegressionRegion.PercentWeight.toFixed(0) + ' Percent (' + (+vm.areaSQMI.toUSGSvalue() * +RegressionRegion.PercentWeight / 100).toUSGSvalue() + ' square miles) ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h3>
+                        <div ng-repeat="RegressionRegion in StatisticsGroup.RegressionRegions" ng-if="RegressionRegion.Parameters.length > 0">
+                            <h3>{{StatisticsGroup.Name}} Parameters<small ng-bind="(RegressionRegion.PercentWeight && RegressionRegion.PercentWeight < 100) ? ' [' + RegressionRegion.PercentWeight.toFixed(0) + ' Percent (' + (+vm.areaSQMI.toUSGSvalue() * +RegressionRegion.PercentWeight / 100).toUSGSvalue() + ' square miles) ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h3>
                             <table id="{{vm.camelize(StatisticsGroup.Name + RegressionRegion.Name + 'ScenarioParamTable')}}" class="scenarioParamTable table table-condensed">
                                 <thead class="param-table">
                                 <tr>
@@ -119,19 +119,18 @@
                                         <td ng-bind="parameter.Limits.Max"></td>
                                     </tr>
                                 </tbody>
-                            </table>
-
-                            <!--Scenario Disclaimers-->
-                            <div ng-show="RegressionRegion.Disclaimer">
-                                <h3>{{StatisticsGroup.Name}} Disclaimers<small ng-bind="(RegressionRegion.PercentWeight) ? ' [' + RegressionRegion.PercentWeight.toFixed(0) + ' Percent (' + (+vm.areaSQMI.toUSGSvalue() * +RegressionRegion.PercentWeight / 100).toUSGSvalue() + ' square miles) ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h3>
-                                <div class="wim-alert-warning">{{RegressionRegion.Disclaimer}}</div> 
-                            </div>
+                            </table>                              
                         </div>
-
+                        
                         <!--Flow Report-->
                         <div ng-repeat="RegressionRegion in StatisticsGroup.RegressionRegions">
+                            <!--Scenario Disclaimers-->
+                            <div ng-show="RegressionRegion.Disclaimer">
+                                <h3>{{StatisticsGroup.Name}} Disclaimers<small ng-bind="(RegressionRegion.PercentWeight && RegressionRegion.PercentWeight < 100) ? ' [' + RegressionRegion.PercentWeight.toFixed(0) + ' Percent (' + (+vm.areaSQMI.toUSGSvalue() * +RegressionRegion.PercentWeight / 100).toUSGSvalue() + ' square miles) ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h3>
+                                <div class="wim-alert-warning">{{RegressionRegion.Disclaimer}}</div>
+                            </div>
 
-                            <h3>{{StatisticsGroup.Name}} Flow Report<small ng-bind="(RegressionRegion.PercentWeight) ? ' [' + RegressionRegion.PercentWeight.toFixed(0) + ' Percent (' + (+vm.areaSQMI.toUSGSvalue() * +RegressionRegion.PercentWeight / 100).toUSGSvalue() + ' square miles) ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h3>
+                            <h3>{{StatisticsGroup.Name}} Flow Report<small ng-bind="(RegressionRegion.PercentWeight && RegressionRegion.PercentWeight < 100) ? ' [' + RegressionRegion.PercentWeight.toFixed(0) + ' Percent (' + (+vm.areaSQMI.toUSGSvalue() * +RegressionRegion.PercentWeight / 100).toUSGSvalue() + ' square miles) ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h3>
                             <small ng-show="RegressionRegion.Results[0].IntervalBounds || RegressionRegion.Results[0].Errors && RegressionRegion.Results[0].Errors.length > 0">PIl: Prediction Interval-Lower, PIu: Prediction Interval-Upper, SEp: Standard Error of Prediction, SE: Standard Error (other -- see report)</small>
                             <table id="{{vm.camelize(StatisticsGroup.Name + RegressionRegion.Name + 'ScenarioFlowTable')}}"class="scenarioFlowTable table table-condensed">
                                 <thead class="flow-table">
@@ -155,7 +154,7 @@
                                         <td ng-if="parameter.IntervalBounds.Lower" ng-bind="parameter.IntervalBounds.Lower.toUSGSvalue()"></td>
                                         <td ng-if="parameter.IntervalBounds.Upper" ng-bind="parameter.IntervalBounds.Upper.toUSGSvalue()"></td>
                                         <td ng-if="parameter.Errors && parameter.Errors.length > 0" ng-repeat="error in parameter.Errors" ng-bind="(error.Value) ? error.Value.toUSGSvalue() : '--'"></td>
-                                        <td ng-if="parameter.EquivalentYears" ng-bind="parameter.EquivalentYears"></td>
+                                        <td ng-if="parameter.EquivalentYears" ng-bind="parameter.EquivalentYears.toUSGSvalue()"></td>
                                     </tr>
                                 </tbody>
                             </table>
