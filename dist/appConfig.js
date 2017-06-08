@@ -1,17 +1,22 @@
-var configuration = {}
+var configuration={}
 configuration.version="4.1.3"
-configuration.environment = 'development'
-configuration.cloud = true;
+configuration.environment='development'
 
 configuration.baseurls =
 {   
     'NWISurl': 'https://waterservices.usgs.gov/nwis',
-    'StreamStatsMapServices': 'https://streamstats09.cr.usgs.gov',
-    'StreamStatsServices': 'https://ssdev.cr.usgs.gov',
-    'NSS': 'https://services.wim.usgs.gov/nssservicestest',
-    'SearchAPI': 'https://txpub.usgs.gov/DSS/search_api/1.1/dataService/dataService.ashx',
-    'GISserver': 'https://gis.wim.usgs.gov',
+    'StreamStatsServices': 'http://test.streamstats.usgs.gov',
+    'StreamStatsMapServices': 'http://test.streamstats.usgs.gov',
+    'NSS': 'http://test.streamstats.usgs.gov/nssservices',
     'NationalMapRasterServices': 'https://raster.nationalmap.gov/arcgis/rest/services'
+}
+
+//override streamstats arguments if on production
+if (window.location.host === 'streamstats.usgs.gov') {
+    configuration.baseurls.StreamStatsServices = 'https://streamstats.usgs.gov',
+    configuration.baseurls.StreamStatsMapServices = 'https://streamstats.usgs.gov',
+    configuration.baseurls.NSS = 'https://streamstats.usgs.gov/nssservices',
+    configuration.environment = 'production'
 }
 
 configuration.queryparams =
@@ -29,23 +34,17 @@ configuration.queryparams =
     'SSComputeParams': '/streamstatsservices/parameters.json?rcode={0}&workspaceID={1}&includeparameters={2}',
     'SSavailableFeatures': '/streamstatsservices/features.json?workspaceID={0}',
     'SSfeatures': '/streamstatsservices/features.geojson?workspaceID={0}&crs={1}&includefeatures={2}&simplify=true',
-    'SSStateLayers': '/arcgis/rest/services/{0}_ss/MapServer?f=pjson',
-    'SSNationalLayers': '/arcgis/rest/services/ss_studyAreas_prod/MapServer',
+    'SSStateLayers': '/arcgis/rest/services/StreamStats/stateServices/MapServer',
+    'SSNationalLayers': '/arcgis/rest/services/StreamStats/nationalLayers/MapServer',
     'FARefGage': '/2/query?geometry={0}&geometryType=esriGeometryPoint&inSR={1}&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
     'regionService': '/arcgis/rest/services/ss_studyAreas_prod/MapServer/identify',
     'NLCDQueryService': '/LandCover/USGS_EROS_LandCover_NLCD/MapServer/4',
-    'regulationService': '/arcgis/rest/services/Regulation/{0}RegulationSites/MapServer/exts/RegulationRESTSOE/Regulation',
-    'RegressionRegionQueryService': '/arcgis/rest/services/NSS/nssRegions_Test/MapServer/exts/PercentOverlayRESTSOE/PercentOverlay',
+    'regulationService': '/arcgis/rest/services/regulations/{0}/MapServer/exts/RegulationRESTSOE/Regulation',
+    'RegressionRegionQueryService': '/arcgis/rest/services/nss/regions/MapServer/exts/PercentOverlayRESTSOE/PercentOverlay',
     'SSNavigationServices': '/streamstatsservices/navigation/{0}.geojson?rcode={1}&',
     'Wateruse': '/streamstatsservices/wateruse.json?rcode={0}&workspaceID={1}&startyear={2}&endyear={3}',
     'WateruseConfig': '/streamstatsservices/wateruse.json?rcode={0}',
     'coordinatedReachQueryService':'/arcgis/rest/services/coordinatedreaches/{0}/MapServer/0/query?geometry={1},{2},{3},{4}&geometryType=esriGeometryEnvelope&inSR={5}&spatialRel=esriSpatialRelIntersects&outFields={6}&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson'
-}
-
-//override streamstats arguments if on production
-if (window.location.origin.indexOf('streamstatsags.cr.usgs.gov') !== -1) {
-    configuration.baseurls.StreamStats = 'https://streamstatsags.cr.usgs.gov';
-    configuration.environment = 'production';
 }
 
 configuration.SupportTicketService = {
@@ -207,7 +206,7 @@ configuration.regions = [
 		{
 			"CO_Regulation":{
 				"name": "Regulation Points",
-				"url": configuration.baseurls['GISserver'] + "/arcgis/rest/services/Regulation/CORegulationSites/MapServer",
+				"url": configuration.baseurls['GISserver'] + "/arcgis/rest/services/regulations/co/MapServer",
 				"type": 'agsDynamic',
 				"visible": true,
 				"layerOptions": {
@@ -280,7 +279,7 @@ configuration.regions = [
 		{
             "MT_Regulation": {
                 "name": "Regulation Points",
-                "url": configuration.baseurls['GISserver'] + "/arcgis/rest/services/Regulation/MTRegulationSites/MapServer",
+                "url": configuration.baseurls['GISserver'] + "/arcgis/rest/services/regulations/mt/MapServer",
                 "type": 'agsDynamic',
                 "visible": true,
                 "layerOptions": {
@@ -326,28 +325,6 @@ configuration.regions = [
     { "RegionID": "RRB", "Name": "Rainy River Basin", "Bounds": [[47.268377,-95.64855],[50.054196,-89.766532]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": false }
 
 ]//end regions
-
-//override streamstats arguments if on cloud
-if (configuration.cloud) {
-    configuration.baseurls.StreamStatsServices = 'https://streamstatstest.wim.usgs.gov';
-    configuration.baseurls.GISserver = configuration.baseurls.StreamStatsServices;
-    configuration.baseurls.StreamStatsMapServices = configuration.baseurls.StreamStatsServices;
-    configuration.baseurls.NSS = 'https://streamstatstest.wim.usgs.gov/nssservices'
-
-    configuration.queryparams.SSStateLayers = '/arcgis/rest/services/StreamStats/stateServices/MapServer';
-    configuration.queryparams.SSNationalLayers = '/arcgis/rest/services/StreamStats/nationalLayers/MapServer';
-    configuration.queryparams.RegressionRegionQueryService = '/arcgis/rest/services/nss/regions/MapServer/exts/PercentOverlayRESTSOE/PercentOverlay';
-    configuration.queryparams.regulationService = '/arcgis/rest/services/regulations/{0}/MapServer/exts/RegulationRESTSOE/Regulation',
-
-    configuration.regions.forEach(function (value,index) {
-        if (value.RegionID === 'CO') {
-            value.Layers.CO_Regulation.url = configuration.baseurls['GISserver'] + "/arcgis/rest/services/regulations/co/MapServer";
-        }
-        if (value.RegionID === 'MT') {
-            value.Layers.MT_Regulation.url = configuration.baseurls['GISserver'] + "/arcgis/rest/services/regulations/mt/MapServer";
-        }
-    });
-}
 
 configuration.overlayedLayers = {
     "SSLayer": {

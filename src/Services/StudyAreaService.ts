@@ -578,7 +578,8 @@ module StreamStats.Services {
             //var url = configuration.baseurls['NodeServer'] + configuration.queryparams['RegressionRegionQueryService'];
             //var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', watershed);
 
-            var url = configuration.baseurls['GISserver'] + configuration.queryparams['RegressionRegionQueryService'];
+            var url = configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['RegressionRegionQueryService'];
+            console.log('HERE',url)
             var request: WiM.Services.Helpers.RequestInfo =
                 new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST,
                     'json', { geometry: watershed, f: 'json' },
@@ -717,9 +718,7 @@ module StreamStats.Services {
 
             var watershed = angular.toJson(this.selectedStudyArea.Features[1].feature, null);
 
-            var url = configuration.baseurls['GISserver'] + configuration.queryparams['regulationService'].format(this.selectedStudyArea.RegionID);
-            //CLOUD CHECK
-            if (configuration.cloud) url = configuration.baseurls['GISserver'] + configuration.queryparams['regulationService'].format(this.selectedStudyArea.RegionID.toLowerCase());
+            var url = configuration.baseurls['GISserver'] + configuration.queryparams['regulationService'].format(this.selectedStudyArea.RegionID.toLowerCase());
             var request: WiM.Services.Helpers.RequestInfo =
                 new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST,
                     'json', { watershed: watershed, outputcrs: 4326, f: 'geojson' },
