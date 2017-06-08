@@ -825,18 +825,9 @@ module StreamStats.Controllers {
                         //build list of layers to query before delineate
                         var queryString = 'visible:'
 
-                        //CLOUD
-                        if (configuration.cloud) {
-                            this.regionServices.regionMapLayerList.forEach((item) => {
-                                if (item[0] == 'ExcludePolys') queryString += item[1];
-                            });
-                        }
-
-                        else {
-                            this.regionServices.regionMapLayerList.forEach((item) => {
-                                queryString += String(item[1]);
-                            });
-                        }
+                        this.regionServices.regionMapLayerList.forEach((item) => {
+                            if (item[0] == 'ExcludePolys') queryString += item[1];
+                        });
 
                         this.angulartics.eventTrack('delineationClick', { category: 'Map', label: this.regionServices.selectedRegion.Name });
 
@@ -1237,43 +1228,18 @@ module StreamStats.Controllers {
 
             if (this.regionServices.regionMapLayerList.length < 1) return;
 
-            //CLOUD
-            if (configuration.cloud) {
-                var layerList = [];
-                var roots = this.regionServices.regionMapLayerList.map(function (layer) {
-                    layerList.push(layer[1])
+            var layerList = [];
+            var roots = this.regionServices.regionMapLayerList.map(function (layer) {
+                layerList.push(layer[1])
+            });
+
+            this.layers.overlays[regionId + "_region"] = new Layer(regionId + " Map layers", configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['SSStateLayers'],
+                "agsDynamic", true, {
+                    "opacity": 1,
+                    "layers": layerList,
+                    "format": "png8",
+                    "f": "image"
                 });
-
-                this.layers.overlays[regionId + "_region"] = new Layer(regionId + " Map layers", configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['SSStateLayers'],
-                    "agsDynamic", true, {
-                        "opacity": 1,
-                        "layers": layerList,
-                        "format": "png8",
-                        "f": "image"
-                    });
-            }
-            //NOT CLOUD
-            else {
-                this.layers.overlays[regionId + "_region"] = new Layer(regionId + " Map layers", configuration.baseurls['StreamStatsMapServices'] + "/arcgis/rest/services/{0}_ss/MapServer".format(regionId.toLowerCase()),
-                    "agsDynamic", true, {
-                        "opacity": 1,
-                        //"layers": this.regionServices.regionMapLayerList,
-                        "format": "png8",
-                        "f": "image"
-                    });
-
-                //override default map service visibility
-                this.leafletData.getLayers("mainMap").then((maplayers: any) => {
-                    var regionLayer = maplayers.overlays[regionId + "_region"];
-
-                    var visibleLayers = [];
-                    this.regionServices.regionMapLayerList.forEach((item) => {
-                        if (item[2]) visibleLayers.push(item[1]);
-                    });
-                    //console.log('visible state/region map layers: ', visibleLayers);
-                    regionLayer.setLayers([visibleLayers]);
-                });
-            }
             
             //get any other layers specified in config
             var layers = this.regionServices.selectedRegion.Layers;
