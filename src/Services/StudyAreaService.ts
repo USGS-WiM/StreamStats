@@ -435,6 +435,7 @@ module StreamStats.Services {
         }
 
         public getAdditionalFeatures(featureString: string) {
+            if (!featureString) return;
             //console.log('downloading additional features...')
             var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSfeatures'].format(this.selectedStudyArea.WorkspaceID, 4326, featureString);
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
