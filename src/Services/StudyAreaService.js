@@ -329,9 +329,8 @@ var StreamStats;
                     if (response.data.featurecollection && response.data.featurecollection.length > 0) {
                         var features = [];
                         angular.forEach(response.data.featurecollection, function (feature, index) {
-                            if (['globalwatershed', 'globalwatershedpoint'].indexOf(feature.name) === -1) {
+                            if (_this.selectedStudyArea.Features.map(function (f) { return f.name; }).indexOf(feature.name) === -1) {
                                 features.push(feature.name);
-                                //add to legend jkn
                                 _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(feature.name, "geojson", { displayName: feature.name, imagesrc: null }, false));
                             }
                         }); //next feature
@@ -357,7 +356,17 @@ var StreamStats;
                         //console.log('additional features:', response);
                         angular.forEach(response.data.featurecollection, function (feature, index) {
                             //console.log('test', feature, index);
-                            _this.selectedStudyArea.Features.push(feature);
+                            if (feature.feature.features.length < 1) {
+                                //remove from studyarea array                                
+                                for (var i = 0; i < _this.selectedStudyArea.Features.length; i++) {
+                                    if (_this.selectedStudyArea.Features[i].name === feature.name) {
+                                        _this.selectedStudyArea.Features.splice(i, 1);
+                                        break;
+                                    }
+                                }
+                            }
+                            else
+                                _this.selectedStudyArea.Features.push(feature);
                         });
                     }
                     //sm when complete
