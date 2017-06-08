@@ -222,7 +222,8 @@ var StreamStats;
             SidebarController.prototype.calculateParameters = function () {
                 //ga event
                 this.angulartics.eventTrack('CalculateParameters', {
-                    category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.studyAreaService.studyAreaParameterList.map(function (elem) { return elem.code; }).join(",") });
+                    category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.studyAreaService.studyAreaParameterList.map(function (elem) { return elem.code; }).join(",")
+                });
                 //console.log('in Calculate Parameters');
                 this.studyAreaService.loadParameters();
             };
@@ -248,7 +249,8 @@ var StreamStats;
                 this.toaster.pop('wait', "Opening Report", "Please wait...", 5000);
                 //ga event
                 this.angulartics.eventTrack('CalculateFlows', {
-                    category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.nssService.selectedStatisticsGroupList.map(function (elem) { return elem.Name; }).join(",") });
+                    category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.nssService.selectedStatisticsGroupList.map(function (elem) { return elem.Name; }).join(",")
+                });
                 if (this.nssService.selectedStatisticsGroupList.length > 0 && this.nssService.showFlowsTable) {
                     var strippedoutStatisticGroups = [];
                     if (this.studyAreaService.selectedStudyArea.CoordinatedReach != null) {
@@ -264,10 +266,10 @@ var StreamStats;
                                 this.nssService.selectedStatisticsGroupList.splice(i, 1);
                                 break;
                             } //end if
-                        } //next i
+                        } //next
                     } //end if
                     this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList, "value", this.regionService.selectedRegion.RegionID, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) { return elem.code; }).join(","));
-                    if (this.studyAreaService.selectedStudyArea.Disclaimers["isRegulated"]) {
+                    if (this.regionService.selectedRegion.Applications.indexOf("RegulationFlows") != -1) {
                         setTimeout(function () {
                             _this.nssService.estimateFlows(_this.studyAreaService.studyAreaParameterList, "unRegulatedValue", _this.regionService.selectedRegion.RegionID, _this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) { return elem.code; }).join(","), true);
                         }, 500);
@@ -457,11 +459,11 @@ var StreamStats;
                 catch (e) {
                 }
             };
-            //Constructor
-            //-+-+-+-+-+-+-+-+-+-+-+-
-            SidebarController.$inject = ['$scope', 'toaster', '$analytics', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ModalService', 'leafletData', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager'];
             return SidebarController;
         }()); //end class
+        //Constructor
+        //-+-+-+-+-+-+-+-+-+-+-+-
+        SidebarController.$inject = ['$scope', 'toaster', '$analytics', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ModalService', 'leafletData', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager'];
         var ProcedureType;
         (function (ProcedureType) {
             ProcedureType[ProcedureType["INIT"] = 1] = "INIT";
