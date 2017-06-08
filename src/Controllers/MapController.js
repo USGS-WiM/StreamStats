@@ -625,18 +625,10 @@ var StreamStats;
                             _this.studyArea.doDelineateFlag = false;
                             //build list of layers to query before delineate
                             var queryString = 'visible:';
-                            //CLOUD
-                            if (configuration.cloud) {
-                                _this.regionServices.regionMapLayerList.forEach(function (item) {
-                                    if (item[0] == 'ExcludePolys')
-                                        queryString += item[1];
-                                });
-                            }
-                            else {
-                                _this.regionServices.regionMapLayerList.forEach(function (item) {
-                                    queryString += String(item[1]);
-                                });
-                            }
+                            _this.regionServices.regionMapLayerList.forEach(function (item) {
+                                if (item[0] == 'ExcludePolys')
+                                    queryString += item[1];
+                            });
                             _this.angulartics.eventTrack('delineationClick', { category: 'Map', label: _this.regionServices.selectedRegion.Name });
                             //force map refresh
                             map.invalidateSize();
@@ -969,41 +961,18 @@ var StreamStats;
             };
             MapController.prototype.addRegionOverlayLayers = function (regionId) {
                 //console.log('in addRegionOverlayLayers');
-                var _this = this;
                 if (this.regionServices.regionMapLayerList.length < 1)
                     return;
-                //CLOUD
-                if (configuration.cloud) {
-                    var layerList = [];
-                    var roots = this.regionServices.regionMapLayerList.map(function (layer) {
-                        layerList.push(layer[1]);
-                    });
-                    this.layers.overlays[regionId + "_region"] = new Layer(regionId + " Map layers", configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['SSStateLayers'], "agsDynamic", true, {
-                        "opacity": 1,
-                        "layers": layerList,
-                        "format": "png8",
-                        "f": "image"
-                    });
-                }
-                else {
-                    this.layers.overlays[regionId + "_region"] = new Layer(regionId + " Map layers", configuration.baseurls['StreamStatsMapServices'] + "/arcgis/rest/services/{0}_ss/MapServer".format(regionId.toLowerCase()), "agsDynamic", true, {
-                        "opacity": 1,
-                        //"layers": this.regionServices.regionMapLayerList,
-                        "format": "png8",
-                        "f": "image"
-                    });
-                    //override default map service visibility
-                    this.leafletData.getLayers("mainMap").then(function (maplayers) {
-                        var regionLayer = maplayers.overlays[regionId + "_region"];
-                        var visibleLayers = [];
-                        _this.regionServices.regionMapLayerList.forEach(function (item) {
-                            if (item[2])
-                                visibleLayers.push(item[1]);
-                        });
-                        //console.log('visible state/region map layers: ', visibleLayers);
-                        regionLayer.setLayers([visibleLayers]);
-                    });
-                }
+                var layerList = [];
+                var roots = this.regionServices.regionMapLayerList.map(function (layer) {
+                    layerList.push(layer[1]);
+                });
+                this.layers.overlays[regionId + "_region"] = new Layer(regionId + " Map layers", configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['SSStateLayers'], "agsDynamic", true, {
+                    "opacity": 1,
+                    "layers": layerList,
+                    "format": "png8",
+                    "f": "image"
+                });
                 //get any other layers specified in config
                 var layers = this.regionServices.selectedRegion.Layers;
                 if (layers == undefined)
