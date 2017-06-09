@@ -1295,3 +1295,12 @@ div.leaflet-top > .elevation {
             opacity: 1;
             transition: 0.1s;
         }
+
+
+
+/*
+    Modals
+*/
+#aboutTabs{
+    padding: 0 !important;
+}
