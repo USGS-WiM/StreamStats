@@ -15,9 +15,9 @@
             <h6>Exploration Tools</h6>
             <div class="group-wrapper">
                 <button ng-class="!vm.explorationService.drawMeasurement ? 'btn-exploration-tools btn-blue fullwidth':'btn-black fullwidth'" ng-click="vm.resetExplorationTools(); vm.explorationService.drawMeasurement = !vm.explorationService.drawMeasurement;"><span><i class="fa fa-arrows-h"></i>&nbsp;&nbsp;Measure Tool</span></button>
-                <div id="measurement-div" class="wim-alert row" ng-show="vm.explorationService.measurementData.length > 0" ng-bind="vm.explorationService.measurementData"></div>
+                <div id="measurement-div" class="banner" ng-show="vm.explorationService.measurementData.length > 0" ng-bind="vm.explorationService.measurementData"></div>
                 <button ng-class="!vm.explorationService.drawElevationProfile ? 'btn-exploration-tools btn-blue fullwidth':'btn-black fullwidth'" ng-click="vm.resetExplorationTools(); vm.explorationService.drawElevationProfile = !vm.explorationService.drawElevationProfile;"><span><i class="fa fa-line-chart"></i>&nbsp;&nbsp;Elevation Profile Tool</span></button>
-                <div id="elevation-help-div" class="wim-alert row" ng-show="vm.explorationService.drawElevationProfile">Click the map to begin<br>Double click to end the drawing and query elevation</div>
+                <div id="elevation-help-div" class="banner" ng-show="vm.explorationService.drawElevationProfile">Click the map to begin<br>Double click to end the drawing and query elevation</div>
                 <!-- Network Navigation -->
                 <!--<div ng-show="vm.environment == 'development' ">
                     <button ng-disabled="vm.center.zoom < 10" ng-class="vm.selectedExplorationMethodType !== 1? 'btn-wim-sm btn-wim-primary btn-wim-group-1':'btn-wim-sm btn-wim-warning btn-wim-group-1'" ng-click="vm.setExplorationMethodType(1)"><span><i class="fa fa-share-alt"></i>&nbsp;&nbsp;Find Path Between Two Points</span></button>
