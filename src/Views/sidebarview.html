@@ -166,15 +166,15 @@
                             <div class="banner">Toggling these scenario buttons selects the necessary basin characteristics</div>
                         </div>
 
-                        <div class="group-wrapper" ng-show="vm.nssService.statisticsGroupList.length == 0 && vm.regionService.selectedRegion.ScenariosAvailable">
+                        <form style="padding: 5px 0;" ng-show="vm.nssService.statisticsGroupList.length == 0 && vm.regionService.selectedRegion.ScenariosAvailable">
                             <button type="button" class="btn-blue fullwidth" ng-click="vm.queryStatisticsGroupTypes()" ng-disabled="vm.nssService.loadingStatisticsGroup"><span ng-show="vm.nssService.loadingStatisticsGroup"><i ng-class="vm.nssService.loadingStatisticsGroup ? 'fa fa-refresh fa-spin' : ''"></i>&nbsp;&nbsp;Querying Scenarios</span><span ng-show="!vm.nssService.loadingStatisticsGroup">Re-query Scenarios</span></button>
-                        </div>
+                        </form>
 
                         <div class="banner warning" ng-show="vm.nssService.statisticsGroupList.length == 0  && !vm.nssService.loadingStatisticsGroup"><span ng-show="vm.regionService.selectedRegion.ScenariosAvailable">Failed to load scenarios or no scenarios available</span><span ng-hide="vm.regionService.selectedRegion.ScenariosAvailable">Scenario computation has not been enabled yet for {{vm.regionService.selectedRegion.Name}}</span></div>
 
-                        <div class="group-wrapper" ng-if="vm.nssService.statisticsGroupList.length > 0" ng-repeat="statisticsGroup in vm.nssService.statisticsGroupList">
-                            <button class="btn-blue fullwidth" ng-disabled="vm.studyAreaService.parametersLoading" ng-class="vm.checkArrayForObj(vm.nssService.selectedStatisticsGroupList, statisticsGroup) != -1 ? 'btn-blue': ''" ng-click="vm.setStatisticsGroup(statisticsGroup)"><span>{{statisticsGroup.Name}} </span></button>
-                        </div>
+                        <form style="padding: 5px 0" ng-if="vm.nssService.statisticsGroupList.length > 0" ng-repeat="statisticsGroup in vm.nssService.statisticsGroupList">
+                            <button class="fullwidth" ng-disabled="vm.studyAreaService.parametersLoading" ng-class="vm.checkArrayForObj(vm.nssService.selectedStatisticsGroupList, statisticsGroup) != -1 ? 'btn-blue': ''" ng-click="vm.setStatisticsGroup(statisticsGroup)"><span>{{statisticsGroup.Name}} </span></button>
+                        </form>
                     </div>
 
                     <div class="well well-sm">
@@ -184,9 +184,9 @@
                         </div>
 
                         <div ng-init="vm.showBasinCharacterstics = false" ng-show="vm.showBasinCharacterstics">
-                            <div class="group-wrapper">
-                                <button class="btn-blue fullwidth" ng-class="vm.multipleParameterSelectorAdd ? '': 'btn-blue'" ng-click="vm.multipleParameterSelector()"><span>Select All Basin Characteristics</span></button>
-                            </div>
+                            <form style="padding: 5px 0;">
+                                <button class="btn-blue fullwidth" ng-class="vm.multipleParameterSelectorAdd ? 'btn-black': 'btn-blue'" ng-click="vm.multipleParameterSelector()"><span>Select All Basin Characteristics</span></button>
+                            </form>
                             <table class="table table-condensed">
                                 <thead class="param-table">
                                     <tr>
@@ -207,7 +207,7 @@
                         <div class="banner warning" ng-show="vm.studyAreaService.studyAreaParameterList.length < 1">A scenario OR one or more basin characteristics from the dropdown above must be selected to continue</div>
                     </div>
                     <form style="padding: 5px 0;">
-                        <button type="button" class="btn-blue fullwidth" ng-click="vm.calculateParameters()" ng-disabled="vm.studyAreaService.parametersLoading || vm.nssService.loadingParametersByStatisticsGroupCounter > 0 || vm.studyAreaService.studyAreaParameterList.length < 1"><i ng-class="vm.studyAreaService.parametersLoading ? 'fa fa-refresh fa-spin' : 'fa fa-check-circle'"></i>&nbsp;&nbsp;Continue</button>
+                        <button type="button" class="fullwidth" ng-click="vm.calculateParameters()" ng-disabled="vm.studyAreaService.parametersLoading || vm.nssService.loadingParametersByStatisticsGroupCounter > 0 || vm.studyAreaService.studyAreaParameterList.length < 1"><i ng-class="vm.studyAreaService.parametersLoading ? 'fa fa-refresh fa-spin' : 'fa fa-check-circle'"></i>&nbsp;&nbsp;Continue</button>
                     </form>
                 </div>
             </div>
@@ -218,21 +218,21 @@
                 <div class="list-group-body" ng-show="vm.selectedProcedure == 4">
 
                     <div id="step4info" class="banner">
-                        <p><strong>Step 1:</strong> You can modify computed basin characteristics here, then select the types of reports you wish to generate.  Then click the "Build Report" button</p>
+                        <div class="banner-body"><strong>Step 1:</strong> You can modify computed basin characteristics here, then select the types of reports you wish to generate.  Then click the "Build Report" button</div>
                     </div>
 
                     <!--<div class="wim-alert">You can modify computed basin characteristics here, then select the types of reports you wish to generate.  Then click the "Build Report" button</div>-->
 
-                    <div class="group-wrapper">
+                    <form style="padding: 5px 0;">
                         <button class="fullwidth" ng-click="vm.studyAreaService.showModifyBasinCharacterstics = !vm.studyAreaService.showModifyBasinCharacterstics"><span ng-hide="vm.studyAreaService.showModifyBasinCharacterstics "><i class="fa fa-chevron-down"></i>&nbsp;&nbsp;Show Basin Characteristics</span><span ng-show="vm.studyAreaService.showModifyBasinCharacterstics "><i class="fa fa-chevron-up"></i>&nbsp;&nbsp;Hide Basin Characteristics</span></button>
-                    </div>
+                    </form>
 
                     <div class="well well-sm" ng-init="vm.studyAreaService.showModifyBasinCharacterstics = false" ng-show="vm.studyAreaService.showModifyBasinCharacterstics">
                         <p>Basin Characteristics can be edited here</p>
 
-                        <div class="group-wrapper" ng-show="vm.ParameterValuesMissing">
-                            <button class="btn-blue fullwidth" ng-click="vm.calculateParameters()" ng-disabled="vm.studyAreaService.parametersLoading"><span><i ng-class="vm.studyAreaService.parametersLoading ? 'fa fa-refresh fa-spin' : 'fa fa-refresh'"></i>&nbsp;&nbsp;Caclulate Missing Parameters</span></button>
-                        </div>
+                        <form style="padding: 5px 0;" ng-show="vm.ParameterValuesMissing">
+                            <button class="fullwidth" ng-click="vm.calculateParameters()" ng-disabled="vm.studyAreaService.parametersLoading"><span><i ng-class="vm.studyAreaService.parametersLoading ? 'fa fa-refresh fa-spin' : 'fa fa-refresh'"></i>&nbsp;&nbsp;Caclulate Missing Parameters</span></button>
+                        </form>
 
                         <table class="table table-condensed">
                             <thead class="param-table">
@@ -256,17 +256,17 @@
 
                     <div class="well well-sm">
                         <p>Select available reports to display:</p>
-                        <form ng-init="vm.nssService.showBasinCharacteristicsTable = true" ng-show="vm.parametersLoaded">
+                        <form style="padding: 5px 0;" ng-init="vm.nssService.showBasinCharacteristicsTable = true" ng-show="vm.parametersLoaded">
                             <checkbox large ng-model="vm.nssService.showBasinCharacteristicsTable"></checkbox><span>&nbsp;&nbsp;Basin Characteristics Report</span>
                         </form>
-                        <form ng-show="vm.nssService.selectedStatisticsGroupList.length > 0">
+                        <form style="padding: 5px 0;" ng-show="vm.nssService.selectedStatisticsGroupList.length > 0">
                             <checkbox large ng-model="vm.nssService.showFlowsTable"></checkbox><span>&nbsp;&nbsp;Scenario Flow Reports</span>
                         </form>
 
 
-                        <div class="group-wrapper" ng-show="vm.nssService.showBasinCharacteristicsTable || vm.nssService.showFlowsTable">
+                        <form style="padding: 5px 0;" ng-show="vm.nssService.showBasinCharacteristicsTable || vm.nssService.showFlowsTable">
                             <button  ng-disabled="vm.studyAreaService.requestParameterList.length > 0" ng-click="vm.generateReport()" type="button" class="btn-blue fullwidth"><i ng-class="vm.nssService.canUpdate ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Continue</button>
-                        </div>
+                        </form>
                     </div>
                 </div>
             </div>
