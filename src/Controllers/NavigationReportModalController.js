@@ -70,11 +70,11 @@ var StreamStats;
                 //    }).finally(() => {
                 //    });
             };
+            //Constructor
+            //-+-+-+-+-+-+-+-+-+-+-+-
+            NavigationReportModalController.$inject = ['$scope', '$sce', '$modalInstance', 'StreamStats.Services.ModalService'];
             return NavigationReportModalController;
         }()); //end  class
-        //Constructor
-        //-+-+-+-+-+-+-+-+-+-+-+-
-        NavigationReportModalController.$inject = ['$scope', '$sce', '$modalInstance', 'StreamStats.Services.ModalService'];
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.NavigationReportModalController', NavigationReportModalController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));

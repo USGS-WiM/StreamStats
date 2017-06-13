@@ -28,15 +28,14 @@ var StreamStats;
         var NavbarController = (function (_super) {
             __extends(NavbarController, _super);
             function NavbarController($scope, $http, modal, studyArea) {
-                var _this = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
-                $scope.vm = _this;
-                _this.modalService = modal;
-                _this.checkActiveNews();
-                _this.newArticleCount = 0;
-                _this.environment = configuration.environment;
-                _this.AppVersion = configuration.version;
-                _this.cloud = configuration.cloud;
-                return _this;
+                _super.call(this, $http, configuration.baseurls.StreamStats);
+                $scope.vm = this;
+                this.modalService = modal;
+                this.checkActiveNews();
+                this.newArticleCount = 0;
+                this.environment = configuration.environment;
+                this.AppVersion = configuration.version;
+                this.cloud = configuration.cloud;
             }
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
@@ -100,11 +99,11 @@ var StreamStats;
                     var expires = "";
                 document.cookie = name + "=" + value + expires + "; path=/";
             };
+            //Constructor
+            //-+-+-+-+-+-+-+-+-+-+-+-
+            NavbarController.$inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.StudyAreaService'];
             return NavbarController;
         }(WiM.Services.HTTPServiceBase)); //end class
-        //Constructor
-        //-+-+-+-+-+-+-+-+-+-+-+-
-        NavbarController.$inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.StudyAreaService'];
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.NavbarController', NavbarController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));

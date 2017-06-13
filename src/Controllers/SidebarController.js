@@ -222,8 +222,7 @@ var StreamStats;
             SidebarController.prototype.calculateParameters = function () {
                 //ga event
                 this.angulartics.eventTrack('CalculateParameters', {
-                    category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.studyAreaService.studyAreaParameterList.map(function (elem) { return elem.code; }).join(",")
-                });
+                    category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.studyAreaService.studyAreaParameterList.map(function (elem) { return elem.code; }).join(",") });
                 //console.log('in Calculate Parameters');
                 this.studyAreaService.loadParameters();
             };
@@ -249,8 +248,7 @@ var StreamStats;
                 this.toaster.pop('wait', "Opening Report", "Please wait...", 5000);
                 //ga event
                 this.angulartics.eventTrack('CalculateFlows', {
-                    category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.nssService.selectedStatisticsGroupList.map(function (elem) { return elem.Name; }).join(",")
-                });
+                    category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.nssService.selectedStatisticsGroupList.map(function (elem) { return elem.Name; }).join(",") });
                 if (this.nssService.selectedStatisticsGroupList.length > 0 && this.nssService.showFlowsTable) {
                     var strippedoutStatisticGroups = [];
                     if (this.studyAreaService.selectedStudyArea.CoordinatedReach != null) {
@@ -334,13 +332,14 @@ var StreamStats;
                             //loop over list of state/region parameters to see if there is a match
                             regressionRegion.Parameters.forEach(function (param) {
                                 var found = false;
-                                _this.regionService.parameterList.forEach(function (parameter) {
-                                    //console.log('test',parameter)
+                                for (var i = 0; i < _this.regionService.parameterList.length; i++) {
+                                    var parameter = _this.regionService.parameterList[i];
                                     if (parameter.code.toLowerCase() == param.Code.toLowerCase()) {
                                         _this.addParameterToStudyAreaList(parameter.code);
                                         found = true;
+                                        break;
                                     } //end if
-                                });
+                                } //next i
                                 if (!found) {
                                     //console.log('PARAM NOT FOUND', param.Code)
                                     _this.toaster.pop('warning', "Missing Parameter: " + param.Code, "The selected scenario requires a parameter not available in this State/Region.  The value for this parameter will need to be entered manually.", 0);
@@ -417,7 +416,7 @@ var StreamStats;
                 try {
                     for (var i = 0; i < this.regionService.parameterList.length; i++) {
                         var p = this.regionService.parameterList[i];
-                        if (p.code.toUpperCase() === paramCode && this.checkArrayForObj(this.studyAreaService.studyAreaParameterList, p) == -1) {
+                        if (p.code.toUpperCase() === paramCode.toUpperCase() && this.checkArrayForObj(this.studyAreaService.studyAreaParameterList, p) == -1) {
                             this.studyAreaService.studyAreaParameterList.push(p);
                             p['checked'] = true;
                             p['toggleable'] = false;
@@ -459,11 +458,11 @@ var StreamStats;
                 catch (e) {
                 }
             };
+            //Constructor
+            //-+-+-+-+-+-+-+-+-+-+-+-
+            SidebarController.$inject = ['$scope', 'toaster', '$analytics', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ModalService', 'leafletData', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager'];
             return SidebarController;
         }()); //end class
-        //Constructor
-        //-+-+-+-+-+-+-+-+-+-+-+-
-        SidebarController.$inject = ['$scope', 'toaster', '$analytics', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ModalService', 'leafletData', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager'];
         var ProcedureType;
         (function (ProcedureType) {
             ProcedureType[ProcedureType["INIT"] = 1] = "INIT";

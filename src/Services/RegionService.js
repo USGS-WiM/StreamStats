@@ -32,31 +32,30 @@ var StreamStats;
             function Region() {
             }
             return Region;
-        }()); //end class
-        Services.Region = Region;
+        }());
+        Services.Region = Region; //end class
         var Parameter = (function () {
             function Parameter() {
             }
             return Parameter;
-        }()); //end class
-        Services.Parameter = Parameter;
+        }());
+        Services.Parameter = Parameter; //end class
         Services.onSelectedRegionChanged = "onSelectedRegionChanged";
         var RegionService = (function (_super) {
             __extends(RegionService, _super);
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
             function RegionService($http, $q, toaster, eventManager) {
-                var _this = _super.call(this, $http, configuration.baseurls['StreamStatsServices']) || this;
-                _this.$q = $q;
-                _this.eventManager = eventManager;
-                _this.toaster = toaster;
-                _this.regionList = [];
-                _this.parameterList = [];
-                _this.masterRegionList = configuration.regions;
-                _this.loadNationalMapLayers();
-                _this.streamStatsAvailable = false;
-                _this.eventManager.AddEvent(Services.onSelectedRegionChanged);
-                return _this;
+                _super.call(this, $http, configuration.baseurls['StreamStatsServices']);
+                this.$q = $q;
+                this.eventManager = eventManager;
+                this.toaster = toaster;
+                this.regionList = [];
+                this.parameterList = [];
+                this.masterRegionList = configuration.regions;
+                this.loadNationalMapLayers();
+                this.streamStatsAvailable = false;
+                this.eventManager.AddEvent(Services.onSelectedRegionChanged);
             }
             Object.defineProperty(RegionService.prototype, "selectedRegion", {
                 get: function () {
