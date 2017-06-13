@@ -21,13 +21,12 @@ var StreamStats;
         var WateruseController = (function (_super) {
             __extends(WateruseController, _super);
             function WateruseController($scope, $http, studyAreaService, modal, $timeout) {
-                var _this = _super.call(this, $http, configuration.baseurls.StreamStatsServices) || this;
-                _this.$timeout = $timeout;
-                $scope.vm = _this;
-                _this.modalInstance = modal;
-                _this.StudyArea = studyAreaService.selectedStudyArea;
-                _this.init();
-                return _this;
+                _super.call(this, $http, configuration.baseurls.StreamStatsServices);
+                this.$timeout = $timeout;
+                $scope.vm = this;
+                this.modalInstance = modal;
+                this.StudyArea = studyAreaService.selectedStudyArea;
+                this.init();
             }
             Object.defineProperty(WateruseController.prototype, "StartYear", {
                 get: function () {
@@ -417,11 +416,11 @@ var StreamStats;
                     text.attr("dy", "1.32em");
                 });
             };
+            //Constructor
+            //-+-+-+-+-+-+-+-+-+-+-+-
+            WateruseController.$inject = ['$scope', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance', '$timeout'];
             return WateruseController;
         }(WiM.Services.HTTPServiceBase)); //end wimLayerControlController class
-        //Constructor
-        //-+-+-+-+-+-+-+-+-+-+-+-
-        WateruseController.$inject = ['$scope', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance', '$timeout'];
         var WaterUseType;
         (function (WaterUseType) {
             WaterUseType[WaterUseType["Annual"] = 1] = "Annual";
