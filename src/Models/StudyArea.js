@@ -27,8 +27,8 @@ var StreamStats;
                 this.CoordinatedReach = null;
             }
             return StudyArea;
-        }()); //end class
-        Models.StudyArea = StudyArea;
+        }());
+        Models.StudyArea = StudyArea; //end class
     })(Models = StreamStats.Models || (StreamStats.Models = {}));
 })(StreamStats || (StreamStats = {})); //end module 
 //# sourceMappingURL=StudyArea.js.map

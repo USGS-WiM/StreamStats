@@ -27,17 +27,16 @@ var StreamStats;
         var AboutController = (function (_super) {
             __extends(AboutController, _super);
             function AboutController($scope, $http, $sce, modalService, region, studyAreaService, modal) {
-                var _this = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
-                $scope.vm = _this;
-                _this.sce = $sce;
-                _this.modalInstance = modal;
-                _this.modalService = modalService;
-                _this.StudyArea = studyAreaService.selectedStudyArea;
-                _this.regionService = region;
-                _this.selectedAboutTabName = "about";
-                _this.regionArticle = '<h3>No State or Region Selected</h3>';
-                _this.init();
-                return _this;
+                _super.call(this, $http, configuration.baseurls.StreamStats);
+                $scope.vm = this;
+                this.sce = $sce;
+                this.modalInstance = modal;
+                this.modalService = modalService;
+                this.StudyArea = studyAreaService.selectedStudyArea;
+                this.regionService = region;
+                this.selectedAboutTabName = "about";
+                this.regionArticle = '<h3>No State or Region Selected</h3>';
+                this.init();
             }
             //Methods  
             //-+-+-+-+-+-+-+-+-+-+-+-
@@ -180,11 +179,11 @@ var StreamStats;
                     var expires = "";
                 document.cookie = name + "=" + value + expires + "; path=/";
             };
+            //Constructor
+            //-+-+-+-+-+-+-+-+-+-+-+-
+            AboutController.$inject = ['$scope', '$http', '$sce', 'StreamStats.Services.ModalService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', '$modalInstance'];
             return AboutController;
         }(WiM.Services.HTTPServiceBase)); //end  class
-        //Constructor
-        //-+-+-+-+-+-+-+-+-+-+-+-
-        AboutController.$inject = ['$scope', '$http', '$sce', 'StreamStats.Services.ModalService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', '$modalInstance'];
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.AboutController', AboutController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));

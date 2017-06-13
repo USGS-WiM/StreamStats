@@ -389,14 +389,13 @@ var StreamStats;
                     return index == 0 ? letter.toLowerCase() : letter.toUpperCase();
                 }).replace(/\s+/g, '');
             };
+            //Constructor
+            //-+-+-+-+-+-+-+-+-+-+-+-
+            ReportController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService'];
             return ReportController;
         }()); //end class
-        //Constructor
-        //-+-+-+-+-+-+-+-+-+-+-+-
-        ReportController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService'];
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.ReportController', ReportController);
-        //.controller('StreamStats.Controllers.MapController', MapController)
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));
 })(StreamStats || (StreamStats = {})); //end module
 //# sourceMappingURL=ReportController.js.map

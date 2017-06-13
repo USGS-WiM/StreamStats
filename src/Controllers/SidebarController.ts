@@ -431,15 +431,15 @@ module StreamStats.Controllers {
                         regressionRegion.Parameters.forEach((param) => {
 
                             var found = false;
-                            this.regionService.parameterList.forEach((parameter) => {
-                                //console.log('test',parameter)
+                            for (var i = 0; i < this.regionService.parameterList.length; i++) {
+                                var parameter = this.regionService.parameterList[i];
                                 if (parameter.code.toLowerCase() == param.Code.toLowerCase()) {
                                     this.addParameterToStudyAreaList(parameter.code);
                                     found = true;
-                                    //console.log('PARAM WAS FOUND SUCCESSFULLY', param.Code)
+                                    break;
                                 }//end if
-                            });
-
+                            }//next i
+                            
                             if (!found) {
                                 //console.log('PARAM NOT FOUND', param.Code)
                                 this.toaster.pop('warning', "Missing Parameter: " + param.Code, "The selected scenario requires a parameter not available in this State/Region.  The value for this parameter will need to be entered manually.", 0);
@@ -525,7 +525,7 @@ module StreamStats.Controllers {
                 for (var i = 0; i < this.regionService.parameterList.length; i++) {   
                     let p: Services.IParameter = this.regionService.parameterList[i];
 
-                    if (p.code.toUpperCase() === paramCode && this.checkArrayForObj(this.studyAreaService.studyAreaParameterList, p) == -1) {
+                    if (p.code.toUpperCase() === paramCode.toUpperCase() && this.checkArrayForObj(this.studyAreaService.studyAreaParameterList, p) == -1) {
                         this.studyAreaService.studyAreaParameterList.push(p);
                         p['checked'] = true;
                         p['toggleable'] = false;
