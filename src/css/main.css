@@ -967,6 +967,7 @@ div.leaflet-top > .elevation {
 	    content: '\f122' !important;
         text-align: center !important;
 	    font-family: "Ionicons" !important;
+        line-height: 15px !important;
 	}
 /*
 	    close legend button
@@ -1019,10 +1020,11 @@ div.leaflet-top > .elevation {
 
 
 		.wimLegend-application-item{
-		    padding: 4px 0 4px 15px !important;
+		    padding: 5px 0 5px 15px !important;
 		}
         .wimLegend-application-item img{
             height: 15px !important;
+            max-height: 15px !important;
             width: auto !important;
             margin-right: 5px !important;
         }
