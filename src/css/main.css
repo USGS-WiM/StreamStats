@@ -174,10 +174,6 @@ div.leaflet-top > .elevation {
     float: right;
 }
 
-.exploration-tools-close-button {
-    margin-right:20px;
-}
-
 .exploration-tools-header .close{
     font-size: 22pt;
     margin: 0 auto;
@@ -261,7 +257,7 @@ div.leaflet-top > .elevation {
     background: white;
     z-index: 100;
     right: 10px;
-    top: 10px;
+    top: 0px;
     width: 200px;
     height:90%;
     box-shadow: 1px 1px 5px #333;
@@ -923,7 +919,7 @@ div.leaflet-top > .elevation {
   overflow: visible !important;
   box-shadow: none !important;
   border-radius: 5px !important;
-  top: 20px;
+  top: 10px;
   height: auto;
   max-height: 80vh !important;
   overflow-x: scroll !important;
@@ -967,7 +963,7 @@ div.leaflet-top > .elevation {
 	    content: '\f122' !important;
         text-align: center !important;
 	    font-family: "Ionicons" !important;
-        line-height: 15px !important;
+        line-height: 18px !important;
 	}
 /*
 	    close legend button
@@ -1076,6 +1072,8 @@ div.leaflet-top > .elevation {
             background-color: #10152C;
             padding-top: 10px;
             color: white;
+            border-top-left-radius: 5px !important;
+            border-top-right-radius: 5px !important;
         }
 
     /*
@@ -1200,7 +1198,6 @@ div.leaflet-top > .elevation {
 .sidebar-item .well .text-btn{
     background-color: transparent !important;
 }
-
 /*
     sidebar buttons/headers
     sidebar buttons/headers
@@ -1215,14 +1212,14 @@ div.leaflet-top > .elevation {
 .list-group-item {
     background-color: #F3F4F5 !important;
     letter-spacing: 0.75px !important;
-    color: #10152C !important;
+    /*color: #10152C !important;*/
+    color: rgba(0,0,0,0.25) !important;
     font-weight: 800 !important;
 }
     .list-group-item:hover,
     .list-group-item:active,
     .list-group-item:focus {
-        color: #10152C !important;
-
+        color: rgba(0,0,0,0.25) !important;
     }
     .list-group-item h5,
     .list-group-item-active h5 {
@@ -1358,3 +1355,22 @@ div.leaflet-top > .elevation {
     width: 20px !important;
     display: inline !important;
 }
+
+
+/*
+    Extra Buttons
+*/
+.btn-orange {
+    background-color: #F46652 !important;
+    color: white !important;
+}
+    .btn-orange:hover {
+        background-color: #E85742 !important;
+        color: white !important;
+    }
+
+
+    .redd{
+        background-color: red !important;
+        color: red !important;
+    }
