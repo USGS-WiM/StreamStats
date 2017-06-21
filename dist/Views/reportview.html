@@ -171,7 +171,7 @@
 
             <div id="downloadButtons" class="hidden-print">
                 <div class="btn-group wim-btn-group" dropdown is-open="status.isopen">
-                  <button type="button" class="btn-wim-sm btn-wim-default dropdown-toggle" dropdown-toggle ng-disabled="disabled">
+                  <button type="button" class="btn-black" dropdown-toggle ng-disabled="disabled">
                       <i class='fa fa-download'></i>&nbsp;&nbsp;Download Basin <span class="caret"></span>
                   </button>
                   <ul class="dropdown-menu" role="menu">
@@ -181,7 +181,7 @@
                   </ul>
                 </div>
                 <div class="btn-group wim-btn-group">
-                    <button type="button" class="btn-wim-sm btn-wim-default" ng-click="vm.downloadCSV()" ><span><i class="fa fa-download"></i>&nbsp;&nbsp;Download CSV</span></button>
+                    <button type="button" class="btn-black" ng-click="vm.downloadCSV()" ><span><i class="fa fa-download"></i>&nbsp;&nbsp;Download CSV</span></button>
                      <!--<button type="button" class="btn-wim-sm btn-wim-default" ng-click="vm.downloadPDF()" ><span><i class="fa fa-download"></i>&nbsp;&nbsp;Download PDF</span></button>-->
                 </div>
             </div>
@@ -190,8 +190,8 @@
     </div>
     <div class="modal-footer hidden-print">
         <div class="btn-group">
-            <button class="btn-wim-default" ng-click="vm.close()"><i class="fa fa-close"></i>&nbsp;&nbsp;Close</button>
-            <button class="btn-wim-default" ng-click="vm.print()" analytics-on analytics-event="Print" analytics-category="Report" analytics-label="Print"><i class="fa fa-print"></i>&nbsp;&nbsp;Print</button>
+            <button class="btn-black" ng-click="vm.close()"><i class="fa fa-close"></i>&nbsp;&nbsp;Close</button>
+            <button class="btn-blue" ng-click="vm.print()" analytics-on analytics-event="Print" analytics-category="Report" analytics-label="Print"><i class="fa fa-print"></i>&nbsp;&nbsp;Print</button>
         </div>
     </div>
     

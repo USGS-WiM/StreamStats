@@ -1,0 +1,25 @@
+﻿<Properties StartupConfiguration="{1C191781-759F-4FF2-8B35-6A1B93320985}|">
+  <MonoDevelop.Ide.Workbench ActiveDocument="src/Controllers/SidebarController.ts">
+    <Files>
+      <File FileName="src/css/main.css" Line="1076" Column="53" />
+      <File FileName="src/Views/sidebarview.html" Line="147" Column="133" />
+      <File FileName="src/index.html" Line="112" Column="41" />
+      <File FileName="src/css/wim.global.min.css" Line="37" Column="40" />
+      <File FileName="src/Views/navigationview.html" Line="1" Column="1" />
+      <File FileName="src/Views/mapview.html" Line="42" Column="90" />
+      <File FileName="src/Views/navreportmodal.html" Line="19" Column="51" />
+      <File FileName="src/Views/reportview.html" Line="197" Column="5" />
+      <File FileName="src/Views/about.html" Line="8" Column="47" />
+      <File FileName="src/Views/help.html" Line="96" Column="51" />
+      <File FileName="src/Views/explorationview.html" Line="8" Column="41" />
+      <File FileName="src/Controllers/SidebarController.ts" Line="98" Column="58" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MultiItemStartupConfigurations />
+  <MonoDevelop.Ide.ItemProperties.StreamStats PreferredExecutionTarget="MonoDevelop.Default" />
+</Properties>
