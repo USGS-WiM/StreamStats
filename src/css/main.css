@@ -1,4 +1,4 @@
-﻿/*
+﻿﻿/*
     ===========================
     ===========================
          General
@@ -1373,4 +1373,30 @@ div.leaflet-top > .elevation {
     .redd{
         background-color: red !important;
         color: red !important;
+    }
+
+
+/*
+    Legend Fixes
+    Legend Fixes
+    Legend Fixes
+*/
+.angular-leaflet-control-layers-expanded .list-group-item,
+.angular-leaflet-control-layers-expanded .list-group-item-active{
+    padding-bottom: 10px !important;
+}
+
+
+    .angular-leaflet-control-layers-expanded .list-group-item .rdo span,
+    .angular-leaflet-control-layers-expanded .list-group-item .chx span,
+    .angular-leaflet-control-layers-expanded .list-group-item-active .rdo span,
+    .angular-leaflet-control-layers-expanded .list-group-item-active .chx span {
+        justify-content: space-between !important;
+    }
+
+    .angular-leaflet-control-layers-expanded .list-group-item .fa-chevron-down{
+        top: 0px !important;
+    }
+    .angular-leaflet-control-layers-expanded .list-group-item-active .fa-chevron-up{
+        top: 3px !important;
     }
