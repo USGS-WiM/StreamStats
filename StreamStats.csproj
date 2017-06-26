@@ -61,7 +61,6 @@
   <ItemGroup>
     <None Include=".typingsrc" />
     <Content Include="gulpfile.js" />
-    <Content Include="node_modules\wim_angular\dist\css\wimLegend.css" />
     <Content Include="src\appConfig.js" />
     <Content Include="src\Assets\images\Animatedkayakers.gif" />
     <Content Include="src\Assets\images\arrows.gif" />

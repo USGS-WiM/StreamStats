@@ -83,24 +83,27 @@ var StreamStats;
                             });
                             if (units = 'meters') {
                                 coords = coords.map(function (elem) {
+                                    //convert to mi
                                     return [elem[0], elem[1], elem[2] * 3.28084];
                                 });
                             }
                             // build table data and get distance between points
                             _this.coordinateList = [];
-                            var tempLatLng = null;
+                            var x1 = null;
                             var totalDistance = 0.00000;
-                            coords.forEach(function (value) {
-                                var latlng = L.latLng(value[0], value[1]);
-                                if (tempLatLng == null) {
-                                    tempLatLng = latlng;
-                                    return;
-                                }
-                                //distance is in meters
-                                totalDistance += tempLatLng.distanceTo(latlng);
-                                tempLatLng = latlng;
-                                _this.coordinateList.push([value[1].toFixed(5), value[0].toFixed(5), value[2].toFixed(2), (totalDistance * 3.28084).toFixed(2)]);
-                            });
+                            for (var i = 0; i < coords.length; i++) {
+                                var value = coords[i];
+                                var x2 = L.latLng(value[0], value[1]);
+                                //initialized w/ first value
+                                if (x1 == null) {
+                                    _this.coordinateList.push([value[1].toFixed(5), value[0].toFixed(5), value[2].toFixed(2), (totalDistance).toFixed(2)]);
+                                    x1 = x2;
+                                    continue;
+                                } //end if                               
+                                //compute distance meters=>miles
+                                totalDistance += x1.distanceTo(x2) * 0.000621371;
+                                _this.coordinateList.push([value[1].toFixed(5), value[0].toFixed(5), value[2].toFixed(2), (totalDistance).toFixed(2)]);
+                            } //next i                               
                             _this.elevationProfileGeoJSON = {
                                 "name": "NewFeatureType", "type": "FeatureCollection",
                                 "features": [

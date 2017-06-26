@@ -1,4 +1,4 @@
-﻿/*
+﻿﻿/*
     ===========================
     ===========================
          General
@@ -890,14 +890,6 @@ div.leaflet-top > .elevation {
     }
 
 }
-/*
-    Mitch 6/8/2017
-    Mitch 6/8/2017
-    Mitch 6/8/2017
-    Mitch 6/8/2017
-    Mitch 6/8/2017
-    Mitch 6/8/2017
-*/
 .nav-title{
     width: auto !important;
 }
@@ -910,11 +902,6 @@ div.leaflet-top > .elevation {
     box-sizing: border-box;
 }
 
-/*
-    Layers / Legend
-    Layers / Legend
-    Layers / Legend
-*/
 .angular-leaflet-control-layers-expanded{
   overflow: visible !important;
   box-shadow: none !important;
@@ -922,7 +909,7 @@ div.leaflet-top > .elevation {
   top: 10px;
   height: auto;
   max-height: 80vh !important;
-  overflow-x: scroll !important;
+  overflow-x: hidden !important;
   overflow-y: hidden !important;
 
 }
@@ -1374,3 +1361,49 @@ div.leaflet-top > .elevation {
         background-color: red !important;
         color: red !important;
     }
+
+
+/*
+    Legend Fixes
+    Legend Fixes
+    Legend Fixes
+*/
+.angular-leaflet-control-layers-expanded .list-group-item,
+.angular-leaflet-control-layers-expanded .list-group-item-active{
+    padding-bottom: 10px !important;
+}
+
+
+    .angular-leaflet-control-layers-expanded .list-group-item .rdo span,
+    .angular-leaflet-control-layers-expanded .list-group-item .chx span,
+    .angular-leaflet-control-layers-expanded .list-group-item-active .rdo span,
+    .angular-leaflet-control-layers-expanded .list-group-item-active .chx span {
+        justify-content: space-between !important;
+    }
+
+    .angular-leaflet-control-layers-expanded .list-group-item .fa-chevron-down{
+        top: 0px !important;
+    }
+    .angular-leaflet-control-layers-expanded .list-group-item-active .fa-chevron-up{
+        top: 3px !important;
+    }
+
+
+/*
+    Checkbox fixes
+*/
+.chx input + span:before {
+    border: none !important;
+    background-color: white !important;
+    border: 1px solid rgba(0,0,0,0.2) !important;
+    margin-right: 0 !important;
+}
+.chx input:checked + span:before {
+    background-color: white !important;
+    content: '\f121' !important;
+    color: #333 !important;
+    font-family: 'Ionicons' !important;
+    border: 1px solid rgba(0,0,0,0.2) !important;
+    font-size: 16px !important;
+    padding-top: 1px !important;
+}

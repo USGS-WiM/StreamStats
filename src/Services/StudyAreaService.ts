@@ -418,8 +418,7 @@ module StreamStats.Services {
                         var features = [];
                         angular.forEach(response.data.featurecollection, (feature, index) => {
                             if (this.selectedStudyArea.Features.map(f => { return f.name }).indexOf(feature.name) === -1){
-                                features.push(feature.name)
-                                this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(feature.name, "geojson", {displayName: feature.name, imagesrc:null}, false));
+                                features.push(feature.name)                               
                             }                            
                         });//next feature
                         this.getAdditionalFeatures(features.join(','));
@@ -459,8 +458,11 @@ module StreamStats.Services {
                                     }
                                 }
                             }
-                            else
+                            else {
                                 this.selectedStudyArea.Features.push(feature);
+                                this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(feature.name, "geojson", { displayName: feature.name, imagesrc: null }, false));
+                            }
+
                         });
                     }
 
