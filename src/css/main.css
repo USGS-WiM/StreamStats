@@ -1400,3 +1400,23 @@ div.leaflet-top > .elevation {
     .angular-leaflet-control-layers-expanded .list-group-item-active .fa-chevron-up{
         top: 3px !important;
     }
+
+
+/*
+    Checkbox fixes
+*/
+.chx input + span:before {
+    border: none !important;
+    background-color: white !important;
+    border: 1px solid rgba(0,0,0,0.2) !important;
+    margin-right: 0 !important;
+}
+.chx input:checked + span:before {
+    background-color: white !important;
+    content: '\f121' !important;
+    color: #333 !important;
+    font-family: 'Ionicons' !important;
+    border: 1px solid rgba(0,0,0,0.2) !important;
+    font-size: 16px !important;
+    padding-top: 1px !important;
+}
