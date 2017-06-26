@@ -331,7 +331,6 @@ var StreamStats;
                         angular.forEach(response.data.featurecollection, function (feature, index) {
                             if (_this.selectedStudyArea.Features.map(function (f) { return f.name; }).indexOf(feature.name) === -1) {
                                 features.push(feature.name);
-                                _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(feature.name, "geojson", { displayName: feature.name, imagesrc: null }, false));
                             }
                         }); //next feature
                         _this.getAdditionalFeatures(features.join(','));
@@ -367,8 +366,10 @@ var StreamStats;
                                     }
                                 }
                             }
-                            else
+                            else {
                                 _this.selectedStudyArea.Features.push(feature);
+                                _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(feature.name, "geojson", { displayName: feature.name, imagesrc: null }, false));
+                            }
                         });
                     }
                     //sm when complete

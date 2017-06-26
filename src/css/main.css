@@ -890,14 +890,6 @@ div.leaflet-top > .elevation {
     }
 
 }
-/*
-    Mitch 6/8/2017
-    Mitch 6/8/2017
-    Mitch 6/8/2017
-    Mitch 6/8/2017
-    Mitch 6/8/2017
-    Mitch 6/8/2017
-*/
 .nav-title{
     width: auto !important;
 }
@@ -910,11 +902,6 @@ div.leaflet-top > .elevation {
     box-sizing: border-box;
 }
 
-/*
-    Layers / Legend
-    Layers / Legend
-    Layers / Legend
-*/
 .angular-leaflet-control-layers-expanded{
   overflow: visible !important;
   box-shadow: none !important;
@@ -922,7 +909,7 @@ div.leaflet-top > .elevation {
   top: 10px;
   height: auto;
   max-height: 80vh !important;
-  overflow-x: scroll !important;
+  overflow-x: hidden !important;
   overflow-y: hidden !important;
 
 }
@@ -1400,3 +1387,10 @@ div.leaflet-top > .elevation {
     .angular-leaflet-control-layers-expanded .list-group-item-active .fa-chevron-up{
         top: 3px !important;
     }
+/*override wimlegend css*/
+.chx input:checked + span:before {
+    background-color: white !important;
+    color: black !important;
+    content: '\2714' !important;
+    border:none !important;
+}
