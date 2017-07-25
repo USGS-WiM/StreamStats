@@ -50,6 +50,7 @@ module StreamStats.Controllers {
         public regionArticle: Object;
         public activeNewsArticles: Object;
         public pastNewsArticles: Object;
+        public disclaimersArticle: string;
         public AppVersion: string;
 
         //Constructor
@@ -213,7 +214,58 @@ module StreamStats.Controllers {
                     }
                 }
             });
+        }
 
+        public getDisclaimersArticle() {
+
+            console.log("Trying to open disclaimers article");
+
+            //'DisclaimersArticle': '/solution/categories/9000106503/folders/9000163536/articles/9000127695.json',
+            //'CreditsArticle': '/solution/categories/9000106503/folders/9000163536/articles/9000127697.json',
+
+            var headers = {
+                "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
+            };
+
+            var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.DisclaimersArticle;
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
+
+            this.Execute(request).then(
+                (response: any) => {
+                    console.log('Successfully retrieved disclaimers article');
+
+                    this.disclaimersArticle = response.data.article.description;
+
+                }, (error) => {
+                    //sm when error
+                }).finally(() => {
+                    this.getCreditsArticle();
+                });
+
+        }
+
+        public getCreditsArticle() {
+
+            console.log("Trying to open credits article");
+
+            var headers = {
+                "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
+            };
+
+            var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.CreditsArticle;
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
+
+            this.Execute(request).then(
+                (response: any) => {
+                    console.log('Successfully retrieved credits article');
+
+                    this.disclaimersArticle += response.data.article.description;
+
+                }, (error) => {
+                    //sm when error
+                }).finally(() => {
+
+                });
 
         }
 
@@ -230,6 +282,7 @@ module StreamStats.Controllers {
             this.getRegionHelpArticle();
             this.getActiveNews();
             this.getPastNews();
+            this.getDisclaimersArticle();
         }
 
         public readCookie(name) {

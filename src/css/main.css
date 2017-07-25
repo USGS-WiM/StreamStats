@@ -1133,28 +1133,32 @@ div.leaflet-top > .elevation {
     border: none !important;
     background-color: transparent !important;
 }
-    .search-api-container span:nth-child(2) {
-        display: block;
-        flex-grow: 3 !important;
-        width: 100% !important;
-    }
-    .search-api-container input {
-        display: block;
-        width: 100% !important;
-        margin: 0 !important;
-    }
+.search-api-container span:nth-child(2) {
+    display: block;
+    flex-grow: 3 !important;
+    width: 100% !important;
+}
+.search-api-container input {
+    display: block;
+    width: 100% !important;
+    margin: 0 !important;
+}
 
-	.search-api-icon{
-        background-color: transparent !important;
-        border-right: none !important;
-        padding-top: 6px;
-        padding-right: 10px !important;
-	}
-	.search-api-spinner {
-	    padding: 2px 0 0 0 !important;
-	    text-align: right;
-	    margin-left: 10px;
-	}
+.search-api-icon{
+    background-color: transparent !important;
+    border-right: none !important;
+    padding-top: 6px;
+    padding-right: 10px !important;
+}
+.search-api-spinner {
+	padding: 2px 0 0 0 !important;
+	text-align: right;
+	margin-left: 10px;
+    background-image: url("./images/spinner_16x16.gif");
+}
+.search-api-spinner-hidden {
+    background-image: none;
+}
 
 
 /*

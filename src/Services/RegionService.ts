@@ -110,7 +110,6 @@ module StreamStats.Services {
             }
         }
         public regionMapLayerList: any;
-        public nationalMapLayerList: any;
         public streamStatsAvailable: boolean;
         public regionMapLayerListLoaded: boolean;
         public resetView: boolean;
@@ -123,7 +122,6 @@ module StreamStats.Services {
             this.regionList = [];
             this.parameterList = [];
             this.masterRegionList = configuration.regions;
-            this.loadNationalMapLayers();
             this.streamStatsAvailable = false;
             this.eventManager.AddEvent<WiM.Event.EventArgs>(onSelectedRegionChanged);
         }
@@ -171,27 +169,6 @@ module StreamStats.Services {
 
             this.regionList.push(selectedRegion);
             return true;
-        }
-
-        public loadNationalMapLayers() {
-
-            var url = configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['SSNationalLayers'] + "?f=pjson";
-            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
-            this.nationalMapLayerList = [];
-
-            this.Execute(request).then(
-                (response: any) => {
-                    response.data.layers.forEach((value, key) => {
-                        //console.log("Adding layer: ", value);
-                        this.nationalMapLayerList.push([value.name, value.id]);
-                    });
-                    //console.log('list of national map layers', this.nationalMapLayerList);
-                    //return layerArray;
-                       
-                },(error) => {
-                    console.log('No national map layers found');
-                    return this.$q.reject(error.data)
-                });
         }
 
         public loadMapLayersByRegion(regionid: string): any {
