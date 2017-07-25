@@ -143,6 +143,41 @@ var StreamStats;
                     }
                 });
             };
+            AboutController.prototype.getDisclaimersArticle = function () {
+                var _this = this;
+                console.log("Trying to open disclaimers article");
+                //'DisclaimersArticle': '/solution/categories/9000106503/folders/9000163536/articles/9000127695.json',
+                //'CreditsArticle': '/solution/categories/9000106503/folders/9000163536/articles/9000127697.json',
+                var headers = {
+                    "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
+                };
+                var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.DisclaimersArticle;
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
+                this.Execute(request).then(function (response) {
+                    console.log('Successfully retrieved disclaimers article');
+                    _this.disclaimersArticle = response.data.article.description;
+                }, function (error) {
+                    //sm when error
+                }).finally(function () {
+                    _this.getCreditsArticle();
+                });
+            };
+            AboutController.prototype.getCreditsArticle = function () {
+                var _this = this;
+                console.log("Trying to open credits article");
+                var headers = {
+                    "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
+                };
+                var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.CreditsArticle;
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
+                this.Execute(request).then(function (response) {
+                    console.log('Successfully retrieved credits article');
+                    _this.disclaimersArticle += response.data.article.description;
+                }, function (error) {
+                    //sm when error
+                }).finally(function () {
+                });
+            };
             AboutController.prototype.convertUnsafe = function (x) {
                 return this.sce.trustAsHtml(x);
             };
@@ -156,6 +191,7 @@ var StreamStats;
                 this.getRegionHelpArticle();
                 this.getActiveNews();
                 this.getPastNews();
+                this.getDisclaimersArticle();
             };
             AboutController.prototype.readCookie = function (name) {
                 var nameEQ = name + "=";
