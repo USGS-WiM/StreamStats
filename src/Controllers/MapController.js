@@ -333,15 +333,44 @@ var StreamStats;
                         var popupContent = $("<div>").attr("id", 'popupContent');
                         var resultsCount = 0;
                         //QUERY STATE LAYERS (if applicable)
+                        if (_this.regionServices.selectedRegion) {
+                            maplayers.overlays[_this.regionServices.selectedRegion.RegionID + "_region"].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).run(function (error, results) {
+                                //console.log('queried state/regional layers');
+                                var regionLayers = $("<div>").attr("id", 'regionLayers').appendTo(popupContent);
+                                _this.toaster.clear();
+                                _this.cursorStyle = 'pointer';
+                                //loop over each identify result
+                                results.features.forEach(function (queryResult) {
+                                    //get layer name for result
+                                    _this.layers.overlays[_this.regionServices.selectedRegion.RegionID + "_region"].layerArray.forEach(function (item) {
+                                        if (item.layerId === queryResult.layerId) {
+                                            var layerName = item.layerName;
+                                            if (layerName === 'Bridge') {
+                                                resultsCount += 1;
+                                                regionLayers.append('<h5>' + layerName + '</h5>');
+                                                //loop over properties of each result
+                                                angular.forEach(queryResult.properties, function (value, key) {
+                                                    regionLayers.append('<strong>' + key + ': </strong>' + value + '</br>');
+                                                });
+                                            }
+                                        }
+                                        if (resultsCount > 0) {
+                                            map.openPopup(popupContent.html(), [evt.latlng.lat, evt.latlng.lng], { maxHeight: 200 });
+                                            _this.toaster.clear();
+                                        }
+                                        else {
+                                            _this.toaster.pop("warning", "Information", "No points were found at this location", 5000);
+                                        }
+                                    });
+                                });
+                            });
+                        }
                         //QUERY NATIONAL LAYERS
                         maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).run(function (error, results) {
+                            //console.log('queried national layers');
                             var nationalLayers = $("<div>").attr("id", 'nationalLayers').appendTo(popupContent);
                             _this.toaster.clear();
                             _this.cursorStyle = 'pointer';
-                            if (!results.features || results.features.length == 0) {
-                                _this.toaster.pop("warning", "Information", "No points were found at this location", 5000);
-                                return;
-                            }
                             //loop over each identify result
                             results.features.forEach(function (queryResult) {
                                 //get layer name for result
