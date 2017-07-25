@@ -131,6 +131,13 @@ gulp.task('leaflet', function () {
         .pipe(size());
 });
 
+// usgs-search-api
+gulp.task('usgs-search-api', function () {
+    return gulp.src('node_modules/usgs-search-api/dist/*.gif')
+        .pipe(gulp.dest('dist/styles/images'))
+        .pipe(size());
+});
+
 // appConfig
 gulp.task('appConfig', function () {
     return gulp.src(['src/appConfig.js', 'web.config'])
@@ -149,7 +156,7 @@ gulp.task('clean', function (cb) {
 });
 
 // build dist
-gulp.task('dist', ['html', 'images', 'leaflet', 'appConfig']);
+gulp.task('dist', ['html', 'images', 'leaflet','usgs-search-api','appConfig']);
 
 // Default task
 gulp.task('default', ['clean'], function () {
