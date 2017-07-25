@@ -261,7 +261,7 @@ module StreamStats.Controllers {
                 //query streamgage is default map click action
                 else {
                     //query streamgages
-                    this.queryStreamgages(args.leafletEvent);
+                    this.queryPoints(args.leafletEvent);
 
                     //if (exploration.selectedMethod != null) {
                     //    exploration.selectedMethod.addLocation(new WiM.Models.Point(args.leafletEvent.latlng.lat, args.leafletEvent.latlng.lng, '4326'));
@@ -444,88 +444,15 @@ module StreamStats.Controllers {
             }
         }
 
-        private queryNationalMapLayers(evt) {
-
-            this.leafletData.getMap("mainMap").then((map: any) => {
-                this.leafletData.getLayers("mainMap").then((maplayers: any) => {
-
-                    //turn off if zoomed in too far
-                    if (map.getZoom() >= 8) return;
-
-                    //console.log('in querystates');
-                    this.toaster.pop("wait", "Information", "Querying National map layers...", 0);
-                    this.cursorStyle = 'wait'; 
-
-                    //ga event
-                    this.angulartics.eventTrack('initialOperation', { category: 'Map', label: 'Map click query' });
-
-                    maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).run((error: any, results: any) => {
-                        //console.log('national results', results, results.features.length);
-
-                        if (results.features.length < 1) {
-                            //console.log('here');
-                            this.cursorStyle = 'pointer';
-                            this.toaster.clear();
-                            this.toaster.pop("warning", "Warning", "No State/Regional Study Found", 5000);
-                            map.panBy([0, 1]);
-                            return;
-                        }
-
-                        var rcodeList = []
-
-                        results.features.forEach((queryResult) => {
-
-                            this.regionServices.nationalMapLayerList.forEach((item) => {
-                                if (queryResult.layerId == item[1]) {
-                                    //console.log('Map query found a match with: ', item[0], queryResult)
-
-                                    if (((item[0] == 'State Applications') || (item[0] == 'Regional Studies')) && (map.getZoom() <= 7)) {
-
-                                        if (item[0] == 'State Applications') rcodeList.push(queryResult.properties.ST_ABBR);
-                                        if (item[0] == 'Regional Studies') rcodeList.push(queryResult.properties.st_abbr);
-                                    }
-                                }
-
-                            });
-                        });
-
-                        //console.log('RCODELIST: ', rcodeList);
-                        //console.log('bounds', map.getBounds())
-
-                        if (rcodeList.length < 1) return;
-
-                        if (rcodeList.length == 1) {
-                            this.regionServices.masterRegionList.forEach((item) => {
-                                if (item.RegionID == rcodeList[0]) {
-                                    this.setBoundsByRegion(rcodeList[0]);
-                                    //console.log('in map click query', this.regionServices.selectedRegion);
-
-                                    if (this.regionServices.selectedRegion) this.regionServices.loadParametersByRegion(); 
-                                }
-                            });
-                        }
-
-                        //if multiple results, zoom to level 9 where selection options appear in sidebar
-                        if (rcodeList.length > 1) {
-                            map.setView(evt.latlng, 9)
-                        }
-
-                        this.toaster.clear();
-                        this.cursorStyle = 'pointer';
-                    });
-                });
-            });
-        }
-
-        private queryStreamgages(evt) {
+        private queryPoints(evt) {
 
             //console.log('in query regional layers');
-            this.toaster.pop("wait", "Information", "Querying Streamgages...", 0);
+            this.toaster.pop("wait", "Information", "Querying Points...", 0);
             this.cursorStyle = 'wait';
             this.markers = {};
 
             //report ga event
-            this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'queryStreamgages' });
+            this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'queryPoints' });
 
             this.leafletData.getMap("mainMap").then((map: any) => {
                 this.leafletData.getLayers("mainMap").then((maplayers: any) => {
@@ -534,50 +461,79 @@ module StreamStats.Controllers {
                     if (map.getZoom() <= 8) {
                         this.cursorStyle = 'pointer';
                         this.toaster.clear();
-                        this.toaster.pop("warning", "Warning", "You must be at Zoom Level 9 or greater to query streamgages", 5000);
+                        this.toaster.pop("warning", "Warning", "You must be at Zoom Level 9 or greater to query points", 5000);
                         return;
                     }
 
-                    //get layer to query
-                    var layerString;
-                    this.regionServices.nationalMapLayerList.forEach((item) => {
-                        if (item[0].toLowerCase() == "streamgages") layerString = '"visible:' + item[1] + '"';
-                    });
+                    var popupContent = $("<div>").attr("id", 'popupContent');
+                    var resultsCount = 0;
 
-                    maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).layers(layerString).run((error: any, results: any) => {
+                    //QUERY STATE LAYERS (if applicable)
+
+                    //QUERY NATIONAL LAYERS
+                    maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).run((error: any, results: any) => {
+
+                        var nationalLayers = $("<div>").attr("id", 'nationalLayers').appendTo(popupContent);
 
                         this.toaster.clear();
                         this.cursorStyle = 'pointer';
 
                         if (!results.features || results.features.length == 0) {
-                            this.toaster.pop("warning", "Information", "No streamgages were found at this location", 5000);
+                            this.toaster.pop("warning", "Information", "No points were found at this location", 5000);
                             return;
                         }
 
-                        var popupContent = '';
-                        var popupKeyList = [{ name: 'sta_id', label: 'Station ID' }, { name: 'sta_name', label: 'Station Name' }, { name: 'latitude', label: 'Latitude' }, { name: 'longitude', label: 'Longitude' }, { name: 'featureurl', label: 'URL' }];
-
+                        //loop over each identify result
                         results.features.forEach((queryResult) => {
 
-                            angular.forEach(queryResult.properties, function (value, key) {
-                                angular.forEach(popupKeyList, function (obj, v) {
-
-                                    if (obj.name === key) {
-                                        if (key == "featureurl") {
-
-                                            var siteNo = value.split('site_no=')[1];
-                                            var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm'
-                                            popupContent += '<strong>NWIS page: </strong><a href="' + value + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br>';
-                                        }
-                                        else popupContent += '<strong>' + obj.label + ': </strong>' + value + '</br>';
-                                    }
-                                });
+                            //get layer name for result
+                            var layerName;
+                            this.layers.overlays["SSLayer"].layerArray.forEach((item) => {
+                                if (item.layerId === queryResult.layerId) layerName = item.layerName;
                             });
-                            popupContent += '<br>';
+                            //console.log('query result:', layerName, queryResult);
+    
+                            //clean up streamgages results
+                            if (layerName === 'Streamgages') {
+                                resultsCount += 1;
+                                var streamgagePopupKeyList = [{ name: 'sta_id', label: 'Station ID' }, { name: 'sta_name', label: 'Station Name' }, { name: 'latitude', label: 'Latitude' }, { name: 'longitude', label: 'Longitude' }, { name: 'featureurl', label: 'URL' }];
+                                nationalLayers.append('<h5>' + layerName + '</h5>');
+                                angular.forEach(streamgagePopupKeyList, function (obj, v) {
 
+                                    //loop over properties of each result
+                                    angular.forEach(queryResult.properties, function (value, key) {
+
+                                        if (obj.name === key) {
+                                            if (key == "featureurl") {
+
+                                                var siteNo = value.split('site_no=')[1];
+                                                var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm'
+
+                                                nationalLayers.append('<strong>NWIS page: </strong><a href="' + value + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br>');
+
+                                            }
+                                            else {
+                                                nationalLayers.append('<strong>' + obj.label + ': </strong>' + value + '</br>');
+                                            }
+                                        }
+                                    });
+                                });
+                            }
+
+                            //otherwise just dump key values for non streamgage layers
+                            else {
+                                //nationalLayers.append('<h5>' + layerName + '</h5>');
+                                //nationalLayers.append('<strong>' + key + ': </strong>' + value + '</br>');
+                            }
+                         
                             //show popup
-                            map.openPopup(popupContent, [evt.latlng.lat, evt.latlng.lng], { maxHeight: 200});
-                            this.toaster.clear();
+                            if (resultsCount > 0) {
+                                map.openPopup(popupContent.html(), [evt.latlng.lat, evt.latlng.lng], { maxHeight: 200 });
+                                this.toaster.clear();
+                            }
+                            else {
+                                this.toaster.pop("warning", "Information", "No points were found at this location", 5000);
+                            }
 
                         });
                     });
