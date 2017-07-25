@@ -1,70 +1,32 @@
-<!-- Modal -->
+<!DOCTYPE html>
 
-<div class="modal-header">
-    <button class="close"
-            ng-click="vm.Close()">
-        &times;
-    </button>
-    <h4 class="modal-title">About StreamStats v{{vm.AppVersion}}</h4>
-</div>
-<div class="modal-body">
-        <ul id="aboutTabs" class="nav nav-tabs">
-            <li ng-class="{'active':vm.selectedAboutTabName==='about'}"><a ng-click="vm.selectAboutTab('about')"><i class="fa fa-question-circle"></i>&nbsp;About the project</a></li>
-            <li ng-class="{'active':vm.selectedAboutTabName==='regionInfo'}"><a ng-click="vm.selectAboutTab('regionInfo')"><i class="fa fa-info-circle"></i>&nbsp;State / Regional Info</a></li>
-            <li ng-class="{'active':vm.selectedAboutTabName==='news'}"><a ng-click="vm.selectAboutTab('news')"><i class="fa fa-exclamation-circle"></i>&nbsp;News</a></li>
-            <li ng-class="{'active':vm.selectedAboutTabName==='disclaimers'}"><a ng-click="vm.selectAboutTab('disclaimers')"><i class="fa fa-bell"></i>&nbsp;Disclaimers</a></li>
-        </ul>
-        <div style="padding-top: 10px;">
-
-            <div id="about" ng-if="vm.selectedAboutTabName==='about'">
-                <!--<div class="banner">
-                    These data are preliminary or provisional and are subject to revision. They are being provided to meet the need for timely best science. The data have not received final approval by the U.S. Geological Survey (USGS) and are provided on the condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from the authorized or unauthorized use of the data.
-                </div>-->
-                <div ng-hide="vm.aboutArticle"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
-                <div id="aboutContent" ng-bind-html="vm.convertUnsafe(vm.aboutArticle)"></div>
-            </div>
-
-            <div id="regionInfo" ng-show="vm.selectedAboutTabName==='regionInfo'" >
-                <div id="supportContent" >
-                    <div ng-show="vm.regionArticle" ng-bind-html="vm.convertUnsafe(vm.regionArticle)"></div>
-                </div>  
-            </div>   
-
-            <div id="news" ng-show="vm.selectedAboutTabName==='news'" >
-                <div id="activeNewsContent" ng-hide="vm.activeNewsArticles == 0">
-                    <h3>Active News</h3>
-                      <div ng-hide="vm.activeNewsArticles"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
-                      <accordion id="activeNewsArticles" close-others="false">
-                        <accordion-group ng-repeat="article in vm.activeNewsArticles" ng-init="article.open = true" is-open="article.open" >
-                          <accordion-heading><i ng-class="vm.activeNewsArticles[$index].open ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i> {{article.title}}</accordion-heading>
-                          <div class="row">
-                            <div class="col-sm-12" ng-bind-html="vm.convertUnsafe(article.description)"> </div>
-                          </div>
-                        </accordion-group>
-                      </accordion>
-                </div>  
-
-                <div id="pastNewsContent" ng-hide="vm.pastNewsArticles == 0">
-                    <h3>Past News</h3>
-                      <div ng-hide="vm.pastNewsArticles"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
-                      <accordion id="pastNewsArticles">
-                        <accordion-group ng-repeat="article in vm.pastNewsArticles" is-open="article.open">
-                          <accordion-heading><i ng-class="vm.pastNewsArticles[$index].open ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i> {{article.title}}</accordion-heading>
-                          <div class="row">
-                            <div ng-hide="article.description"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
-                            <div class="col-sm-12" ng-bind-html="vm.convertUnsafe(article.description)"></div>
-                          </div>
-                        </accordion-group>
-                      </accordion>
-                </div>  
-            </div>     
-            <div id="disclaimers" ng-if="vm.selectedAboutTabName==='disclaimers'">
-                <div ng-hide="vm.disclaimersArticle"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
-                <div id="disclaimersContent" ng-bind-html="vm.convertUnsafe(vm.disclaimersArticle)"></div>
-            </div>
-        </div>
-</div>
-
-<div class="modal-footer">
-    <button ng-click="vm.Close()" class="btn-black"><i class="fa fa-close"></i><span >&nbsp;&nbsp;Close</span></button>
-</div>
+<html lang="en" ng-app="StreamStats">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/png" href="./images/favicon.png" />
+    <title>StreamStats</title>
+     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <script>document.write('<base href="' + document.location + '" />');</script>
+    <base target="_blank" />
+    <link rel="stylesheet" href="styles/vendor.min.css">
+    <link rel="stylesheet" href="styles/custom.min.css">
+    <script src="scripts/vendor.min.js"></script>
+    
+    <script src="scripts/custom.min.js"></script>
+    <script src="appConfig.js"></script>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+      ga('create', 'UA-61219868-6', 'auto');
+    </script>
+</head>
+<body>
+    <div ui-view="navbar" class="wim-nav"></div>
+    <div ui-view="sidebar" class="sidebar sidebar-left"></div>  
+    <div ui-view="map" class="app app-body"></div>   
+    <toaster-container toaster-options="{'position-class': 'toast-bottom-right', 'close-button':false, 'prevent-duplicates': true}"></toaster-container>    
+</body>
+</html>
