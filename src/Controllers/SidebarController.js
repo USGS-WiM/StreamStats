@@ -307,7 +307,12 @@ var StreamStats;
                 if (this.regionService.selectedRegion.Applications.indexOf("CoordinatedReach") != -1) {
                     this.studyAreaService.queryCoordinatedReach();
                 }
-                this.studyAreaService.queryRegressionRegions();
+                //only do this if we havent done it already and basin hasn't been edited
+                if (!this.studyAreaService.selectedStudyArea.RegressionRegions && !this.studyAreaService.selectedStudyArea.Disclaimers['isEdited']) {
+                    this.studyAreaService.queryRegressionRegions();
+                }
+                else
+                    this.setProcedureType(3);
             };
             SidebarController.prototype.queryStatisticsGroupTypes = function () {
                 this.nssService.loadStatisticsGroupTypes(this.regionService.selectedRegion.RegionID, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) {
