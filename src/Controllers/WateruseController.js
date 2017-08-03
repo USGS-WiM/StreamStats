@@ -25,7 +25,7 @@ var StreamStats;
                 this.$timeout = $timeout;
                 $scope.vm = this;
                 this.modalInstance = modal;
-                this.StudyArea = studyAreaService.selectedStudyArea;
+                this.StudyArea = {}; //studyAreaService.selectedStudyArea;
                 this.init();
             }
             Object.defineProperty(WateruseController.prototype, "StartYear", {
@@ -65,17 +65,17 @@ var StreamStats;
                 var _this = this;
                 this.CanContiue = false;
                 //https://ssdev.cr.usgs.gov/streamstatsservices/wateruse.json?rcode=OH&workspaceID=OH20160217071851546000&startyear=2005&endyear=2009
-                var url = configuration.queryparams['Wateruse'].format(this.StudyArea.RegionID, this.StudyArea.WorkspaceID, this.StartYear, this.EndYear);
-                //var url = "wateruse.js";
-                var request = new WiM.Services.Helpers.RequestInfo(url);
+                //var url = configuration.queryparams['Wateruse'].format(this.StudyArea.RegionID, this.StudyArea.WorkspaceID, this.StartYear, this.EndYear);
+                var url = "wateruse.js";
+                var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     _this.showResults = true;
                     //sm when complete
                     _this.result = response.data;
                     if (_this.result.Messages === 'Wateruse not available at specified site.')
                         alert(_this.result.Messages);
-                    _this.GetGraphData(WaterUseType.Monthly);
-                    _this.GetGraphData(WaterUseType.Annual);
+                    _this.loadGraphData(WaterUseType.Monthly);
+                    _this.loadGraphData(WaterUseType.Annual);
                     _this.ReportData.Monthly.Table = _this.GetTableData(WaterUseType.Monthly);
                     _this.ReportData.Annual.Table = _this.GetTableData(WaterUseType.Annual);
                 }, function (error) {
@@ -93,122 +93,114 @@ var StreamStats;
             WateruseController.prototype.Print = function () {
                 window.print();
             };
-            WateruseController.prototype.GetGraphData = function (useType) {
-                var _this = this;
-                switch (useType) {
-                    case WaterUseType.Monthly:
-                        this.ReportData.Monthly.Graph.withdrawals = [];
-                        if (this.result.hasOwnProperty("DailyMonthlyAveWithdrawalsByCode")) {
-                            this.ReportData.Monthly.Graph.withdrawals = this.result.DailyMonthlyAveWithdrawalsByCode.map(function (elem) {
-                                return {
-                                    "key": _this.getWUText(elem[0].name.slice(-2)),
-                                    "values": elem.map(function (values) {
-                                        return {
-                                            "label": values.name.substring(6, 9),
-                                            "stack": values.type,
-                                            "value": values.value
-                                        };
-                                    })
-                                };
-                            });
-                        } //end if
-                        this.ReportData.Monthly.Graph.returns = [];
-                        var values = [];
-                        if (this.result.hasOwnProperty("MonthlyWaterUseCoeff")) {
-                            this.result.MonthlyWaterUseCoeff.forEach(function (item) {
-                                if (item.name === "Total Returns" && item.unit === "MGD") {
-                                    values.push({ "label": item.type, "stack": item.name, "value": item.value });
-                                }
-                            }); //next
-                        } //end if
-                        else if (this.result.hasOwnProperty("DailyMonthlyAveDischarges")) {
-                            values = this.result.DailyMonthlyAveDischarges.map(function (elem) {
-                                return {
-                                    "label": elem.name.substring(6, 9),
-                                    "stack": elem.type,
-                                    "value": elem.value
-                                };
-                            });
-                        } //end if
-                        this.ReportData.Monthly.Graph.returns.push({
-                            "key": "Returns",
-                            "values": values,
-                            "color": "#ff7f0e"
-                        });
-                        break;
-                    case WaterUseType.Annual:
-                        this.ReportData.Annual.Graph = [];
-                        if (this.result.hasOwnProperty("AveGWWithdrawals"))
-                            this.ReportData.Annual.Graph.push({ name: "Groundwater withdrawal", value: this.result.AveGWWithdrawals.value });
-                        else if (this.result.hasOwnProperty("DailyAnnualAveGWWithdrawal"))
-                            this.ReportData.Annual.Graph.push({ name: "Groundwater withdrawal", value: this.result.DailyAnnualAveGWWithdrawal.value });
-                        if (this.result.hasOwnProperty("AveSWWithdrawals"))
-                            this.ReportData.Annual.Graph.push({ name: "Surface water withdrawal", value: this.result.AveSWWithdrawals.value });
-                        else if (this.result.hasOwnProperty("DailyAnnualAveSWWithdrawal"))
-                            this.ReportData.Annual.Graph.push({ name: "Surface water withdrawal", value: this.result.DailyAnnualAveSWWithdrawal.value });
-                        break;
-                } //end switch
+            WateruseController.prototype.loadGraphData = function (useType) {
+                try {
+                    switch (useType) {
+                        case WaterUseType.Monthly:
+                            this.ReportData.Monthly.Graph.withdrawals = [];
+                            if (this.result.hasOwnProperty("withdrawal") && this.result.withdrawal.hasOwnProperty("monthly")) {
+                                for (var month in this.result.withdrawal.monthly) {
+                                    var montlyCodes = this.result.withdrawal.monthly[month]["code"];
+                                    for (var code in montlyCodes) {
+                                        var itemindex = this.ReportData.Monthly.Graph.withdrawals.findIndex(function (elem) { return elem.key == montlyCodes[code].name; });
+                                        if (itemindex < 0) {
+                                            itemindex = this.ReportData.Monthly.Graph.withdrawals.push({
+                                                "key": montlyCodes[code].name,
+                                                "values": []
+                                            }) - 1;
+                                        } //end if
+                                        this.ReportData.Monthly.Graph.withdrawals[itemindex].values.push({
+                                            "label": this.getMonth(+month),
+                                            "stack": "withdrawal",
+                                            "value": montlyCodes[code].value
+                                        });
+                                    } //next code       
+                                } //next month
+                            } //end if
+                            this.ReportData.Monthly.Graph.returns = [];
+                            if (this.result.hasOwnProperty("return")) {
+                                var values = [];
+                                for (var month in this.result.return.monthly) {
+                                    values.push({
+                                        "label": this.getMonth(+month),
+                                        "stack": "withdrawal",
+                                        "value": this.Sum(this.result.return.monthly[month]["month"], "value")
+                                    });
+                                } //next month
+                                this.ReportData.Monthly.Graph.returns.push({
+                                    "key": "returns",
+                                    "color": "#ff7f0e",
+                                    "values": values
+                                });
+                            } //end if                               
+                            break;
+                        case WaterUseType.Annual:
+                            this.ReportData.Annual.Graph = [];
+                            if (this.result.hasOwnProperty("withdrawal") && this.result.withdrawal.hasOwnProperty("annual")) {
+                                for (var annkey in this.result.withdrawal.annual) {
+                                    var annItem = this.result.withdrawal.annual[annkey];
+                                    this.ReportData.Annual.Graph.push({ name: annItem.name, value: annItem.value });
+                                } //next annItem
+                            } //end if
+                            break;
+                    } //end switch
+                }
+                catch (e) {
+                    var x = e;
+                }
             };
             WateruseController.prototype.GetTableData = function (useType) {
-                var _this = this;
                 var tableFields = [];
                 var tableValues = [];
                 switch (useType) {
                     case WaterUseType.Monthly:
                         //init table
-                        for (var i = 0; i < 12; i++) {
-                            tableValues.push({ "month": this.getMonth(i), "returns": {}, "withdrawals": [] });
+                        for (var i = 1; i <= 12; i++) {
+                            tableValues.push({ "month": this.getMonth(i), "returns": { "name": "return", "value": 0 }, "withdrawals": [] });
                         }
-                        if (this.result.hasOwnProperty("MonthlyWaterUseCoeff")) {
-                            var index = 0;
-                            this.result.MonthlyWaterUseCoeff.forEach(function (item) {
-                                if (item.name === "Total Returns" && item.unit === "MGD") {
-                                    tableValues[index].returns = item;
-                                    index++;
-                                }
-                            }); //next
-                        }
-                        else if (this.result.hasOwnProperty("DailyMonthlyAveDischarges")) {
-                            var index = 0;
-                            this.result.DailyMonthlyAveDischarges.forEach(function (item) {
-                                if (item.type === "Discharge" && item.unit === "MGD") {
-                                    tableValues[index].returns = item;
-                                    index++;
-                                }
-                            }); //next
+                        //returns
+                        if (this.result.hasOwnProperty("return") && this.result.withdrawal.hasOwnProperty("monthly")) {
+                            for (var item in this.result.return.monthly) {
+                                tableValues[+item - 1].returns.value = this.Sum(this.result.return.monthly[item].month, "value");
+                            } //next item
                         } //end if
-                        if (this.result.hasOwnProperty("DailyMonthlyAveWithdrawalsByCode")) {
-                            this.result.DailyMonthlyAveWithdrawalsByCode.forEach(function (item) {
-                                tableFields.push(_this.getWUText(item[0].name.slice(-2)));
-                                tableValues[0].withdrawals.push(item[0]);
-                                tableValues[1].withdrawals.push(item[1]);
-                                tableValues[2].withdrawals.push(item[2]);
-                                tableValues[3].withdrawals.push(item[3]);
-                                tableValues[4].withdrawals.push(item[4]);
-                                tableValues[5].withdrawals.push(item[5]);
-                                tableValues[6].withdrawals.push(item[6]);
-                                tableValues[7].withdrawals.push(item[7]);
-                                tableValues[8].withdrawals.push(item[8]);
-                                tableValues[9].withdrawals.push(item[9]);
-                                tableValues[10].withdrawals.push(item[10]);
-                                tableValues[11].withdrawals.push(item[11]);
-                            }); //next item  
+                        //withdrawals
+                        if (this.result.hasOwnProperty("withdrawal") && this.result.withdrawal.hasOwnProperty("monthly")) {
+                            for (var mkey in this.result.withdrawal.monthly) {
+                                if (this.result.withdrawal.monthly[mkey].hasOwnProperty("code")) {
+                                    var monthlycode = this.result.withdrawal.monthly[mkey].code;
+                                    for (var cKey in monthlycode) {
+                                        var itemindex = tableFields.findIndex(function (elem) { return elem == monthlycode[cKey].name; });
+                                        if (itemindex < 0) {
+                                            itemindex = tableFields.push(monthlycode[cKey].name) - 1;
+                                            tableValues.forEach(function (ele) { ele.withdrawals.push({ "name": monthlycode[cKey].name, "value": 0 }); });
+                                        } //end if
+                                        tableValues[+mkey - 1].withdrawals[itemindex].value = monthlycode[cKey].value;
+                                    }
+                                } //end if
+                            } //next item
                         }
                         break;
                     case WaterUseType.Annual:
                         tableFields = ["", "Average Return", "Average Withdrawal"];
-                        if (this.result.hasOwnProperty("AveSWWithdrawals"))
-                            tableValues.push({ name: "Surface Water", aveReturn: "---", aveWithdrawal: this.result.AveSWWithdrawals.value.toFixed(3), unit: "MGD" });
-                        else if (this.result.hasOwnProperty("DailyAnnualAveSWWithdrawal"))
-                            tableValues.push({ name: "Surface Water", aveReturn: "---", aveWithdrawal: this.result.DailyAnnualAveSWWithdrawal.value.toFixed(3), unit: "MGD" });
-                        if (this.result.hasOwnProperty("AveGWWithdrawals"))
-                            tableValues.push({ name: "Groundwater", aveReturn: "---", aveWithdrawal: this.result.AveGWWithdrawals.value.toFixed(3), unit: "MGD" });
-                        else if (this.result.hasOwnProperty("DailyAnnualAveSWWithdrawal"))
-                            tableValues.push({ name: "Groundwater", aveReturn: "---", aveWithdrawal: this.result.DailyAnnualAveGWWithdrawal.value.toFixed(3), unit: "MGD" });
-                        if (this.result.hasOwnProperty("AveReturns"))
-                            tableValues.push({ name: "Total", aveReturn: this.result.AveReturns.value.toFixed(3), aveWithdrawal: (this.result.AveSWWithdrawals.value + this.result.AveGWWithdrawals.value).toFixed(3), unit: "MGD" });
-                        else if (this.result.hasOwnProperty("DailyAnnualAveDischarge"))
-                            tableValues.push({ name: "Total", aveReturn: this.result.DailyAnnualAveDischarge.value.toFixed(3), aveWithdrawal: (this.result.DailyAnnualAveGWWithdrawal.value + this.result.DailyAnnualAveSWWithdrawal.value).toFixed(3), unit: "MGD" });
+                        var sw = { name: "Surface Water", aveReturn: "---", aveWithdrawal: "---", unit: "MGD" };
+                        var gw = { name: "Groundwater", aveReturn: "---", aveWithdrawal: "---", unit: "MGD" };
+                        if (this.result.hasOwnProperty("withdrawal") && this.result.withdrawal.hasOwnProperty("annual")) {
+                            var annWith = this.result.withdrawal.annual;
+                            if (annWith.hasOwnProperty("SW"))
+                                sw.aveWithdrawal = annWith.SW.value.toFixed(3);
+                            if (annWith.hasOwnProperty("GW"))
+                                gw.aveWithdrawal = annWith.GW.value.toFixed(3);
+                        }
+                        if (this.result.hasOwnProperty("return") && this.result.withdrawal.hasOwnProperty("annual")) {
+                            var annreturn = this.result.return.annual;
+                            if (annreturn.hasOwnProperty("SW"))
+                                sw.aveReturn = annreturn.SW.value.toFixed(3);
+                            if (annreturn.hasOwnProperty("GW"))
+                                gw.aveReturn = annreturn.GW.value.toFixed(3);
+                        }
+                        tableValues.push(sw);
+                        tableValues.push(gw);
                         tableValues.push({ name: "", aveReturn: "", aveWithdrawal: "" });
                         if (this.result.hasOwnProperty("TotalTempStats")) {
                             tableValues.push({ name: "Temporary water use registrations (surface water)", aveReturn: "", aveWithdrawal: this.result.TotalTempStats[2].value.toFixed(3), unit: "MGD" });
@@ -230,20 +222,27 @@ var StreamStats;
                     return Number(a) + Number(b.value);
                 }, 0);
             };
+            WateruseController.prototype.Sum = function (objectsToSum, propertyname) {
+                var sum = 0;
+                for (var item in objectsToSum) {
+                    sum += objectsToSum[item][propertyname];
+                } //next item
+                return sum;
+            };
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             WateruseController.prototype.init = function () {
                 var _this = this;
                 //https://ssdev.cr.usgs.gov/streamstatsservices/wateruse.json?rcode=OH
-                var url = configuration.queryparams['WateruseConfig'].format(this.StudyArea.RegionID);
-                //var url = "wateruse.js";
-                var request = new WiM.Services.Helpers.RequestInfo(url);
+                //var url = configuration.queryparams['WateruseConfig'].format(this.StudyArea.RegionID);
+                var url = "wateruseconfig.js";
+                var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     var result = response.data;
-                    _this.spanYear = result.yearspan;
-                    _this._startYear = result.syear;
-                    _this._endYear = (_this.spanYear) ? result.eyear : result.syear;
-                    _this._yearRange = { floor: result.syear, draggableRange: true, noSwitching: true, showTicks: false, ceil: result.eyear };
+                    _this.spanYear = result.minYear != result.maxYear;
+                    _this._startYear = result.minYear;
+                    _this._endYear = result.maxYear;
+                    _this._yearRange = { floor: result.minYear, draggableRange: true, noSwitching: true, showTicks: false, ceil: result.maxYear };
                 }, function (error) {
                     ;
                     _this._startYear = 2005;
@@ -368,18 +367,18 @@ var StreamStats;
             };
             WateruseController.prototype.getMonth = function (index) {
                 switch (index) {
-                    case 0: return "Jan";
-                    case 1: return "Feb";
-                    case 2: return "Mar";
-                    case 3: return "Apr";
-                    case 4: return "May";
-                    case 5: return "Jun";
-                    case 6: return "Jul";
-                    case 7: return "Aug";
-                    case 8: return "Sep";
-                    case 9: return "Oct";
-                    case 10: return "Nov";
-                    case 11: return "Dec";
+                    case 1: return "Jan";
+                    case 2: return "Feb";
+                    case 3: return "Mar";
+                    case 4: return "Apr";
+                    case 5: return "May";
+                    case 6: return "Jun";
+                    case 7: return "Jul";
+                    case 8: return "Aug";
+                    case 9: return "Sep";
+                    case 10: return "Oct";
+                    case 11: return "Nov";
+                    case 12: return "Dec";
                 }
             };
             WateruseController.prototype.getWUText = function (wtype) {
