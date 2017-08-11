@@ -8,6 +8,7 @@ configuration.baseurls =
     'StreamStatsServices': 'https://test.streamstats.usgs.gov',
     'StreamStatsMapServices': 'https://test.streamstats.usgs.gov',
     'NSS': 'https://test.streamstats.usgs.gov/nssservices',
+    'WaterUseServices' : 'http://localhost:53812/',
     'NationalMapRasterServices': 'https://raster.nationalmap.gov/arcgis/rest/services'
 }
 
@@ -16,6 +17,7 @@ if (window.location.host === 'streamstats.usgs.gov') {
     configuration.baseurls.StreamStatsServices = 'https://streamstats.usgs.gov',
     configuration.baseurls.StreamStatsMapServices = 'https://streamstats.usgs.gov',
     configuration.baseurls.NSS = 'https://streamstats.usgs.gov/nssservices',
+    configuration.BaseURL.WaterUseServices ='http://localhost:53812/',
     configuration.environment = 'production'
 }
 
@@ -42,8 +44,8 @@ configuration.queryparams =
     'regulationService': '/arcgis/rest/services/regulations/{0}/MapServer/exts/RegulationRESTSOE/Regulation',
     'RegressionRegionQueryService': '/arcgis/rest/services/nss/regions/MapServer/exts/PercentOverlayRESTSOE/PercentOverlay',
     'SSNavigationServices': '/streamstatsservices/navigation/{0}.geojson?rcode={1}&',
-    'Wateruse': '/streamstatsservices/wateruse.json?rcode={0}&workspaceID={1}&startyear={2}&endyear={3}',
-    'WateruseConfig': '/streamstatsservices/wateruse.json?rcode={0}',
+    'Wateruse': 'summary?year={0}&endyear={1}&includePermits={2}&includereturns={3}&computeDomestic={4}',
+    'WateruseConfig': '/regions/{0}/config',
     'coordinatedReachQueryService':'/arcgis/rest/services/coordinatedreaches/{0}/MapServer/0/query?geometry={1},{2},{3},{4}&geometryType=esriGeometryEnvelope&inSR={5}&spatialRel=esriSpatialRelIntersects&outFields={6}&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson'
 }
 
