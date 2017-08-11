@@ -120,7 +120,7 @@ module StreamStats.Controllers {
                     this.showResults = true;                 
                     //sm when complete
                     this.result = response.data;
-                    if (this.result.Messages === 'Wateruse not available at specified site.' || (!response.data.hasOwnProperty("withdrawal") && !response.data.hasOwnProperty("return"))) alert(this.result.Messages);
+                    if (this.result.Messages === 'Wateruse not available at specified site.' || (!response.data.hasOwnProperty("withdrawal") && !response.data.hasOwnProperty("return"))) alert('Wateruse not available at specified site.');
                     this.ReportData.Monthly.Graph= this.loadGraphData(WaterUseType.Monthly);
                     this.ReportData.Annual.Graph=this.loadGraphData(WaterUseType.Annual);
 
