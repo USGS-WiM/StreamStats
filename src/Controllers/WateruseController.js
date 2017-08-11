@@ -1,11 +1,16 @@
 //------------------------------------------------------------------------------
 //----- WaterUse ---------------------------------------------------------------
 //------------------------------------------------------------------------------
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var StreamStats;
 (function (StreamStats) {
     var Controllers;
@@ -21,12 +26,13 @@ var StreamStats;
         var WateruseController = (function (_super) {
             __extends(WateruseController, _super);
             function WateruseController($scope, $http, studyAreaService, modal, $timeout) {
-                _super.call(this, $http, configuration.baseurls.WaterUseServices);
-                this.$timeout = $timeout;
-                $scope.vm = this;
-                this.modalInstance = modal;
-                this.StudyArea = studyAreaService.selectedStudyArea;
-                this.init();
+                var _this = _super.call(this, $http, configuration.baseurls.WaterUseServices) || this;
+                _this.$timeout = $timeout;
+                $scope.vm = _this;
+                _this.modalInstance = modal;
+                _this.StudyArea = studyAreaService.selectedStudyArea;
+                _this.init();
+                return _this;
             }
             Object.defineProperty(WateruseController.prototype, "StartYear", {
                 get: function () {
@@ -74,7 +80,7 @@ var StreamStats;
                     //sm when complete
                     _this.result = response.data;
                     if (_this.result.Messages === 'Wateruse not available at specified site.' || (!response.data.hasOwnProperty("withdrawal") && !response.data.hasOwnProperty("return")))
-                        alert(_this.result.Messages);
+                        alert('Wateruse not available at specified site.');
                     _this.ReportData.Monthly.Graph = _this.loadGraphData(WaterUseType.Monthly);
                     _this.ReportData.Annual.Graph = _this.loadGraphData(WaterUseType.Annual);
                     _this.ReportData.Monthly.Table = _this.GetTableData(WaterUseType.Monthly);
@@ -154,7 +160,8 @@ var StreamStats;
                                     var annItem = this.result.withdrawal.annual[annkey];
                                     results.withdrawals.push({
                                         name: annItem.name, value: annItem.value,
-                                        color: this.generateColorShade(190, 350) });
+                                        color: this.generateColorShade(190, 350)
+                                    });
                                 } //next annItem
                             } //end if
                             if (this.result.hasOwnProperty("return") && this.result.withdrawal.hasOwnProperty("annual")) {
@@ -528,8 +535,12 @@ var StreamStats;
                 }
             };
             WateruseController.prototype.tableToCSV = function ($table) {
-                var $headers = $table.find('tr:has(th)'), $rows = $table.find('tr:has(td)'), tmpColDelim = String.fromCharCode(11) // vertical tab character
+                var $headers = $table.find('tr:has(th)'), $rows = $table.find('tr:has(td)')
+                // Temporary delimiter characters unlikely to be typed by keyboard
+                // This is to avoid accidentally splitting the actual contents
+                , tmpColDelim = String.fromCharCode(11) // vertical tab character
                 , tmpRowDelim = String.fromCharCode(0) // null character
+                // actual delimiter characters for CSV format
                 , colDelim = '","', rowDelim = '"\r\n"';
                 // Grab text from table into CSV formatted string
                 var csv = '"';
@@ -606,11 +617,11 @@ var StreamStats;
             WateruseController.prototype.rand = function (min, max) {
                 return parseInt((Math.random() * (max - min + 1)), 10) + min;
             };
-            //Constructor
-            //-+-+-+-+-+-+-+-+-+-+-+-
-            WateruseController.$inject = ['$scope', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance', '$timeout'];
             return WateruseController;
         }(WiM.Services.HTTPServiceBase)); //end wimLayerControlController class
+        //Constructor
+        //-+-+-+-+-+-+-+-+-+-+-+-
+        WateruseController.$inject = ['$scope', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance', '$timeout'];
         var WaterUseType;
         (function (WaterUseType) {
             WaterUseType[WaterUseType["Annual"] = 1] = "Annual";
