@@ -393,7 +393,47 @@ module StreamStats.Controllers {
                     window.open(url);
                 }
             }
-        }      
+        }   
+        public DownloadCSVBySource() {
+            var headers = {
+                "Accept": "text/csv",
+                "Authorization": "Basic dGVzdE1hbmFnZXI6RG9nMQ=="
+            };
+            var url = configuration.queryparams['WateruseSourceCSV'].format(this.StartYear, this.EndYear, this.includePermits, this.includeReturns, this.computeDomesticWU);
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, false, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(this.StudyArea.Features[1].feature.features[0].geometry),headers);
+
+            this.Execute(request).then(
+                (response: any) => {
+                    var filename = 'wateruseSummaryBySource.csv';
+
+                    var blob = new Blob([response.data], { type: 'text/csv;charset=utf-8;' });
+                    if (navigator.msSaveBlob) { // IE 10+
+                        navigator.msSaveBlob(request, filename);
+                    } else {
+                        var link = <any>document.createElement("a");
+                        var url = URL.createObjectURL(blob);
+                        if (link.download !== undefined) { // feature detection
+                            // Browsers that support HTML5 download attribute
+                            link.setAttribute("href", url);
+                            link.setAttribute("download", filename);
+                            link.style.visibility = 'hidden';
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                        }
+                        else {
+                            window.open(url);
+                        }
+                    }
+                }, (error) => {
+                    var x = error;
+                    //sm when error                    
+                }).finally(() => {
+                    this.CanContiue = true;
+                });
+
+
+        }
         
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
