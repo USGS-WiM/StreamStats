@@ -3493,17 +3493,13 @@ body, h1, h2, h3, h4, h5, h6 {
     }
 
     .wim-nav .container .mobile-nav-toggle:active, .wim-nav .container .mobile-nav-toggle:focus {
-        -webkit-transform: rotate(90deg);
-        transform: rotate(90deg);
+        -webkit-transform: rotate(180deg);
+        transform: rotate(180deg);
         -webkit-transition: .1s;
         transition: .1s;
         text-decoration: none;
     }
 
-        .wim-nav .container .mobile-nav-toggle:active:before, .wim-nav .container .mobile-nav-toggle:focus:before {
-            content: '\f2d7';
-            font-family: Ionicons;
-        }
 
 @media only screen and (max-width:992px) {
     .wim-nav .container .mobile-nav-toggle {
@@ -3538,7 +3534,7 @@ body, h1, h2, h3, h4, h5, h6 {
 
 @media only screen and (max-width:800px) {
     .wim-nav .container .nav-branding img {
-        height: 30px;
+        height: auto;
     }
 }
 
@@ -3566,13 +3562,13 @@ body, h1, h2, h3, h4, h5, h6 {
 
 @media only screen and (max-width:800px) {
     .wim-nav .container .nav-title {
-        text-align: right;
-        font-size: 14px;
-        padding: 0 0 0 20px;
-        line-height: 14px;
+        text-align: left;
+        font-size: 12px;
+        padding: 0 0 0 10px;
+        line-height: 12px;
         -webkit-box-flex: 3;
         -ms-flex-positive: 3;
-        flex-grow: 3;
+        flex-grow: 2;
     }
 }
 
@@ -3590,9 +3586,20 @@ body, h1, h2, h3, h4, h5, h6 {
     padding: 0;
 }
 
+.wim-nav .container .nav-links .nav-link-text{
+    display: inline-block !important;
+    padding-left: 4px !important;
+}
+
 @media only screen and (max-width:800px) {
     .wim-nav .container .nav-links {
-        display: none;
+        /*display: none;*/
+    }
+    .wim-nav .container .nav-links a {
+        margin: 24px 0 0 10px !important;
+    }
+    .wim-nav .container .nav-links .nav-link-text{
+        display: none !important;
     }
 }
 
@@ -4298,7 +4305,7 @@ ul {
 }
 
     .button:focus, button:focus, input[type=button]:focus {
-        text-decoration: underline;
+        text-decoration: none !important;
     }
 
     .button:hover, button:hover, input[type=button]:hover {
