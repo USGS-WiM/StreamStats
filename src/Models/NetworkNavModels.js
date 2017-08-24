@@ -1,11 +1,16 @@
 //------------------------------------------------------------------------------
 //----- Network Navigation ---------------------------------------------------------------
 //------------------------------------------------------------------------------
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 //-------1---------2---------3---------4---------5---------6---------7---------8
 //       01234567890123456789012345678901234567890123456789012345678901234567890
 //-------+---------+---------+---------+---------+---------+---------+---------+
@@ -54,17 +59,18 @@ var StreamStats;
             //properties
             //Constructor
             function PathBetweenPoints() {
-                _super.call(this, 1, 2);
+                return _super.call(this, 1, 2) || this;
             }
             return PathBetweenPoints;
-        }(NetworkNav));
-        Models.PathBetweenPoints = PathBetweenPoints; //end class
+        }(NetworkNav)); //end class
+        Models.PathBetweenPoints = PathBetweenPoints;
         var Path2Outlet = (function (_super) {
             __extends(Path2Outlet, _super);
             //Constructor
             function Path2Outlet() {
-                _super.call(this, 2, 1);
-                this._workspaceID = '';
+                var _this = _super.call(this, 2, 1) || this;
+                _this._workspaceID = '';
+                return _this;
             }
             Object.defineProperty(Path2Outlet.prototype, "workspaceID", {
                 get: function () {
@@ -77,22 +83,23 @@ var StreamStats;
                 configurable: true
             });
             return Path2Outlet;
-        }(NetworkNav));
-        Models.Path2Outlet = Path2Outlet; //end class
+        }(NetworkNav)); //end class
+        Models.Path2Outlet = Path2Outlet;
         var NetworkReport = (function (_super) {
             __extends(NetworkReport, _super);
             //Constructor
             function NetworkReport() {
-                _super.call(this, 3, 1);
+                var _this = _super.call(this, 3, 1) || this;
                 //https://ssdev.cr.usgs.gov/streamstatsservices/navigation/4.geojson?rcode=RRB&startpoint=[-94.719923,48.47219]&crs=4326&direction=Upstream&layers=NHDFlowline
                 //properties
-                this.layerOptions = [{ name: "NHDFlowline", selected: true }, { name: "Gage", selected: false }, { name: "Dam", selected: false }];
-                this.DirectionOptions = ["Upstream", "Downstream"];
-                this.selectedDirectionType = this.DirectionOptions[1];
+                _this.layerOptions = [{ name: "NHDFlowline", selected: true }, { name: "Gage", selected: false }, { name: "Dam", selected: false }];
+                _this.DirectionOptions = ["Upstream", "Downstream"];
+                _this.selectedDirectionType = _this.DirectionOptions[1];
+                return _this;
             }
             return NetworkReport;
-        }(NetworkNav));
-        Models.NetworkReport = NetworkReport; //end class
+        }(NetworkNav)); //end class
+        Models.NetworkReport = NetworkReport;
     })(Models = StreamStats.Models || (StreamStats.Models = {}));
 })(StreamStats || (StreamStats = {})); //end namespace
 //# sourceMappingURL=NetworkNavModels.js.map
