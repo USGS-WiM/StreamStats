@@ -8,6 +8,7 @@ configuration.baseurls =
     'StreamStatsServices': 'https://test.streamstats.usgs.gov',
     'StreamStatsMapServices': 'https://test.streamstats.usgs.gov',
     'NSS': 'https://test.streamstats.usgs.gov/nssservices',
+    'WaterUseServices': 'http://localhost:53812',
     'NationalMapRasterServices': 'https://raster.nationalmap.gov/arcgis/rest/services'
 }
 
@@ -16,6 +17,7 @@ if (window.location.host === 'streamstats.usgs.gov') {
     configuration.baseurls.StreamStatsServices = 'https://streamstats.usgs.gov',
     configuration.baseurls.StreamStatsMapServices = 'https://streamstats.usgs.gov',
     configuration.baseurls.NSS = 'https://streamstats.usgs.gov/nssservices',
+    configuration.BaseURL.WaterUseServices ='http://54.147.255.78/wateruseservices',
     configuration.environment = 'production'
 }
 
@@ -42,8 +44,9 @@ configuration.queryparams =
     'regulationService': '/arcgis/rest/services/regulations/{0}/MapServer/exts/RegulationRESTSOE/Regulation',
     'RegressionRegionQueryService': '/arcgis/rest/services/nss/regions/MapServer/exts/PercentOverlayRESTSOE/PercentOverlay',
     'SSNavigationServices': '/streamstatsservices/navigation/{0}.geojson?rcode={1}&',
-    'Wateruse': '/streamstatsservices/wateruse.json?rcode={0}&workspaceID={1}&startyear={2}&endyear={3}',
-    'WateruseConfig': '/streamstatsservices/wateruse.json?rcode={0}',
+    'Wateruse': '/summary?year={0}&endyear={1}&includePermits={2}&includereturns={3}&computeDomestic={4}',
+    'WateruseSourceCSV':'/summary/bysource?year={0}&endyear={1}&includePermits={2}&includereturns={3}&computeDomestic={4}',
+    'WateruseConfig': '/regions/{0}/config',
     'coordinatedReachQueryService':'/arcgis/rest/services/coordinatedreaches/{0}/MapServer/0/query?geometry={1},{2},{3},{4}&geometryType=esriGeometryEnvelope&inSR={5}&spatialRel=esriSpatialRelIntersects&outFields={6}&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson'
 }
 
@@ -269,7 +272,7 @@ configuration.regions = [
     { "RegionID": "KS", "Name": "Kansas", "Bounds": [[36.988875,-102.051535],[40.002987,-94.601224]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "KY", "Name": "Kentucky", "Bounds": [[36.49657, -89.568231], [39.142063, -81.959575]], "Layers": {}, "Applications": ["KarstCheck"], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "LA", "Name": "Louisiana", "Bounds": [[28.939655,-94.041785],[33.023422,-89.021803]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
-	{ "RegionID": "MA", "Name": "Massachusetts", "Bounds": [[41.238279,-73.49884],[42.886877,-69.91778]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
+    { "RegionID": "MA", "Name": "Massachusetts", "Bounds": [[41.238279, -73.49884], [42.886877, -69.91778]], "Layers": {}, "Applications": ["Wateruse"], "regionEnabled": true, "ScenariosAvailable": true },
 	{ "RegionID": "MD", "Name": "Maryland and District of Columbia", "Bounds": [[37.970255, -79.489865], [39.725461, -75.045623]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "ME", "Name": "Maine", "Bounds": [[43.09105,-71.087509],[47.453334,-66.969271]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "MI", "Name": "Michigan", "Bounds": [[41.697494,-90.4082],[48.173795,-82.419836]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
