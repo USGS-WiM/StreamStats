@@ -6,9 +6,10 @@ module StreamStats {
     //'use strict';
 
     class config {
-        static $inject = ['$stateProvider', '$urlRouterProvider', '$locationProvider', '$logProvider'];
-        constructor(private $stateProvider: ng.ui.IStateProvider, private $urlRouterProvider: ng.ui.IUrlRouterProvider, private $locationProvider: ng.ILocationProvider, private $logProvider: ng.ILogProvider) {
-            this.$stateProvider
+        static $inject = ['$stateProvider', '$urlRouterProvider', '$locationProvider', '$logProvider','$compileProvider'];
+        constructor(private $stateProvider: ng.ui.IStateProvider, private $urlRouterProvider: ng.ui.IUrlRouterProvider,
+            private $locationProvider: ng.ILocationProvider, private $logProvider: ng.ILogProvider, private $compilerProvider:ng.ICompileProvider) {
+                this.$stateProvider
                 .state("main", {
                 url: '/?rcode&workspaceID',
                 //reloadOnSearch:true,
@@ -40,7 +41,11 @@ module StreamStats {
             this.$locationProvider.html5Mode(true);   
             
             //turns of angular-leaflet console spam
-            this.$logProvider.debugEnabled(false);                        
+            this.$logProvider.debugEnabled(false);  
+            //flag for production => remove debug info
+            if (configuration.environment == "production")
+                this.$compilerProvider.debugInfoEnabled(false);
+
         }//end constructor
     }//end class
 

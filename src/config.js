@@ -4,11 +4,12 @@ var StreamStats;
 (function (StreamStats) {
     //'use strict';
     var config = (function () {
-        function config($stateProvider, $urlRouterProvider, $locationProvider, $logProvider) {
+        function config($stateProvider, $urlRouterProvider, $locationProvider, $logProvider, $compilerProvider) {
             this.$stateProvider = $stateProvider;
             this.$urlRouterProvider = $urlRouterProvider;
             this.$locationProvider = $locationProvider;
             this.$logProvider = $logProvider;
+            this.$compilerProvider = $compilerProvider;
             this.$stateProvider
                 .state("main", {
                 url: '/?rcode&workspaceID',
@@ -38,10 +39,13 @@ var StreamStats;
             this.$locationProvider.html5Mode(true);
             //turns of angular-leaflet console spam
             this.$logProvider.debugEnabled(false);
+            //flag for production => remove debug info
+            if (configuration.environment == "production")
+                this.$compilerProvider.debugInfoEnabled(false);
         } //end constructor
+        config.$inject = ['$stateProvider', '$urlRouterProvider', '$locationProvider', '$logProvider', '$compileProvider'];
         return config;
     }()); //end class
-    config.$inject = ['$stateProvider', '$urlRouterProvider', '$locationProvider', '$logProvider'];
     angular.module('StreamStats', [
         'ui.router', 'ui.bootstrap', 'ui.checkbox',
         'mobile-angular-ui',
