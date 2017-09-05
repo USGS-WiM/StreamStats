@@ -71,11 +71,11 @@ var StreamStats;
                     }
                 }
             };
+            //Constructor
+            //-+-+-+-+-+-+-+-+-+-+-+-
+            ExplorationToolsModalController.$inject = ['$scope', '$analytics', '$sce', '$modalInstance', 'StreamStats.Services.ModalService', 'StreamStats.Services.ExplorationService'];
             return ExplorationToolsModalController;
         }()); //end  class
-        //Constructor
-        //-+-+-+-+-+-+-+-+-+-+-+-
-        ExplorationToolsModalController.$inject = ['$scope', '$analytics', '$sce', '$modalInstance', 'StreamStats.Services.ModalService', 'StreamStats.Services.ExplorationService'];
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.ExplorationToolsModalController', ExplorationToolsModalController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));

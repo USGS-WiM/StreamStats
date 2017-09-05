@@ -35,7 +35,6 @@ var StreamStats;
                 if (options === void 0) { options = null; }
                 if (options) {
                     this.modalOptions = options;
-                    //console.log('in modal open function', this.modalOptions);
                 }
                 this.modal.open(this.getModalSettings(mType));
             };
@@ -110,7 +109,6 @@ var StreamStats;
             };
             return ModalService;
         }()); //end class
-        var SSModalType;
         (function (SSModalType) {
             SSModalType[SSModalType["e_report"] = 1] = "e_report";
             SSModalType[SSModalType["e_wateruse"] = 2] = "e_wateruse";
@@ -118,7 +116,8 @@ var StreamStats;
             SSModalType[SSModalType["e_help"] = 4] = "e_help";
             SSModalType[SSModalType["e_navreport"] = 5] = "e_navreport";
             SSModalType[SSModalType["e_exploration"] = 6] = "e_exploration";
-        })(SSModalType = Services.SSModalType || (Services.SSModalType = {}));
+        })(Services.SSModalType || (Services.SSModalType = {}));
+        var SSModalType = Services.SSModalType;
         factory.$inject = ['$modal'];
         function factory($modal) {
             return new ModalService($modal);

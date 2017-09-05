@@ -26,8 +26,8 @@ var StreamStats;
                 this.remove = [];
             }
             return WatershedEditDecisionList;
-        }()); //end class
-        Models.WatershedEditDecisionList = WatershedEditDecisionList;
+        }());
+        Models.WatershedEditDecisionList = WatershedEditDecisionList; //end class
     })(Models = StreamStats.Models || (StreamStats.Models = {}));
 })(StreamStats || (StreamStats = {})); //end module 
 //# sourceMappingURL=WatershedEDL.js.map

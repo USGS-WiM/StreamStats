@@ -1,16 +1,11 @@
 //------------------------------------------------------------------------------
 //----- Help ---------------------------------------------------------------
 //------------------------------------------------------------------------------
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var StreamStats;
 (function (StreamStats) {
     var Controllers;
@@ -24,20 +19,19 @@ var StreamStats;
         var HelpController = (function (_super) {
             __extends(HelpController, _super);
             function HelpController($scope, $http, $sce, studyAreaService, modal, Upload) {
-                var _this = _super.call(this, $http, '') || this;
-                $scope.vm = _this;
-                _this.StudyArea = studyAreaService.selectedStudyArea;
-                _this.Upload = Upload;
-                _this.http = $http;
-                _this.sce = $sce;
-                _this.modalInstance = modal;
-                _this.StudyArea = studyAreaService.selectedStudyArea;
-                _this.freshdeskTicketData = new FreshdeskTicketData();
-                _this.selectedHelpTabName = "help";
-                _this.showSuccessAlert = false;
-                _this.submittingSupportTicket = false;
-                _this.init();
-                return _this;
+                _super.call(this, $http, '');
+                $scope.vm = this;
+                this.StudyArea = studyAreaService.selectedStudyArea;
+                this.Upload = Upload;
+                this.http = $http;
+                this.sce = $sce;
+                this.modalInstance = modal;
+                this.StudyArea = studyAreaService.selectedStudyArea;
+                this.freshdeskTicketData = new FreshdeskTicketData();
+                this.selectedHelpTabName = "help";
+                this.showSuccessAlert = false;
+                this.submittingSupportTicket = false;
+                this.init();
             }
             //Methods  
             //-+-+-+-+-+-+-+-+-+-+-+-
@@ -151,11 +145,11 @@ var StreamStats;
                 if (false || !!document.documentMode)
                     this.Browser = "IE";
             };
+            //Constructor
+            //-+-+-+-+-+-+-+-+-+-+-+-
+            HelpController.$inject = ['$scope', '$http', '$sce', 'StreamStats.Services.StudyAreaService', '$modalInstance', 'Upload'];
             return HelpController;
         }(WiM.Services.HTTPServiceBase)); //end  class
-        //Constructor
-        //-+-+-+-+-+-+-+-+-+-+-+-
-        HelpController.$inject = ['$scope', '$http', '$sce', 'StreamStats.Services.StudyAreaService', '$modalInstance', 'Upload'];
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.HelpController', HelpController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));
