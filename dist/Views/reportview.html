@@ -72,8 +72,8 @@
                                 <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList">
                                     <td ng-bind="parameter.code"></td>
                                     <td ng-bind="parameter.description"></td>
-                                    <td ng-bind="parameter.value"></td>
-                                    <td ng-if="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated && vm.showRegulation" ng-bind="parameter.unRegulatedValue.toFixed(3)"></td>
+                                    <td>{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
+                                    <td ng-if="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated && vm.showRegulation">{{parameter.unRegulatedValue == -99999 ? 'undefined' : parameter.unRegulatedValue.toFixed(3)}}</td>
                                     <td ng-bind="parameter.unit"></td>
                                 </tr>
                             </tbody>
@@ -112,8 +112,8 @@
                                     <tr ng-repeat="parameter in RegressionRegion.Parameters">
                                         <td ng-bind="parameter.Code"></td>
                                         <td ng-bind="parameter.Name"></td>
-                                        <td ng-bind="parameter.Value" ng-class="(parameter.Value < parameter.Limits.Min) || (parameter.Value > parameter.Limits.Max) ? 'wim-warning' : ''"></td>
-                                        <td ng-if="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated && vm.showRegulation" ng-bind="parameter.unRegulatedValue.toFixed(3)" ng-class="(parameter.Value < parameter.Limits.Min) || (parameter.Value > parameter.Limits.Max) ? 'wim-warning' : ''"></td>
+                                        <td ng-class="(parameter.Value < parameter.Limits.Min) || (parameter.Value > parameter.Limits.Max) ? 'wim-warning' : ''">{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
+                                        <td ng-if="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated && vm.showRegulation" ng-class="(parameter.Value < parameter.Limits.Min) || (parameter.Value > parameter.Limits.Max) ? 'wim-warning' : ''">{{parameter.unRegulatedValue == -99999 ? 'undefined' : parameter.unRegulatedValue.toFixed(3)}}</td>
                                         <td ng-bind="parameter.UnitType.Unit"></td>
                                         <td ng-bind="parameter.Limits.Min"></td>
                                         <td ng-bind="parameter.Limits.Max"></td>
