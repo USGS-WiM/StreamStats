@@ -95,7 +95,7 @@ module StreamStats.Services {
 
             var request: WiM.Services.Helpers.RequestInfo =
                 new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST,
-                    'json', { InputLineFeatures: esriJSON, returnZ: true, f: 'json'},
+                    'json', { InputLineFeatures: esriJSON, returnZ: true, DEMResolution: '30m', f: 'json'},
                     { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
                     WiM.Services.Helpers.paramsTransform);
 						
@@ -108,7 +108,9 @@ module StreamStats.Services {
                         var coords = response.data.results[0].value.features[0].geometry.paths[0];
 
                         if (coords.length > 0) {
-                            //console.log('coords before: ', coords)
+
+                            //get copy of coordinates for elevation plugin
+                            var coords_orig = angular.fromJson(angular.toJson(coords));
 
                             //convert elevation values if units are meters
                             var units = 'feet';
@@ -118,7 +120,7 @@ module StreamStats.Services {
 
                             if (units = 'meters') {
                                 coords = coords.map((elem) => {
-                                    //convert to mi
+                                    //convert to feet
                                     return [elem[0], elem[1], elem[2] * 3.28084]
                                 });
                             }
@@ -135,16 +137,26 @@ module StreamStats.Services {
                                     this.coordinateList.push([value[1].toFixed(5), value[0].toFixed(5), value[2].toFixed(2), (totalDistance).toFixed(2)])
                                     x1 = x2;
                                     continue;
-                                }//end if                               
-                                //compute distance meters=>miles
-                                totalDistance += x1.distanceTo(x2) * 0.000621371;
-                                this.coordinateList.push([value[1].toFixed(5), value[0].toFixed(5), value[2].toFixed(2), (totalDistance).toFixed(2)])                               
-                            }//next i                               
+                                }//end if                   
+
+                                //compare each point to origin point
+                                //leaflet 'distanceTo' method returns meters, compute distance meters=>miles
+                                totalDistance = x1.distanceTo(x2) * 0.000621371;
+
+                                ////get distances between each point
+                                //var last_value = coords[i - 1];
+                                //x1 = L.latLng(last_value[0], last_value[1]);
+                                //console.log(x1.distanceTo(x2), x1.distanceTo(x2) * 0.000621371)
+                                //totalDistance += x1.distanceTo(x2) * 0.000621371;
+
+                                this.coordinateList.push([value[1].toFixed(5), value[0].toFixed(5), value[2].toFixed(2), (totalDistance).toFixed(2)]) 
+                                
+                            }//next i    
 
                             this.elevationProfileGeoJSON = {
                                 "name": "NewFeatureType", "type": "FeatureCollection"
                                 , "features": [
-                                    { "type": "Feature", "geometry": { "type": "LineString", "coordinates": coords }, "properties": "" }
+                                    { "type": "Feature", "geometry": { "type": "LineString", "coordinates": coords_orig }, "properties": "" }
                                 ]
                             };
                         }
