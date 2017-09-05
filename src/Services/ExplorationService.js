@@ -76,7 +76,7 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', { InputLineFeatures: esriJSON, returnZ: true, DEMResolution: '30m', f: 'json' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
                 //do ajax call for future precip layer, needs to happen even if only runoff value is needed for this region
                 this.Execute(request).then(function (response) {
-                    //console.log('elevation profile response: ', response.data);
+                    console.log('elevation profile response: ', response.data);
                     if (response.data && response.data.results) {
                         var coords = response.data.results[0].value.features[0].geometry.paths[0];
                         if (coords.length > 0) {
@@ -90,32 +90,23 @@ var StreamStats;
                             });
                             if (units = 'meters') {
                                 coords = coords.map(function (elem) {
-                                    //convert to feet
+                                    //convert elevation value from meters to feet
                                     return [elem[0], elem[1], elem[2] * 3.28084];
                                 });
                             }
                             // build table data and get distance between points
-                            _this.coordinateList = [];
-                            var x1 = null;
-                            var totalDistance = 0.00000;
-                            for (var i = 0; i < coords.length; i++) {
-                                var value = coords[i];
-                                var x2 = L.latLng(value[0], value[1]);
-                                //initialized w/ first value
-                                if (x1 == null) {
-                                    _this.coordinateList.push([value[1].toFixed(5), value[0].toFixed(5), value[2].toFixed(2), (totalDistance).toFixed(2)]);
-                                    x1 = x2;
-                                    continue;
-                                } //end if                   
-                                //compare each point to origin point
-                                //leaflet 'distanceTo' method returns meters, compute distance meters=>miles
-                                totalDistance = x1.distanceTo(x2) * 0.000621371;
-                                ////get distances between each point
-                                //var last_value = coords[i - 1];
-                                //x1 = L.latLng(last_value[0], last_value[1]);
-                                //console.log(x1.distanceTo(x2), x1.distanceTo(x2) * 0.000621371)
-                                //totalDistance += x1.distanceTo(x2) * 0.000621371;
-                                _this.coordinateList.push([value[1].toFixed(5), value[0].toFixed(5), value[2].toFixed(2), (totalDistance).toFixed(2)]);
+                            var totalDistance = 0;
+                            //initialize list with first value and zero distance
+                            _this.coordinateList = [[coords[0][1].toFixed(5), coords[0][0].toFixed(5), coords[0][2].toFixed(2), totalDistance.toFixed(2)]];
+                            //loop over coords and calulate distances
+                            for (var i = 1; i < coords.length; i++) {
+                                //use leaflet 'distanceTo' method (units meters)
+                                var previousPoint = L.latLng(coords[i - 1][1], coords[i - 1][0]);
+                                var currentPoint = L.latLng(coords[i][1], coords[i][0]);
+                                totalDistance += previousPoint.distanceTo(currentPoint);
+                                console.log('total D:', totalDistance * 0.000621371, coords);
+                                //convert meters to miles for total distance
+                                _this.coordinateList.push([coords[i][1].toFixed(5), coords[i][0].toFixed(5), coords[i][2].toFixed(2), (totalDistance * 0.000621371).toFixed(2)]);
                             } //next i    
                             _this.elevationProfileGeoJSON = {
                                 "name": "NewFeatureType", "type": "FeatureCollection",
