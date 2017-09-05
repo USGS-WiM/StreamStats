@@ -1437,7 +1437,8 @@ div.leaflet-top > .elevation {
     font-size: 12px !important;
 }
 
-#printArea h3{
+#printArea h3,
+#printArea h4{
     font-size: 14px !important;
     font-weight: 400 !important;
 }
@@ -1449,4 +1450,27 @@ div.leaflet-top > .elevation {
     height: 20px !important;
     position: relative !important;
     top: 10px !important;
+}
+    #reportMap [type=checkbox]:checked:before {
+        content: 'x';
+        font-size: 14px;
+        position: absolute;
+        font-weight: bolder;
+        margin-left: 4px;
+        margin-top: -1px;
+    }
+
+.exploration-tools-expanded h6{
+    font-weight: 400;
+    font-size: 12px;
+}
+
+.wimLegend-application-item img{
+    margin-left: 5px !important;
+}
+
+.angular-leaflet-control-layers-expanded .list-group {
+    display: block;
+    overflow: scroll;
+    max-height: 400px;
 }
