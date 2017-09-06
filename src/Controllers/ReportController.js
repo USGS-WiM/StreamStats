@@ -350,8 +350,12 @@ var StreamStats;
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             ReportController.prototype.tableToCSV = function ($table) {
-                var $headers = $table.find('tr:has(th)'), $rows = $table.find('tr:has(td)'), tmpColDelim = String.fromCharCode(11) // vertical tab character
+                var $headers = $table.find('tr:has(th)'), $rows = $table.find('tr:has(td)')
+                // Temporary delimiter characters unlikely to be typed by keyboard
+                // This is to avoid accidentally splitting the actual contents
+                , tmpColDelim = String.fromCharCode(11) // vertical tab character
                 , tmpRowDelim = String.fromCharCode(0) // null character
+                // actual delimiter characters for CSV format
                 , colDelim = '","', rowDelim = '"\r\n"';
                 // Grab text from table into CSV formatted string
                 var csv = '"';
@@ -389,13 +393,14 @@ var StreamStats;
                     return index == 0 ? letter.toLowerCase() : letter.toUpperCase();
                 }).replace(/\s+/g, '');
             };
-            //Constructor
-            //-+-+-+-+-+-+-+-+-+-+-+-
-            ReportController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService'];
             return ReportController;
         }()); //end class
+        //Constructor
+        //-+-+-+-+-+-+-+-+-+-+-+-
+        ReportController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService'];
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.ReportController', ReportController);
+        //.controller('StreamStats.Controllers.MapController', MapController)
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));
 })(StreamStats || (StreamStats = {})); //end module
 //# sourceMappingURL=ReportController.js.map

@@ -1,11 +1,16 @@
 //------------------------------------------------------------------------------
 //----- StudyAreaService -------------------------------------------------------
 //------------------------------------------------------------------------------
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 //-------1---------2---------3---------4---------5---------6---------7---------8
 //       01234567890123456789012345678901234567890123456789012345678901234567890
 //-------+---------+---------+---------+---------+---------+---------+---------+
@@ -38,11 +43,12 @@ var StreamStats;
                 if (saVisible === void 0) { saVisible = false; }
                 if (paramState === void 0) { paramState = false; }
                 if (additionalFeatures === void 0) { additionalFeatures = false; }
-                _super.call(this);
-                this.studyArea = studyArea;
-                this.studyAreaVisible = saVisible;
-                this.parameterLoaded = paramState;
-                this.additionalFeaturesLoaded = additionalFeatures;
+                var _this = _super.call(this) || this;
+                _this.studyArea = studyArea;
+                _this.studyAreaVisible = saVisible;
+                _this.parameterLoaded = paramState;
+                _this.additionalFeaturesLoaded = additionalFeatures;
+                return _this;
             }
             return StudyAreaEventArgs;
         }(WiM.Event.EventArgs));
@@ -53,11 +59,10 @@ var StreamStats;
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
             function StudyAreaService($http, $q, eventManager, toaster) {
-                var _this = this;
-                _super.call(this, $http, configuration.baseurls['StreamStatsServices']);
-                this.$http = $http;
-                this.$q = $q;
-                this.eventManager = eventManager;
+                var _this = _super.call(this, $http, configuration.baseurls['StreamStatsServices']) || this;
+                _this.$http = $http;
+                _this.$q = $q;
+                _this.eventManager = eventManager;
                 eventManager.AddEvent(Services.onSelectedStudyParametersLoaded);
                 eventManager.AddEvent(Services.onSelectedStudyAreaChanged);
                 eventManager.AddEvent(Services.onStudyAreaReset);
@@ -65,10 +70,11 @@ var StreamStats;
                     _this.onStudyAreaChanged(sender, e);
                 }));
                 eventManager.AddEvent(Services.onEditClick);
-                this._studyAreaList = [];
-                this.toaster = toaster;
-                this.clearStudyArea();
-                this.servicesURL = configuration.baseurls['StreamStatsServices'];
+                _this._studyAreaList = [];
+                _this.toaster = toaster;
+                _this.clearStudyArea();
+                _this.servicesURL = configuration.baseurls['StreamStatsServices'];
+                return _this;
             }
             Object.defineProperty(StudyAreaService.prototype, "StudyAreaList", {
                 get: function () {

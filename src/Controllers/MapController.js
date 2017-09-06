@@ -147,6 +147,19 @@ var StreamStats;
                     else {
                         //query streamgages
                         _this.queryPoints(args.leafletEvent);
+                        //if (exploration.selectedMethod != null) {
+                        //    exploration.selectedMethod.addLocation(new WiM.Models.Point(args.leafletEvent.latlng.lat, args.leafletEvent.latlng.lng, '4326'));
+                        //    for (var i: number = 0; i < exploration.selectedMethod.locations.length; i++) {
+                        //        var item = exploration.selectedMethod.locations[i];
+                        //        this.markers['netnav_' + i] = {
+                        //            lat: item.Latitude,
+                        //            lng: item.Longitude,
+                        //            message: exploration.GetToolName(exploration.selectedMethod.ModelType) + " point",
+                        //            focus: true,
+                        //            draggable: false
+                        //        };
+                        //    }//next i
+                        //}
                     }
                 });
                 $scope.$watch(function () { return _this.bounds; }, function (newval, oldval) { return _this.mapBoundsChange(oldval, newval); });
@@ -402,6 +415,8 @@ var StreamStats;
                                     });
                                 }
                                 else {
+                                    //nationalLayers.append('<h5>' + layerName + '</h5>');
+                                    //nationalLayers.append('<strong>' + key + ': </strong>' + value + '</br>');
                                 }
                                 //show popup
                                 if (resultsCount > 0) {
@@ -598,7 +613,7 @@ var StreamStats;
                         else {
                             _this.toaster.clear();
                             _this.studyArea.checkingDelineatedPoint = true;
-                            _this.toaster.pop("info", "Information", "Validating your clicked point...", 5000);
+                            _this.toaster.pop("info", "Information", "Validating your clicked point...", true, 0);
                             _this.cursorStyle = 'wait';
                             _this.markers = {};
                             //put pourpoint on the map
@@ -621,8 +636,19 @@ var StreamStats;
                             //force map refresh
                             map.invalidateSize();
                             var selectedRegionLayerName = _this.regionServices.selectedRegion.RegionID + "_region";
+                            //if there are no map layers to query, skip with warning
+                            if (queryString === 'visible:') {
+                                _this.toaster.clear();
+                                _this.toaster.pop("warning", "Selected State/Region does not have exlusion areas defined", "Delineating with no exclude polygon layer...", true, 0);
+                                _this.startDelineate(latlng, true);
+                                _this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'not advised (no point query)' });
+                                _this.cursorStyle = 'pointer';
+                                return;
+                            }
+                            //do point validation query
                             maplayers.overlays[selectedRegionLayerName].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run(function (error, results) {
-                                //console.log('exclusion area check: ', queryString, results); 
+                                console.log('exclusion area check: ', queryString, results);
+                                _this.toaster.clear();
                                 //if there are no exclusion area hits
                                 if (results.features.length == 0) {
                                     //ga event
@@ -679,6 +705,7 @@ var StreamStats;
                                 //console.log('add layer', layer.toGeoJSON());
                                 var editPolygon = greinerHormann.union(sourcePolygon, clipPolygon);
                                 _this.studyArea.WatershedEditDecisionList.append.push(layer.toGeoJSON());
+                                //this.studyArea.Disclaimers['isEdited'] = true;
                             }
                             if (_this.studyArea.drawControlOption == 'remove') {
                                 //console.log('remove layer', layer.toGeoJSON());
@@ -691,6 +718,7 @@ var StreamStats;
                                     return;
                                 }
                                 _this.studyArea.WatershedEditDecisionList.remove.push(layer.toGeoJSON());
+                                //this.studyArea.Disclaimers['isEdited'] = true;
                             }
                             //set studyArea basin to new edited polygon
                             basin.geometry.coordinates[0] = [];
@@ -822,6 +850,7 @@ var StreamStats;
                         return;
                     }
                     this.nssService.queriedRegions = true;
+                    //console.log('set queriedregions flag to true: ', this.nssService.queriedRegions);
                 }
             };
             MapController.prototype.removeGeoJson = function (layerName) {
@@ -945,6 +974,7 @@ var StreamStats;
                     //console.log('in setBoundsByRegion selectedRegion gets set here');
                     this.regionServices.selectedRegion = this.regionServices.regionList[0];
                     this.bounds = this.leafletBoundsHelperService.createBoundsFromArray(this.regionServices.selectedRegion.Bounds);
+                    //this.center = <ICenter>{};
                 }
             };
             MapController.prototype.addRegionOverlayLayers = function (regionId) {
@@ -1026,11 +1056,11 @@ var StreamStats;
                 if (isInExclusionArea)
                     this.studyArea.selectedStudyArea.Disclaimers['isInExclusionArea'] = 'The delineation point is in an exclusion area.';
             };
-            //Constructor
-            //-+-+-+-+-+-+-+-+-+-+-+-
-            MapController.$inject = ['$scope', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService'];
             return MapController;
         }()); //end class
+        //Constructor
+        //-+-+-+-+-+-+-+-+-+-+-+-
+        MapController.$inject = ['$scope', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService'];
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.MapController', MapController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));
