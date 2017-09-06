@@ -796,7 +796,7 @@ module StreamStats.Controllers {
                         this.toaster.clear();
                         this.studyArea.checkingDelineatedPoint = true;
 
-                        this.toaster.pop("info", "Information", "Validating your clicked point...", 5000);
+                        this.toaster.pop("info", "Information", "Validating your clicked point...", true, 0);
                         this.cursorStyle = 'wait';
                         this.markers = {};
 
@@ -826,9 +826,21 @@ module StreamStats.Controllers {
 
                         var selectedRegionLayerName = this.regionServices.selectedRegion.RegionID + "_region";
 
+                        //if there are no map layers to query, skip with warning
+                        if (queryString === 'visible:') {
+                            this.toaster.clear();
+                            this.toaster.pop("warning", "Selected State/Region does not have exlusion areas defined", "Delineating with no exclude polygon layer...", true, 0);
+                            this.startDelineate(latlng, true);
+                            this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'not advised (no point query)' });
+                            this.cursorStyle = 'pointer';
+                            return;
+                        }
+
+                        //do point validation query
                         maplayers.overlays[selectedRegionLayerName].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run((error: any, results: any) => {
 
-                            //console.log('exclusion area check: ', queryString, results); 
+                            console.log('exclusion area check: ', queryString, results); 
+                            this.toaster.clear();
 
                             //if there are no exclusion area hits
                             if (results.features.length == 0) {

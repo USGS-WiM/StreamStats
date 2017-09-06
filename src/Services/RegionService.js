@@ -1,11 +1,16 @@
 //------------------------------------------------------------------------------
 //----- RegionService -----------------------------------------------------
 //------------------------------------------------------------------------------
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 //-------1---------2---------3---------4---------5---------6---------7---------8
 //       01234567890123456789012345678901234567890123456789012345678901234567890
 //-------+---------+---------+---------+---------+---------+---------+---------+
@@ -32,29 +37,30 @@ var StreamStats;
             function Region() {
             }
             return Region;
-        }());
-        Services.Region = Region; //end class
+        }()); //end class
+        Services.Region = Region;
         var Parameter = (function () {
             function Parameter() {
             }
             return Parameter;
-        }());
-        Services.Parameter = Parameter; //end class
+        }()); //end class
+        Services.Parameter = Parameter;
         Services.onSelectedRegionChanged = "onSelectedRegionChanged";
         var RegionService = (function (_super) {
             __extends(RegionService, _super);
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
             function RegionService($http, $q, toaster, eventManager) {
-                _super.call(this, $http, configuration.baseurls['StreamStatsServices']);
-                this.$q = $q;
-                this.eventManager = eventManager;
-                this.toaster = toaster;
-                this.regionList = [];
-                this.parameterList = [];
-                this.masterRegionList = configuration.regions;
-                this.streamStatsAvailable = false;
-                this.eventManager.AddEvent(Services.onSelectedRegionChanged);
+                var _this = _super.call(this, $http, configuration.baseurls['StreamStatsServices']) || this;
+                _this.$q = $q;
+                _this.eventManager = eventManager;
+                _this.toaster = toaster;
+                _this.regionList = [];
+                _this.parameterList = [];
+                _this.masterRegionList = configuration.regions;
+                _this.streamStatsAvailable = false;
+                _this.eventManager.AddEvent(Services.onSelectedRegionChanged);
+                return _this;
             }
             Object.defineProperty(RegionService.prototype, "selectedRegion", {
                 get: function () {

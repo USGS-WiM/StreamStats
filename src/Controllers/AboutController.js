@@ -1,11 +1,16 @@
 //------------------------------------------------------------------------------
 //----- About ---------------------------------------------------------------
 //------------------------------------------------------------------------------
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 //-------1---------2---------3---------4---------5---------6---------7---------8
 //       01234567890123456789012345678901234567890123456789012345678901234567890
 //-------+---------+---------+---------+---------+---------+---------+---------+
@@ -27,16 +32,17 @@ var StreamStats;
         var AboutController = (function (_super) {
             __extends(AboutController, _super);
             function AboutController($scope, $http, $sce, modalService, region, studyAreaService, modal) {
-                _super.call(this, $http, configuration.baseurls.StreamStats);
-                $scope.vm = this;
-                this.sce = $sce;
-                this.modalInstance = modal;
-                this.modalService = modalService;
-                this.StudyArea = studyAreaService.selectedStudyArea;
-                this.regionService = region;
-                this.selectedAboutTabName = "about";
-                this.regionArticle = '<h3>No State or Region Selected</h3>';
-                this.init();
+                var _this = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
+                $scope.vm = _this;
+                _this.sce = $sce;
+                _this.modalInstance = modal;
+                _this.modalService = modalService;
+                _this.StudyArea = studyAreaService.selectedStudyArea;
+                _this.regionService = region;
+                _this.selectedAboutTabName = "about";
+                _this.regionArticle = '<h3>No State or Region Selected</h3>';
+                _this.init();
+                return _this;
             }
             //Methods  
             //-+-+-+-+-+-+-+-+-+-+-+-
@@ -215,11 +221,11 @@ var StreamStats;
                     var expires = "";
                 document.cookie = name + "=" + value + expires + "; path=/";
             };
-            //Constructor
-            //-+-+-+-+-+-+-+-+-+-+-+-
-            AboutController.$inject = ['$scope', '$http', '$sce', 'StreamStats.Services.ModalService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', '$modalInstance'];
             return AboutController;
         }(WiM.Services.HTTPServiceBase)); //end  class
+        //Constructor
+        //-+-+-+-+-+-+-+-+-+-+-+-
+        AboutController.$inject = ['$scope', '$http', '$sce', 'StreamStats.Services.ModalService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', '$modalInstance'];
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.AboutController', AboutController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));
