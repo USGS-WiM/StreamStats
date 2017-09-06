@@ -8,7 +8,7 @@ configuration.baseurls =
     'StreamStatsServices': 'https://test.streamstats.usgs.gov',
     'StreamStatsMapServices': 'https://test.streamstats.usgs.gov',
     'NSS': 'https://test.streamstats.usgs.gov/nssservices',
-    'WaterUseServices': 'http://localhost:53812',
+    'WaterUseServices': 'https://test.streamstats.usgs.gov/wateruseservices',
     'NationalMapRasterServices': 'https://raster.nationalmap.gov/arcgis/rest/services'
 }
 
@@ -17,7 +17,7 @@ if (window.location.host === 'streamstats.usgs.gov') {
     configuration.baseurls.StreamStatsServices = 'https://streamstats.usgs.gov',
     configuration.baseurls.StreamStatsMapServices = 'https://streamstats.usgs.gov',
     configuration.baseurls.NSS = 'https://streamstats.usgs.gov/nssservices',
-    configuration.BaseURL.WaterUseServices ='http://54.147.255.78/wateruseservices',
+    configuration.BaseURL.WaterUseServices ='https://streamstats.usgs.gov/wateruseservices',
     configuration.environment = 'production'
 }
 
