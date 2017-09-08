@@ -27,6 +27,7 @@
     font-weight: 700;
     src: local('Roboto Bold'),local('Roboto-Bold'),url(https://fonts.gstatic.com/s/roboto/v16/d-6IYplOFocCacKzxwXSOKCWcynf_cDxXwCLxiixG1c.ttf) format('truetype');
 }
+
 /*!
   Ionicons, v2.0.1
   Created by Ben Sperry for the Ionic Framework, http://ionicons.com/
@@ -40,8 +41,8 @@
 */
 @font-face {
     font-family: Ionicons;
-    src: url(https://code.ionicframework.com/ionicons/2.0.1/fonts/ionicons.eot?v=2.0.1);
-    src: url(https://code.ionicframework.com/ionicons/2.0.1/fonts/ionicons.eot?v=2.0.1#iefix) format("embedded-opentype"),url(https://code.ionicframework.com/ionicons/2.0.1/fonts/ionicons.ttf?v=2.0.1) format("truetype"),url(https://code.ionicframework.com/ionicons/2.0.1/fonts/ionicons.woff?v=2.0.1) format("woff"),url(https://code.ionicframework.com/ionicons/2.0.1/fonts/ionicons.svg?v=2.0.1#Ionicons) format("svg");
+    src: url(https://cdn.jsdelivr.net/npm/ionicons@2.0.1/fonts/ionicons.eot?v=2.0.1);
+    src: url(https://cdn.jsdelivr.net/npm/ionicons@2.0.1/fonts/ionicons.eot?v=2.0.1#iefix) format("embedded-opentype"),url(https://cdn.jsdelivr.net/npm/ionicons@2.0.1/fonts/ionicons.ttf?v=2.0.1) format("truetype"),url(https://cdn.jsdelivr.net/npm/ionicons@2.0.1/fonts/ionicons.woff?v=2.0.1) format("woff"),url(https://cdn.jsdelivr.net/npm/ionicons@2.0.1/fonts/ionicons.svg?v=2.0.1#Ionicons) format("svg");
     font-weight: 400;
     font-style: normal;
 }
