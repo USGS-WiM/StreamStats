@@ -647,7 +647,7 @@ var StreamStats;
                             }
                             //do point validation query
                             maplayers.overlays[selectedRegionLayerName].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run(function (error, results) {
-                                console.log('exclusion area check: ', queryString, results);
+                                //console.log('exclusion area check: ', queryString, results); 
                                 _this.toaster.clear();
                                 //if there are no exclusion area hits
                                 if (results.features.length == 0) {
