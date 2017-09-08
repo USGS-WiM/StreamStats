@@ -194,18 +194,14 @@ module StreamStats.Services {
                 (response: any) => {  
                     //console.log('delineation response headers: ', response.headers());
 
-                    //tests
-                    //response.data.featurecollection[1].feature.features.length = 0;
-
                     if (response.data.featurecollection && response.data.featurecollection[1] && response.data.featurecollection[1].feature.features.length > 0) {
-                        this.selectedStudyArea.Server = response.headers()['usgswim-hostname'];
+                        this.selectedStudyArea.Server = response.headers()['usgswim-hostname'].toLowerCase();
                         this.selectedStudyArea.Features = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"] : null;
                         this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
                         this.selectedStudyArea.Date = new Date();
 
                         //reset URLS based on load balancer response from watershed request (ensure subsequent requests hit same EC2 instance)
                         if (configuration.environment == "production") {
-                            this.selectedStudyArea.Server = response.headers()['usgswim-hostname'].toLowerCase();
                             configuration.baseurls.StreamStatsServices = 'https://' + this.selectedStudyArea.Server + '.streamstats.usgs.gov';
                             configuration.baseurls.StreamStatsMapServices = 'https://' + this.selectedStudyArea.Server + '.streamstats.usgs.gov';
                             configuration.baseurls.NSS = 'https://' + this.selectedStudyArea.Server + '.streamstats.usgs.gov/nssservices';

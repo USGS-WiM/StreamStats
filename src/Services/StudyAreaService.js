@@ -149,16 +149,13 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     //console.log('delineation response headers: ', response.headers());
-                    //tests
-                    //response.data.featurecollection[1].feature.features.length = 0;
                     if (response.data.featurecollection && response.data.featurecollection[1] && response.data.featurecollection[1].feature.features.length > 0) {
-                        _this.selectedStudyArea.Server = response.headers()['usgswim-hostname'];
+                        _this.selectedStudyArea.Server = response.headers()['usgswim-hostname'].toLowerCase();
                         _this.selectedStudyArea.Features = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"] : null;
                         _this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
                         _this.selectedStudyArea.Date = new Date();
                         //reset URLS based on load balancer response from watershed request (ensure subsequent requests hit same EC2 instance)
                         if (configuration.environment == "production") {
-                            _this.selectedStudyArea.Server = response.headers()['usgswim-hostname'].toLowerCase();
                             configuration.baseurls.StreamStatsServices = 'https://' + _this.selectedStudyArea.Server + '.streamstats.usgs.gov';
                             configuration.baseurls.StreamStatsMapServices = 'https://' + _this.selectedStudyArea.Server + '.streamstats.usgs.gov';
                             configuration.baseurls.NSS = 'https://' + _this.selectedStudyArea.Server + '.streamstats.usgs.gov/nssservices';
