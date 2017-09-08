@@ -1,4 +1,4 @@
-﻿﻿/*
+﻿﻿﻿/*
     ===========================
     ===========================
          General
@@ -1471,6 +1471,13 @@ div.leaflet-top > .elevation {
 
 .angular-leaflet-control-layers-expanded .list-group {
     display: block;
-    overflow: scroll;
+    overflow-y: scroll;
     max-height: 400px;
+}
+
+.toast-warning {
+    background-color: #FF9200 !important;
+}
+.toast-error {
+    background-color: #FF2B00 !important;
 }
