@@ -50,6 +50,7 @@ module StreamStats.Controllers {
         public regionArticle: Object;
         public activeNewsArticles: Object;
         public pastNewsArticles: Object;
+        public disclaimersArticle: string;
         public AppVersion: string;
 
         //Constructor
@@ -64,6 +65,7 @@ module StreamStats.Controllers {
             this.StudyArea = studyAreaService.selectedStudyArea;
             this.regionService = region;
             this.selectedAboutTabName = "about";
+            this.regionArticle = '<h3>No State or Region Selected</h3>';
             this.init();  
         }  
         
@@ -179,25 +181,92 @@ module StreamStats.Controllers {
             var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.RegionInfoFolder;
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
 
-            //clear article
-            this.regionArticle = null;
+            //check if this state/region is enabled in appConfig.js
+            configuration.regions.forEach((value, index) => {
+
+                //find this state/region
+                if (value.Name === regionID) {
+                    if (!value.regionEnabled) {
+                         this.regionArticle = '<div class="wim-alert">StreamStats has not been developed for <strong>' + value.Name + '</strong>.  Please contact the <a href="mailto:support@streamstats.freshdesk.com">streamstats team</a> if you would like StreamStats enabled for this State/Region.</div>';
+                    }
+
+                    //otherwise get region help article
+                    else {
+                        //clear article
+                        this.regionArticle = '<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>';
+
+                        this.Execute(request).then(
+                            (response: any) => {
+
+                                response.data.folder.articles.forEach((article) => {
+                                    if (article.title == regionID) {
+                                        //console.log("Help article found for : ", regionID);
+                                        this.regionArticle = article.description;
+                                        return;
+                                    }
+                                });
+
+                            }, (error) => {
+                                //sm when error
+                            }).finally(() => {
+
+                            });
+                    }
+                }
+            });
+        }
+
+        public getDisclaimersArticle() {
+
+            console.log("Trying to open disclaimers article");
+
+            //'DisclaimersArticle': '/solution/categories/9000106503/folders/9000163536/articles/9000127695.json',
+            //'CreditsArticle': '/solution/categories/9000106503/folders/9000163536/articles/9000127697.json',
+
+            var headers = {
+                "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
+            };
+
+            var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.DisclaimersArticle;
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
 
             this.Execute(request).then(
                 (response: any) => {
+                    console.log('Successfully retrieved disclaimers article');
 
-                    response.data.folder.articles.forEach((article) => {
-                        if (article.title == regionID) {
-                            //console.log("Help article found for : ", regionID);
-                            this.regionArticle = article;
-                            return;
-                        }
-                    });
+                    this.disclaimersArticle = response.data.article.description;
+
+                }, (error) => {
+                    //sm when error
+                }).finally(() => {
+                    this.getCreditsArticle();
+                });
+
+        }
+
+        public getCreditsArticle() {
+
+            console.log("Trying to open credits article");
+
+            var headers = {
+                "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
+            };
+
+            var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.CreditsArticle;
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
+
+            this.Execute(request).then(
+                (response: any) => {
+                    console.log('Successfully retrieved credits article');
+
+                    this.disclaimersArticle += response.data.article.description;
 
                 }, (error) => {
                     //sm when error
                 }).finally(() => {
 
                 });
+
         }
 
         public convertUnsafe(x: string) {
@@ -213,6 +282,7 @@ module StreamStats.Controllers {
             this.getRegionHelpArticle();
             this.getActiveNews();
             this.getPastNews();
+            this.getDisclaimersArticle();
         }
 
         public readCookie(name) {

@@ -345,12 +345,12 @@ module StreamStats.Controllers {
                             this.nssService.selectedStatisticsGroupList.splice(i, 1);
                             break;
                         }//end if
-                    }//next i
+                    }//next
 
                     
                 }//end if
                 this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList,"value", this.regionService.selectedRegion.RegionID, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) { return elem.code; }).join(","));
-                if (this.studyAreaService.selectedStudyArea.Disclaimers["isRegulated"]) {
+                if (this.regionService.selectedRegion.Applications.indexOf("RegulationFlows") !=-1) {
                     setTimeout(() => {
                         this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList, "unRegulatedValue", this.regionService.selectedRegion.RegionID, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) { return elem.code; }).join(","), true);
                     }, 500);
@@ -398,7 +398,12 @@ module StreamStats.Controllers {
             if (this.regionService.selectedRegion.Applications.indexOf("CoordinatedReach") != -1) {
                 this.studyAreaService.queryCoordinatedReach();
             }
-            this.studyAreaService.queryRegressionRegions();
+
+            //only do this if we havent done it already and basin hasn't been edited
+            if (!this.studyAreaService.selectedStudyArea.RegressionRegions && !this.studyAreaService.selectedStudyArea.Disclaimers['isEdited']) {
+                this.studyAreaService.queryRegressionRegions();
+            }
+            else this.setProcedureType(3);
         }
 
         private queryStatisticsGroupTypes() {
@@ -416,31 +421,58 @@ module StreamStats.Controllers {
 
         public onSelectedStatisticsGroupChanged() {
 
-            //console.log('StatisticsGroup param list changed.  loaded ', this.nssService.selectedStatisticsGroupList);
-
             //toggle show flows checkbox
             this.nssService.selectedStatisticsGroupList.length > 0 ? this.nssService.showFlowsTable = true : this.nssService.showFlowsTable = false;
 
-            this.regionService.parameterList.forEach((parameter) => {
+            //loop over whole statisticsgroups
+            this.nssService.selectedStatisticsGroupList.forEach((statisticsGroup) => {
 
-                //loop over whole statisticsgroups
-                this.nssService.selectedStatisticsGroupList.forEach((statisticsGroup) => {
+                if (statisticsGroup.RegressionRegions) {
 
-                    if (statisticsGroup.RegressionRegions) {
+                    //get their parameters
+                    statisticsGroup.RegressionRegions.forEach((regressionRegion) => {
 
-                        //get their parameters
-                        statisticsGroup.RegressionRegions.forEach((regressionRegion) => {
+                        //loop over list of state/region parameters to see if there is a match
+                        regressionRegion.Parameters.forEach((param) => {
 
-                            regressionRegion.Parameters.forEach((param) => {
+                            var found = false;
+                            for (var i = 0; i < this.regionService.parameterList.length; i++) {
+                                var parameter = this.regionService.parameterList[i];
                                 if (parameter.code.toLowerCase() == param.Code.toLowerCase()) {
                                     this.addParameterToStudyAreaList(parameter.code);
+                                    found = true;
+                                    break;
                                 }//end if
+                            }//next i
+                            
+                            if (!found) {
+                                //console.log('PARAM NOT FOUND', param.Code)
+                                this.toaster.pop('warning', "Missing Parameter: " + param.Code, "The selected scenario requires a parameter not available in this State/Region.  The value for this parameter will need to be entered manually.", 0);
 
-                            });// next param
-                        });// next regressionRegion
-                    }//end if
-                });//next statisticgroup
-            });//next parameter
+                                //add to region parameterList
+                                var newParam = {
+                                    name: param.name,
+                                    description: param.Description,
+                                    code: param.Code,
+                                    unit: param.UnitType.Unit,
+                                    value: null,
+                                    regulatedValue: null,
+                                    unRegulatedValue: null,
+                                    loaded:null,
+                                    checked: false,
+                                    toggleable: true
+                                }
+
+                                //push the param that was not in the original regionService paramaterList
+                                this.regionService.parameterList.push(newParam);
+
+                                //select it
+                                this.addParameterToStudyAreaList(param.Code);
+                            }
+                        });// next param
+                    });// next regressionRegion
+                }//end if
+            });//next statisticgroup
         }
 
         public OpenWateruse() {
@@ -498,7 +530,7 @@ module StreamStats.Controllers {
                 for (var i = 0; i < this.regionService.parameterList.length; i++) {   
                     let p: Services.IParameter = this.regionService.parameterList[i];
 
-                    if (p.code.toUpperCase() === paramCode && this.checkArrayForObj(this.studyAreaService.studyAreaParameterList, p) == -1) {
+                    if (p.code.toUpperCase() === paramCode.toUpperCase() && this.checkArrayForObj(this.studyAreaService.studyAreaParameterList, p) == -1) {
                         this.studyAreaService.studyAreaParameterList.push(p);
                         p['checked'] = true;
                         p['toggleable'] = false;

@@ -222,7 +222,8 @@ var StreamStats;
             SidebarController.prototype.calculateParameters = function () {
                 //ga event
                 this.angulartics.eventTrack('CalculateParameters', {
-                    category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.studyAreaService.studyAreaParameterList.map(function (elem) { return elem.code; }).join(",") });
+                    category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.studyAreaService.studyAreaParameterList.map(function (elem) { return elem.code; }).join(",")
+                });
                 //console.log('in Calculate Parameters');
                 this.studyAreaService.loadParameters();
             };
@@ -248,7 +249,8 @@ var StreamStats;
                 this.toaster.pop('wait', "Opening Report", "Please wait...", 5000);
                 //ga event
                 this.angulartics.eventTrack('CalculateFlows', {
-                    category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.nssService.selectedStatisticsGroupList.map(function (elem) { return elem.Name; }).join(",") });
+                    category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.nssService.selectedStatisticsGroupList.map(function (elem) { return elem.Name; }).join(",")
+                });
                 if (this.nssService.selectedStatisticsGroupList.length > 0 && this.nssService.showFlowsTable) {
                     var strippedoutStatisticGroups = [];
                     if (this.studyAreaService.selectedStudyArea.CoordinatedReach != null) {
@@ -264,10 +266,10 @@ var StreamStats;
                                 this.nssService.selectedStatisticsGroupList.splice(i, 1);
                                 break;
                             } //end if
-                        } //next i
+                        } //next
                     } //end if
                     this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList, "value", this.regionService.selectedRegion.RegionID, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) { return elem.code; }).join(","));
-                    if (this.studyAreaService.selectedStudyArea.Disclaimers["isRegulated"]) {
+                    if (this.regionService.selectedRegion.Applications.indexOf("RegulationFlows") != -1) {
                         setTimeout(function () {
                             _this.nssService.estimateFlows(_this.studyAreaService.studyAreaParameterList, "unRegulatedValue", _this.regionService.selectedRegion.RegionID, _this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) { return elem.code; }).join(","), true);
                         }, 500);
@@ -307,7 +309,12 @@ var StreamStats;
                 if (this.regionService.selectedRegion.Applications.indexOf("CoordinatedReach") != -1) {
                     this.studyAreaService.queryCoordinatedReach();
                 }
-                this.studyAreaService.queryRegressionRegions();
+                //only do this if we havent done it already and basin hasn't been edited
+                if (!this.studyAreaService.selectedStudyArea.RegressionRegions && !this.studyAreaService.selectedStudyArea.Disclaimers['isEdited']) {
+                    this.studyAreaService.queryRegressionRegions();
+                }
+                else
+                    this.setProcedureType(3);
             };
             SidebarController.prototype.queryStatisticsGroupTypes = function () {
                 this.nssService.loadStatisticsGroupTypes(this.regionService.selectedRegion.RegionID, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) {
@@ -321,25 +328,50 @@ var StreamStats;
                 //}
             };
             SidebarController.prototype.onSelectedStatisticsGroupChanged = function () {
-                //console.log('StatisticsGroup param list changed.  loaded ', this.nssService.selectedStatisticsGroupList);
                 var _this = this;
                 //toggle show flows checkbox
                 this.nssService.selectedStatisticsGroupList.length > 0 ? this.nssService.showFlowsTable = true : this.nssService.showFlowsTable = false;
-                this.regionService.parameterList.forEach(function (parameter) {
-                    //loop over whole statisticsgroups
-                    _this.nssService.selectedStatisticsGroupList.forEach(function (statisticsGroup) {
-                        if (statisticsGroup.RegressionRegions) {
-                            //get their parameters
-                            statisticsGroup.RegressionRegions.forEach(function (regressionRegion) {
-                                regressionRegion.Parameters.forEach(function (param) {
+                //loop over whole statisticsgroups
+                this.nssService.selectedStatisticsGroupList.forEach(function (statisticsGroup) {
+                    if (statisticsGroup.RegressionRegions) {
+                        //get their parameters
+                        statisticsGroup.RegressionRegions.forEach(function (regressionRegion) {
+                            //loop over list of state/region parameters to see if there is a match
+                            regressionRegion.Parameters.forEach(function (param) {
+                                var found = false;
+                                for (var i = 0; i < _this.regionService.parameterList.length; i++) {
+                                    var parameter = _this.regionService.parameterList[i];
                                     if (parameter.code.toLowerCase() == param.Code.toLowerCase()) {
                                         _this.addParameterToStudyAreaList(parameter.code);
+                                        found = true;
+                                        break;
                                     } //end if
-                                }); // next param
-                            }); // next regressionRegion
-                        } //end if
-                    }); //next statisticgroup
-                }); //next parameter
+                                } //next i
+                                if (!found) {
+                                    //console.log('PARAM NOT FOUND', param.Code)
+                                    _this.toaster.pop('warning', "Missing Parameter: " + param.Code, "The selected scenario requires a parameter not available in this State/Region.  The value for this parameter will need to be entered manually.", 0);
+                                    //add to region parameterList
+                                    var newParam = {
+                                        name: param.name,
+                                        description: param.Description,
+                                        code: param.Code,
+                                        unit: param.UnitType.Unit,
+                                        value: null,
+                                        regulatedValue: null,
+                                        unRegulatedValue: null,
+                                        loaded: null,
+                                        checked: false,
+                                        toggleable: true
+                                    };
+                                    //push the param that was not in the original regionService paramaterList
+                                    _this.regionService.parameterList.push(newParam);
+                                    //select it
+                                    _this.addParameterToStudyAreaList(param.Code);
+                                }
+                            }); // next param
+                        }); // next regressionRegion
+                    } //end if
+                }); //next statisticgroup
             };
             SidebarController.prototype.OpenWateruse = function () {
                 this.modalService.openModal(StreamStats.Services.SSModalType.e_wateruse);
@@ -391,7 +423,7 @@ var StreamStats;
                 try {
                     for (var i = 0; i < this.regionService.parameterList.length; i++) {
                         var p = this.regionService.parameterList[i];
-                        if (p.code.toUpperCase() === paramCode && this.checkArrayForObj(this.studyAreaService.studyAreaParameterList, p) == -1) {
+                        if (p.code.toUpperCase() === paramCode.toUpperCase() && this.checkArrayForObj(this.studyAreaService.studyAreaParameterList, p) == -1) {
                             this.studyAreaService.studyAreaParameterList.push(p);
                             p['checked'] = true;
                             p['toggleable'] = false;
@@ -429,15 +461,24 @@ var StreamStats;
             };
             SidebarController.prototype.sm = function (msg) {
                 try {
+                    //toastr.options = {
+                    //    positionClass: "toast-bottom-right"
+                    //};
+                    //this.NotificationList.unshift(new LogEntry(msg.msg, msg.type));
+                    //setTimeout(() => {
+                    //    toastr[msg.type](msg.msg);
+                    //    if (msg.ShowWaitCursor != undefined)
+                    //        this.IsLoading(msg.ShowWaitCursor)
+                    //}, 0)
                 }
                 catch (e) {
                 }
             };
-            //Constructor
-            //-+-+-+-+-+-+-+-+-+-+-+-
-            SidebarController.$inject = ['$scope', 'toaster', '$analytics', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ModalService', 'leafletData', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager'];
             return SidebarController;
         }()); //end class
+        //Constructor
+        //-+-+-+-+-+-+-+-+-+-+-+-
+        SidebarController.$inject = ['$scope', 'toaster', '$analytics', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ModalService', 'leafletData', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager'];
         var ProcedureType;
         (function (ProcedureType) {
             ProcedureType[ProcedureType["INIT"] = 1] = "INIT";

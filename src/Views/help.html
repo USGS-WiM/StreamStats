@@ -18,12 +18,12 @@
     <div style="padding-top: 10px;">
         <div id="about" ng-if="vm.selectedHelpTabName==='help'">
             <div id="helpContent">
+                <div ng-hide="vm.helpArticles"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
                 <accordion id="helpArticles">
                     <accordion-group ng-repeat="article in vm.helpArticles" is-open="article.open">
                         <accordion-heading><i ng-class="vm.helpArticles[$index].open ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i> {{article.title}}</accordion-heading>
                         <div class="row">
-                            <div class="col-sm-12" ng-bind-html="vm.convertUnsafe(article.description)">
-                            </div>
+                            <div class="col-sm-12" ng-bind-html="vm.convertUnsafe(article.description)"></div>
                         </div>
                     </accordion-group>
                 </accordion>
@@ -34,12 +34,12 @@
     <div style="padding-top: 10px;">
         <div id="about" ng-if="vm.selectedHelpTabName==='faq'">
             <div id="faqContent" >
+             <div ng-hide="vm.faqArticles"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
              <accordion id="faqArticles">
                 <accordion-group ng-repeat="article in vm.faqArticles" is-open="article.open">
                   <accordion-heading><i ng-class="vm.faqArticles[$index].open ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i> {{article.title}}</accordion-heading>
                   <div class="row">
-                    <div class="col-sm-12" ng-bind-html="vm.convertUnsafe(article.description)">
-                    </div>
+                    <div class="col-sm-12" ng-bind-html="vm.convertUnsafe(article.description)"></div>
                   </div>
                 </accordion-group>
               </accordion>
@@ -93,5 +93,5 @@
     </div>
 </div>
 <div class="modal-footer">
-    <button ng-click="vm.Close()" class="btn-wim-default"><i class="fa fa-close"></i><span >&nbsp;&nbsp;Close</span></button>
+    <button ng-click="vm.Close()" class="btn-black"><i class="fa fa-close"></i><span >&nbsp;&nbsp;Close</span></button>
 </div>

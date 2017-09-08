@@ -1,11 +1,16 @@
 //------------------------------------------------------------------------------
 //----- nssService -----------------------------------------------------
 //------------------------------------------------------------------------------
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 //-------1---------2---------3---------4---------5---------6---------7---------8
 //       01234567890123456789012345678901234567890123456789012345678901234567890
 //-------+---------+---------+---------+---------+---------+---------+---------+
@@ -32,19 +37,20 @@ var StreamStats;
             function StatisticsGroup() {
             }
             return StatisticsGroup;
-        }());
-        Services.StatisticsGroup = StatisticsGroup; //end class
+        }()); //end class
+        Services.StatisticsGroup = StatisticsGroup;
         var nssService = (function (_super) {
             __extends(nssService, _super);
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
             function nssService($http, $q, toaster, modal) {
-                _super.call(this, $http, configuration.baseurls['NSS']);
-                this.$q = $q;
-                this.toaster = toaster;
-                this.modalService = modal;
-                this._onSelectedStatisticsGroupChanged = new WiM.Event.Delegate();
-                this.clearNSSdata();
+                var _this = _super.call(this, $http, configuration.baseurls['NSS']) || this;
+                _this.$q = $q;
+                _this.toaster = toaster;
+                _this.modalService = modal;
+                _this._onSelectedStatisticsGroupChanged = new WiM.Event.Delegate();
+                _this.clearNSSdata();
+                return _this;
             }
             Object.defineProperty(nssService.prototype, "onSelectedStatisticsGroupChanged", {
                 get: function () {
@@ -203,6 +209,7 @@ var StreamStats;
                                 //comment out for not, not useful
                                 //if (headerMsg[0] == 'info') statGroup.Disclaimers['Info'] = headerMsg[1].trim();
                             });
+                            //console.log('headerMsgs: ', statGroup.Name, statGroup.Disclaimers);
                         }
                         //if (append) console.log('in estimate flows for regulated basins: ', response);
                         //make sure there are some results
@@ -242,11 +249,15 @@ var StreamStats;
                                         ; //next i
                                     }); //end r
                                 }); //end rr
+                                //loop over and append statistic
                             }
+                            //overwrite existing Regressions Regions array with new one from request that includes results
                         }
                         else {
                             _this.toaster.clear();
                             _this.toaster.pop('error', "There was an error Estimating Flows for " + statGroup.Name, "No results were returned", 0);
+                            //this.isDone = true;
+                            //console.log("Zero length flow response, check equations in NSS service");
                         }
                         //sm when complete
                     }, function (error) {

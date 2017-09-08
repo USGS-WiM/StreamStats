@@ -1,11 +1,16 @@
 //------------------------------------------------------------------------------
 //----- StudyAreaService -------------------------------------------------------
 //------------------------------------------------------------------------------
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 //-------1---------2---------3---------4---------5---------6---------7---------8
 //       01234567890123456789012345678901234567890123456789012345678901234567890
 //-------+---------+---------+---------+---------+---------+---------+---------+
@@ -31,7 +36,7 @@ var StreamStats;
         var ExplorationServiceEventArgs = (function (_super) {
             __extends(ExplorationServiceEventArgs, _super);
             function ExplorationServiceEventArgs() {
-                _super.call(this);
+                return _super.call(this) || this;
             }
             return ExplorationServiceEventArgs;
         }(WiM.Event.EventArgs));
@@ -41,18 +46,18 @@ var StreamStats;
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
             function ExplorationService($http, $q, toaster, eventManager, regionservice) {
-                _super.call(this, $http, configuration.baseurls['StreamStatsServices']);
-                this.$q = $q;
-                this.eventManager = eventManager;
-                this.regionservice = regionservice;
-                this.toaster = toaster;
-                this.drawElevationProfile = false;
-                this.drawMeasurement = false;
-                this.showElevationChart = false;
-                this.allowStreamgageQuery = false;
-                this.measurementData = '';
-                this._selectedMethod = null;
+                var _this = _super.call(this, $http, configuration.baseurls['StreamStatsServices']) || this;
+                _this.$q = $q;
+                _this.eventManager = eventManager;
+                _this.regionservice = regionservice;
+                _this.toaster = toaster;
+                _this.drawElevationProfile = false;
+                _this.drawMeasurement = false;
+                _this.showElevationChart = false;
+                _this.measurementData = '';
+                _this._selectedMethod = null;
                 eventManager.AddEvent(Services.onSelectedStudyAreaChanged);
+                return _this;
             }
             Object.defineProperty(ExplorationService.prototype, "selectedMethod", {
                 get: function () {
@@ -68,14 +73,15 @@ var StreamStats;
                 //ESRI elevation profile tool
                 //Help page: https://elevation.arcgis.com/arcgis/rest/directories/arcgisoutput/Tools/ElevationSync_GPServer/Tools_ElevationSync/Profile.htm
                 var url = 'https://elevation.arcgis.com/arcgis/rest/services/Tools/ElevationSync/GPServer/Profile/execute';
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', { InputLineFeatures: esriJSON, returnZ: true, f: 'json' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', { InputLineFeatures: esriJSON, returnZ: true, DEMResolution: '30m', f: 'json' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
                 //do ajax call for future precip layer, needs to happen even if only runoff value is needed for this region
                 this.Execute(request).then(function (response) {
-                    //console.log('elevation profile response: ', response.data);
+                    console.log('elevation profile response: ', response.data);
                     if (response.data && response.data.results) {
                         var coords = response.data.results[0].value.features[0].geometry.paths[0];
                         if (coords.length > 0) {
-                            //console.log('coords before: ', coords)
+                            //get copy of coordinates for elevation plugin
+                            var coords_orig = angular.fromJson(angular.toJson(coords));
                             //convert elevation values if units are meters
                             var units = 'feet';
                             response.data.results[0].value.fields.forEach(function (field) {
@@ -84,13 +90,28 @@ var StreamStats;
                             });
                             if (units = 'meters') {
                                 coords = coords.map(function (elem) {
+                                    //convert elevation value from meters to feet
                                     return [elem[0], elem[1], elem[2] * 3.28084];
                                 });
                             }
+                            // build table data and get distance between points
+                            var totalDistance = 0;
+                            //initialize list with first value and zero distance
+                            _this.coordinateList = [[coords[0][1].toFixed(5), coords[0][0].toFixed(5), coords[0][2].toFixed(2), totalDistance.toFixed(2)]];
+                            //loop over coords and calulate distances
+                            for (var i = 1; i < coords.length; i++) {
+                                //use leaflet 'distanceTo' method (units meters)
+                                var previousPoint = L.latLng(coords[i - 1][1], coords[i - 1][0]);
+                                var currentPoint = L.latLng(coords[i][1], coords[i][0]);
+                                totalDistance += previousPoint.distanceTo(currentPoint);
+                                console.log('total D:', totalDistance * 0.000621371, coords);
+                                //convert meters to miles for total distance
+                                _this.coordinateList.push([coords[i][1].toFixed(5), coords[i][0].toFixed(5), coords[i][2].toFixed(2), (totalDistance * 0.000621371).toFixed(2)]);
+                            } //next i    
                             _this.elevationProfileGeoJSON = {
                                 "name": "NewFeatureType", "type": "FeatureCollection",
                                 "features": [
-                                    { "type": "Feature", "geometry": { "type": "LineString", "coordinates": coords }, "properties": "" }
+                                    { "type": "Feature", "geometry": { "type": "LineString", "coordinates": coords_orig }, "properties": "" }
                                 ]
                             };
                         }
@@ -179,13 +200,13 @@ var StreamStats;
             };
             return ExplorationService;
         }(WiM.Services.HTTPServiceBase)); //end class
+        var ExplorationMethodType;
         (function (ExplorationMethodType) {
             ExplorationMethodType[ExplorationMethodType["undefined"] = 0] = "undefined";
             ExplorationMethodType[ExplorationMethodType["FINDPATHBETWEENPOINTS"] = 1] = "FINDPATHBETWEENPOINTS";
             ExplorationMethodType[ExplorationMethodType["FINDPATH2OUTLET"] = 2] = "FINDPATH2OUTLET";
             ExplorationMethodType[ExplorationMethodType["GETNETWORKREPORT"] = 3] = "GETNETWORKREPORT";
-        })(Services.ExplorationMethodType || (Services.ExplorationMethodType = {}));
-        var ExplorationMethodType = Services.ExplorationMethodType;
+        })(ExplorationMethodType = Services.ExplorationMethodType || (Services.ExplorationMethodType = {}));
         factory.$inject = ['$http', '$q', 'toaster', 'WiM.Event.EventManager', 'StreamStats.Services.RegionService'];
         function factory($http, $q, toaster, eventmngr, regionservice) {
             return new ExplorationService($http, $q, toaster, eventmngr, regionservice);

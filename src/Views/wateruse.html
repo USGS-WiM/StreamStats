@@ -28,16 +28,24 @@
                     <li ng-class="{'active': vm.SelectedTab == 1}"><a ng-click="vm.SelectedTab=1">Water Use Graph</a></li>
                 </ul>
                 <div class="tabs">
+                    <!-- Graph tab -->
                     <div ng-if="vm.SelectedTab == 1">
-                        <center><h3>{{vm.StartYear}}-{{vm.EndYear}} Average Water Use By Source</h3></center>
-                        <nvd3 options='vm.AnnualReportOptions' data='vm.ReportData.Annual.Graph'></nvd3>                     
-                        <center><h3>{{vm.StartYear}}-{{vm.EndYear}} Average Water Use Withdrawals By Month</h3></center>
-                        <nvd3 id="monthlyreturns" options='vm.MonthlyReportOptions' data='vm.ReportData.Monthly.Graph.withdrawals'></nvd3>
+                        <center><h3>{{vm.StartYear}}-{{vm.EndYear}} Average Water Use By Source</h3></center>                      
+                        <nvd3 ng-if="vm.result.hasOwnProperty('withdrawal')" id="withdrawalPie" options='vm.AnnualReportOptions' data='vm.ReportData.Annual.Graph.withdrawals' ng-style="vm.result.hasOwnProperty('return')?{'display':'inline-block', 'width':'50%', 'float':'left'}:{}"></nvd3>
+                        <nvd3 ng-if="vm.result.hasOwnProperty('return')" id ="ReturnPie" options='vm.AnnualReportOptions' data='vm.ReportData.Annual.Graph.returns' ng-style="vm.result.hasOwnProperty('withdrawal')? {'display':'inline-block', 'width':'50%', 'float':'right'}:{}"></nvd3>
+                        
+                        <div ng-if="vm.result.hasOwnProperty('withdrawal')">
+                            <center><h3>{{vm.StartYear}}-{{vm.EndYear}} Average Water Use Withdrawals By Month</h3></center>
+                            <nvd3 id="monthlyreturns" options='vm.MonthlyReportOptions' data='vm.ReportData.Monthly.Graph.withdrawals'></nvd3>
+                        </div>
 
-                        <center><h3>{{vm.StartYear}}-{{vm.EndYear}} Average Water Use Returns By Month</h3></center>
-                        <nvd3 options='vm.MonthlyReturnReportOptions' data='vm.ReportData.Monthly.Graph.returns'></nvd3> 
-                                            
-                    </div>
+                        <div ng-if="vm.result.hasOwnProperty('return')">
+                            <center><h3>{{vm.StartYear}}-{{vm.EndYear}} Average Water Use Returns By Month</h3></center>
+                            <nvd3 options='vm.MonthlyReturnReportOptions' data='vm.ReportData.Monthly.Graph.returns'></nvd3>
+                        </div>
+
+                        </div>
+                    <!-- table tab -->
                     <div ng-if="vm.SelectedTab == 2">
                         <div class="overflowTable well well-sm">
                             <center>
@@ -45,7 +53,7 @@
                                 <header>reported in million gallons/day</header>
                             </center>
 
-                            <table class="table table-condensed">
+                            <table id="AnnualWaterUseTable" class="table table-condensed">
                                 <thead class="param-table">
                                     <tr>
                                         <th ng-repeat="item in vm.ReportData.Annual.Table.Fields">{{item}}</th>
@@ -67,47 +75,63 @@
                                 <header>reported in million gallons/day</header>
                             </center>
 
-                            <table class="table table-condensed">
+                            <table id="MonthlyWaterUseTable" class="table table-condensed">
                                 <thead class="param-table">
                                     <tr>
                                         <th></th>
-                                        <th>Returns</th>
-                                        <th colspan="{{vm.ReportData.Monthly.Table.Fields.length+1}}">Withdrawals</th>
+                                        <th ng-if="vm.result.hasOwnProperty('return')" colspan="3">Returns</th>
+                                        <th colspan="3">Withdrawals</th>
+                                        <th colspan="{{vm.ReportData.Monthly.Table.Fields.length+3}}">Withdrawals by category</th>
                                     </tr>
-
                                     <tr>
                                         <th>Month</th>
+                                        <th ng-if="vm.result.hasOwnProperty('return')">Total</th>
+                                        <th ng-if="vm.result.hasOwnProperty('return')">Surfacewater</th>
+                                        <th ng-if="vm.result.hasOwnProperty('return')">Ground water</th>
                                         <th>Total</th>
-                                        <th>Total</th>
-                                        <th>Net</th>
+                                        <th>Surfacewater</th>
+                                        <th>Ground water</th>                                       
                                         <th ng-repeat="item in vm.ReportData.Monthly.Table.Fields track by $index">{{item}}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr ng-repeat="item in vm.ReportData.Monthly.Table.values">
                                         <td>{{item.month}}</td>
-                                        <td>{{item.returns.value.toFixed(3)}}</td>
-                                        <td>{{vm.Reduce(item.withdrawals).toFixed(3)}}</td>
-                                        <td>{{(vm.Reduce(item.withdrawals)-item.returns.value).toFixed(3)}}</td>
-                                        <td ng-repeat="wthdls in item.withdrawals">{{wthdls.value.toFixed(3)}}</td>
+                                        <td ng-if="vm.result.hasOwnProperty('return')">{{vm.Add(item.returns.SW,item.returns.GW)}}</td>
+                                        <td ng-if="vm.result.hasOwnProperty('return')">{{item.returns.SW}}</td>
+                                        <td ng-if="vm.result.hasOwnProperty('return')">{{item.returns.GW}}</td>
+                                        <td>{{vm.Add(item.withdrawals.SW,item.withdrawals.GW)}}</td>
+                                        <td>{{item.withdrawals.SW}}</td>
+                                        <td>{{item.withdrawals.GW}}</td>                                        
+                                        <td ng-repeat="wthdls in item.withdrawals.code">{{wthdls.value}}</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
-
-                    
                 </div>
             </div>
-            
         </div>
         <div class="modal-footer hidden-print">
             <div class="btn-group">
+                <form style="padding: 5px 0; display:inline-table" ng-if="vm.showResults && vm.SelectedTab == 2">
+                    <div class="btn-group btn-wim-group-1 wim-dropdown" dropdown is-open="status.isopen">
+                        <button type="button" class="btn-wim-default" dropdown-toggle ng-disabled="disabled">
+                            <i class='fa fa-download'></i>&nbsp;&nbsp;Download<span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="#" ng-click="vm.DownloadCSV()"><span class="fa fa-download"></span>&nbsp;&nbsp;Table CSV</a></li>
+                            <li><a href="#" ng-click="vm.DownloadCSVBySource()"><span class="fa fa-download"></span>&nbsp;&nbsp;Source CSV</a></li>
+                         </ul>
+                    </div>
+                </form>
+
+                <!--<button ng-if="vm.showResults && vm.SelectedTab == 2" class="btn-wim-default" ng-click="vm.DownloadCSV()"><span><i class="fa fa-download"></i>&nbsp;&nbsp;Download CSV</span></button>-->
                 <button ng-if="vm.showResults" class="btn-wim-default" ng-click="vm.Reset()"><i class="fa fa-reset"></i>&nbsp;&nbsp;Reset</button>
                 <button class="btn-wim-default" ng-click="vm.Close()"><i class="fa fa-close"></i>&nbsp;&nbsp;Close</button>
                 <!--<button ng-if="vm.showResults" class="btn-wim-default" ng-click="vm.Print()"><i class="fa fa-print"></i> Print </button>-->
+                
             </div>
-        </div>
-
-        
+        </div>      
+                
 </div>

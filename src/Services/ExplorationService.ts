@@ -31,16 +31,14 @@ module StreamStats.Services {
         elevationProfileGeoJSON: any;
         showElevationChart: boolean;
         measurementData: string;
-        allowStreamgageQuery: boolean;
         selectedMethod: Models.INetworkNav;
         setMethod(methodtype: ExplorationMethodType)
         GetToolName(methodID: number): String
         ExecuteSelectedModel(): void
         elevationProfileHTML: any;
-
-
-        
+        coordinateList: Array<any>;
     }
+
     export var onSelectedMethodExecuteComplete: string = "onSelectedMethodExecuteComplete";
 
     export class ExplorationServiceEventArgs extends WiM.Event.EventArgs {
@@ -65,12 +63,12 @@ module StreamStats.Services {
         public elevationProfileGeoJSON: any;
         public showElevationChart: boolean;
         public measurementData: string;
-        public allowStreamgageQuery: boolean;
         public _selectedMethod: Models.INetworkNav
         public get selectedMethod(): Models.INetworkNav {
             return this._selectedMethod;
         }
         public elevationProfileHTML: any;
+        public coordinateList: Array<any>;
         
 
         //Constructor
@@ -82,7 +80,6 @@ module StreamStats.Services {
             this.drawElevationProfile = false;
             this.drawMeasurement = false;
             this.showElevationChart = false;
-            this.allowStreamgageQuery = false;
             this.measurementData = '';
             this._selectedMethod = null;
             eventManager.AddEvent<StudyAreaEventArgs>(onSelectedStudyAreaChanged);
@@ -98,20 +95,22 @@ module StreamStats.Services {
 
             var request: WiM.Services.Helpers.RequestInfo =
                 new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST,
-                    'json', { InputLineFeatures: esriJSON, returnZ: true, f: 'json'},
+                    'json', { InputLineFeatures: esriJSON, returnZ: true, DEMResolution: '30m', f: 'json'},
                     { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
                     WiM.Services.Helpers.paramsTransform);
 						
             //do ajax call for future precip layer, needs to happen even if only runoff value is needed for this region
             this.Execute(request).then(
                 (response: any) => {
-                    //console.log('elevation profile response: ', response.data);
+                    console.log('elevation profile response: ', response.data);
 
                     if (response.data && response.data.results) {
                         var coords = response.data.results[0].value.features[0].geometry.paths[0];
 
                         if (coords.length > 0) {
-                            //console.log('coords before: ', coords)
+
+                            //get copy of coordinates for elevation plugin
+                            var coords_orig = angular.fromJson(angular.toJson(coords));
 
                             //convert elevation values if units are meters
                             var units = 'feet';
@@ -121,14 +120,34 @@ module StreamStats.Services {
 
                             if (units = 'meters') {
                                 coords = coords.map((elem) => {
+                                    //convert elevation value from meters to feet
                                     return [elem[0], elem[1], elem[2] * 3.28084]
                                 });
                             }
 
+                            // build table data and get distance between points
+                            var totalDistance = 0;
+                            //initialize list with first value and zero distance
+                            this.coordinateList = [[coords[0][1].toFixed(5), coords[0][0].toFixed(5), coords[0][2].toFixed(2), totalDistance.toFixed(2)]];
+
+                            //loop over coords and calulate distances
+                            for (var i = 1; i < coords.length; i++) {
+ 
+                                //use leaflet 'distanceTo' method (units meters)
+                                var previousPoint = L.latLng(coords[i - 1][1], coords[i - 1][0]);
+                                var currentPoint = L.latLng(coords[i][1], coords[i][0]);
+                                totalDistance += previousPoint.distanceTo(currentPoint);
+
+                                console.log('total D:', totalDistance * 0.000621371, coords)
+                                //convert meters to miles for total distance
+                                this.coordinateList.push([coords[i][1].toFixed(5), coords[i][0].toFixed(5), coords[i][2].toFixed(2), (totalDistance * 0.000621371).toFixed(2)]) 
+                                
+                            }//next i    
+
                             this.elevationProfileGeoJSON = {
                                 "name": "NewFeatureType", "type": "FeatureCollection"
                                 , "features": [
-                                    { "type": "Feature", "geometry": { "type": "LineString", "coordinates": coords }, "properties": "" }
+                                    { "type": "Feature", "geometry": { "type": "LineString", "coordinates": coords_orig }, "properties": "" }
                                 ]
                             };
                         }

@@ -4,9 +4,11 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="utf-8" />
-    <title>StreamStats 4.0</title>
+    <link rel="icon" type="image/png" href="./images/favicon.png" />
+    <title>StreamStats</title>
      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <script>document.write('<base href="' + document.location + '" />');</script>
+    <base target="_blank" />
     <link rel="stylesheet" href="styles/vendor.min.css">
     <link rel="stylesheet" href="styles/custom.min.css">
     <script src="scripts/vendor.min.js"></script>
@@ -20,11 +22,14 @@
       })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
       ga('create', 'UA-61219868-6', 'auto');
     </script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ionicons@2.0.1/css/ionicons.min.css" />
+
 </head>
 <body>
-    <div ui-view="navbar" class="navbar-app navbar-absolute-top"></div>
+    <div ui-view="navbar" class="wim-nav"></div>
     <div ui-view="sidebar" class="sidebar sidebar-left"></div>  
     <div ui-view="map" class="app app-body"></div>   
-    <toaster-container toaster-options="{'position-class': 'toast-bottom-right', 'close-button':true}"></toaster-container>    
+    <toaster-container toaster-options="{'position-class': 'toast-bottom-right', 'close-button':false, 'prevent-duplicates': true}"></toaster-container>    
 </body>
 </html>

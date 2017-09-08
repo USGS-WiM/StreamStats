@@ -4,9 +4,11 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="utf-8" />
-    <title>StreamStats 4.0</title>
+    <link rel="icon" type="image/png" href="./images/favicon.png" />
+    <title>StreamStats</title>
      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <script>document.write('<base href="' + document.location + '" />');</script>
+    <base target="_blank" />
     <!-- build:css styles/vendor.min.css -->
     <link rel="stylesheet" href="../node_modules/mobile-angular-ui/dist/css/mobile-angular-ui-hover.css" />
     <link rel="stylesheet" href="../node_modules/mobile-angular-ui/dist/css/mobile-angular-ui-base.css" />
@@ -25,13 +27,13 @@
     <!-- build:css styles/custom.min.css -->
     <link rel="stylesheet" href="../node_modules/wim-styles/core/css/wim.css" />
     <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/wim.global.min.css" />
     <link rel="stylesheet" href="css/custom.css" />
     <!-- endbuild -->
     <!-- build:js scripts/vendor.min.js -->
     <script src="../node_modules/angular/angular.js"></script>
     <script src="../node_modules/angulartics/dist/angulartics.min.js"></script>
     <script src="../node_modules/angulartics-google-analytics/dist/angulartics-google-analytics.min.js"></script>
-    <script src="../node_modules/angular-animate/angular-animate.js"></script>
     <script src="../node_modules/angular-bootstrap/ui-bootstrap.js"></script>
     <script src="../node_modules/angular-bootstrap/ui-bootstrap-tpls.js"></script>
     <script src="../node_modules/angularjs-toaster/toaster.js"></script>
@@ -105,11 +107,14 @@
       })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
       ga('create', 'UA-61219868-6', 'auto');
     </script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ionicons@2.0.1/css/ionicons.min.css" />
+
 </head>
 <body>
-    <div ui-view="navbar" class="navbar-app navbar-absolute-top"></div>
+    <div ui-view="navbar" class="wim-nav"></div>
     <div ui-view="sidebar" class="sidebar sidebar-left"></div>  
     <div ui-view="map" class="app app-body"></div>   
-    <toaster-container toaster-options="{'position-class': 'toast-bottom-right', 'close-button':true}"></toaster-container>    
+    <toaster-container toaster-options="{'position-class': 'toast-bottom-right', 'close-button':false, 'prevent-duplicates': true}"></toaster-container>    
 </body>
 </html>
