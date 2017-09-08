@@ -839,7 +839,7 @@ module StreamStats.Controllers {
                         //do point validation query
                         maplayers.overlays[selectedRegionLayerName].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run((error: any, results: any) => {
 
-                            console.log('exclusion area check: ', queryString, results); 
+                            //console.log('exclusion area check: ', queryString, results); 
                             this.toaster.clear();
 
                             //if there are no exclusion area hits
