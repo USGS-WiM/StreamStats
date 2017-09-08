@@ -164,8 +164,8 @@ var StreamStats;
                 }
             };
             return CoordinatedReach;
-        }());
-        Models.CoordinatedReach = CoordinatedReach; //end class
+        }()); //end class
+        Models.CoordinatedReach = CoordinatedReach;
     })(Models = StreamStats.Models || (StreamStats.Models = {}));
 })(StreamStats || (StreamStats = {})); //end module 
 //# sourceMappingURL=CoordinatedReach.js.map

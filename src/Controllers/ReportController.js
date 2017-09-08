@@ -94,16 +94,10 @@ var StreamStats;
             });
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
-            ReportController.prototype.HasDisclaimers = function (disclaimer) {
-                if (disclaimer == null)
-                    return false;
-                var canshow = Object.keys(disclaimer).length > 0;
-                return canshow;
-            };
             ReportController.prototype.initMap = function () {
                 this.center = new Center(39, -96, 4);
                 this.layers = {
-                    baselayers: this.studyAreaService.baseMap,
+                    baselayers: configuration.basemaps,
                     overlays: {}
                 };
                 L.Icon.Default.imagePath = 'images';
@@ -161,7 +155,7 @@ var StreamStats;
                             map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
                         });
                     }
-                    if (item.name == 'globalwatershedpoint') {
+                    else if (item.name == 'globalwatershedpoint') {
                         _this.layers.overlays[item.name] = {
                             name: 'Basin Clicked Point',
                             type: 'geoJSONShape',
@@ -169,7 +163,7 @@ var StreamStats;
                             visible: true,
                         };
                     }
-                    if (item.name == 'regulatedWatershed') {
+                    else if (item.name == 'regulatedWatershed') {
                         //console.log('showing regulated watershed');
                         _this.layers.overlays["globalwatershedregulated"] = {
                             name: 'Basin Boundary (Regulated Area)',
@@ -183,6 +177,20 @@ var StreamStats;
                                     opacity: 1,
                                     color: 'white',
                                     fillOpacity: 0.5
+                                }
+                            }
+                        };
+                    }
+                    else {
+                        _this.layers.overlays[item.name] = {
+                            name: item.name,
+                            type: 'geoJSONShape',
+                            data: item.feature,
+                            visible: false,
+                            layerOptions: {
+                                style: {
+                                    fillColor: "red",
+                                    color: 'red'
                                 }
                             }
                         };
@@ -210,8 +218,8 @@ var StreamStats;
                         if (regressionRegion.PercentWeight)
                             regionPercent = regressionRegion.PercentWeight.toFixed(0) + ' Percent ';
                         finalVal += '\r\n' + statGroup.Name + ' Parameters,' + regionPercent + regressionRegion.Name.split("_").join(" ") + '\r\n';
-                        //get this table by ID
-                        finalVal += _this.tableToCSV($('#' + _this.camelize(statGroup.Name + regressionRegion.Name + 'ScenarioParamTable'))) + '\r\n';
+                        //get this table by ID --need to use this type of selected because jquery doesn't like the possibility of colons in div id
+                        finalVal += _this.tableToCSV($(document.getElementById(_this.camelize(statGroup.Name + regressionRegion.Name + 'ScenarioParamTable')))) + '\r\n';
                     });
                     return finalVal + '\r\n';
                 };
@@ -237,9 +245,9 @@ var StreamStats;
                             //add explanatory row if needed
                             if (regressionRegion.Results[0].IntervalBounds && regressionRegion.Results[0].Errors && regressionRegion.Results[0].Errors.length > 0)
                                 finalVal +=
-                                    '"PIl: Prediction Interval- Upper, PIu: Prediction Interval- Lower, SEe: Standard Error of Estimate, SEp: Standard Error of Prediction, SE: Standard Error (other-- see report)"\r\n';
-                            //get this table by ID
-                            finalVal += _this.tableToCSV($('#' + _this.camelize(statGroup.Name + regressionRegion.Name + 'ScenarioFlowTable'))) + '\r\n\r\n';
+                                    '"PIl: Prediction Interval- Lower, PIu: Prediction Interval- Upper, SEp: Standard Error of Prediction, SE: Standard Error (other-- see report)"\r\n';
+                            //get this table by ID --need to use this type of selected because jquery doesn't like the possibility of colons in div id
+                            finalVal += _this.tableToCSV($(document.getElementById(_this.camelize(statGroup.Name + regressionRegion.Name + 'ScenarioFlowTable')))) + '\r\n\r\n';
                         }
                     });
                     return finalVal + '\r\n';
@@ -342,8 +350,12 @@ var StreamStats;
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             ReportController.prototype.tableToCSV = function ($table) {
-                var $headers = $table.find('tr:has(th)'), $rows = $table.find('tr:has(td)'), tmpColDelim = String.fromCharCode(11) // vertical tab character
+                var $headers = $table.find('tr:has(th)'), $rows = $table.find('tr:has(td)')
+                // Temporary delimiter characters unlikely to be typed by keyboard
+                // This is to avoid accidentally splitting the actual contents
+                , tmpColDelim = String.fromCharCode(11) // vertical tab character
                 , tmpRowDelim = String.fromCharCode(0) // null character
+                // actual delimiter characters for CSV format
                 , colDelim = '","', rowDelim = '"\r\n"';
                 // Grab text from table into CSV formatted string
                 var csv = '"';
@@ -381,13 +393,14 @@ var StreamStats;
                     return index == 0 ? letter.toLowerCase() : letter.toUpperCase();
                 }).replace(/\s+/g, '');
             };
-            //Constructor
-            //-+-+-+-+-+-+-+-+-+-+-+-
-            ReportController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService'];
             return ReportController;
         }()); //end class
+        //Constructor
+        //-+-+-+-+-+-+-+-+-+-+-+-
+        ReportController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService'];
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.ReportController', ReportController);
+        //.controller('StreamStats.Controllers.MapController', MapController)
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));
 })(StreamStats || (StreamStats = {})); //end module
 //# sourceMappingURL=ReportController.js.map

@@ -62,7 +62,7 @@
         top: 70px !important;
     }
 }
-.leaflet-top .leaflet-control{
+#mainMap .leaflet-top .leaflet-control{
     margin-top: 55px !important;
     box-shadow: none !important;
 }

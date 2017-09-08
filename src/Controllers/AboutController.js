@@ -1,11 +1,16 @@
 //------------------------------------------------------------------------------
 //----- About ---------------------------------------------------------------
 //------------------------------------------------------------------------------
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 //-------1---------2---------3---------4---------5---------6---------7---------8
 //       01234567890123456789012345678901234567890123456789012345678901234567890
 //-------+---------+---------+---------+---------+---------+---------+---------+
@@ -27,15 +32,17 @@ var StreamStats;
         var AboutController = (function (_super) {
             __extends(AboutController, _super);
             function AboutController($scope, $http, $sce, modalService, region, studyAreaService, modal) {
-                _super.call(this, $http, configuration.baseurls.StreamStats);
-                $scope.vm = this;
-                this.sce = $sce;
-                this.modalInstance = modal;
-                this.modalService = modalService;
-                this.StudyArea = studyAreaService.selectedStudyArea;
-                this.regionService = region;
-                this.selectedAboutTabName = "about";
-                this.init();
+                var _this = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
+                $scope.vm = _this;
+                _this.sce = $sce;
+                _this.modalInstance = modal;
+                _this.modalService = modalService;
+                _this.StudyArea = studyAreaService.selectedStudyArea;
+                _this.regionService = region;
+                _this.selectedAboutTabName = "about";
+                _this.regionArticle = '<h3>No State or Region Selected</h3>';
+                _this.init();
+                return _this;
             }
             //Methods  
             //-+-+-+-+-+-+-+-+-+-+-+-
@@ -116,16 +123,62 @@ var StreamStats;
                 };
                 var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.RegionInfoFolder;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
-                //clear article
-                this.regionArticle = null;
-                this.Execute(request).then(function (response) {
-                    response.data.folder.articles.forEach(function (article) {
-                        if (article.title == regionID) {
-                            //console.log("Help article found for : ", regionID);
-                            _this.regionArticle = article;
-                            return;
+                //check if this state/region is enabled in appConfig.js
+                configuration.regions.forEach(function (value, index) {
+                    //find this state/region
+                    if (value.Name === regionID) {
+                        if (!value.regionEnabled) {
+                            _this.regionArticle = '<div class="wim-alert">StreamStats has not been developed for <strong>' + value.Name + '</strong>.  Please contact the <a href="mailto:support@streamstats.freshdesk.com">streamstats team</a> if you would like StreamStats enabled for this State/Region.</div>';
                         }
-                    });
+                        else {
+                            //clear article
+                            _this.regionArticle = '<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>';
+                            _this.Execute(request).then(function (response) {
+                                response.data.folder.articles.forEach(function (article) {
+                                    if (article.title == regionID) {
+                                        //console.log("Help article found for : ", regionID);
+                                        _this.regionArticle = article.description;
+                                        return;
+                                    }
+                                });
+                            }, function (error) {
+                                //sm when error
+                            }).finally(function () {
+                            });
+                        }
+                    }
+                });
+            };
+            AboutController.prototype.getDisclaimersArticle = function () {
+                var _this = this;
+                console.log("Trying to open disclaimers article");
+                //'DisclaimersArticle': '/solution/categories/9000106503/folders/9000163536/articles/9000127695.json',
+                //'CreditsArticle': '/solution/categories/9000106503/folders/9000163536/articles/9000127697.json',
+                var headers = {
+                    "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
+                };
+                var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.DisclaimersArticle;
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
+                this.Execute(request).then(function (response) {
+                    console.log('Successfully retrieved disclaimers article');
+                    _this.disclaimersArticle = response.data.article.description;
+                }, function (error) {
+                    //sm when error
+                }).finally(function () {
+                    _this.getCreditsArticle();
+                });
+            };
+            AboutController.prototype.getCreditsArticle = function () {
+                var _this = this;
+                console.log("Trying to open credits article");
+                var headers = {
+                    "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
+                };
+                var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.CreditsArticle;
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
+                this.Execute(request).then(function (response) {
+                    console.log('Successfully retrieved credits article');
+                    _this.disclaimersArticle += response.data.article.description;
                 }, function (error) {
                     //sm when error
                 }).finally(function () {
@@ -144,6 +197,7 @@ var StreamStats;
                 this.getRegionHelpArticle();
                 this.getActiveNews();
                 this.getPastNews();
+                this.getDisclaimersArticle();
             };
             AboutController.prototype.readCookie = function (name) {
                 var nameEQ = name + "=";
@@ -167,11 +221,11 @@ var StreamStats;
                     var expires = "";
                 document.cookie = name + "=" + value + expires + "; path=/";
             };
-            //Constructor
-            //-+-+-+-+-+-+-+-+-+-+-+-
-            AboutController.$inject = ['$scope', '$http', '$sce', 'StreamStats.Services.ModalService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', '$modalInstance'];
             return AboutController;
         }(WiM.Services.HTTPServiceBase)); //end  class
+        //Constructor
+        //-+-+-+-+-+-+-+-+-+-+-+-
+        AboutController.$inject = ['$scope', '$http', '$sce', 'StreamStats.Services.ModalService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', '$modalInstance'];
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.AboutController', AboutController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));

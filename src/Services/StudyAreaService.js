@@ -1,11 +1,16 @@
 //------------------------------------------------------------------------------
 //----- StudyAreaService -------------------------------------------------------
 //------------------------------------------------------------------------------
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 //-------1---------2---------3---------4---------5---------6---------7---------8
 //       01234567890123456789012345678901234567890123456789012345678901234567890
 //-------+---------+---------+---------+---------+---------+---------+---------+
@@ -33,14 +38,17 @@ var StreamStats;
         Services.onEditClick = "onEditClick";
         var StudyAreaEventArgs = (function (_super) {
             __extends(StudyAreaEventArgs, _super);
-            function StudyAreaEventArgs(studyArea, saVisible, paramState) {
+            function StudyAreaEventArgs(studyArea, saVisible, paramState, additionalFeatures) {
                 if (studyArea === void 0) { studyArea = null; }
                 if (saVisible === void 0) { saVisible = false; }
                 if (paramState === void 0) { paramState = false; }
-                _super.call(this);
-                this.studyArea = studyArea;
-                this.studyAreaVisible = saVisible;
-                this.parameterLoaded = paramState;
+                if (additionalFeatures === void 0) { additionalFeatures = false; }
+                var _this = _super.call(this) || this;
+                _this.studyArea = studyArea;
+                _this.studyAreaVisible = saVisible;
+                _this.parameterLoaded = paramState;
+                _this.additionalFeaturesLoaded = additionalFeatures;
+                return _this;
             }
             return StudyAreaEventArgs;
         }(WiM.Event.EventArgs));
@@ -51,11 +59,10 @@ var StreamStats;
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
             function StudyAreaService($http, $q, eventManager, toaster) {
-                var _this = this;
-                _super.call(this, $http, configuration.baseurls['StreamStatsServices']);
-                this.$http = $http;
-                this.$q = $q;
-                this.eventManager = eventManager;
+                var _this = _super.call(this, $http, configuration.baseurls['StreamStatsServices']) || this;
+                _this.$http = $http;
+                _this.$q = $q;
+                _this.eventManager = eventManager;
                 eventManager.AddEvent(Services.onSelectedStudyParametersLoaded);
                 eventManager.AddEvent(Services.onSelectedStudyAreaChanged);
                 eventManager.AddEvent(Services.onStudyAreaReset);
@@ -63,10 +70,11 @@ var StreamStats;
                     _this.onStudyAreaChanged(sender, e);
                 }));
                 eventManager.AddEvent(Services.onEditClick);
-                this._studyAreaList = [];
-                this.toaster = toaster;
-                this.clearStudyArea();
-                this.servicesURL = configuration.baseurls['StreamStatsServices'];
+                _this._studyAreaList = [];
+                _this.toaster = toaster;
+                _this.clearStudyArea();
+                _this.servicesURL = configuration.baseurls['StreamStatsServices'];
+                return _this;
             }
             Object.defineProperty(StudyAreaService.prototype, "StudyAreaList", {
                 get: function () {
@@ -141,14 +149,21 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     //console.log('delineation response headers: ', response.headers());
-                    //tests
-                    //response.data.featurecollection[1].feature.features.length = 0;
                     if (response.data.featurecollection && response.data.featurecollection[1] && response.data.featurecollection[1].feature.features.length > 0) {
-                        _this.selectedStudyArea.Server = response.headers()['usgswim-hostname'];
+                        _this.selectedStudyArea.Server = response.headers()['usgswim-hostname'].toLowerCase();
                         _this.selectedStudyArea.Features = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"] : null;
                         _this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
                         _this.selectedStudyArea.Date = new Date();
-                        //check for global
+                        //reset URLS based on load balancer response from watershed request (ensure subsequent requests hit same EC2 instance)
+                        if (configuration.environment == "production") {
+                            configuration.baseurls.StreamStatsServices = 'https://' + _this.selectedStudyArea.Server + '.streamstats.usgs.gov';
+                            configuration.baseurls.StreamStatsMapServices = 'https://' + _this.selectedStudyArea.Server + '.streamstats.usgs.gov';
+                            configuration.baseurls.NSS = 'https://' + _this.selectedStudyArea.Server + '.streamstats.usgs.gov/nssservices';
+                            configuration.baseurls.WaterUseServices = 'https://' + _this.selectedStudyArea.Server + '.streamstats.usgs.gov/wateruseservices';
+                        }
+                        //stub code for global check, but the services need to be updated first
+                        //right now GlobalWshd is always 1
+                        //this.selectedStudyArea.isGlobal = false;
                         //this.selectedStudyArea.Features.forEach((item) => { 
                         //    if (item.name == "globalwatershed") {
                         //        angular.forEach(item.feature.features[0].properties, (i,v) => {
@@ -156,7 +171,6 @@ var StreamStats;
                         //            if (v == "GlobalWshd" && i == 1) {
                         //                this.selectedStudyArea.isGlobal = true;
                         //            }
-                        //            else this.selectedStudyArea.isGlobal = false;
                         //        });
                         //    }
                         //});
@@ -297,6 +311,8 @@ var StreamStats;
                         }
                         var results = response.data.parameters;
                         _this.loadParameterResults(results);
+                        //get additional features for this workspace
+                        _this.getAdditionalFeatureList();
                         //do regulation parameter update if needed
                         if (_this.selectedStudyArea.Disclaimers['isRegulated']) {
                             _this.loadRegulatedParameterResults(_this.regulationCheckResults.parameters);
@@ -313,6 +329,66 @@ var StreamStats;
                 }).finally(function () {
                     //this.canUpdate = true;
                     _this.parametersLoading = false;
+                });
+            };
+            StudyAreaService.prototype.getAdditionalFeatureList = function () {
+                var _this = this;
+                //this.toaster.pop("wait", "Information", "Querying for additional features...", 0);
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSavailableFeatures'].format(this.selectedStudyArea.WorkspaceID);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                this.Execute(request).then(function (response) {
+                    if (response.data.featurecollection && response.data.featurecollection.length > 0) {
+                        var features = [];
+                        angular.forEach(response.data.featurecollection, function (feature, index) {
+                            if (_this.selectedStudyArea.Features.map(function (f) { return f.name; }).indexOf(feature.name) === -1) {
+                                features.push(feature.name);
+                            }
+                        }); //next feature
+                        _this.getAdditionalFeatures(features.join(','));
+                    }
+                    //sm when complete
+                }, function (error) {
+                    //sm when error
+                    _this.toaster.clear();
+                    _this.toaster.pop("error", "There was an HTTP error requesting additional feautres list", "Please retry", 0);
+                }).finally(function () {
+                });
+            };
+            StudyAreaService.prototype.getAdditionalFeatures = function (featureString) {
+                var _this = this;
+                if (!featureString)
+                    return;
+                //console.log('downloading additional features...')
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSfeatures'].format(this.selectedStudyArea.WorkspaceID, 4326, featureString);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                this.Execute(request).then(function (response) {
+                    if (response.data.featurecollection && response.data.featurecollection.length > 0) {
+                        _this.toaster.clear();
+                        //this.toaster.pop('success', "Additional features found", "Please continue", 5000);
+                        //console.log('additional features:', response);
+                        angular.forEach(response.data.featurecollection, function (feature, index) {
+                            //console.log('test', feature, index);
+                            if (feature.feature.features.length < 1) {
+                                //remove from studyarea array                                
+                                for (var i = 0; i < _this.selectedStudyArea.Features.length; i++) {
+                                    if (_this.selectedStudyArea.Features[i].name === feature.name) {
+                                        _this.selectedStudyArea.Features.splice(i, 1);
+                                        break;
+                                    }
+                                }
+                            }
+                            else {
+                                _this.selectedStudyArea.Features.push(feature);
+                                _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(feature.name, "geojson", { displayName: feature.name, imagesrc: null }, false));
+                            }
+                        });
+                    }
+                    //sm when complete
+                }, function (error) {
+                    //sm when error
+                    _this.toaster.clear();
+                    _this.toaster.pop("error", "There was an HTTP error getting additional features", "Please retry", 0);
+                }).finally(function () {
                 });
             };
             StudyAreaService.prototype.queryLandCover = function () {
@@ -344,7 +420,7 @@ var StreamStats;
                 var ppt = this.selectedStudyArea.Pourpoint;
                 var ex = new L.Circle([ppt.Longitude, ppt.Latitude], 50).getBounds();
                 var outFields = "eqWithStrID.BASIN_NAME,eqWithStrID.DVA_EQ_ID,eqWithStrID.a10,eqWithStrID.b10,eqWithStrID.a25,eqWithStrID.b25,eqWithStrID.a50,eqWithStrID.b50,eqWithStrID.a100,eqWithStrID.b100,eqWithStrID.a500,eqWithStrID.b500";
-                var url = configuration.baseurls['GISserver'] + configuration.queryparams['coordinatedReachQueryService']
+                var url = configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['coordinatedReachQueryService']
                     .format(this.selectedStudyArea.RegionID.toLowerCase(), ex.getNorth(), ex.getWest(), ex.getSouth(), ex.getEast(), ppt.crs, outFields);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
@@ -388,7 +464,7 @@ var StreamStats;
                 var watershed = angular.toJson(this.selectedStudyArea.Features[1].feature, null);
                 //var url = configuration.baseurls['NodeServer'] + configuration.queryparams['RegressionRegionQueryService'];
                 //var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', watershed);
-                var url = configuration.baseurls['GISserver'] + configuration.queryparams['RegressionRegionQueryService'];
+                var url = configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['RegressionRegionQueryService'];
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', { geometry: watershed, f: 'json' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
                 this.Execute(request).then(function (response) {
                     //console.log(response.data);
@@ -490,13 +566,11 @@ var StreamStats;
                 this.toaster.pop('wait', "Checking for Upstream Regulation", "Please wait...", 0);
                 this.regulationCheckComplete = false;
                 var watershed = angular.toJson(this.selectedStudyArea.Features[1].feature, null);
-                var url = configuration.baseurls['GISserver'] + configuration.queryparams['regulationService'].format(this.selectedStudyArea.RegionID);
-                //CLOUD CHECK
-                if (configuration.cloud)
-                    url = configuration.baseurls['GISserver'] + configuration.queryparams['regulationService'].format(this.selectedStudyArea.RegionID.toLowerCase());
+                var url = configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['regulationService'].format(this.selectedStudyArea.RegionID.toLowerCase());
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', { watershed: watershed, outputcrs: 4326, f: 'geojson' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
                 this.Execute(request).then(function (response) {
-                    //console.log(response);
+                    //add generic 'regulation has been checked' disclaimer
+                    _this.selectedStudyArea.Disclaimers['regulationChecked'] = true;
                     if (response.data.percentarearegulated > 0) {
                         _this.toaster.clear();
                         _this.toaster.pop('success', "Map updated with Regulated Area", "Continue to 'Modify Basin Characteristics' to see area-weighted basin characteristics", 5000);

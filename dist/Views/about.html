@@ -8,52 +8,63 @@
     <h4 class="modal-title">About StreamStats v{{vm.AppVersion}}</h4>
 </div>
 <div class="modal-body">
-        <ul id="aboutTabs" class="nav nav-tabs">
-            <li ng-class="{'active':vm.selectedAboutTabName==='about'}"><a ng-click="vm.selectAboutTab('about')"><i class="fa fa-question-circle"></i>&nbsp;About the project</a></li>
-            <li ng-class="{'active':vm.selectedAboutTabName==='regionInfo'}"><a ng-click="vm.selectAboutTab('regionInfo')"><i class="fa fa-info-circle"></i>&nbsp;State / Regional Info</a></li>
-            <li ng-class="{'active':vm.selectedAboutTabName==='news'}"><a ng-click="vm.selectAboutTab('news')"><i class="fa fa-exclamation-circle"></i>&nbsp;News</a></li>
-        </ul>
-        <div style="padding-top: 10px;">
-            <div id="about" ng-if="vm.selectedAboutTabName==='about'">
-                <div id="aboutContent" ng-bind-html="vm.convertUnsafe(vm.aboutArticle)"></div> 
-            </div>
-            <div id="regionInfo" ng-show="vm.selectedAboutTabName==='regionInfo'" >
-                <div id="supportContent" >
-                    <h3 ng-hide="vm.regionArticle">No State or Region Selected</h3>
-                    <div ng-show="vm.regionArticle" ng-bind-html="vm.convertUnsafe(vm.regionArticle.description)"></div>
-                </div>  
-            </div>   
-            <div id="news" ng-show="vm.selectedAboutTabName==='news'" >
-                <div id="activeNewsContent" ng-hide="vm.activeNewsArticles == 0">
-                    <h3>Active News</h3>
-                      <accordion id="activeNewsArticles" close-others="false">
-                        <accordion-group ng-repeat="article in vm.activeNewsArticles" ng-init="article.open = true" is-open="article.open" >
-                          <accordion-heading><i ng-class="vm.activeNewsArticles[$index].open ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i> {{article.title}}</accordion-heading>
-                          <div class="row">
-                            <div class="col-sm-12" ng-bind-html="vm.convertUnsafe(article.description)"> </div>
-                            <!--<div class="col-sm-12" ng-hide="vm.readCookie(article.id)">
-                                <button ng-click="vm.createCookie(article.id, true, 30);article.open = false" class="btn-wim-default"><i class="fa fa-close"></i><span >&nbsp;&nbsp;Dismiss</span></button>
-                            </div>-->
-                          </div>
-                        </accordion-group>
-                      </accordion>
-                </div>  
-                <div id="pastNewsContent" ng-hide="vm.pastNewsArticles == 0">
-                    <h3>Past News</h3>
-                      <accordion id="pastNewsArticles">
-                        <accordion-group ng-repeat="article in vm.pastNewsArticles" is-open="article.open">
-                          <accordion-heading><i ng-class="vm.pastNewsArticles[$index].open ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i> {{article.title}}</accordion-heading>
-                          <div class="row">
-                            <div class="col-sm-12" ng-bind-html="vm.convertUnsafe(article.description)">
-                            </div>
-                          </div>
-                        </accordion-group>
-                      </accordion>
-                </div>  
-            </div>     
+    <ul id="aboutTabs" class="nav nav-tabs">
+        <li ng-class="{'active':vm.selectedAboutTabName==='about'}"><a ng-click="vm.selectAboutTab('about')"><i class="fa fa-question-circle"></i>&nbsp;About the project</a></li>
+        <li ng-class="{'active':vm.selectedAboutTabName==='regionInfo'}"><a ng-click="vm.selectAboutTab('regionInfo')"><i class="fa fa-info-circle"></i>&nbsp;State / Regional Info</a></li>
+        <li ng-class="{'active':vm.selectedAboutTabName==='news'}"><a ng-click="vm.selectAboutTab('news')"><i class="fa fa-exclamation-circle"></i>&nbsp;News</a></li>
+        <li ng-class="{'active':vm.selectedAboutTabName==='disclaimers'}"><a ng-click="vm.selectAboutTab('disclaimers')"><i class="fa fa-bell"></i>&nbsp;Disclaimers</a></li>
+    </ul>
+    <div style="padding-top: 10px;">
+
+        <div id="about" ng-if="vm.selectedAboutTabName==='about'">
+            <!--<div class="banner">
+                These data are preliminary or provisional and are subject to revision. They are being provided to meet the need for timely best science. The data have not received final approval by the U.S. Geological Survey (USGS) and are provided on the condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from the authorized or unauthorized use of the data.
+            </div>-->
+            <div ng-hide="vm.aboutArticle"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
+            <div id="aboutContent" ng-bind-html="vm.convertUnsafe(vm.aboutArticle)"></div>
         </div>
+
+        <div id="regionInfo" ng-show="vm.selectedAboutTabName==='regionInfo'">
+            <div id="supportContent">
+                <div ng-show="vm.regionArticle" ng-bind-html="vm.convertUnsafe(vm.regionArticle)"></div>
+            </div>
+        </div>
+
+        <div id="news" ng-show="vm.selectedAboutTabName==='news'">
+            <div id="activeNewsContent" ng-hide="vm.activeNewsArticles == 0">
+                <h3>Active News</h3>
+                <div ng-hide="vm.activeNewsArticles"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
+                <accordion id="activeNewsArticles" close-others="false">
+                    <accordion-group ng-repeat="article in vm.activeNewsArticles" ng-init="article.open = true" is-open="article.open">
+                        <accordion-heading><i ng-class="vm.activeNewsArticles[$index].open ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i> {{article.title}}</accordion-heading>
+                        <div class="row">
+                            <div class="col-sm-12" ng-bind-html="vm.convertUnsafe(article.description)"> </div>
+                        </div>
+                    </accordion-group>
+                </accordion>
+            </div>
+
+            <div id="pastNewsContent" ng-hide="vm.pastNewsArticles == 0">
+                <h3>Past News</h3>
+                <div ng-hide="vm.pastNewsArticles"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
+                <accordion id="pastNewsArticles">
+                    <accordion-group ng-repeat="article in vm.pastNewsArticles" is-open="article.open">
+                        <accordion-heading><i ng-class="vm.pastNewsArticles[$index].open ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i> {{article.title}}</accordion-heading>
+                        <div class="row">
+                            <div ng-hide="article.description"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
+                            <div class="col-sm-12" ng-bind-html="vm.convertUnsafe(article.description)"></div>
+                        </div>
+                    </accordion-group>
+                </accordion>
+            </div>
+        </div>
+
+        <div id="disclaimers" ng-if="vm.selectedAboutTabName==='disclaimers'">
+            <div id="disclaimersContent" ng-bind-html="vm.convertUnsafe(vm.disclaimersArticle)"></div>
+        </div>
+    </div>
 </div>
 
 <div class="modal-footer">
-    <button ng-click="vm.Close()" class="btn-wim-default"><i class="fa fa-close"></i><span >&nbsp;&nbsp;Close</span></button>
+    <button ng-click="vm.Close()" class="btn-black"><i class="fa fa-close"></i><span>&nbsp;&nbsp;Close</span></button>
 </div>
