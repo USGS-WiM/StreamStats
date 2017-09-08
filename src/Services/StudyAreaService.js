@@ -157,11 +157,13 @@ var StreamStats;
                         _this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
                         _this.selectedStudyArea.Date = new Date();
                         //reset URLS based on load balancer response from watershed request (ensure subsequent requests hit same EC2 instance)
-                        _this.selectedStudyArea.Server = response.headers()['usgswim-hostname'].toLowerCase();
-                        configuration.baseurls.StreamStatsServices = 'https://' + _this.selectedStudyArea.Server + '.streamstats.usgs.gov';
-                        configuration.baseurls.StreamStatsMapServices = 'https://' + _this.selectedStudyArea.Server + '.streamstats.usgs.gov';
-                        configuration.baseurls.NSS = 'https://' + _this.selectedStudyArea.Server + '.streamstats.usgs.gov/nssservices';
-                        configuration.baseurls.WaterUseServices = 'https://' + _this.selectedStudyArea.Server + '.streamstats.usgs.gov/wateruseservices';
+                        if (configuration.environment == "production") {
+                            _this.selectedStudyArea.Server = response.headers()['usgswim-hostname'].toLowerCase();
+                            configuration.baseurls.StreamStatsServices = 'https://' + _this.selectedStudyArea.Server + '.streamstats.usgs.gov';
+                            configuration.baseurls.StreamStatsMapServices = 'https://' + _this.selectedStudyArea.Server + '.streamstats.usgs.gov';
+                            configuration.baseurls.NSS = 'https://' + _this.selectedStudyArea.Server + '.streamstats.usgs.gov/nssservices';
+                            configuration.baseurls.WaterUseServices = 'https://' + _this.selectedStudyArea.Server + '.streamstats.usgs.gov/wateruseservices';
+                        }
                         //stub code for global check, but the services need to be updated first
                         //right now GlobalWshd is always 1
                         //this.selectedStudyArea.isGlobal = false;

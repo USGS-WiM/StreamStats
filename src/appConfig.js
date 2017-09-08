@@ -5,10 +5,10 @@ configuration.environment='development'
 configuration.baseurls =
 {   
     'NWISurl': 'https://waterservices.usgs.gov/nwis',
-    'StreamStatsServices': 'https://lowfruit.streamstats.usgs.gov',
-    'StreamStatsMapServices': 'https://lowfruit.streamstats.usgs.gov',
-    'NSS': 'https://lowfruit.streamstats.usgs.gov/nssservices',
-    'WaterUseServices': 'https://lowfruit.streamstats.usgs.gov/wateruseservices'
+    'StreamStatsServices': 'https://test.streamstats.usgs.gov',
+    'StreamStatsMapServices': 'https://test.streamstats.usgs.gov',
+    'NSS': 'https://test.streamstats.usgs.gov/nssservices',
+    'WaterUseServices': 'https://test.streamstats.usgs.gov/wateruseservices'
 }
 
 //override streamstats arguments if on production
