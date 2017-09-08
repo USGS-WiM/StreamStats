@@ -5,11 +5,10 @@ configuration.environment='development'
 configuration.baseurls =
 {   
     'NWISurl': 'https://waterservices.usgs.gov/nwis',
-    'StreamStatsServices': 'https://test.streamstats.usgs.gov',
-    'StreamStatsMapServices': 'https://test.streamstats.usgs.gov',
-    'NSS': 'https://test.streamstats.usgs.gov/nssservices',
-    'WaterUseServices': 'https://test.streamstats.usgs.gov/wateruseservices',
-    'NationalMapRasterServices': 'https://raster.nationalmap.gov/arcgis/rest/services'
+    'StreamStatsServices': 'https://lowfruit.streamstats.usgs.gov',
+    'StreamStatsMapServices': 'https://lowfruit.streamstats.usgs.gov',
+    'NSS': 'https://lowfruit.streamstats.usgs.gov/nssservices',
+    'WaterUseServices': 'https://lowfruit.streamstats.usgs.gov/wateruseservices'
 }
 
 //override streamstats arguments if on production
@@ -17,7 +16,7 @@ if (window.location.host === 'streamstats.usgs.gov') {
     configuration.baseurls.StreamStatsServices = 'https://streamstats.usgs.gov',
     configuration.baseurls.StreamStatsMapServices = 'https://streamstats.usgs.gov',
     configuration.baseurls.NSS = 'https://streamstats.usgs.gov/nssservices',
-    configuration.BaseURL.WaterUseServices ='https://streamstats.usgs.gov/wateruseservices',
+    configuration.baseurls.WaterUseServices ='https://streamstats.usgs.gov/wateruseservices',
     configuration.environment = 'production'
 }
 

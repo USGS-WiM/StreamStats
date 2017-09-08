@@ -203,6 +203,13 @@ module StreamStats.Services {
                         this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
                         this.selectedStudyArea.Date = new Date();
 
+                        //reset URLS based on load balancer response from watershed request (ensure subsequent requests hit same EC2 instance)
+                        this.selectedStudyArea.Server = response.headers()['usgswim-hostname'].toLowerCase();
+                        configuration.baseurls.StreamStatsServices = 'https://' + this.selectedStudyArea.Server + '.streamstats.usgs.gov';
+                        configuration.baseurls.StreamStatsMapServices = 'https://' + this.selectedStudyArea.Server + '.streamstats.usgs.gov';
+                        configuration.baseurls.NSS = 'https://' + this.selectedStudyArea.Server + '.streamstats.usgs.gov/nssservices';
+                        configuration.baseurls.WaterUseServices = 'https://' + this.selectedStudyArea.Server + '.streamstats.usgs.gov/wateruseservices';
+
                         //stub code for global check, but the services need to be updated first
                         //right now GlobalWshd is always 1
 
