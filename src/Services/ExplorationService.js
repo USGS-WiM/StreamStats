@@ -104,7 +104,7 @@ var StreamStats;
                                 var previousPoint = L.latLng(coords[i - 1][1], coords[i - 1][0]);
                                 var currentPoint = L.latLng(coords[i][1], coords[i][0]);
                                 totalDistance += previousPoint.distanceTo(currentPoint);
-                                console.log('total D:', totalDistance * 0.000621371, coords);
+                                //console.log('total D:', totalDistance * 0.000621371, coords)
                                 //convert meters to miles for total distance
                                 _this.coordinateList.push([coords[i][1].toFixed(5), coords[i][0].toFixed(5), coords[i][2].toFixed(2), (totalDistance * 0.000621371).toFixed(2)]);
                             } //next i    
