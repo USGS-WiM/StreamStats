@@ -310,7 +310,8 @@ var StreamStats;
                     this.studyAreaService.queryCoordinatedReach();
                 }
                 //only do this if we havent done it already and basin hasn't been edited
-                if (!this.studyAreaService.selectedStudyArea.RegressionRegions && !this.studyAreaService.selectedStudyArea.Disclaimers['isEdited']) {
+                //if (!this.studyAreaService.selectedStudyArea.RegressionRegions && !this.studyAreaService.selectedStudyArea.Disclaimers['isEdited']) {  //COMMENTED OUT 9/14/2017 BECAUSE EDIT NOT WORKING
+                if (!this.studyAreaService.selectedStudyArea.RegressionRegions) {
                     this.studyAreaService.queryRegressionRegions();
                 }
                 else
