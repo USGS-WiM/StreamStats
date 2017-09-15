@@ -5,10 +5,10 @@ configuration.environment='development'
 configuration.baseurls =
 {   
     'NWISurl': 'https://waterservices.usgs.gov/nwis',
-    'StreamStatsServices': 'https://test.streamstats.usgs.gov',
-    'StreamStatsMapServices': 'https://test.streamstats.usgs.gov',
-    'NSS': 'https://test.streamstats.usgs.gov/nssservices',
-    'WaterUseServices': 'https://test.streamstats.usgs.gov/wateruseservices'
+    'StreamStatsServices': 'http://34.225.184.188',
+    'StreamStatsMapServices': 'http://34.225.184.188',
+    'NSS': 'http://34.225.184.188/nssservices',
+    'WaterUseServices': 'http://34.225.184.188/wateruseservices'
 }
 
 //override streamstats arguments if on production
@@ -324,8 +324,8 @@ configuration.regions = [
     { "RegionID": "WI", "Name": "Wisconsin", "Bounds": [[42.489152,-92.885397],[46.952479,-86.967712]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": false },	
     { "RegionID": "WV", "Name": "West Virginia", "Bounds": [[37.20491,-82.647158],[40.637203,-77.727467]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "WY", "Name": "Wyoming", "Bounds": [[40.994289,-111.053428],[45.002793,-104.051705]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
-    { "RegionID": "CRB", "Name": "Connecticut River Basin", "Bounds": [[41.227366,-73.254776],[45.305324,-71.059248]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": false },
-    { "RegionID": "DRB", "Name": "Delaware River Basin", "Bounds": [[38.666626, -76.452907], [42.507076, -74.319593]], "Layers": {}, "Applications": ["Wateruse"], "regionEnabled": true, "ScenariosAvailable": false },
+    { "RegionID": "CRB", "Name": "Connecticut River Basin", "Bounds": [[41.227366,-73.254776],[45.305324,-71.059248]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
+    { "RegionID": "DRB", "Name": "Delaware River Basin", "Bounds": [[38.666626, -76.452907], [42.507076, -74.319593]], "Layers": {}, "Applications": ["Wateruse"], "regionEnabled": false, "ScenariosAvailable": false },
     { "RegionID": "RRB", "Name": "Rainy River Basin", "Bounds": [[47.268377,-95.64855],[50.054196,-89.766532]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": false }
 
 ]//end regions
