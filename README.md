@@ -48,6 +48,8 @@ gulp release   # makes v0.2.1 → v1.0.0
  Push the commit that contains the json files with bumped versions to your personal github repo 
  
 ```
+git add .
+git commit -m "bump version"
 git push origin staging
 ```
 
