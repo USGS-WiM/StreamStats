@@ -5,13 +5,13 @@ configuration.environment='development'
 configuration.baseurls =
 {   
     'NWISurl': 'https://waterservices.usgs.gov/nwis',
-    'StreamStatsServices': 'http://34.225.184.188',
-    'StreamStatsMapServices': 'http://34.225.184.188',
-    'NSS': 'http://34.225.184.188/nssservices',
-    'WaterUseServices': 'http://34.225.184.188/wateruseservices'
+    'StreamStatsServices': 'https://test.streamstats.usgs.gov',
+    'StreamStatsMapServices': 'https://test.streamstats.usgs.gov',
+    'NSS': 'https://test.streamstats.usgs.gov/nssservices',
+    'WaterUseServices': 'https://test.streamstats.usgs.gov/wateruseservices'
 }
 
-//override streamstats arguments if on production
+//override streamstats arguments if on production, these get overriden again in MapController after load balancer assigns a server
 if (window.location.host === 'streamstats.usgs.gov') {
     configuration.baseurls.StreamStatsServices = 'https://streamstats.usgs.gov',
     configuration.baseurls.StreamStatsMapServices = 'https://streamstats.usgs.gov',
