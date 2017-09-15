@@ -176,7 +176,7 @@ module StreamStats.Controllers {
             this.overlays = {};
             this.studyAreaService.selectedStudyArea.Features.forEach((item) => {
 
-                //console.log('in each loop', item.name);
+                //console.log('in each loop', JSON.stringify(item));
 
                 if (item.name == 'globalwatershed') {
                     this.layers.overlays[item.name] = {
