@@ -130,7 +130,7 @@ var StreamStats;
                     return;
                 this.overlays = {};
                 this.studyAreaService.selectedStudyArea.Features.forEach(function (item) {
-                    //console.log('in each loop', item.name);
+                    //console.log('in each loop', JSON.stringify(item));
                     if (item.name == 'globalwatershed') {
                         _this.layers.overlays[item.name] = {
                             name: 'Basin Boundary',
