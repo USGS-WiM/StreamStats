@@ -17,6 +17,7 @@
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>
@@ -62,13 +63,6 @@
     <None Include=".typingsrc" />
     <Content Include="gulpfile.js" />
     <Content Include="src\appConfig.js" />
-    <Content Include="src\Assets\images\Animatedkayakers.gif" />
-    <Content Include="src\Assets\images\arrows.gif" />
-    <Content Include="src\Assets\images\multi_sw_act.png" />
-    <Content Include="src\Assets\images\multi_sw_act_blank.png" />
-    <Content Include="src\Assets\images\sw_act_30.png" />
-    <Content Include="src\Assets\images\usgs-logo.png" />
-    <Content Include="src\Assets\images\usgs_logo.png" />
     <Content Include="src\css\main.css" />
     <Content Include="src\Views\help.html" />
     <Content Include="src\Views\about.html" />
@@ -87,6 +81,7 @@
     <Content Include="src\Views\navreportmodal.html" />
     <Content Include="src\Views\reportview.html" />
     <Content Include="src\Views\sidebarview.html" />
+    <Content Include="src\Views\stormrunoff.html" />
     <Content Include="src\Views\wateruse.html" />
     <Content Include="web.config" />
     <Content Include="typings.json" />
@@ -118,6 +113,7 @@
     <TypeScriptCompile Include="src\Controllers\NavigationReportModalController.ts" />
     <TypeScriptCompile Include="src\Controllers\ReportController.ts" />
     <TypeScriptCompile Include="src\Controllers\SidebarController.ts" />
+    <TypeScriptCompile Include="src\Controllers\StormRunoffController.ts" />
     <TypeScriptCompile Include="src\Controllers\WateruseController.ts" />
     <TypeScriptCompile Include="src\Models\CoordinatedReach.ts" />
     <TypeScriptCompile Include="src\Models\NetworkNavModels.ts" />
@@ -134,7 +130,9 @@
       <SubType>Code</SubType>
     </TypeScriptCompile>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="src\Assets\images\" />
+  </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
 </Project>
