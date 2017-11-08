@@ -99,6 +99,15 @@ module StreamStats.Services {
                             backdrop:'static',
                             windowClass: 'windowZ'
                         };
+                    case SSModalType.e_stormrunnoff:
+                        return {
+                            templateUrl: 'Views/stormrunoff.html',
+                            controller: 'StreamStats.Controllers.StormRunoffController',
+                            size: 'lg',
+                            backdropClass: 'backdropZ',
+                            backdrop: 'static',
+                            windowClass: 'windowZ'
+                        };
                     case SSModalType.e_about:
                         return {
                             templateUrl: 'Views/about.html',
@@ -144,7 +153,8 @@ module StreamStats.Services {
         e_about = 3,
         e_help = 4,
         e_navreport = 5,
-        e_exploration = 6
+        e_exploration = 6,
+        e_stormrunnoff =7
         
     }
 

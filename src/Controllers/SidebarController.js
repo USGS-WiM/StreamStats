@@ -377,6 +377,9 @@ var StreamStats;
             SidebarController.prototype.OpenWateruse = function () {
                 this.modalService.openModal(StreamStats.Services.SSModalType.e_wateruse);
             };
+            SidebarController.prototype.OpenStormRunoff = function () {
+                this.modalService.openModal(StreamStats.Services.SSModalType.e_stormrunnoff);
+            };
             SidebarController.prototype.downloadGeoJSON = function () {
                 var GeoJSON = angular.toJson(this.studyAreaService.selectedStudyArea.Features[1].feature);
                 var filename = 'data.geojson';

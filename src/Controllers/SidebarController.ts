@@ -479,6 +479,9 @@ module StreamStats.Controllers {
         public OpenWateruse() {
             this.modalService.openModal(Services.SSModalType.e_wateruse);
         }
+        public OpenStormRunoff() {
+            this.modalService.openModal(Services.SSModalType.e_stormrunnoff);
+        }
 
         private downloadGeoJSON() {
 

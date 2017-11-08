@@ -1,0 +1,27 @@
+﻿    <!-- Modal -->
+
+    <div class="modal-header hidden-print">
+        <button type="button" class="close" ng-click="vm.Close()"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Study Area Storm Water Runoff Summary</h4>
+    </div>
+    <div class="modal-body">
+        <input ng-if="false" type="text" class="form-control" ng-model="vm.reportTitle" placeholder="Title">
+        <div ng-hide="vm.StudyArea">A study area is needed before viewing the report</div>
+        <div ng-show="vm.StudyArea">
+            <div ng-if="!vm.showResults" class="form-group hidden-print">
+                <div class="wim-alert">What do you want me to do?</div>
+            </div>
+            <div style="background:blue">
+                <center><img src="Assets/images/usgs_logo_animated.svg"></center>
+            </div>
+         
+        </div>
+        <div class="modal-footer hidden-print">
+            <div class="btn-group">
+                <button class="btn-wim-default" ng-click="vm.Close()"><i class="fa fa-close"></i>&nbsp;&nbsp;Close</button>
+                <!--<button ng-if="vm.showResults" class="btn-wim-default" ng-click="vm.Print()"><i class="fa fa-print"></i> Print </button>-->
+                
+            </div>
+        </div>      
+                
+</div>
