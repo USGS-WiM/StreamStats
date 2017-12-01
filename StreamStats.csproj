@@ -10,13 +10,14 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
-    <TypeScriptToolsVersion>2.0</TypeScriptToolsVersion>
+    <TypeScriptToolsVersion>2.3</TypeScriptToolsVersion>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>
@@ -80,7 +81,6 @@
     <Content Include="src\images\usgs-logo.png" />
     <Content Include="src\images\usgs_logo.png" />
     <Content Include="src\index.html" />
-    <Content Include="bower.json" />
     <Content Include="src\Views\mapview.html" />
     <Content Include="src\Views\navigationview.html" />
     <Content Include="src\Views\explorationview.html" />
