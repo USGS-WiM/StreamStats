@@ -8,7 +8,8 @@ configuration.baseurls =
     'StreamStatsServices': 'https://test.streamstats.usgs.gov',
     'StreamStatsMapServices': 'https://streamstats.usgs.gov',
     'NSS': 'https://test.streamstats.usgs.gov/nssservices',
-    'WaterUseServices': 'https://test.streamstats.usgs.gov/wateruseservices'
+    'WaterUseServices': 'https://test.streamstats.usgs.gov/wateruseservices',
+    'StormRunoffServices': 'https://test.streamstats.usgs.gov/stormrunoffservices'
 }
 
 //override streamstats arguments if on production, these get overriden again in MapController after load balancer assigns a server
@@ -46,7 +47,10 @@ configuration.queryparams =
     'Wateruse': '/summary?year={0}&endyear={1}&includePermits={2}&includereturns={3}&computeDomestic={4}',
     'WateruseSourceCSV':'/summary/bysource?year={0}&endyear={1}&includePermits={2}&includereturns={3}&computeDomestic={4}',
     'WateruseConfig': '/regions/{0}/config',
-    'coordinatedReachQueryService':'/arcgis/rest/services/coordinatedreaches/{0}/MapServer/0/query?geometry={1},{2},{3},{4}&geometryType=esriGeometryEnvelope&inSR={5}&spatialRel=esriSpatialRelIntersects&outFields={6}&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson'
+    'coordinatedReachQueryService': '/arcgis/rest/services/coordinatedreaches/{0}/MapServer/0/query?geometry={1},{2},{3},{4}&geometryType=esriGeometryEnvelope&inSR={5}&spatialRel=esriSpatialRelIntersects&outFields={6}&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
+    'StormRunoffTR55A': '/TR55?precip={0}&crvnum={1}&pfreq={2}',
+    'StormRunoffTR55B': '/TR55/GetResult?precip={0}&crvnum={1}&pfreq={2}',
+    'StormRunoffRationalMethod': '/RationalMethod?rain={0}&rcoeff={1}&area={2}'
 }
 
 configuration.SupportTicketService = {
