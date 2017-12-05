@@ -24,16 +24,37 @@ var StreamStats;
         }());
         var StormRunoffController = (function (_super) {
             __extends(StormRunoffController, _super);
-            function StormRunoffController($scope, $http, studyAreaService, region, modal, $timeout) {
+            function StormRunoffController($scope, $http, studyAreaService, region, modal, $timeout, EventManager) {
                 var _this = _super.call(this, $http, configuration.baseurls.StormRunoffServices) || this;
                 _this.$timeout = $timeout;
+                _this.EventManager = EventManager;
+                _this.regionParameters = [];
+                _this.PrecipOptions = [];
+                _this.SelectedParameterList = [];
                 $scope.vm = _this;
                 _this.modalInstance = modal;
-                _this.StudyArea = studyAreaService.selectedStudyArea;
-                _this.AvailableParameters = region.parameterList;
+                _this.studyAreaService = studyAreaService;
+                _this.regionParameters = region.parameterList;
+                _this.parameterloadedEventHandler = new WiM.Event.EventHandler(function (sender, e) {
+                    if (e.parameterLoaded)
+                        _this.loadParameters();
+                });
                 _this.init();
                 return _this;
             }
+            Object.defineProperty(StormRunoffController.prototype, "SelectedTab", {
+                get: function () {
+                    return this._selectedTab;
+                },
+                set: function (val) {
+                    if (this._selectedTab != val) {
+                        this._selectedTab = val;
+                        this.selectRunoffType();
+                    } //end if           
+                },
+                enumerable: true,
+                configurable: true
+            });
             //Methods  
             //-+-+-+-+-+-+-+-+-+-+-+-
             StormRunoffController.prototype.GetStormRunoffResults = function () {
@@ -45,13 +66,13 @@ var StreamStats;
                 };
                 if (this.SelectedTab == 1) {
                     var equation_1 = StormRunoffType.TR55;
-                    var url = configuration.queryparams['StormRunoffTR55B'].format(this.selectedSRParameterList[0], this.selectedSRParameterList[1], this.selectedSRParameterList[2], this.selectedSRParameterList[3]);
+                    //var url = configuration.queryparams['StormRunoffTR55B'].format(this.selectedSRParameterList[0], this.selectedSRParameterList[1], this.selectedSRParameterList[2], this.selectedSRParameterList[3]);
                 }
                 else if (this.SelectedTab == 2) {
                     var equation_2 = StormRunoffType.RationalMethod;
-                    var url = configuration.queryparams['StormRunoffRationalMethod'].format(this.selectedSRParameterList[0], this.selectedSRParameterList[1], this.selectedSRParameterList[2], this.selectedSRParameterList[3]);
+                    //var url = configuration.queryparams['StormRunoffRationalMethod'].format(this.selectedSRParameterList[0], this.selectedSRParameterList[1], this.selectedSRParameterList[2], this.selectedSRParameterList[3]);
                 }
-                var request = new WiM.Services.Helpers.RequestInfo(url, false, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(this.StudyArea.Features[1].feature.features[0].geometry));
+                var request = null; //new WiM.Services.Helpers.RequestInfo(url, false, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(this.StudyArea.Features[1].feature.features[0].geometry));
                 this.Execute(request).then(function (response) {
                     _this.showResults = true;
                     //sm when complete
@@ -70,13 +91,22 @@ var StreamStats;
                     _this.CanContinue = true;
                 });
             };
-            StormRunoffController.prototype.CalculateStreamStatsBCs = function () {
-                var _this = this;
-                var pintensity = $("input:radio[name=pintensity]:checked").val();
-                if (this.SelectedTab == 1) {
-                    this.parameterList[1] = pintensity;
-                    this.selectedSRParameterList = this.AvailableParameters.filter(function (p) { return _this.parameterList.indexOf(p.code); });
+            StormRunoffController.prototype.CalculateParameters = function () {
+                try {
+                    this.EventManager.SubscribeToEvent(StreamStats.Services.onSelectedStudyParametersLoaded, this.parameterloadedEventHandler);
+                    //add to studyareaservice if not already there
+                    for (var i = 0; i < this.SelectedParameterList.length; i++) {
+                        var param = this.SelectedParameterList[i];
+                        if (this.checkArrayForObj(this.studyAreaService.studyAreaParameterList, param) == -1) {
+                            this.studyAreaService.studyAreaParameterList.push(param);
+                        } //end if
+                    } //next i
+                    if (this.SelectedPrecip != null && this.checkArrayForObj(this.studyAreaService.studyAreaParameterList, this.SelectedPrecip) == -1)
+                        this.studyAreaService.studyAreaParameterList.push(this.SelectedPrecip);
                     this.studyAreaService.loadParameters();
+                }
+                catch (e) {
+                    console.log("oops CalculateParams failed to load ", e);
                 }
             };
             StormRunoffController.prototype.Close = function () {
@@ -91,25 +121,45 @@ var StreamStats;
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             StormRunoffController.prototype.init = function () {
-                var _this = this;
-                this.parameterList = ["RCN", "I6H100Y", "DRNAREA", "RUNCO_CO"];
-                this.selectedSRParameterList = this.AvailableParameters.filter(function (p) { return _this.parameterList.indexOf(p.code); });
+                this.SelectedTab = StormRunoffType.TR55;
+                this.SelectedPrecip = this.PrecipOptions[0];
+                //for testing
+                this.CalculateParameters();
+            };
+            StormRunoffController.prototype.loadParameters = function () {
+                //unsubscribe first
+                this.EventManager.UnSubscribeToEvent(StreamStats.Services.onSelectedStudyParametersLoaded, this.parameterloadedEventHandler);
+                alert("Parameters loaded");
+            };
+            StormRunoffController.prototype.selectRunoffType = function () {
+                switch (this._selectedTab) {
+                    case StormRunoffType.TR55:
+                        this.PrecipOptions = this.regionParameters.filter(function (f) { return ["I6H100Y", "I24H100Y", "I24H2Y", "I6H2Y", "PRECIP"].indexOf(f.code) != -1; });
+                        this.SelectedParameterList = this.regionParameters.filter(function (f) { return ["RCN", "DRNAREA", "RUNCO_CO"].indexOf(f.code) != -1; });
+                        break;
+                    default:
+                        break;
+                }
+            };
+            StormRunoffController.prototype.checkArrayForObj = function (arr, obj) {
+                for (var i = 0; i < arr.length; i++) {
+                    if (angular.equals(arr[i], obj)) {
+                        return i;
+                    }
+                }
+                ;
+                return -1;
             };
             return StormRunoffController;
         }(WiM.Services.HTTPServiceBase)); //end wimLayerControlController class    
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        StormRunoffController.$inject = ['$scope', '$http', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.RegionService', '$modalInstance', '$timeout'];
+        StormRunoffController.$inject = ['$scope', '$http', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.RegionService', '$modalInstance', '$timeout', 'WiM.Event.EventManager'];
         var StormRunoffType;
         (function (StormRunoffType) {
             StormRunoffType[StormRunoffType["TR55"] = 1] = "TR55";
             StormRunoffType[StormRunoffType["RationalMethod"] = 2] = "RationalMethod";
         })(StormRunoffType || (StormRunoffType = {}));
-        var StormRunoffTabType;
-        (function (StormRunoffTabType) {
-            StormRunoffTabType[StormRunoffTabType["TR55"] = 1] = "TR55";
-            StormRunoffTabType[StormRunoffTabType["RationalMethod"] = 2] = "RationalMethod";
-        })(StormRunoffTabType || (StormRunoffTabType = {}));
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.StormRunoffController', StormRunoffController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));
