@@ -210,11 +210,11 @@ var StreamStats;
                     return;
                 }
                 var index = this.studyAreaService.studyAreaParameterList.indexOf(parameter);
-                if (index > -1) {
+                if (!parameter.checked && index > -1) {
                     //remove it
                     this.studyAreaService.studyAreaParameterList.splice(index, 1);
                 }
-                else {
+                else if (parameter.checked && index == -1) {
                     //add it
                     this.studyAreaService.studyAreaParameterList.push(parameter);
                 }
@@ -453,7 +453,7 @@ var StreamStats;
                             //proceed if there is a regression region
                             return this.studyAreaService.regressionRegionQueryComplete;
                         case ProcedureType.BUILD:
-                            return this.parametersLoaded;
+                            return this.studyAreaService.regressionRegionQueryComplete && this.parametersLoaded;
                         default:
                             return false;
                     } //end switch          
