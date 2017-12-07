@@ -189,6 +189,7 @@ module StreamStats.Services {
             var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(),
                 this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString(), false)
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
+            request.withCredentials = true;
 
             this.Execute(request).then(
                 (response: any) => {  
@@ -199,14 +200,6 @@ module StreamStats.Services {
                         this.selectedStudyArea.Features = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"] : null;
                         this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
                         this.selectedStudyArea.Date = new Date();
-
-                        //reset URLS based on load balancer response from watershed request (ensure subsequent requests hit same EC2 instance)
-                        if (configuration.environment == "production") {
-                            configuration.baseurls.StreamStatsServices = 'https://' + this.selectedStudyArea.Server + '.streamstats.usgs.gov';
-                            configuration.baseurls.StreamStatsMapServices = 'https://' + this.selectedStudyArea.Server + '.streamstats.usgs.gov';
-                            configuration.baseurls.NSS = 'https://' + this.selectedStudyArea.Server + '.streamstats.usgs.gov/nssservices';
-                            configuration.baseurls.WaterUseServices = 'https://' + this.selectedStudyArea.Server + '.streamstats.usgs.gov/wateruseservices';
-                        }
 
                         //stub code for global check, but the services need to be updated first
                         //right now GlobalWshd is always 1
@@ -252,6 +245,7 @@ module StreamStats.Services {
 
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSwatershedByWorkspace'].format('geojson', rcode, workspaceID, 4326, false)
                 var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
+                request.withCredentials = true;
 
                 this.Execute(request).then(
                     (response: any) => {                        
@@ -292,6 +286,8 @@ module StreamStats.Services {
             //Content-Type: application/json
             var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSeditBasin'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID, this.selectedStudyArea.Pourpoint.crs.toString())
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.PUT, 'json', angular.toJson(this.WatershedEditDecisionList), {});
+            request.withCredentials = true;
+
             this.Execute(request).then(
                 (response: any) => {
                     //create new study area                    
@@ -349,6 +345,7 @@ module StreamStats.Services {
             var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSComputeParams'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID,
                 requestParameterList.join(','));
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
+            request.withCredentials = true;
 
             this.Execute(request).then(
                 (response: any) => {
@@ -416,6 +413,7 @@ module StreamStats.Services {
             //this.toaster.pop("wait", "Information", "Querying for additional features...", 0);
             var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSavailableFeatures'].format(this.selectedStudyArea.WorkspaceID);
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
+            request.withCredentials = true;
 
             this.Execute(request).then(
                 (response: any) => {
@@ -443,6 +441,7 @@ module StreamStats.Services {
             //console.log('downloading additional features...')
             var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSfeatures'].format(this.selectedStudyArea.WorkspaceID, 4326, featureString);
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
+            request.withCredentials = true;
 
             this.Execute(request).then(
                 (response: any) => {
