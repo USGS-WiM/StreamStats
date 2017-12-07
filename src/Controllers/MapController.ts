@@ -397,6 +397,7 @@ module StreamStats.Controllers {
                         polyline: false,
                         rectangle: false,
                         circle: false,
+                        circlemarker: false,
                         marker: false
                     }
 
