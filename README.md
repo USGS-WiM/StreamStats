@@ -1,36 +1,45 @@
-﻿# streamstats
+![WiM](wimlogo.png)
 
-> Basin delineation and flow statistics computation application
-## Disclaimer
-This software has been approved for release by the U.S. Geological Survey (USGS). Although the software has been subjected to rigorous review, the USGS reserves the right to update the software as needed pursuant to further analysis and review. No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty. Furthermore, the software is released on condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from its authorized or unauthorized use.
+# StreamStats
 
-## Project setup
+StreamStats client application
+
+### Prerequisites
 
 ##### required software
 [node.js](http://nodejs.org)  
 [git](https://git-scm.com/)  
 [typescript 1.7] (https://github.com/Microsoft/TypeScript)
 
-#### 1.  Install global dependencies
-This will install the following packages globally
-
+Install global dependencies
 ```bash
+npm install -g bower
 npm install -g gulp
 npm install -g typings
 ```
 
-#### 2.  Update/add packages
-This will install the required dependencies to the project
+## Getting Started
+
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+
+### Installing
+
+https://help.github.com/articles/cloning-a-repository/
 
 Inside of your project folder (after git fork and clone):
 ```bash
 npm install
+bower install
 typings install 
 ```
+Note: [upgrade from tsd to typings] (https://github.com/DefinitelyTyped/tsd/issues/269)
+## Contributing
 
-------
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on the process for submitting pull requests to us. Please read [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for details on adhering by the [USGS Code of Scientific Conduct](https://www2.usgs.gov/fsp/fsp_code_of_scientific_conduct.asp).
 
-## Building a release
+## Versioning
+
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](../../tags). 
 
 **Commit, Sync, and Merge Pull Request on any current project changes.  The steps below require a clean git status.**
 
@@ -58,3 +67,31 @@ git push origin staging
 
 ##### Step 4.  
 Create new release on github.com
+
+To push tags to remote origin: `git push origin --tags`
+
+*Note that your alias for the remote origin may differ.
+
+## Authors
+
+* **[Jeremy Newson](https://www.usgs.gov/staff-profiles/jeremy-k-newson)**  - *Lead Developer* - [USGS Web Informatics & Mapping](https://wim.usgs.gov/)
+* **[Marty Smith](https://www.usgs.gov/staff-profiles/martyn-smith)**  - *Lead Developer* - [USGS Web Informatics & Mapping](https://wim.usgs.gov/)
+
+See also the list of [contributors](../../graphs/contributors) who participated in this project.
+
+## License
+
+This project is licensed under the Creative Commons CC0 1.0 Universal License - see the [LICENSE.md](LICENSE.md) file for details
+
+## Suggested Citation
+
+In the spirit of open source, please cite any re-use of the source code stored in this repository. Below is the suggested citation:
+
+`This project contains code produced by the Web Informatics and Mapping (WIM) team at the United States Geological Survey (USGS). As a work of the United States Government, this project is in the public domain within the United States. https://wim.usgs.gov`
+
+
+## About WIM
+
+* This project authored by the [USGS WIM team](https://wim.usgs.gov)
+* WIM is a team of developers and technologists who build and manage tools, software, web services, and databases to support USGS science and other federal government cooperators.
+* WiM is a part of the [Upper Midwest Water Science Center](https://www.usgs.gov/centers/wisconsin-water-science-center).
