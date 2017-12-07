@@ -13,7 +13,7 @@
     height: 71px !important;
 }
 
-.ng-scope.ng-isolate-scope.angular-leaflet-control-layers-collapsed:before {
+.angular-leaflet-control-layers-collapsed:before {
     font-size: 14px;
     display: block;
     content: 'Layers';
@@ -33,7 +33,7 @@
 }
 
 
-.exploration-tools-collapsed.ng-scope:after {
+.exploration-tools-collapsed:after {
     font-size: 14px;
     display: block;
     content: 'Exploration Tools';

@@ -81,7 +81,6 @@
     <Content Include="src\images\usgs-logo.png" />
     <Content Include="src\images\usgs_logo.png" />
     <Content Include="src\index.html" />
-    <Content Include="bower.json" />
     <Content Include="src\Views\mapview.html" />
     <Content Include="src\Views\navigationview.html" />
     <Content Include="src\Views\explorationview.html" />
