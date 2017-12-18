@@ -34,18 +34,23 @@ module StreamStats.Controllers {
     interface IReportable {
         Graph: any;
         Table: any;
+        PeakQ: any;
+        Infiltration: any;
+        ExcessPrecip: any;
     }
 
     interface IStormRunoffReportable {
-        TimeSeries: IReportable;
+        TR55: IReportable;
+        RationalMethod: IReportable;
     }
 
     class StormRunoffReportable implements IStormRunoffReportable {
-        public TimeSeries: IReportable;
+        public TR55: IReportable;
+        public RationalMethod: IReportable;
         public constructor() {
-            this.TimeSeries = { Graph: {}, Table: {} };
+            this.TR55 = { Graph: {}, Table: {}, PeakQ: {}, Infiltration: {}, ExcessPrecip: {} };
+            this.RationalMethod = { Graph: {}, Table: {}, PeakQ: {}, Infiltration: {}, ExcessPrecip: {} };
         }
-
     }
 
     interface IStormRunoffController extends IModal {
@@ -54,6 +59,7 @@ module StreamStats.Controllers {
     class StormRunoffController extends WiM.Services.HTTPServiceBase implements IStormRunoffController {
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
+        public StudyArea: StreamStats.Models.IStudyArea;
         private modalInstance: ng.ui.bootstrap.IModalServiceInstance;
         public showResults: boolean;
         private parameterloadedEventHandler: WiM.Event.EventHandler<Services.StudyAreaEventArgs>;
@@ -89,6 +95,7 @@ module StreamStats.Controllers {
             super($http, configuration.baseurls.StormRunoffServices);
             $scope.vm = this;
             this.modalInstance = modal;
+            this.StudyArea = studyAreaService.selectedStudyArea;
             this.studyAreaService = studyAreaService;
             this.regionParameters = region.parameterList; 
 
@@ -96,7 +103,7 @@ module StreamStats.Controllers {
                 if (e.parameterLoaded) this.loadParameters()
             })
         
-            this.init();              
+            this.init();  
         }  
         
         //Methods  
@@ -110,14 +117,14 @@ module StreamStats.Controllers {
             };
             if (this.SelectedTab == 1) {
                 let equation = StormRunoffType.TR55;
-                //var url = configuration.queryparams['StormRunoffTR55B'].format(this.selectedSRParameterList[0], this.selectedSRParameterList[1], this.selectedSRParameterList[2], this.selectedSRParameterList[3]);
+                var url = configuration.queryparams['StormRunoffTR55B'].format(this.SelectedParameterList[0].value, this.SelectedParameterList[1].value, this.SelectedParameterList[2].value, this.SelectedParameterList[3]);
             }
             else if (this.SelectedTab == 2) {
                 let equation = StormRunoffType.RationalMethod;
-                //var url = configuration.queryparams['StormRunoffRationalMethod'].format(this.selectedSRParameterList[0], this.selectedSRParameterList[1], this.selectedSRParameterList[2], this.selectedSRParameterList[3]);
+                var url = configuration.queryparams['StormRunoffRationalMethod'].format(this.SelectedParameterList[0].value, this.SelectedParameterList[1].value, this.SelectedParameterList[2].value, this.SelectedParameterList[3]);
             }
             
-            var request: WiM.Services.Helpers.RequestInfo = null; //new WiM.Services.Helpers.RequestInfo(url, false, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(this.StudyArea.Features[1].feature.features[0].geometry));
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, false, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(this.StudyArea.Features[1].feature.features[0].geometry));
 
             this.Execute(request).then(
                 (response: any) => {
@@ -125,13 +132,13 @@ module StreamStats.Controllers {
                     //sm when complete
                     this.result = response.data; 
                     if (this.SelectedTab == 1) {
-                        //this.ReportData.TimeSeries.Graph = this.loadGraphData(StormRunoffType.TR55);
-                        //this.ReportData.TimeSeries.Table = this.GetTableData(StormRunoffType.TR55);
+                        this.ReportData.TR55.Graph = this.loadGraphData();
+                        this.ReportData.TR55.Table = this.GetTableData();
+                        this.ReportData.TR55.PeakQ = this.getPeakQ();
                     }
                     else if (this.SelectedTab == 2) {
-                        //this.ReportData.TimeSeries.Table = this.GetTableData(StormRunoffType.RationalMethod);
+                        this.ReportData.RationalMethod.PeakQ = this.getPeakQ();
                     }
-
                 }, (error) => {
                     var x = error;
                     //sm when error                    
@@ -159,6 +166,22 @@ module StreamStats.Controllers {
                 console.log("oops CalculateParams failed to load ",e)
             }
         }
+
+        public RadioButtonCtrl($scope) {
+            $scope.poptions = [{
+                "pfreq": "I6H2Y",
+                "name": "6 Hour 2 Year Precipitation"
+            }, {
+                "pfreq": "I6H100Y",
+                "name": "6 Hour 100 Year Precipitation"
+            }, {
+                "pfreq": "I24H2Y",
+                "name": "24 Hour 2 Year Precipitation"
+            }, {
+                "pfreq": "I24H100Y",
+                "name": "24 Hour 100 Year Precipitation"
+            }];
+        }
         
         public Close(): void {
             this.modalInstance.dismiss('cancel')
@@ -169,16 +192,132 @@ module StreamStats.Controllers {
         public Print(): void {
             window.print();
         }
-        
+
+        private loadGraphData() {
+            try {
+                var results = [];
+                
+                for (var i = 0; i <= 100; i++) {
+                    if (this.result[i] != "undefined") {
+                        var dur = this.result[i].duration;
+                        var time = new Date(null);
+                        time = this.computeTime(this.result[i], dur);
+                        results.push({ "x": time, "y": this.result[i].Q });
+                    }
+                }
+                return results;
+            } catch(e) {
+                var x = e;
+            }
+        }
+
+        private GetTableData(): any {
+            var tableFields: any = [];
+            tableFields.push("time");
+            tableFields.push(Object.keys(this.result));
+            var tableValues: Array<any> = [];
+            try {
+                for (var i = 0; i <= 100; i++) {
+                    if (this.result[i] != "undefined") {
+                        var dur = this.result[i].duration;
+                        var time = new Date(null);
+                        time = this.computeTime(this.result[i], dur);
+                        tableValues.push({ time })
+                        var tempArray: any = [];
+                        for (var k in this.result[i]) {
+                            if (this.result[i].hasOwnProperty(k)) {
+                                tempArray.push(this.result[i][k]);
+                            }
+                        }
+                        tempArray.unshift(time);
+                        tableValues.push({ tempArray });           
+                    }
+                }
+
+            } catch(e) {
+                var x = e;
+            } 
+        }
+
+        private getPeakQ(): any {
+            try {
+                var Q = 0;
+
+                for (var i = 0; i <= 100; i++) {
+                    if (this.result[i] != "undefined") {
+                        if (this.result[i].Q > Q) {
+                            Q = this.result[i].Q;
+                        }
+                    }
+                }
+                return Q;
+
+            } catch (e) {
+                var x = e;
+            } 
+        }
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         
         private init(): void {            
             this.SelectedTab = StormRunoffType.TR55;
-            this.SelectedPrecip = this.PrecipOptions[0];
+            this.showResults = false;
+            this.CanContinue = true;
+            this.ReportData = new StormRunoffReportable();
+            this.ReportOptions = {
+                chart: {
+                    type: 'lineChart',
+                    height: 450,
+                    visible: true,
+                    stacked: true,
+                    showControls: false,
+                    margin: {
+                        top: 20,
+                        right: 30,
+                        bottom: 60,
+                        left: 55
+                    },
+                    x: function (d) { return d.label; },
+                    y: function (d) { return d.value; },
+                    dispatch: {
+                        stateChange: () => {
+                            //console.log("StateChange");
+                            //must wrap in timer or method executes prematurely
+                            this.$timeout(() => {
+                                //this.loadGraphLabels(0);
+                            }, 500);
+                        },
+                        renderEnd: () => {
+                            //console.log("renderend");
+                            //must wrap in timer or method executes prematurely
+                            this.$timeout(() => {
+                                //this.loadGraphLabels(0);
+                            }, 500);
+                        }
+                    },
+                    showValues: true,
+                    valueFormat: function (d) {
+                        return d3.format(',.4f')(d);
+                    },
+                    tooltip: {
+                        valueFormatter: function (d) { return d3.format(',.4f')(d) + " cubic feet/second"; }
+                    },
+
+                    xAxis: {
+                        showMaxMin: false
+                    },
+                    yAxis: {
+                        axisLabel: 'Time interval',
+                        tickFormat: function (d) {
+                            return d3.format(',.3f')(d);
+                        }
+                    },
+                    refreshDataOnly: true
+                }
+            };
 
             //for testing
-            this.CalculateParameters();
+            //this.CalculateParameters();
         }
         private loadParameters(): void{
             //unsubscribe first
@@ -188,8 +327,9 @@ module StreamStats.Controllers {
         private selectRunoffType() {
             switch (this._selectedTab) {
                 case StormRunoffType.TR55:
-                    this.PrecipOptions = this.regionParameters.filter(f => { return ["I6H100Y", "I24H100Y", "I24H2Y", "I6H2Y", "PRECIP"].indexOf(f.code) != -1 })
-                    this.SelectedParameterList = this.regionParameters.filter(f => { return ["RCN", "DRNAREA", "RUNCO_CO"].indexOf(f.code) != -1 })
+                    this.PrecipOptions = this.regionParameters.filter(f => { return ["I6H2Y", "I6H100Y", "I24H2Y", "I24H100Y"].indexOf(f.code) != -1 })
+                    this.SelectedParameterList = this.regionParameters.filter(f => { return ["DRNAREA", "I6H2Y", "RCN", "RUNCO_CO"].indexOf(f.code) != -1 })
+                    this.SelectedPrecip = this.PrecipOptions[0];
                     break;
                 default: //case StormRunoffType.RationalMethod:
 
@@ -204,6 +344,12 @@ module StreamStats.Controllers {
             };
             return -1;
         }
+        private computeTime(time, dur): Date {
+            time.setMinutes(time * 0.01 * dur * 60); // specify value for MINUTES here
+            time.toISOString().substr(11, 8).replace(/^[0:]+/, "");
+
+            return time;
+        }
     }//end wimLayerControlController class    
     enum StormRunoffType {
         TR55 = 1,
@@ -212,4 +358,5 @@ module StreamStats.Controllers {
 
     angular.module('StreamStats.Controllers')
         .controller('StreamStats.Controllers.StormRunoffController', StormRunoffController);
+
 }//end module 

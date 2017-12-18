@@ -74,8 +74,9 @@
                         </div>
                     </div>
 
-
+                    
                     <form ng-hide="vm.studyAreaService.selectedStudyArea.Features" style="padding-bottom: 15px;">
+                        <button ng-show="vm.regionService.selectedRegion.Applications.indexOf('StormRunoff') != -1" ng-click="vm.OpenStormRunoff()" type="button" class="btn-black fullwidth"><i class="fa fa-steam"></i>&nbsp;&nbsp;Open Available Storm Runoff Models</button>
                         <button id="delineateButton" type="button" class="btn-blue fullwidth" ng-click="vm.startDelineate()" ng-class="vm.studyAreaService.doDelineateFlag ? 'btn-orange' : 'btn-blue'" ng-hide="vm.studyAreaService.selectedStudyArea.Features" ng-disabled="!vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint || !vm.studyAreaService.zoomLevel15"><i ng-class="vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint ? 'fa fa-map-marker' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Delineate</button>
                     </form>
 
