@@ -6,7 +6,11 @@ configuration.baseurls =
 {   
     'NWISurl': 'https://waterservices.usgs.gov/nwis',
     'StreamStatsServices': 'https://test.streamstats.usgs.gov',
+<<<<<<< HEAD
     'StreamStatsMapServices': 'https://streamstats.usgs.gov',
+=======
+    'StreamStatsMapServices': 'https://testgis.streamstats.usgs.gov',
+>>>>>>> 630907defd56d8b8376883db9672e0b5f5d4933d
     'NSS': 'https://test.streamstats.usgs.gov/nssservices',
     'WaterUseServices': 'https://test.streamstats.usgs.gov/wateruseservices',
     'StormRunoffServices': 'https://test.streamstats.usgs.gov/stormrunoffservices'
@@ -204,7 +208,11 @@ configuration.basemaps =
 configuration.regions = [
 	{ "RegionID": "AK", "Name": "Alaska", "Bounds": [[51.583032,-178.217598],[71.406235,-129.992235]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "AL", "Name": "Alabama", "Bounds": [[30.233604, -88.472952], [35.016033, -84.894016]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
+<<<<<<< HEAD
     { "RegionID": "AR", "Name": "Arkansas", "Bounds": [[33.010151, -94.617257], [36.492811, -89.645479]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true},
+=======
+    { "RegionID": "AR", "Name": "Arkansas", "Bounds": [[33.010151, -94.617257], [36.492811, -89.645479]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
+>>>>>>> 630907defd56d8b8376883db9672e0b5f5d4933d
     { "RegionID": "AS", "Name": "American Samoa", "Bounds": [[-14.375555, -170.82611], [-14.166389, -169.438323]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "AZ", "Name": "Arizona", "Bounds": [[31.335634, -114.821761], [37.003926, -109.045615]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "CA", "Name": "California", "Bounds": [[32.535781, -124.392638], [42.002191, -114.12523]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
