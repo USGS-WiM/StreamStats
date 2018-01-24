@@ -78,7 +78,6 @@ var StreamStats;
                 this.explorationMethodBusy = false;
                 this.explorationToolsExpanded = false;
                 $scope.vm = this;
-                this.init();
                 this.toaster = toaster;
                 this.angulartics = $analytics;
                 this.searchService = search;
@@ -92,6 +91,7 @@ var StreamStats;
                 this.eventManager = eventManager;
                 this.cursorStyle = 'pointer';
                 this.environment = configuration.environment;
+                this.init();
                 //subscribe to Events
                 this.eventManager.SubscribeToEvent(StreamStats.Services.onSelectedStudyAreaChanged, new WiM.Event.EventHandler(function () {
                     _this.onSelectedStudyAreaChanged();
@@ -144,22 +144,24 @@ var StreamStats;
                     //check if in elevation profile mode
                     if (_this.explorationService.drawElevationProfile)
                         return;
+                    //network navigation
+                    if (exploration.selectedMethod != null && exploration.selectedMethod.locations.length <= exploration.selectedMethod.minLocations) {
+                        //add point
+                        exploration.selectedMethod.addLocation(new WiM.Models.Point(args.leafletEvent.latlng.lat, args.leafletEvent.latlng.lng, '4326'));
+                        //add to map
+                        for (var i = 0; i < exploration.selectedMethod.locations.length; i++) {
+                            var item = exploration.selectedMethod.locations[i];
+                            _this.markers['netnav_' + i] = {
+                                lat: item.Latitude,
+                                lng: item.Longitude,
+                                message: exploration.GetToolName(exploration.selectedMethod.navigationID),
+                                focus: true,
+                                draggable: false
+                            };
+                        } //next i
+                    }
                     else {
-                        //query streamgages
                         _this.queryPoints(args.leafletEvent);
-                        //if (exploration.selectedMethod != null) {
-                        //    exploration.selectedMethod.addLocation(new WiM.Models.Point(args.leafletEvent.latlng.lat, args.leafletEvent.latlng.lng, '4326'));
-                        //    for (var i: number = 0; i < exploration.selectedMethod.locations.length; i++) {
-                        //        var item = exploration.selectedMethod.locations[i];
-                        //        this.markers['netnav_' + i] = {
-                        //            lat: item.Latitude,
-                        //            lng: item.Longitude,
-                        //            message: exploration.GetToolName(exploration.selectedMethod.ModelType) + " point",
-                        //            focus: true,
-                        //            draggable: false
-                        //        };
-                        //    }//next i
-                        //}
                     }
                 });
                 $scope.$watch(function () { return _this.bounds; }, function (newval, oldval) { return _this.mapBoundsChange(oldval, newval); });
@@ -205,10 +207,10 @@ var StreamStats;
                 get: function () {
                     if (this.explorationService.selectedMethod == null)
                         return 0;
-                    return this.explorationService.selectedMethod.ModelType;
+                    return this.explorationService.selectedMethod.navigationID;
                 },
                 set: function (val) {
-                    this.explorationService.setMethod(val);
+                    this.explorationService.setMethod(val, null, null, null);
                 },
                 enumerable: true,
                 configurable: true
@@ -221,8 +223,10 @@ var StreamStats;
                 this.removeGeoJsonLayers("netnav_", true);
                 if (!this.canSelectExplorationTool(val))
                     return;
-                this.selectedExplorationMethodType = val;
-                //then select
+                //this.selectedExplorationMethodType = val;
+                console.log('here0', val);
+                //get this configuration
+                this.explorationService.getNavigationConfiguration(val);
                 //send messages if needed
             };
             MapController.prototype.toggleLimitExplorationMethodToStudyArea = function () {
@@ -237,32 +241,32 @@ var StreamStats;
             };
             MapController.prototype.ExecuteNav = function () {
                 //validate request
-                if (this.explorationService.selectedMethod.locations.length != this.explorationService.selectedMethod.requiredLocationLength) {
-                    this.toaster.pop("warning", "Warning", "You must select at least " + this.explorationService.selectedMethod.requiredLocationLength + " points.", 10000);
+                if (this.explorationService.selectedMethod.locations.length != this.explorationService.selectedMethod.minLocations) {
+                    this.toaster.pop("warning", "Warning", "You must select at least " + this.explorationService.selectedMethod.minLocations + " points.", 10000);
                     return;
                 }
                 var isOK = false;
-                if (this.selectedExplorationMethodType == StreamStats.Services.ExplorationMethodType.GETNETWORKREPORT) {
-                    for (var i = 0; i < this.explorationService.selectedMethod.layerOptions.length; i++) {
-                        var item = this.explorationService.selectedMethod.layerOptions[i];
-                        if (item.selected) {
-                            isOK = true;
-                            break;
-                        }
-                        ;
-                    } //next i
-                    if (!isOK) {
-                        this.toaster.pop("warning", "Warning", "You must select at least one configuration item", 10000);
-                        return;
-                    }
-                } //end if
+                //if (this.selectedExplorationMethodType == Services.ExplorationMethodType.NETWORKTRACE) {
+                //    for (var i: number = 0; i < (<Models.NetworkTrace>this.explorationService.selectedMethod).layerOptions.length; i++) {
+                //        var item = (<Models.NetworkTrace>this.explorationService.selectedMethod).layerOptions[i];
+                //        if (item.selected) { isOK = true; break; };
+                //    }//next i
+                //    if (!isOK) {
+                //        this.toaster.pop("warning", "Warning", "You must select at least one configuration item", 10000);
+                //        return;
+                //    }
+                //}//end if
                 this.explorationMethodBusy = true;
                 this.explorationService.ExecuteSelectedModel();
             };
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             MapController.prototype.init = function () {
-                //init map           
+                this.setupMap();
+                console.log('in map init');
+                this.explorationService.getNavigationEndPoints();
+            };
+            MapController.prototype.setupMap = function () {
                 this.center = new Center(39, -100, 4);
                 this.layers = {
                     baselayers: configuration.basemaps,
@@ -289,11 +293,7 @@ var StreamStats;
                             marker: false
                         }
                     },
-                    custom: new Array(
-                    //zoom home button control
-                    //(<any>L.Control).zoomHome({ homeCoordinates: [39, -100], homeZoom: 4 }),
-                    //location control
-                    L.control.locate({ follow: false, locateOptions: { "maxZoom": 15 } }), L.control.elevation({ imperial: true, width: width }))
+                    custom: new Array(L.control.locate({ follow: false, locateOptions: { "maxZoom": 15 } }), L.control.elevation({ imperial: true, width: width }))
                 };
                 this.events = {
                     map: {
@@ -735,27 +735,28 @@ var StreamStats;
             };
             MapController.prototype.canSelectExplorationTool = function (methodval) {
                 switch (methodval) {
-                    case StreamStats.Services.ExplorationMethodType.FINDPATHBETWEENPOINTS:
-                        if (this.regionServices.selectedRegion == null) {
-                            this.toaster.pop("warning", "Warning", "you must first select a state or region to use this tool", 5000);
-                            return false;
-                        }
-                        if (this.center.zoom < 10) {
-                            this.toaster.pop("warning", "Warning", "you must be zoomed into at least a zoomlevel of 10 to use this tool", 5000);
-                            return false;
-                        }
+                    case StreamStats.Services.ExplorationMethodType.NETWORKPATH:
+                        //if (this.regionServices.selectedRegion == null) {
+                        //    this.toaster.pop("warning", "Warning", "you must first select a state or region to use this tool", 5000);
+                        //    return false;
+                        //}
+                        //if (this.center.zoom < 10) {
+                        //    this.toaster.pop("warning", "Warning", "you must be zoomed into at least a zoomlevel of 10 to use this tool", 5000);
+                        //    return false;
+                        //}
                         break;
-                    case StreamStats.Services.ExplorationMethodType.FINDPATH2OUTLET:
-                        if (this.regionServices.selectedRegion == null) {
-                            this.toaster.pop("warning", "Warning", "you must first select a state or region to use this tool", 5000);
-                            return false;
-                        }
-                        if (this.center.zoom < 10) {
-                            this.toaster.pop("warning", "Warning", "you must be zoomed into at least a zoomlevel of 10 to use this tool", 5000);
-                            return false;
-                        }
-                        break;
-                    case StreamStats.Services.ExplorationMethodType.GETNETWORKREPORT:
+                    case StreamStats.Services.ExplorationMethodType.FLOWPATH:
+                        //if (this.regionServices.selectedRegion == null) {
+                        //    this.toaster.pop("warning", "Warning", "you must first select a state or region to use this tool", 5000);
+                        //    return false;
+                        //}
+                        //if (this.center.zoom < 10) {
+                        //    this.toaster.pop("warning", "Warning", "you must be zoomed into at least a zoomlevel of 10 to use this tool", 5000);
+                        //    return false;
+                        //}
+                        //break;
+                        return true;
+                    case StreamStats.Services.ExplorationMethodType.NETWORKTRACE:
                         if (this.regionServices.selectedRegion == null) {
                             this.toaster.pop("warning", "Warning", "you must first select a state or region to use this tool", 5000);
                             return false;
@@ -771,13 +772,17 @@ var StreamStats;
                 return true;
             };
             MapController.prototype.onExplorationMethodComplete = function (sender, e) {
-                var _this = this;
+                console.log('in onexplorationmethodCOmplete:', e);
                 this.explorationMethodBusy = false;
-                if (e.features != null && e.features.length > 0) {
-                    e.features.forEach(function (layer) {
-                        var item = angular.fromJson(angular.toJson(layer));
-                        _this.addGeoJSON("netnav_" + item.name, item.feature);
-                    });
+                if (e.features != null && e.features['features'].length > 0) {
+                    console.log('here test');
+                    this.addGeoJSON("netnav_route", e.features);
+                    //e.features.forEach((layer)=> {
+                    //    var item = angular.fromJson(angular.toJson(layer));
+                    //    this.addGeoJSON("netnav_"+item.name, item.feature);                    
+                    //});       
+                    //disable tool
+                    this.selectedExplorationMethodType = 0;
                 } //end if
                 if (e.report != null && e.report != '') {
                     this.modal.openModal(StreamStats.Services.SSModalType.e_navreport, { placeholder: e.report });
@@ -921,7 +926,7 @@ var StreamStats;
                     this.geojson[LayerName] =
                         {
                             data: feature,
-                            visible: false,
+                            visible: true,
                             style: {
                                 displayName: LayerName,
                                 fillColor: "red",

@@ -43,7 +43,7 @@ configuration.queryparams =
     'NLCDQueryService': '/LandCover/USGS_EROS_LandCover_NLCD/MapServer/4',
     'regulationService': '/arcgis/rest/services/regulations/{0}/MapServer/exts/RegulationRESTSOE/Regulation',
     'RegressionRegionQueryService': '/arcgis/rest/services/nss/regions/MapServer/exts/PercentOverlayRESTSOE/PercentOverlay',
-    'SSNavigationServices': '/streamstatsservices/navigation/{0}.geojson?rcode={1}&',
+    'SSNavigationServices': '/navigationservices/navigation',
     'Wateruse': '/summary?year={0}&endyear={1}&includePermits={2}&includereturns={3}&computeDomestic={4}',
     'WateruseSourceCSV':'/summary/bysource?year={0}&endyear={1}&includePermits={2}&includereturns={3}&computeDomestic={4}',
     'WateruseConfig': '/regions/{0}/config',
