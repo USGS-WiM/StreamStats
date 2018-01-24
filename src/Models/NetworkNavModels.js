@@ -33,9 +33,14 @@ var StreamStats;
     (function (Models) {
         var NetworkNav = (function () {
             //Constructor
-            function NetworkNav(modelID, maxLocations) {
-                this.requiredLocationLength = maxLocations;
-                this.ModelType = modelID;
+            function NetworkNav(methodtype, navigationInfo, totalPointCount, totalOptionsCount) {
+                this.navigationCode = navigationInfo.code;
+                this.navigationID = methodtype;
+                this.navigationInfo = navigationInfo;
+                this.minLocations = totalPointCount;
+                this.navigationConfiguration = [];
+                this.optionsCount = totalOptionsCount;
+                this.navigationPointCount = 0;
                 this._locations = [];
             }
             Object.defineProperty(NetworkNav.prototype, "locations", {
@@ -48,31 +53,59 @@ var StreamStats;
             //Methods
             NetworkNav.prototype.addLocation = function (pnt) {
                 this._locations.push(pnt);
-                if (this._locations.length > this.requiredLocationLength)
+                this.navigationPointCount += 1;
+                console.log('in add location:', pnt, this.navigationPointCount);
+                if (this.navigationPointCount === 1) {
+                    this.navigationConfiguration.push({
+                        "id": 1,
+                        "name": "Start point location",
+                        "required": true,
+                        "description": "Specified lat/long/crs  navigation start location",
+                        "valueType": "geojson point geometry",
+                        "value": {
+                            "type": "Point", "coordinates": [pnt.Longitude, pnt.Latitude], "crs": { "properties": { "name": "EPSG:" + pnt.crs }, "type": "name" }
+                        }
+                    });
+                }
+                if (this.navigationPointCount === 2) {
+                    this.navigationConfiguration.push({
+                        "id": 1,
+                        "name": "End point location",
+                        "required": true,
+                        "description": "Specified lat/long/crs  navigation end location",
+                        "valueType": "geojson point geometry",
+                        "value": {
+                            "type": "Point", "coordinates": [pnt.Longitude, pnt.Latitude], "crs": { "properties": { "name": "EPSG:" + pnt.crs }, "type": "name" }
+                        }
+                    });
+                }
+                console.log('navigationConfiguration:', this.navigationConfiguration);
+                if (this._locations.length > this.minLocations)
                     this._locations.shift();
             };
             return NetworkNav;
         }()); //end class
-        var PathBetweenPoints = (function (_super) {
-            __extends(PathBetweenPoints, _super);
+        Models.NetworkNav = NetworkNav;
+        var NetworkPath = (function (_super) {
+            __extends(NetworkPath, _super);
             //https://ssdev.cr.usgs.gov/streamstatsservices/navigation/1.geojson?rcode=RRB&startpoint=[-94.311504,48.443681]&endpoint=[-94.349721,48.450215]&crs=4326
             //properties
             //Constructor
-            function PathBetweenPoints() {
-                return _super.call(this, 1, 2) || this;
+            function NetworkPath() {
+                return _super.call(this, 2, 2, 0, 1) || this;
             }
-            return PathBetweenPoints;
+            return NetworkPath;
         }(NetworkNav)); //end class
-        Models.PathBetweenPoints = PathBetweenPoints;
-        var Path2Outlet = (function (_super) {
-            __extends(Path2Outlet, _super);
+        Models.NetworkPath = NetworkPath;
+        var FlowPath = (function (_super) {
+            __extends(FlowPath, _super);
             //Constructor
-            function Path2Outlet() {
-                var _this = _super.call(this, 2, 1) || this;
+            function FlowPath() {
+                var _this = _super.call(this, 1, 1, 1, 1) || this;
                 _this._workspaceID = '';
                 return _this;
             }
-            Object.defineProperty(Path2Outlet.prototype, "workspaceID", {
+            Object.defineProperty(FlowPath.prototype, "workspaceID", {
                 get: function () {
                     return this._workspaceID;
                 },
@@ -82,14 +115,14 @@ var StreamStats;
                 enumerable: true,
                 configurable: true
             });
-            return Path2Outlet;
+            return FlowPath;
         }(NetworkNav)); //end class
-        Models.Path2Outlet = Path2Outlet;
-        var NetworkReport = (function (_super) {
-            __extends(NetworkReport, _super);
+        Models.FlowPath = FlowPath;
+        var NetworkTrace = (function (_super) {
+            __extends(NetworkTrace, _super);
             //Constructor
-            function NetworkReport() {
-                var _this = _super.call(this, 3, 1) || this;
+            function NetworkTrace() {
+                var _this = _super.call(this, 3, 1, 4, 1) || this;
                 //https://ssdev.cr.usgs.gov/streamstatsservices/navigation/4.geojson?rcode=RRB&startpoint=[-94.719923,48.47219]&crs=4326&direction=Upstream&layers=NHDFlowline
                 //properties
                 _this.layerOptions = [{ name: "NHDFlowline", selected: true }, { name: "Gage", selected: false }, { name: "Dam", selected: false }];
@@ -97,9 +130,9 @@ var StreamStats;
                 _this.selectedDirectionType = _this.DirectionOptions[1];
                 return _this;
             }
-            return NetworkReport;
+            return NetworkTrace;
         }(NetworkNav)); //end class
-        Models.NetworkReport = NetworkReport;
+        Models.NetworkTrace = NetworkTrace;
     })(Models = StreamStats.Models || (StreamStats.Models = {}));
 })(StreamStats || (StreamStats = {})); //end namespace
 //# sourceMappingURL=NetworkNavModels.js.map

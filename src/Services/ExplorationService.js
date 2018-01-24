@@ -130,64 +130,114 @@ var StreamStats;
                 }).finally(function () {
                 });
             };
-            ExplorationService.prototype.setMethod = function (methodtype) {
-                if (this._selectedMethod != null && methodtype === this._selectedMethod.ModelType)
+            ExplorationService.prototype.getNavigationEndPoints = function () {
+                var _this = this;
+                console.log('get nav endpoints');
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSNavigationServices'];
+                var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                this.Execute(request).then(function (response) {
+                    var results = response.data;
+                    console.log('network nav options:', results);
+                    _this.navigationResources = results;
+                    //sm when complete
+                }, function (error) {
+                    //sm when error                    
+                    _this.toaster.pop("error", "Error processing request", "Please try again", 0);
+                    _this.eventManager.RaiseEvent(Services.onSelectedMethodExecuteComplete, _this, ExplorationServiceEventArgs.Empty);
+                }).finally(function () {
+                    //busy
+                });
+            };
+            ExplorationService.prototype.getNavigationConfiguration = function (id) {
+                var _this = this;
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSNavigationServices'] + '/' + id;
+                var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                this.Execute(request).then(function (response) {
+                    var data = response.data;
+                    console.log('navigation config:', data);
+                    //get count of point location configurations
+                    var totalPointCount = _this.getCountByType(data.configuration, 'geojson point geometry');
+                    console.log('total point count:', totalPointCount);
+                    //get options count
+                    var totalOptionsCount = _this.getCountByType(data.configuration, 'option');
+                    console.log('total options count:', totalOptionsCount);
+                    _this.setMethod(id, data, totalPointCount, totalOptionsCount);
+                    //sm when complete
+                }, function (error) {
+                    //sm when error                    
+                    _this.toaster.pop("error", "Error processing request", "Please try again", 0);
+                    _this.eventManager.RaiseEvent(Services.onSelectedMethodExecuteComplete, _this, ExplorationServiceEventArgs.Empty);
+                }).finally(function () {
+                    //busy
+                });
+            };
+            ExplorationService.prototype.getCountByType = function (object, text) {
+                return object.filter(function (item) { return item.valueType.toLowerCase().includes(text); }).length;
+            };
+            ExplorationService.prototype.setMethod = function (methodtype, data, totalPointCount, totalOptionsCount) {
+                console.log('HERE99', methodtype, data, totalPointCount, totalOptionsCount);
+                if (this._selectedMethod != null && methodtype === this._selectedMethod.navigationID)
                     methodtype = ExplorationMethodType.undefined;
                 switch (methodtype) {
-                    case ExplorationMethodType.FINDPATH2OUTLET:
-                        this._selectedMethod = new StreamStats.Models.Path2Outlet();
+                    case ExplorationMethodType.FLOWPATH:
+                        this._selectedMethod = new StreamStats.Models.NetworkNav(methodtype, data, totalPointCount, totalOptionsCount);
                         break;
-                    case ExplorationMethodType.FINDPATHBETWEENPOINTS:
-                        this._selectedMethod = new StreamStats.Models.PathBetweenPoints();
+                    case ExplorationMethodType.NETWORKPATH:
+                        this._selectedMethod = new StreamStats.Models.NetworkNav(methodtype, data, totalPointCount, totalOptionsCount);
+                        //this._selectedMethod = new Models.NetworkPath();
                         break;
-                    case ExplorationMethodType.GETNETWORKREPORT:
-                        this._selectedMethod = new StreamStats.Models.NetworkReport();
+                    case ExplorationMethodType.NETWORKTRACE:
+                        this._selectedMethod = new StreamStats.Models.NetworkTrace();
                         break;
                     default:
                         this._selectedMethod = null;
                         break;
                 } //end switch
             };
+            //public setMethod(methodtype: ExplorationMethodType) {
+            //    console.log('HERE1', methodtype)
+            //    if (this._selectedMethod != null && methodtype === this._selectedMethod.ModelType) methodtype = ExplorationMethodType.undefined;
+            //    switch (methodtype) {
+            //        case ExplorationMethodType.FLOWPATH:
+            //            console.log('TEST')
+            //            this._selectedMethod = new Models.FlowPath();
+            //            break;
+            //        case ExplorationMethodType.NETWORKPATH:                
+            //            this._selectedMethod = new Models.NetworkPath();
+            //            break;
+            //        case ExplorationMethodType.NETWORKTRACE:
+            //            this._selectedMethod = new Models.NetworkTrace();
+            //            break
+            //        default:
+            //            this._selectedMethod = null;
+            //            break;
+            //    }//end switch
+            //}
             ExplorationService.prototype.GetToolName = function (methodID) {
                 switch (methodID) {
-                    case ExplorationMethodType.FINDPATHBETWEENPOINTS:
-                        return "Find path between two points";
-                    case ExplorationMethodType.FINDPATH2OUTLET:
-                        return "Find path to outlet";
-                    case ExplorationMethodType.GETNETWORKREPORT:
-                        return "Get network report";
+                    case ExplorationMethodType.FLOWPATH:
+                        return "Flow (Raindrop) Trace to outlet";
+                    case ExplorationMethodType.NETWORKPATH:
+                        return "Find network path between two points";
+                    case ExplorationMethodType.NETWORKTRACE:
+                        return "Configurable network trace";
                     default:
                         return "";
                 } //end switch
             };
             ExplorationService.prototype.ExecuteSelectedModel = function () {
                 var _this = this;
+                console.log('selected method:', this.selectedMethod);
                 //build url
-                //streamstatsservices/navigation / { 0}.geojson ? rcode = { 1}& startpoint={ 2}& endpoint={ 3 }&crs={ 4 }&workspaceID={ 5 }&direction={ 6 }&layers={ 7 }
-                var urlParams = [];
-                urlParams.push("startpoint=" + JSON.stringify(new Array(this.selectedMethod.locations[0].Longitude, this.selectedMethod.locations[0].Latitude)));
-                if (this.selectedMethod.locations.length > 1)
-                    urlParams.push("endpoint=" + JSON.stringify(new Array(this.selectedMethod.locations[1].Longitude, this.selectedMethod.locations[1].Latitude)));
-                urlParams.push("crs=" + this.selectedMethod.locations[0].crs);
-                if ("workspaceID" in this.selectedMethod && this.selectedMethod.workspaceID !== '')
-                    urlParams.push("workspaceID=" + this.selectedMethod.workspaceID);
-                if (this.selectedMethod.hasOwnProperty("selectedDirectionType"))
-                    urlParams.push("direction=" + this.selectedMethod.selectedDirectionType);
-                if (this.selectedMethod.hasOwnProperty("layerOptions")) {
-                    var itemstring = this.selectedMethod.layerOptions.map(function (elem) {
-                        if (elem.selected)
-                            return elem.name;
-                    }).join(";");
-                    urlParams.push("layers=" + itemstring);
-                } //endif
-                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSNavigationServices']
-                    .format(this.selectedMethod.ModelType, this.regionservice.selectedRegion.RegionID) + urlParams.join("&");
-                var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSNavigationServices'] + '/' + this.selectedMethod.navigationCode + '/route';
+                console.log('url: ', url);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(this.selectedMethod.navigationConfiguration));
                 this.Execute(request).then(function (response) {
                     var results = response.data;
+                    console.log('successfull navigation request results:', results);
                     var evtarg = new ExplorationServiceEventArgs();
-                    evtarg.features = results.hasOwnProperty("featurecollection") ? results["featurecollection"] : null;
-                    evtarg.report = results.hasOwnProperty("Report") ? results["Report"] : null;
+                    evtarg.features = results.type === "FeatureCollection" ? results : null;
+                    evtarg.report = results.type == "Report" ? results : null;
                     _this.eventManager.RaiseEvent(Services.onSelectedMethodExecuteComplete, _this, evtarg);
                     //sm when complete
                 }, function (error) {
@@ -203,9 +253,9 @@ var StreamStats;
         var ExplorationMethodType;
         (function (ExplorationMethodType) {
             ExplorationMethodType[ExplorationMethodType["undefined"] = 0] = "undefined";
-            ExplorationMethodType[ExplorationMethodType["FINDPATHBETWEENPOINTS"] = 1] = "FINDPATHBETWEENPOINTS";
-            ExplorationMethodType[ExplorationMethodType["FINDPATH2OUTLET"] = 2] = "FINDPATH2OUTLET";
-            ExplorationMethodType[ExplorationMethodType["GETNETWORKREPORT"] = 3] = "GETNETWORKREPORT";
+            ExplorationMethodType[ExplorationMethodType["FLOWPATH"] = 1] = "FLOWPATH";
+            ExplorationMethodType[ExplorationMethodType["NETWORKPATH"] = 2] = "NETWORKPATH";
+            ExplorationMethodType[ExplorationMethodType["NETWORKTRACE"] = 3] = "NETWORKTRACE";
         })(ExplorationMethodType = Services.ExplorationMethodType || (Services.ExplorationMethodType = {}));
         factory.$inject = ['$http', '$q', 'toaster', 'WiM.Event.EventManager', 'StreamStats.Services.RegionService'];
         function factory($http, $q, toaster, eventmngr, regionservice) {
