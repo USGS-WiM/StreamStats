@@ -40,6 +40,7 @@ module StreamStats.Services {
         elevationProfileHTML: any;
         coordinateList: Array<any>;
         navigationResources: Array<any>;
+        explorationMethodBusy: boolean;
     }
 
     export var onSelectedMethodExecuteComplete: string = "onSelectedMethodExecuteComplete";
@@ -73,6 +74,7 @@ module StreamStats.Services {
         public elevationProfileHTML: any;
         public coordinateList: Array<any>;
         public navigationResources: Array<any>;
+        public explorationMethodBusy: boolean;
         
 
         //Constructor
@@ -240,43 +242,11 @@ module StreamStats.Services {
             console.log('HERE99', methodtype, data, totalPointCount, totalOptionsCount)
 
             if (this._selectedMethod != null && methodtype === this._selectedMethod.navigationID) methodtype = ExplorationMethodType.undefined;
-            switch (methodtype) {
-                case ExplorationMethodType.FLOWPATH:
-                    
-                    this._selectedMethod = new Models.NetworkNav(methodtype, data, totalPointCount, totalOptionsCount);
-                    break;
-                case ExplorationMethodType.NETWORKPATH:
-                    this._selectedMethod = new Models.NetworkNav(methodtype, data, totalPointCount, totalOptionsCount);
-                    //this._selectedMethod = new Models.NetworkPath();
-                    break;
-                case ExplorationMethodType.NETWORKTRACE:
-                    this._selectedMethod = new Models.NetworkTrace();
-                    break
-                default:
-                    this._selectedMethod = null;
-                    break;
-            }//end switch
+
+            this._selectedMethod = new Models.NetworkNav(methodtype, data, totalPointCount, totalOptionsCount);
+
         }
 
-        //public setMethod(methodtype: ExplorationMethodType) {
-        //    console.log('HERE1', methodtype)
-        //    if (this._selectedMethod != null && methodtype === this._selectedMethod.ModelType) methodtype = ExplorationMethodType.undefined;
-        //    switch (methodtype) {
-        //        case ExplorationMethodType.FLOWPATH:
-        //            console.log('TEST')
-        //            this._selectedMethod = new Models.FlowPath();
-        //            break;
-        //        case ExplorationMethodType.NETWORKPATH:                
-        //            this._selectedMethod = new Models.NetworkPath();
-        //            break;
-        //        case ExplorationMethodType.NETWORKTRACE:
-        //            this._selectedMethod = new Models.NetworkTrace();
-        //            break
-        //        default:
-        //            this._selectedMethod = null;
-        //            break;
-        //    }//end switch
-        //}
         public GetToolName(methodID: ExplorationMethodType): String {
             switch (methodID) {
                 case ExplorationMethodType.FLOWPATH:
@@ -296,7 +266,7 @@ module StreamStats.Services {
             console.log('selected method:', this.selectedMethod);
 
             //build url
-            var url: string = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSNavigationServices'] + '/' + this.selectedMethod.navigationCode + '/route';
+            var url: string = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSNavigationServices'] + '/' + this.selectedMethod.navigationInfo.code + '/route';
 
             console.log('url: ', url)
             

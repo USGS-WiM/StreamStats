@@ -60,10 +60,11 @@ var StreamStats;
             return MapDefault;
         }());
         var MapController = (function () {
-            function MapController($scope, toaster, $analytics, $location, $stateParams, leafletBoundsHelper, leafletData, search, region, studyArea, StatisticsGroup, exploration, eventManager, modal) {
+            function MapController($scope, toaster, $analytics, $location, $stateParams, leafletBoundsHelper, leafletData, search, region, studyArea, StatisticsGroup, exploration, eventManager, modal, modalStack) {
                 var _this = this;
                 this.$scope = $scope;
                 this.modal = modal;
+                this.modalStack = modalStack;
                 this.center = null;
                 this.layers = null;
                 this.mapDefaults = null;
@@ -75,7 +76,6 @@ var StreamStats;
                 this.events = null;
                 this.layercontrol = null;
                 this.regionLayer = null;
-                this.explorationMethodBusy = false;
                 this.explorationToolsExpanded = false;
                 $scope.vm = this;
                 this.toaster = toaster;
@@ -159,6 +159,15 @@ var StreamStats;
                                 draggable: false
                             };
                         } //next i
+                        //if no options are needed we don't need to open modal just go
+                        if (exploration.selectedMethod.optionsCount === 0) {
+                            //execute nav
+                            _this.ExecuteNav();
+                        }
+                        else if (exploration.selectedMethod.navigationPointCount === exploration.selectedMethod.minLocations) {
+                            _this.modal.openModal(StreamStats.Services.SSModalType.e_exploration);
+                            //this.ExecuteNav();
+                        }
                     }
                     else {
                         _this.queryPoints(args.leafletEvent);
@@ -246,17 +255,7 @@ var StreamStats;
                     return;
                 }
                 var isOK = false;
-                //if (this.selectedExplorationMethodType == Services.ExplorationMethodType.NETWORKTRACE) {
-                //    for (var i: number = 0; i < (<Models.NetworkTrace>this.explorationService.selectedMethod).layerOptions.length; i++) {
-                //        var item = (<Models.NetworkTrace>this.explorationService.selectedMethod).layerOptions[i];
-                //        if (item.selected) { isOK = true; break; };
-                //    }//next i
-                //    if (!isOK) {
-                //        this.toaster.pop("warning", "Warning", "You must select at least one configuration item", 10000);
-                //        return;
-                //    }
-                //}//end if
-                this.explorationMethodBusy = true;
+                this.explorationService.explorationMethodBusy = true;
                 this.explorationService.ExecuteSelectedModel();
             };
             //Helper Methods
@@ -754,17 +753,16 @@ var StreamStats;
                         //    this.toaster.pop("warning", "Warning", "you must be zoomed into at least a zoomlevel of 10 to use this tool", 5000);
                         //    return false;
                         //}
-                        //break;
-                        return true;
+                        break;
                     case StreamStats.Services.ExplorationMethodType.NETWORKTRACE:
-                        if (this.regionServices.selectedRegion == null) {
-                            this.toaster.pop("warning", "Warning", "you must first select a state or region to use this tool", 5000);
-                            return false;
-                        }
-                        if (this.center.zoom < 10) {
-                            this.toaster.pop("warning", "Warning", "you must be zoomed into at least a zoomlevel of 10 to use this tool", 5000);
-                            return false;
-                        }
+                        //if (this.regionServices.selectedRegion == null) {
+                        //    this.toaster.pop("warning", "Warning", "you must first select a state or region to use this tool", 5000);
+                        //    return false;
+                        //}
+                        //if (this.center.zoom < 10) {
+                        //    this.toaster.pop("warning", "Warning", "you must be zoomed into at least a zoomlevel of 10 to use this tool", 5000);
+                        //    return false;
+                        //}
                         break;
                     default:
                         return false;
@@ -773,7 +771,7 @@ var StreamStats;
             };
             MapController.prototype.onExplorationMethodComplete = function (sender, e) {
                 console.log('in onexplorationmethodCOmplete:', e);
-                this.explorationMethodBusy = false;
+                this.explorationService.explorationMethodBusy = false;
                 if (e.features != null && e.features['features'].length > 0) {
                     console.log('here test');
                     this.addGeoJSON("netnav_route", e.features);
@@ -783,6 +781,7 @@ var StreamStats;
                     //});       
                     //disable tool
                     this.selectedExplorationMethodType = 0;
+                    this.modalStack.dismissAll();
                 } //end if
                 if (e.report != null && e.report != '') {
                     this.modal.openModal(StreamStats.Services.SSModalType.e_navreport, { placeholder: e.report });
@@ -1066,7 +1065,7 @@ var StreamStats;
         }()); //end class
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        MapController.$inject = ['$scope', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService'];
+        MapController.$inject = ['$scope', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack'];
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.MapController', MapController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));
