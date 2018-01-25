@@ -59,7 +59,7 @@ module StreamStats.Controllers {
         //-+-+-+-+-+-+-+-+-+-+-+-
         public close(): void {
             this.explorationService.showElevationChart = false;
-            this.modalInstance.dismiss('cancel')
+            this.modalInstance.dismiss('cancel');
         }
 
         public convertUnsafe(x: string) {
@@ -105,7 +105,19 @@ module StreamStats.Controllers {
             }
 
         }
-        
+
+        public ExecuteNav(): void {
+            //validate request
+            if (this.explorationService.selectedMethod.navigationPointCount != this.explorationService.selectedMethod.minLocations) {
+                //this.toaster.pop("warning", "Warning", "You must select at least " + this.explorationService.selectedMethod.minLocations + " points.", 10000);
+                return;
+            }
+            var isOK: boolean = false;
+
+            this.explorationService.explorationMethodBusy = true;
+
+            this.explorationService.ExecuteSelectedModel();
+        }
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
 

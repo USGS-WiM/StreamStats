@@ -71,6 +71,16 @@ var StreamStats;
                     }
                 }
             };
+            ExplorationToolsModalController.prototype.ExecuteNav = function () {
+                //validate request
+                if (this.explorationService.selectedMethod.navigationPointCount != this.explorationService.selectedMethod.minLocations) {
+                    //this.toaster.pop("warning", "Warning", "You must select at least " + this.explorationService.selectedMethod.minLocations + " points.", 10000);
+                    return;
+                }
+                var isOK = false;
+                this.explorationService.explorationMethodBusy = true;
+                this.explorationService.ExecuteSelectedModel();
+            };
             return ExplorationToolsModalController;
         }()); //end  class
         //Constructor

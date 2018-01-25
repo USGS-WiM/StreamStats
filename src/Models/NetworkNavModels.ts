@@ -28,14 +28,13 @@ module StreamStats.Models {
         addLocation(pnt: WiM.Models.IPoint);
         navigationName: string;
         navigationDescription: string;
-        navigationCode: string;
         navigationID: number;
         navigationInfo: any;
         navigationConfiguration: Array<any>;
         minLocations: number;
         optionsCount: number;
         navigationPointCount: number;
-        
+       
     }
 
     export class NetworkNav implements INetworkNav{
@@ -49,7 +48,6 @@ module StreamStats.Models {
         
         public navigationName: string;
         public navigationDescription: string;
-        public navigationCode: string;
         public navigationID: number;
         public navigationInfo: any;
         public navigationConfiguration: Array<any>;
@@ -60,7 +58,6 @@ module StreamStats.Models {
         //Constructor
         constructor(methodtype: number, navigationInfo: any, totalPointCount: number, totalOptionsCount: number) {
 
-            this.navigationCode = navigationInfo.code;
             this.navigationID = methodtype;
             this.navigationInfo = navigationInfo;
             this.minLocations = totalPointCount;
@@ -91,7 +88,7 @@ module StreamStats.Models {
 
             if (this.navigationPointCount === 2) {
                 this.navigationConfiguration.push({
-                    "id": 1,
+                    "id": this.navigationPointCount ,
                     "name": "End point location",
                     "required": true,
                     "description": "Specified lat/long/crs  navigation end location",

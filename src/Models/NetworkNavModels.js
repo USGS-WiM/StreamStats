@@ -34,7 +34,6 @@ var StreamStats;
         var NetworkNav = (function () {
             //Constructor
             function NetworkNav(methodtype, navigationInfo, totalPointCount, totalOptionsCount) {
-                this.navigationCode = navigationInfo.code;
                 this.navigationID = methodtype;
                 this.navigationInfo = navigationInfo;
                 this.minLocations = totalPointCount;
@@ -69,7 +68,7 @@ var StreamStats;
                 }
                 if (this.navigationPointCount === 2) {
                     this.navigationConfiguration.push({
-                        "id": 1,
+                        "id": this.navigationPointCount,
                         "name": "End point location",
                         "required": true,
                         "description": "Specified lat/long/crs  navigation end location",

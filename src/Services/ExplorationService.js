@@ -178,41 +178,8 @@ var StreamStats;
                 console.log('HERE99', methodtype, data, totalPointCount, totalOptionsCount);
                 if (this._selectedMethod != null && methodtype === this._selectedMethod.navigationID)
                     methodtype = ExplorationMethodType.undefined;
-                switch (methodtype) {
-                    case ExplorationMethodType.FLOWPATH:
-                        this._selectedMethod = new StreamStats.Models.NetworkNav(methodtype, data, totalPointCount, totalOptionsCount);
-                        break;
-                    case ExplorationMethodType.NETWORKPATH:
-                        this._selectedMethod = new StreamStats.Models.NetworkNav(methodtype, data, totalPointCount, totalOptionsCount);
-                        //this._selectedMethod = new Models.NetworkPath();
-                        break;
-                    case ExplorationMethodType.NETWORKTRACE:
-                        this._selectedMethod = new StreamStats.Models.NetworkTrace();
-                        break;
-                    default:
-                        this._selectedMethod = null;
-                        break;
-                } //end switch
+                this._selectedMethod = new StreamStats.Models.NetworkNav(methodtype, data, totalPointCount, totalOptionsCount);
             };
-            //public setMethod(methodtype: ExplorationMethodType) {
-            //    console.log('HERE1', methodtype)
-            //    if (this._selectedMethod != null && methodtype === this._selectedMethod.ModelType) methodtype = ExplorationMethodType.undefined;
-            //    switch (methodtype) {
-            //        case ExplorationMethodType.FLOWPATH:
-            //            console.log('TEST')
-            //            this._selectedMethod = new Models.FlowPath();
-            //            break;
-            //        case ExplorationMethodType.NETWORKPATH:                
-            //            this._selectedMethod = new Models.NetworkPath();
-            //            break;
-            //        case ExplorationMethodType.NETWORKTRACE:
-            //            this._selectedMethod = new Models.NetworkTrace();
-            //            break
-            //        default:
-            //            this._selectedMethod = null;
-            //            break;
-            //    }//end switch
-            //}
             ExplorationService.prototype.GetToolName = function (methodID) {
                 switch (methodID) {
                     case ExplorationMethodType.FLOWPATH:
@@ -229,7 +196,7 @@ var StreamStats;
                 var _this = this;
                 console.log('selected method:', this.selectedMethod);
                 //build url
-                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSNavigationServices'] + '/' + this.selectedMethod.navigationCode + '/route';
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSNavigationServices'] + '/' + this.selectedMethod.navigationInfo.code + '/route';
                 console.log('url: ', url);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(this.selectedMethod.navigationConfiguration));
                 this.Execute(request).then(function (response) {

@@ -169,7 +169,7 @@ module StreamStats.Controllers {
         public set selectedExplorationMethodType(val: Services.ExplorationMethodType) {  
             this.explorationService.setMethod(val, null, null, null);
         }
-        public explorationMethodBusy: boolean = false;
+        //public explorationMethodBusy: boolean = false;
         private environment: string;
         public explorationToolsExpanded: boolean = false;
         public measuremove: any;
@@ -178,8 +178,8 @@ module StreamStats.Controllers {
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService'];
-        constructor(public $scope: IMapControllerScope, toaster, $analytics, $location: ng.ILocationService, $stateParams, leafletBoundsHelper: any, leafletData: ILeafletData, search: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, exploration: Services.IExplorationService, eventManager: WiM.Event.IEventManager, private modal: Services.IModalService) {
+        static $inject = ['$scope', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack'];
+        constructor(public $scope: IMapControllerScope, toaster, $analytics, $location: ng.ILocationService, $stateParams, leafletBoundsHelper: any, leafletData: ILeafletData, search: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, exploration: Services.IExplorationService, eventManager: WiM.Event.IEventManager, private modal: Services.IModalService, private modalStack: ng.ui.bootstrap.IModalStackService,) {
             $scope.vm = this;
             
             this.toaster = toaster;
@@ -276,6 +276,20 @@ module StreamStats.Controllers {
                             draggable: false
                         };
                     }//next i
+
+                    //if no options are needed we don't need to open modal just go
+                    if (exploration.selectedMethod.optionsCount === 0) {
+                        //execute nav
+                        this.ExecuteNav();
+
+                    }
+
+                    //otherwise open modal
+                    else if (exploration.selectedMethod.navigationPointCount === exploration.selectedMethod.minLocations) {
+
+                        this.modal.openModal(Services.SSModalType.e_exploration);
+                        //this.ExecuteNav();
+                    }
                 }
 
                 //query streamgage is default map click action
@@ -359,18 +373,8 @@ module StreamStats.Controllers {
                 return;
             }
             var isOK:boolean = false;
-            //if (this.selectedExplorationMethodType == Services.ExplorationMethodType.NETWORKTRACE) {
-            //    for (var i: number = 0; i < (<Models.NetworkTrace>this.explorationService.selectedMethod).layerOptions.length; i++) {
-            //        var item = (<Models.NetworkTrace>this.explorationService.selectedMethod).layerOptions[i];
-            //        if (item.selected) { isOK = true; break; };
-            //    }//next i
-            //    if (!isOK) {
-            //        this.toaster.pop("warning", "Warning", "You must select at least one configuration item", 10000);
-            //        return;
-            //    }
 
-            //}//end if
-            this.explorationMethodBusy = true;
+            this.explorationService.explorationMethodBusy = true;
 
             this.explorationService.ExecuteSelectedModel();
         }
@@ -973,17 +977,16 @@ module StreamStats.Controllers {
                     //    this.toaster.pop("warning", "Warning", "you must be zoomed into at least a zoomlevel of 10 to use this tool", 5000);
                     //    return false;
                     //}
-                    //break;
-                    return true;
+                    break;
                 case Services.ExplorationMethodType.NETWORKTRACE:
-                    if (this.regionServices.selectedRegion == null) {
-                        this.toaster.pop("warning", "Warning", "you must first select a state or region to use this tool", 5000);
-                        return false;
-                    }
-                    if (this.center.zoom < 10) {
-                        this.toaster.pop("warning", "Warning", "you must be zoomed into at least a zoomlevel of 10 to use this tool", 5000);
-                        return false;
-                    }
+                    //if (this.regionServices.selectedRegion == null) {
+                    //    this.toaster.pop("warning", "Warning", "you must first select a state or region to use this tool", 5000);
+                    //    return false;
+                    //}
+                    //if (this.center.zoom < 10) {
+                    //    this.toaster.pop("warning", "Warning", "you must be zoomed into at least a zoomlevel of 10 to use this tool", 5000);
+                    //    return false;
+                    //}
                     break;
                 default:
                     return false;
@@ -994,7 +997,7 @@ module StreamStats.Controllers {
         private onExplorationMethodComplete(sender: any, e: Services.ExplorationServiceEventArgs) {
 
             console.log('in onexplorationmethodCOmplete:',e)
-            this.explorationMethodBusy = false;
+            this.explorationService.explorationMethodBusy = false;
             if (e.features != null && e.features['features'].length > 0) {
                 console.log('here test')
                 this.addGeoJSON("netnav_route", e.features);   
@@ -1005,6 +1008,8 @@ module StreamStats.Controllers {
 
                 //disable tool
                 this.selectedExplorationMethodType = 0;
+                this.modalStack.dismissAll();
+
             }//end if
             if (e.report != null && e.report != '') {          
                 this.modal.openModal(Services.SSModalType.e_navreport, { placeholder:e.report});
