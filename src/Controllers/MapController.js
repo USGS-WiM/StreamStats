@@ -159,12 +159,13 @@ var StreamStats;
                                 draggable: false
                             };
                         } //next i
-                        //if no options are needed we don't need to open modal just go
-                        if (exploration.selectedMethod.optionsCount === 0) {
-                            //execute nav
-                            _this.ExecuteNav();
-                        }
-                        else if (exploration.selectedMethod.navigationPointCount === exploration.selectedMethod.minLocations) {
+                        ////if no options are needed we don't need to open modal just go
+                        //if (exploration.selectedMethod.optionsCount === 0) {
+                        //    //execute nav
+                        //    this.ExecuteNav();
+                        //}
+                        //otherwise open modal
+                        if (exploration.selectedMethod.navigationPointCount === exploration.selectedMethod.minLocations) {
                             _this.modal.openModal(StreamStats.Services.SSModalType.e_exploration);
                             //this.ExecuteNav();
                         }

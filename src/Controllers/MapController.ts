@@ -277,15 +277,15 @@ module StreamStats.Controllers {
                         };
                     }//next i
 
-                    //if no options are needed we don't need to open modal just go
-                    if (exploration.selectedMethod.optionsCount === 0) {
-                        //execute nav
-                        this.ExecuteNav();
+                    ////if no options are needed we don't need to open modal just go
+                    //if (exploration.selectedMethod.optionsCount === 0) {
+                    //    //execute nav
+                    //    this.ExecuteNav();
 
-                    }
+                    //}
 
                     //otherwise open modal
-                    else if (exploration.selectedMethod.navigationPointCount === exploration.selectedMethod.minLocations) {
+                    if (exploration.selectedMethod.navigationPointCount === exploration.selectedMethod.minLocations) {
 
                         this.modal.openModal(Services.SSModalType.e_exploration);
                         //this.ExecuteNav();

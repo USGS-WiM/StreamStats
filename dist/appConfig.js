@@ -6,9 +6,10 @@ configuration.baseurls =
 {   
     'NWISurl': 'https://waterservices.usgs.gov/nwis',
     'StreamStatsServices': 'https://test.streamstats.usgs.gov',
-    'StreamStatsMapServices': 'https://test.streamstats.usgs.gov',
+    'StreamStatsMapServices': 'https://testgis.streamstats.usgs.gov',
     'NSS': 'https://test.streamstats.usgs.gov/nssservices',
     'WaterUseServices': 'https://test.streamstats.usgs.gov/wateruseservices'
+	
 }
 
 //override streamstats arguments if on production, these get overriden again in MapController after load balancer assigns a server
@@ -42,7 +43,7 @@ configuration.queryparams =
     'NLCDQueryService': '/LandCover/USGS_EROS_LandCover_NLCD/MapServer/4',
     'regulationService': '/arcgis/rest/services/regulations/{0}/MapServer/exts/RegulationRESTSOE/Regulation',
     'RegressionRegionQueryService': '/arcgis/rest/services/nss/regions/MapServer/exts/PercentOverlayRESTSOE/PercentOverlay',
-    'SSNavigationServices': '/streamstatsservices/navigation/{0}.geojson?rcode={1}&',
+    'SSNavigationServices': '/navigationservices/navigation',
     'Wateruse': '/summary?year={0}&endyear={1}&includePermits={2}&includereturns={3}&computeDomestic={4}',
     'WateruseSourceCSV':'/summary/bysource?year={0}&endyear={1}&includePermits={2}&includereturns={3}&computeDomestic={4}',
     'WateruseConfig': '/regions/{0}/config',
@@ -200,7 +201,7 @@ configuration.basemaps =
 configuration.regions = [
 	{ "RegionID": "AK", "Name": "Alaska", "Bounds": [[51.583032,-178.217598],[71.406235,-129.992235]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "AL", "Name": "Alabama", "Bounds": [[30.233604, -88.472952], [35.016033, -84.894016]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
-    { "RegionID": "AR", "Name": "Arkansas", "Bounds": [[33.010151, -94.617257], [36.492811, -89.645479]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": false },
+    { "RegionID": "AR", "Name": "Arkansas", "Bounds": [[33.010151, -94.617257], [36.492811, -89.645479]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "AS", "Name": "American Samoa", "Bounds": [[-14.375555, -170.82611], [-14.166389, -169.438323]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "AZ", "Name": "Arizona", "Bounds": [[31.335634, -114.821761], [37.003926, -109.045615]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "CA", "Name": "California", "Bounds": [[32.535781, -124.392638], [42.002191, -114.12523]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
@@ -225,7 +226,7 @@ configuration.regions = [
         "regionEnabled": true,
         "ScenariosAvailable": true
     },
-    { "RegionID": "CT", "Name": "Connecticut", "Bounds": [[40.998392, -73.725237], [42.047428, -71.788249]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
+    { "RegionID": "CT", "Name": "Connecticut", "Bounds": [[40.998392, -73.725237], [42.047428, -71.788249]], "Layers": {}, "Applications": ["Wateruse"], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "DE", "Name": "Delaware", "Bounds": [[38.449602,-75.791094],[39.840119,-75.045623]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "FL", "Name": "Florida", "Bounds": [[24.956376,-87.625711],[31.003157,-80.050911]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
     { "RegionID": "GA", "Name": "Georgia", "Bounds": [[30.361291,-85.60896],[35.000366,-80.894753]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
