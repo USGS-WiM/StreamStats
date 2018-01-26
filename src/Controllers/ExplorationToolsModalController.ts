@@ -39,6 +39,9 @@ module StreamStats.Controllers {
         public sce: any;
         public angulartics: any;
         public print: any;
+        public selectedLimit: any;
+        public selectedDirection: any;
+        public selectedQuerySourceList: any;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -50,6 +53,12 @@ module StreamStats.Controllers {
             this.modalInstance = modal;
             this.explorationService = exploration;
 
+            //init required values
+            this.selectedDirection = 'downstream';
+            this.selectedQuerySourceList = ['flowline'];
+            this.selectExclusiveOption(this.selectedDirection, 'Direction');
+            this.selectOption(this.selectedQuerySourceList[0], 'Query Source');
+            
             this.print = function () {
                 window.print();
             };
@@ -106,7 +115,66 @@ module StreamStats.Controllers {
 
         }
 
+        public addLimit(item) {
+            
+            this.selectedLimit = item;
+
+            this.deleteConfig('Limit');
+
+            //add limit object
+            this.explorationService.selectedMethod.navigationInfo.configuration.forEach((item, key) => {
+                if (item.name == 'Limit') {
+
+                    var limitObject = JSON.parse(JSON.stringify(item));
+                    limitObject.value = this.selectedLimit;
+                    console.log('limit object:',limitObject)
+                    this.explorationService.selectedMethod.navigationConfiguration.push(limitObject)
+                }
+            });
+        }
+
+        public selectExclusiveOption(option, configName) {
+
+            this.selectedDirection = option;
+
+            this.deleteConfig(configName);
+
+            this.explorationService.selectedMethod.navigationInfo.configuration.forEach((item, key) => {
+                if (item.name == configName) {
+
+                    var configObject = JSON.parse(JSON.stringify(item));
+                    configObject.value = option;
+                    console.log('adding selectExclusiveOption config object:', configObject)
+                    this.explorationService.selectedMethod.navigationConfiguration.push(configObject)
+                }
+            });
+        }
+
+        public selectOption(option, configName) {
+
+            console.log('in selection option', option, configName, this.selectedQuerySourceList)
+
+            var index = this.selectedQuerySourceList.indexOf(option);
+            if (index > -1) {
+                this.selectedQuerySourceList.splice(index,1)
+            }
+            else this.selectedQuerySourceList.push(option)
+
+            this.deleteConfig(configName);
+
+            this.explorationService.selectedMethod.navigationInfo.configuration.forEach((item, key) => {
+                if (item.name == configName) {
+
+                    var configObject = JSON.parse(JSON.stringify(item));
+                    configObject.value = option;
+                    console.log('adding selectOption config object:', configObject)
+                    this.explorationService.selectedMethod.navigationConfiguration.push(configObject)
+                }
+            });
+        }
+
         public ExecuteNav(): void {
+
             //validate request
             if (this.explorationService.selectedMethod.navigationPointCount != this.explorationService.selectedMethod.minLocations) {
                 //this.toaster.pop("warning", "Warning", "You must select at least " + this.explorationService.selectedMethod.minLocations + " points.", 10000);
@@ -120,6 +188,44 @@ module StreamStats.Controllers {
         }
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
+
+        public deleteConfig(name) {
+
+            //delete existing limit object
+            this.explorationService.selectedMethod.navigationConfiguration.forEach((item, key) => {
+
+                if (item.name == name) {
+                    console.log('deleting:', item.name)
+                    this.explorationService.selectedMethod.navigationConfiguration.splice(key, 1)
+                }
+            });
+        }
+
+        public checkLimit(name, config) {
+            
+
+            config.forEach((item, key) => {
+                console.log('checking1', item.name, item.value.name, name)
+                if (item.name == 'Limit' && item.value.name == name) {
+                    console.log('FOUND:', item.name, name)
+                    return true;
+                }
+            });
+
+            return false;
+        }
+
+        public configExists(name, config) {
+            console.log('checking1',name,config)
+            for (var i = 0; i < config.length; i++) {
+                if (config[i].name === name) {
+                    console.log('checking:', config[i].name, name)
+                    return true;
+                }
+            }
+
+            return false;
+        }
 
     }//end  class
 

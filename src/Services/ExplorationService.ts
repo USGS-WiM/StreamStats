@@ -271,7 +271,7 @@ module StreamStats.Services {
             console.log('url: ', url)
             
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST,
-                'json', JSON.stringify(this.selectedMethod.navigationConfiguration));
+                'json', angular.toJson(this.selectedMethod.navigationConfiguration));
 
             this.Execute(request).then(
                 (response: any) => {

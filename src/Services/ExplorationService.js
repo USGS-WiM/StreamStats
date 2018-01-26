@@ -198,7 +198,7 @@ var StreamStats;
                 //build url
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSNavigationServices'] + '/' + this.selectedMethod.navigationInfo.code + '/route';
                 console.log('url: ', url);
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(this.selectedMethod.navigationConfiguration));
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', angular.toJson(this.selectedMethod.navigationConfiguration));
                 this.Execute(request).then(function (response) {
                     var results = response.data;
                     console.log('successfull navigation request results:', results);

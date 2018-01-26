@@ -26,6 +26,11 @@ var StreamStats;
                 this.angulartics = $analytics;
                 this.modalInstance = modal;
                 this.explorationService = exploration;
+                //init required values
+                this.selectedDirection = 'downstream';
+                this.selectedQuerySourceList = ['flowline'];
+                this.selectExclusiveOption(this.selectedDirection, 'Direction');
+                this.selectOption(this.selectedQuerySourceList[0], 'Query Source');
                 this.print = function () {
                     window.print();
                 };
@@ -71,6 +76,52 @@ var StreamStats;
                     }
                 }
             };
+            ExplorationToolsModalController.prototype.addLimit = function (item) {
+                var _this = this;
+                this.selectedLimit = item;
+                this.deleteConfig('Limit');
+                //add limit object
+                this.explorationService.selectedMethod.navigationInfo.configuration.forEach(function (item, key) {
+                    if (item.name == 'Limit') {
+                        var limitObject = JSON.parse(JSON.stringify(item));
+                        limitObject.value = _this.selectedLimit;
+                        console.log('limit object:', limitObject);
+                        _this.explorationService.selectedMethod.navigationConfiguration.push(limitObject);
+                    }
+                });
+            };
+            ExplorationToolsModalController.prototype.selectExclusiveOption = function (option, configName) {
+                var _this = this;
+                this.selectedDirection = option;
+                this.deleteConfig(configName);
+                this.explorationService.selectedMethod.navigationInfo.configuration.forEach(function (item, key) {
+                    if (item.name == configName) {
+                        var configObject = JSON.parse(JSON.stringify(item));
+                        configObject.value = option;
+                        console.log('adding selectExclusiveOption config object:', configObject);
+                        _this.explorationService.selectedMethod.navigationConfiguration.push(configObject);
+                    }
+                });
+            };
+            ExplorationToolsModalController.prototype.selectOption = function (option, configName) {
+                var _this = this;
+                console.log('in selection option', option, configName, this.selectedQuerySourceList);
+                var index = this.selectedQuerySourceList.indexOf(option);
+                if (index > -1) {
+                    this.selectedQuerySourceList.splice(index, 1);
+                }
+                else
+                    this.selectedQuerySourceList.push(option);
+                this.deleteConfig(configName);
+                this.explorationService.selectedMethod.navigationInfo.configuration.forEach(function (item, key) {
+                    if (item.name == configName) {
+                        var configObject = JSON.parse(JSON.stringify(item));
+                        configObject.value = option;
+                        console.log('adding selectOption config object:', configObject);
+                        _this.explorationService.selectedMethod.navigationConfiguration.push(configObject);
+                    }
+                });
+            };
             ExplorationToolsModalController.prototype.ExecuteNav = function () {
                 //validate request
                 if (this.explorationService.selectedMethod.navigationPointCount != this.explorationService.selectedMethod.minLocations) {
@@ -80,6 +131,38 @@ var StreamStats;
                 var isOK = false;
                 this.explorationService.explorationMethodBusy = true;
                 this.explorationService.ExecuteSelectedModel();
+            };
+            //Helper Methods
+            //-+-+-+-+-+-+-+-+-+-+-+-
+            ExplorationToolsModalController.prototype.deleteConfig = function (name) {
+                var _this = this;
+                //delete existing limit object
+                this.explorationService.selectedMethod.navigationConfiguration.forEach(function (item, key) {
+                    if (item.name == name) {
+                        console.log('deleting:', item.name);
+                        _this.explorationService.selectedMethod.navigationConfiguration.splice(key, 1);
+                    }
+                });
+            };
+            ExplorationToolsModalController.prototype.checkLimit = function (name, config) {
+                config.forEach(function (item, key) {
+                    console.log('checking1', item.name, item.value.name, name);
+                    if (item.name == 'Limit' && item.value.name == name) {
+                        console.log('FOUND:', item.name, name);
+                        return true;
+                    }
+                });
+                return false;
+            };
+            ExplorationToolsModalController.prototype.configExists = function (name, config) {
+                console.log('checking1', name, config);
+                for (var i = 0; i < config.length; i++) {
+                    if (config[i].name === name) {
+                        console.log('checking:', config[i].name, name);
+                        return true;
+                    }
+                }
+                return false;
             };
             return ExplorationToolsModalController;
         }()); //end  class

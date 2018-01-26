@@ -73,6 +73,11 @@ module StreamStats.Models {
             this.navigationPointCount+=1
             console.log('in add location:', pnt, this.navigationPointCount);
 
+            //replace configuration item with new point
+            this.navigationInfo.configuration.forEach((item) => {
+
+            });
+
             if (this.navigationPointCount === 1) {
                 this.navigationConfiguration.push({
                     "id": 1,
