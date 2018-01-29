@@ -56,13 +56,12 @@ module StreamStats.Models {
         public navigationPointCount: number;
 
         //Constructor
-        constructor(methodtype: number, navigationInfo: any, totalPointCount: number, totalOptionsCount: number) {
+        constructor(methodtype: number, navigationInfo: any) {
 
             this.navigationID = methodtype;
             this.navigationInfo = navigationInfo;
-            this.minLocations = totalPointCount;
+            if (this.navigationInfo.configuration) this.minLocations = this.getCountByType(this.navigationInfo.configuration,'geojson point geometry');
             this.navigationConfiguration = [];
-            this.optionsCount = totalOptionsCount;
             this.navigationPointCount = 0;
             this._locations = [];
         }
@@ -71,7 +70,7 @@ module StreamStats.Models {
         public addLocation(pnt: WiM.Models.IPoint):void {
             this._locations.push(pnt);
             this.navigationPointCount+=1
-            console.log('in add location:', pnt, this.navigationPointCount);
+            //console.log('in add location:', pnt, this.navigationPointCount);
 
             //replace configuration item with new point
             this.navigationInfo.configuration.forEach((item) => {
@@ -104,10 +103,14 @@ module StreamStats.Models {
                 })
             }
 
-            console.log('navigationConfiguration:', this.navigationConfiguration)
+            //console.log('navigationConfiguration:', this.navigationConfiguration)
 
             if (this._locations.length > this.minLocations)
                 this._locations.shift();
+        }
+
+        private getCountByType(object, text) {
+            return object.filter(function (item) { return item.valueType.toLowerCase().includes(text) }).length;
         }
     }//end class
 
@@ -117,7 +120,7 @@ module StreamStats.Models {
        
         //Constructor
         constructor() {
-            super(2, 2, 0 , 1);
+            super(2, 2);
         }
     }//end class
     export class FlowPath extends NetworkNav {
@@ -134,7 +137,7 @@ module StreamStats.Models {
         }
         //Constructor
         constructor() {
-            super(1, 1, 1, 1);
+            super(1, 1);
             this._workspaceID = '';
         }
     }//end class
@@ -148,7 +151,7 @@ module StreamStats.Models {
 
         //Constructor
         constructor() {
-            super(3, 1, 4, 1);
+            super(3, 1);
             this.selectedDirectionType = this.DirectionOptions[1];
         }
 

@@ -154,7 +154,7 @@ var StreamStats;
                             _this.markers['netnav_' + i] = {
                                 lat: item.Latitude,
                                 lng: item.Longitude,
-                                message: exploration.GetToolName(exploration.selectedMethod.navigationID),
+                                message: exploration.selectedMethod.navigationName,
                                 focus: true,
                                 draggable: false
                             };
@@ -220,7 +220,7 @@ var StreamStats;
                     return this.explorationService.selectedMethod.navigationID;
                 },
                 set: function (val) {
-                    this.explorationService.setMethod(val, null, null, null);
+                    this.explorationService.setMethod(val, {});
                 },
                 enumerable: true,
                 configurable: true
@@ -231,22 +231,17 @@ var StreamStats;
                 //check if can select
                 this.removeMarkerLayers("netnav_", true);
                 this.removeGeoJsonLayers("netnav_", true);
-                if (!this.canSelectExplorationTool(val))
-                    return;
+                //if (!this.canSelectExplorationTool(val)) return
                 //this.selectedExplorationMethodType = val;
-                console.log('here0', val);
                 //get this configuration
                 this.explorationService.getNavigationConfiguration(val);
                 //send messages if needed
             };
-            MapController.prototype.toggleLimitExplorationMethodToStudyArea = function () {
-                if (this.studyArea.selectedStudyArea !== null && this.studyArea.selectedStudyArea.WorkspaceID !== '') {
-                    if (this.explorationService.selectedMethod.workspaceID !== '')
-                        this.explorationService.selectedMethod.workspaceID = '';
-                    else {
-                        this.explorationService.selectedMethod.workspaceID = this.studyArea.selectedStudyArea.WorkspaceID;
-                        this.toaster.pop("info", "Information", "Ensure your selected point resides within the basin", 5000);
-                    }
+            MapController.prototype.addExplorationPointFromPourpoint = function (lat, lng, crs) {
+                this.explorationService.selectedMethod.addLocation(new WiM.Models.Point(lat, lng, crs));
+                //open modal
+                if (this.explorationService.selectedMethod.navigationPointCount === this.explorationService.selectedMethod.minLocations) {
+                    this.modal.openModal(StreamStats.Services.SSModalType.e_exploration);
                 }
             };
             MapController.prototype.ExecuteNav = function () {
@@ -547,6 +542,7 @@ var StreamStats;
                             map.off("draw:created", _this.measurestop);
                     });
                 });
+                this.selectedExplorationMethodType = 0;
             };
             MapController.prototype.measurement = function () {
                 var _this = this;
@@ -771,10 +767,10 @@ var StreamStats;
                 return true;
             };
             MapController.prototype.onExplorationMethodComplete = function (sender, e) {
-                console.log('in onexplorationmethodCOmplete:', e);
+                //console.log('in onexplorationmethodCOmplete:',e)
                 this.explorationService.explorationMethodBusy = false;
                 if (e.features != null && e.features['features'].length > 0) {
-                    console.log('here test');
+                    //console.log('exploration method complete')
                     this.addGeoJSON("netnav_route", e.features);
                     //e.features.forEach((layer)=> {
                     //    var item = angular.fromJson(angular.toJson(layer));

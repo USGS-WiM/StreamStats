@@ -132,7 +132,6 @@ var StreamStats;
             };
             ExplorationService.prototype.getNavigationEndPoints = function () {
                 var _this = this;
-                console.log('get nav endpoints');
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSNavigationServices'];
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
@@ -153,15 +152,9 @@ var StreamStats;
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSNavigationServices'] + '/' + id;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
-                    var data = response.data;
-                    console.log('navigation config:', data);
-                    //get count of point location configurations
-                    var totalPointCount = _this.getCountByType(data.configuration, 'geojson point geometry');
-                    console.log('total point count:', totalPointCount);
-                    //get options count
-                    var totalOptionsCount = _this.getCountByType(data.configuration, 'option');
-                    console.log('total options count:', totalOptionsCount);
-                    _this.setMethod(id, data, totalPointCount, totalOptionsCount);
+                    var config = response.data;
+                    console.log('navigation config:', config);
+                    _this.setMethod(id, config);
                     //sm when complete
                 }, function (error) {
                     //sm when error                    
@@ -174,23 +167,10 @@ var StreamStats;
             ExplorationService.prototype.getCountByType = function (object, text) {
                 return object.filter(function (item) { return item.valueType.toLowerCase().includes(text); }).length;
             };
-            ExplorationService.prototype.setMethod = function (methodtype, data, totalPointCount, totalOptionsCount) {
-                console.log('HERE99', methodtype, data, totalPointCount, totalOptionsCount);
+            ExplorationService.prototype.setMethod = function (methodtype, config) {
                 if (this._selectedMethod != null && methodtype === this._selectedMethod.navigationID)
                     methodtype = ExplorationMethodType.undefined;
-                this._selectedMethod = new StreamStats.Models.NetworkNav(methodtype, data, totalPointCount, totalOptionsCount);
-            };
-            ExplorationService.prototype.GetToolName = function (methodID) {
-                switch (methodID) {
-                    case ExplorationMethodType.FLOWPATH:
-                        return "Flow (Raindrop) Trace to outlet";
-                    case ExplorationMethodType.NETWORKPATH:
-                        return "Find network path between two points";
-                    case ExplorationMethodType.NETWORKTRACE:
-                        return "Configurable network trace";
-                    default:
-                        return "";
-                } //end switch
+                this._selectedMethod = new StreamStats.Models.NetworkNav(methodtype, config);
             };
             ExplorationService.prototype.ExecuteSelectedModel = function () {
                 var _this = this;
