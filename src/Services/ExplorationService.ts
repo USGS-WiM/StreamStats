@@ -34,8 +34,7 @@ module StreamStats.Services {
         getNavigationEndPoints();
         getNavigationConfiguration(modelType:number);
         selectedMethod: Models.INetworkNav;
-        setMethod(methodtype: ExplorationMethodType, configuration: any, totalPointCount: number, totalOptionsCount: number)
-        GetToolName(methodID: number): String
+        setMethod(methodtype: ExplorationMethodType, configuration: any)
         ExecuteSelectedModel(): void
         elevationProfileHTML: any;
         coordinateList: Array<any>;
@@ -178,7 +177,6 @@ module StreamStats.Services {
         }
 
         public getNavigationEndPoints() {
-            console.log('get nav endpoints')
 
             var url: string = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSNavigationServices'];
 
@@ -210,18 +208,10 @@ module StreamStats.Services {
 
             this.Execute(request).then(
                 (response: any) => {
-                    var data = response.data;
-                    console.log('navigation config:', data);
+                    var config = response.data;
+                    console.log('navigation config:', config);
 
-                    //get count of point location configurations
-                    var totalPointCount = this.getCountByType(data.configuration, 'geojson point geometry');
-                    console.log('total point count:', totalPointCount);
-
-                    //get options count
-                    var totalOptionsCount = this.getCountByType(data.configuration, 'option')
-                    console.log('total options count:', totalOptionsCount);
-
-                    this.setMethod(id, data, totalPointCount, totalOptionsCount);
+                    this.setMethod(id, config);
 
                     //sm when complete
                 }, (error) => {
@@ -238,29 +228,13 @@ module StreamStats.Services {
             return object.filter(function (item) { return item.valueType.toLowerCase().includes(text) }).length;
         }
 
-        public setMethod(methodtype: ExplorationMethodType, data: any, totalPointCount:number, totalOptionsCount:number) {
-            console.log('HERE99', methodtype, data, totalPointCount, totalOptionsCount)
+        public setMethod(methodtype: ExplorationMethodType, config: any) {
 
             if (this._selectedMethod != null && methodtype === this._selectedMethod.navigationID) methodtype = ExplorationMethodType.undefined;
-
-            this._selectedMethod = new Models.NetworkNav(methodtype, data, totalPointCount, totalOptionsCount);
-
+            this._selectedMethod = new Models.NetworkNav(methodtype, config);
         }
 
-        public GetToolName(methodID: ExplorationMethodType): String {
-            switch (methodID) {
-                case ExplorationMethodType.FLOWPATH:
-                    return "Flow (Raindrop) Trace to outlet";
-                case ExplorationMethodType.NETWORKPATH:
-                    return "Find network path between two points";
-                case ExplorationMethodType.NETWORKTRACE:
-                    return "Configurable network trace";
-                default:
-                    return "";
 
-            }//end switch
-
-        }
         public ExecuteSelectedModel(): void {
             
             console.log('selected method:', this.selectedMethod);

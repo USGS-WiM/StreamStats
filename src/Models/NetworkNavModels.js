@@ -33,12 +33,12 @@ var StreamStats;
     (function (Models) {
         var NetworkNav = (function () {
             //Constructor
-            function NetworkNav(methodtype, navigationInfo, totalPointCount, totalOptionsCount) {
+            function NetworkNav(methodtype, navigationInfo) {
                 this.navigationID = methodtype;
                 this.navigationInfo = navigationInfo;
-                this.minLocations = totalPointCount;
+                if (this.navigationInfo.configuration)
+                    this.minLocations = this.getCountByType(this.navigationInfo.configuration, 'geojson point geometry');
                 this.navigationConfiguration = [];
-                this.optionsCount = totalOptionsCount;
                 this.navigationPointCount = 0;
                 this._locations = [];
             }
@@ -53,7 +53,7 @@ var StreamStats;
             NetworkNav.prototype.addLocation = function (pnt) {
                 this._locations.push(pnt);
                 this.navigationPointCount += 1;
-                console.log('in add location:', pnt, this.navigationPointCount);
+                //console.log('in add location:', pnt, this.navigationPointCount);
                 //replace configuration item with new point
                 this.navigationInfo.configuration.forEach(function (item) {
                 });
@@ -81,9 +81,12 @@ var StreamStats;
                         }
                     });
                 }
-                console.log('navigationConfiguration:', this.navigationConfiguration);
+                //console.log('navigationConfiguration:', this.navigationConfiguration)
                 if (this._locations.length > this.minLocations)
                     this._locations.shift();
+            };
+            NetworkNav.prototype.getCountByType = function (object, text) {
+                return object.filter(function (item) { return item.valueType.toLowerCase().includes(text); }).length;
             };
             return NetworkNav;
         }()); //end class
@@ -94,7 +97,7 @@ var StreamStats;
             //properties
             //Constructor
             function NetworkPath() {
-                return _super.call(this, 2, 2, 0, 1) || this;
+                return _super.call(this, 2, 2) || this;
             }
             return NetworkPath;
         }(NetworkNav)); //end class
@@ -103,7 +106,7 @@ var StreamStats;
             __extends(FlowPath, _super);
             //Constructor
             function FlowPath() {
-                var _this = _super.call(this, 1, 1, 1, 1) || this;
+                var _this = _super.call(this, 1, 1) || this;
                 _this._workspaceID = '';
                 return _this;
             }
@@ -124,7 +127,7 @@ var StreamStats;
             __extends(NetworkTrace, _super);
             //Constructor
             function NetworkTrace() {
-                var _this = _super.call(this, 3, 1, 4, 1) || this;
+                var _this = _super.call(this, 3, 1) || this;
                 //https://ssdev.cr.usgs.gov/streamstatsservices/navigation/4.geojson?rcode=RRB&startpoint=[-94.719923,48.47219]&crs=4326&direction=Upstream&layers=NHDFlowline
                 //properties
                 _this.layerOptions = [{ name: "NHDFlowline", selected: true }, { name: "Gage", selected: false }, { name: "Dam", selected: false }];

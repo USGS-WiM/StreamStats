@@ -20,22 +20,41 @@
 
                         <h5>{{configuration.name}}<small ng-show="configuration.required" style="color:red">&nbsp;&nbsp;(Required)</small><small ng-hide="configuration.required">&nbsp;&nbsp;(Optional)</small></h5>
 
-                        <div ng-show="configuration.valueType === 'geojson point geometry'">
-                            <h6>Latitude: {{configuration.value.coordinates[1]}} Longitude: {{configuration.value.coordinates[0]}} </h6>
-                        </div>
-
-                        <div ng-show="configuration.valueType === 'option'">
-                            <div class="checkbox">
-                                <label ng-repeat="item in configuration.value"><checkbox large ng-model="item.checked" ng-init="item.checked = true"></checkbox>{{item}}</label>
+                        <div ng-if="configuration.valueType === 'geojson point geometry'">
+                            <!-- Need to show modified click points here -->
+                            <div ng-repeat="modified_configuration in vm.explorationService.selectedMethod.navigationConfiguration">
+                                <h6 ng-show="modified_configuration.name === configuration.name">Latitude: {{modified_configuration.value.coordinates[1]}} Longitude: {{modified_configuration.value.coordinates[0]}} </h6>
                             </div>
                         </div>
 
-                        <div ng-show="configuration.valueType === 'exclusiveOption'">
-                            <div ng-repeat="item in configuration.value" class="input-group" style="margin-bottom: 10px;">
-                                <span class="input-group-addon"><input type="radio" name="limit"></span>
-                                <span class="input-group-addon" id="distance">{{item.name}}</span>
-                                <input ng-show="item.name === 'Distance (km)'" type="text" class="form-control" name="distanceValue" ng-model="item.value">
-                                <textarea ng-show="item.name === 'Polygon geometry'" class="form-control" rows="3" name="polygonValue"></textarea>
+                        <div ng-if="configuration.name === 'Direction'" > 
+                            <div ng-repeat="direction in configuration.value">
+                                <label class="rdo">
+                                    <input type="radio" ng-model="vm.selectedDirection" ng-value="direction" ng-click="vm.selectExclusiveOption(direction,configuration.name)"/>
+                                    <span>{{direction}}</span>
+                                </label>
+                            </div>
+                        </div>
+
+
+                        <div ng-if="configuration.name === 'Query Source'" >
+                            <div ng-repeat="source in configuration.value">
+                                <label class="chx">
+                                    <input type="checkbox" ng-checked="vm.selectedQuerySourceList.indexOf(source) != -1" ng-click="vm.selectOption(source,configuration.name)" />
+                                    <span>&nbsp;&nbsp;{{source}}</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div ng-if="configuration.name === 'Limit'">
+                            <div ng-repeat="item in configuration.value " class="input-group">
+
+                                <span class="input-group-addon rdo" ng-click="vm.addLimit(item)">
+                                    <input type="radio" name="limit" ng-checked="vm.selectedLimit.name === item.name">
+                                    <span class="input-group-addon">{{item.name}}</span>
+                                </span>
+                                <textarea class="form-control" rows="3" name="polygonValue" >{{item.value}}</textarea>
+
                             </div>
                         </div>
 

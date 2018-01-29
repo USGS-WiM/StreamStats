@@ -36,28 +36,30 @@ module StreamStats.Controllers {
         //-+-+-+-+-+-+-+-+-+-+-+-
         private modalInstance: ng.ui.bootstrap.IModalServiceInstance;
         private explorationService: Services.IExplorationService;
+        private studyAreaService: Services.IStudyAreaService;
         public sce: any;
         public angulartics: any;
         public print: any;
         public selectedLimit: any;
         public selectedDirection: any;
         public selectedQuerySourceList: any;
+        public
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$analytics', '$sce', '$modalInstance', 'StreamStats.Services.ModalService', 'StreamStats.Services.ExplorationService'];
-        constructor($scope: IExplorationToolsModalControllerScope, $analytics, $sce: any, modal: ng.ui.bootstrap.IModalServiceInstance, modalservice: Services.IModalService, exploration: Services.IExplorationService) {
+        static $inject = ['$scope', '$analytics', '$sce', '$modalInstance', 'StreamStats.Services.ModalService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.StudyAreaService'];
+        constructor($scope: IExplorationToolsModalControllerScope, $analytics, $sce: any, modal: ng.ui.bootstrap.IModalServiceInstance, modalservice: Services.IModalService, exploration: Services.IExplorationService, studyArea: Services.IStudyAreaService) {
             $scope.vm = this;
             this.sce = $sce;
             this.angulartics = $analytics;
             this.modalInstance = modal;
             this.explorationService = exploration;
+            this.studyAreaService = studyArea;
 
             //init required values
-            this.selectedDirection = 'downstream';
-            this.selectedQuerySourceList = ['flowline'];
-            this.selectExclusiveOption(this.selectedDirection, 'Direction');
-            this.selectOption(this.selectedQuerySourceList[0], 'Query Source');
+            this.selectExclusiveOption('downstream', 'Direction');
+            this.selectOption('flowline', 'Query Source');
+            this.checkWorkspaceID();
             
             this.print = function () {
                 window.print();
@@ -68,6 +70,7 @@ module StreamStats.Controllers {
         //-+-+-+-+-+-+-+-+-+-+-+-
         public close(): void {
             this.explorationService.showElevationChart = false;
+            this.explorationService.setMethod(0, {});
             this.modalInstance.dismiss('cancel');
         }
 
@@ -127,7 +130,7 @@ module StreamStats.Controllers {
 
                     var limitObject = JSON.parse(JSON.stringify(item));
                     limitObject.value = this.selectedLimit;
-                    console.log('limit object:',limitObject)
+                    //console.log('limit object:',limitObject)
                     this.explorationService.selectedMethod.navigationConfiguration.push(limitObject)
                 }
             });
@@ -135,16 +138,16 @@ module StreamStats.Controllers {
 
         public selectExclusiveOption(option, configName) {
 
+            //init selected direction
             this.selectedDirection = option;
 
             this.deleteConfig(configName);
 
             this.explorationService.selectedMethod.navigationInfo.configuration.forEach((item, key) => {
                 if (item.name == configName) {
-
                     var configObject = JSON.parse(JSON.stringify(item));
                     configObject.value = option;
-                    console.log('adding selectExclusiveOption config object:', configObject)
+                    //console.log('adding selectExclusiveOption config object:', configObject)
                     this.explorationService.selectedMethod.navigationConfiguration.push(configObject)
                 }
             });
@@ -152,25 +155,50 @@ module StreamStats.Controllers {
 
         public selectOption(option, configName) {
 
-            console.log('in selection option', option, configName, this.selectedQuerySourceList)
+            //init list if it doesn't exist
+            if (!this.selectedQuerySourceList) this.selectedQuerySourceList = [];
 
             var index = this.selectedQuerySourceList.indexOf(option);
-            if (index > -1) {
-                this.selectedQuerySourceList.splice(index,1)
-            }
-            else this.selectedQuerySourceList.push(option)
+            (index > -1) ? this.selectedQuerySourceList.splice(index,1) : this.selectedQuerySourceList.push(option)
 
             this.deleteConfig(configName);
 
             this.explorationService.selectedMethod.navigationInfo.configuration.forEach((item, key) => {
                 if (item.name == configName) {
-
                     var configObject = JSON.parse(JSON.stringify(item));
-                    configObject.value = option;
-                    console.log('adding selectOption config object:', configObject)
+                    configObject.value = this.selectedQuerySourceList;
+                    //console.log('adding selectOption config object:', configObject)
                     this.explorationService.selectedMethod.navigationConfiguration.push(configObject)
                 }
             });
+        }
+
+        public checkWorkspaceID() {
+
+            if (this.studyAreaService.selectedStudyArea && this.studyAreaService.selectedStudyArea.WorkspaceID !== '') {
+
+                //console.log('in exploration service we have a workspace:', this.studyAreaService.selectedStudyArea.WorkspaceID, this.explorationService.selectedMethod.navigationInfo.configuration);
+
+                this.explorationService.selectedMethod.navigationInfo.configuration.forEach((item, key) => {
+                    if (item.name == 'Limit') {
+                        item.value.forEach((limit, key) => {
+                            if (limit.name == 'Polygon geometry') {
+
+                                //reset limit polygon with delineated basin
+                                //console.log('in here', this.studyAreaService.selectedStudyArea, this.studyAreaService.selectedStudyArea.Features[1].feature.features[0].geometry)
+                                limit.name = 'Polygon geometry from delineated watershed';
+                                limit.value = this.studyAreaService.selectedStudyArea.Features[1].feature.features[0].geometry;
+                            }
+                        });
+                    }
+                });
+
+                //if ((<Models.FlowPath>this.explorationService.selectedMethod).workspaceID !== '') (<Models.FlowPath>this.explorationService.selectedMethod).workspaceID = ''
+                //else {
+                //    (<Models.FlowPath>this.explorationService.selectedMethod).workspaceID = this.studyAreaService.selectedStudyArea.WorkspaceID;
+                //    //this.toaster.pop("info", "Information", "Ensure your selected point resides within the basin", 5000);
+                //}
+            }    
         }
 
         public ExecuteNav(): void {
@@ -195,36 +223,10 @@ module StreamStats.Controllers {
             this.explorationService.selectedMethod.navigationConfiguration.forEach((item, key) => {
 
                 if (item.name == name) {
-                    console.log('deleting:', item.name)
+                    //console.log('deleting:', item.name)
                     this.explorationService.selectedMethod.navigationConfiguration.splice(key, 1)
                 }
             });
-        }
-
-        public checkLimit(name, config) {
-            
-
-            config.forEach((item, key) => {
-                console.log('checking1', item.name, item.value.name, name)
-                if (item.name == 'Limit' && item.value.name == name) {
-                    console.log('FOUND:', item.name, name)
-                    return true;
-                }
-            });
-
-            return false;
-        }
-
-        public configExists(name, config) {
-            console.log('checking1',name,config)
-            for (var i = 0; i < config.length; i++) {
-                if (config[i].name === name) {
-                    console.log('checking:', config[i].name, name)
-                    return true;
-                }
-            }
-
-            return false;
         }
 
     }//end  class
