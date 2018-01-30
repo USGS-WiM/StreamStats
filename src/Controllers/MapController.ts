@@ -175,6 +175,7 @@ module StreamStats.Controllers {
         public measuremove: any;
         public measurestart: any;
         public measurestop: any;
+        public selectedExplorationTool: any;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -195,6 +196,7 @@ module StreamStats.Controllers {
             this.eventManager = eventManager;
             this.cursorStyle = 'pointer';
             this.environment = configuration.environment;
+            this.selectedExplorationTool = null;
 
             this.init();
 
@@ -639,6 +641,8 @@ module StreamStats.Controllers {
                         //force map refresh
                         map.panBy([0, 1]);
 
+                        this.selectedExplorationTool = null;
+
                     }); 
                 });
             });
@@ -702,6 +706,8 @@ module StreamStats.Controllers {
                 if (control._container.className.indexOf("leaflet-control-locate") > -1) lc = control; 
             });
             lc.start();
+
+            this.selectedExplorationTool = null;
         }
 
         private resetExplorationTools() {
@@ -729,6 +735,8 @@ module StreamStats.Controllers {
             this.selectedExplorationMethodType = 0;
             this.removeMarkerLayers("netnav_", true);
             this.removeGeoJsonLayers("netnav_", true);
+
+            this.selectedExplorationTool = null;
         }
 
         private measurement() {
@@ -790,6 +798,7 @@ module StreamStats.Controllers {
 
                         this.drawControl.disable();
                         this.explorationService.drawMeasurement = false;
+                        this.selectedExplorationTool = null;
                     };
 
                     map.on("click", this.measurestart);
@@ -1016,6 +1025,7 @@ module StreamStats.Controllers {
 
                 //disable tool
                 this.selectedExplorationMethodType = 0;
+                this.selectedExplorationTool = null;
                 this.modalStack.dismissAll();
 
             }//end if

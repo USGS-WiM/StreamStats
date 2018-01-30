@@ -91,6 +91,7 @@ var StreamStats;
                 this.eventManager = eventManager;
                 this.cursorStyle = 'pointer';
                 this.environment = configuration.environment;
+                this.selectedExplorationTool = null;
                 this.init();
                 //subscribe to Events
                 this.eventManager.SubscribeToEvent(StreamStats.Services.onSelectedStudyAreaChanged, new WiM.Event.EventHandler(function () {
@@ -463,6 +464,7 @@ var StreamStats;
                             _this.explorationService.drawElevationProfile = false;
                             //force map refresh
                             map.panBy([0, 1]);
+                            _this.selectedExplorationTool = null;
                         });
                     });
                 });
@@ -518,6 +520,7 @@ var StreamStats;
                         lc = control;
                 });
                 lc.start();
+                this.selectedExplorationTool = null;
             };
             MapController.prototype.resetExplorationTools = function () {
                 var _this = this;
@@ -545,6 +548,7 @@ var StreamStats;
                 this.selectedExplorationMethodType = 0;
                 this.removeMarkerLayers("netnav_", true);
                 this.removeGeoJsonLayers("netnav_", true);
+                this.selectedExplorationTool = null;
             };
             MapController.prototype.measurement = function () {
                 var _this = this;
@@ -595,6 +599,7 @@ var StreamStats;
                             map.off("draw:created", _this.measurestop);
                             _this.drawControl.disable();
                             _this.explorationService.drawMeasurement = false;
+                            _this.selectedExplorationTool = null;
                         };
                         map.on("click", _this.measurestart);
                         map.on("draw:created", _this.measurestop);
@@ -781,6 +786,7 @@ var StreamStats;
                     });
                     //disable tool
                     this.selectedExplorationMethodType = 0;
+                    this.selectedExplorationTool = null;
                     this.modalStack.dismissAll();
                 } //end if
                 if (e.report != null && e.report != '') {
