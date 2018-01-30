@@ -734,7 +734,8 @@ module StreamStats.Controllers {
             this.explorationService.networkNavResults = [];
             this.selectedExplorationMethodType = 0;
             this.removeMarkerLayers("netnav_", true);
-            this.removeGeoJsonLayers("netnav_", true);
+            this.removeGeoJsonLayers("netnavpoints", true);
+            this.removeGeoJsonLayers("netnavroute", true);
 
             this.selectedExplorationTool = null;
         }
@@ -1020,6 +1021,15 @@ module StreamStats.Controllers {
                 this.explorationService.networkNavResults.forEach((layer, key)=> {
 
                     this.addGeoJSON(layer.name, layer.feature); 
+
+                    //zoomTo logic
+                    if (layer.name == "netnavroute") {
+                        this.leafletData.getMap("mainMap").then((map: any) => {
+                            var tempExtent = L.geoJson(layer.feature);
+                            map.fitBounds(tempExtent.getBounds());
+                        });
+                    }
+
                     this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(layer.name, "geojson", this.geojson[layer.name].style));
                 });      
 
@@ -1083,14 +1093,14 @@ module StreamStats.Controllers {
        
         private onSelectedStudyAreaChanged() {
 
-            console.log('in onselectedstudyareachange1', this.studyArea.selectedStudyArea.Features)
+            //console.log('in onselectedstudyareachange1', this.studyArea.selectedStudyArea.Features)
 
             this.removeOverlayLayers('globalwatershed', true);
 
             if (!this.studyArea.selectedStudyArea || !this.studyArea.selectedStudyArea.Features) return;
 
             this.studyArea.selectedStudyArea.Features.forEach((layer) => {
-                console.log('in onselectedstudyareachange2',layer)
+                //console.log('in onselectedstudyareachange2',layer)
 
                 var item = angular.fromJson(angular.toJson(layer));
                 this.addGeoJSON(item.name, item.feature);
@@ -1197,7 +1207,12 @@ module StreamStats.Controllers {
                 this.geojson[LayerName] = {
                     data: feature,
                     onEachFeature: function (feature, layer) {
-                        layer.bindPopup('Network navigation point');
+
+                        var popupContent = '<strong>Network navigation point</strong></br>';
+                        angular.forEach(feature.properties, function (value, key) {
+                            popupContent += '<strong>' + key + ': </strong>' + value + '</br>';
+                        });
+                        layer.bindPopup(popupContent);
                     },
                     style: {
                         displayName: "Network navigation point",
@@ -1215,7 +1230,7 @@ module StreamStats.Controllers {
                         visible: true,
                         style: {
                             displayName: "Network navigation route",
-                            fillColor: "red",
+                            imagesrc: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADYAAAA2CAYAAACMRWrdAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAVaSURBVGhDzZr5VxpXFMf7n7ZpkqZLmqbRaIxaEzWyzIjghhtuQBQNuKMii0vSnqZb2qZNm66iwfavuL33jVbEOzBvmBn44XOOHD3P+TD3vXu/MG95MsdQL3h38rDgjsLu9fvw9O07hll6MAb9Sz9eWKuuxGaCSch8+IC9eD1Stx7B4OK3l9aqGzHf+q+w2jYM++82sQIcB+80QNSfAF/yt0vr1Y1Y1B+H7I12vOCGSwJ6rLX0w+CT78CbPrq0Xl2IBR9/CVt3vHgHGlkBjtyNNpiYzIGS+ptds+ZivZt/QOLhBOxdvccK6DGvzEEfli+3JlFzsdmhtdMDw3gJbjaqMBz7Ckswz65J1FSM9keyySdVgntXm2FqdBvUrb/YNc+omZiSOoTFnlnYvdbCCugR75qEwPJP7JrF1EwsFMrCzsfdcCBRgvT3I5HPRSPn1iymJmL+lZ9h7f4A7F+5ywpwHFxphPDAqjhsuDVLcVyMes68GoPce62sgB4r2LwH4t+Dh+lZHI6LjYafwfZtt9SBkX2/Hcan98S+5NbkcFSsN/k7LHeM4tjUzAroMYd32Lf+ml1TD0fFwgMrkP3gM7xY4wfGRlMfDC18w45N5XBMbCj2NSSxscqU4O71FpicSIOyXb5ncTgiRhcW756CvWtyY9OiKwz+1VfsmpVwRGxqLAXpm514scZLkA4YGo6N9CwO28UCyy9h/V5AqmfR384Mb+DYZKxncdgqRhs+5n0Mu5I9a6njNOpLHhjF2Co2PrMPqU96RNLlBDjSHz2EsdmnWILGexaHbWIU9VfarYv6stgmJqI+TgxWRX1ZbBELzmHUb5CL+rQPaeLXi/qyWC6mbv0JiU75qB/zRKFv7Rd2TTNYLkafDdIBIBX1GxQYnn9eNurLYqnYQPwFbDT3YXYy3rMo6k+Pbok7za1pFsvEzEb9RGfIUNSXxTKx0CRG/VtyUZ/GrNHIs6p7FoclYv61Vxj1B6WjfqR/WWQ0bs1qsURsrndBfDLLCeix2jYkFfVlqVqMPjXa+tT+qC9LVWJORn1ZqhIzF/V9pqK+LKbF6OJMRf3xHVBNRH1ZTInRPPeke9rRqC+LKTF613duduHFGi/B7duuqqJ+Ke5TPJk3oGQ1vIg7ewyuzJG8mIj6GC9MRX2DH09XgoRcaeINvi6AmjsReHMFcKFYdzYvJ2Y26tPJWW3UL0aICXixLlmxMYz626ai/gEoFo9NWimSGJVhAcuwIH4m4UcypejbeI1RP1izqM+jiXlwbwkpUZ7H0IO/MywWCSzhxCDXs9ZbAjC4aE3UL8WLJSfAn8/3nAbdSUNiwbnnIgzWMuqXoqCUKsSOUCYPPfjmCSk8ULzpQmUxLeqHah71S1FQSM0eoVge99WZGJYkSqnpfyqLTY9sSkd9embD6qhfiiaWPxfD19rdOoHe9L/lxfoTP2DU98tHfXwzrI76FzlCsTyoyLkY7S08HfFulRWjSLHgjkg/iaZF/ZfsmtahiSkZaiGHQoz6F/U0pZIYPc5DT5ZJ9SyK+mF7ov5FcG9hmStp/D+Im8qQxLCXKRkS09ljFPVXWynqy/Qse6P+RbB9oJjYw8iZGDVpJYtTCO4zVsxU1G+lqP/CsrGpIvh/NDGUotdiCCYxumtMHxuJfoFR3yPVsyjqT0zt2tazWETPopNQa8hi+vifksmDHg6hx1DpZOME9HAi6hejzYnnU8bZaEXl6Mbe5i4dgrUn0TrwYo0fGMm7veKLc7ujfjFnA7AGDb/aACxkUcyVKxITUR8vUqYEaRqh75ediPrFaGIF5ARfY1zBacOLzVmI4UHSkzuE/wDtg18mgH26LgAAAABJRU5ErkJggg==",
                             color: 'red'
                         }
                     }
