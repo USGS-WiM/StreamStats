@@ -20,7 +20,7 @@
                 <div id="measurement-div" class="banner" ng-show="vm.explorationService.measurementData.length > 0" ng-bind="vm.explorationService.measurementData"></div>
                 <button ng-class="!vm.explorationService.drawElevationProfile ? 'btn-exploration-tools btn-blue fullwidth':'btn-black fullwidth'" ng-click="vm.resetExplorationTools(); vm.explorationService.drawElevationProfile = !vm.explorationService.drawElevationProfile;"><span><i class="fa fa-line-chart"></i>&nbsp;&nbsp;Elevation Profile Tool</span></button>
                 <div id="elevation-help-div" class="banner" ng-show="vm.explorationService.drawElevationProfile">Click the map to begin<br>Double click to end the drawing and query elevation</div>
-                <button class="btn-blue fullwidth" ng-click="vm.resetExplorationTools(); vm.showLocation()"><span><i class="fa fa-map-marker"></i>&nbsp;&nbsp;Show your location</span></button>
+                <button class="btn-blue fullwidth" ng-click="vm.resetExplorationTools(); vm.showLocation()"><span><i class="fa fa-crosshairs"></i>&nbsp;&nbsp;Show your location</span></button>
 
                 <div>Network Navigation</div>
                 <div ng-show="vm.environment == 'development' ">

@@ -40,6 +40,7 @@ module StreamStats.Services {
         coordinateList: Array<any>;
         navigationResources: Array<any>;
         explorationMethodBusy: boolean;
+        networkNavResults: any;
     }
 
     export var onSelectedMethodExecuteComplete: string = "onSelectedMethodExecuteComplete";
@@ -74,6 +75,7 @@ module StreamStats.Services {
         public coordinateList: Array<any>;
         public navigationResources: Array<any>;
         public explorationMethodBusy: boolean;
+        public networkNavResults: any;
         
 
         //Constructor
@@ -87,6 +89,7 @@ module StreamStats.Services {
             this.showElevationChart = false;
             this.measurementData = '';
             this._selectedMethod = null;
+            this.networkNavResults = [];
             eventManager.AddEvent<StudyAreaEventArgs>(onSelectedStudyAreaChanged);
 
         }
@@ -251,6 +254,42 @@ module StreamStats.Services {
                 (response: any) => {
                     var results = response.data;
                     console.log('successfull navigation request results:', results);
+
+                    //init netnavresults
+                    var netnavroute = {
+                        feature: {
+                            features: [],
+                            type: 'FeatureCollection'
+                        },
+                        name: "netnavroute"
+                    };
+
+                    var netnavpoints = {
+                        feature: {
+                            features: [],
+                            type: 'FeatureCollection'
+                        },
+                        name: "netnavpoints"
+                    };
+
+                    results.features.forEach((layer, key) => {
+                        if (layer.geometry.type == 'Point') {
+                            console.log('we have a point:', layer, netnavpoints.feature.features);
+
+                            netnavpoints.feature.features.push(layer);
+                            console.log('we have a point:', netnavpoints);
+
+                        }
+                        else {
+                            netnavroute.feature.features.push(layer)
+                        }
+                    });
+
+                    this.networkNavResults.push(netnavroute);
+                    this.networkNavResults.push(netnavpoints);
+
+                    console.log('saved net nav results:', this.networkNavResults)
+
 
                     var evtarg = new ExplorationServiceEventArgs();
                     evtarg.features = results.type === "FeatureCollection" ? results : null;
