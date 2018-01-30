@@ -274,10 +274,9 @@ module StreamStats.Services {
 
                     results.features.forEach((layer, key) => {
                         if (layer.geometry.type == 'Point') {
-                            console.log('we have a point:', layer, netnavpoints.feature.features);
-
+           
                             netnavpoints.feature.features.push(layer);
-                            console.log('we have a point:', netnavpoints);
+                            //console.log('we have a point:', layer);
 
                         }
                         else {
