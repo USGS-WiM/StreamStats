@@ -56,6 +56,7 @@ var StreamStats;
                 _this.showElevationChart = false;
                 _this.measurementData = '';
                 _this._selectedMethod = null;
+                _this.networkNavResults = [];
                 eventManager.AddEvent(Services.onSelectedStudyAreaChanged);
                 return _this;
             }
@@ -182,6 +183,34 @@ var StreamStats;
                 this.Execute(request).then(function (response) {
                     var results = response.data;
                     console.log('successfull navigation request results:', results);
+                    //init netnavresults
+                    var netnavroute = {
+                        feature: {
+                            features: [],
+                            type: 'FeatureCollection'
+                        },
+                        name: "netnavroute"
+                    };
+                    var netnavpoints = {
+                        feature: {
+                            features: [],
+                            type: 'FeatureCollection'
+                        },
+                        name: "netnavpoints"
+                    };
+                    results.features.forEach(function (layer, key) {
+                        if (layer.geometry.type == 'Point') {
+                            console.log('we have a point:', layer, netnavpoints.feature.features);
+                            netnavpoints.feature.features.push(layer);
+                            console.log('we have a point:', netnavpoints);
+                        }
+                        else {
+                            netnavroute.feature.features.push(layer);
+                        }
+                    });
+                    _this.networkNavResults.push(netnavroute);
+                    _this.networkNavResults.push(netnavpoints);
+                    console.log('saved net nav results:', _this.networkNavResults);
                     var evtarg = new ExplorationServiceEventArgs();
                     evtarg.features = results.type === "FeatureCollection" ? results : null;
                     evtarg.report = results.type == "Report" ? results : null;

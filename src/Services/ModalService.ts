@@ -76,7 +76,7 @@ module StreamStats.Services {
                         return {
                             templateUrl: 'Views/explorationview.html',
                             controller: 'StreamStats.Controllers.ExplorationToolsModalController',
-                            size: 'lg',
+                            size: 'sm',
                             backdropClass: 'backdropZ',
                             windowClass: 'windowZ',
 
