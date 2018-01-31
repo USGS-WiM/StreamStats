@@ -284,8 +284,8 @@ module StreamStats.Services {
                         }
                     });
 
-                    this.networkNavResults.push(netnavroute);
-                    this.networkNavResults.push(netnavpoints);
+                    if (netnavroute.feature.features.length > 0) this.networkNavResults.push(netnavroute);
+                    if (netnavpoints.feature.features.length > 0) this.networkNavResults.push(netnavpoints);
 
                     console.log('saved net nav results:', this.networkNavResults)
 

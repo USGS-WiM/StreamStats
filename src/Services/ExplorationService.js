@@ -207,8 +207,10 @@ var StreamStats;
                             netnavroute.feature.features.push(layer);
                         }
                     });
-                    _this.networkNavResults.push(netnavroute);
-                    _this.networkNavResults.push(netnavpoints);
+                    if (netnavroute.feature.features.length > 0)
+                        _this.networkNavResults.push(netnavroute);
+                    if (netnavpoints.feature.features.length > 0)
+                        _this.networkNavResults.push(netnavpoints);
                     console.log('saved net nav results:', _this.networkNavResults);
                     var evtarg = new ExplorationServiceEventArgs();
                     evtarg.features = results.type === "FeatureCollection" ? results : null;

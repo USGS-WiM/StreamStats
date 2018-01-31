@@ -9,7 +9,7 @@
     </div>
     <div class="modal-body">
 
-        <div id="networkNav" ng-show="vm.explorationService.selectedMethod.navigationInfo.configuration">
+        <div id="networkNav" ng-if="vm.explorationService.selectedMethod.navigationInfo.configuration">
 
             <div class="panel panel-default">
                 <div class="panel-heading">
@@ -75,7 +75,7 @@
         </div>
 
         <div id="printArea">
-            <div id="elevationData" ng-show="vm.explorationService.showElevationChart">
+            <div id="elevationData" ng-if="vm.explorationService.showElevationChart">
                 <div class="row">
                     <div class="col-sm-12">
                         <h3>Elevation Profile</h3>
