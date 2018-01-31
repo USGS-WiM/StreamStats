@@ -224,6 +224,10 @@ module StreamStats.Controllers {
             this.eventManager.SubscribeToEvent(Services.onSelectedMethodExecuteComplete, new WiM.Event.EventHandler<Services.ExplorationServiceEventArgs>((sender: any, e: Services.ExplorationServiceEventArgs) => {
                 this.onExplorationMethodComplete(sender,e);
             }));
+
+            this.eventManager.SubscribeToEvent(Services.onSelectExplorationMethod, new WiM.Event.EventHandler<Services.ExplorationServiceEventArgs>((sender: any, e: Services.ExplorationServiceEventArgs) => {
+                if (sender.selectedMethod.navigationID != 0) this.onSelectExplorationMethod(sender, e);
+            }));
             
 
             $scope.$on('leafletDirectiveMap.mainMap.mousemove',(event, args) => {
@@ -267,7 +271,7 @@ module StreamStats.Controllers {
                     //add point
                     exploration.selectedMethod.addLocation(new WiM.Models.Point(args.leafletEvent.latlng.lat, args.leafletEvent.latlng.lng, '4326'));
 
-                    //add to map
+                    //add temporary marker to map
                     for (var i: number = 0; i < exploration.selectedMethod.locations.length; i++) {
                         var item = exploration.selectedMethod.locations[i];
                         this.markers['netnav_' + i] = {
@@ -286,12 +290,14 @@ module StreamStats.Controllers {
 
                     //}
 
-                    //otherwise open modal
-                    if (exploration.selectedMethod.navigationPointCount === exploration.selectedMethod.minLocations) {
+                    this.modal.openModal(Services.SSModalType.e_exploration);
 
-                        this.modal.openModal(Services.SSModalType.e_exploration);
-                        //this.ExecuteNav();
-                    }
+                    ////otherwise open modal
+                    //if (exploration.selectedMethod.navigationPointCount === exploration.selectedMethod.minLocations) {
+
+                    //    this.modal.openModal(Services.SSModalType.e_exploration);
+                    //    //this.ExecuteNav();
+                    //}
                 }
 
                 //query streamgage is default map click action
@@ -345,6 +351,8 @@ module StreamStats.Controllers {
 
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
+
+
         public setExplorationMethodType(val: number) {
             
             //check if can select
@@ -355,7 +363,6 @@ module StreamStats.Controllers {
             //get this configuration
             this.explorationService.getNavigationConfiguration(val);
 
-            //send messages if needed
         }
 
         public addExplorationPointFromPourpoint(lat, lng, crs) {
@@ -700,6 +707,8 @@ module StreamStats.Controllers {
 
         private showLocation() {
 
+            this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'showLocation' });
+
             //get reference to location control
             var lc;
             this.controls.custom.forEach((control) => {
@@ -939,6 +948,9 @@ module StreamStats.Controllers {
                         var clipPolygon = L.polygon(editAreaConverted);
 
                         if (this.studyArea.drawControlOption == 'add') {
+
+                            this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'addArea' });
+
                             //console.log('add layer', layer.toGeoJSON());
                             var editPolygon = greinerHormann.union(sourcePolygon, clipPolygon);
                             this.studyArea.WatershedEditDecisionList.append.push(layer.toGeoJSON());
@@ -946,6 +958,9 @@ module StreamStats.Controllers {
                         }
 
                         if (this.studyArea.drawControlOption == 'remove') {
+
+                            this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'removeArea' });
+
                             //console.log('remove layer', layer.toGeoJSON());
                             var editPolygon = greinerHormann.diff(sourcePolygon, clipPolygon);
 
@@ -1015,10 +1030,12 @@ module StreamStats.Controllers {
         }
         private onExplorationMethodComplete(sender: any, e: Services.ExplorationServiceEventArgs) {
 
-            //console.log('in onexplorationmethodCOmplete:',e)
+            this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'networknav-' + this.explorationService.selectedMethod.navigationInfo.code });
+
+            //console.log('in onexplorationmethodCOmplete:', this.explorationService.selectedMethod.navigationInfo.code)
             this.explorationService.explorationMethodBusy = false;
             if (e.features != null && e.features['features'].length > 0) {
-                console.log('exploration method complete', e)
+                //console.log('exploration method complete', e)
 
                 this.removeMarkerLayers("netnav_", true);
 
@@ -1047,6 +1064,11 @@ module StreamStats.Controllers {
                 this.modal.openModal(Services.SSModalType.e_navreport, { placeholder:e.report});
             }//end if
         }
+
+        private onSelectExplorationMethod(sender: any, e: Services.ExplorationServiceEventArgs) {
+            this.modal.openModal(Services.SSModalType.e_exploration);
+        }
+
         private onSelectedAreaOfInterestChanged(sender: any, e: WiM.Services.SearchAPIEventArgs) {
 
             //ga event

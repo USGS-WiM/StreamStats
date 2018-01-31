@@ -78,6 +78,7 @@ module StreamStats.Services {
                             controller: 'StreamStats.Controllers.ExplorationToolsModalController',
                             size: 'sm',
                             backdropClass: 'backdropZ',
+                            backdrop: 'static',
                             windowClass: 'windowZ',
 
                         };

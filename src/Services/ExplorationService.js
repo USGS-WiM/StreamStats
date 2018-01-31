@@ -32,6 +32,7 @@ var StreamStats;
     var Services;
     (function (Services) {
         'use strict';
+        Services.onSelectExplorationMethod = "onSelectExplorationMethod";
         Services.onSelectedMethodExecuteComplete = "onSelectedMethodExecuteComplete";
         var ExplorationServiceEventArgs = (function (_super) {
             __extends(ExplorationServiceEventArgs, _super);
@@ -172,6 +173,7 @@ var StreamStats;
                 if (this._selectedMethod != null && methodtype === this._selectedMethod.navigationID)
                     methodtype = ExplorationMethodType.undefined;
                 this._selectedMethod = new StreamStats.Models.NetworkNav(methodtype, config);
+                this.eventManager.RaiseEvent(Services.onSelectExplorationMethod, this, ExplorationServiceEventArgs.Empty);
             };
             ExplorationService.prototype.ExecuteSelectedModel = function () {
                 var _this = this;
@@ -211,7 +213,7 @@ var StreamStats;
                         _this.networkNavResults.push(netnavroute);
                     if (netnavpoints.feature.features.length > 0)
                         _this.networkNavResults.push(netnavpoints);
-                    console.log('saved net nav results:', _this.networkNavResults);
+                    //console.log('saved net nav results:', this.networkNavResults)
                     var evtarg = new ExplorationServiceEventArgs();
                     evtarg.features = results.type === "FeatureCollection" ? results : null;
                     evtarg.report = results.type == "Report" ? results : null;

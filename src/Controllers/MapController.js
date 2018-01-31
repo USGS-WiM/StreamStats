@@ -115,6 +115,10 @@ var StreamStats;
                 this.eventManager.SubscribeToEvent(StreamStats.Services.onSelectedMethodExecuteComplete, new WiM.Event.EventHandler(function (sender, e) {
                     _this.onExplorationMethodComplete(sender, e);
                 }));
+                this.eventManager.SubscribeToEvent(StreamStats.Services.onSelectExplorationMethod, new WiM.Event.EventHandler(function (sender, e) {
+                    if (sender.selectedMethod.navigationID != 0)
+                        _this.onSelectExplorationMethod(sender, e);
+                }));
                 $scope.$on('leafletDirectiveMap.mainMap.mousemove', function (event, args) {
                     var latlng = args.leafletEvent.latlng;
                     _this.mapPoint.lat = latlng.lat;
@@ -149,7 +153,7 @@ var StreamStats;
                     if (exploration.selectedMethod != null && exploration.selectedMethod.locations.length <= exploration.selectedMethod.minLocations) {
                         //add point
                         exploration.selectedMethod.addLocation(new WiM.Models.Point(args.leafletEvent.latlng.lat, args.leafletEvent.latlng.lng, '4326'));
-                        //add to map
+                        //add temporary marker to map
                         for (var i = 0; i < exploration.selectedMethod.locations.length; i++) {
                             var item = exploration.selectedMethod.locations[i];
                             _this.markers['netnav_' + i] = {
@@ -165,11 +169,12 @@ var StreamStats;
                         //    //execute nav
                         //    this.ExecuteNav();
                         //}
-                        //otherwise open modal
-                        if (exploration.selectedMethod.navigationPointCount === exploration.selectedMethod.minLocations) {
-                            _this.modal.openModal(StreamStats.Services.SSModalType.e_exploration);
-                            //this.ExecuteNav();
-                        }
+                        _this.modal.openModal(StreamStats.Services.SSModalType.e_exploration);
+                        ////otherwise open modal
+                        //if (exploration.selectedMethod.navigationPointCount === exploration.selectedMethod.minLocations) {
+                        //    this.modal.openModal(Services.SSModalType.e_exploration);
+                        //    //this.ExecuteNav();
+                        //}
                     }
                     else {
                         _this.queryPoints(args.leafletEvent);
@@ -235,7 +240,6 @@ var StreamStats;
                 //this.selectedExplorationMethodType = val;
                 //get this configuration
                 this.explorationService.getNavigationConfiguration(val);
-                //send messages if needed
             };
             MapController.prototype.addExplorationPointFromPourpoint = function (lat, lng, crs) {
                 this.explorationService.selectedMethod.addLocation(new WiM.Models.Point(lat, lng, crs));
@@ -514,6 +518,7 @@ var StreamStats;
             };
             MapController.prototype.showLocation = function () {
                 var _this = this;
+                this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'showLocation' });
                 //get reference to location control
                 var lc;
                 this.controls.custom.forEach(function (control) {
@@ -711,12 +716,14 @@ var StreamStats;
                             var sourcePolygon = L.polygon(basinConverted);
                             var clipPolygon = L.polygon(editAreaConverted);
                             if (_this.studyArea.drawControlOption == 'add') {
+                                _this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'addArea' });
                                 //console.log('add layer', layer.toGeoJSON());
                                 var editPolygon = greinerHormann.union(sourcePolygon, clipPolygon);
                                 _this.studyArea.WatershedEditDecisionList.append.push(layer.toGeoJSON());
                                 //this.studyArea.Disclaimers['isEdited'] = true;
                             }
                             if (_this.studyArea.drawControlOption == 'remove') {
+                                _this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'removeArea' });
                                 //console.log('remove layer', layer.toGeoJSON());
                                 var editPolygon = greinerHormann.diff(sourcePolygon, clipPolygon);
                                 //check for split polygon
@@ -780,10 +787,11 @@ var StreamStats;
             };
             MapController.prototype.onExplorationMethodComplete = function (sender, e) {
                 var _this = this;
-                //console.log('in onexplorationmethodCOmplete:',e)
+                this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'networknav-' + this.explorationService.selectedMethod.navigationInfo.code });
+                //console.log('in onexplorationmethodCOmplete:', this.explorationService.selectedMethod.navigationInfo.code)
                 this.explorationService.explorationMethodBusy = false;
                 if (e.features != null && e.features['features'].length > 0) {
-                    console.log('exploration method complete', e);
+                    //console.log('exploration method complete', e)
                     this.removeMarkerLayers("netnav_", true);
                     this.explorationService.networkNavResults.forEach(function (layer, key) {
                         _this.addGeoJSON(layer.name, layer.feature);
@@ -804,6 +812,9 @@ var StreamStats;
                 if (e.report != null && e.report != '') {
                     this.modal.openModal(StreamStats.Services.SSModalType.e_navreport, { placeholder: e.report });
                 } //end if
+            };
+            MapController.prototype.onSelectExplorationMethod = function (sender, e) {
+                this.modal.openModal(StreamStats.Services.SSModalType.e_exploration);
             };
             MapController.prototype.onSelectedAreaOfInterestChanged = function (sender, e) {
                 //ga event

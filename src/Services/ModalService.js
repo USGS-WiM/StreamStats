@@ -53,6 +53,7 @@ var StreamStats;
                                 controller: 'StreamStats.Controllers.ExplorationToolsModalController',
                                 size: 'sm',
                                 backdropClass: 'backdropZ',
+                                backdrop: 'static',
                                 windowClass: 'windowZ',
                             };
                         case SSModalType.e_report:

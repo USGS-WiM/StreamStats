@@ -43,6 +43,7 @@ module StreamStats.Services {
         networkNavResults: any;
     }
 
+    export var onSelectExplorationMethod: string = "onSelectExplorationMethod";
     export var onSelectedMethodExecuteComplete: string = "onSelectedMethodExecuteComplete";
 
     export class ExplorationServiceEventArgs extends WiM.Event.EventArgs {
@@ -235,6 +236,9 @@ module StreamStats.Services {
 
             if (this._selectedMethod != null && methodtype === this._selectedMethod.navigationID) methodtype = ExplorationMethodType.undefined;
             this._selectedMethod = new Models.NetworkNav(methodtype, config);
+
+            this.eventManager.RaiseEvent(onSelectExplorationMethod, this, ExplorationServiceEventArgs.Empty);
+
         }
 
 
@@ -287,7 +291,7 @@ module StreamStats.Services {
                     if (netnavroute.feature.features.length > 0) this.networkNavResults.push(netnavroute);
                     if (netnavpoints.feature.features.length > 0) this.networkNavResults.push(netnavpoints);
 
-                    console.log('saved net nav results:', this.networkNavResults)
+                    //console.log('saved net nav results:', this.networkNavResults)
 
 
                     var evtarg = new ExplorationServiceEventArgs();
