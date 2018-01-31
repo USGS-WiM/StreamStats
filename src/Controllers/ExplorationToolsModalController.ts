@@ -57,9 +57,11 @@ module StreamStats.Controllers {
             this.studyAreaService = studyArea;
 
             //init required values
-            this.selectExclusiveOption('downstream', 'Direction');
-            this.selectOption('flowline', 'Query Source');
-            this.checkWorkspaceID();
+            if (this.explorationService.selectedMethod.navigationInfo.configuration) {
+                this.selectExclusiveOption('downstream', 'Direction');
+                this.selectOption('flowline', 'Query Source');
+                this.checkWorkspaceID();
+            }
             
             this.print = function () {
                 window.print();

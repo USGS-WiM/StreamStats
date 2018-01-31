@@ -346,7 +346,7 @@ configuration.overlayedLayers = {
     },//end maskLayer    
     "MaskLayer": {
         "name": "Area of Interest",
-        "url": "https://txpub.usgs.gov/arcgis/rest/services/Mapping/Mask/MapServer",
+        "url": "https://txgeo.usgs.gov/arcgis/rest/services/Mapping/Mask/MapServer",
         "type": 'agsTiled',
         "visible": true,
         "layerOptions": {
