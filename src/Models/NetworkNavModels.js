@@ -53,10 +53,7 @@ var StreamStats;
             NetworkNav.prototype.addLocation = function (pnt) {
                 this._locations.push(pnt);
                 this.navigationPointCount += 1;
-                //console.log('in add location:', pnt, this.navigationPointCount);
-                //replace configuration item with new point
-                this.navigationInfo.configuration.forEach(function (item) {
-                });
+                console.log('in add location:', pnt, this.navigationPointCount);
                 if (this.navigationPointCount === 1) {
                     this.navigationConfiguration.push({
                         "id": 1,

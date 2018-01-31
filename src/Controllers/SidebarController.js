@@ -228,6 +228,7 @@ var StreamStats;
                 this.studyAreaService.loadParameters();
             };
             SidebarController.prototype.submitBasinEdits = function () {
+                this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'sumbitEdits' });
                 this.studyAreaService.showEditToolbar = false;
                 //check if basin has been edited, if so we need to re-query regression regions
                 if (this.studyAreaService.selectedStudyArea.Disclaimers['isEdited']) {
