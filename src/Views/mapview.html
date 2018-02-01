@@ -14,52 +14,32 @@
             </div>
             <h6>Exploration Tools</h6>
             <div class="group-wrapper">
-                <button ng-class="!vm.explorationService.drawMeasurement ? 'btn-exploration-tools btn-blue fullwidth':'btn-black fullwidth'" ng-click="vm.resetExplorationTools(); vm.explorationService.drawMeasurement = !vm.explorationService.drawMeasurement;"><span><i class="fa fa-arrows-h"></i>&nbsp;&nbsp;Measure Tool</span></button>
+
+                <div>General</div>
+                <button ng-disabled="vm.studyArea.doDelineateFlag || ( vm.selectedExplorationTool && vm.selectedExplorationTool !=  navigationResource.code)" ng-class="!vm.explorationService.drawMeasurement ? 'btn-exploration-tools btn-blue fullwidth':'btn-orange fullwidth'" ng-click="vm.resetExplorationTools(); vm.explorationService.drawMeasurement = !vm.explorationService.drawMeasurement; vm.selectedExplorationTool = 'measurement'"><span><i class="fa fa-arrows-h"></i>&nbsp;&nbsp;Measure Tool</span></button>
                 <div id="measurement-div" class="banner" ng-show="vm.explorationService.measurementData.length > 0" ng-bind="vm.explorationService.measurementData"></div>
-                <button ng-class="!vm.explorationService.drawElevationProfile ? 'btn-exploration-tools btn-blue fullwidth':'btn-black fullwidth'" ng-click="vm.resetExplorationTools(); vm.explorationService.drawElevationProfile = !vm.explorationService.drawElevationProfile;"><span><i class="fa fa-line-chart"></i>&nbsp;&nbsp;Elevation Profile Tool</span></button>
+                <button ng-disabled="vm.studyArea.doDelineateFlag || ( vm.selectedExplorationTool && vm.selectedExplorationTool !=  navigationResource.code)" ng-class="!vm.explorationService.drawElevationProfile ? 'btn-exploration-tools btn-blue fullwidth':'btn-orange fullwidth'" ng-click="vm.resetExplorationTools(); vm.explorationService.drawElevationProfile = !vm.explorationService.drawElevationProfile; vm.selectedExplorationTool = 'elevation'"><span><i class="fa fa-line-chart"></i>&nbsp;&nbsp;Elevation Profile Tool</span></button>
                 <div id="elevation-help-div" class="banner" ng-show="vm.explorationService.drawElevationProfile">Click the map to begin<br>Double click to end the drawing and query elevation</div>
-                <!-- Network Navigation -->
-                <!--<div ng-show="vm.environment == 'development' ">
-                    <button ng-disabled="vm.center.zoom < 10" ng-class="vm.selectedExplorationMethodType !== 1? 'btn-wim-sm btn-wim-primary btn-wim-group-1':'btn-wim-sm btn-wim-warning btn-wim-group-1'" ng-click="vm.setExplorationMethodType(1)"><span><i class="fa fa-share-alt"></i>&nbsp;&nbsp;Find Path Between Two Points</span></button>
-                    <div ng-show="vm.selectedExplorationMethodType === 1" class="wim-alert row">
-                        Select two locations near the stream network, then select 'Go' to dislplay how the two points are hydrologically connected.
-                        <button ng-disabled="vm.center.zoom < 10 || vm.explorationMethodBusy" ng-click=" vm.ExecuteNav()" type="button" class="btn-wim-sm btn-wim-success btn-wim-group-1"><i ng-class="vm.explorationMethodBusy? 'fa fa-refresh fa-spin':'fa fa-share-alt'"></i>&nbsp;&nbsp;Go</button>
-                    </div>
-                
-                    <button ng-disabled="vm.center.zoom < 10"  ng-class="vm.selectedExplorationMethodType !== 2? 'btn-wim-sm btn-wim-primary btn-wim-group-1':'btn-wim-sm btn-wim-warning btn-wim-group-1'" ng-click="vm.setExplorationMethodType(2)"><span><i class="fa fa-tint"></i>&nbsp;&nbsp;Find Path to Outlet</span></button>
-                    <div ng-show="vm.selectedExplorationMethodType === 2" class="wim-alert row">
-                        Select a location within your area of interest to find that water flows down hill.
+                <button ng-disabled="vm.studyArea.doDelineateFlag || ( vm.selectedExplorationTool && vm.selectedExplorationTool !=  navigationResource.code)" class="btn-blue fullwidth" ng-click="vm.resetExplorationTools(); vm.showLocation() ; vm.selectedExplorationTool = 'location'"><span><i class="fa fa-crosshairs"></i>&nbsp;&nbsp;Show your location</span></button>
 
-                        <button ng-show="vm.studyArea.selectedStudyArea != null" ng-click="vm.toggleLimitExplorationMethodToStudyArea()" type="button"
-                                ng-class="(vm.explorationService.selectedMethod.workspaceID === '')? 'btn-wim-sm btn-wim-info':'btn-wim-sm btn-wim-warning'">
-                            <i ng-class="(vm.explorationService.selectedMethod.workspaceID !== '')?'fa fa-check-square-o':'fa fa-square-o'"></i>&nbsp;&nbsp;Limit to study area.
-                        </button>                   
+                <div>Network Navigation</div>
+                <div ng-show="vm.environment == 'development' ">
 
-                        <button ng-disabled="vm.center.zoom < 10 || vm.explorationMethodBusyy" ng-click="vm.ExecuteNav()" type="button" class="btn-wim-sm btn-wim-success btn-wim-group-1"><i ng-class="vm.explorationMethodBusy? 'fa fa-refresh fa-spin':'fa fa-tint'"></i>&nbsp;&nbsp;Go</button>
-                    </div>
-               
-                    <button ng-disabled="vm.center.zoom < 10" ng-class="vm.selectedExplorationMethodType !== 3? 'btn-wim-sm btn-wim-primary btn-wim-group-1':'btn-wim-sm btn-wim-warning btn-wim-group-1'" ng-click="vm.setExplorationMethodType(3)"><span><i class="fa fa-sitemap fa-rotate-90"></i>&nbsp;&nbsp;Get Network Report</span></button>
-                    <div ng-show="vm.selectedExplorationMethodType === 3" class="wim-alert row">
-                        Select a location within your area of interest then configure the information that you would like included in your network report.
-                        <br />
-                        <select class="btn-wim-sm" ng-model="vm.explorationService.selectedMethod.selectedDirectionType">
-                            <option ng-repeat="item in vm.explorationService.selectedMethod.DirectionOptions" value="{{item}}">Search {{item}}</option>
-                        </select>
-                            <table class="table table-condensed">
-                                <tbody ng-repeat="item in vm.explorationService.selectedMethod.layerOptions">
-                                    <tr>
-                                        <td><checkbox ng-model="item.selected"></checkbox></td>
-                                        <td><span>&nbsp;&nbsp;{{item.name}}</span></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        <button ng-disabled="vm.center.zoom < 10 || vm.explorationMethodBusy" ng-click=" vm.ExecuteNav()" type="button" class="btn-wim-sm btn-wim-success btn-wim-group-1"><i ng-class="vm.explorationMethodBusy? 'fa fa-refresh fa-spin':'fa fa-sitemap fa-rotate-90'"></i>&nbsp;&nbsp;Go</button>
-                    </div>
-                </div>-->
-              
+                    <div ng-repeat="navigationResource in vm.explorationService.navigationResources" ng-switch on="navigationResource.code">
+                        <button ng-disabled="vm.explorationService.explorationMethodBusy || vm.studyArea.doDelineateFlag || ( vm.selectedExplorationTool && vm.selectedExplorationTool !=  navigationResource.code)" ng-class="vm.selectedExplorationMethodType !== navigationResource.id ? 'btn-exploration-tools btn-blue fullwidth':'btn-orange fullwidth'" ng-click="vm.setExplorationMethodType(navigationResource.id); vm.selectedExplorationTool = navigationResource.code"><span><i class="fa fa-tint" ng-switch-when='flowpath'></i><i class="fa fa-share-alt" ng-switch-when='networkpath'></i><i class="fa fa-sitemap fa-rotate-90" ng-switch-when='networktrace'></i>&nbsp;&nbsp;{{navigationResource.name}}</span></button>
+                        <!--<div ng-show="vm.selectedExplorationMethodType === navigationResource.id" class="wim-alert row" style="margin:0;">
 
-                <button class="btn-blue fullwidth" ng-click="vm.resetExplorationTools(); vm.showLocation()"><span><i class="fa fa-map-marker"></i>&nbsp;&nbsp;Show your location</span></button>
-                <!--<button class="btn-wim-sm btn-wim-primary btn-wim-group-1" ng-click="vm.resetMap()"><span><i class="fa fa-home"></i>&nbsp;&nbsp;Reset the view</span></button>-->
+                            <div ng-show="vm.studyArea.selectedStudyArea.Pourpoint">
+                                <button class="btn-exploration-tools btn-green" ng-click="vm.addExplorationPointFromPourpoint(vm.studyArea.selectedStudyArea.Pourpoint.Latitude, vm.studyArea.selectedStudyArea.Pourpoint.Longitude, vm.studyArea.selectedStudyArea.Pourpoint.crs)"><span><i class="fa fa-map-marker"></i>&nbsp;&nbsp;Use pourpoint</span></button>
+                                <span>OR</span>
+                            </div>
+                            
+                            <span ng-show="vm.explorationService.selectedMethod.navigationPointCount === 0">Click Start Point Location</span>
+                            <span ng-show="vm.explorationService.selectedMethod.navigationPointCount === 1 && vm.explorationService.selectedMethod.minLocations === 2">Click End Point Location</span>
+
+                        </div>-->
+                    </div>
+                </div>         
             </div>
         </div>
     </div>
