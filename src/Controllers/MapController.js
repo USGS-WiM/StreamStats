@@ -186,6 +186,11 @@ var StreamStats;
                         _this.displayElevationProfile();
                 });
                 $scope.$watch(function () { return _this.explorationService.drawElevationProfile; }, function (newval, oldval) {
+                    if (newval) {
+                        _this.modal.openModal(StreamStats.Services.SSModalType.e_exploration);
+                    }
+                });
+                $scope.$watch(function () { return _this.explorationService.selectElevationPoints; }, function (newval, oldval) {
                     if (newval)
                         _this.elevationProfile();
                 });
@@ -468,7 +473,6 @@ var StreamStats;
                             _this.explorationService.drawElevationProfile = false;
                             //force map refresh
                             map.panBy([0, 1]);
-                            _this.selectedExplorationTool = null;
                         });
                     });
                 });
@@ -515,6 +519,7 @@ var StreamStats;
                 });
                 this.toaster.clear();
                 this.cursorStyle = 'pointer';
+                this.selectedExplorationTool = null;
             };
             MapController.prototype.showLocation = function () {
                 var _this = this;
@@ -539,6 +544,7 @@ var StreamStats;
                 this.explorationService.measurementData = '';
                 this.explorationService.drawElevationProfile = false;
                 this.explorationService.drawMeasurement = false;
+                this.explorationService.selectElevationPoints = false;
                 delete this.geojson['elevationProfileLine3D'];
                 this.leafletData.getMap("mainMap").then(function (map) {
                     _this.leafletData.getLayers("mainMap").then(function (maplayers) {
