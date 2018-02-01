@@ -89,7 +89,7 @@ module StreamStats.Controllers {
 
 
             //main file header with site information
-            var csvFile = 'long,lat,elevation(feet),distance(feet)\r\n';
+            var csvFile = 'long,lat,elevation(feet),distance(mi)\r\n';
 
             //write out values
             this.explorationService.coordinateList.forEach((value) => {
