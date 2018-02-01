@@ -31,14 +31,19 @@ module StreamStats.Services {
         elevationProfileGeoJSON: any;
         showElevationChart: boolean;
         measurementData: string;
+        getNavigationEndPoints();
+        getNavigationConfiguration(modelType:number);
         selectedMethod: Models.INetworkNav;
-        setMethod(methodtype: ExplorationMethodType)
-        GetToolName(methodID: number): String
+        setMethod(methodtype: ExplorationMethodType, configuration: any)
         ExecuteSelectedModel(): void
         elevationProfileHTML: any;
         coordinateList: Array<any>;
+        navigationResources: Array<any>;
+        explorationMethodBusy: boolean;
+        networkNavResults: any;
     }
 
+    export var onSelectExplorationMethod: string = "onSelectExplorationMethod";
     export var onSelectedMethodExecuteComplete: string = "onSelectedMethodExecuteComplete";
 
     export class ExplorationServiceEventArgs extends WiM.Event.EventArgs {
@@ -69,6 +74,9 @@ module StreamStats.Services {
         }
         public elevationProfileHTML: any;
         public coordinateList: Array<any>;
+        public navigationResources: Array<any>;
+        public explorationMethodBusy: boolean;
+        public networkNavResults: any;
         
 
         //Constructor
@@ -82,6 +90,7 @@ module StreamStats.Services {
             this.showElevationChart = false;
             this.measurementData = '';
             this._selectedMethod = null;
+            this.networkNavResults = [];
             eventManager.AddEvent<StudyAreaEventArgs>(onSelectedStudyAreaChanged);
 
         }
@@ -170,66 +179,124 @@ module StreamStats.Services {
 
             });
         }
-        public setMethod(methodtype: ExplorationMethodType) {
-            if (this._selectedMethod != null && methodtype === this._selectedMethod.ModelType) methodtype = ExplorationMethodType.undefined;
-            switch (methodtype) {
-                case ExplorationMethodType.FINDPATH2OUTLET:
-                    this._selectedMethod = new Models.Path2Outlet();
-                    break;
-                case ExplorationMethodType.FINDPATHBETWEENPOINTS:                
-                    this._selectedMethod = new Models.PathBetweenPoints();
-                    break;
-                case ExplorationMethodType.GETNETWORKREPORT:
-                    this._selectedMethod = new Models.NetworkReport();
-                    break
-                default:
-                    this._selectedMethod = null;
-                    break;
-            }//end switch
-        }
-        public GetToolName(methodID: ExplorationMethodType): String {
-            switch (methodID) {
-                case ExplorationMethodType.FINDPATHBETWEENPOINTS:
-                    return "Find path between two points";
-                case ExplorationMethodType.FINDPATH2OUTLET:
-                    return "Find path to outlet";
-                case ExplorationMethodType.GETNETWORKREPORT:
-                    return "Get network report";
-                default:
-                    return "";
 
-            }//end switch
+        public getNavigationEndPoints() {
 
-        }
-        public ExecuteSelectedModel(): void {
-            //build url
-            //streamstatsservices/navigation / { 0}.geojson ? rcode = { 1}& startpoint={ 2}& endpoint={ 3 }&crs={ 4 }&workspaceID={ 5 }&direction={ 6 }&layers={ 7 }
-            var urlParams: Array<string> = [];
-            urlParams.push("startpoint=" + JSON.stringify(new Array(this.selectedMethod.locations[0].Longitude, this.selectedMethod.locations[0].Latitude)));
-            if (this.selectedMethod.locations.length > 1) urlParams.push("endpoint=" + JSON.stringify(new Array(this.selectedMethod.locations[1].Longitude, this.selectedMethod.locations[1].Latitude)));
-            urlParams.push("crs="+this.selectedMethod.locations[0].crs);
-            if ("workspaceID" in this.selectedMethod && (<any>this.selectedMethod).workspaceID !== '') urlParams.push("workspaceID=" +(<any>this.selectedMethod).workspaceID);
-            if (this.selectedMethod.hasOwnProperty("selectedDirectionType")) urlParams.push("direction="+(<any>this.selectedMethod).selectedDirectionType);
-            if (this.selectedMethod.hasOwnProperty("layerOptions")) {
-                var itemstring = (<any>this.selectedMethod).layerOptions.map((elem) => {
-                    if (elem.selected)
-                        return elem.name;
-                }).join(";");
+            var url: string = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSNavigationServices'];
 
-                    urlParams.push("layers=" + itemstring)
-            }//endif
-
-            var url: string = configuration.baseurls['StreamStatsServices']+configuration.queryparams['SSNavigationServices']
-                .format(this.selectedMethod.ModelType, this.regionservice.selectedRegion.RegionID)+urlParams.join("&");
-            
-            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url,true);
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
 
             this.Execute(request).then(
                 (response: any) => {
                     var results = response.data;
+                    console.log('network nav options:', results);
+
+                    this.navigationResources = results;
+
+                    //sm when complete
+                }, (error) => {
+                    //sm when error                    
+                    this.toaster.pop("error", "Error processing request", "Please try again", 0);
+                    this.eventManager.RaiseEvent(onSelectedMethodExecuteComplete, this, ExplorationServiceEventArgs.Empty);
+
+                }).finally(() => {
+                    //busy
+                });
+        }
+
+        public getNavigationConfiguration(id) {
+
+            var url: string = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSNavigationServices'] + '/' + id;
+     
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
+
+            this.Execute(request).then(
+                (response: any) => {
+                    var config = response.data;
+                    console.log('navigation config:', config);
+
+                    this.setMethod(id, config);
+
+                    //sm when complete
+                }, (error) => {
+                    //sm when error                    
+                    this.toaster.pop("error", "Error processing request", "Please try again", 0);
+                    this.eventManager.RaiseEvent(onSelectedMethodExecuteComplete, this, ExplorationServiceEventArgs.Empty);
+
+                }).finally(() => {
+                    //busy
+                });
+        }
+
+        private getCountByType(object, text) {
+            return object.filter(function (item) { return item.valueType.toLowerCase().includes(text) }).length;
+        }
+
+        public setMethod(methodtype: ExplorationMethodType, config: any) {
+
+            if (this._selectedMethod != null && methodtype === this._selectedMethod.navigationID) methodtype = ExplorationMethodType.undefined;
+            this._selectedMethod = new Models.NetworkNav(methodtype, config);
+
+            this.eventManager.RaiseEvent(onSelectExplorationMethod, this, ExplorationServiceEventArgs.Empty);
+
+        }
+
+
+        public ExecuteSelectedModel(): void {
+            
+            console.log('selected method:', this.selectedMethod);
+
+            //build url
+            var url: string = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSNavigationServices'] + '/' + this.selectedMethod.navigationInfo.code + '/route';
+
+            console.log('url: ', url)
+            
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST,
+                'json', angular.toJson(this.selectedMethod.navigationConfiguration));
+
+            this.Execute(request).then(
+                (response: any) => {
+                    var results = response.data;
+                    console.log('successfull navigation request results:', results);
+
+                    //init netnavresults
+                    var netnavroute = {
+                        feature: {
+                            features: [],
+                            type: 'FeatureCollection'
+                        },
+                        name: "netnavroute"
+                    };
+
+                    var netnavpoints = {
+                        feature: {
+                            features: [],
+                            type: 'FeatureCollection'
+                        },
+                        name: "netnavpoints"
+                    };
+
+                    results.features.forEach((layer, key) => {
+                        if (layer.geometry.type == 'Point') {
+           
+                            netnavpoints.feature.features.push(layer);
+                            //console.log('we have a point:', layer);
+
+                        }
+                        else {
+                            netnavroute.feature.features.push(layer)
+                        }
+                    });
+
+                    if (netnavroute.feature.features.length > 0) this.networkNavResults.push(netnavroute);
+                    if (netnavpoints.feature.features.length > 0) this.networkNavResults.push(netnavpoints);
+
+                    //console.log('saved net nav results:', this.networkNavResults)
+
+
                     var evtarg = new ExplorationServiceEventArgs();
-                    evtarg.features = results.hasOwnProperty("featurecollection")? results["featurecollection"]: null;
-                    evtarg.report = results.hasOwnProperty("Report") ? results["Report"] : null;
+                    evtarg.features = results.type === "FeatureCollection" ? results : null;
+                    evtarg.report = results.type == "Report" ? results : null;
 
                     this.eventManager.RaiseEvent(onSelectedMethodExecuteComplete, this, evtarg);
 
@@ -247,10 +314,10 @@ module StreamStats.Services {
         }
     }//end class
     export enum ExplorationMethodType {
-        undefined =0,
-        FINDPATHBETWEENPOINTS = 1,
-        FINDPATH2OUTLET =2,
-        GETNETWORKREPORT = 3
+        undefined = 0,
+        FLOWPATH = 1,
+        NETWORKPATH = 2,
+        NETWORKTRACE = 3
     }
     factory.$inject = ['$http', '$q', 'toaster', 'WiM.Event.EventManager', 'StreamStats.Services.RegionService'];
     function factory($http: ng.IHttpService, $q: ng.IQService, toaster: any,eventmngr, regionservice) {
