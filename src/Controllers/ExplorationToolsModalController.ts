@@ -43,7 +43,7 @@ module StreamStats.Controllers {
         public selectedLimit: any;
         public selectedDirection: any;
         public selectedQuerySourceList: any;
-        public
+        public DEMresolutionList: any;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -55,6 +55,7 @@ module StreamStats.Controllers {
             this.modalInstance = modal;
             this.explorationService = exploration;
             this.studyAreaService = studyArea;
+            this.DEMresolutionList = ['FINEST','10m','30m','90m','1000m'];
 
             //init required values
             if (this.explorationService.selectedMethod.navigationInfo.configuration) {
@@ -80,6 +81,11 @@ module StreamStats.Controllers {
             return this.sce.trustAsHtml(x);
         }
 
+        public selectElevationPoints() {
+            this.modalInstance.dismiss('cancel');
+            this.explorationService.selectElevationPoints = true;
+        }
+
         private downloadCSV() {
 
             //ga event
@@ -89,7 +95,7 @@ module StreamStats.Controllers {
 
 
             //main file header with site information
-            var csvFile = 'long,lat,elevation(feet),distance(feet)\r\n';
+            var csvFile = 'long,lat,elevation(feet),distance(mi)\r\n';
 
             //write out values
             this.explorationService.coordinateList.forEach((value) => {
