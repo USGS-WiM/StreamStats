@@ -59,6 +59,8 @@ var StreamStats;
                 _this._selectedMethod = null;
                 _this.networkNavResults = [];
                 eventManager.AddEvent(Services.onSelectedStudyAreaChanged);
+                _this.selectElevationPoints = false;
+                _this.DEMresolution = '30m';
                 return _this;
             }
             Object.defineProperty(ExplorationService.prototype, "selectedMethod", {
@@ -72,10 +74,20 @@ var StreamStats;
             //-+-+-+-+-+-+-+-+-+-+-+-
             ExplorationService.prototype.elevationProfile = function (esriJSON) {
                 var _this = this;
+                var elevationOptions = {
+                    InputLineFeatures: esriJSON,
+                    returnZ: true,
+                    DEMResolution: this.DEMresolution,
+                    f: 'json',
+                    MaximumSampleDistance: null,
+                };
+                //add optional parameters to request
+                if (this.samplingDistance)
+                    elevationOptions.MaximumSampleDistance = this.samplingDistance;
                 //ESRI elevation profile tool
                 //Help page: https://elevation.arcgis.com/arcgis/rest/directories/arcgisoutput/Tools/ElevationSync_GPServer/Tools_ElevationSync/Profile.htm
                 var url = 'https://elevation.arcgis.com/arcgis/rest/services/Tools/ElevationSync/GPServer/Profile/execute';
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', { InputLineFeatures: esriJSON, returnZ: true, DEMResolution: '30m', f: 'json' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', elevationOptions, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
                 //do ajax call for future precip layer, needs to happen even if only runoff value is needed for this region
                 this.Execute(request).then(function (response) {
                     console.log('elevation profile response: ', response.data);

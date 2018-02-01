@@ -70,52 +70,77 @@
             </div>
         </div>
 
-        <div id="printArea">
-            <div id="elevationData" ng-if="vm.explorationService.showElevationChart">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <h3>Elevation Profile</h3>
-                        <div id="elevation-div" class="leaflet-control elevation lime-theme"><div ng-bind-html="vm.convertUnsafe(vm.explorationService.elevationProfileHTML)"> </div></div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-8">
-                        <table id="elevationProfileTable" class="table table-striped text-center" table-condensed">
-                            <thead>
-                                <tr>
-                                    <th>Latitude</th>
-                                    <th>Longitude</th>
-                                    <th>Elevation (ft)</th>
-                                    <th>Distance (mi)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr ng-repeat="item in vm.explorationService.coordinateList track by $index">
-                                    <td ng-bind="item[0]"></td>
-                                    <td ng-bind="item[1]"></td>
-                                    <td ng-bind="item[2]"></td>
-                                    <td ng-bind="item[3]"></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
 
-                <p>Elevation data provided by: <a href="https://developers.arcgis.com/rest/elevation/api-reference/profile.htm">ESRI Elevation Analysis services</a></p>
 
-                <div id="downloadButtons" class="hidden-print">
-                    <div class="btn-group wim-btn-group">
-                        <button type="button" class="btn-wim-sm btn-wim-default" ng-click="vm.downloadCSV()"><span><i class="fa fa-download"></i>&nbsp;&nbsp;Download CSV</span></button>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Elevation profile<small ng-if="!vm.explorationService.showElevationChart">&nbsp;&nbsp;Configure tool using the options below</small></h3>
+                </div>
+                <div class="panel-body">
+
+                    <div id="elevationProfileSetup" ng-if="!vm.explorationService.showElevationChart">
+                        <h5>Select DEM Resolution</h5>
+                        <div ng-repeat="resolution in vm.DEMresolutionList">
+                            <label class="rdo">
+                                <input type="radio" ng-model="vm.explorationService.DEMresolution" ng-value="resolution" />
+                                <span>{{resolution}}</span>
+                            </label>
+                        </div>
+                        <h5>Maximum Samping Distance in Meters (optional)</h5>
+                        <input type="text" class="form-control" ng-model="vm.explorationService.samplingDistance">
+                        <h5>Select points</h5>
+                        <button class="btn-exploration-tools btn-green" ng-click="vm.selectElevationPoints()"><span><i class="fa fa-map-marker"></i>&nbsp;&nbsp;Select profile points</span></button>
+                    </div>
+
+                    <div id="printArea">
+
+                        <div id="elevationData" ng-if="vm.explorationService.showElevationChart">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div id="elevation-div" class="leaflet-control elevation lime-theme"><div ng-bind-html="vm.convertUnsafe(vm.explorationService.elevationProfileHTML)"> </div></div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-8">
+                                    <table id="elevationProfileTable" class="table table-striped text-center" table-condensed">
+                                        <thead>
+                                            <tr>
+                                                <th>Latitude</th>
+                                                <th>Longitude</th>
+                                                <th>Elevation (ft)</th>
+                                                <th>Distance (mi)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-repeat="item in vm.explorationService.coordinateList track by $index">
+                                                <td ng-bind="item[0]"></td>
+                                                <td ng-bind="item[1]"></td>
+                                                <td ng-bind="item[2]"></td>
+                                                <td ng-bind="item[3]"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <p>Elevation data provided by: <a href="https://developers.arcgis.com/rest/elevation/api-reference/profile.htm">ESRI Elevation Analysis services</a></p>
+
+                            <div id="downloadButtons" class="hidden-print">
+                                <div class="btn-group wim-btn-group">
+                                    <button type="button" class="btn-wim-sm btn-wim-default" ng-click="vm.downloadCSV()"><span><i class="fa fa-download"></i>&nbsp;&nbsp;Download CSV</span></button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+
 
             </div>
-    <div class="modal-footer  hidden-print">
-        <div class="btn-group">
-            <button class="btn-wim-default" ng-click="vm.close()"><i class="fa fa-close"></i>&nbsp;&nbsp;Close</button>
-            <button class="btn-wim-default" ng-hide="vm.explorationService.selectedMethod.navigationInfo.configuration" ng-click="vm.print()" analytics-on analytics-event="Print" analytics-category="Map" analytics-label="elevationProfilePrint"><i class="fa fa-print"></i>&nbsp;&nbsp;Print</button>
+            <div class="modal-footer  hidden-print">
+                <div class="btn-group">
+                    <button class="btn-wim-default" ng-click="vm.close()"><i class="fa fa-close"></i>&nbsp;&nbsp;Close</button>
+                    <button class="btn-wim-default" ng-hide="vm.explorationService.selectedMethod.navigationInfo.configuration" ng-click="vm.print()" analytics-on analytics-event="Print" analytics-category="Map" analytics-label="elevationProfilePrint"><i class="fa fa-print"></i>&nbsp;&nbsp;Print</button>
+                </div>
+            </div>
         </div>
-    </div>
-</div>

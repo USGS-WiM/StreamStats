@@ -27,6 +27,7 @@ var StreamStats;
                 this.modalInstance = modal;
                 this.explorationService = exploration;
                 this.studyAreaService = studyArea;
+                this.DEMresolutionList = ['FINEST', '10m', '30m', '90m', '1000m'];
                 //init required values
                 if (this.explorationService.selectedMethod.navigationInfo.configuration) {
                     this.selectExclusiveOption('downstream', 'Direction');
@@ -47,12 +48,16 @@ var StreamStats;
             ExplorationToolsModalController.prototype.convertUnsafe = function (x) {
                 return this.sce.trustAsHtml(x);
             };
+            ExplorationToolsModalController.prototype.selectElevationPoints = function () {
+                this.modalInstance.dismiss('cancel');
+                this.explorationService.selectElevationPoints = true;
+            };
             ExplorationToolsModalController.prototype.downloadCSV = function () {
                 //ga event
                 this.angulartics.eventTrack('Download', { category: 'ElevationProfile', label: 'CSV' });
                 var filename = 'elevation-profile.csv';
                 //main file header with site information
-                var csvFile = 'long,lat,elevation(feet),distance(feet)\r\n';
+                var csvFile = 'long,lat,elevation(feet),distance(mi)\r\n';
                 //write out values
                 this.explorationService.coordinateList.forEach(function (value) {
                     csvFile += value.join(',') + '\r\n';
