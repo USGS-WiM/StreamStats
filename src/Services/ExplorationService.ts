@@ -41,6 +41,7 @@ module StreamStats.Services {
         navigationResources: Array<any>;
         explorationMethodBusy: boolean;
         networkNavResults: any;
+        selectElevationPoints: boolean;
     }
 
     export var onSelectExplorationMethod: string = "onSelectExplorationMethod";
@@ -76,8 +77,10 @@ module StreamStats.Services {
         public coordinateList: Array<any>;
         public navigationResources: Array<any>;
         public explorationMethodBusy: boolean;
-        public networkNavResults: any;
-        
+        public networkNavResults: any;       
+        public selectElevationPoints: boolean;
+        public DEMresolution: string;
+        public samplingDistance: string;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -92,11 +95,24 @@ module StreamStats.Services {
             this._selectedMethod = null;
             this.networkNavResults = [];
             eventManager.AddEvent<StudyAreaEventArgs>(onSelectedStudyAreaChanged);
+            this.selectElevationPoints = false;
+            this.DEMresolution = '30m';
 
         }
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         public elevationProfile(esriJSON) {
+
+            var elevationOptions = {
+                InputLineFeatures: esriJSON,
+                returnZ: true,
+                DEMResolution: this.DEMresolution,
+                f: 'json',
+                MaximumSampleDistance: null,
+            }
+
+            //add optional parameters to request
+            if (this.samplingDistance) elevationOptions.MaximumSampleDistance = this.samplingDistance;
 
             //ESRI elevation profile tool
             //Help page: https://elevation.arcgis.com/arcgis/rest/directories/arcgisoutput/Tools/ElevationSync_GPServer/Tools_ElevationSync/Profile.htm
@@ -104,7 +120,7 @@ module StreamStats.Services {
 
             var request: WiM.Services.Helpers.RequestInfo =
                 new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST,
-                    'json', { InputLineFeatures: esriJSON, returnZ: true, DEMResolution: '30m', f: 'json'},
+                    'json', elevationOptions,
                     { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
                     WiM.Services.Helpers.paramsTransform);
 						

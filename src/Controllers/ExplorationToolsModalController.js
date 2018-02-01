@@ -27,6 +27,7 @@ var StreamStats;
                 this.modalInstance = modal;
                 this.explorationService = exploration;
                 this.studyAreaService = studyArea;
+                this.DEMresolutionList = ['FINEST', '10m', '30m', '90m', '1000m'];
                 //init required values
                 if (this.explorationService.selectedMethod.navigationInfo.configuration) {
                     this.selectExclusiveOption('downstream', 'Direction');
@@ -46,6 +47,10 @@ var StreamStats;
             };
             ExplorationToolsModalController.prototype.convertUnsafe = function (x) {
                 return this.sce.trustAsHtml(x);
+            };
+            ExplorationToolsModalController.prototype.selectElevationPoints = function () {
+                this.modalInstance.dismiss('cancel');
+                this.explorationService.selectElevationPoints = true;
             };
             ExplorationToolsModalController.prototype.downloadCSV = function () {
                 //ga event
