@@ -186,16 +186,67 @@ module StreamStats.Services {
             this.toaster.pop("wait", "Delineating Basin", "Please wait...", 0);
             this.canUpdate = false;
 
+            //console.log('loadstudy area', this.selectedStudyArea.RegionID )
+            
             var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(),
-                this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString(), false)
+                this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString(), false);
+
+            //hack for st louis stormdrain
+            if (this.selectedStudyArea.RegionID == 'MO_STL') {
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSstormwaterDelineation'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(),
+                    this.selectedStudyArea.Pourpoint.Latitude.toString());
+            }
+
+
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
             request.withCredentials = true;
 
             this.Execute(request).then(
                 (response: any) => {  
-                    //console.log('delineation response headers: ', response.headers());
+                    console.log('delineation response headers: ', response);
 
-                    if (response.data.featurecollection && response.data.featurecollection[1] && response.data.featurecollection[1].feature.features.length > 0) {
+                    //hack for st louis stormdrain
+                    if (this.selectedStudyArea.RegionID == 'MO_STL') {
+
+                        if (response.data.featureList && response.data.featureList[0] && response.data.featureList[0].feature.geometry.coordinates.length > 0) {
+
+                            //this.selectedStudyArea.Server = response.headers()['usgswim-hostname'].toLowerCase();
+
+                            //transform response into something more like regular delineation response
+                            var fakeFC = [
+                                {
+                                    name: 'globalwatershedpoint', feature:
+                                    {
+                                        features: [response.data.featureList[1].feature],
+                                        type: "FeatureCollection"
+                                    }
+                                },
+                                {
+                                    name: 'globalwatershed', feature:
+                                    {
+                                        features: [response.data.featureList[0].feature],
+                                        type: "FeatureCollection"
+                                    }
+                                }
+                            ];
+                            console.log('fakeFC',fakeFC)
+
+                            this.selectedStudyArea.Features = response.data.hasOwnProperty("featureList") ? fakeFC : null;
+                            this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
+                            this.selectedStudyArea.Date = new Date();
+
+                            this.toaster.clear();
+                            this.eventManager.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);
+                            this.canUpdate = true;
+                        }
+                        else {
+                            this.clearStudyArea();
+                            this.toaster.clear();
+                            this.toaster.pop("error", "A watershed was not returned from the delineation request", "Please retry", 0);
+                        }
+                    }
+
+                    else if (response.data.featurecollection && response.data.featurecollection[1] && response.data.featurecollection[1].feature.features.length > 0) {
                         this.selectedStudyArea.Server = response.headers()['usgswim-hostname'].toLowerCase();
                         this.selectedStudyArea.Features = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"] : null;
                         this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
