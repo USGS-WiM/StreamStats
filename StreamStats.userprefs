@@ -4,7 +4,7 @@
       <File FileName="src/css/main.css" Line="1472" Column="54" />
       <File FileName="src/Views/navigationview.html" Line="1" Column="1" />
       <File FileName="src/Views/sidebarview.html" Line="1" Column="1" />
-      <File FileName="src/Views/explorationview.html" Line="11" Column="18" />
+      <File FileName="src/Views/explorationview.html" Line="11" Column="1" />
       <File FileName="src/index.html" Line="112" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>

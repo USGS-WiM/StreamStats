@@ -13,59 +13,64 @@
 
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{{vm.explorationService.selectedMethod.navigationInfo.name}}<small>&nbsp;&nbsp;{{vm.explorationService.selectedMethod.navigationInfo.description}}</small></h3>
+                    <h3 class="panel-title">{{vm.explorationService.selectedMethod.navigationInfo.name}}<small>{{vm.explorationService.selectedMethod.navigationInfo.description}}</small></h3>
                 </div>
                 <div class="panel-body">
-                    <div ng-repeat="configuration in vm.explorationService.selectedMethod.navigationInfo.configuration">
+                    <div class="panel-confitem-wrapper">
+                        <div class="panel-confitem" ng-repeat="configuration in vm.explorationService.selectedMethod.navigationInfo.configuration">
 
-                        <h5>{{configuration.name}}<small ng-show="configuration.required" style="color:red">&nbsp;&nbsp;(Required)</small><small ng-hide="configuration.required">&nbsp;&nbsp;(Optional)</small></h5>
+                            <h5>{{configuration.name}}<small ng-show="configuration.required" style="color:red">&nbsp;&nbsp;(Required)</small><small ng-hide="configuration.required">&nbsp;&nbsp;(Optional)</small></h5>
 
-                        <div ng-if="configuration.valueType === 'geojson point geometry'">
-                            <!-- Need to show modified click points here -->
-                            <div ng-repeat="modified_configuration in vm.explorationService.selectedMethod.navigationConfiguration">
-                                <h6 ng-show="modified_configuration.name === configuration.name">Latitude: {{modified_configuration.value.coordinates[1]}} Longitude: {{modified_configuration.value.coordinates[0]}} </h6>
+                            <div ng-if="configuration.valueType === 'geojson point geometry'">
+                                <!-- Need to show modified click points here -->
+                                <div ng-repeat="modified_configuration in vm.explorationService.selectedMethod.navigationConfiguration">
+                                    <h6 ng-show="modified_configuration.name === configuration.name">Latitude: {{modified_configuration.value.coordinates[1]}} Longitude: {{modified_configuration.value.coordinates[0]}} </h6>
+                                </div>
+
+                                <button ng-hide="(vm.explorationService.selectedMethod.navigationPointCount >= 1 && configuration.name == 'Start point location') || (vm.explorationService.selectedMethod.navigationPointCount == 2 && configuration.name == 'End point location')" class="btn-exploration-tools btn-green" ng-click="vm.modalInstance.dismiss('cancel')"><span><i class="fa fa-map-marker"></i>&nbsp;&nbsp;Select {{configuration.name}}</span></button>
                             </div>
 
-                            <button ng-hide="(vm.explorationService.selectedMethod.navigationPointCount >= 1 && configuration.name == 'Start point location') || (vm.explorationService.selectedMethod.navigationPointCount == 2 && configuration.name == 'End point location')" class="btn-exploration-tools btn-green" ng-click="vm.modalInstance.dismiss('cancel')"><span><i class="fa fa-map-marker"></i>&nbsp;&nbsp;Select {{configuration.name}}</span></button>
-                        </div>
-
-                        <div ng-if="configuration.name === 'Direction'" > 
-                            <div ng-repeat="direction in configuration.value">
-                                <label class="rdo">
-                                    <input type="radio" ng-model="vm.selectedDirection" ng-value="direction" ng-click="vm.selectExclusiveOption(direction,configuration.name)"/>
-                                    <span>{{direction}}</span>
-                                </label>
+                            <div ng-if="configuration.name === 'Direction'" > 
+                                <div ng-repeat="direction in configuration.value">
+                                    <label class="rdo">
+                                        <input type="radio" ng-model="vm.selectedDirection" ng-value="direction" ng-click="vm.selectExclusiveOption(direction,configuration.name)"/>
+                                        <span>{{direction}}</span>
+                                    </label>
+                                </div>
                             </div>
-                        </div>
 
-                        <div ng-if="configuration.name === 'Query Source'" >
-                            <div ng-repeat="source in configuration.value">
-                                <label class="chx">
-                                    <input type="checkbox" ng-checked="vm.selectedQuerySourceList.indexOf(source) != -1" ng-click="vm.selectOption(source,configuration.name)" />
-                                    <span>&nbsp;&nbsp;{{source}}</span>
-                                </label>
+                            <div ng-if="configuration.name === 'Query Source'" >
+                                <div ng-repeat="source in configuration.value">
+                                    <label class="chx">
+                                        <input type="checkbox" ng-checked="vm.selectedQuerySourceList.indexOf(source) != -1" ng-click="vm.selectOption(source,configuration.name)" />
+                                        <span>&nbsp;&nbsp;{{source}}</span>
+                                    </label>
+                                </div>
                             </div>
-                        </div>
 
-                        <div ng-if="configuration.name === 'Limit'">
-                            <div ng-repeat="item in configuration.value " class="input-group">
+                            <div ng-if="configuration.name === 'Limit'">
+                                <div ng-repeat="item in configuration.value " class="input-group">
 
-                                <span ng-if="item.name == 'Polygon geometry from delineated watershed'" class="input-group-addon rdo" ng-click="vm.addLimit(item)">
-                                    <input type="radio" name="limit" ng-checked="vm.selectedLimit.name === item.name">
-                                    <span class="input-group-addon" >{{item.name}}</span>
-                                </span>
-                                <span ng-if="item.name == 'Distance (km)'" class="input-group-addon rdo" ng-click="vm.addLimit(item)">
-                                    <input type="radio" name="limit" ng-checked="vm.selectedLimit.name === item.name">
-                                    <span class="input-group-addon">{{item.name}}</span>
-                                </span>
-                                <input ng-if="item.name == 'Distance (km)'" type="text" class="form-control" name="distanceValue" ng-value="item.value">
+                                    <span ng-if="item.name == 'Polygon geometry from delineated watershed'" class="input-group-addon rdo" ng-click="vm.addLimit(item)">
+                                        <input type="radio" name="limit" ng-checked="vm.selectedLimit.name === item.name">
+                                        <span class="input-group-addon" >{{item.name}}</span>
+                                    </span>
+                                    <span ng-if="item.name == 'Distance (km)'" class="input-group-addon rdo" ng-click="vm.addLimit(item)">
+                                        <input type="radio" name="limit" ng-checked="vm.selectedLimit.name === item.name">
+                                        <span class="input-group-addon">{{item.name}}</span>
+                                    </span>
+                                    <input ng-if="item.name == 'Distance (km)'" type="text" class="form-control" name="distanceValue" ng-value="item.value">
 
+                                </div>
                             </div>
-                        </div>
 
+                        </div>
                     </div>
 
-                    <button ng-disabled="vm.explorationService.explorationMethodBusy" ng-click="vm.ExecuteNav()" type="button" class="btn-wim-sm btn-wim-success btn-wim-group-1"><i ng-class="vm.explorationService.explorationMethodBusy? 'fa fa-refresh fa-spin':'fa fa-check-circle-o'"></i>&nbsp;&nbsp;Go</button>
+                    <div class="panel-confitem-action">
+                        <button ng-disabled="vm.explorationService.explorationMethodBusy" ng-click="vm.ExecuteNav()" type="button" class="btn-wim-sm btn-wim-success btn-wim-group-1"><i ng-class="vm.explorationService.explorationMethodBusy? 'fa fa-refresh fa-spin':'fa fa-check-circle-o'"></i>&nbsp;&nbsp;Go</button>
+                    </div>
+
                 </div>
             </div>
         </div>
