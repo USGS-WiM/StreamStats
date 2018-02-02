@@ -118,6 +118,8 @@ var StreamStats;
                 this.eventManager.SubscribeToEvent(StreamStats.Services.onSelectExplorationMethod, new WiM.Event.EventHandler(function (sender, e) {
                     if (sender.selectedMethod.navigationID != 0)
                         _this.onSelectExplorationMethod(sender, e);
+                    if (sender.selectedMethod.navigationID == 0)
+                        _this.selectedExplorationTool = null;
                 }));
                 $scope.$on('leafletDirectiveMap.mainMap.mousemove', function (event, args) {
                     var latlng = args.leafletEvent.latlng;
@@ -205,6 +207,12 @@ var StreamStats;
                         _this.addRegionOverlayLayers(_this.regionServices.selectedRegion.RegionID);
                     }
                 });
+                //$scope.$watch(() => this.explorationService.selectedMethod, (newval, oldval) => {
+                //    if (newval) {
+                //        console.log('watch selectedMethod', newval);
+                //        if (newval.navigationID == 0) this.resetExplorationTools();
+                //    }
+                //});
                 $scope.$on('$locationChangeStart', function () { return _this.updateRegion(); });
                 // check if region was explicitly set.
                 if ($stateParams.rcode) {
@@ -241,8 +249,6 @@ var StreamStats;
             MapController.prototype.setExplorationMethodType = function (val) {
                 //check if can select
                 this.removeGeoJsonLayers("netnav_", true);
-                //if (!this.canSelectExplorationTool(val)) return
-                //this.selectedExplorationMethodType = val;
                 //get this configuration
                 this.explorationService.getNavigationConfiguration(val);
             };

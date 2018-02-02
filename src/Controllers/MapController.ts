@@ -227,6 +227,7 @@ module StreamStats.Controllers {
 
             this.eventManager.SubscribeToEvent(Services.onSelectExplorationMethod, new WiM.Event.EventHandler<Services.ExplorationServiceEventArgs>((sender: any, e: Services.ExplorationServiceEventArgs) => {
                 if (sender.selectedMethod.navigationID != 0) this.onSelectExplorationMethod(sender, e);
+                if (sender.selectedMethod.navigationID == 0) this.selectedExplorationTool = null;
             }));
             
 
@@ -334,6 +335,14 @@ module StreamStats.Controllers {
                 }
             });
 
+
+            //$scope.$watch(() => this.explorationService.selectedMethod, (newval, oldval) => {
+            //    if (newval) {
+            //        console.log('watch selectedMethod', newval);
+            //        if (newval.navigationID == 0) this.resetExplorationTools();
+            //    }
+            //});
+
             $scope.$on('$locationChangeStart',() => this.updateRegion());
 
             // check if region was explicitly set.
@@ -360,12 +369,10 @@ module StreamStats.Controllers {
 
 
         public setExplorationMethodType(val: number) {
-            
+           
             //check if can select
             this.removeGeoJsonLayers("netnav_",true);
-            //if (!this.canSelectExplorationTool(val)) return
-            //this.selectedExplorationMethodType = val;
-            
+
             //get this configuration
             this.explorationService.getNavigationConfiguration(val);
 
