@@ -882,10 +882,19 @@ var StreamStats;
                 });
                 //clear out this.markers
                 this.markers = {};
-                var bbox = this.geojson['globalwatershed'].data.features[0].bbox;
-                this.leafletData.getMap("mainMap").then(function (map) {
-                    map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]], {});
-                });
+                if (this.geojson['globalwatershed'].data.features[0].bbox) {
+                    var bbox = this.geojson['globalwatershed'].data.features[0].bbox;
+                    this.leafletData.getMap("mainMap").then(function (map) {
+                        map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]], {});
+                    });
+                }
+                else {
+                    //hack for st louis stormwater delienation
+                    this.leafletData.getMap("mainMap").then(function (map) {
+                        var polygon = L.polygon(_this.geojson['globalwatershed'].data.features[0].geometry.coordinates);
+                        console.log('mo stl bounds', polygon.getBounds());
+                    });
+                }
                 //query basin against Karst
                 if (this.regionServices.selectedRegion.Applications.indexOf("KarstCheck") > -1) {
                     this.studyArea.queryKarst(this.regionServices.selectedRegion.RegionID, this.regionServices.regionMapLayerList);
