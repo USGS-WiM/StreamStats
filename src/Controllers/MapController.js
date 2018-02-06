@@ -252,13 +252,6 @@ var StreamStats;
                 //get this configuration
                 this.explorationService.getNavigationConfiguration(val);
             };
-            MapController.prototype.addExplorationPointFromPourpoint = function (lat, lng, crs) {
-                this.explorationService.selectedMethod.addLocation(new WiM.Models.Point(lat, lng, crs));
-                //open modal
-                if (this.explorationService.selectedMethod.navigationPointCount === this.explorationService.selectedMethod.minLocations) {
-                    this.modal.openModal(StreamStats.Services.SSModalType.e_exploration);
-                }
-            };
             MapController.prototype.ExecuteNav = function () {
                 //validate request
                 if (this.explorationService.selectedMethod.locations.length != this.explorationService.selectedMethod.minLocations) {

@@ -378,16 +378,6 @@ module StreamStats.Controllers {
 
         }
 
-        public addExplorationPointFromPourpoint(lat, lng, crs) {
-            this.explorationService.selectedMethod.addLocation(new WiM.Models.Point(lat, lng, crs));
-
-            //open modal
-            if (this.explorationService.selectedMethod.navigationPointCount === this.explorationService.selectedMethod.minLocations) {
-
-                this.modal.openModal(Services.SSModalType.e_exploration);
-            }
-        }
- 
         public ExecuteNav(): void {
             //validate request
             if (this.explorationService.selectedMethod.locations.length != this.explorationService.selectedMethod.minLocations) {

@@ -52,6 +52,9 @@ var StreamStats;
                 this.modalInstance.dismiss('cancel');
                 this.explorationService.selectElevationPoints = true;
             };
+            ExplorationToolsModalController.prototype.addExplorationPointFromPourpoint = function (lat, lng, crs) {
+                this.explorationService.selectedMethod.addLocation(new WiM.Models.Point(lat, lng, crs));
+            };
             ExplorationToolsModalController.prototype.downloadCSV = function () {
                 //ga event
                 this.angulartics.eventTrack('Download', { category: 'ElevationProfile', label: 'CSV' });
