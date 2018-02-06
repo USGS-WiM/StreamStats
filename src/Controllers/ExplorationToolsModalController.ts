@@ -86,6 +86,10 @@ module StreamStats.Controllers {
             this.explorationService.selectElevationPoints = true;
         }
 
+        public addExplorationPointFromPourpoint(lat, lng, crs) {
+            this.explorationService.selectedMethod.addLocation(new WiM.Models.Point(lat, lng, crs));
+        }
+
         private downloadCSV() {
 
             //ga event
