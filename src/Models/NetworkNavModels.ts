@@ -25,7 +25,7 @@
 module StreamStats.Models {
     export interface INetworkNav {
         locations: Array<WiM.Models.IPoint>;
-        addLocation(pnt: WiM.Models.IPoint);
+        addLocation(name: string, pnt: WiM.Models.IPoint);
         navigationName: string;
         navigationDescription: string;
         navigationID: number;
@@ -67,36 +67,32 @@ module StreamStats.Models {
         }
 
         //Methods
-        public addLocation(pnt: WiM.Models.IPoint):void {
+        public addLocation(name: string, pnt: WiM.Models.IPoint):void {
             this._locations.push(pnt);
+
+            //console.log('in add location:', name, pnt, this.navigationPointCount, this.navigationConfiguration);
+
+            //delete point if already exists
+            this.navigationConfiguration.reverse().forEach((config, index) => {
+                if (config.name == name) {
+                    console.log('found this point already, deleting:', this.navigationConfiguration, index)
+                    this.navigationConfiguration.splice(index, 1);
+                    this.navigationPointCount -= 1
+                }
+            });
+
+            //add point
             this.navigationPointCount+=1
-            console.log('in add location:', pnt, this.navigationPointCount);
-
-            if (this.navigationPointCount === 1) {
-                this.navigationConfiguration.push({
-                    "id": 1,
-                    "name": "Start point location",
-                    "required": true,
-                    "description": "Specified lat/long/crs  navigation start location",
-                    "valueType": "geojson point geometry",
-                    "value": {
-                        "type": "Point", "coordinates": [pnt.Longitude, pnt.Latitude], "crs": { "properties": { "name": "EPSG:" + pnt.crs }, "type": "name" }
-                    }
-                })
-            }
-
-            if (this.navigationPointCount === 2) {
-                this.navigationConfiguration.push({
-                    "id": this.navigationPointCount ,
-                    "name": "End point location",
-                    "required": true,
-                    "description": "Specified lat/long/crs  navigation end location",
-                    "valueType": "geojson point geometry",
-                    "value": {
-                        "type": "Point", "coordinates": [pnt.Longitude, pnt.Latitude], "crs": { "properties": { "name": "EPSG:" + pnt.crs }, "type": "name" }
-                    }
-                })
-            }
+            this.navigationConfiguration.push({
+                "id": this.navigationPointCount,
+                "name": name,
+                "required": true,
+                "description": "Specified lat/long/crs  navigation start location",
+                "valueType": "geojson point geometry",
+                "value": {
+                    "type": "Point", "coordinates": [pnt.Longitude, pnt.Latitude], "crs": { "properties": { "name": "EPSG:" + pnt.crs }, "type": "name" }
+                }
+            })
 
             //console.log('navigationConfiguration:', this.navigationConfiguration)
 

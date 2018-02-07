@@ -27,12 +27,13 @@
                                     <h6 ng-show="modified_configuration.name === configuration.name">Latitude: {{modified_configuration.value.coordinates[1]}} Longitude: {{modified_configuration.value.coordinates[0]}} </h6>
                                 </div>
 
-                                <div ng-show="vm.studyAreaService.selectedStudyArea.Pourpoint && vm.explorationService.selectedMethod.navigationPointCount != 1">
-                                    <button class="btn-exploration-tools btn-green" ng-click="vm.addExplorationPointFromPourpoint(vm.studyAreaService.selectedStudyArea.Pourpoint.Latitude, vm.studyAreaService.selectedStudyArea.Pourpoint.Longitude, vm.studyAreaService.selectedStudyArea.Pourpoint.crs)"><span><i class="fa fa-map-marker"></i>&nbsp;&nbsp;Use pourpoint</span></button>
-                                    <span>OR</span>
+                                <div ng-show="vm.studyAreaService.selectedStudyArea.Pourpoint">
+                                    <button class="btn-exploration-tools btn-green" ng-click="vm.addExplorationPointFromPourpoint(configuration.name, vm.studyAreaService.selectedStudyArea.Pourpoint.Latitude, vm.studyAreaService.selectedStudyArea.Pourpoint.Longitude, vm.studyAreaService.selectedStudyArea.Pourpoint.crs)"><span><i class="fa fa-map-marker"></i>&nbsp;&nbsp;Use pourpoint</span></button>
                                 </div>
 
-                                <button ng-hide="(vm.explorationService.selectedMethod.navigationPointCount >= 1 && configuration.name == 'Start point location') || (vm.explorationService.selectedMethod.navigationPointCount == 2 && configuration.name == 'End point location')" class="btn-exploration-tools btn-green" ng-click="vm.modalInstance.dismiss('cancel')"><span><i class="fa fa-map-marker"></i>&nbsp;&nbsp;Select {{configuration.name}}</span></button>
+                                <button class="btn-exploration-tools btn-green" ng-click="vm.addExplorationPointFromMapt(configuration.name)"><span><i class="fa fa-map-marker"></i>&nbsp;&nbsp;Select {{configuration.name}}</span></button>
+
+                                <!--<button ng-hide="(vm.explorationService.selectedMethod.navigationPointCount >= 1 && configuration.name == 'Start point location') || (vm.explorationService.selectedMethod.navigationPointCount == 2 && configuration.name == 'End point location')" class="btn-exploration-tools btn-green" ng-click="vm.modalInstance.dismiss('cancel')"><span><i class="fa fa-map-marker"></i>&nbsp;&nbsp;Select {{configuration.name}}</span></button>-->
                             </div>
 
                             <div ng-if="configuration.name === 'Direction'" > 

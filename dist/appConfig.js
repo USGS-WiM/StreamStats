@@ -325,10 +325,10 @@ configuration.regions = [
     { "RegionID": "VI", "Name": "Virgin Islands", "Bounds": [[17.676666, -65.026947], [18.377777, -64.560287]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
     { "RegionID": "WA", "Name": "Washington", "Bounds": [[45.543092,-124.732769],[48.999931,-116.919132]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": false },
     { "RegionID": "WI", "Name": "Wisconsin", "Bounds": [[42.489152,-92.885397],[46.952479,-86.967712]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": false },	
-    { "RegionID": "WV", "Name": "West Virginia", "Bounds": [[37.20491,-82.647158],[40.637203,-77.727467]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
+    { "RegionID": "WV", "Name": "West Virginia", "Bounds": [[37.20491,-82.647158],[40.637203,-77.727467]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
     { "RegionID": "WY", "Name": "Wyoming", "Bounds": [[40.994289,-111.053428],[45.002793,-104.051705]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
-    { "RegionID": "CRB", "Name": "Connecticut River Basin", "Bounds": [[41.227366,-73.254776],[45.305324,-71.059248]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
-    { "RegionID": "DRB", "Name": "Delaware River Basin", "Bounds": [[38.666626, -76.452907], [42.507076, -74.319593]], "Layers": {}, "Applications": ["Wateruse"], "regionEnabled": false, "ScenariosAvailable": false },
+    { "RegionID": "CRB", "Name": "Connecticut River Basin", "Bounds": [[41.227366,-73.254776],[45.305324,-71.059248]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": false },
+    { "RegionID": "DRB", "Name": "Delaware River Basin", "Bounds": [[38.666626, -76.452907], [42.507076, -74.319593]], "Layers": {}, "Applications": ["Wateruse"], "regionEnabled": true, "ScenariosAvailable": false },
     { "RegionID": "RRB", "Name": "Rainy River Basin", "Bounds": [[47.268377,-95.64855],[50.054196,-89.766532]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": false }
 
 ]//end regions
