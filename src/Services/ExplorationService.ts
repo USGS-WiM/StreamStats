@@ -42,6 +42,7 @@ module StreamStats.Services {
         explorationMethodBusy: boolean;
         networkNavResults: any;
         selectElevationPoints: boolean;
+        explorationPointType: string;
     }
 
     export var onSelectExplorationMethod: string = "onSelectExplorationMethod";
@@ -81,6 +82,7 @@ module StreamStats.Services {
         public selectElevationPoints: boolean;
         public DEMresolution: string;
         public samplingDistance: string;
+        public explorationPointType: string;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-

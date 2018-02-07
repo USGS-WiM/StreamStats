@@ -269,8 +269,11 @@ module StreamStats.Controllers {
                 //network navigation
                 if (exploration.selectedMethod != null && exploration.selectedMethod.locations.length <= exploration.selectedMethod.minLocations) {
 
+                    console.log('in mapcontroller add point', exploration.selectedMethod.navigationPointCount, exploration.selectedMethod.locations.length)
+
                     //add point
-                    exploration.selectedMethod.addLocation(new WiM.Models.Point(args.leafletEvent.latlng.lat, args.leafletEvent.latlng.lng, '4326'));
+                    if (exploration.explorationPointType == 'Start point location') exploration.selectedMethod.addLocation('Start point location', new WiM.Models.Point(args.leafletEvent.latlng.lat, args.leafletEvent.latlng.lng, '4326'));
+                    if (exploration.explorationPointType == 'End point location') exploration.selectedMethod.addLocation('End point location', new WiM.Models.Point(args.leafletEvent.latlng.lat, args.leafletEvent.latlng.lng, '4326'));
 
                     //add temporary marker to map
                     for (var i: number = 0; i < exploration.selectedMethod.locations.length; i++) {
@@ -284,21 +287,7 @@ module StreamStats.Controllers {
                         };
                     }//next i
 
-                    ////if no options are needed we don't need to open modal just go
-                    //if (exploration.selectedMethod.optionsCount === 0) {
-                    //    //execute nav
-                    //    this.ExecuteNav();
-
-                    //}
-
                     this.modal.openModal(Services.SSModalType.e_exploration);
-
-                    ////otherwise open modal
-                    //if (exploration.selectedMethod.navigationPointCount === exploration.selectedMethod.minLocations) {
-
-                    //    this.modal.openModal(Services.SSModalType.e_exploration);
-                    //    //this.ExecuteNav();
-                    //}
                 }
 
                 //query streamgage is default map click action
@@ -754,6 +743,7 @@ module StreamStats.Controllers {
             this.removeGeoJsonLayers("netnavroute", true);
 
             this.selectedExplorationTool = null;
+            this.explorationService.explorationPointType = null;
         }
 
         private measurement() {

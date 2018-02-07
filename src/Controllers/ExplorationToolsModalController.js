@@ -52,8 +52,12 @@ var StreamStats;
                 this.modalInstance.dismiss('cancel');
                 this.explorationService.selectElevationPoints = true;
             };
-            ExplorationToolsModalController.prototype.addExplorationPointFromPourpoint = function (lat, lng, crs) {
-                this.explorationService.selectedMethod.addLocation(new WiM.Models.Point(lat, lng, crs));
+            ExplorationToolsModalController.prototype.addExplorationPointFromMapt = function (name) {
+                this.modalInstance.dismiss('cancel');
+                this.explorationService.explorationPointType = name;
+            };
+            ExplorationToolsModalController.prototype.addExplorationPointFromPourpoint = function (name, lat, lng, crs) {
+                this.explorationService.selectedMethod.addLocation(name, new WiM.Models.Point(lat, lng, crs));
             };
             ExplorationToolsModalController.prototype.downloadCSV = function () {
                 //ga event
