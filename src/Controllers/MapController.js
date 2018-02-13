@@ -669,7 +669,7 @@ var StreamStats;
                                     _this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'valid' });
                                     _this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000);
                                     _this.studyArea.checkingDelineatedPoint = false;
-                                    _this.startDelineate(latlng);
+                                    _this.startDelineate(latlng, false);
                                 }
                                 else {
                                     _this.studyArea.checkingDelineatedPoint = false;
@@ -1146,7 +1146,8 @@ var StreamStats;
                 //console.log('in startDelineate', latlng);
                 var studyArea = new StreamStats.Models.StudyArea(this.regionServices.selectedRegion.RegionID, new WiM.Models.Point(latlng.lat, latlng.lng, '4326'));
                 this.studyArea.AddStudyArea(studyArea);
-                this.studyArea.loadStudyBoundary();
+                //check for river basin study (Alt region) a watch on the result of this will start delineation
+                this.studyArea.checkForRiverBasin(this.regionServices.selectedRegion.RegionID, latlng);
                 //add disclaimer here
                 if (isInExclusionArea)
                     this.studyArea.selectedStudyArea.Disclaimers['isInExclusionArea'] = 'The delineation point is in an exclusion area.';
