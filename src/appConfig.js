@@ -370,4 +370,4 @@ configuration.overlayedLayers = {
     }
 }//end overlayedLayers
 
-configuration.stateGeoJSONurl = './jsonstates.json'
+configuration.stateGeoJSONurl = './data/jsonstates.json'
