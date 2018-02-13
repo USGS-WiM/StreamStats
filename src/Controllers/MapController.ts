@@ -882,7 +882,8 @@ module StreamStats.Controllers {
 
                                 this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000)
                                 this.studyArea.checkingDelineatedPoint = false;
-                                this.startDelineate(latlng);
+
+                                this.startDelineate(latlng, false);
                             }
 
                             //otherwise parse exclude Codes
@@ -1452,11 +1453,13 @@ module StreamStats.Controllers {
         private startDelineate(latlng: any, isInExclusionArea?: boolean) {
             //console.log('in startDelineate', latlng);
 
+
             var studyArea: Models.IStudyArea = new Models.StudyArea(this.regionServices.selectedRegion.RegionID, new WiM.Models.Point(latlng.lat, latlng.lng, '4326'));
-
-
             this.studyArea.AddStudyArea(studyArea);
-            this.studyArea.loadStudyBoundary();
+
+            //check for river basin study (Alt region) a watch on the result of this will start delineation
+            this.studyArea.checkForRiverBasin(this.regionServices.selectedRegion.RegionID, latlng);
+            
 
             //add disclaimer here
             if (isInExclusionArea) this.studyArea.selectedStudyArea.Disclaimers['isInExclusionArea'] = 'The delineation point is in an exclusion area.';
