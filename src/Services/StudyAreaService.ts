@@ -23,6 +23,7 @@
 
 //Import
 module StreamStats.Services {
+    declare var turf;
     'use strict'
     export interface IStudyAreaService {
         selectedStudyArea: Models.IStudyArea;
@@ -51,7 +52,8 @@ module StreamStats.Services {
         baseMap: Object;
         showModifyBasinCharacterstics: boolean;
         getAdditionalFeatureList();
-        getAdditionalFeatures(featureString:string);
+        getAdditionalFeatures(featureString: string);
+        checkForRiverBasin(region: string, latlng: any);
         //requestParameterList: Array<any>; jkn
     }
 
@@ -186,15 +188,22 @@ module StreamStats.Services {
             this.toaster.pop("wait", "Delineating Basin", "Please wait...", 0);
             this.canUpdate = false;
 
-            //console.log('loadstudy area', this.selectedStudyArea.RegionID )
+            //console.log('loadstudy area', this.selectedStudyArea);
+
+            var regionID;
+            (this.selectedStudyArea.AltRegionID) ? regionID = this.selectedStudyArea.AltRegionID : regionID = this.selectedStudyArea.RegionID
             
-            var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(),
+            var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', regionID, this.selectedStudyArea.Pourpoint.Longitude.toString(),
                 this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString(), false);
 
             //hack for st louis stormdrain
             if (this.selectedStudyArea.RegionID == 'MO_STL') {
-                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSstormwaterDelineation'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(),
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSstormwaterDelineation'].format(regionID, this.selectedStudyArea.Pourpoint.Longitude.toString(),
                     this.selectedStudyArea.Pourpoint.Latitude.toString());
+            }
+
+            if (this.selectedStudyArea.RegionID == 'CRB' || this.selectedStudyArea.RegionID == 'DRB') {
+                this.selectedStudyArea
             }
 
 
@@ -203,7 +212,7 @@ module StreamStats.Services {
 
             this.Execute(request).then(
                 (response: any) => {  
-                    console.log('delineation response headers: ', response);
+                    //console.log('delineation response headers: ', response);
 
                     //hack for st louis stormdrain
                     if (this.selectedStudyArea.RegionID == 'MO_STL') {
@@ -285,6 +294,44 @@ module StreamStats.Services {
                 }).finally(() => {
                     
             });
+        }
+
+
+        public checkForRiverBasin(region, latlng) {
+
+            //console.log('in check for river basin', region, latlng, this.selectedStudyArea);
+            if (['CRB', 'DRB'].indexOf(region) == -1) this.loadStudyBoundary();
+
+
+            var url = configuration.stateGeoJSONurl;
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
+
+            this.Execute(request).then(
+                (response: any) => {
+                    //console.log('in response', response);
+
+                    //loop over states
+                    response.data.features.forEach((feature) => {
+                        //var inside = this.inside([latlng.lng, latlng.lat], feature.geometry.coordinates);
+                        var point = turf.point([latlng.lng, latlng.lat]);
+
+                        var inside = turf.pointsWithinPolygon(point, feature);
+
+                        if (inside.features.length > 0) {
+                            //console.log('test2:', feature.properties, inside);
+                            this.selectedStudyArea.AltRegionID = feature.properties.abbr;
+                            this.loadStudyBoundary();
+                        }
+                    });
+
+
+                    //sm when complete
+                }, (error) => {
+
+
+                    this.toaster.pop('warning', "Error checking for river basin", "", 5000);
+                    //sm when complete
+                }).finally(() => { });
         }
 
         public loadWatershed(rcode: string, workspaceID: string): void {
@@ -820,7 +867,27 @@ module StreamStats.Services {
 
         
         //Helper Methods
-        //-+-+-+-+-+-+-+-+-+-+-+-       
+        //-+-+-+-+-+-+-+-+-+-+-+-      
+
+        private inside(point, vs) {
+            // ray-casting algorithm based on
+            // http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
+
+            var x = point[0], y = point[1];
+
+            var inside = false;
+            for (var i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+                var xi = vs[i][0], yi = vs[i][1];
+                var xj = vs[j][0], yj = vs[j][1];
+
+                var intersect = ((yi > y) != (yj > y))
+                    && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+                if (intersect) inside = !inside;
+            }
+
+            return inside;
+        };
+
         private loadParameterResults(results: Array<WiM.Models.IParameter>) {
 
             //this.toaster.pop('wait', "Loading Basin Characteristics", "Please wait...", 0);

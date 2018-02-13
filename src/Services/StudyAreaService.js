@@ -145,16 +145,21 @@ var StreamStats;
                 var _this = this;
                 this.toaster.pop("wait", "Delineating Basin", "Please wait...", 0);
                 this.canUpdate = false;
-                //console.log('loadstudy area', this.selectedStudyArea.RegionID )
-                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString(), false);
+                //console.log('loadstudy area', this.selectedStudyArea);
+                var regionID;
+                (this.selectedStudyArea.AltRegionID) ? regionID = this.selectedStudyArea.AltRegionID : regionID = this.selectedStudyArea.RegionID;
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', regionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString(), false);
                 //hack for st louis stormdrain
                 if (this.selectedStudyArea.RegionID == 'MO_STL') {
-                    var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSstormwaterDelineation'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString());
+                    var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSstormwaterDelineation'].format(regionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString());
+                }
+                if (this.selectedStudyArea.RegionID == 'CRB' || this.selectedStudyArea.RegionID == 'DRB') {
+                    this.selectedStudyArea;
                 }
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 request.withCredentials = true;
                 this.Execute(request).then(function (response) {
-                    console.log('delineation response headers: ', response);
+                    //console.log('delineation response headers: ', response);
                     //hack for st louis stormdrain
                     if (_this.selectedStudyArea.RegionID == 'MO_STL') {
                         if (response.data.featureList && response.data.featureList[0] && response.data.featureList[0].feature.geometry.coordinates.length > 0) {
@@ -223,6 +228,32 @@ var StreamStats;
                     _this.toaster.pop("error", "There was an HTTP error with the delineation request", "Please retry", 0);
                 }).finally(function () {
                 });
+            };
+            StudyAreaService.prototype.checkForRiverBasin = function (region, latlng) {
+                var _this = this;
+                //console.log('in check for river basin', region, latlng, this.selectedStudyArea);
+                if (['CRB', 'DRB'].indexOf(region) == -1)
+                    this.loadStudyBoundary();
+                var url = configuration.stateGeoJSONurl;
+                var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                this.Execute(request).then(function (response) {
+                    //console.log('in response', response);
+                    //loop over states
+                    response.data.features.forEach(function (feature) {
+                        //var inside = this.inside([latlng.lng, latlng.lat], feature.geometry.coordinates);
+                        var point = turf.point([latlng.lng, latlng.lat]);
+                        var inside = turf.pointsWithinPolygon(point, feature);
+                        if (inside.features.length > 0) {
+                            //console.log('test2:', feature.properties, inside);
+                            _this.selectedStudyArea.AltRegionID = feature.properties.abbr;
+                            _this.loadStudyBoundary();
+                        }
+                    });
+                    //sm when complete
+                }, function (error) {
+                    _this.toaster.pop('warning', "Error checking for river basin", "", 5000);
+                    //sm when complete
+                }).finally(function () { });
             };
             StudyAreaService.prototype.loadWatershed = function (rcode, workspaceID) {
                 var _this = this;
@@ -635,7 +666,23 @@ var StreamStats;
                 });
             };
             //Helper Methods
-            //-+-+-+-+-+-+-+-+-+-+-+-       
+            //-+-+-+-+-+-+-+-+-+-+-+-      
+            StudyAreaService.prototype.inside = function (point, vs) {
+                // ray-casting algorithm based on
+                // http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
+                var x = point[0], y = point[1];
+                var inside = false;
+                for (var i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+                    var xi = vs[i][0], yi = vs[i][1];
+                    var xj = vs[j][0], yj = vs[j][1];
+                    var intersect = ((yi > y) != (yj > y))
+                        && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+                    if (intersect)
+                        inside = !inside;
+                }
+                return inside;
+            };
+            ;
             StudyAreaService.prototype.loadParameterResults = function (results) {
                 //this.toaster.pop('wait', "Loading Basin Characteristics", "Please wait...", 0);
                 //console.log('in load parameter results');
