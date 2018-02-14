@@ -212,35 +212,14 @@ module StreamStats.Services {
 
             this.Execute(request).then(
                 (response: any) => {  
-                    //console.log('delineation response headers: ', response);
 
                     //hack for st louis stormdrain
                     if (this.selectedStudyArea.RegionID == 'MO_STL') {
 
-                        if (response.data.featureList && response.data.featureList[0] && response.data.featureList[0].feature.geometry.coordinates.length > 0) {
+                        if (response.data.layers && response.data.layers.features && response.data.layers.features[1].geometry.coordinates.length > 0) {
 
-                            //this.selectedStudyArea.Server = response.headers()['usgswim-hostname'].toLowerCase();
-
-                            //transform response into something more like regular delineation response
-                            var fakeFC = [
-                                {
-                                    name: 'globalwatershedpoint', feature:
-                                    {
-                                        features: [response.data.featureList[1].feature],
-                                        type: "FeatureCollection"
-                                    }
-                                },
-                                {
-                                    name: 'globalwatershed', feature:
-                                    {
-                                        features: [response.data.featureList[0].feature],
-                                        type: "FeatureCollection"
-                                    }
-                                }
-                            ];
-                            console.log('fakeFC',fakeFC)
-
-                            this.selectedStudyArea.Features = response.data.hasOwnProperty("featureList") ? fakeFC : null;
+                            //this.selectedStudyArea.Server = response.headers()['x-usgswim-hostname'].toLowerCase();
+                            this.selectedStudyArea.Features = response.data.hasOwnProperty("layers") ? response.data["layers"] : null;
                             this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
                             this.selectedStudyArea.Date = new Date();
 
@@ -255,6 +234,7 @@ module StreamStats.Services {
                         }
                     }
 
+                    //otherwise old method
                     else if (response.data.featurecollection && response.data.featurecollection[1] && response.data.featurecollection[1].feature.features.length > 0) {
                         this.selectedStudyArea.Server = response.headers()['usgswim-hostname'].toLowerCase();
                         this.selectedStudyArea.Features = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"] : null;
@@ -299,9 +279,13 @@ module StreamStats.Services {
 
         public checkForRiverBasin(region, latlng) {
 
-            //console.log('in check for river basin', region, latlng, this.selectedStudyArea);
-            if (['CRB', 'DRB'].indexOf(region) == -1) this.loadStudyBoundary();
+            //console.log('in check for river basin', ['CRB', 'DRB'].indexOf(region), region, latlng, this.selectedStudyArea);
 
+            //just delineate if not in one of these regions
+            if (['CRB', 'DRB'].indexOf(region) == -1) {
+                this.loadStudyBoundary();
+                return;
+            }
 
             var url = configuration.stateGeoJSONurl;
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
@@ -868,26 +852,6 @@ module StreamStats.Services {
         
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-      
-
-        private inside(point, vs) {
-            // ray-casting algorithm based on
-            // http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
-
-            var x = point[0], y = point[1];
-
-            var inside = false;
-            for (var i = 0, j = vs.length - 1; i < vs.length; j = i++) {
-                var xi = vs[i][0], yi = vs[i][1];
-                var xj = vs[j][0], yj = vs[j][1];
-
-                var intersect = ((yi > y) != (yj > y))
-                    && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-                if (intersect) inside = !inside;
-            }
-
-            return inside;
-        };
-
         private loadParameterResults(results: Array<WiM.Models.IParameter>) {
 
             //this.toaster.pop('wait', "Loading Basin Characteristics", "Please wait...", 0);
