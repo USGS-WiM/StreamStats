@@ -87,13 +87,13 @@ configuration.basemaps =
                     "layerOptions": {
                         "opacity": 0.8,
                         "minZoom": 0,
-                        "maxZoom": 15,
+                        "maxZoom": 16,
                         "attribution": "<a href='https://www.doi.gov'>U.S. Department of the Interior</a> | <a href='https://www.usgs.gov'>U.S. Geological Survey</a> | <a href='https://www.usgs.gov/laws/policies_notices.html'>Policies</a>"
                     }
                 },
                 {
                     "name": "dynamic",
-                    "url": "https://services.nationalmap.gov/arcgis/rest/services/USGSTopoLarge/MapServer",
+                    "url": "https://services.nationalmap.gov/arcgis/rest/services/USGSImageryTopoLarge/MapServer",
                     "type": 'agsDynamic',
                     "layerOptions": {
                         "format": "png8",
@@ -101,7 +101,7 @@ configuration.basemaps =
                         "position": "back",
                         "opacity": 0.7,
                         "zIndex": -100,
-                        "minZoom": 16,
+                        "minZoom": 17,
                         "maxZoom": 20,
                         "attribution": "<a href='https://www.doi.gov'>U.S. Department of the Interior</a> | <a href='https://www.usgs.gov'>U.S. Geological Survey</a> | <a href='https://www.usgs.gov/laws/policies_notices.html'>Policies</a>"
                     }
@@ -353,7 +353,7 @@ configuration.overlayedLayers = {
         "visible": true,
         "layerOptions": {
             "opacity": 0.6,
-            "maxZoom": 11,
+            "maxZoom": 10,
             "zIndex": 9999,
         },
         "layerParams": {
