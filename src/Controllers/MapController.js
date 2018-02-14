@@ -859,29 +859,42 @@ var StreamStats;
             MapController.prototype.onSelectedStudyAreaChanged = function () {
                 //console.log('in onselectedstudyareachange1', this.studyArea.selectedStudyArea.Features)
                 var _this = this;
-                this.removeOverlayLayers('globalwatershed', true);
                 if (!this.studyArea.selectedStudyArea || !this.studyArea.selectedStudyArea.Features)
                     return;
-                this.studyArea.selectedStudyArea.Features.forEach(function (layer) {
-                    //console.log('in onselectedstudyareachange2',layer)
-                    var item = angular.fromJson(angular.toJson(layer));
-                    _this.addGeoJSON(item.name, item.feature);
-                    _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(item.name, "geojson", _this.geojson[item.name].style));
-                });
                 //clear out this.markers
                 this.markers = {};
-                if (this.geojson['globalwatershed'].data.features[0].bbox) {
-                    var bbox = this.geojson['globalwatershed'].data.features[0].bbox;
-                    this.leafletData.getMap("mainMap").then(function (map) {
-                        map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]], {});
+                //temp (soon to be permanent method for MO_STL)
+                if (this.studyArea.selectedStudyArea.RegionID == 'MO_STL') {
+                    this.removeOverlayLayers('GlobalWatershed', true);
+                    this.studyArea.selectedStudyArea.Features['features'].forEach(function (layer) {
+                        console.log('in onselectedstudyareachange2', layer);
+                        var item = angular.fromJson(angular.toJson(layer));
+                        var name = item.id.toLowerCase();
+                        _this.addGeoJSON(name, item);
+                        _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(name, "geojson", _this.geojson[name].style));
                     });
+                    if (this.geojson['globalwatershed'].data.features[0].bbox) {
+                        var bbox = this.studyArea.selectedStudyArea.Features['bbox'];
+                        this.leafletData.getMap("mainMap").then(function (map) {
+                            map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]], {});
+                        });
+                    }
                 }
                 else {
-                    //hack for st louis stormwater delienation
-                    this.leafletData.getMap("mainMap").then(function (map) {
-                        var polygon = L.polygon(_this.geojson['globalwatershed'].data.features[0].geometry.coordinates);
-                        console.log('mo stl bounds', polygon.getBounds());
+                    this.studyArea.selectedStudyArea.Features.forEach(function (layer) {
+                        //console.log('in onselectedstudyareachange2',layer)
+                        _this.removeOverlayLayers('globalwatershed', true);
+                        var item = angular.fromJson(angular.toJson(layer));
+                        var name = item.name.toLowerCase();
+                        _this.addGeoJSON(name, item.feature);
+                        _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(name, "geojson", _this.geojson[name].style));
                     });
+                    if (this.geojson['globalwatershed'].data.features[0].bbox) {
+                        var bbox = this.geojson['globalwatershed'].data.features[0].bbox;
+                        this.leafletData.getMap("mainMap").then(function (map) {
+                            map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]], {});
+                        });
+                    }
                 }
                 //query basin against Karst
                 if (this.regionServices.selectedRegion.Applications.indexOf("KarstCheck") > -1) {
