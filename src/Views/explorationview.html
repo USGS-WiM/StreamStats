@@ -5,57 +5,154 @@
                 ng-click="vm.close()">
             &times;
         </button>
-        <h4 class="modal-title"> Exploration Tools</h4>
+        <h4 class="modal-title">Exploration Tools</h4>
     </div>
     <div class="modal-body">
-        <div id="printArea">
-            <div id="elevationData" ng-show="vm.explorationService.showElevationChart">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <h3>Elevation Profile</h3>
-                        <div id="elevation-div" class="leaflet-control elevation lime-theme"><div ng-bind-html="vm.convertUnsafe(vm.explorationService.elevationProfileHTML)"> </div></div>
 
+        <div id="networkNav" ng-if="vm.explorationService.selectedMethod.navigationInfo.configuration">
 
-                    </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">{{vm.explorationService.selectedMethod.navigationInfo.name}}<small>{{vm.explorationService.selectedMethod.navigationInfo.description}}</small></h3>
                 </div>
-                <div class="row">
-                    <div class="col-sm-8">
-                        <table id="elevationProfileTable" class="table table-striped text-center" table-condensed">
-                            <thead>
-                                <tr>
-                                    <th>Latitude</th>
-                                    <th>Longitude</th>
-                                    <th>Elevation (ft)</th>
-                                    <th>Distance (mi)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr ng-repeat="item in vm.explorationService.coordinateList track by $index">
-                                    <td ng-bind="item[0]"></td>
-                                    <td ng-bind="item[1]"></td>
-                                    <td ng-bind="item[2]"></td>
-                                    <td ng-bind="item[3]"></td>
-                                </tr>
-                            </tbody>
-                        </table>
+                <div class="panel-body">
+                    <div class="panel-confitem-wrapper">
+                        <div class="panel-confitem" ng-repeat="configuration in vm.explorationService.selectedMethod.navigationInfo.configuration">
+
+                            <h5>{{configuration.name}}<small ng-show="configuration.required" style="color:red">&nbsp;&nbsp;(Required)</small><small ng-hide="configuration.required">&nbsp;&nbsp;(Optional)</small></h5>
+
+                            <div ng-if="configuration.valueType === 'geojson point geometry'">
+                                <!-- Need to show modified click points here -->
+                                <div ng-repeat="modified_configuration in vm.explorationService.selectedMethod.navigationConfiguration">
+                                    <h6 ng-show="modified_configuration.name === configuration.name">Latitude: {{modified_configuration.value.coordinates[1]}} Longitude: {{modified_configuration.value.coordinates[0]}} </h6>
+                                </div>
+
+                                <div ng-show="vm.studyAreaService.selectedStudyArea.Pourpoint">
+                                    <button class="btn-exploration-tools btn-green" ng-click="vm.addExplorationPointFromPourpoint(configuration.name, vm.studyAreaService.selectedStudyArea.Pourpoint.Latitude, vm.studyAreaService.selectedStudyArea.Pourpoint.Longitude, vm.studyAreaService.selectedStudyArea.Pourpoint.crs)"><span><i class="fa fa-map-marker"></i>&nbsp;&nbsp;Use pourpoint</span></button>
+                                </div>
+
+                                <button class="btn-exploration-tools btn-green" ng-click="vm.addExplorationPointFromMapt(configuration.name)"><span><i class="fa fa-map-marker"></i>&nbsp;&nbsp;Select point on Map</span></button>
+
+                                <!--<button ng-hide="(vm.explorationService.selectedMethod.navigationPointCount >= 1 && configuration.name == 'Start point location') || (vm.explorationService.selectedMethod.navigationPointCount == 2 && configuration.name == 'End point location')" class="btn-exploration-tools btn-green" ng-click="vm.modalInstance.dismiss('cancel')"><span><i class="fa fa-map-marker"></i>&nbsp;&nbsp;Select {{configuration.name}}</span></button>-->
+                            </div>
+
+                            <div ng-if="configuration.name === 'Direction'" > 
+                                <div ng-repeat="direction in configuration.value">
+                                    <label class="rdo">
+                                        <input type="radio" ng-model="vm.selectedDirection" ng-value="direction" ng-click="vm.selectExclusiveOption(direction,configuration.name)"/>
+                                        <span>{{direction}}</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div ng-if="configuration.name === 'Query Source'" >
+                                <div ng-repeat="source in configuration.value">
+                                    <label class="chx">
+                                        <input type="checkbox" ng-checked="vm.selectedQuerySourceList.indexOf(source) != -1" ng-click="vm.selectOption(source,configuration.name)" />
+                                        <span>&nbsp;&nbsp;{{source}}</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div ng-if="configuration.name === 'Limit'">
+                                <div ng-repeat="item in configuration.value " class="input-group">
+
+                                    <span ng-if="item.name == 'Polygon geometry from delineated watershed'" class="input-group-addon rdo" ng-click="vm.addLimit(item)">
+                                        <input type="radio" name="limit" ng-checked="vm.selectedLimit.name === item.name">
+                                        <span class="input-group-addon" >{{item.name}}</span>
+                                    </span>
+                                    <span ng-if="item.name == 'Distance (km)'" class="input-group-addon rdo" ng-click="vm.addLimit(item)">
+                                        <input type="radio" name="limit" ng-checked="vm.selectedLimit.name === item.name">
+                                        <span class="input-group-addon">{{item.name}}</span>
+                                    </span>
+                                    <input ng-if="item.name == 'Distance (km)'" type="text" class="form-control" name="distanceValue" ng-value="item.value">
+
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
+
+                    <div class="panel-confitem-action">
+                        <button ng-disabled="vm.explorationService.explorationMethodBusy" ng-click="vm.ExecuteNav()" type="button" class="btn-wim-sm btn-wim-success btn-wim-group-1"><i ng-class="vm.explorationService.explorationMethodBusy? 'fa fa-refresh fa-spin':'fa fa-check-circle-o'"></i>&nbsp;&nbsp;Go</button>
+                    </div>
+
                 </div>
+            </div>
+        </div>
 
-                <p>Elevation data provided by: <a href="https://developers.arcgis.com/rest/elevation/api-reference/profile.htm">ESRI Elevation Analysis services</a></p>
 
-                <div id="downloadButtons" class="hidden-print">
-                    <div class="btn-group wim-btn-group">
-                        <button type="button" class="btn-wim-sm btn-wim-default" ng-click="vm.downloadCSV()"><span><i class="fa fa-download"></i>&nbsp;&nbsp;Download CSV</span></button>
+        <div id="networkNav" ng-if="!vm.explorationService.selectedMethod.navigationInfo.configuration">
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Elevation profile<small ng-if="!vm.explorationService.showElevationChart">&nbsp;&nbsp;Configure tool using the options below</small></h3>
+                </div>
+                <div class="panel-body">
+
+                    <div id="elevationProfileSetup" ng-if="!vm.explorationService.showElevationChart">
+                        <h5>Select DEM Resolution</h5>
+                        <div ng-repeat="resolution in vm.DEMresolutionList">
+                            <label class="rdo">
+                                <input type="radio" ng-model="vm.explorationService.DEMresolution" ng-value="resolution" />
+                                <span>{{resolution}}</span>
+                            </label>
+                        </div>
+                        <h5>Maximum Samping Distance in Meters (optional)</h5>
+                        <input type="text" class="form-control" ng-model="vm.explorationService.samplingDistance">
+                        <h5>Select points</h5>
+                        <button class="btn-exploration-tools btn-green" ng-click="vm.selectElevationPoints()"><span><i class="fa fa-map-marker"></i>&nbsp;&nbsp;Select profile points</span></button>
+                    </div>
+
+                    <div id="printArea">
+
+                        <div id="elevationData" ng-if="vm.explorationService.showElevationChart">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div id="elevation-div" class="leaflet-control elevation lime-theme"><div ng-bind-html="vm.convertUnsafe(vm.explorationService.elevationProfileHTML)"> </div></div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-8">
+                                    <table id="elevationProfileTable" class="table table-striped text-center" table-condensed">
+                                        <thead>
+                                            <tr>
+                                                <th>Latitude</th>
+                                                <th>Longitude</th>
+                                                <th>Elevation (ft)</th>
+                                                <th>Distance (mi)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-repeat="item in vm.explorationService.coordinateList track by $index">
+                                                <td ng-bind="item[0]"></td>
+                                                <td ng-bind="item[1]"></td>
+                                                <td ng-bind="item[2]"></td>
+                                                <td ng-bind="item[3]"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <p>Elevation data provided by: <a href="https://developers.arcgis.com/rest/elevation/api-reference/profile.htm">ESRI Elevation Analysis services</a></p>
+
+                            <div id="downloadButtons" class="hidden-print">
+                                <div class="btn-group wim-btn-group">
+                                    <button type="button" class="btn-wim-sm btn-wim-default" ng-click="vm.downloadCSV()"><span><i class="fa fa-download"></i>&nbsp;&nbsp;Download CSV</span></button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-            </div>
-    <div class="modal-footer  hidden-print">
-        <div class="btn-group">
-            <button class="btn-wim-default" ng-click="vm.close()"><i class="fa fa-close"></i>&nbsp;&nbsp;Close</button>
-            <button class="btn-wim-default" ng-click="vm.print()" analytics-on analytics-event="Print" analytics-category="Map" analytics-label="elevationProfilePrint"><i class="fa fa-print"></i>&nbsp;&nbsp;Print</button>
         </div>
-    </div>
-</div>
+            <div class="modal-footer  hidden-print">
+                <div class="btn-group">
+                    <button class="btn-wim-default" ng-click="vm.close()"><i class="fa fa-close"></i>&nbsp;&nbsp;Close</button>
+                    <button class="btn-wim-default" ng-hide="vm.explorationService.selectedMethod.navigationInfo.configuration" ng-click="vm.print()" analytics-on analytics-event="Print" analytics-category="Map" analytics-label="elevationProfilePrint"><i class="fa fa-print"></i>&nbsp;&nbsp;Print</button>
+                </div>
+            </div>
+        </div>

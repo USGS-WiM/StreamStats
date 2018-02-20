@@ -157,7 +157,11 @@ var StreamStats;
                 //console.log('in load parameters', this.selectedRegion);
                 if (!this.selectedRegion)
                     return;
-                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSAvailableParams'].format(this.selectedRegion.RegionID);
+                //hack for st louis stormdrain
+                var temp_region = this.selectedRegion.RegionID;
+                if (temp_region == 'MO_STL')
+                    temp_region = 'MO';
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSAvailableParams'].format(temp_region);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     //console.log(response);
@@ -165,17 +169,6 @@ var StreamStats;
                         _this.streamStatsAvailable = true;
                         response.data.parameters.forEach(function (parameter) {
                             try {
-                                ////dont add an always selected param twice
-                                //configuration.alwaysSelectedParameters.forEach((alwaysSelectedParam) => {
-                                //    if (alwaysSelectedParam.name == parameter.code) {
-                                //        parameter.checked = true;
-                                //        parameter.toggleable = false;
-                                //    }
-                                //    else {
-                                //        parameter.checked = false;
-                                //        parameter.toggleable = true;
-                                //    }
-                                //});
                                 parameter.checked = false;
                                 parameter.toggleable = true;
                                 _this.parameterList.push(parameter);

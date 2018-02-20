@@ -164,25 +164,25 @@ module StreamStats.Controllers {
         public nomnimalZoomLevel: string;
         public get selectedExplorationMethodType(): Services.ExplorationMethodType {
             if (this.explorationService.selectedMethod == null) return 0;
-            return this.explorationService.selectedMethod.ModelType;
+            return this.explorationService.selectedMethod.navigationID;
         }
-        public set selectedExplorationMethodType(val: Services.ExplorationMethodType) {            
-            this.explorationService.setMethod(val);
+        public set selectedExplorationMethodType(val: Services.ExplorationMethodType) {  
+            this.explorationService.setMethod(val, {});
         }
-        public explorationMethodBusy: boolean = false;
+        //public explorationMethodBusy: boolean = false;
         private environment: string;
         public explorationToolsExpanded: boolean = false;
         public measuremove: any;
         public measurestart: any;
         public measurestop: any;
+        public selectedExplorationTool: any;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService'];
-        constructor(public $scope: IMapControllerScope, toaster, $analytics, $location: ng.ILocationService, $stateParams, leafletBoundsHelper: any, leafletData: ILeafletData, search: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, exploration: Services.IExplorationService, eventManager: WiM.Event.IEventManager, private modal: Services.IModalService) {
+        static $inject = ['$scope', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack'];
+        constructor(public $scope: IMapControllerScope, toaster, $analytics, $location: ng.ILocationService, $stateParams, leafletBoundsHelper: any, leafletData: ILeafletData, search: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, exploration: Services.IExplorationService, eventManager: WiM.Event.IEventManager, private modal: Services.IModalService, private modalStack: ng.ui.bootstrap.IModalStackService,) {
             $scope.vm = this;
-            this.init();
-
+            
             this.toaster = toaster;
             this.angulartics = $analytics;
             this.searchService = search;
@@ -196,6 +196,9 @@ module StreamStats.Controllers {
             this.eventManager = eventManager;
             this.cursorStyle = 'pointer';
             this.environment = configuration.environment;
+            this.selectedExplorationTool = null;
+
+            this.init();
 
             //subscribe to Events
             this.eventManager.SubscribeToEvent(Services.onSelectedStudyAreaChanged, new WiM.Event.EventHandler<Services.StudyAreaEventArgs>(() => {
@@ -220,6 +223,11 @@ module StreamStats.Controllers {
 
             this.eventManager.SubscribeToEvent(Services.onSelectedMethodExecuteComplete, new WiM.Event.EventHandler<Services.ExplorationServiceEventArgs>((sender: any, e: Services.ExplorationServiceEventArgs) => {
                 this.onExplorationMethodComplete(sender,e);
+            }));
+
+            this.eventManager.SubscribeToEvent(Services.onSelectExplorationMethod, new WiM.Event.EventHandler<Services.ExplorationServiceEventArgs>((sender: any, e: Services.ExplorationServiceEventArgs) => {
+                if (sender.selectedMethod.navigationID != 0) this.onSelectExplorationMethod(sender, e);
+                if (sender.selectedMethod.navigationID == 0) this.selectedExplorationTool = null;
             }));
             
 
@@ -258,26 +266,33 @@ module StreamStats.Controllers {
                 //check if in elevation profile mode
                 if (this.explorationService.drawElevationProfile) return; 
 
+                //network navigation
+                if (exploration.selectedMethod != null && exploration.selectedMethod.locations.length <= exploration.selectedMethod.minLocations) {
+
+                    console.log('in mapcontroller add point', exploration.selectedMethod.navigationPointCount, exploration.selectedMethod.locations.length)
+
+                    //add point
+                    if (exploration.explorationPointType == 'Start point location') exploration.selectedMethod.addLocation('Start point location', new WiM.Models.Point(args.leafletEvent.latlng.lat, args.leafletEvent.latlng.lng, '4326'));
+                    if (exploration.explorationPointType == 'End point location') exploration.selectedMethod.addLocation('End point location', new WiM.Models.Point(args.leafletEvent.latlng.lat, args.leafletEvent.latlng.lng, '4326'));
+
+                    //add temporary marker to map
+                    for (var i: number = 0; i < exploration.selectedMethod.locations.length; i++) {
+                        var item = exploration.selectedMethod.locations[i];
+                        this.markers['netnav_' + i] = {
+                            lat: item.Latitude,
+                            lng: item.Longitude,
+                            message: exploration.selectedMethod.navigationName,
+                            focus: true,
+                            draggable: false
+                        };
+                    }//next i
+
+                    this.modal.openModal(Services.SSModalType.e_exploration);
+                }
+
                 //query streamgage is default map click action
                 else {
-                    //query streamgages
                     this.queryPoints(args.leafletEvent);
-
-                    //if (exploration.selectedMethod != null) {
-                    //    exploration.selectedMethod.addLocation(new WiM.Models.Point(args.leafletEvent.latlng.lat, args.leafletEvent.latlng.lng, '4326'));
-
-                    //    for (var i: number = 0; i < exploration.selectedMethod.locations.length; i++) {
-                    //        var item = exploration.selectedMethod.locations[i];
-                    //        this.markers['netnav_' + i] = {
-                    //            lat: item.Latitude,
-                    //            lng: item.Longitude,
-                    //            message: exploration.GetToolName(exploration.selectedMethod.ModelType) + " point",
-                    //            focus: true,
-                    //            draggable: false
-                    //        };
-                    //    }//next i
-                    //}
-
                 }
             });
 
@@ -288,8 +303,14 @@ module StreamStats.Controllers {
             });
 
             $scope.$watch(() => this.explorationService.drawElevationProfile,(newval, oldval) => {
-                if (newval) this.elevationProfile();
+                if (newval) {
+                    this.modal.openModal(Services.SSModalType.e_exploration);
+                }
             });
+
+            $scope.$watch(() => this.explorationService.selectElevationPoints, (newval, oldval) => {
+                if (newval) this.elevationProfile();
+            });        
 
             $scope.$watch(() => this.explorationService.drawMeasurement,(newval, oldval) => {
                 //console.log('measurementListener ', newval, oldval);
@@ -302,6 +323,14 @@ module StreamStats.Controllers {
                     this.addRegionOverlayLayers(this.regionServices.selectedRegion.RegionID);
                 }
             });
+
+
+            //$scope.$watch(() => this.explorationService.selectedMethod, (newval, oldval) => {
+            //    if (newval) {
+            //        console.log('watch selectedMethod', newval);
+            //        if (newval.navigationID == 0) this.resetExplorationTools();
+            //    }
+            //});
 
             $scope.$on('$locationChangeStart',() => this.updateRegion());
 
@@ -326,46 +355,27 @@ module StreamStats.Controllers {
 
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
+
+
         public setExplorationMethodType(val: number) {
+           
             //check if can select
-            this.removeMarkerLayers("netnav_", true);
             this.removeGeoJsonLayers("netnav_",true);
-            if (!this.canSelectExplorationTool(val)) return
-            this.selectedExplorationMethodType = val;
-            
-            //then select
 
+            //get this configuration
+            this.explorationService.getNavigationConfiguration(val);
 
-            //send messages if needed
         }
-        public toggleLimitExplorationMethodToStudyArea(): void {
-            if (this.studyArea.selectedStudyArea !== null && this.studyArea.selectedStudyArea.WorkspaceID !== '') {
-                if ((<Models.Path2Outlet>this.explorationService.selectedMethod).workspaceID !== '') (<Models.Path2Outlet>this.explorationService.selectedMethod).workspaceID = ''
-                else {
-                    (<Models.Path2Outlet>this.explorationService.selectedMethod).workspaceID = this.studyArea.selectedStudyArea.WorkspaceID;
-                    this.toaster.pop("info", "Information", "Ensure your selected point resides within the basin", 5000);
-                }
-            }                 
-        }
+
         public ExecuteNav(): void {
             //validate request
-            if (this.explorationService.selectedMethod.locations.length != this.explorationService.selectedMethod.requiredLocationLength) {
-                this.toaster.pop("warning", "Warning", "You must select at least " + this.explorationService.selectedMethod.requiredLocationLength + " points.", 10000);
+            if (this.explorationService.selectedMethod.locations.length != this.explorationService.selectedMethod.minLocations) {
+                this.toaster.pop("warning", "Warning", "You must select at least " + this.explorationService.selectedMethod.minLocations + " points.", 10000);
                 return;
             }
             var isOK:boolean = false;
-            if (this.selectedExplorationMethodType == Services.ExplorationMethodType.GETNETWORKREPORT) {
-                for (var i: number = 0; i < (<Models.NetworkReport>this.explorationService.selectedMethod).layerOptions.length; i++) {
-                    var item = (<Models.NetworkReport>this.explorationService.selectedMethod).layerOptions[i];
-                    if (item.selected) { isOK = true; break; };
-                }//next i
-                if (!isOK) {
-                    this.toaster.pop("warning", "Warning", "You must select at least one configuration item", 10000);
-                    return;
-                }
 
-            }//end if
-            this.explorationMethodBusy = true;
+            this.explorationService.explorationMethodBusy = true;
 
             this.explorationService.ExecuteSelectedModel();
         }
@@ -374,7 +384,13 @@ module StreamStats.Controllers {
         //-+-+-+-+-+-+-+-+-+-+-+-
         private init(): void { 
 
-            //init map           
+            this.setupMap();
+            console.log('in map init')
+            this.explorationService.getNavigationEndPoints();
+        }
+
+        public setupMap() {
+      
             this.center = new Center(39, -100, 4);
             this.layers = {
                 baselayers: configuration.basemaps,
@@ -384,7 +400,7 @@ module StreamStats.Controllers {
             this.markers = {};
             this.paths = {};
             this.geojson = {};
-            this.regionLayer = {};     
+            this.regionLayer = {};
 
             //for elevation div
             var width = 600;
@@ -400,16 +416,12 @@ module StreamStats.Controllers {
                         circlemarker: false,
                         marker: false
                     }
-
                 },
                 custom:
                 new Array(
-                    //zoom home button control
-                    //(<any>L.Control).zoomHome({ homeCoordinates: [39, -100], homeZoom: 4 }),
-                    //location control
-                    (<any>L.control).locate({ follow: false, locateOptions: {"maxZoom": 15} }),
+                    (<any>L.control).locate({ follow: false, locateOptions: { "maxZoom": 15 } }),
                     (<any>L.control).elevation({ imperial: true, width: width })
-                    )
+                )
             };
             this.events = {
                 map: {
@@ -681,9 +693,12 @@ module StreamStats.Controllers {
 
             this.toaster.clear();
             this.cursorStyle = 'pointer';
+            this.selectedExplorationTool = null;
         }
 
         private showLocation() {
+
+            this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'showLocation' });
 
             //get reference to location control
             var lc;
@@ -691,15 +706,22 @@ module StreamStats.Controllers {
                 if (control._container.className.indexOf("leaflet-control-locate") > -1) lc = control; 
             });
             lc.start();
+
+            this.leafletData.getMap("mainMap").then((map: any) => {
+                map.on('locationfound', () => { this.selectedExplorationTool = null });
+            });
+
         }
 
         private resetExplorationTools() {
             document.getElementById('measurement-div').innerHTML = '';
+            this.explorationService.elevationProfileHTML = '';
             if (this.drawControl) this.drawController({ }, false);
             this.explorationService.measurementData = '';
 
             this.explorationService.drawElevationProfile = false;
             this.explorationService.drawMeasurement = false;
+            this.explorationService.selectElevationPoints = false;
 
             delete this.geojson['elevationProfileLine3D'];
             this.leafletData.getMap("mainMap").then((map: any) => {
@@ -713,6 +735,15 @@ module StreamStats.Controllers {
                     if (this.measurestop) map.off("draw:created", this.measurestop);
                 });
             });
+
+            this.explorationService.networkNavResults = [];
+            this.selectedExplorationMethodType = 0;
+            this.removeMarkerLayers("netnav_", true);
+            this.removeGeoJsonLayers("netnavpoints", true);
+            this.removeGeoJsonLayers("netnavroute", true);
+
+            this.selectedExplorationTool = null;
+            this.explorationService.explorationPointType = null;
         }
 
         private measurement() {
@@ -774,6 +805,7 @@ module StreamStats.Controllers {
 
                         this.drawControl.disable();
                         this.explorationService.drawMeasurement = false;
+                        this.selectedExplorationTool = null;
                     };
 
                     map.on("click", this.measurestart);
@@ -850,7 +882,8 @@ module StreamStats.Controllers {
 
                                 this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000)
                                 this.studyArea.checkingDelineatedPoint = false;
-                                this.startDelineate(latlng);
+
+                                this.startDelineate(latlng, false);
                             }
 
                             //otherwise parse exclude Codes
@@ -909,6 +942,9 @@ module StreamStats.Controllers {
                         var clipPolygon = L.polygon(editAreaConverted);
 
                         if (this.studyArea.drawControlOption == 'add') {
+
+                            this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'addArea' });
+
                             //console.log('add layer', layer.toGeoJSON());
                             var editPolygon = greinerHormann.union(sourcePolygon, clipPolygon);
                             this.studyArea.WatershedEditDecisionList.append.push(layer.toGeoJSON());
@@ -916,6 +952,9 @@ module StreamStats.Controllers {
                         }
 
                         if (this.studyArea.drawControlOption == 'remove') {
+
+                            this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'removeArea' });
+
                             //console.log('remove layer', layer.toGeoJSON());
                             var editPolygon = greinerHormann.diff(sourcePolygon, clipPolygon);
 
@@ -947,35 +986,35 @@ module StreamStats.Controllers {
 
         private canSelectExplorationTool(methodval: Services.ExplorationMethodType): boolean {            
             switch (methodval) {
-                case Services.ExplorationMethodType.FINDPATHBETWEENPOINTS:
-                    if (this.regionServices.selectedRegion == null) {
-                        this.toaster.pop("warning", "Warning", "you must first select a state or region to use this tool", 5000);
-                        return false;
-                    }
-                    if (this.center.zoom < 10) {
-                        this.toaster.pop("warning", "Warning", "you must be zoomed into at least a zoomlevel of 10 to use this tool", 5000);
-                        return false;
-                    }
+                case Services.ExplorationMethodType.NETWORKPATH:
+                    //if (this.regionServices.selectedRegion == null) {
+                    //    this.toaster.pop("warning", "Warning", "you must first select a state or region to use this tool", 5000);
+                    //    return false;
+                    //}
+                    //if (this.center.zoom < 10) {
+                    //    this.toaster.pop("warning", "Warning", "you must be zoomed into at least a zoomlevel of 10 to use this tool", 5000);
+                    //    return false;
+                    //}
                     break;
-                case Services.ExplorationMethodType.FINDPATH2OUTLET:
-                    if (this.regionServices.selectedRegion == null) {
-                        this.toaster.pop("warning", "Warning", "you must first select a state or region to use this tool", 5000);
-                        return false;
-                    }
-                    if (this.center.zoom < 10) {
-                        this.toaster.pop("warning", "Warning", "you must be zoomed into at least a zoomlevel of 10 to use this tool", 5000);
-                        return false;
-                    }
+                case Services.ExplorationMethodType.FLOWPATH:
+                    //if (this.regionServices.selectedRegion == null) {
+                    //    this.toaster.pop("warning", "Warning", "you must first select a state or region to use this tool", 5000);
+                    //    return false;
+                    //}
+                    //if (this.center.zoom < 10) {
+                    //    this.toaster.pop("warning", "Warning", "you must be zoomed into at least a zoomlevel of 10 to use this tool", 5000);
+                    //    return false;
+                    //}
                     break;
-                case Services.ExplorationMethodType.GETNETWORKREPORT:
-                    if (this.regionServices.selectedRegion == null) {
-                        this.toaster.pop("warning", "Warning", "you must first select a state or region to use this tool", 5000);
-                        return false;
-                    }
-                    if (this.center.zoom < 10) {
-                        this.toaster.pop("warning", "Warning", "you must be zoomed into at least a zoomlevel of 10 to use this tool", 5000);
-                        return false;
-                    }
+                case Services.ExplorationMethodType.NETWORKTRACE:
+                    //if (this.regionServices.selectedRegion == null) {
+                    //    this.toaster.pop("warning", "Warning", "you must first select a state or region to use this tool", 5000);
+                    //    return false;
+                    //}
+                    //if (this.center.zoom < 10) {
+                    //    this.toaster.pop("warning", "Warning", "you must be zoomed into at least a zoomlevel of 10 to use this tool", 5000);
+                    //    return false;
+                    //}
                     break;
                 default:
                     return false;
@@ -984,17 +1023,46 @@ module StreamStats.Controllers {
             return true;
         }
         private onExplorationMethodComplete(sender: any, e: Services.ExplorationServiceEventArgs) {
-            this.explorationMethodBusy = false;
-            if (e.features != null && e.features.length > 0) {
-                e.features.forEach((layer)=> {
-                    var item = angular.fromJson(angular.toJson(layer));
-                    this.addGeoJSON("netnav_"+item.name, item.feature);                    
-                });                                
+
+            this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'networknav-' + this.explorationService.selectedMethod.navigationInfo.code });
+
+            //console.log('in onexplorationmethodCOmplete:', this.explorationService.selectedMethod.navigationInfo.code)
+            this.explorationService.explorationMethodBusy = false;
+            if (e.features != null && e.features['features'].length > 0) {
+                //console.log('exploration method complete', e)
+
+                this.removeMarkerLayers("netnav_", true);
+
+                this.explorationService.networkNavResults.forEach((layer, key)=> {
+
+                    this.addGeoJSON(layer.name, layer.feature); 
+
+                    //zoomTo logic
+                    if (layer.name == "netnavroute") {
+                        this.leafletData.getMap("mainMap").then((map: any) => {
+                            var tempExtent = L.geoJson(layer.feature);
+                            map.fitBounds(tempExtent.getBounds());
+                        });
+                    }
+
+                    this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(layer.name, "geojson", this.geojson[layer.name].style));
+                });      
+
+                //disable tool
+                this.selectedExplorationMethodType = 0;
+                this.selectedExplorationTool = null;
+                this.modalStack.dismissAll();
+
             }//end if
             if (e.report != null && e.report != '') {          
                 this.modal.openModal(Services.SSModalType.e_navreport, { placeholder:e.report});
             }//end if
         }
+
+        private onSelectExplorationMethod(sender: any, e: Services.ExplorationServiceEventArgs) {
+            this.modal.openModal(Services.SSModalType.e_exploration);
+        }
+
         private onSelectedAreaOfInterestChanged(sender: any, e: WiM.Services.SearchAPIEventArgs) {
 
             //ga event
@@ -1045,25 +1113,55 @@ module StreamStats.Controllers {
        
         private onSelectedStudyAreaChanged() {
 
-            this.removeOverlayLayers('globalwatershed', true);
+            //console.log('in onselectedstudyareachange1', this.studyArea.selectedStudyArea.Features)
 
             if (!this.studyArea.selectedStudyArea || !this.studyArea.selectedStudyArea.Features) return;
-
-            this.studyArea.selectedStudyArea.Features.forEach((layer) => {
-
-                var item = angular.fromJson(angular.toJson(layer));
-                this.addGeoJSON(item.name, item.feature);
-                this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(item.name, "geojson", this.geojson[item.name].style));
-            });
 
             //clear out this.markers
             this.markers = {};
 
-            var bbox = this.geojson['globalwatershed'].data.features[0].bbox;
-            this.leafletData.getMap("mainMap").then((map: any) => {
-                map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]], {
+            //temp (soon to be permanent method for MO_STL)
+            if (this.studyArea.selectedStudyArea.RegionID == 'MO_STL') {
+                this.removeOverlayLayers('GlobalWatershed', true);
+
+                this.studyArea.selectedStudyArea.Features['features'].forEach((layer) => {
+
+                    var item = angular.fromJson(angular.toJson(layer));
+                    var name = item.id.toLowerCase();
+                    this.addGeoJSON(name, item);
+                    this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(name, "geojson", this.geojson[name].style));
                 });
-            });
+
+                if (this.studyArea.selectedStudyArea.Features['bbox']) {
+                    var bbox = this.studyArea.selectedStudyArea.Features['bbox'];
+                    this.leafletData.getMap("mainMap").then((map: any) => {
+                        map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]], {
+                        });
+                    });
+                }
+            }
+
+            //old style delineation service response
+            else {
+                this.studyArea.selectedStudyArea.Features.forEach((layer) => {
+                    //console.log('in onselectedstudyareachange2',layer)
+
+                    this.removeOverlayLayers('globalwatershed', true);
+
+                    var item = angular.fromJson(angular.toJson(layer));
+                    var name = item.name.toLowerCase();
+                    this.addGeoJSON(name, item.feature);
+                    this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(name, "geojson", this.geojson[name].style));
+                });
+
+                if (this.geojson['globalwatershed'].data.features[0].bbox) {
+                    var bbox = this.geojson['globalwatershed'].data.features[0].bbox;
+                    this.leafletData.getMap("mainMap").then((map: any) => {
+                        map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]], {
+                        });
+                    });
+                }
+            }
 
             //query basin against Karst
             if (this.regionServices.selectedRegion.Applications.indexOf("KarstCheck") > -1) {
@@ -1150,12 +1248,62 @@ module StreamStats.Controllers {
                         }
                     }
             }
+
+            else if (LayerName.indexOf('netnavpoints') != -1)  {
+
+                this.geojson[LayerName] = {
+                    data: feature,
+                    onEachFeature: function (feature, layer) {
+
+                        var popupContent = '<strong>Network navigation start/end point</strong></br>';
+                        angular.forEach(feature.properties, function (value, key) {
+                            popupContent += '<strong>' + key + ': </strong>' + value + '</br>';
+                        });
+                        layer.bindPopup(popupContent);
+                    },
+                    pointToLayer: function (feature, latlng) {
+
+                        //default class
+                        var classname = "wmm-pin wmm-mutedblue wmm-icon-noicon wmm-icon-black wmm-size-25";
+
+                        if (feature.properties.source == 'ss_gages') classname = "wmm-pin wmm-blue wmm-icon-triangle wmm-icon-black wmm-size-25";
+                        if (feature.properties.source == 'WQP') classname = "wmm-pin wmm-sky wmm-icon-square wmm-icon-black wmm-size-25";
+
+                        var myIcon = L.divIcon({
+                            className: classname,
+                        });
+
+                        return L.marker(latlng, { icon: myIcon });
+                    },
+                    style: {
+                        displayName: "Network navigation point",
+                        imagesrc: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB0AAAAlCAYAAAC+uuLPAAAACXBIWXMAAA7EAAAOxAGVKw4bAAA57GlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxMzggNzkuMTU5ODI0LCAyMDE2LzA5LzE0LTAxOjA5OjAxICAgICAgICAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iCiAgICAgICAgICAgIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIKICAgICAgICAgICAgeG1sbnM6cGhvdG9zaG9wPSJodHRwOi8vbnMuYWRvYmUuY29tL3Bob3Rvc2hvcC8xLjAvIgogICAgICAgICAgICB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIKICAgICAgICAgICAgeG1sbnM6c3RFdnQ9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZUV2ZW50IyIKICAgICAgICAgICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iCiAgICAgICAgICAgIHhtbG5zOmV4aWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vZXhpZi8xLjAvIj4KICAgICAgICAgPHhtcDpDcmVhdG9yVG9vbD5BZG9iZSBQaG90b3Nob3AgQ0MgMjAxNyAoV2luZG93cyk8L3htcDpDcmVhdG9yVG9vbD4KICAgICAgICAgPHhtcDpDcmVhdGVEYXRlPjIwMTgtMDEtMzBUMTU6NTk6NDgtMDU6MDA8L3htcDpDcmVhdGVEYXRlPgogICAgICAgICA8eG1wOk1vZGlmeURhdGU+MjAxOC0wMS0zMVQxMTowMDoyMC0wNTowMDwveG1wOk1vZGlmeURhdGU+CiAgICAgICAgIDx4bXA6TWV0YWRhdGFEYXRlPjIwMTgtMDEtMzFUMTE6MDA6MjAtMDU6MDA8L3htcDpNZXRhZGF0YURhdGU+CiAgICAgICAgIDxkYzpmb3JtYXQ+aW1hZ2UvcG5nPC9kYzpmb3JtYXQ+CiAgICAgICAgIDxwaG90b3Nob3A6Q29sb3JNb2RlPjM8L3Bob3Rvc2hvcDpDb2xvck1vZGU+CiAgICAgICAgIDx4bXBNTTpJbnN0YW5jZUlEPnhtcC5paWQ6M2FkNDgxMTctYjA3Mi05NjQ4LTk5MmYtZmIyZTgzNTcwOTkxPC94bXBNTTpJbnN0YW5jZUlEPgogICAgICAgICA8eG1wTU06RG9jdW1lbnRJRD5hZG9iZTpkb2NpZDpwaG90b3Nob3A6ZDZiMzhiZmUtMDY5Zi0xMWU4LTk2OTAtOGIzNWZmM2I1YzJjPC94bXBNTTpEb2N1bWVudElEPgogICAgICAgICA8eG1wTU06T3JpZ2luYWxEb2N1bWVudElEPnhtcC5kaWQ6NDQ0OTVjNjYtY2JjZS04ZDQyLWFhYmUtYjJmZTM4MjRmYWI3PC94bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ+CiAgICAgICAgIDx4bXBNTTpIaXN0b3J5PgogICAgICAgICAgICA8cmRmOlNlcT4KICAgICAgICAgICAgICAgPHJkZjpsaSByZGY6cGFyc2VUeXBlPSJSZXNvdXJjZSI+CiAgICAgICAgICAgICAgICAgIDxzdEV2dDphY3Rpb24+Y3JlYXRlZDwvc3RFdnQ6YWN0aW9uPgogICAgICAgICAgICAgICAgICA8c3RFdnQ6aW5zdGFuY2VJRD54bXAuaWlkOjQ0NDk1YzY2LWNiY2UtOGQ0Mi1hYWJlLWIyZmUzODI0ZmFiNzwvc3RFdnQ6aW5zdGFuY2VJRD4KICAgICAgICAgICAgICAgICAgPHN0RXZ0OndoZW4+MjAxOC0wMS0zMFQxNTo1OTo0OC0wNTowMDwvc3RFdnQ6d2hlbj4KICAgICAgICAgICAgICAgICAgPHN0RXZ0OnNvZnR3YXJlQWdlbnQ+QWRvYmUgUGhvdG9zaG9wIENDIDIwMTcgKFdpbmRvd3MpPC9zdEV2dDpzb2Z0d2FyZUFnZW50PgogICAgICAgICAgICAgICA8L3JkZjpsaT4KICAgICAgICAgICAgICAgPHJkZjpsaSByZGY6cGFyc2VUeXBlPSJSZXNvdXJjZSI+CiAgICAgICAgICAgICAgICAgIDxzdEV2dDphY3Rpb24+c2F2ZWQ8L3N0RXZ0OmFjdGlvbj4KICAgICAgICAgICAgICAgICAgPHN0RXZ0Omluc3RhbmNlSUQ+eG1wLmlpZDozYWQ0ODExNy1iMDcyLTk2NDgtOTkyZi1mYjJlODM1NzA5OTE8L3N0RXZ0Omluc3RhbmNlSUQ+CiAgICAgICAgICAgICAgICAgIDxzdEV2dDp3aGVuPjIwMTgtMDEtMzFUMTE6MDA6MjAtMDU6MDA8L3N0RXZ0OndoZW4+CiAgICAgICAgICAgICAgICAgIDxzdEV2dDpzb2Z0d2FyZUFnZW50PkFkb2JlIFBob3Rvc2hvcCBDQyAyMDE3IChXaW5kb3dzKTwvc3RFdnQ6c29mdHdhcmVBZ2VudD4KICAgICAgICAgICAgICAgICAgPHN0RXZ0OmNoYW5nZWQ+Lzwvc3RFdnQ6Y2hhbmdlZD4KICAgICAgICAgICAgICAgPC9yZGY6bGk+CiAgICAgICAgICAgIDwvcmRmOlNlcT4KICAgICAgICAgPC94bXBNTTpIaXN0b3J5PgogICAgICAgICA8dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPgogICAgICAgICA8dGlmZjpYUmVzb2x1dGlvbj45NjAwMDAvMTAwMDA8L3RpZmY6WFJlc29sdXRpb24+CiAgICAgICAgIDx0aWZmOllSZXNvbHV0aW9uPjk2MDAwMC8xMDAwMDwvdGlmZjpZUmVzb2x1dGlvbj4KICAgICAgICAgPHRpZmY6UmVzb2x1dGlvblVuaXQ+MjwvdGlmZjpSZXNvbHV0aW9uVW5pdD4KICAgICAgICAgPGV4aWY6Q29sb3JTcGFjZT42NTUzNTwvZXhpZjpDb2xvclNwYWNlPgogICAgICAgICA8ZXhpZjpQaXhlbFhEaW1lbnNpb24+Mjk8L2V4aWY6UGl4ZWxYRGltZW5zaW9uPgogICAgICAgICA8ZXhpZjpQaXhlbFlEaW1lbnNpb24+Mzc8L2V4aWY6UGl4ZWxZRGltZW5zaW9uPgogICAgICA8L3JkZjpEZXNjcmlwdGlvbj4KICAgPC9yZGY6UkRGPgo8L3g6eG1wbWV0YT4KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAKPD94cGFja2V0IGVuZD0idyI/Pj4hpkQAAAAgY0hSTQAAeiUAAICDAAD5/wAAgOkAAHUwAADqYAAAOpgAABdvkl/FRgAAA2xJREFUeNrs181rI3Ucx/H3b2YyD8mkMZslSZOsaVfsXpaFlYLg3jwvgl4XRVGPXZ8FRawXQQVXlD3pQegee+tfIQiFZV1auw9tau3zQ9KkM5OZyfw81JV1aZNMCiq43/Mwr9985/f9zG+ElJJ/uhT+hfr/oFq/F07PzMj7tWU2t7dwHBdVU0nbaYbzea6++YaIg4peG+n7qSk5e+sX6o0GrucRBAGdKEIIgaqq6IkESctiuJDnufFxXrp8WZwI/fSLL+XthQUOHIdei9M0jbSd4pnz5/lwYkIMhL4/OSkX7i/S9n2EomAPDZErFknZaSzbJooimvU6rUaDxu4OTrMJgGWajF+4wCfvvStioR9Mfibn7t0lCEIM06JYrVKqjmBYJqqqoagqSEkYhnQ6Ic5+k5XFe2yurBBFEaZh8OzFi3z8ztuiL/Tza9/In2Zn8YOAoewpqmPnyBUK6IYB4ujFR1FE23VYW66xfOcOvueRtCyev3SJiSM22d9G5sb0tPz55k38ICBp25RGRsmXy+imeSwIoCgKVsqmVB2lNDKKoig4rsut+fnec3p7fh7X89ASCU4XhymcqaBqfU8VhmWRL5XJ5vMArK6v89X167IrenepBoCdyZCvVDAMM9bQCyEYymYpVs6gmyZBGLK6vtH9SVsHBwAk7TSZ3OmuLT221apKKpPBzmQAqO83uqNSSrREAjOZRFXVgWMukdAxTAsAx3F7Z6+iqmha4kTZqmoaCV0HIOiEvVEpJVEUnTDS5V8JpiB6o6Hv0/bcE5GBH+D/eQ/d0LujQgiklATtNr7nDYy2PZeDZutwElKp7uhw4XC+9vf22FpbHQj0220aOzs4rcMszj2R7Y6OnX0KANc5YGPlNxq7O/HeZBSxt7XJ+nKNqNNhKG3z9NnR7uhHb10VpWIRGUXUt3dYq9VitblZr7O6tITTOmxttVLh9StXRF9fmRdffU06rotumpRHRqmOnTvM3y61v7fL4twc2+trdMKQJ8tlfrj2dX9fmQf1wsuvyLbv9wU/CpYKBX787lsR+2A2c2NKGLqO73n8vrRIbeHXI1sdF+x5GuwFDwL2dTA7rtWe6wwE9o0+CmdO5QDY3dyIDcZCH4YVVUUAnU4nNhgbfRgGBgIHQh/AuWx2IHBg9PFf22P0P4H+MQCyncndp+2ZGQAAAABJRU5ErkJggg==",
+                        visible: true
+                    }
+                }
+            }
+
+            else if (LayerName == 'netnavroute') {
+
+                this.geojson[LayerName] =
+                    {
+                        data: feature,
+                        visible: true,
+                        style: {
+                            displayName: "Network navigation route",
+                            imagesrc: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADYAAAA2CAYAAACMRWrdAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAVaSURBVGhDzZr5VxpXFMf7n7ZpkqZLmqbRaIxaEzWyzIjghhtuQBQNuKMii0vSnqZb2qZNm66iwfavuL33jVbEOzBvmBn44XOOHD3P+TD3vXu/MG95MsdQL3h38rDgjsLu9fvw9O07hll6MAb9Sz9eWKuuxGaCSch8+IC9eD1Stx7B4OK3l9aqGzHf+q+w2jYM++82sQIcB+80QNSfAF/yt0vr1Y1Y1B+H7I12vOCGSwJ6rLX0w+CT78CbPrq0Xl2IBR9/CVt3vHgHGlkBjtyNNpiYzIGS+ptds+ZivZt/QOLhBOxdvccK6DGvzEEfli+3JlFzsdmhtdMDw3gJbjaqMBz7Ckswz65J1FSM9keyySdVgntXm2FqdBvUrb/YNc+omZiSOoTFnlnYvdbCCugR75qEwPJP7JrF1EwsFMrCzsfdcCBRgvT3I5HPRSPn1iymJmL+lZ9h7f4A7F+5ywpwHFxphPDAqjhsuDVLcVyMes68GoPce62sgB4r2LwH4t+Dh+lZHI6LjYafwfZtt9SBkX2/Hcan98S+5NbkcFSsN/k7LHeM4tjUzAroMYd32Lf+ml1TD0fFwgMrkP3gM7xY4wfGRlMfDC18w45N5XBMbCj2NSSxscqU4O71FpicSIOyXb5ncTgiRhcW756CvWtyY9OiKwz+1VfsmpVwRGxqLAXpm514scZLkA4YGo6N9CwO28UCyy9h/V5AqmfR384Mb+DYZKxncdgqRhs+5n0Mu5I9a6njNOpLHhjF2Co2PrMPqU96RNLlBDjSHz2EsdmnWILGexaHbWIU9VfarYv6stgmJqI+TgxWRX1ZbBELzmHUb5CL+rQPaeLXi/qyWC6mbv0JiU75qB/zRKFv7Rd2TTNYLkafDdIBIBX1GxQYnn9eNurLYqnYQPwFbDT3YXYy3rMo6k+Pbok7za1pFsvEzEb9RGfIUNSXxTKx0CRG/VtyUZ/GrNHIs6p7FoclYv61Vxj1B6WjfqR/WWQ0bs1qsURsrndBfDLLCeix2jYkFfVlqVqMPjXa+tT+qC9LVWJORn1ZqhIzF/V9pqK+LKbF6OJMRf3xHVBNRH1ZTInRPPeke9rRqC+LKTF613duduHFGi/B7duuqqJ+Ke5TPJk3oGQ1vIg7ewyuzJG8mIj6GC9MRX2DH09XgoRcaeINvi6AmjsReHMFcKFYdzYvJ2Y26tPJWW3UL0aICXixLlmxMYz626ai/gEoFo9NWimSGJVhAcuwIH4m4UcypejbeI1RP1izqM+jiXlwbwkpUZ7H0IO/MywWCSzhxCDXs9ZbAjC4aE3UL8WLJSfAn8/3nAbdSUNiwbnnIgzWMuqXoqCUKsSOUCYPPfjmCSk8ULzpQmUxLeqHah71S1FQSM0eoVge99WZGJYkSqnpfyqLTY9sSkd9embD6qhfiiaWPxfD19rdOoHe9L/lxfoTP2DU98tHfXwzrI76FzlCsTyoyLkY7S08HfFulRWjSLHgjkg/iaZF/ZfsmtahiSkZaiGHQoz6F/U0pZIYPc5DT5ZJ9SyK+mF7ov5FcG9hmStp/D+Im8qQxLCXKRkS09ljFPVXWynqy/Qse6P+RbB9oJjYw8iZGDVpJYtTCO4zVsxU1G+lqP/CsrGpIvh/NDGUotdiCCYxumtMHxuJfoFR3yPVsyjqT0zt2tazWETPopNQa8hi+vifksmDHg6hx1DpZOME9HAi6hejzYnnU8bZaEXl6Mbe5i4dgrUn0TrwYo0fGMm7veKLc7ujfjFnA7AGDb/aACxkUcyVKxITUR8vUqYEaRqh75ediPrFaGIF5ARfY1zBacOLzVmI4UHSkzuE/wDtg18mgH26LgAAAABJRU5ErkJggg==",
+                            color: 'red'
+                        }
+                    }
+            }
+
+
             //additional features get generic styling for now
             else {
                 this.geojson[LayerName] =
                     {
                         data: feature,
-                        visible: false,
+                        visible: true,
                         style: {
                             displayName: LayerName,
                             fillColor: "red",
@@ -1167,17 +1315,48 @@ module StreamStats.Controllers {
 
         }
         private onLayerChanged(sender: WiM.Directives.IwimLegendController, e: WiM.Directives.LegendLayerChangedEventArgs) {
+
+            //console.log('in onLayerChanged', e, this.geojson, this.studyArea.selectedStudyArea.Features)
+
             if (e.PropertyName === "visible") {
                 if (!e.Value)
                     delete this.geojson[e.LayerName];
                 else {
                     //get feature
                     var value: any = null;
-                    for (var i = 0; i < this.studyArea.selectedStudyArea.Features.length; i++) {
-                        var item = angular.fromJson(angular.toJson(this.studyArea.selectedStudyArea.Features[i]));
-                        if (item.name == e.LayerName)
-                            this.addGeoJSON(e.LayerName, item.feature);
-                    }//next
+
+                    //special case for 'MO_STL' will soon be permanant
+                    if (this.studyArea.selectedStudyArea.RegionID == 'MO_STL') {
+
+                        //need this in if now that we have network nav results
+                        this.studyArea.selectedStudyArea.Features['features'].forEach((layer) => {
+                            var item = angular.fromJson(angular.toJson(layer));
+                            var name = item.id.toLowerCase();
+                            this.addGeoJSON(name, item);
+                        });
+                    }
+
+                    else {
+                        //need this in if now that we have network nav results
+                        if (this.studyArea.selectedStudyArea && this.studyArea.selectedStudyArea.Features.length > 0) {
+                            for (var i = 0; i < this.studyArea.selectedStudyArea.Features.length; i++) {
+                                var item = angular.fromJson(angular.toJson(this.studyArea.selectedStudyArea.Features[i]));
+                                if (item.name == e.LayerName)
+                                    this.addGeoJSON(e.LayerName, item.feature);
+                            }//next
+                        }
+                    }
+
+
+                    if (this.explorationService.networkNavResults) {
+                        for (var i = 0; i < this.explorationService.networkNavResults.length; i++) {
+                            var item = angular.fromJson(angular.toJson(this.explorationService.networkNavResults[i]));
+                            if (item.name == e.LayerName)
+                                this.addGeoJSON(e.LayerName, item.feature);
+                        }//next
+                    }
+
+
                 }//end if  
             }//end if
         }
@@ -1307,11 +1486,13 @@ module StreamStats.Controllers {
         private startDelineate(latlng: any, isInExclusionArea?: boolean) {
             //console.log('in startDelineate', latlng);
 
+
             var studyArea: Models.IStudyArea = new Models.StudyArea(this.regionServices.selectedRegion.RegionID, new WiM.Models.Point(latlng.lat, latlng.lng, '4326'));
-
-
             this.studyArea.AddStudyArea(studyArea);
-            this.studyArea.loadStudyBoundary();
+
+            //check for river basin study (Alt region) a watch on the result of this will start delineation
+            this.studyArea.checkForRiverBasin(this.regionServices.selectedRegion.RegionID, latlng);
+            
 
             //add disclaimer here
             if (isInExclusionArea) this.studyArea.selectedStudyArea.Disclaimers['isInExclusionArea'] = 'The delineation point is in an exclusion area.';

@@ -51,8 +51,9 @@ var StreamStats;
                             return {
                                 templateUrl: 'Views/explorationview.html',
                                 controller: 'StreamStats.Controllers.ExplorationToolsModalController',
-                                size: 'lg',
+                                size: 'sm',
                                 backdropClass: 'backdropZ',
+                                backdrop: 'static',
                                 windowClass: 'windowZ',
                             };
                         case SSModalType.e_report:
