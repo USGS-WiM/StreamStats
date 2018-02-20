@@ -867,13 +867,12 @@ var StreamStats;
                 if (this.studyArea.selectedStudyArea.RegionID == 'MO_STL') {
                     this.removeOverlayLayers('GlobalWatershed', true);
                     this.studyArea.selectedStudyArea.Features['features'].forEach(function (layer) {
-                        console.log('in onselectedstudyareachange2', layer);
                         var item = angular.fromJson(angular.toJson(layer));
                         var name = item.id.toLowerCase();
                         _this.addGeoJSON(name, item);
                         _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(name, "geojson", _this.geojson[name].style));
                     });
-                    if (this.geojson['globalwatershed'].data.features[0].bbox) {
+                    if (this.studyArea.selectedStudyArea.Features['bbox']) {
                         var bbox = this.studyArea.selectedStudyArea.Features['bbox'];
                         this.leafletData.getMap("mainMap").then(function (map) {
                             map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]], {});
@@ -1029,26 +1028,40 @@ var StreamStats;
                 }
             };
             MapController.prototype.onLayerChanged = function (sender, e) {
-                console.log('in onLayerChanged', e, this.geojson);
+                //console.log('in onLayerChanged', e, this.geojson, this.studyArea.selectedStudyArea.Features)
+                var _this = this;
                 if (e.PropertyName === "visible") {
                     if (!e.Value)
                         delete this.geojson[e.LayerName];
                     else {
                         //get feature
                         var value = null;
-                        //need this in if now that we have network nav results
-                        if (this.studyArea.selectedStudyArea && this.studyArea.selectedStudyArea.Features.length > 0) {
-                            for (var i = 0; i < this.studyArea.selectedStudyArea.Features.length; i++) {
-                                var item = angular.fromJson(angular.toJson(this.studyArea.selectedStudyArea.Features[i]));
+                        //special case for 'MO_STL' will soon be permanant
+                        if (this.studyArea.selectedStudyArea.RegionID == 'MO_STL') {
+                            //need this in if now that we have network nav results
+                            this.studyArea.selectedStudyArea.Features['features'].forEach(function (layer) {
+                                var item = angular.fromJson(angular.toJson(layer));
+                                var name = item.id.toLowerCase();
+                                _this.addGeoJSON(name, item);
+                            });
+                        }
+                        else {
+                            //need this in if now that we have network nav results
+                            if (this.studyArea.selectedStudyArea && this.studyArea.selectedStudyArea.Features.length > 0) {
+                                for (var i = 0; i < this.studyArea.selectedStudyArea.Features.length; i++) {
+                                    var item = angular.fromJson(angular.toJson(this.studyArea.selectedStudyArea.Features[i]));
+                                    if (item.name == e.LayerName)
+                                        this.addGeoJSON(e.LayerName, item.feature);
+                                } //next
+                            }
+                        }
+                        if (this.explorationService.networkNavResults) {
+                            for (var i = 0; i < this.explorationService.networkNavResults.length; i++) {
+                                var item = angular.fromJson(angular.toJson(this.explorationService.networkNavResults[i]));
                                 if (item.name == e.LayerName)
                                     this.addGeoJSON(e.LayerName, item.feature);
                             } //next
                         }
-                        for (var i = 0; i < this.explorationService.networkNavResults.length; i++) {
-                            var item = angular.fromJson(angular.toJson(this.explorationService.networkNavResults[i]));
-                            if (item.name == e.LayerName)
-                                this.addGeoJSON(e.LayerName, item.feature);
-                        } //next
                     } //end if  
                 } //end if
             };
