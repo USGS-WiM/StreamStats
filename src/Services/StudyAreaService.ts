@@ -54,7 +54,7 @@ module StreamStats.Services {
         getAdditionalFeatureList();
         getAdditionalFeatures(featureString: string);
         checkForRiverBasin(region: string, latlng: any);
-        //requestParameterList: Array<any>; jkn
+        surfacecontributionsonly: boolean;
     }
 
     export var onSelectedStudyAreaChanged: string = "onSelectedStudyAreaChanged";
@@ -114,7 +114,7 @@ module StreamStats.Services {
         public servicesURL: string;
         public baseMap: Object;
         public showModifyBasinCharacterstics: boolean;
-        //public requestParameterList: Array<any>; jkn
+        public surfacecontributionsonly: boolean = false;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -199,13 +199,12 @@ module StreamStats.Services {
             //hack for st louis stormdrain
             if (this.selectedStudyArea.RegionID == 'MO_STL') {
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSstormwaterDelineation'].format(regionID, this.selectedStudyArea.Pourpoint.Longitude.toString(),
-                    this.selectedStudyArea.Pourpoint.Latitude.toString());
+                    this.selectedStudyArea.Pourpoint.Latitude.toString(), this.surfacecontributionsonly);
             }
 
             if (this.selectedStudyArea.RegionID == 'CRB' || this.selectedStudyArea.RegionID == 'DRB') {
                 this.selectedStudyArea
             }
-
 
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
             request.withCredentials = true;
