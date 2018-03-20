@@ -93,7 +93,7 @@ var StreamStats;
             };
             ExplorationToolsModalController.prototype.addLimit = function (item) {
                 var _this = this;
-                this.selectedLimit = document.getElementsByName("distanceValue")[0].value;
+                this.selectedLimit = item;
                 this.deleteConfig('Limit');
                 //add limit object
                 this.explorationService.selectedMethod.navigationInfo.configuration.forEach(function (item, key) {

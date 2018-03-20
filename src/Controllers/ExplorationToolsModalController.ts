@@ -137,7 +137,7 @@ module StreamStats.Controllers {
 
         public addLimit(item) {
             
-            this.selectedLimit = (<HTMLInputElement>document.getElementsByName("distanceValue")[0]).value;
+            this.selectedLimit = item;
 
             this.deleteConfig('Limit');
 
