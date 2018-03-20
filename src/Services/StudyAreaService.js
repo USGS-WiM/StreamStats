@@ -36,7 +36,7 @@ var StreamStats;
         Services.onSelectedStudyParametersLoaded = "onSelectedStudyParametersLoaded";
         Services.onStudyAreaReset = "onStudyAreaReset";
         Services.onEditClick = "onEditClick";
-        var StudyAreaEventArgs = (function (_super) {
+        var StudyAreaEventArgs = /** @class */ (function (_super) {
             __extends(StudyAreaEventArgs, _super);
             function StudyAreaEventArgs(studyArea, saVisible, paramState, additionalFeatures) {
                 if (studyArea === void 0) { studyArea = null; }
@@ -53,7 +53,7 @@ var StreamStats;
             return StudyAreaEventArgs;
         }(WiM.Event.EventArgs));
         Services.StudyAreaEventArgs = StudyAreaEventArgs;
-        var StudyAreaService = (function (_super) {
+        var StudyAreaService = /** @class */ (function (_super) {
             __extends(StudyAreaService, _super);
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-

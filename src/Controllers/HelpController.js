@@ -16,12 +16,12 @@ var StreamStats;
     var Controllers;
     (function (Controllers) {
         'use string';
-        var FreshdeskTicketData = (function () {
+        var FreshdeskTicketData = /** @class */ (function () {
             function FreshdeskTicketData() {
             }
             return FreshdeskTicketData;
         }());
-        var HelpController = (function (_super) {
+        var HelpController = /** @class */ (function (_super) {
             __extends(HelpController, _super);
             function HelpController($scope, $http, $sce, studyAreaService, modal, Upload) {
                 var _this = _super.call(this, $http, '') || this;
@@ -151,11 +151,11 @@ var StreamStats;
                 if (false || !!document.documentMode)
                     this.Browser = "IE";
             };
+            //Constructor
+            //-+-+-+-+-+-+-+-+-+-+-+-
+            HelpController.$inject = ['$scope', '$http', '$sce', 'StreamStats.Services.StudyAreaService', '$modalInstance', 'Upload'];
             return HelpController;
         }(WiM.Services.HTTPServiceBase)); //end  class
-        //Constructor
-        //-+-+-+-+-+-+-+-+-+-+-+-
-        HelpController.$inject = ['$scope', '$http', '$sce', 'StreamStats.Services.StudyAreaService', '$modalInstance', 'Upload'];
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.HelpController', HelpController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));
