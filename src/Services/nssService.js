@@ -33,13 +33,13 @@ var StreamStats;
     var Services;
     (function (Services) {
         'use strict';
-        var StatisticsGroup = (function () {
+        var StatisticsGroup = /** @class */ (function () {
             function StatisticsGroup() {
             }
             return StatisticsGroup;
         }()); //end class
         Services.StatisticsGroup = StatisticsGroup;
-        var nssService = (function (_super) {
+        var nssService = /** @class */ (function (_super) {
             __extends(nssService, _super);
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-

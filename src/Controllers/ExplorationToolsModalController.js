@@ -19,7 +19,7 @@ var StreamStats;
     var Controllers;
     (function (Controllers) {
         'use string';
-        var ExplorationToolsModalController = (function () {
+        var ExplorationToolsModalController = /** @class */ (function () {
             function ExplorationToolsModalController($scope, $analytics, $sce, modal, modalservice, exploration, studyArea) {
                 $scope.vm = this;
                 this.sce = $sce;
@@ -93,7 +93,7 @@ var StreamStats;
             };
             ExplorationToolsModalController.prototype.addLimit = function (item) {
                 var _this = this;
-                this.selectedLimit = item;
+                this.selectedLimit = document.getElementsByName("distanceValue")[0].value;
                 this.deleteConfig('Limit');
                 //add limit object
                 this.explorationService.selectedMethod.navigationInfo.configuration.forEach(function (item, key) {
@@ -181,11 +181,11 @@ var StreamStats;
                     }
                 });
             };
+            //Constructor
+            //-+-+-+-+-+-+-+-+-+-+-+-
+            ExplorationToolsModalController.$inject = ['$scope', '$analytics', '$sce', '$modalInstance', 'StreamStats.Services.ModalService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.StudyAreaService'];
             return ExplorationToolsModalController;
         }()); //end  class
-        //Constructor
-        //-+-+-+-+-+-+-+-+-+-+-+-
-        ExplorationToolsModalController.$inject = ['$scope', '$analytics', '$sce', '$modalInstance', 'StreamStats.Services.ModalService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.StudyAreaService'];
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.ExplorationToolsModalController', ExplorationToolsModalController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));
