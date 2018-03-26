@@ -38,17 +38,17 @@
                     </div>
 
                     <!--<dl class="dl-horizontal">
-                        <dt>Region ID:</dt><dd>{{vm.studyAreaService.selectedStudyArea.RegionID}}</dd>
-                        <dt>Workspace ID:</dt><dd>{{vm.studyAreaService.selectedStudyArea.WorkspaceID}}</dd>
-                        <dt>Clicked Point (Latitude, Longitude):</dt><dd>{{vm.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5)}}, {{vm.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5)}}</dd>
-                        <dt>Time:</dt><dd>{{vm.studyAreaService.selectedStudyArea.Date | date:'yyyy-MM-dd HH:mm:ss Z'}}</dd>
-                    </dl>-->
+            <dt>Region ID:</dt><dd>{{vm.studyAreaService.selectedStudyArea.RegionID}}</dd>
+            <dt>Workspace ID:</dt><dd>{{vm.studyAreaService.selectedStudyArea.WorkspaceID}}</dd>
+            <dt>Clicked Point (Latitude, Longitude):</dt><dd>{{vm.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5)}}, {{vm.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5)}}</dd>
+            <dt>Time:</dt><dd>{{vm.studyAreaService.selectedStudyArea.Date | date:'yyyy-MM-dd HH:mm:ss Z'}}</dd>
+        </dl>-->
 
                     <leaflet id="reportMap" width="100%" height="400px" layers="vm.layers" center="vm.center" defaults="vm.defaults"></leaflet><br />
 
                 </div>
 
-                <br/>
+                <br />
                 <div ng-if="vm.reportComments != 'Some comments here'">
                     <p>{{vm.reportComments}}</p>
                 </div>
@@ -63,7 +63,7 @@
                                 <tr>
                                     <th>Parameter Code</th>
                                     <th>Parameter Description</th>
-                                    <th>Value</th> 
+                                    <th>Value</th>
                                     <th ng-if="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated && vm.showRegulation">Unregulated Value</th>
                                     <th>Unit</th>
                                 </tr>
@@ -77,10 +77,10 @@
                                     <td ng-bind="parameter.unit"></td>
                                 </tr>
                             </tbody>
-                        </table> 
+                        </table>
                     </div>
 
-                    <!--Study Area Disclaimers-->  
+                    <!--Study Area Disclaimers-->
                     <div class="well well-sm" ng-show="vm.canShowDisclaimers">
                         <h3>General Disclaimers</h3>
                         <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.parametersEdited">Parameter values have been edited, computed flows may not apply.</div>
@@ -90,7 +90,7 @@
                         <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isInExclusionArea">{{vm.studyAreaService.selectedStudyArea.Disclaimers.isInExclusionArea}}</div>
                         <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.hasKarst">{{vm.studyAreaService.selectedStudyArea.Disclaimers.hasKarst}}</div>
                     </div>
-            
+
                     <!--Parameter Table for Flow Report-->
                     <div class="well well-sm" ng-show="vm.nssService.showFlowsTable" ng-repeat="StatisticsGroup in vm.nssService.selectedStatisticsGroupList">
 
@@ -98,15 +98,15 @@
                             <h3>{{StatisticsGroup.Name}} Parameters<small ng-bind="(RegressionRegion.PercentWeight && RegressionRegion.PercentWeight < 100) ? ' [' + RegressionRegion.PercentWeight.toFixed(0) + ' Percent (' + (+vm.areaSQMI.toUSGSvalue() * +RegressionRegion.PercentWeight / 100).toUSGSvalue() + ' square miles) ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h3>
                             <table id="{{vm.camelize(StatisticsGroup.Name + RegressionRegion.Name + 'ScenarioParamTable')}}" class="scenarioParamTable table table-condensed">
                                 <thead class="param-table">
-                                <tr>
-                                    <th>Parameter Code</th>
-                                    <th>Parameter Name</th>
-                                    <th>Value</th>
-                                    <th ng-if="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated && vm.showRegulation">Unregulated Value</th>
-                                    <th>Units</th>
-                                    <th>Min Limit</th>
-                                    <th>Max Limit</th>
-                                </tr>
+                                    <tr>
+                                        <th>Parameter Code</th>
+                                        <th>Parameter Name</th>
+                                        <th>Value</th>
+                                        <th ng-if="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated && vm.showRegulation">Unregulated Value</th>
+                                        <th>Units</th>
+                                        <th>Min Limit</th>
+                                        <th>Max Limit</th>
+                                    </tr>
                                 </thead>
                                 <tbody>
                                     <tr ng-repeat="parameter in RegressionRegion.Parameters">
@@ -119,9 +119,9 @@
                                         <td ng-bind="parameter.Limits.Max"></td>
                                     </tr>
                                 </tbody>
-                            </table>                              
+                            </table>
                         </div>
-                        
+
                         <!--Flow Report-->
                         <div ng-repeat="RegressionRegion in StatisticsGroup.RegressionRegions">
                             <!--Scenario Disclaimers-->
@@ -132,20 +132,20 @@
 
                             <h3>{{StatisticsGroup.Name}} Flow Report<small ng-bind="(RegressionRegion.PercentWeight && RegressionRegion.PercentWeight < 100) ? ' [' + RegressionRegion.PercentWeight.toFixed(0) + ' Percent (' + (+vm.areaSQMI.toUSGSvalue() * +RegressionRegion.PercentWeight / 100).toUSGSvalue() + ' square miles) ' + RegressionRegion.Name.split('_').join(' ') + ']' : ' [' +RegressionRegion.Name.split('_').join(' ') + ']'"></small></h3>
                             <small ng-show="RegressionRegion.Results[0].IntervalBounds || RegressionRegion.Results[0].Errors && RegressionRegion.Results[0].Errors.length > 0">PIl: Prediction Interval-Lower, PIu: Prediction Interval-Upper, SEp: Standard Error of Prediction, SE: Standard Error (other -- see report)</small>
-                            <table id="{{vm.camelize(StatisticsGroup.Name + RegressionRegion.Name + 'ScenarioFlowTable')}}"class="scenarioFlowTable table table-condensed">
+                            <table id="{{vm.camelize(StatisticsGroup.Name + RegressionRegion.Name + 'ScenarioFlowTable')}}" class="scenarioFlowTable table table-condensed">
                                 <thead class="flow-table">
-                                <tr>
-                                    <th>Statistic</th>
-                                    <th>Value</th>
-                                    <th ng-if="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated && vm.showRegulation">Unregulated Value</th> 
-                                    <th>Unit</th>
-                                    <th ng-if="RegressionRegion.Results[0].IntervalBounds.Lower">PIl</th>
-                                    <th ng-if="RegressionRegion.Results[0].IntervalBounds.Upper">PIu</th>
-                                    <th ng-if="RegressionRegion.Results[0].Errors && RegressionRegion.Results[0].Errors.length > 0" ng-repeat="error in RegressionRegion.Results[0].Errors" ng-bind="error.Code"></th>
-                                    <th ng-if="RegressionRegion.Results[0].EquivalentYears > 0">Equiv. Yrs.</th>
-                                </tr>
+                                    <tr>
+                                        <th>Statistic</th>
+                                        <th>Value</th>
+                                        <th ng-if="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated && vm.showRegulation">Unregulated Value</th>
+                                        <th>Unit</th>
+                                        <th ng-if="RegressionRegion.Results[0].IntervalBounds.Lower">PIl</th>
+                                        <th ng-if="RegressionRegion.Results[0].IntervalBounds.Upper">PIu</th>
+                                        <th ng-if="RegressionRegion.Results[0].Errors && RegressionRegion.Results[0].Errors.length > 0" ng-repeat="error in RegressionRegion.Results[0].Errors" ng-bind="error.Code"></th>
+                                        <th ng-if="RegressionRegion.Results[0].EquivalentYears > 0">Equiv. Yrs.</th>
+                                    </tr>
                                 </thead>
-                                <tbody >
+                                <tbody>
                                     <tr ng-repeat="parameter in RegressionRegion.Results">
                                         <td>{{parameter.Name}}</td>
                                         <td ng-bind="parameter.Value.toUSGSvalue()"></td>
@@ -166,6 +166,36 @@
                         </div>
 
                     </div>
+                </div>
+                <div class="disclaimerReport">
+                    <p>
+                        USGS Data Disclaimer:
+                        Unless otherwise stated, all data, metadata and related materials are considered to satisfy the quality standards relative to the purpose for which the data were collected. Although these data and associated metadata have been reviewed for accuracy and completeness and approved for release by the U.S. Geological Survey (USGS), no warranty expressed or implied is made regarding the display or utility of the data for other purposes, nor on all computer systems, nor shall the act of distribution constitute any such warranty.
+                    </p>
+                    <p>
+                        USGS Software Disclaimer:
+                        This software has been approved for release by the U.S. Geological Survey (USGS). Although the software has been subjected to rigorous review, the USGS reserves the right to update the software as needed pursuant to further analysis and review. No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty. Furthermore, the software is released on condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from its authorized or unauthorized use.
+                    </p>
+                    <p>
+                        USGS Product Names Disclaimer:
+                        Any use of trade, firm, or product names is for descriptive purposes only and does not imply endorsement by the U.S. Government..
+                    </p>
+                    <p>
+                        This web application has been made possible by several open-source projects: <br />
+                        Project: AngularJS <br />
+                        Copyright (c) 2010-2017 Google, Inc. <br />
+                        License (MIT) <br /><br />
+
+                        Project: Leaflet<br />
+                        Copyright (c) 2010-2016, Vladimir Agafonkin<br />
+                        Copyright (c) 2010-2011, CloudMade<br />
+                        All rights reserved.<br />
+                        License (2-Clause BSD) <br /> <br />
+
+                        Project: Angular Leaflet Directive<br />
+                        Copyright (c) All right reserved.<br />
+                        License (MIT)
+                    </p>
                 </div>
             </div>
 
