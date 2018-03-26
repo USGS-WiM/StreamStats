@@ -1648,3 +1648,24 @@ input[name=distanceValue] {
     .exploration-tools-expanded:hover {
         cursor: default;
     }
+
+
+/*
+    Mitch Fixes 3/26
+*/
+
+.panel-confitem-wrapper button,
+.panel-confitem-wrapper .input-group{
+    margin-bottom: 10px !important;
+}
+
+.rdo span div,
+.chx span div {
+    display: inline-block;
+    width: 100%;
+    max-width: 100%;
+    break-inside: always;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    text-align: left;
+}
