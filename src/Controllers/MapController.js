@@ -1172,8 +1172,7 @@ var StreamStats;
                 //console.log('in startDelineate', latlng);
                 var studyArea = new StreamStats.Models.StudyArea(this.regionServices.selectedRegion.RegionID, new WiM.Models.Point(latlng.lat, latlng.lng, '4326'));
                 this.studyArea.AddStudyArea(studyArea);
-                //check for river basin study (Alt region) a watch on the result of this will start delineation
-                this.studyArea.checkForRiverBasin(this.regionServices.selectedRegion.RegionID, latlng);
+                this.studyArea.loadStudyBoundary();
                 //add disclaimer here
                 if (isInExclusionArea)
                     this.studyArea.selectedStudyArea.Disclaimers['isInExclusionArea'] = 'The delineation point is in an exclusion area.';

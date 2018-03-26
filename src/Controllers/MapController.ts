@@ -1489,9 +1489,7 @@ module StreamStats.Controllers {
 
             var studyArea: Models.IStudyArea = new Models.StudyArea(this.regionServices.selectedRegion.RegionID, new WiM.Models.Point(latlng.lat, latlng.lng, '4326'));
             this.studyArea.AddStudyArea(studyArea);
-
-            //check for river basin study (Alt region) a watch on the result of this will start delineation
-            this.studyArea.checkForRiverBasin(this.regionServices.selectedRegion.RegionID, latlng);
+            this.studyArea.loadStudyBoundary();
             
 
             //add disclaimer here

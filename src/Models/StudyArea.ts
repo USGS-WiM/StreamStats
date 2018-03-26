@@ -25,7 +25,6 @@
 module StreamStats.Models {
     export interface IStudyArea {
         RegionID: string;
-        AltRegionID: string;
         Pourpoint: WiM.Models.IPoint;
         Description: string;
         Basin: Object;
@@ -44,7 +43,6 @@ module StreamStats.Models {
     export class StudyArea implements IStudyArea {
         //properties
         public RegionID: string;
-        public AltRegionID: string;
         public Pourpoint: WiM.Models.IPoint;
         public Description: string;
         public Basin: Object;
