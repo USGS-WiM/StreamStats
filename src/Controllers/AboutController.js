@@ -65,8 +65,15 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
                 this.Execute(request).then(function (response) {
                     //console.log('Successfully retrieved active news articles folder');
+                    var publishedArticles = [];
                     if (response.data.folder.articles.length) {
-                        _this.activeNewsArticles = response.data.folder.articles;
+                        response.data.folder.articles.forEach(function (element) {
+                            if (element.status == 2) {
+                                publishedArticles.push(element);
+                            }
+                            ;
+                        });
+                        _this.activeNewsArticles = publishedArticles;
                     }
                 }, function (error) {
                     //sm when error
@@ -83,7 +90,16 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
                 this.Execute(request).then(function (response) {
                     //console.log('Successfully retrieved past news articles folder');
-                    _this.pastNewsArticles = response.data.folder.articles;
+                    var publishedArticles = [];
+                    if (response.data.folder.articles.length) {
+                        response.data.folder.articles.forEach(function (element) {
+                            if (element.status == 2) {
+                                publishedArticles.push(element);
+                            }
+                            ;
+                        });
+                        _this.pastNewsArticles = publishedArticles;
+                    }
                 }, function (error) {
                     //sm when error
                 }).finally(function () {

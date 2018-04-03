@@ -247,7 +247,7 @@ module StreamStats.Services {
         }
 
         private getCountByType(object, text) {
-            return object.filter(function (item) { return item.valueType.toLowerCase().includes(text) }).length;
+            return object.filter(function (item) { return (item.valueType.toLowerCase().indexOf(text) >= 0)}).length;
         }
 
         public setMethod(methodtype: ExplorationMethodType, config: any) {
