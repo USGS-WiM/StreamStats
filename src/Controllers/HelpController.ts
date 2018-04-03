@@ -162,7 +162,15 @@ module StreamStats.Controllers {
 
             return this.Execute(request).then(
                 (response: any) => {
-                    return response.data.folder.articles;
+                    var publishedArticles = [];
+                    if (response.data.folder.articles.length) {
+                        response.data.folder.articles.forEach(function (element) {
+                            if (element.status == 2) {
+                                publishedArticles.push(element);
+                            };
+                        });
+                        return publishedArticles;
+                    }
                 }, (error) => {
                     return "There was a problem getting this article"
                 }).finally(() => {

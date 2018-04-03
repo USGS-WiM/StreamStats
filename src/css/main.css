@@ -594,9 +594,9 @@ div.leaflet-top > .elevation {
   .modal-content{
     border-radius: 0;
   }
-  .modal-content p{
-    padding-top: 15px;
-  }
+    .modal-content p {
+        padding-top: 15px !important;
+    }
 
   #disclaimer h3{
     margin-top: 15px;
@@ -1392,6 +1392,25 @@ div.leaflet-top > .elevation {
         top: 3px !important;
     }
 
+/*
+    News Articles Fixes
+    Katrin - 4/3
+*/
+
+.panel-body .col-sm-12 div {
+    font-size: 13px;
+    line-height: 22px;
+    margin-bottom: 12px;
+    color: rgba(0,0,0,0.7);
+    font-weight: 400;
+    display: block !important;
+    max-width: 680px;
+    padding-top: 15px;
+    font-family: "Source Sans Pro", sans-serif;
+    padding: 10px 0;
+    margin: 0 auto;
+    letter-spacing: 0.15px;
+}
 
 /*
     Checkbox fixes
@@ -1565,9 +1584,9 @@ h3.panel-title {
 
 .modal-body p,
 .panel-body p {
-    font-size: 13px;
-    line-height: 22px;
-    color: rgba(0,0,0,0.7);
+    font-size: 13px !important;
+    line-height: 22px !important;
+    color: rgba(0,0,0,0.7) !important;
 }
 
 #networkNav .btn-wim-success {
