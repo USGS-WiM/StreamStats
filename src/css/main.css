@@ -595,7 +595,7 @@ div.leaflet-top > .elevation {
     border-radius: 0;
   }
     .modal-content p {
-        padding-top: 15px !important;
+        padding-top: 15px;
     }
 
   #disclaimer h3{
@@ -1584,9 +1584,9 @@ h3.panel-title {
 
 .modal-body p,
 .panel-body p {
-    font-size: 13px !important;
-    line-height: 22px !important;
-    color: rgba(0,0,0,0.7) !important;
+    font-size: 13px;
+    line-height: 22px;
+    color: rgba(0,0,0,0.7);
 }
 
 #networkNav .btn-wim-success {
