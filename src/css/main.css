@@ -1347,6 +1347,11 @@ div.leaflet-top > .elevation {
     display: inline !important;
 }
 
+.disclaimerReport p {
+    max-width: 85%;
+    margin-bottom: auto;
+    padding-top: 5px;
+}
 
 /*
     Extra Buttons
