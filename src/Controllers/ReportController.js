@@ -45,6 +45,7 @@ var StreamStats;
                 this.leafletData = leafletData;
                 this.reportTitle = 'StreamStats Report';
                 this.reportComments = 'Some comments here';
+                this.AppVersion = configuration.version;
                 this.initMap();
                 $scope.$on('leafletDirectiveMap.reportMap.load', function (event, args) {
                     //console.log('report map load');
@@ -266,9 +267,7 @@ var StreamStats;
                 //disclaimer
                 csvFile += '"USGS Data Disclaimer: Unless otherwise stated, all data, metadata and related materials are considered to satisfy the quality standards relative to the purpose for which the data were collected. Although these data and associated metadata have been reviewed for accuracy and completeness and approved for release by the U.S. Geological Survey (USGS), no warranty expressed or implied is made regarding the display or utility of the data for other purposes, nor on all computer systems, nor shall the act of distribution constitute any such warranty."' + '\n' +
                     '"USGS Software Disclaimer: This software has been approved for release by the U.S. Geological Survey (USGS). Although the software has been subjected to rigorous review, the USGS reserves the right to update the software as needed pursuant to further analysis and review. No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty. Furthermore, the software is released on condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from its authorized or unauthorized use."' + '\n' +
-                    '"USGS Product Names Disclaimer: Any use of trade, firm, or product names is for descriptive purposes only and does not imply endorsement by the U.S. Government."' + '\n\n' +
-                    'This web application has been made possible by several open-source projects: \nProject: AngularJS  \n"Copyright (c) 2010-2017 Google, Inc."  \nLicense (MIT) \nProject: Leaflet \n"Copyright (c) 2010-2016, Vladimir Agafonkin" \n"Copyright (c) 2010-2011, CloudMade" \nAll rights reserved. \nLicense (2-Clause BSD) \n' +
-                    'Project: Angular Leaflet Directive \nCopyright (c) All right reserved. \nLicense (MIT)';
+                    '"USGS Product Names Disclaimer: Any use of trade, firm, or product names is for descriptive purposes only and does not imply endorsement by the U.S. Government."' + '\n\n' + 'Application Version: ' + this.AppVersion;
                 //download
                 var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
                 if (navigator.msSaveBlob) {
