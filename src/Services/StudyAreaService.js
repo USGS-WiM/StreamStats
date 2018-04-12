@@ -36,7 +36,7 @@ var StreamStats;
         Services.onSelectedStudyParametersLoaded = "onSelectedStudyParametersLoaded";
         Services.onStudyAreaReset = "onStudyAreaReset";
         Services.onEditClick = "onEditClick";
-        var StudyAreaEventArgs = (function (_super) {
+        var StudyAreaEventArgs = /** @class */ (function (_super) {
             __extends(StudyAreaEventArgs, _super);
             function StudyAreaEventArgs(studyArea, saVisible, paramState, additionalFeatures) {
                 if (studyArea === void 0) { studyArea = null; }
@@ -53,9 +53,8 @@ var StreamStats;
             return StudyAreaEventArgs;
         }(WiM.Event.EventArgs));
         Services.StudyAreaEventArgs = StudyAreaEventArgs;
-        var StudyAreaService = (function (_super) {
+        var StudyAreaService = /** @class */ (function (_super) {
             __extends(StudyAreaService, _super);
-            //public requestParameterList: Array<any>; jkn
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
             function StudyAreaService($http, $q, eventManager, toaster) {
@@ -63,6 +62,7 @@ var StreamStats;
                 _this.$http = $http;
                 _this.$q = $q;
                 _this.eventManager = eventManager;
+                _this.surfacecontributionsonly = false;
                 eventManager.AddEvent(Services.onSelectedStudyParametersLoaded);
                 eventManager.AddEvent(Services.onSelectedStudyAreaChanged);
                 eventManager.AddEvent(Services.onStudyAreaReset);
@@ -145,12 +145,33 @@ var StreamStats;
                 var _this = this;
                 this.toaster.pop("wait", "Delineating Basin", "Please wait...", 0);
                 this.canUpdate = false;
+                //console.log('loadstudy area', this.selectedStudyArea);
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString(), false);
+                //hack for st louis stormdrain
+                if (this.selectedStudyArea.RegionID == 'MO_STL') {
+                    var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSstormwaterDelineation'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString(), this.surfacecontributionsonly);
+                }
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 request.withCredentials = true;
                 this.Execute(request).then(function (response) {
-                    //console.log('delineation response headers: ', response.headers());
-                    if (response.data.featurecollection && response.data.featurecollection[1] && response.data.featurecollection[1].feature.features.length > 0) {
+                    //hack for st louis stormdrain
+                    if (_this.selectedStudyArea.RegionID == 'MO_STL') {
+                        if (response.data.layers && response.data.layers.features && response.data.layers.features[1].geometry.coordinates.length > 0) {
+                            //this.selectedStudyArea.Server = response.headers()['x-usgswim-hostname'].toLowerCase();
+                            _this.selectedStudyArea.Features = response.data.hasOwnProperty("layers") ? response.data["layers"] : null;
+                            _this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
+                            _this.selectedStudyArea.Date = new Date();
+                            _this.toaster.clear();
+                            _this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, _this, StudyAreaEventArgs.Empty);
+                            _this.canUpdate = true;
+                        }
+                        else {
+                            _this.clearStudyArea();
+                            _this.toaster.clear();
+                            _this.toaster.pop("error", "A watershed was not returned from the delineation request", "Please retry", 0);
+                        }
+                    }
+                    else if (response.data.featurecollection && response.data.featurecollection[1] && response.data.featurecollection[1].feature.features.length > 0) {
                         _this.selectedStudyArea.Server = response.headers()['usgswim-hostname'].toLowerCase();
                         _this.selectedStudyArea.Features = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"] : null;
                         _this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
@@ -597,7 +618,7 @@ var StreamStats;
                 });
             };
             //Helper Methods
-            //-+-+-+-+-+-+-+-+-+-+-+-       
+            //-+-+-+-+-+-+-+-+-+-+-+-      
             StudyAreaService.prototype.loadParameterResults = function (results) {
                 //this.toaster.pop('wait', "Loading Basin Characteristics", "Please wait...", 0);
                 //console.log('in load parameter results');

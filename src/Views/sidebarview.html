@@ -78,33 +78,35 @@
                     <form ng-hide="vm.studyAreaService.selectedStudyArea.Features" style="padding-bottom: 15px;">
                         <button ng-show="vm.regionService.selectedRegion.Applications.indexOf('StormRunoff') != -1" ng-click="vm.OpenStormRunoff()" type="button" class="btn-black fullwidth"><i class="fa fa-steam"></i>&nbsp;&nbsp;Open Storm Runoff Models</button>
                         <button id="delineateButton" type="button" class="btn-blue fullwidth" ng-click="vm.startDelineate()" ng-class="vm.studyAreaService.doDelineateFlag ? 'btn-orange' : 'btn-blue'" ng-hide="vm.studyAreaService.selectedStudyArea.Features" ng-disabled="!vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint || !vm.studyAreaService.zoomLevel15"><i ng-class="vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint ? 'fa fa-map-marker' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Delineate</button>
-                    </form>
+                        <div style="margin-top:10px;" ng-show="vm.regionService.selectedRegion.RegionID ==='MO_STL'">
+                            <checkbox style="height:20px; border:1px solid rgba(0,0,0,.2)!important;" ng-model="vm.studyAreaService.surfacecontributionsonly"></checkbox><span>&nbsp;&nbsp;Surface Contributing Basin only</span>
+                        </div>                       
+                  </form>
+                                          
+                            <div ng-show="vm.studyAreaService.selectedStudyArea.Features">
+                                <form style="padding: 5px 0;">
+                                    <button id="clearDelinationButton" type="button" class="btn-red fullwidth" ng-click="vm.resetWorkSpace()" ng-show="vm.studyAreaService.selectedStudyArea.Features" ng-disabled="!vm.studyAreaService.canUpdate"><span><i class="fa fa-trash-o"></i>&nbsp;&nbsp;Clear Basin</span></button>
+                                </form>
+                                <form style="padding: 5px 0;">
+                                    <button type="button" class="btn-blue fullwidth" ng-click="vm.studyAreaService.showEditToolbar = !vm.studyAreaService.showEditToolbar" ng-disabled="!vm.studyAreaService.canUpdate"><span class="fa fa-edit"></span>&nbsp;&nbsp;Edit Basin</button>
+                                </form>
 
-                    <div ng-show="vm.studyAreaService.selectedStudyArea.Features">
 
-                        <form style="padding: 5px 0;">
-                            <button id="clearDelinationButton" type="button" class="btn-red fullwidth" ng-click="vm.resetWorkSpace()" ng-show="vm.studyAreaService.selectedStudyArea.Features" ng-disabled="!vm.studyAreaService.canUpdate"><span><i class="fa fa-trash-o"></i>&nbsp;&nbsp;Clear Basin</span></button>
-                        </form>
-                        <form style="padding: 5px 0;">
-                            <button type="button" class="btn-blue fullwidth" ng-click="vm.studyAreaService.showEditToolbar = !vm.studyAreaService.showEditToolbar" ng-disabled="!vm.studyAreaService.canUpdate"><span class="fa fa-edit"></span>&nbsp;&nbsp;Edit Basin</button>
-                        </form>
-      
-
-                        <div class="well well-sm" ng-show="vm.studyAreaService.showEditToolbar">
-                            <p>To edit your basin, first click the 'Add Area' or 'Remove Area' button below.  Use your mouse or finger to draw a polygon.</p><p>If <strong>adding</strong> an area be sure your drawn polygon starts and ends within the yellow basin boundaries</p><p>If <strong>removing</strong> an area, be sure your drawn polygon starts and ends outside of the yellow basin.</p>
-                            <form style="padding:0 0 10px 0;">
-                                <button type="button" class="btn-blue" ng-click="vm.studyAreaService.editBasin('add')"><span class="fa fa-plus-square"></span>&nbsp;&nbsp;Add Area</button>
-                            </form>
-                            <form style="padding:0 0 10px 0;">
-                                <button type="button" class="btn-blue" ng-click="vm.studyAreaService.editBasin('remove')"><span class="fa fa-minus-square"></span>&nbsp;&nbsp;Remove Area</button>
-                            </form>
-                            <form style="padding:0 0 10px 0;">
-                                <button type="button" class="btn-black" ng-click="vm.studyAreaService.undoEdit()"><span class="fa fa-undo"></span>&nbsp;&nbsp;Undo Edits</button>
-                            </form>
-                            <form style="padding:0 0 10px 0;">
-                                <button type="button" class="btn-black" ng-click="vm.submitBasinEdits()"><span class="fa fa-check"></span>&nbsp;&nbsp;Submit edited basin</button>
-                            </form>
-                        </div>
+                                <div class="well well-sm" ng-show="vm.studyAreaService.showEditToolbar">
+                                    <p>To edit your basin, first click the 'Add Area' or 'Remove Area' button below.  Use your mouse or finger to draw a polygon.</p><p>If <strong>adding</strong> an area be sure your drawn polygon starts and ends within the yellow basin boundaries</p><p>If <strong>removing</strong> an area, be sure your drawn polygon starts and ends outside of the yellow basin.</p>
+                                    <form style="padding:0 0 10px 0;">
+                                        <button type="button" class="btn-blue" ng-click="vm.studyAreaService.editBasin('add')"><span class="fa fa-plus-square"></span>&nbsp;&nbsp;Add Area</button>
+                                    </form>
+                                    <form style="padding:0 0 10px 0;">
+                                        <button type="button" class="btn-blue" ng-click="vm.studyAreaService.editBasin('remove')"><span class="fa fa-minus-square"></span>&nbsp;&nbsp;Remove Area</button>
+                                    </form>
+                                    <form style="padding:0 0 10px 0;">
+                                        <button type="button" class="btn-black" ng-click="vm.studyAreaService.undoEdit()"><span class="fa fa-undo"></span>&nbsp;&nbsp;Undo Edits</button>
+                                    </form>
+                                    <form style="padding:0 0 10px 0;">
+                                        <button type="button" class="btn-black" ng-click="vm.submitBasinEdits()"><span class="fa fa-check"></span>&nbsp;&nbsp;Submit edited basin</button>
+                                    </form>
+                                </div>
 
                         <div class="well well-sm" ng-show="vm.regionService.selectedRegion.Applications.length > 0">
                             <strong>State/Region Specific Functions</strong>
@@ -117,31 +119,31 @@
                                 <div class="banner" ng-show="vm.regionService.selectedRegion.Applications.indexOf('CoordinatedReach') != -1">Check for Coordinated Reach (automatic)</div>
                             </form>
 
-                            <div class="banner info" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated == true || vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated == false"><div>Regulation check has been completed.  There is <strong ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated">{{vm.studyAreaService.regulationCheckResults.percentarearegulated.toFixed(2)}} percent</strong><strong ng-show="!vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated">NO</strong> regulation in this watershed.</div></div>
-                        </div>
-
-                        <div>
-                            <form style="padding: 5px 0;">
-                                <div class="btn-group btn-wim-sm btn-wim-group-1 wim-dropdown" dropdown is-open="status.isopen">
-                                    <button type="button" class="btn-black fullwidth" dropdown-toggle ng-disabled="disabled">
-                                        <i class='fa fa-download'></i>&nbsp;&nbsp;Download Basin<span class="caret"></span>
-                                    </button>
-                                    <ul class="dropdown-menu" role="menu">
-                                        <li><a href="#" ng-click="vm.downloadGeoJSON()" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="GeoJSON"><span class="fa fa-download"></span>&nbsp;&nbsp;GeoJSON</a></li>
-                                        <li><a href="{{vm.studyAreaService.servicesURL}}/streamstatsservices/download?workspaceID={{vm.studyAreaService.selectedStudyArea.WorkspaceID}}&format=Shape" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="Shapefile"><span class="fa fa-download"></span>&nbsp;&nbsp;Shapefile</a></li>
-                                        <li><a href="{{vm.studyAreaService.servicesURL}}/streamstatsservices/download?workspaceID={{vm.studyAreaService.selectedStudyArea.WorkspaceID}}" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="File GDB"><span class="fa fa-download"></span>&nbsp;&nbsp;ESRI File GDB</a></li>
-                                    </ul>
+                                    <div class="banner info" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated == true || vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated == false"><div>Regulation check has been completed.  There is <strong ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated">{{vm.studyAreaService.regulationCheckResults.percentarearegulated.toFixed(2)}} percent</strong><strong ng-show="!vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated">NO</strong> regulation in this watershed.</div></div>
                                 </div>
-                            </form>
-                            <div class="col-md-12 text-center" style="padding: 10px 0; font-size:16px;">or</div>
-                            <form style="padding: 5px 0;">
-                                <button type="button" class="btn-blue fullwidth" ng-click="vm.queryRegressionRegions();" ng-disabled="vm.studyAreaService.regressionRegionQueryLoading || !vm.studyAreaService.canUpdate"><i ng-class="vm.studyAreaService.regressionRegionQueryLoading ? 'fa fa-refresh fa-spin' : 'fa fa-check-circle'"></i>&nbsp;&nbsp;Continue</button>
-                            </form>
-                        </div>
+
+                                <div>
+                                    <form style="padding: 5px 0;">
+                                        <div class="btn-group btn-wim-sm btn-wim-group-1 wim-dropdown" dropdown is-open="status.isopen">
+                                            <button type="button" class="btn-black fullwidth" dropdown-toggle ng-disabled="disabled">
+                                                <i class='fa fa-download'></i>&nbsp;&nbsp;Download Basin<span class="caret"></span>
+                                            </button>
+                                            <ul class="dropdown-menu" role="menu">
+                                                <li><a href="#" ng-click="vm.downloadGeoJSON()" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="GeoJSON"><span class="fa fa-download"></span>&nbsp;&nbsp;GeoJSON</a></li>
+                                                <li><a href="{{vm.studyAreaService.servicesURL}}/streamstatsservices/download?workspaceID={{vm.studyAreaService.selectedStudyArea.WorkspaceID}}&format=Shape" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="Shapefile"><span class="fa fa-download"></span>&nbsp;&nbsp;Shapefile</a></li>
+                                                <li><a href="{{vm.studyAreaService.servicesURL}}/streamstatsservices/download?workspaceID={{vm.studyAreaService.selectedStudyArea.WorkspaceID}}" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="File GDB"><span class="fa fa-download"></span>&nbsp;&nbsp;ESRI File GDB</a></li>
+                                            </ul>
+                                        </div>
+                                    </form>
+                                    <div class="col-md-12 text-center" style="padding: 10px 0; font-size:16px;">or</div>
+                                    <form style="padding: 5px 0;">
+                                        <button type="button" class="btn-blue fullwidth" ng-click="vm.queryRegressionRegions();" ng-disabled="vm.studyAreaService.regressionRegionQueryLoading || !vm.studyAreaService.canUpdate"><i ng-class="vm.studyAreaService.regressionRegionQueryLoading ? 'fa fa-refresh fa-spin' : 'fa fa-check-circle'"></i>&nbsp;&nbsp;Continue</button>
+                                    </form>
+                                </div>
 
 
-                    </div>
-                </div>
+                            </div>
+</div>
             </div>
 
             <div class="sidebar-item">

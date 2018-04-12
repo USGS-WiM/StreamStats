@@ -31,11 +31,15 @@ var StreamStats;
 (function (StreamStats) {
     var Models;
     (function (Models) {
-        var NetworkNav = (function () {
+        var NetworkNav = /** @class */ (function () {
             //Constructor
-            function NetworkNav(modelID, maxLocations) {
-                this.requiredLocationLength = maxLocations;
-                this.ModelType = modelID;
+            function NetworkNav(methodtype, navigationInfo) {
+                this.navigationID = methodtype;
+                this.navigationInfo = navigationInfo;
+                if (this.navigationInfo.configuration)
+                    this.minLocations = this.getCountByType(this.navigationInfo.configuration, 'geojson point geometry');
+                this.navigationConfiguration = [];
+                this.navigationPointCount = 0;
                 this._locations = [];
             }
             Object.defineProperty(NetworkNav.prototype, "locations", {
@@ -46,33 +50,60 @@ var StreamStats;
                 configurable: true
             });
             //Methods
-            NetworkNav.prototype.addLocation = function (pnt) {
+            NetworkNav.prototype.addLocation = function (name, pnt) {
+                var _this = this;
                 this._locations.push(pnt);
-                if (this._locations.length > this.requiredLocationLength)
+                //console.log('in add location:', name, pnt, this.navigationPointCount, this.navigationConfiguration);
+                //delete point if already exists
+                this.navigationConfiguration.reverse().forEach(function (config, index) {
+                    if (config.name == name) {
+                        console.log('found this point already, deleting:', _this.navigationConfiguration, index);
+                        _this.navigationConfiguration.splice(index, 1);
+                        _this.navigationPointCount -= 1;
+                    }
+                });
+                //add point
+                this.navigationPointCount += 1;
+                this.navigationConfiguration.push({
+                    "id": this.navigationPointCount,
+                    "name": name,
+                    "required": true,
+                    "description": "Specified lat/long/crs  navigation start location",
+                    "valueType": "geojson point geometry",
+                    "value": {
+                        "type": "Point", "coordinates": [pnt.Longitude, pnt.Latitude], "crs": { "properties": { "name": "EPSG:" + pnt.crs }, "type": "name" }
+                    }
+                });
+                //console.log('navigationConfiguration:', this.navigationConfiguration)
+                if (this._locations.length > this.minLocations)
                     this._locations.shift();
+            };
+            NetworkNav.prototype.getCountByType = function (object, text) {
+                return object.filter(function (item) { return (item.valueType.toLowerCase().indexOf(text) >= 0); }).length;
             };
             return NetworkNav;
         }()); //end class
-        var PathBetweenPoints = (function (_super) {
-            __extends(PathBetweenPoints, _super);
+        Models.NetworkNav = NetworkNav;
+        var NetworkPath = /** @class */ (function (_super) {
+            __extends(NetworkPath, _super);
             //https://ssdev.cr.usgs.gov/streamstatsservices/navigation/1.geojson?rcode=RRB&startpoint=[-94.311504,48.443681]&endpoint=[-94.349721,48.450215]&crs=4326
             //properties
             //Constructor
-            function PathBetweenPoints() {
-                return _super.call(this, 1, 2) || this;
+            function NetworkPath() {
+                return _super.call(this, 2, 2) || this;
             }
-            return PathBetweenPoints;
+            return NetworkPath;
         }(NetworkNav)); //end class
-        Models.PathBetweenPoints = PathBetweenPoints;
-        var Path2Outlet = (function (_super) {
-            __extends(Path2Outlet, _super);
+        Models.NetworkPath = NetworkPath;
+        var FlowPath = /** @class */ (function (_super) {
+            __extends(FlowPath, _super);
             //Constructor
-            function Path2Outlet() {
-                var _this = _super.call(this, 2, 1) || this;
+            function FlowPath() {
+                var _this = _super.call(this, 1, 1) || this;
                 _this._workspaceID = '';
                 return _this;
             }
-            Object.defineProperty(Path2Outlet.prototype, "workspaceID", {
+            Object.defineProperty(FlowPath.prototype, "workspaceID", {
                 get: function () {
                     return this._workspaceID;
                 },
@@ -82,13 +113,13 @@ var StreamStats;
                 enumerable: true,
                 configurable: true
             });
-            return Path2Outlet;
+            return FlowPath;
         }(NetworkNav)); //end class
-        Models.Path2Outlet = Path2Outlet;
-        var NetworkReport = (function (_super) {
-            __extends(NetworkReport, _super);
+        Models.FlowPath = FlowPath;
+        var NetworkTrace = /** @class */ (function (_super) {
+            __extends(NetworkTrace, _super);
             //Constructor
-            function NetworkReport() {
+            function NetworkTrace() {
                 var _this = _super.call(this, 3, 1) || this;
                 //https://ssdev.cr.usgs.gov/streamstatsservices/navigation/4.geojson?rcode=RRB&startpoint=[-94.719923,48.47219]&crs=4326&direction=Upstream&layers=NHDFlowline
                 //properties
@@ -97,9 +128,9 @@ var StreamStats;
                 _this.selectedDirectionType = _this.DirectionOptions[1];
                 return _this;
             }
-            return NetworkReport;
+            return NetworkTrace;
         }(NetworkNav)); //end class
-        Models.NetworkReport = NetworkReport;
+        Models.NetworkTrace = NetworkTrace;
     })(Models = StreamStats.Models || (StreamStats.Models = {}));
 })(StreamStats || (StreamStats = {})); //end namespace
 //# sourceMappingURL=NetworkNavModels.js.map

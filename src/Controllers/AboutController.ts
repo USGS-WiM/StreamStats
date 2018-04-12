@@ -96,9 +96,14 @@ module StreamStats.Controllers {
             this.Execute(request).then(
                 (response: any) => {
                     //console.log('Successfully retrieved active news articles folder');
-
+                    var publishedArticles = [];
                     if (response.data.folder.articles.length) {
-                        this.activeNewsArticles = response.data.folder.articles;                        
+                        response.data.folder.articles.forEach(function(element) {
+                            if (element.status == 2) {
+                                publishedArticles.push(element);
+                            };
+                        });
+                        this.activeNewsArticles = publishedArticles;                        
                     }
 
                 }, (error) => {
@@ -123,8 +128,15 @@ module StreamStats.Controllers {
             this.Execute(request).then(
                 (response: any) => {
                     //console.log('Successfully retrieved past news articles folder');
-
-                    this.pastNewsArticles = response.data.folder.articles;
+                    var publishedArticles = [];
+                    if (response.data.folder.articles.length) {
+                        response.data.folder.articles.forEach(function (element) {
+                            if (element.status == 2) {
+                                publishedArticles.push(element);
+                            };
+                        });
+                        this.pastNewsArticles = publishedArticles;
+                    }
 
                 }, (error) => {
                     //sm when error

@@ -24,47 +24,97 @@
 // Class
 module StreamStats.Models {
     export interface INetworkNav {
-        ModelType: number;
         locations: Array<WiM.Models.IPoint>;
-        addLocation(pnt: WiM.Models.IPoint);
-        requiredLocationLength: number;
-        
+        addLocation(name: string, pnt: WiM.Models.IPoint);
+        navigationName: string;
+        navigationDescription: string;
+        navigationID: number;
+        navigationInfo: any;
+        navigationConfiguration: Array<any>;
+        minLocations: number;
+        optionsCount: number;
+        navigationPointCount: number;
+       
     }
 
-    abstract class NetworkNav implements INetworkNav{
+    export class NetworkNav implements INetworkNav{
+
         //properties
-        public requiredLocationLength:number;
         private _locations: Array<WiM.Models.IPoint>;
+
         public get locations(): Array <WiM.Models.IPoint> {
             return this._locations;
         }
-        public ModelType: number;
+        
+        public navigationName: string;
+        public navigationDescription: string;
+        public navigationID: number;
+        public navigationInfo: any;
+        public navigationConfiguration: Array<any>;
+        public minLocations: number;
+        public optionsCount: number;
+        public navigationPointCount: number;
+
         //Constructor
-        constructor(modelID:number, maxLocations: number) {
-            this.requiredLocationLength = maxLocations;
-            this.ModelType = modelID;
+        constructor(methodtype: number, navigationInfo: any) {
+
+            this.navigationID = methodtype;
+            this.navigationInfo = navigationInfo;
+            if (this.navigationInfo.configuration) this.minLocations = this.getCountByType(this.navigationInfo.configuration,'geojson point geometry');
+            this.navigationConfiguration = [];
+            this.navigationPointCount = 0;
             this._locations = [];
         }
 
         //Methods
-        public addLocation(pnt: WiM.Models.IPoint):void {
+        public addLocation(name: string, pnt: WiM.Models.IPoint):void {
             this._locations.push(pnt);
 
-            if (this._locations.length > this.requiredLocationLength)
+            //console.log('in add location:', name, pnt, this.navigationPointCount, this.navigationConfiguration);
+
+            //delete point if already exists
+            this.navigationConfiguration.reverse().forEach((config, index) => {
+                if (config.name == name) {
+                    console.log('found this point already, deleting:', this.navigationConfiguration, index)
+                    this.navigationConfiguration.splice(index, 1);
+                    this.navigationPointCount -= 1
+                }
+            });
+
+            //add point
+            this.navigationPointCount+=1
+            this.navigationConfiguration.push({
+                "id": this.navigationPointCount,
+                "name": name,
+                "required": true,
+                "description": "Specified lat/long/crs  navigation start location",
+                "valueType": "geojson point geometry",
+                "value": {
+                    "type": "Point", "coordinates": [pnt.Longitude, pnt.Latitude], "crs": { "properties": { "name": "EPSG:" + pnt.crs }, "type": "name" }
+                }
+            })
+
+            //console.log('navigationConfiguration:', this.navigationConfiguration)
+
+            if (this._locations.length > this.minLocations)
                 this._locations.shift();
+        }
+
+        private getCountByType(object, text) {
+            return object.filter(function (item) { return (item.valueType.toLowerCase().indexOf(text) >= 0) }).length;
         }
     }//end class
 
-    export class PathBetweenPoints extends NetworkNav {
+    export class NetworkPath extends NetworkNav {
         //https://ssdev.cr.usgs.gov/streamstatsservices/navigation/1.geojson?rcode=RRB&startpoint=[-94.311504,48.443681]&endpoint=[-94.349721,48.450215]&crs=4326
         //properties
        
         //Constructor
         constructor() {
-            super(1, 2);
+            super(2, 2);
         }
     }//end class
-    export class Path2Outlet extends NetworkNav {
+    export class FlowPath extends NetworkNav {
         //https://ssdev.cr.usgs.gov/streamstatsservices/navigation/2.geojson?rcode=RRB&startpoint=[-94.719923,48.47219]&crs=4326&workspaceID=RRB20160624114146710000
         //https://ssdev.cr.usgs.gov/streamstatsservices/navigation/3.geojson?rcode=RRB&startpoint=[-94.719923,48.47219]&crs=4326
 
@@ -78,11 +128,11 @@ module StreamStats.Models {
         }
         //Constructor
         constructor() {
-            super(2, 1);
+            super(1, 1);
             this._workspaceID = '';
         }
     }//end class
-    export class NetworkReport extends NetworkNav {
+    export class NetworkTrace extends NetworkNav {
         //https://ssdev.cr.usgs.gov/streamstatsservices/navigation/4.geojson?rcode=RRB&startpoint=[-94.719923,48.47219]&crs=4326&direction=Upstream&layers=NHDFlowline
         //properties
         public layerOptions: Array<any> = [{ name: "NHDFlowline", selected: true }, { name: "Gage", selected: false  }, { name: "Dam", selected:false  }];

@@ -76,8 +76,9 @@ module StreamStats.Services {
                         return {
                             templateUrl: 'Views/explorationview.html',
                             controller: 'StreamStats.Controllers.ExplorationToolsModalController',
-                            size: 'lg',
+                            size: 'sm',
                             backdropClass: 'backdropZ',
+                            backdrop: 'static',
                             windowClass: 'windowZ',
 
                         };
@@ -137,12 +138,12 @@ module StreamStats.Services {
                         };
      
                     default:
-                        return false;
+                        return null;
                 }//end switch          
             }
             catch (e) {
                 //this.sm(new MSG.NotificationArgs(e.message, MSG.NotificationType.INFORMATION, 1.5));
-                return false;
+                return null;
             }
         }
 
