@@ -29,7 +29,7 @@ var StreamStats;
     var Controllers;
     (function (Controllers) {
         'use string';
-        var AboutController = (function (_super) {
+        var AboutController = /** @class */ (function (_super) {
             __extends(AboutController, _super);
             function AboutController($scope, $http, $sce, modalService, region, studyAreaService, modal) {
                 var _this = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
@@ -65,8 +65,15 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
                 this.Execute(request).then(function (response) {
                     //console.log('Successfully retrieved active news articles folder');
+                    var publishedArticles = [];
                     if (response.data.folder.articles.length) {
-                        _this.activeNewsArticles = response.data.folder.articles;
+                        response.data.folder.articles.forEach(function (element) {
+                            if (element.status == 2) {
+                                publishedArticles.push(element);
+                            }
+                            ;
+                        });
+                        _this.activeNewsArticles = publishedArticles;
                     }
                 }, function (error) {
                     //sm when error
@@ -83,7 +90,16 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
                 this.Execute(request).then(function (response) {
                     //console.log('Successfully retrieved past news articles folder');
-                    _this.pastNewsArticles = response.data.folder.articles;
+                    var publishedArticles = [];
+                    if (response.data.folder.articles.length) {
+                        response.data.folder.articles.forEach(function (element) {
+                            if (element.status == 2) {
+                                publishedArticles.push(element);
+                            }
+                            ;
+                        });
+                        _this.pastNewsArticles = publishedArticles;
+                    }
                 }, function (error) {
                     //sm when error
                 }).finally(function () {
@@ -221,11 +237,11 @@ var StreamStats;
                     var expires = "";
                 document.cookie = name + "=" + value + expires + "; path=/";
             };
+            //Constructor
+            //-+-+-+-+-+-+-+-+-+-+-+-
+            AboutController.$inject = ['$scope', '$http', '$sce', 'StreamStats.Services.ModalService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', '$modalInstance'];
             return AboutController;
         }(WiM.Services.HTTPServiceBase)); //end  class
-        //Constructor
-        //-+-+-+-+-+-+-+-+-+-+-+-
-        AboutController.$inject = ['$scope', '$http', '$sce', 'StreamStats.Services.ModalService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', '$modalInstance'];
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.AboutController', AboutController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));

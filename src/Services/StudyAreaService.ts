@@ -23,6 +23,7 @@
 
 //Import
 module StreamStats.Services {
+    declare var turf;
     'use strict'
     export interface IStudyAreaService {
         selectedStudyArea: Models.IStudyArea;
@@ -51,8 +52,8 @@ module StreamStats.Services {
         baseMap: Object;
         showModifyBasinCharacterstics: boolean;
         getAdditionalFeatureList();
-        getAdditionalFeatures(featureString:string);
-        //requestParameterList: Array<any>; jkn
+        getAdditionalFeatures(featureString: string);
+        surfacecontributionsonly: boolean;
     }
 
     export var onSelectedStudyAreaChanged: string = "onSelectedStudyAreaChanged";
@@ -112,7 +113,7 @@ module StreamStats.Services {
         public servicesURL: string;
         public baseMap: Object;
         public showModifyBasinCharacterstics: boolean;
-        //public requestParameterList: Array<any>; jkn
+        public surfacecontributionsonly: boolean = false;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -186,16 +187,48 @@ module StreamStats.Services {
             this.toaster.pop("wait", "Delineating Basin", "Please wait...", 0);
             this.canUpdate = false;
 
+            //console.log('loadstudy area', this.selectedStudyArea);
+            
+            
             var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(),
-                this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString(), false)
+                this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString(), false);
+
+            //hack for st louis stormdrain
+            if (this.selectedStudyArea.RegionID == 'MO_STL') {
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSstormwaterDelineation'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(),
+                    this.selectedStudyArea.Pourpoint.Latitude.toString(), this.surfacecontributionsonly);
+            }
+
+            
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
             request.withCredentials = true;
 
             this.Execute(request).then(
                 (response: any) => {  
-                    //console.log('delineation response headers: ', response.headers());
 
-                    if (response.data.featurecollection && response.data.featurecollection[1] && response.data.featurecollection[1].feature.features.length > 0) {
+                    //hack for st louis stormdrain
+                    if (this.selectedStudyArea.RegionID == 'MO_STL') {
+
+                        if (response.data.layers && response.data.layers.features && response.data.layers.features[1].geometry.coordinates.length > 0) {
+
+                            //this.selectedStudyArea.Server = response.headers()['x-usgswim-hostname'].toLowerCase();
+                            this.selectedStudyArea.Features = response.data.hasOwnProperty("layers") ? response.data["layers"] : null;
+                            this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
+                            this.selectedStudyArea.Date = new Date();
+
+                            this.toaster.clear();
+                            this.eventManager.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);
+                            this.canUpdate = true;
+                        }
+                        else {
+                            this.clearStudyArea();
+                            this.toaster.clear();
+                            this.toaster.pop("error", "A watershed was not returned from the delineation request", "Please retry", 0);
+                        }
+                    }
+
+                    //otherwise old method
+                    else if (response.data.featurecollection && response.data.featurecollection[1] && response.data.featurecollection[1].feature.features.length > 0) {
                         this.selectedStudyArea.Server = response.headers()['usgswim-hostname'].toLowerCase();
                         this.selectedStudyArea.Features = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"] : null;
                         this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
@@ -235,6 +268,8 @@ module StreamStats.Services {
                     
             });
         }
+
+        
 
         public loadWatershed(rcode: string, workspaceID: string): void {
             try {
@@ -769,7 +804,7 @@ module StreamStats.Services {
 
         
         //Helper Methods
-        //-+-+-+-+-+-+-+-+-+-+-+-       
+        //-+-+-+-+-+-+-+-+-+-+-+-      
         private loadParameterResults(results: Array<WiM.Models.IParameter>) {
 
             //this.toaster.pop('wait', "Loading Basin Characteristics", "Please wait...", 0);

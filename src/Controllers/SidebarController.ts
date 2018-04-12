@@ -297,6 +297,8 @@ module StreamStats.Controllers {
 
         public submitBasinEdits() {
 
+            this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'sumbitEdits' });
+
             this.studyAreaService.showEditToolbar = false;
 
             //check if basin has been edited, if so we need to re-query regression regions

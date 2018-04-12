@@ -13,7 +13,6 @@ StreamStats client application
 
 Install global dependencies
 ```bash
-npm install -g bower
 npm install -g gulp
 npm install -g typings
 ```
@@ -29,7 +28,6 @@ https://help.github.com/articles/cloning-a-repository/
 Inside of your project folder (after git fork and clone):
 ```bash
 npm install
-bower install
 typings install 
 ```
 Note: [upgrade from tsd to typings] (https://github.com/DefinitelyTyped/tsd/issues/269)

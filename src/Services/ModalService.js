@@ -23,7 +23,7 @@ var StreamStats;
     var Services;
     (function (Services) {
         'use strict';
-        var ModalService = (function () {
+        var ModalService = /** @class */ (function () {
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
             function ModalService($modal) {
@@ -51,8 +51,9 @@ var StreamStats;
                             return {
                                 templateUrl: 'Views/explorationview.html',
                                 controller: 'StreamStats.Controllers.ExplorationToolsModalController',
-                                size: 'lg',
+                                size: 'sm',
                                 backdropClass: 'backdropZ',
+                                backdrop: 'static',
                                 windowClass: 'windowZ',
                             };
                         case SSModalType.e_report:
@@ -109,12 +110,12 @@ var StreamStats;
                                 windowClass: 'windowZ'
                             };
                         default:
-                            return false;
+                            return null;
                     } //end switch          
                 }
                 catch (e) {
                     //this.sm(new MSG.NotificationArgs(e.message, MSG.NotificationType.INFORMATION, 1.5));
-                    return false;
+                    return null;
                 }
             };
             return ModalService;

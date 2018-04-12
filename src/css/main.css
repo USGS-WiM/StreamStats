@@ -594,9 +594,9 @@ div.leaflet-top > .elevation {
   .modal-content{
     border-radius: 0;
   }
-  .modal-content p{
-    padding-top: 15px;
-  }
+    .modal-content p {
+        padding-top: 15px;
+    }
 
   #disclaimer h3{
     margin-top: 15px;
@@ -1347,6 +1347,11 @@ div.leaflet-top > .elevation {
     display: inline !important;
 }
 
+.disclaimerReport p {
+    max-width: 85%;
+    margin-bottom: auto;
+    padding-top: 5px;
+}
 
 /*
     Extra Buttons
@@ -1392,6 +1397,25 @@ div.leaflet-top > .elevation {
         top: 3px !important;
     }
 
+/*
+    News Articles Fixes
+    Katrin - 4/3
+*/
+
+.panel-body .col-sm-12 div {
+    font-size: 13px;
+    line-height: 22px;
+    margin-bottom: 12px;
+    color: rgba(0,0,0,0.7);
+    font-weight: 400;
+    display: block !important;
+    max-width: 680px;
+    padding-top: 15px;
+    font-family: "Source Sans Pro", sans-serif;
+    padding: 10px 0;
+    margin: 0 auto;
+    letter-spacing: 0.15px;
+}
 
 /*
     Checkbox fixes
@@ -1480,4 +1504,192 @@ div.leaflet-top > .elevation {
 }
 .toast-error {
     background-color: #FF2B00 !important;
+}
+
+
+/*
+    Mitch - Fixes Feb 1
+*/
+
+html {
+    font-size: 14px;
+}
+
+.exploration-tools-expanded {
+    text-align: center;
+    font-weight: 600;
+}
+
+    .exploration-tools-expanded button {
+        font-size: 12px;
+        padding: 3px 0;
+        height: 30px;
+        line-height: 0;
+    }
+
+.modal-body h3 {
+    font-size: 20px;
+    padding: 0;
+    margin: 10px 0 10px 0;
+}
+
+.panel-heading {
+    padding: 0 8px;
+}
+
+    .panel-heading h4 {
+        padding: 0;
+    }
+
+.accordion-toggle {
+    font-size: 14px;
+    font-weight: 500;
+    padding: 10px;
+    display: block;
+}
+
+h4.modal-title {
+    font-size: 16px;
+    padding-top: 8px;
+}
+
+h3.panel-title {
+    margin: 0;
+    padding: 8px 0;
+    line-height: 24px;
+}
+
+    h3.panel-title small {
+        display: block;
+    }
+
+.panel-body h5 {
+    margin: 10px 0 5px 0;
+    font-size: 16px;
+    letter-spacing: -0.2px;
+    font-weight: 500;
+    padding: 0;
+}
+
+.nav-tabs li {
+    font-size: 12px;
+    padding: 0;
+}
+
+    .nav-tabs li a {
+        padding: 8px;
+    }
+
+@media (max-width: 1000px) {
+    .nav-tabs li {
+        width: 50%;
+        text-align: center;
+    }
+}
+
+.modal-body p,
+.panel-body p {
+    font-size: 13px;
+    line-height: 22px;
+    color: rgba(0,0,0,0.7);
+}
+
+#networkNav .btn-wim-success {
+    width: 200px;
+    line-height: 0;
+    margin: 15px auto;
+}
+
+    #networkNav .btn-wim-success:hover {
+        color: white;
+    }
+
+.input-group-addon.rdo {
+    padding: 0 !important;
+}
+
+span.input-group-addon {
+    border: none;
+}
+
+input[name=distanceValue] {
+    margin: 0 !important;
+    height: 38px;
+}
+
+.panel-confitem-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.panel-confitem {
+    max-width: 240px;
+    margin: 0 20px;
+}
+
+.panel-confitem-action {
+    width: 100%;
+    margin: 35px 0 0 0;
+}
+
+.map-position {
+    border-radius: 3px;
+    box-shadow: 0px 5px 20px 0px rgba(0,0,0,0.2);
+    z-index: 5;
+}
+
+.exploration-tools-expanded,
+.angular-leaflet-control-layers-expanded {
+    box-shadow: 0px 5px 20px 0px rgba(0,0,0,0.2) !important;
+}
+
+    .exploration-tools-expanded .banner {
+        padding: 5px;
+        font-size: 11px !important;
+        line-height: 12px;
+        text-align: left;
+        font-weight: 400;
+        width: 90%;
+        margin: 10px auto;
+    }
+
+
+    .exploration-tools-expanded button:disabled {
+        background-color: rgba(0,0,0,0.1) !important;
+        color: rgba(0,0,0,0.5) !important;
+    }
+
+        .exploration-tools-expanded button:disabled:hover {
+            background-color: rgba(0,0,0,0.1) !important;
+        }
+
+    .exploration-tools-expanded button.btn-orange:disabled {
+        background-color: rgba(200,0,0,0.5) !important;
+        color: rgba(0,0,0,1) !important;
+    }
+
+    .exploration-tools-expanded:hover {
+        cursor: default;
+    }
+
+
+/*
+    Mitch Fixes 3/26
+*/
+
+.panel-confitem-wrapper button,
+.panel-confitem-wrapper .input-group{
+    margin-bottom: 10px !important;
+}
+
+.rdo span div,
+.chx span div {
+    display: inline-block;
+    width: 100%;
+    max-width: 100%;
+    break-inside: always;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    text-align: left;
 }
