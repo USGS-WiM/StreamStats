@@ -63,7 +63,9 @@
     <None Include=".typingsrc" />
     <Content Include="gulpfile.js" />
     <Content Include="src\appConfig.js" />
+    <Content Include="src\css\custom.css" />
     <Content Include="src\css\main.css" />
+    <Content Include="src\images\usgs-logo-black.png" />
     <Content Include="src\Views\help.html" />
     <Content Include="src\Views\about.html" />
     <Content Include="src\fonts\glyphicons-halflings-regular.svg" />
@@ -87,6 +89,7 @@
     <Content Include=".gitattributes" />
     <Content Include=".gitignore" />
     <None Include="manual.pubxml" />
+    <Content Include="src\Assets\results.json" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
