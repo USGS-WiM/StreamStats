@@ -1095,7 +1095,7 @@ div.leaflet-top > .elevation {
 */
     #mainMap .leaflet-top .leaflet-control; {
     margin-top: 65px !important;
-    position: realtive;
+    position: relative;
     top: 10px !important;
     border-radius: 3px !important;
 }
