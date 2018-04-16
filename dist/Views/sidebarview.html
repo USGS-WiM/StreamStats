@@ -171,9 +171,9 @@
                             <button type="button" class="btn-blue fullwidth" ng-click="vm.queryStatisticsGroupTypes()" ng-disabled="vm.nssService.loadingStatisticsGroup"><span ng-show="vm.nssService.loadingStatisticsGroup"><i ng-class="vm.nssService.loadingStatisticsGroup ? 'fa fa-refresh fa-spin' : ''"></i>&nbsp;&nbsp;Querying Scenarios</span><span ng-show="!vm.nssService.loadingStatisticsGroup">Re-query Scenarios</span></button>
                         </form>
 
-                        <div class="banner warning" ng-show="vm.nssService.statisticsGroupList.length == 0  && !vm.nssService.loadingStatisticsGroup"><span ng-show="vm.regionService.selectedRegion.ScenariosAvailable">Failed to load scenarios or no scenarios available</span><span ng-hide="vm.regionService.selectedRegion.ScenariosAvailable">Scenario computation has not been enabled yet for {{vm.regionService.selectedRegion.Name}}</span></div>
+                        <div class="banner warning" ng-show="(vm.nssService.statisticsGroupList.length == 0  && !vm.nssService.loadingStatisticsGroup) || (vm.studyAreaService.selectedStudyArea.RegressionRegions && vm.studyAreaService.selectedStudyArea.RegressionRegions.length === 0)"><span ng-show="vm.regionService.selectedRegion.ScenariosAvailable">Failed to load scenarios or no scenarios available</span><span ng-hide="vm.regionService.selectedRegion.ScenariosAvailable">Scenario computation has not been enabled yet for {{vm.regionService.selectedRegion.Name}}</span></div>
 
-                        <form style="padding: 5px 0" ng-if="vm.nssService.statisticsGroupList.length > 0" ng-repeat="statisticsGroup in vm.nssService.statisticsGroupList">
+                        <form style="padding: 5px 0" ng-if="vm.nssService.statisticsGroupList.length > 0 && vm.studyAreaService.selectedStudyArea.RegressionRegions.length > 0" ng-repeat="statisticsGroup in vm.nssService.statisticsGroupList">
                             <button class="fullwidth" ng-disabled="vm.studyAreaService.parametersLoading" ng-class="vm.checkArrayForObj(vm.nssService.selectedStatisticsGroupList, statisticsGroup) != -1 ? 'btn-blue': ''" ng-click="vm.setStatisticsGroup(statisticsGroup)"><span>{{statisticsGroup.Name}} </span></button>
                         </form>
                     </div>
