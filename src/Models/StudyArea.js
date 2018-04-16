@@ -20,7 +20,7 @@ var StreamStats;
 (function (StreamStats) {
     var Models;
     (function (Models) {
-        var StudyArea = /** @class */ (function () {
+        var StudyArea = (function () {
             function StudyArea(region, point) {
                 this.RegionID = region;
                 this.Pourpoint = point;

@@ -34,7 +34,7 @@ var StreamStats;
         'use strict';
         Services.onSelectExplorationMethod = "onSelectExplorationMethod";
         Services.onSelectedMethodExecuteComplete = "onSelectedMethodExecuteComplete";
-        var ExplorationServiceEventArgs = /** @class */ (function (_super) {
+        var ExplorationServiceEventArgs = (function (_super) {
             __extends(ExplorationServiceEventArgs, _super);
             function ExplorationServiceEventArgs() {
                 return _super.call(this) || this;
@@ -42,7 +42,7 @@ var StreamStats;
             return ExplorationServiceEventArgs;
         }(WiM.Event.EventArgs));
         Services.ExplorationServiceEventArgs = ExplorationServiceEventArgs;
-        var ExplorationService = /** @class */ (function (_super) {
+        var ExplorationService = (function (_super) {
             __extends(ExplorationService, _super);
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
@@ -150,7 +150,7 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     var results = response.data;
-                    console.log('network nav options:', results);
+                    //console.log('network nav options:', results);
                     _this.navigationResources = results;
                     //sm when complete
                 }, function (error) {

@@ -594,9 +594,9 @@ div.leaflet-top > .elevation {
   .modal-content{
     border-radius: 0;
   }
-    .modal-content p {
-        padding-top: 15px;
-    }
+  .modal-content p{
+    padding-top: 15px;
+  }
 
   #disclaimer h3{
     margin-top: 15px;
@@ -1095,7 +1095,7 @@ div.leaflet-top > .elevation {
 */
     #mainMap .leaflet-top .leaflet-control; {
     margin-top: 65px !important;
-    position: relative;
+    position: realtive;
     top: 10px !important;
     border-radius: 3px !important;
 }
@@ -1347,11 +1347,6 @@ div.leaflet-top > .elevation {
     display: inline !important;
 }
 
-.disclaimerReport p {
-    max-width: 85%;
-    margin-bottom: auto;
-    padding-top: 5px;
-}
 
 /*
     Extra Buttons
@@ -1397,25 +1392,6 @@ div.leaflet-top > .elevation {
         top: 3px !important;
     }
 
-/*
-    News Articles Fixes
-    Katrin - 4/3
-*/
-
-.panel-body .col-sm-12 div {
-    font-size: 13px;
-    line-height: 22px;
-    margin-bottom: 12px;
-    color: rgba(0,0,0,0.7);
-    font-weight: 400;
-    display: block !important;
-    max-width: 680px;
-    padding-top: 15px;
-    font-family: "Source Sans Pro", sans-serif;
-    padding: 10px 0;
-    margin: 0 auto;
-    letter-spacing: 0.15px;
-}
 
 /*
     Checkbox fixes
@@ -1672,24 +1648,3 @@ input[name=distanceValue] {
     .exploration-tools-expanded:hover {
         cursor: default;
     }
-
-
-/*
-    Mitch Fixes 3/26
-*/
-
-.panel-confitem-wrapper button,
-.panel-confitem-wrapper .input-group{
-    margin-bottom: 10px !important;
-}
-
-.rdo span div,
-.chx span div {
-    display: inline-block;
-    width: 100%;
-    max-width: 100%;
-    break-inside: always;
-    word-wrap: break-word;
-    white-space: pre-wrap;
-    text-align: left;
-}

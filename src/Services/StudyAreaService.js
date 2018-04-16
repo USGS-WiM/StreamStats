@@ -36,7 +36,7 @@ var StreamStats;
         Services.onSelectedStudyParametersLoaded = "onSelectedStudyParametersLoaded";
         Services.onStudyAreaReset = "onStudyAreaReset";
         Services.onEditClick = "onEditClick";
-        var StudyAreaEventArgs = /** @class */ (function (_super) {
+        var StudyAreaEventArgs = (function (_super) {
             __extends(StudyAreaEventArgs, _super);
             function StudyAreaEventArgs(studyArea, saVisible, paramState, additionalFeatures) {
                 if (studyArea === void 0) { studyArea = null; }
@@ -53,8 +53,9 @@ var StreamStats;
             return StudyAreaEventArgs;
         }(WiM.Event.EventArgs));
         Services.StudyAreaEventArgs = StudyAreaEventArgs;
-        var StudyAreaService = /** @class */ (function (_super) {
+        var StudyAreaService = (function (_super) {
             __extends(StudyAreaService, _super);
+            //public requestParameterList: Array<any>; jkn
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
             function StudyAreaService($http, $q, eventManager, toaster) {
@@ -62,7 +63,6 @@ var StreamStats;
                 _this.$http = $http;
                 _this.$q = $q;
                 _this.eventManager = eventManager;
-                _this.surfacecontributionsonly = false;
                 eventManager.AddEvent(Services.onSelectedStudyParametersLoaded);
                 eventManager.AddEvent(Services.onSelectedStudyAreaChanged);
                 eventManager.AddEvent(Services.onStudyAreaReset);
@@ -146,10 +146,14 @@ var StreamStats;
                 this.toaster.pop("wait", "Delineating Basin", "Please wait...", 0);
                 this.canUpdate = false;
                 //console.log('loadstudy area', this.selectedStudyArea);
-                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString(), false);
+                var regionID = this.selectedStudyArea.RegionID;
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', regionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString(), false);
                 //hack for st louis stormdrain
                 if (this.selectedStudyArea.RegionID == 'MO_STL') {
-                    var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSstormwaterDelineation'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString(), this.surfacecontributionsonly);
+                    var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSstormwaterDelineation'].format(regionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString());
+                }
+                if (this.selectedStudyArea.RegionID == 'CRB' || this.selectedStudyArea.RegionID == 'DRB') {
+                    this.selectedStudyArea;
                 }
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 request.withCredentials = true;
@@ -497,8 +501,10 @@ var StreamStats;
                         return;
                     }
                     if (response.data.length == 0) {
-                        //console.log('query error');
-                        _this.toaster.pop('error', "Regression region query failed", "This type of query may not be supported here at this time", 0);
+                        //Its possible to have a zero length response from the region query.  In the case probably should clear out nssRegion list in sidebarController ~line 103
+                        _this.regressionRegionQueryComplete = true;
+                        _this.selectedStudyArea.RegressionRegions = response.data;
+                        _this.toaster.pop('error', "No regression regions were returned", "Regression based scenario computation not allowed", 0);
                         return;
                     }
                     if (response.data.length > 0) {
