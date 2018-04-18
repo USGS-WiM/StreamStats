@@ -27,6 +27,7 @@ module StreamStats.Services {
     'use strict'
     export interface InssService {
         onSelectedStatisticsGroupChanged: WiM.Event.Delegate<WiM.Event.EventArgs>;
+        statisticsGroupList: Array<IStatisticsGroup>;
         selectedStatisticsGroupList: Array<IStatisticsGroup>;
         loadStatisticsGroupTypes(rcode: string, regressionregion: string):Array<any>;
         loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregion: string, percentWeights: any);

@@ -94,7 +94,16 @@ var StreamStats;
                 var url = configuration.SupportTicketService.BaseURL + folder;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
                 return this.Execute(request).then(function (response) {
-                    return response.data.folder.articles;
+                    var publishedArticles = [];
+                    if (response.data.folder.articles.length) {
+                        response.data.folder.articles.forEach(function (element) {
+                            if (element.status == 2) {
+                                publishedArticles.push(element);
+                            }
+                            ;
+                        });
+                        return publishedArticles;
+                    }
                 }, function (error) {
                     return "There was a problem getting this article";
                 }).finally(function () {

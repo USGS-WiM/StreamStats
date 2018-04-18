@@ -50,7 +50,6 @@ var StreamStats;
                 $scope.$watch(function () { return _this.studyAreaService.regressionRegionQueryComplete; }, function (newval, oldval) {
                     if (newval == oldval)
                         return;
-                    //console.log('regression query watch', oldval, newval);
                     if (newval == null)
                         _this.setProcedureType(2);
                     else if (!_this.regionService.selectedRegion.ScenariosAvailable)

@@ -53,8 +53,6 @@ module StreamStats.Services {
         showModifyBasinCharacterstics: boolean;
         getAdditionalFeatureList();
         getAdditionalFeatures(featureString: string);
-        checkForRiverBasin(region: string, latlng: any);
-        surfacecontributionsonly: boolean;
     }
 
     export var onSelectedStudyAreaChanged: string = "onSelectedStudyAreaChanged";
@@ -114,7 +112,7 @@ module StreamStats.Services {
         public servicesURL: string;
         public baseMap: Object;
         public showModifyBasinCharacterstics: boolean;
-        public surfacecontributionsonly: boolean = false;
+        //public requestParameterList: Array<any>; jkn
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -190,8 +188,7 @@ module StreamStats.Services {
 
             //console.log('loadstudy area', this.selectedStudyArea);
 
-            var regionID;
-            (this.selectedStudyArea.AltRegionID) ? regionID = this.selectedStudyArea.AltRegionID : regionID = this.selectedStudyArea.RegionID
+            var regionID = this.selectedStudyArea.RegionID;
             
             var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', regionID, this.selectedStudyArea.Pourpoint.Longitude.toString(),
                 this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString(), false);
@@ -199,12 +196,13 @@ module StreamStats.Services {
             //hack for st louis stormdrain
             if (this.selectedStudyArea.RegionID == 'MO_STL') {
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSstormwaterDelineation'].format(regionID, this.selectedStudyArea.Pourpoint.Longitude.toString(),
-                    this.selectedStudyArea.Pourpoint.Latitude.toString(), this.surfacecontributionsonly);
+                    this.selectedStudyArea.Pourpoint.Latitude.toString());
             }
 
             if (this.selectedStudyArea.RegionID == 'CRB' || this.selectedStudyArea.RegionID == 'DRB') {
                 this.selectedStudyArea
             }
+
 
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
             request.withCredentials = true;
@@ -273,48 +271,6 @@ module StreamStats.Services {
                 }).finally(() => {
                     
             });
-        }
-
-
-        public checkForRiverBasin(region, latlng) {
-
-            //console.log('in check for river basin', ['CRB', 'DRB'].indexOf(region), region, latlng, this.selectedStudyArea);
-
-            //just delineate if not in one of these regions
-            if (['CRB', 'DRB'].indexOf(region) == -1) {
-                this.loadStudyBoundary();
-                return;
-            }
-
-            var url = configuration.stateGeoJSONurl;
-            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
-
-            this.Execute(request).then(
-                (response: any) => {
-                    //console.log('in response', response);
-
-                    //loop over states
-                    response.data.features.forEach((feature) => {
-                        //var inside = this.inside([latlng.lng, latlng.lat], feature.geometry.coordinates);
-                        var point = turf.point([latlng.lng, latlng.lat]);
-
-                        var inside = turf.pointsWithinPolygon(point, feature);
-
-                        if (inside.features.length > 0) {
-                            //console.log('test2:', feature.properties, inside);
-                            this.selectedStudyArea.AltRegionID = feature.properties.abbr;
-                            this.loadStudyBoundary();
-                        }
-                    });
-
-
-                    //sm when complete
-                }, (error) => {
-
-
-                    this.toaster.pop('warning', "Error checking for river basin", "", 5000);
-                    //sm when complete
-                }).finally(() => { });
         }
 
         public loadWatershed(rcode: string, workspaceID: string): void {
@@ -688,8 +644,10 @@ module StreamStats.Services {
                     }
 
                     if (response.data.length == 0) {
-                        //console.log('query error');
-                        this.toaster.pop('error', "Regression region query failed", "This type of query may not be supported here at this time", 0);
+                        //Its possible to have a zero length response from the region query.  In the case probably should clear out nssRegion list in sidebarController ~line 103
+                        this.regressionRegionQueryComplete = true; 
+                        this.selectedStudyArea.RegressionRegions = response.data;
+                        this.toaster.pop('error', "No regression regions were returned", "Regression based scenario computation not allowed", 0);
                         return;
                     }
 
