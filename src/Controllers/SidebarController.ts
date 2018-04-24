@@ -101,8 +101,7 @@ module StreamStats.Controllers {
 
             //watch for completion of regression region query
             $scope.$watch(() => this.studyAreaService.regressionRegionQueryComplete, (newval, oldval) => {
-                if (newval == oldval) return;
-                //console.log('regression query watch', oldval, newval);
+                if (newval == oldval) return;            
                 if (newval == null) this.setProcedureType(2);
                 else if (!this.regionService.selectedRegion.ScenariosAvailable) this.setProcedureType(2);
                 else this.setProcedureType(3);

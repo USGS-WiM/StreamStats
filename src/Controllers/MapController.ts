@@ -385,7 +385,7 @@ module StreamStats.Controllers {
         private init(): void { 
 
             this.setupMap();
-            console.log('in map init')
+            //console.log('in map init')
             this.explorationService.getNavigationEndPoints();
         }
 
@@ -889,8 +889,8 @@ module StreamStats.Controllers {
                             //otherwise parse exclude Codes
                             else {
                                 this.studyArea.checkingDelineatedPoint = false;
-                                var excludeCode = results.features[0].properties.ExcludeCode;
-                                var popupMsg = results.features[0].properties.ExcludeReason;
+                                var excludeCode = results.features[0].properties.ExcludeCod;
+                                var popupMsg = results.features[0].properties.ExcludeRea;
                                 if (excludeCode == 1) {
                                     this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", popupMsg, 0);
                                     //ga event
@@ -898,7 +898,7 @@ module StreamStats.Controllers {
                                 }
                                 else {
                                     this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", popupMsg, true, 0);
-                                    this.startDelineate(latlng, true);
+                                    this.startDelineate(latlng, true, popupMsg);
                                     this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'not advised' });
                                 }
                             }
@@ -1483,7 +1483,7 @@ module StreamStats.Controllers {
             return layeridList;
         }
 
-        private startDelineate(latlng: any, isInExclusionArea?: boolean) {
+        private startDelineate(latlng: any, isInExclusionArea?: boolean, excludeReason?: string) {
             //console.log('in startDelineate', latlng);
 
 
@@ -1493,7 +1493,7 @@ module StreamStats.Controllers {
             
 
             //add disclaimer here
-            if (isInExclusionArea) this.studyArea.selectedStudyArea.Disclaimers['isInExclusionArea'] = 'The delineation point is in an exclusion area.';
+            if (isInExclusionArea) this.studyArea.selectedStudyArea.Disclaimers['isInExclusionArea'] = 'The delineation point is in an exclusion area. ' + excludeReason;
         }
     }//end class
 
