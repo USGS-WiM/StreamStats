@@ -20,7 +20,7 @@ var StreamStats;
     var Controllers;
     (function (Controllers) {
         'use strinct';
-        var Center = /** @class */ (function () {
+        var Center = (function () {
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
             function Center(lt, lg, zm) {
@@ -30,7 +30,7 @@ var StreamStats;
             }
             return Center;
         }());
-        var ReportController = /** @class */ (function () {
+        var ReportController = (function () {
             function ReportController($scope, $analytics, $modalInstance, studyArea, StatisticsGroup, leafletData, regionService) {
                 var _this = this;
                 this.regionService = regionService;
@@ -398,11 +398,11 @@ var StreamStats;
                     return index == 0 ? letter.toLowerCase() : letter.toUpperCase();
                 }).replace(/\s+/g, '');
             };
-            //Constructor
-            //-+-+-+-+-+-+-+-+-+-+-+-
-            ReportController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService'];
             return ReportController;
         }()); //end class
+        //Constructor
+        //-+-+-+-+-+-+-+-+-+-+-+-
+        ReportController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService'];
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.ReportController', ReportController);
         //.controller('StreamStats.Controllers.MapController', MapController)

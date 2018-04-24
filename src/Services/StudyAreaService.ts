@@ -616,8 +616,13 @@ module StreamStats.Services {
 
             this.regressionRegionQueryLoading = true;
             this.regressionRegionQueryComplete = false;
-
-            var watershed = angular.toJson(this.selectedStudyArea.Features[1].feature, null);
+            var watershed: string;
+            try {
+                watershed = angular.toJson(this.selectedStudyArea.Features[1].feature, null)
+            } catch (e) {
+                //for mo_stl hack
+                watershed = angular.toJson({ "type": "FeatureCollection", "crs": { "type": "ESPG", "properties": { "code": 4326 } }, "features": [(<any>this.selectedStudyArea.Features).features[1]]}, null)
+            }
 
             //var url = configuration.baseurls['NodeServer'] + configuration.queryparams['RegressionRegionQueryService'];
             //var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', watershed);

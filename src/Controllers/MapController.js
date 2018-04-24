@@ -20,14 +20,14 @@ var StreamStats;
     var Controllers;
     (function (Controllers) {
         'use strict';
-        var MapPoint = /** @class */ (function () {
+        var MapPoint = (function () {
             function MapPoint() {
                 this.lat = 0;
                 this.lng = 0;
             }
             return MapPoint;
         }());
-        var Center = /** @class */ (function () {
+        var Center = (function () {
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
             function Center(lt, lg, zm) {
@@ -37,7 +37,7 @@ var StreamStats;
             }
             return Center;
         }());
-        var Layer = /** @class */ (function () {
+        var Layer = (function () {
             function Layer(nm, ul, ty, vis, op) {
                 if (op === void 0) { op = undefined; }
                 this.name = nm;
@@ -48,7 +48,7 @@ var StreamStats;
             }
             return Layer;
         }());
-        var MapDefault = /** @class */ (function () {
+        var MapDefault = (function () {
             function MapDefault(mxZm, mnZm, zmCtrl) {
                 if (mxZm === void 0) { mxZm = null; }
                 if (mnZm === void 0) { mnZm = null; }
@@ -59,7 +59,7 @@ var StreamStats;
             }
             return MapDefault;
         }());
-        var MapController = /** @class */ (function () {
+        var MapController = (function () {
             function MapController($scope, toaster, $analytics, $location, $stateParams, leafletBoundsHelper, leafletData, search, region, studyArea, StatisticsGroup, exploration, eventManager, modal, modalStack) {
                 var _this = this;
                 this.$scope = $scope;
@@ -1177,11 +1177,11 @@ var StreamStats;
                 if (isInExclusionArea)
                     this.studyArea.selectedStudyArea.Disclaimers['isInExclusionArea'] = 'The delineation point is in an exclusion area. ' + excludeReason;
             };
-            //Constructor
-            //-+-+-+-+-+-+-+-+-+-+-+-
-            MapController.$inject = ['$scope', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack'];
             return MapController;
         }()); //end class
+        //Constructor
+        //-+-+-+-+-+-+-+-+-+-+-+-
+        MapController.$inject = ['$scope', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack'];
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.MapController', MapController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));
