@@ -36,7 +36,7 @@ var StreamStats;
         Services.onSelectedStudyParametersLoaded = "onSelectedStudyParametersLoaded";
         Services.onStudyAreaReset = "onStudyAreaReset";
         Services.onEditClick = "onEditClick";
-        var StudyAreaEventArgs = /** @class */ (function (_super) {
+        var StudyAreaEventArgs = (function (_super) {
             __extends(StudyAreaEventArgs, _super);
             function StudyAreaEventArgs(studyArea, saVisible, paramState, additionalFeatures) {
                 if (studyArea === void 0) { studyArea = null; }
@@ -53,7 +53,7 @@ var StreamStats;
             return StudyAreaEventArgs;
         }(WiM.Event.EventArgs));
         Services.StudyAreaEventArgs = StudyAreaEventArgs;
-        var StudyAreaService = /** @class */ (function (_super) {
+        var StudyAreaService = (function (_super) {
             __extends(StudyAreaService, _super);
             //public requestParameterList: Array<any>; jkn
             //Constructor
@@ -485,7 +485,14 @@ var StreamStats;
                 //console.log('in load query regression regions');
                 this.regressionRegionQueryLoading = true;
                 this.regressionRegionQueryComplete = false;
-                var watershed = angular.toJson(this.selectedStudyArea.Features[1].feature, null);
+                var watershed;
+                try {
+                    watershed = angular.toJson(this.selectedStudyArea.Features[1].feature, null);
+                }
+                catch (e) {
+                    //for mo_stl hack
+                    watershed = angular.toJson({ "type": "FeatureCollection", "crs": { "type": "ESPG", "properties": { "code": 4326 } }, "features": [this.selectedStudyArea.Features.features[1]] }, null);
+                }
                 //var url = configuration.baseurls['NodeServer'] + configuration.queryparams['RegressionRegionQueryService'];
                 //var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', watershed);
                 var url = configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['RegressionRegionQueryService'];
