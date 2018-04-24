@@ -150,7 +150,7 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     var results = response.data;
-                    console.log('network nav options:', results);
+                    //console.log('network nav options:', results);
                     _this.navigationResources = results;
                     //sm when complete
                 }, function (error) {

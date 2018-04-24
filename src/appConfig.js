@@ -30,7 +30,7 @@ configuration.queryparams =
     'statisticsGroupParameterLookup': '/scenarios.json?region={0}&statisticgroups={1}&regressionregions={2}&configs=2',
     'estimateFlows': '/scenarios/estimate.json?region={0}&statisticgroups={1}&regressionregions={2}&configs=2',
     'SSdelineation': '/streamstatsservices/watershed.{0}?rcode={1}&xlocation={2}&ylocation={3}&crs={4}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
-    'SSstormwaterDelineation': '/stormwaterservices/watershed?rcode={0}&xlocation={1}&ylocation={2}&surfacecontributionsonly={3}',
+    'SSstormwaterDelineation': '/stormwaterservices/watershed?rcode={0}&xlocation={1}&ylocation={2}&surfacecontributiononly={3}',
     'SSwatershedByWorkspace': '/streamstatsservices/watershed.{0}?rcode={1}&workspaceID={2}&crs={3}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
     'SSeditBasin': '/streamstatsservices/watershed/edit.{0}?rcode={1}&workspaceID={2}&crs={3}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
     'SSAvailableParams': '/streamstatsservices/parameters.json?rcode={0}',
@@ -281,7 +281,23 @@ configuration.regions = [
     { "RegionID": "MI", "Name": "Michigan", "Bounds": [[41.697494,-90.4082],[48.173795,-82.419836]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
     { "RegionID": "MN", "Name": "Minnesota", "Bounds": [[43.498102,-97.229436],[49.37173,-89.530673]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "MO", "Name": "Missouri", "Bounds": [[35.989656, -95.767479], [40.609784, -89.105034]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
-    { "RegionID": "MO_STL", "Name": "Missouri St. Louis", "Bounds": [[36.900329, -92.040710], [40.462646, -88.420715]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": false },
+    {"RegionID": "MO_STL", "Name": "Missouri St. Louis", "Bounds": [[36.900329, -92.040710], [40.462646, -88.420715]], "Layers":
+        {
+            "StormDrainPipes": {
+                "name": "Pipes",
+                "url": configuration.baseurls['StreamStatsMapServices'] + "/arcgis/rest/services/stormdrain/mo_stl/MapServer",
+                "type": 'agsDynamic',
+                "visible": true,
+                "layerOptions": {
+                    "zIndex": 1,
+                    "format": "png8",
+                    "layers": [0],
+                    "f": "image"
+                }
+            }
+        },
+        "Applications": [], "regionEnabled": true, "ScenariosAvailable": false
+    },
     { "RegionID": "MP", "Name": "Northern Mariana Islands", "Bounds": [[14.105276, 144.89859], [20.556385, 145.870788]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "MS", "Name": "Mississippi", "Bounds": [[30.194935,-91.643682],[35.005041,-88.090468]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": false },
     { "RegionID": "MT", "Name": "Montana", "Bounds": [[44.353639,-116.063531],[49.000026,-104.043072]], "Layers": 

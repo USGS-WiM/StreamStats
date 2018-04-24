@@ -207,7 +207,7 @@ module StreamStats.Services {
             this.Execute(request).then(
                 (response: any) => {
                     var results = response.data;
-                    console.log('network nav options:', results);
+                    //console.log('network nav options:', results);
 
                     this.navigationResources = results;
 
