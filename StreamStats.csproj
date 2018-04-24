@@ -89,7 +89,6 @@
     <Content Include=".gitattributes" />
     <Content Include=".gitignore" />
     <None Include="manual.pubxml" />
-    <Content Include="src\Assets\results.json" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>

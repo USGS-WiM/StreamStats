@@ -8,8 +8,8 @@ configuration.baseurls =
     'StreamStatsServices': 'https://test.streamstats.usgs.gov',
     'StreamStatsMapServices': 'https://testgis.streamstats.usgs.gov',
     'NSS': 'https://test.streamstats.usgs.gov/nssservices',
-    'WaterUseServices': 'https://test.streamstats.usgs.gov/wateruseservices'
-	
+    'WaterUseServices': 'https://test.streamstats.usgs.gov/wateruseservices',
+    'StormRunoffServices': 'http://localhost:53812'
 }
 
 //override streamstats arguments if on production, these get overriden again in MapController after load balancer assigns a server
@@ -17,7 +17,7 @@ if (window.location.host === 'streamstats.usgs.gov') {
     configuration.baseurls.StreamStatsServices = 'https://streamstats.usgs.gov',
     configuration.baseurls.StreamStatsMapServices = 'https://gis.streamstats.usgs.gov',
     configuration.baseurls.NSS = 'https://streamstats.usgs.gov/nssservices',
-    configuration.baseurls.WaterUseServices ='https://streamstats.usgs.gov/wateruseservices',
+    configuration.baseurls.WaterUseServices = 'https://streamstats.usgs.gov/wateruseservices',
     configuration.environment = 'production'
 }
 
@@ -48,7 +48,9 @@ configuration.queryparams =
     'Wateruse': '/summary?year={0}&endyear={1}&includePermits={2}&includereturns={3}&computeDomestic={4}',
     'WateruseSourceCSV':'/summary/bysource?year={0}&endyear={1}&includePermits={2}&includereturns={3}&computeDomestic={4}',
     'WateruseConfig': '/regions/{0}/config',
-    'coordinatedReachQueryService':'/arcgis/rest/services/coordinatedreaches/{0}/MapServer/0/query?geometry={1},{2},{3},{4}&geometryType=esriGeometryEnvelope&inSR={5}&spatialRel=esriSpatialRelIntersects&outFields={6}&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson'
+    'coordinatedReachQueryService': '/arcgis/rest/services/coordinatedreaches/{0}/MapServer/0/query?geometry={1},{2},{3},{4}&geometryType=esriGeometryEnvelope&inSR={5}&spatialRel=esriSpatialRelIntersects&outFields={6}&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
+    'StormRunoffTR55': '/TR55/GetResult?area={0}&precip={1}&crvnum={2}&pdur={3}',
+    'StormRunoffRationalMethod': '/RationalMethod?area={0}&precipint={1}&rcoeff={2}&pdur={3}'
 }
 
 configuration.SupportTicketService = {
@@ -223,7 +225,7 @@ configuration.regions = [
 				}
 			}
 		},
-        "Applications": ["Regulation", "RegulationFlows"],
+        "Applications": ["Regulation", "RegulationFlows", "StormRunoff"],
         "regionEnabled": true,
         "ScenariosAvailable": true
     },
