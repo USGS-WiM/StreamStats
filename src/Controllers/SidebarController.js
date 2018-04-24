@@ -20,7 +20,7 @@ var StreamStats;
     var Controllers;
     (function (Controllers) {
         'use strinct';
-        var SidebarController = /** @class */ (function () {
+        var SidebarController = (function () {
             function SidebarController($scope, toaster, $analytics, region, studyArea, StatisticsGroup, modal, leafletData, exploration, EventManager) {
                 var _this = this;
                 this.EventManager = EventManager;
@@ -479,11 +479,11 @@ var StreamStats;
                 catch (e) {
                 }
             };
-            //Constructor
-            //-+-+-+-+-+-+-+-+-+-+-+-
-            SidebarController.$inject = ['$scope', 'toaster', '$analytics', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ModalService', 'leafletData', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager'];
             return SidebarController;
         }()); //end class
+        //Constructor
+        //-+-+-+-+-+-+-+-+-+-+-+-
+        SidebarController.$inject = ['$scope', 'toaster', '$analytics', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ModalService', 'leafletData', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager'];
         var ProcedureType;
         (function (ProcedureType) {
             ProcedureType[ProcedureType["INIT"] = 1] = "INIT";

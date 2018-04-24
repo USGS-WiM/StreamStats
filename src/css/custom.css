@@ -82,22 +82,3 @@
     }
 }
 
-div .hidden {
-    display: none;
-}
-
-@media print {
-    .page_break {
-        float: none !important;
-        position: relative;
-        page-break-after: always;
-    }
-    .chart {
-        overflow-x:unset;
-        width:100%;
-    }
-    .identifier {
-        padding-bottom: 8em;
-    }
-}
-

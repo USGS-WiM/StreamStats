@@ -30,7 +30,7 @@ var StreamStats;
     var Controllers;
     (function (Controllers) {
         'use strict';
-        var NavbarController = /** @class */ (function (_super) {
+        var NavbarController = (function (_super) {
             __extends(NavbarController, _super);
             function NavbarController($scope, $http, modal, studyArea) {
                 var _this = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
@@ -105,11 +105,11 @@ var StreamStats;
                     var expires = "";
                 document.cookie = name + "=" + value + expires + "; path=/";
             };
-            //Constructor
-            //-+-+-+-+-+-+-+-+-+-+-+-
-            NavbarController.$inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.StudyAreaService'];
             return NavbarController;
         }(WiM.Services.HTTPServiceBase)); //end class
+        //Constructor
+        //-+-+-+-+-+-+-+-+-+-+-+-
+        NavbarController.$inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.StudyAreaService'];
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.NavbarController', NavbarController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));
