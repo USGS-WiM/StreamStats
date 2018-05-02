@@ -54,8 +54,8 @@ var StreamStats;
                 _this.print = function () {
                     window.print();
                 };
-                _this.BrowserAlert();
                 return _this;
+                //this.BrowserAlert();
             }
             Object.defineProperty(StormRunoffController.prototype, "SelectedPrecip", {
                 get: function () {
@@ -302,8 +302,8 @@ var StreamStats;
                     this.loadDomainY(hydrograph);
                     this.loadPadY2(hyetograph);
                     this.loadDomainY2(hyetograph);
-                    results.push({ values: hydrograph, key: "Discharge (ft³/s)", color: "hsla(120,100%,25%)", type: "line", yAxis: 1 });
-                    results.push({ values: hyetograph, key: "Cum. precipitation (inches)", color: "hsla(240,100%,50%)", type: "line", yAxis: 2 });
+                    results.push({ values: hydrograph, key: "Discharge (ft³/s)", color: " #009900", type: "line", yAxis: 1 });
+                    results.push({ values: hyetograph, key: "Cum. precipitation (inches)", color: "#0033ff", type: "line", yAxis: 2 });
                     return results;
                 }
                 catch (e) {
