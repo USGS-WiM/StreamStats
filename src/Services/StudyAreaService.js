@@ -63,6 +63,7 @@ var StreamStats;
                 _this.$http = $http;
                 _this.$q = $q;
                 _this.eventManager = eventManager;
+                _this.surfacecontributionsonly = false;
                 eventManager.AddEvent(Services.onSelectedStudyParametersLoaded);
                 eventManager.AddEvent(Services.onSelectedStudyAreaChanged);
                 eventManager.AddEvent(Services.onStudyAreaReset);
@@ -150,7 +151,7 @@ var StreamStats;
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', regionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString(), false);
                 //hack for st louis stormdrain
                 if (this.selectedStudyArea.RegionID == 'MO_STL') {
-                    var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSstormwaterDelineation'].format(regionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString());
+                    var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSstormwaterDelineation'].format(regionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString(), this.surfacecontributionsonly);
                 }
                 if (this.selectedStudyArea.RegionID == 'CRB' || this.selectedStudyArea.RegionID == 'DRB') {
                     this.selectedStudyArea;

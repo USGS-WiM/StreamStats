@@ -53,6 +53,7 @@ module StreamStats.Services {
         showModifyBasinCharacterstics: boolean;
         getAdditionalFeatureList();
         getAdditionalFeatures(featureString: string);
+        surfacecontributionsonly:boolean
     }
 
     export var onSelectedStudyAreaChanged: string = "onSelectedStudyAreaChanged";
@@ -112,6 +113,7 @@ module StreamStats.Services {
         public servicesURL: string;
         public baseMap: Object;
         public showModifyBasinCharacterstics: boolean;
+        public surfacecontributionsonly: boolean = false;
         //public requestParameterList: Array<any>; jkn
 
         //Constructor
@@ -196,7 +198,7 @@ module StreamStats.Services {
             //hack for st louis stormdrain
             if (this.selectedStudyArea.RegionID == 'MO_STL') {
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSstormwaterDelineation'].format(regionID, this.selectedStudyArea.Pourpoint.Longitude.toString(),
-                    this.selectedStudyArea.Pourpoint.Latitude.toString());
+                    this.selectedStudyArea.Pourpoint.Latitude.toString(), this.surfacecontributionsonly);
             }
 
             if (this.selectedStudyArea.RegionID == 'CRB' || this.selectedStudyArea.RegionID == 'DRB') {
