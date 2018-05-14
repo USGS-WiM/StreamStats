@@ -20,7 +20,7 @@ var StreamStats;
 (function (StreamStats) {
     var Models;
     (function (Models) {
-        var CoordinatedReach = /** @class */ (function () {
+        var CoordinatedReach = (function () {
             function CoordinatedReach(name, id) {
                 this._name = "Coordinated Reach: " + name;
                 this._id = id;

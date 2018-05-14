@@ -53,6 +53,7 @@ module StreamStats.Services {
         showModifyBasinCharacterstics: boolean;
         getAdditionalFeatureList();
         getAdditionalFeatures(featureString: string);
+        surfacecontributionsonly:boolean
     }
 
     export var onSelectedStudyAreaChanged: string = "onSelectedStudyAreaChanged";
@@ -112,6 +113,7 @@ module StreamStats.Services {
         public servicesURL: string;
         public baseMap: Object;
         public showModifyBasinCharacterstics: boolean;
+        public surfacecontributionsonly: boolean = false;
         //public requestParameterList: Array<any>; jkn
 
         //Constructor
@@ -196,7 +198,7 @@ module StreamStats.Services {
             //hack for st louis stormdrain
             if (this.selectedStudyArea.RegionID == 'MO_STL') {
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSstormwaterDelineation'].format(regionID, this.selectedStudyArea.Pourpoint.Longitude.toString(),
-                    this.selectedStudyArea.Pourpoint.Latitude.toString());
+                    this.selectedStudyArea.Pourpoint.Latitude.toString(), this.surfacecontributionsonly);
             }
 
             if (this.selectedStudyArea.RegionID == 'CRB' || this.selectedStudyArea.RegionID == 'DRB') {
@@ -617,8 +619,25 @@ module StreamStats.Services {
             this.regressionRegionQueryLoading = true;
             this.regressionRegionQueryComplete = false;
 
-            var watershed = angular.toJson(this.selectedStudyArea.Features[1].feature, null);
-
+            //hack for MO_STL - only available regression region for MO_stl
+            if (this.selectedStudyArea.RegionID == 'MO_STL') {
+                //console.log('query success');
+                this.selectedStudyArea.RegressionRegions = [{
+                                                                "name": "Peak_Urban_Statewide_SIR_2010_5073",
+                                                                "code": "gc1486",
+                                                                "percent": 100.0,
+                                                                "areasqmeter": -9999,
+                                                                "maskareasqmeter": -9999
+                                                            }];
+                this.regressionRegionQueryComplete = true;
+                this.regressionRegionQueryLoading = false;
+                
+                this.toaster.pop('success', "Regression regions were succcessfully queried", "Please continue", 5000);
+                return;
+            }//end if
+            
+            var watershed = angular.toJson(this.selectedStudyArea.Features[1].feature, null)
+           
             //var url = configuration.baseurls['NodeServer'] + configuration.queryparams['RegressionRegionQueryService'];
             //var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', watershed);
 
