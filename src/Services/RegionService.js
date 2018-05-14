@@ -33,20 +33,20 @@ var StreamStats;
     var Services;
     (function (Services) {
         'use strict';
-        var Region = /** @class */ (function () {
+        var Region = (function () {
             function Region() {
             }
             return Region;
         }()); //end class
         Services.Region = Region;
-        var Parameter = /** @class */ (function () {
+        var Parameter = (function () {
             function Parameter() {
             }
             return Parameter;
         }()); //end class
         Services.Parameter = Parameter;
         Services.onSelectedRegionChanged = "onSelectedRegionChanged";
-        var RegionService = /** @class */ (function (_super) {
+        var RegionService = (function (_super) {
             __extends(RegionService, _super);
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
@@ -157,11 +157,7 @@ var StreamStats;
                 //console.log('in load parameters', this.selectedRegion);
                 if (!this.selectedRegion)
                     return;
-                //hack for st louis stormdrain
-                var temp_region = this.selectedRegion.RegionID;
-                if (temp_region == 'MO_STL')
-                    temp_region = 'MO';
-                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSAvailableParams'].format(temp_region);
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSAvailableParams'].format(this.selectedRegion.RegionID);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     //console.log(response);
