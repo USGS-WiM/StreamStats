@@ -79,7 +79,8 @@ var StreamStats;
                 if (!rcode && !regressionregions)
                     return;
                 //MO_STL hack
-                rcode = rcode.substring(0, rcode.indexOf('_'));
+                if (rcode === 'MO_STL')
+                    rcode = rcode.substring(0, rcode.indexOf('_'));
                 var url = configuration.baseurls['NSS'] + configuration.queryparams['statisticsGroupLookup'].format(rcode, regressionregions);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.loadingStatisticsGroup = true;
@@ -122,7 +123,8 @@ var StreamStats;
                 if (!rcode && !statisticsGroupID && !regressionregions)
                     return;
                 //MO_STL hack
-                rcode = rcode.substring(0, rcode.indexOf('_'));
+                if (rcode === 'MO_STL')
+                    rcode = rcode.substring(0, rcode.indexOf('_'));
                 var url = configuration.baseurls['NSS'] + configuration.queryparams['statisticsGroupParameterLookup'].format(rcode, statisticsGroupID, regressionregions);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
@@ -192,7 +194,8 @@ var StreamStats;
                     updatedScenarioObject = angular.toJson([updatedScenarioObject], null);
                     //do request
                     //MO_STL hack
-                    rcode = rcode.substring(0, rcode.indexOf('_'));
+                    if (rcode === 'MO_STL')
+                        rcode = rcode.substring(0, rcode.indexOf('_'));
                     var url = configuration.baseurls['NSS'] + configuration.queryparams['estimateFlows'].format(rcode, statGroup.ID, regressionregion);
                     var request = new WiM.Services.Helpers.RequestInfo(url, true, 1, 'json', updatedScenarioObject);
                     statGroup.Citations = [];
