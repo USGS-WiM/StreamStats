@@ -9,7 +9,7 @@ configuration.baseurls =
     'StreamStatsMapServices': 'https://testgis.streamstats.usgs.gov',
     'NSS': 'https://test.streamstats.usgs.gov/nssservices',
     'WaterUseServices': 'https://test.streamstats.usgs.gov/wateruseservices',
-    'StormRunoffServices': 'http://localhost:53812'
+    'StormRunoffServices': 'https://test.streamstats.usgs.gov/runoffmodelingservices'
 }
 
 //override streamstats arguments if on production, these get overriden again in MapController after load balancer assigns a server
@@ -18,6 +18,7 @@ if (window.location.host === 'streamstats.usgs.gov') {
     configuration.baseurls.StreamStatsMapServices = 'https://gis.streamstats.usgs.gov',
     configuration.baseurls.NSS = 'https://streamstats.usgs.gov/nssservices',
     configuration.baseurls.WaterUseServices = 'https://streamstats.usgs.gov/wateruseservices',
+    configuration.baseurls.StormRunoffServices = 'https://streamstats.usgs.gov/runoffmodelingservices',
     configuration.environment = 'production'
 }
 
