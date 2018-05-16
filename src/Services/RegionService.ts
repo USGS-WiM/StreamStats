@@ -218,12 +218,8 @@ module StreamStats.Services {
         public loadParametersByRegion() {
             //console.log('in load parameters', this.selectedRegion);
             if (!this.selectedRegion) return;
-
-            //hack for st louis stormdrain
-            var temp_region = this.selectedRegion.RegionID;
-            if (temp_region == 'MO_STL') temp_region = 'MO';
-
-            var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSAvailableParams'].format(temp_region);
+            
+            var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSAvailableParams'].format(this.selectedRegion.RegionID);
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
 
             this.Execute(request).then(

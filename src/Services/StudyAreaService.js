@@ -63,6 +63,7 @@ var StreamStats;
                 _this.$http = $http;
                 _this.$q = $q;
                 _this.eventManager = eventManager;
+                _this.surfacecontributionsonly = false;
                 eventManager.AddEvent(Services.onSelectedStudyParametersLoaded);
                 eventManager.AddEvent(Services.onSelectedStudyAreaChanged);
                 eventManager.AddEvent(Services.onStudyAreaReset);
@@ -150,7 +151,7 @@ var StreamStats;
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', regionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString(), false);
                 //hack for st louis stormdrain
                 if (this.selectedStudyArea.RegionID == 'MO_STL') {
-                    var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSstormwaterDelineation'].format(regionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString());
+                    var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSstormwaterDelineation'].format(regionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString(), this.surfacecontributionsonly);
                 }
                 if (this.selectedStudyArea.RegionID == 'CRB' || this.selectedStudyArea.RegionID == 'DRB') {
                     this.selectedStudyArea;
@@ -485,6 +486,21 @@ var StreamStats;
                 //console.log('in load query regression regions');
                 this.regressionRegionQueryLoading = true;
                 this.regressionRegionQueryComplete = false;
+                //hack for MO_STL - only available regression region for MO_stl
+                if (this.selectedStudyArea.RegionID == 'MO_STL') {
+                    //console.log('query success');
+                    this.selectedStudyArea.RegressionRegions = [{
+                            "name": "Peak_Urban_Statewide_SIR_2010_5073",
+                            "code": "gc1486",
+                            "percent": 100.0,
+                            "areasqmeter": -9999,
+                            "maskareasqmeter": -9999
+                        }];
+                    this.regressionRegionQueryComplete = true;
+                    this.regressionRegionQueryLoading = false;
+                    this.toaster.pop('success', "Regression regions were succcessfully queried", "Please continue", 5000);
+                    return;
+                } //end if
                 var watershed = angular.toJson(this.selectedStudyArea.Features[1].feature, null);
                 //var url = configuration.baseurls['NodeServer'] + configuration.queryparams['RegressionRegionQueryService'];
                 //var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', watershed);
