@@ -209,11 +209,11 @@ var StreamStats;
                     return;
                 }
                 var index = this.studyAreaService.studyAreaParameterList.indexOf(parameter);
-                if (index > -1) {
+                if (!parameter.checked && index > -1) {
                     //remove it
                     this.studyAreaService.studyAreaParameterList.splice(index, 1);
                 }
-                else {
+                else if (parameter.checked && index == -1) {
                     //add it
                     this.studyAreaService.studyAreaParameterList.push(parameter);
                 }
@@ -377,6 +377,9 @@ var StreamStats;
             SidebarController.prototype.OpenWateruse = function () {
                 this.modalService.openModal(StreamStats.Services.SSModalType.e_wateruse);
             };
+            SidebarController.prototype.OpenStormRunoff = function () {
+                this.modalService.openModal(StreamStats.Services.SSModalType.e_stormrunnoff);
+            };
             SidebarController.prototype.downloadGeoJSON = function () {
                 var GeoJSON = angular.toJson(this.studyAreaService.selectedStudyArea.Features[1].feature);
                 var filename = 'data.geojson';
@@ -450,7 +453,7 @@ var StreamStats;
                             //proceed if there is a regression region
                             return this.studyAreaService.regressionRegionQueryComplete;
                         case ProcedureType.BUILD:
-                            return this.parametersLoaded;
+                            return this.studyAreaService.regressionRegionQueryComplete && this.parametersLoaded;
                         default:
                             return false;
                     } //end switch          
