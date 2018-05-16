@@ -129,7 +129,9 @@ module StreamStats.Services {
             this.toaster.pop('wait', "Loading Available Scenarios", "Please wait...", 0);
             //console.log('in load StatisticsGroups', rcode, regressionregions);
             if (!rcode && !regressionregions) return;
-
+            //MO_STL hack
+            if (rcode === 'MO_STL')
+                rcode = rcode.substring(0, rcode.indexOf('_'));
             var url = configuration.baseurls['NSS'] + configuration.queryparams['statisticsGroupLookup'].format(rcode, regressionregions);
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
 
@@ -180,6 +182,9 @@ module StreamStats.Services {
 
             //console.log('in load StatisticsGroup parameters', rcode, statisticsGroupID,regressionregions);
             if (!rcode && !statisticsGroupID && !regressionregions) return;
+            //MO_STL hack
+            if (rcode === 'MO_STL')
+                rcode = rcode.substring(0, rcode.indexOf('_'));
 
             var url = configuration.baseurls['NSS'] + configuration.queryparams['statisticsGroupParameterLookup'].format(rcode,statisticsGroupID,regressionregions);
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
@@ -258,6 +263,10 @@ module StreamStats.Services {
                 updatedScenarioObject = angular.toJson([updatedScenarioObject], null);
 
                 //do request
+                //MO_STL hack
+                if (rcode === 'MO_STL')
+                    rcode = rcode.substring(0, rcode.indexOf('_'));
+
                 var url = configuration.baseurls['NSS'] + configuration.queryparams['estimateFlows'].format(rcode, statGroup.ID, regressionregion);
                 var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, 1, 'json', updatedScenarioObject);
 
