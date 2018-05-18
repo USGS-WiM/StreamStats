@@ -65,8 +65,18 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
                 this.Execute(request).then(function (response) {
                     //console.log('Successfully retrieved active news articles folder');
+                    var publishedArticles = [];
                     if (response.data.folder.articles.length) {
-                        _this.activeNewsArticles = response.data.folder.articles;
+                        if (window.location.host == 'test.streamstats.usgs.gov') {
+                            _this.activeNewsArticles = response.data.folder.articles;
+                        }
+                        else {
+                            response.data.folder.articles.forEach(function (element) {
+                                if (element.status == 2)
+                                    publishedArticles.push(element);
+                            });
+                            _this.activeNewsArticles = publishedArticles;
+                        }
                     }
                 }, function (error) {
                     //sm when error
@@ -83,7 +93,19 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
                 this.Execute(request).then(function (response) {
                     //console.log('Successfully retrieved past news articles folder');
-                    _this.pastNewsArticles = response.data.folder.articles;
+                    var publishedArticles = [];
+                    if (response.data.folder.articles.length) {
+                        if (window.location.host.indexOf('test.streamstats.usgs.gov') > -1) {
+                            _this.pastNewsArticles = response.data.folder.articles;
+                        }
+                        else {
+                            response.data.folder.articles.forEach(function (element) {
+                                if (element.status == 2)
+                                    publishedArticles.push(element);
+                            });
+                            _this.pastNewsArticles = publishedArticles;
+                        }
+                    }
                 }, function (error) {
                     //sm when error
                 }).finally(function () {
@@ -137,7 +159,12 @@ var StreamStats;
                                 response.data.folder.articles.forEach(function (article) {
                                     if (article.title == regionID) {
                                         //console.log("Help article found for : ", regionID);
-                                        _this.regionArticle = article.description;
+                                        if (window.location.host.indexOf('test.streamstats.usgs.gov') > -1) {
+                                            _this.regionArticle = article.description;
+                                        }
+                                        else if (article.status == 2) {
+                                            _this.regionArticle = article.description;
+                                        }
                                         return;
                                     }
                                 });

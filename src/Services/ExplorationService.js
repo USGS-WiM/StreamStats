@@ -150,7 +150,7 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     var results = response.data;
-                    console.log('network nav options:', results);
+                    //console.log('network nav options:', results);
                     _this.navigationResources = results;
                     //sm when complete
                 }, function (error) {
@@ -179,7 +179,7 @@ var StreamStats;
                 });
             };
             ExplorationService.prototype.getCountByType = function (object, text) {
-                return object.filter(function (item) { return item.valueType.toLowerCase().includes(text); }).length;
+                return object.filter(function (item) { return (item.valueType.toLowerCase().indexOf(text) >= 0); }).length;
             };
             ExplorationService.prototype.setMethod = function (methodtype, config) {
                 if (this._selectedMethod != null && methodtype === this._selectedMethod.navigationID)

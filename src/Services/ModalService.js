@@ -73,6 +73,15 @@ var StreamStats;
                                 backdrop: 'static',
                                 windowClass: 'windowZ'
                             };
+                        case SSModalType.e_stormrunnoff:
+                            return {
+                                templateUrl: 'Views/stormrunoff.html',
+                                controller: 'StreamStats.Controllers.StormRunoffController',
+                                size: 'lg',
+                                backdropClass: 'backdropZ',
+                                backdrop: 'static',
+                                windowClass: 'windowZ'
+                            };
                         case SSModalType.e_about:
                             return {
                                 templateUrl: 'Views/about.html',
@@ -101,12 +110,12 @@ var StreamStats;
                                 windowClass: 'windowZ'
                             };
                         default:
-                            return false;
+                            return null;
                     } //end switch          
                 }
                 catch (e) {
                     //this.sm(new MSG.NotificationArgs(e.message, MSG.NotificationType.INFORMATION, 1.5));
-                    return false;
+                    return null;
                 }
             };
             return ModalService;
@@ -119,6 +128,7 @@ var StreamStats;
             SSModalType[SSModalType["e_help"] = 4] = "e_help";
             SSModalType[SSModalType["e_navreport"] = 5] = "e_navreport";
             SSModalType[SSModalType["e_exploration"] = 6] = "e_exploration";
+            SSModalType[SSModalType["e_stormrunnoff"] = 7] = "e_stormrunnoff";
         })(SSModalType = Services.SSModalType || (Services.SSModalType = {}));
         factory.$inject = ['$modal'];
         function factory($modal) {
