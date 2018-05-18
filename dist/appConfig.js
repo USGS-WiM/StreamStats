@@ -1,5 +1,5 @@
 var configuration={}
-configuration.version="4.2.0"
+configuration.version="4.2.1"
 configuration.environment='development'
 
 configuration.baseurls =
