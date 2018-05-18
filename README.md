@@ -13,7 +13,6 @@ StreamStats client application
 
 Install global dependencies
 ```bash
-npm install -g bower
 npm install -g gulp
 npm install -g typings
 ```
@@ -29,7 +28,6 @@ https://help.github.com/articles/cloning-a-repository/
 Inside of your project folder (after git fork and clone):
 ```bash
 npm install
-bower install
 typings install 
 ```
 Note: [upgrade from tsd to typings] (https://github.com/DefinitelyTyped/tsd/issues/269)
@@ -42,6 +40,8 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on the process for su
 We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](../../tags). 
 
 **Commit, Sync, and Merge Pull Request on any current project changes.  The steps below require a clean git status.**
+
+**Make sure you have the latest dependencies by running `npm install`**
 
 ##### Step 1.
 Bump the version.  Run only one of the below commands.  

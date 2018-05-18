@@ -1,5 +1,5 @@
 var configuration={}
-configuration.version="4.2.0"
+configuration.version="4.2.1"
 configuration.environment='development'
 
 configuration.baseurls =
@@ -8,8 +8,8 @@ configuration.baseurls =
     'StreamStatsServices': 'https://test.streamstats.usgs.gov',
     'StreamStatsMapServices': 'https://testgis.streamstats.usgs.gov',
     'NSS': 'https://test.streamstats.usgs.gov/nssservices',
-    'WaterUseServices': 'https://test.streamstats.usgs.gov/wateruseservices'
-	
+    'WaterUseServices': 'https://test.streamstats.usgs.gov/wateruseservices',
+    'StormRunoffServices': 'https://test.streamstats.usgs.gov/runoffmodelingservices'
 }
 
 //override streamstats arguments if on production, these get overriden again in MapController after load balancer assigns a server
@@ -17,7 +17,8 @@ if (window.location.host === 'streamstats.usgs.gov') {
     configuration.baseurls.StreamStatsServices = 'https://streamstats.usgs.gov',
     configuration.baseurls.StreamStatsMapServices = 'https://gis.streamstats.usgs.gov',
     configuration.baseurls.NSS = 'https://streamstats.usgs.gov/nssservices',
-    configuration.baseurls.WaterUseServices ='https://streamstats.usgs.gov/wateruseservices',
+    configuration.baseurls.WaterUseServices = 'https://streamstats.usgs.gov/wateruseservices',
+    configuration.baseurls.StormRunoffServices = 'https://streamstats.usgs.gov/runoffmodelingservices',
     configuration.environment = 'production'
 }
 
@@ -30,7 +31,7 @@ configuration.queryparams =
     'statisticsGroupParameterLookup': '/scenarios.json?region={0}&statisticgroups={1}&regressionregions={2}&configs=2',
     'estimateFlows': '/scenarios/estimate.json?region={0}&statisticgroups={1}&regressionregions={2}&configs=2',
     'SSdelineation': '/streamstatsservices/watershed.{0}?rcode={1}&xlocation={2}&ylocation={3}&crs={4}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
-    'SSstormwaterDelineation': '/stormwaterservices/watershed?rcode={0}&xlocation={1}&ylocation={2}',
+    'SSstormwaterDelineation': '/stormwaterservices/watershed?rcode={0}&xlocation={1}&ylocation={2}&surfacecontributiononly={3}',
     'SSwatershedByWorkspace': '/streamstatsservices/watershed.{0}?rcode={1}&workspaceID={2}&crs={3}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
     'SSeditBasin': '/streamstatsservices/watershed/edit.{0}?rcode={1}&workspaceID={2}&crs={3}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
     'SSAvailableParams': '/streamstatsservices/parameters.json?rcode={0}',
@@ -48,7 +49,9 @@ configuration.queryparams =
     'Wateruse': '/summary?year={0}&endyear={1}&includePermits={2}&includereturns={3}&computeDomestic={4}',
     'WateruseSourceCSV':'/summary/bysource?year={0}&endyear={1}&includePermits={2}&includereturns={3}&computeDomestic={4}',
     'WateruseConfig': '/regions/{0}/config',
-    'coordinatedReachQueryService':'/arcgis/rest/services/coordinatedreaches/{0}/MapServer/0/query?geometry={1},{2},{3},{4}&geometryType=esriGeometryEnvelope&inSR={5}&spatialRel=esriSpatialRelIntersects&outFields={6}&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson'
+    'coordinatedReachQueryService': '/arcgis/rest/services/coordinatedreaches/{0}/MapServer/0/query?geometry={1},{2},{3},{4}&geometryType=esriGeometryEnvelope&inSR={5}&spatialRel=esriSpatialRelIntersects&outFields={6}&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
+    'StormRunoffTR55': '/TR55/GetResult?area={0}&precip={1}&crvnum={2}&pdur={3}',
+    'StormRunoffRationalMethod': '/RationalMethod?area={0}&precipint={1}&rcoeff={2}&pdur={3}'
 }
 
 configuration.SupportTicketService = {
@@ -223,7 +226,7 @@ configuration.regions = [
 				}
 			}
 		},
-        "Applications": ["Regulation", "RegulationFlows"],
+        "Applications": ["Regulation", "RegulationFlows", "StormRunoff"],
         "regionEnabled": true,
         "ScenariosAvailable": true
     },
@@ -279,7 +282,23 @@ configuration.regions = [
     { "RegionID": "MI", "Name": "Michigan", "Bounds": [[41.697494,-90.4082],[48.173795,-82.419836]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
     { "RegionID": "MN", "Name": "Minnesota", "Bounds": [[43.498102,-97.229436],[49.37173,-89.530673]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "MO", "Name": "Missouri", "Bounds": [[35.989656, -95.767479], [40.609784, -89.105034]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
-    { "RegionID": "MO_STL", "Name": "Missouri St. Louis", "Bounds": [[36.900329, -92.040710], [40.462646, -88.420715]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": false },
+    { "RegionID": "MO_STL", "Name": "Missouri St. Louis", "Bounds": [[38.399258, -90.673599], [38.837568, -89.693069]], "Layers":
+        {
+            "StormDrainPipes": {
+                "name": "Pipes",
+                "url": configuration.baseurls['StreamStatsMapServices'] + "/arcgis/rest/services/stormdrain/mo_stl/MapServer",
+                "type": 'agsDynamic',
+                "visible": true,
+                "layerOptions": {
+                    "zIndex": 1,
+                    "format": "png8",
+                    "layers": [0],
+                    "f": "image"
+                }
+            }
+        },
+        "Applications": [], "regionEnabled": true, "ScenariosAvailable": true
+    },
     { "RegionID": "MP", "Name": "Northern Mariana Islands", "Bounds": [[14.105276, 144.89859], [20.556385, 145.870788]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "MS", "Name": "Mississippi", "Bounds": [[30.194935,-91.643682],[35.005041,-88.090468]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": false },
     { "RegionID": "MT", "Name": "Montana", "Bounds": [[44.353639,-116.063531],[49.000026,-104.043072]], "Layers": 

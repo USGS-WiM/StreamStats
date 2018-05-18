@@ -63,6 +63,7 @@ var StreamStats;
                 _this.$http = $http;
                 _this.$q = $q;
                 _this.eventManager = eventManager;
+                _this.surfacecontributionsonly = false;
                 eventManager.AddEvent(Services.onSelectedStudyParametersLoaded);
                 eventManager.AddEvent(Services.onSelectedStudyAreaChanged);
                 eventManager.AddEvent(Services.onStudyAreaReset);
@@ -146,12 +147,11 @@ var StreamStats;
                 this.toaster.pop("wait", "Delineating Basin", "Please wait...", 0);
                 this.canUpdate = false;
                 //console.log('loadstudy area', this.selectedStudyArea);
-                var regionID;
-                (this.selectedStudyArea.AltRegionID) ? regionID = this.selectedStudyArea.AltRegionID : regionID = this.selectedStudyArea.RegionID;
+                var regionID = this.selectedStudyArea.RegionID;
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', regionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString(), false);
                 //hack for st louis stormdrain
                 if (this.selectedStudyArea.RegionID == 'MO_STL') {
-                    var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSstormwaterDelineation'].format(regionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString());
+                    var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSstormwaterDelineation'].format(regionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString(), this.surfacecontributionsonly);
                 }
                 if (this.selectedStudyArea.RegionID == 'CRB' || this.selectedStudyArea.RegionID == 'DRB') {
                     this.selectedStudyArea;
@@ -211,35 +211,6 @@ var StreamStats;
                     _this.toaster.pop("error", "There was an HTTP error with the delineation request", "Please retry", 0);
                 }).finally(function () {
                 });
-            };
-            StudyAreaService.prototype.checkForRiverBasin = function (region, latlng) {
-                //console.log('in check for river basin', ['CRB', 'DRB'].indexOf(region), region, latlng, this.selectedStudyArea);
-                var _this = this;
-                //just delineate if not in one of these regions
-                if (['CRB', 'DRB'].indexOf(region) == -1) {
-                    this.loadStudyBoundary();
-                    return;
-                }
-                var url = configuration.stateGeoJSONurl;
-                var request = new WiM.Services.Helpers.RequestInfo(url, true);
-                this.Execute(request).then(function (response) {
-                    //console.log('in response', response);
-                    //loop over states
-                    response.data.features.forEach(function (feature) {
-                        //var inside = this.inside([latlng.lng, latlng.lat], feature.geometry.coordinates);
-                        var point = turf.point([latlng.lng, latlng.lat]);
-                        var inside = turf.pointsWithinPolygon(point, feature);
-                        if (inside.features.length > 0) {
-                            //console.log('test2:', feature.properties, inside);
-                            _this.selectedStudyArea.AltRegionID = feature.properties.abbr;
-                            _this.loadStudyBoundary();
-                        }
-                    });
-                    //sm when complete
-                }, function (error) {
-                    _this.toaster.pop('warning', "Error checking for river basin", "", 5000);
-                    //sm when complete
-                }).finally(function () { });
             };
             StudyAreaService.prototype.loadWatershed = function (rcode, workspaceID) {
                 var _this = this;
@@ -515,6 +486,21 @@ var StreamStats;
                 //console.log('in load query regression regions');
                 this.regressionRegionQueryLoading = true;
                 this.regressionRegionQueryComplete = false;
+                //hack for MO_STL - only available regression region for MO_stl
+                if (this.selectedStudyArea.RegionID == 'MO_STL') {
+                    //console.log('query success');
+                    this.selectedStudyArea.RegressionRegions = [{
+                            "name": "Peak_Urban_Statewide_SIR_2010_5073",
+                            "code": "gc1486",
+                            "percent": 100.0,
+                            "areasqmeter": -9999,
+                            "maskareasqmeter": -9999
+                        }];
+                    this.regressionRegionQueryComplete = true;
+                    this.regressionRegionQueryLoading = false;
+                    this.toaster.pop('success', "Regression regions were succcessfully queried", "Please continue", 5000);
+                    return;
+                } //end if
                 var watershed = angular.toJson(this.selectedStudyArea.Features[1].feature, null);
                 //var url = configuration.baseurls['NodeServer'] + configuration.queryparams['RegressionRegionQueryService'];
                 //var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', watershed);
@@ -531,8 +517,10 @@ var StreamStats;
                         return;
                     }
                     if (response.data.length == 0) {
-                        //console.log('query error');
-                        _this.toaster.pop('error', "Regression region query failed", "This type of query may not be supported here at this time", 0);
+                        //Its possible to have a zero length response from the region query.  In the case probably should clear out nssRegion list in sidebarController ~line 103
+                        _this.regressionRegionQueryComplete = true;
+                        _this.selectedStudyArea.RegressionRegions = response.data;
+                        _this.toaster.pop('error', "No regression regions were returned", "Regression based scenario computation not allowed", 0);
                         return;
                     }
                     if (response.data.length > 0) {

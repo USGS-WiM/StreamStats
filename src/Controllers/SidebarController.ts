@@ -101,8 +101,7 @@ module StreamStats.Controllers {
 
             //watch for completion of regression region query
             $scope.$watch(() => this.studyAreaService.regressionRegionQueryComplete, (newval, oldval) => {
-                if (newval == oldval) return;
-                //console.log('regression query watch', oldval, newval);
+                if (newval == oldval) return;            
                 if (newval == null) this.setProcedureType(2);
                 else if (!this.regionService.selectedRegion.ScenariosAvailable) this.setProcedureType(2);
                 else this.setProcedureType(3);
@@ -274,11 +273,11 @@ module StreamStats.Controllers {
 
             var index = this.studyAreaService.studyAreaParameterList.indexOf(parameter);
 
-            if (index > -1) {
+            if (!parameter.checked && index > -1) {
                 //remove it
                 this.studyAreaService.studyAreaParameterList.splice(index, 1);
             }
-            else {
+            else if(parameter.checked && index == -1) {
                 //add it
                 this.studyAreaService.studyAreaParameterList.push(parameter);
             }
@@ -481,6 +480,9 @@ module StreamStats.Controllers {
         public OpenWateruse() {
             this.modalService.openModal(Services.SSModalType.e_wateruse);
         }
+        public OpenStormRunoff() {
+            this.modalService.openModal(Services.SSModalType.e_stormrunnoff);
+        }
 
         private downloadGeoJSON() {
 
@@ -561,7 +563,8 @@ module StreamStats.Controllers {
                         //proceed if there is a regression region
                         return this.studyAreaService.regressionRegionQueryComplete;
                     case ProcedureType.BUILD:
-                        return this.parametersLoaded;
+
+                        return this.studyAreaService.regressionRegionQueryComplete && this.parametersLoaded;
                     default:
                         return false;
                 }//end switch          

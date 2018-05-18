@@ -260,7 +260,7 @@ var StreamStats;
             //-+-+-+-+-+-+-+-+-+-+-+-
             MapController.prototype.init = function () {
                 this.setupMap();
-                console.log('in map init');
+                //console.log('in map init')
                 this.explorationService.getNavigationEndPoints();
             };
             MapController.prototype.setupMap = function () {
@@ -673,8 +673,8 @@ var StreamStats;
                                 }
                                 else {
                                     _this.studyArea.checkingDelineatedPoint = false;
-                                    var excludeCode = results.features[0].properties.ExcludeCode;
-                                    var popupMsg = results.features[0].properties.ExcludeReason;
+                                    var excludeCode = results.features[0].properties.ExcludeCod;
+                                    var popupMsg = results.features[0].properties.ExcludeRea;
                                     if (excludeCode == 1) {
                                         _this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", popupMsg, 0);
                                         //ga event
@@ -682,7 +682,7 @@ var StreamStats;
                                     }
                                     else {
                                         _this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", popupMsg, true, 0);
-                                        _this.startDelineate(latlng, true);
+                                        _this.startDelineate(latlng, true, popupMsg);
                                         _this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'not advised' });
                                     }
                                 }
@@ -1168,15 +1168,14 @@ var StreamStats;
                 } //next variable
                 return layeridList;
             };
-            MapController.prototype.startDelineate = function (latlng, isInExclusionArea) {
+            MapController.prototype.startDelineate = function (latlng, isInExclusionArea, excludeReason) {
                 //console.log('in startDelineate', latlng);
                 var studyArea = new StreamStats.Models.StudyArea(this.regionServices.selectedRegion.RegionID, new WiM.Models.Point(latlng.lat, latlng.lng, '4326'));
                 this.studyArea.AddStudyArea(studyArea);
-                //check for river basin study (Alt region) a watch on the result of this will start delineation
-                this.studyArea.checkForRiverBasin(this.regionServices.selectedRegion.RegionID, latlng);
+                this.studyArea.loadStudyBoundary();
                 //add disclaimer here
                 if (isInExclusionArea)
-                    this.studyArea.selectedStudyArea.Disclaimers['isInExclusionArea'] = 'The delineation point is in an exclusion area.';
+                    this.studyArea.selectedStudyArea.Disclaimers['isInExclusionArea'] = 'The delineation point is in an exclusion area. ' + excludeReason;
             };
             return MapController;
         }()); //end class

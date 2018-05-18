@@ -59,13 +59,15 @@
 
                                     <span ng-if="item.name == 'Polygon geometry from delineated watershed'" class="input-group-addon rdo" ng-click="vm.addLimit(item)">
                                         <input type="radio" name="limit" ng-checked="vm.selectedLimit.name === item.name">
-                                        <span class="input-group-addon" >{{item.name}}</span>
+                                        <span class="input-group-addon" >
+                                            <div>{{item.name}}</div>
+                                        </span>
                                     </span>
                                     <span ng-if="item.name == 'Distance (km)'" class="input-group-addon rdo" ng-click="vm.addLimit(item)">
                                         <input type="radio" name="limit" ng-checked="vm.selectedLimit.name === item.name">
                                         <span class="input-group-addon">{{item.name}}</span>
                                     </span>
-                                    <input ng-if="item.name == 'Distance (km)'" type="text" class="form-control" name="distanceValue" ng-value="item.value">
+                                    <input ng-if="item.name == 'Distance (km)'" type="number" class="form-control" name="distanceValue" ng-model="item.value">
 
                                 </div>
                             </div>
