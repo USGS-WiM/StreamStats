@@ -41,6 +41,8 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 
 **Commit, Sync, and Merge Pull Request on any current project changes.  The steps below require a clean git status.**
 
+**Make sure you have the latest dependencies by running `npm install`**
+
 ##### Step 1.
 Bump the version.  Run only one of the below commands.  
 This creates a local commit with the package.json, bower.json and tsd.json updated to the new version number
