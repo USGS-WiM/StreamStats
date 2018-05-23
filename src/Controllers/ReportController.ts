@@ -26,7 +26,7 @@
 module StreamStats.Controllers {
 
     declare var jsPDF;
-
+    declare var shpwrite;
     'use strinct';
     interface IReportControllerScope extends ng.IScope {
         vm: ReportController;
@@ -139,117 +139,7 @@ module StreamStats.Controllers {
 
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
-        private initMap(): void {
-            this.center = new Center(39, -96, 4);
-            this.layers = {
-                baselayers: configuration.basemaps,
-                overlays: {}
-            }
-            L.Icon.Default.imagePath = 'images';
-            this.defaults = {
-                scrollWheelZoom: false,
-                touchZoom: false,
-                doubleClickZoom: false,
-                boxZoom: false,
-                keyboard: false
-            }
-        } 
-
-        private getPercentWeights() {
-
-            this.nssService.selectedStatisticsGroupList.forEach((statGroup) => {
-                //console.log('here1', statGroup)
-                statGroup.RegressionRegions.forEach((regRegion) => {
-                    //console.log('here2', regRegion)
-                    this.studyAreaService.selectedStudyArea.RegressionRegions.forEach((percentOverlay) => {
-                        //console.log('here3', percentOverlay)
-                        if (regRegion.Code != null && percentOverlay.code.indexOf(regRegion.Code.toUpperCase()) > -1) {
-                            this.areaSQMI = percentOverlay.maskareasqmeter * 0.000000386102159;
-                        }
-                    });
-                });
-            });
-        }
-
-        private showFeatures(): void { 
-
-            if (!this.studyAreaService.selectedStudyArea) return;
-            this.overlays = {};
-            this.studyAreaService.selectedStudyArea.Features.forEach((item) => {
-
-                //console.log('in each loop', JSON.stringify(item));
-
-                if (item.name == 'globalwatershed') {
-                    this.layers.overlays[item.name] = {
-                        name: 'Basin Boundary',
-                        type: 'geoJSONShape',
-                        data: item.feature,
-                        visible: true,
-                        layerOptions: {
-                            style: {
-                                fillColor: "yellow",
-                                weight: 2,
-                                opacity: 1,
-                                color: 'white',
-                                fillOpacity: 0.5
-                            }
-                        }
-                    }
-
-                    var bbox = this.layers.overlays[item.name].data.features[0].bbox;
-                    this.leafletData.getMap("reportMap").then((map: any) => {
-                        //method to reset the map for modal weirdness
-                        map.invalidateSize();
-                        //console.log('in getmap: ', bbox);
-                        map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
-                    });
-                }
-                else if (item.name == 'globalwatershedpoint') {
-                    this.layers.overlays[item.name] = {
-                        name: 'Basin Clicked Point',
-                        type: 'geoJSONShape',
-                        data: item.feature,
-                        visible: true,
-                    }
-                }
-
-                else if (item.name == 'regulatedWatershed') {
-                    //console.log('showing regulated watershed');
-                    this.layers.overlays["globalwatershedregulated"] = {
-                        name: 'Basin Boundary (Regulated Area)',
-                        type: 'geoJSONShape',
-                        data: item.feature,
-                        visible: true,
-                        layerOptions: {
-                            style: {
-                                fillColor: "red",
-                                weight: 2,
-                                opacity: 1,
-                                color: 'white',
-                                fillOpacity: 0.5
-                            }
-                        }
-                    }
-                }
-                //additional features get generic styling for now
-                else {
-                    this.layers.overlays[item.name] = {
-                        name: item.name,
-                        type: 'geoJSONShape',
-                        data: item.feature,
-                        visible: false,
-                        layerOptions: {
-                            style: {
-                                fillColor: "red",
-                                color: 'red'
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        private downloadCSV() {
+        public downloadCSV() {
 
             //ga event
             this.angulartics.eventTrack('Download', { category: 'Report', label: 'CSV' });
@@ -359,7 +249,7 @@ module StreamStats.Controllers {
 
         }
 
-        private downloadGeoJSON() {
+        public downloadGeoJSON() {
 
             var GeoJSON = angular.toJson(this.studyAreaService.selectedStudyArea.Features[1].feature);
 
@@ -384,6 +274,13 @@ module StreamStats.Controllers {
                     window.open(url);
                 }
             }
+
+        }
+
+        public downloadShapeFile() {
+
+            var GeoJSON = angular.toJson(this.studyAreaService.selectedStudyArea.Features[1].feature);
+            shpwrite.download(this.studyAreaService.selectedStudyArea.Features[1].feature);
 
         }
 
@@ -433,7 +330,113 @@ module StreamStats.Controllers {
 
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
+        private initMap(): void {
+            this.center = new Center(39, -96, 4);
+            this.layers = {
+                baselayers: configuration.basemaps,
+                overlays: {}
+            }
+            L.Icon.Default.imagePath = 'images';
+            this.defaults = {
+                scrollWheelZoom: false,
+                touchZoom: false,
+                doubleClickZoom: false,
+                boxZoom: false,
+                keyboard: false
+            }
+        }
+        private getPercentWeights() {
 
+            this.nssService.selectedStatisticsGroupList.forEach((statGroup) => {
+                //console.log('here1', statGroup)
+                statGroup.RegressionRegions.forEach((regRegion) => {
+                    //console.log('here2', regRegion)
+                    this.studyAreaService.selectedStudyArea.RegressionRegions.forEach((percentOverlay) => {
+                        //console.log('here3', percentOverlay)
+                        if (regRegion.Code != null && percentOverlay.code.indexOf(regRegion.Code.toUpperCase()) > -1) {
+                            this.areaSQMI = percentOverlay.maskareasqmeter * 0.000000386102159;
+                        }
+                    });
+                });
+            });
+        }
+        private showFeatures(): void {
+
+            if (!this.studyAreaService.selectedStudyArea) return;
+            this.overlays = {};
+            this.studyAreaService.selectedStudyArea.Features.forEach((item) => {
+
+                //console.log('in each loop', JSON.stringify(item));
+
+                if (item.name == 'globalwatershed') {
+                    this.layers.overlays[item.name] = {
+                        name: 'Basin Boundary',
+                        type: 'geoJSONShape',
+                        data: item.feature,
+                        visible: true,
+                        layerOptions: {
+                            style: {
+                                fillColor: "yellow",
+                                weight: 2,
+                                opacity: 1,
+                                color: 'white',
+                                fillOpacity: 0.5
+                            }
+                        }
+                    }
+
+                    var bbox = this.layers.overlays[item.name].data.features[0].bbox;
+                    this.leafletData.getMap("reportMap").then((map: any) => {
+                        //method to reset the map for modal weirdness
+                        map.invalidateSize();
+                        //console.log('in getmap: ', bbox);
+                        map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
+                    });
+                }
+                else if (item.name == 'globalwatershedpoint') {
+                    this.layers.overlays[item.name] = {
+                        name: 'Basin Clicked Point',
+                        type: 'geoJSONShape',
+                        data: item.feature,
+                        visible: true,
+                    }
+                }
+
+                else if (item.name == 'regulatedWatershed') {
+                    //console.log('showing regulated watershed');
+                    this.layers.overlays["globalwatershedregulated"] = {
+                        name: 'Basin Boundary (Regulated Area)',
+                        type: 'geoJSONShape',
+                        data: item.feature,
+                        visible: true,
+                        layerOptions: {
+                            style: {
+                                fillColor: "red",
+                                weight: 2,
+                                opacity: 1,
+                                color: 'white',
+                                fillOpacity: 0.5
+                            }
+                        }
+                    }
+                }
+                //additional features get generic styling for now
+                else {
+                    this.layers.overlays[item.name] = {
+                        name: item.name,
+                        type: 'geoJSONShape',
+                        data: item.feature,
+                        visible: false,
+                        layerOptions: {
+                            style: {
+                                fillColor: "red",
+                                color: 'red'
+                            }
+                        }
+                    }
+                }
+            });
+        }
         private tableToCSV($table) {
 
             var $headers = $table.find('tr:has(th)')
@@ -484,7 +487,6 @@ module StreamStats.Controllers {
 
             }
         }
-
         private camelize(str) {
             return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function (letter, index) {
                 return index == 0 ? letter.toLowerCase() : letter.toUpperCase();
