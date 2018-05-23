@@ -277,10 +277,12 @@ var StreamStats;
                     var hydrograph = [];
                     var hyetograph = [];
                     var firsttime;
+                    var count = 0;
                     for (var k in this.result) {
                         var dur = this.result[k].duration;
                         var t;
                         var kf = parseFloat(k);
+                        this.duration = dur;
                         t = this.computeTime(kf, dur);
                         hydrograph.push({ x: t, y: this.result[k].q });
                         hyetograph.push({ x: t, y: this.result[k].p });
@@ -541,6 +543,25 @@ var StreamStats;
                                 var minutes = d * 60 % 60;
                                 var h;
                                 var m;
+                                //var count;
+                                //if (this.duration == 24) {
+                                //    count++;
+                                //    if (count % 3 != 0) {
+                                //        if (hours < 10) {
+                                //            h = "0" + hours;
+                                //        } else {
+                                //            h = hours;
+                                //        }
+                                //        if (minutes < 10) {
+                                //            m = "0" + minutes;
+                                //        } else {
+                                //            m = minutes;
+                                //        }
+                                //        return h + ":" + m
+                                //    } else {
+                                //        return "";
+                                //    }
+                                //} else {
                                 if (hours < 10) {
                                     h = "0" + hours;
                                 }
@@ -554,6 +575,7 @@ var StreamStats;
                                     m = minutes;
                                 }
                                 return h + ":" + m;
+                                //}
                             },
                             rotateLabels: '45'
                         },
@@ -716,7 +738,10 @@ var StreamStats;
             };
             StormRunoffController.prototype.computeTime = function (time, dur) {
                 var newtime = new Date('January 1, 2018 00:00:00');
-                var z = dur * 60 * (0.01 * time);
+                //for SW region, time is a percentage
+                //var z = dur * 60 * (0.01 * time);
+                //for NW region, time is in hours
+                var z = time * 60;
                 newtime.setMinutes(z);
                 return newtime;
             };
@@ -751,8 +776,19 @@ var StreamStats;
                 }
             };
             StormRunoffController.prototype.loadGraphXValues = function (data) {
-                for (var i in data) {
-                    this.GraphXValues[i] = data[i].hours;
+                var count = 0;
+                if (this.duration == 24) {
+                    for (var i in data) {
+                        count++;
+                        if (count % 2 != 0) {
+                            this.GraphXValues.push(data[i].hours);
+                        }
+                    }
+                }
+                else {
+                    for (var i in data) {
+                        this.GraphXValues[i] = data[i].hours;
+                    }
                 }
             };
             //used for Y2 label distance
