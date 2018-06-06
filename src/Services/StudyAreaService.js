@@ -396,8 +396,8 @@ var StreamStats;
                             }
                             else {
                                 _this.selectedStudyArea.FeatureCollection.features.push(feature);
-                                _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(feature.id, "geojson", { displayName: feature.id, imagesrc: null }, false));
                             }
+                            _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(feature.id, "geojson", { displayName: feature.id, imagesrc: null }, false));
                         });
                     }
                     //sm when complete
@@ -644,14 +644,16 @@ var StreamStats;
             //-+-+-+-+-+-+-+-+-+-+-+- 
             StudyAreaService.prototype.reconfigureWatershedResponse = function (watershedResponse) {
                 var featureArray = [];
-                watershedResponse.forEach(function (f) {
-                    var feature = {
-                        type: "Feature",
-                        geometry: f.feature.features[0].geometry,
-                        id: f.name,
-                        properties: f.feature.features[0].properties
-                    };
-                    featureArray.push(feature);
+                watershedResponse.forEach(function (fc) {
+                    for (var i = 0; i < fc.feature.features.length; i++) {
+                        var feature = {
+                            type: "Feature",
+                            geometry: fc.feature.features[i].geometry,
+                            id: fc.feature.features.length > 1 ? fc.name + "_" + fc.feature.features[i].properties["Name"] : fc.name,
+                            properties: fc.feature.features[i].properties
+                        };
+                        featureArray.push(feature);
+                    } //next i
                 });
                 return featureArray;
             };

@@ -1021,9 +1021,11 @@ var StreamStats;
                         //need this in if now that we have network nav results 
                         if (this.studyArea.selectedStudyArea && this.studyArea.selectedStudyArea.FeatureCollection.features.length > 0) {
                             this.studyArea.selectedStudyArea.FeatureCollection['features'].forEach(function (layer) {
-                                var item = angular.fromJson(angular.toJson(layer));
-                                var name = item.id.toLowerCase();
-                                _this.addGeoJSON(name, item);
+                                if (layer.id == e.LayerName) {
+                                    var item = angular.fromJson(angular.toJson(layer));
+                                    var name = item.id;
+                                    _this.addGeoJSON(name, item);
+                                }
                             });
                         }
                         if (this.explorationService.networkNavResults) {

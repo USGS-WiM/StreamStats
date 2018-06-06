@@ -1023,7 +1023,6 @@ module StreamStats.Controllers {
             return true;
         }
         private onExplorationMethodComplete(sender: any, e: Services.ExplorationServiceEventArgs) {
-
             this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'networknav-' + this.explorationService.selectedMethod.navigationInfo.code });
 
             //console.log('in onexplorationmethodCOmplete:', this.explorationService.selectedMethod.navigationInfo.code)
@@ -1300,10 +1299,12 @@ module StreamStats.Controllers {
 
                     //need this in if now that we have network nav results 
                     if (this.studyArea.selectedStudyArea && this.studyArea.selectedStudyArea.FeatureCollection.features.length > 0) {
-                        this.studyArea.selectedStudyArea.FeatureCollection['features'].forEach((layer) => {
-                            var item = angular.fromJson(angular.toJson(layer));
-                            var name = item.id.toLowerCase();
-                            this.addGeoJSON(name, item);
+                        this.studyArea.selectedStudyArea.FeatureCollection['features'].forEach((layer:any) => {
+                            if (layer.id == e.LayerName) {
+                                var item = angular.fromJson(angular.toJson(layer));
+                                var name = item.id;
+                                this.addGeoJSON(name, item);
+                            }
                         });
                     }
 
