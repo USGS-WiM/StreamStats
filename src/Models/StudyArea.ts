@@ -21,14 +21,15 @@
 
 
 //Imports"
-// Interface
+// Interface\
+
 module StreamStats.Models {
     export interface IStudyArea {
         RegionID: string;
         Pourpoint: WiM.Models.IPoint;
         Description: string;
         Basin: Object;
-        Features: Array<any>;
+        FeatureCollection: GeoJSON.FeatureCollection;
         RegressionRegions: Array<any>;
         WorkspaceID: string;
         Server: string;
@@ -46,7 +47,7 @@ module StreamStats.Models {
         public Pourpoint: WiM.Models.IPoint;
         public Description: string;
         public Basin: Object;
-        public Features: Array<any>;
+        public FeatureCollection: GeoJSON.FeatureCollection;
         public RegressionRegions: Array<any>;
         public WorkspaceID: string;
         public Server: string

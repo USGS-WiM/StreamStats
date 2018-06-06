@@ -66,6 +66,7 @@
     <Content Include="src\css\custom.css" />
     <Content Include="src\css\main.css" />
     <Content Include="src\images\usgs-logo-black.png" />
+    <Content Include="src\Assets\JS\shpwrite_modified.js" />
     <Content Include="src\Views\help.html" />
     <Content Include="src\Views\about.html" />
     <Content Include="src\fonts\glyphicons-halflings-regular.svg" />
