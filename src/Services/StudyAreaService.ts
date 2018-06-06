@@ -473,7 +473,6 @@ module StreamStats.Services {
 
             this.Execute(request).then(
                 (response: any) => {
-
                     if (response.data.featurecollection && response.data.featurecollection.length > 0) {
                         this.toaster.clear();
                         //this.toaster.pop('success', "Additional features found", "Please continue", 5000);
@@ -493,10 +492,10 @@ module StreamStats.Services {
                                 }
                             }
                             else {
-                                this.selectedStudyArea.FeatureCollection.features.push(feature);
-                                this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(<string> feature.id, "geojson", { displayName: feature.id, imagesrc: null }, false));
+                                this.selectedStudyArea.FeatureCollection.features.push(feature);                                
                             }
 
+                            this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(<string>feature.id, "geojson", { displayName: feature.id, imagesrc: null }, false));
                         });
                     }
 
@@ -598,7 +597,6 @@ module StreamStats.Services {
                         //sm when complete
                         //console.log('Regression query failed, HTTP Error');
                         this.toaster.pop('error', "There was an HTTP error querying coordinated reach", "Please retry", 0);
-
                     });
         }
 
@@ -825,28 +823,26 @@ module StreamStats.Services {
                     this.toaster.pop('error', "Error Checking for Upstream Regulation", "Please retry", 0);
                 }).finally(() => {
                     //this.toaster.clear();
-                    this.regulationCheckComplete = true;
-                     
-
+                    this.regulationCheckComplete = true;                   
             });
-        }
-
-        
+        }        
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+- 
         private reconfigureWatershedResponse(watershedResponse: Array<any>): Array<GeoJSON.Feature>
         {
             var featureArray: Array<GeoJSON.Feature> =[];
-            watershedResponse.forEach(f => {
-                var feature: GeoJSON.Feature = {
-                    type: "Feature",
-                    geometry: f.feature.features[0].geometry,
-                    id: f.name,
-                    properties: f.feature.features[0].properties
-                };               
-                featureArray.push(feature);
+            watershedResponse.forEach(fc => {
+                for (var i =0;i<fc.feature.features.length;i++)
+                {
+                    var feature: GeoJSON.Feature = {
+                        type: "Feature",
+                        geometry: fc.feature.features[i].geometry,
+                        id: fc.feature.features.length > 1? fc.name+"_"+fc.feature.features[i].properties["Name"]:fc.name,
+                        properties: fc.feature.features[i].properties
+                    }; 
+                    featureArray.push(feature);
+                }//next i
             });    
-
             return featureArray;
         }
         private loadParameterResults(results: Array<WiM.Models.IParameter>) {

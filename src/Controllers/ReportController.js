@@ -443,14 +443,14 @@ var StreamStats;
                             regRegion.Results.forEach(function (regResult) {
                                 result.push({
                                     Name: nm,
-                                    Region: regRegion.PercentWeight ? regRegion.PercentWeight + "% " + regRegion.Name : regRegion.Name,
+                                    Region: regRegion.PercentWeight ? regRegion.PercentWeight.toFixed(0) + "% " + regRegion.Name : regRegion.Name,
                                     Statistic: regResult.Name,
-                                    Value: regResult.Value,
+                                    Value: regResult.Value.toUSGSvalue(),
                                     Unit: regResult.Unit.Unit,
                                     Disclaimers: regRegion.Disclaimer ? regRegion.Disclaimer : undefined,
                                     Errors: (regResult.Errors && regResult.Errors.length > 0) ? regResult.Errors.map(function (err) { return err.Name + " : " + err.Value; }).join(', ') : undefined,
-                                    MaxLimit: regResult.IntervalBounds && regResult.IntervalBounds.Upper > 0 ? regResult.IntervalBounds.Upper : undefined,
-                                    MinLimit: regResult.IntervalBounds && regResult.IntervalBounds.Lower > 0 ? regResult.IntervalBounds.Lower : undefined,
+                                    MaxLimit: regResult.IntervalBounds && regResult.IntervalBounds.Upper > 0 ? regResult.IntervalBounds.Upper.toUSGSvalue() : undefined,
+                                    MinLimit: regResult.IntervalBounds && regResult.IntervalBounds.Lower > 0 ? regResult.IntervalBounds.Lower.toUSGSvalue() : undefined,
                                     EquivYears: regResult.EquivalentYears ? regResult.EquivalentYears : undefined
                                 });
                             }); //next regResult
