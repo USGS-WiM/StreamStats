@@ -34,6 +34,11 @@ var StreamStats;
             function ReportController($scope, $analytics, $modalInstance, studyArea, StatisticsGroup, leafletData, regionService) {
                 var _this = this;
                 this.regionService = regionService;
+                //Properties
+                //-+-+-+-+-+-+-+-+-+-+-+-
+                this.disclaimer = "USGS Data Disclaimer: Unless otherwise stated, all data, metadata and related materials are considered to satisfy the quality standards relative to the purpose for which the data were collected. Although these data and associated metadata have been reviewed for accuracy and completeness and approved for release by the U.S. Geological Survey (USGS), no warranty expressed or implied is made regarding the display or utility of the data for other purposes, nor on all computer systems, nor shall the act of distribution constitute any such warranty." + '\n' +
+                    "USGS Software Disclaimer: This software has been approved for release by the U.S. Geological Survey (USGS). Although the software has been subjected to rigorous review, the USGS reserves the right to update the software as needed pursuant to further analysis and review. No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty. Furthermore, the software is released on condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from its authorized or unauthorized use." + '\n' +
+                    "USGS Product Names Disclaimer: Any use of trade, firm, or product names is for descriptive purposes only and does not imply endorsement by the U.S. Government." + '\n\n';
                 this.markers = null;
                 this.overlays = null;
                 this.center = null;
@@ -162,9 +167,7 @@ var StreamStats;
                     csvFile += processScenarioFlowTable(statGroup);
                 });
                 //disclaimer
-                csvFile += '"USGS Data Disclaimer: Unless otherwise stated, all data, metadata and related materials are considered to satisfy the quality standards relative to the purpose for which the data were collected. Although these data and associated metadata have been reviewed for accuracy and completeness and approved for release by the U.S. Geological Survey (USGS), no warranty expressed or implied is made regarding the display or utility of the data for other purposes, nor on all computer systems, nor shall the act of distribution constitute any such warranty."' + '\n' +
-                    '"USGS Software Disclaimer: This software has been approved for release by the U.S. Geological Survey (USGS). Although the software has been subjected to rigorous review, the USGS reserves the right to update the software as needed pursuant to further analysis and review. No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty. Furthermore, the software is released on condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from its authorized or unauthorized use."' + '\n' +
-                    '"USGS Product Names Disclaimer: Any use of trade, firm, or product names is for descriptive purposes only and does not imply endorsement by the U.S. Government."' + '\n\n' + 'Application Version: ' + this.AppVersion;
+                csvFile += this.disclaimer + 'Application Version: ' + this.AppVersion;
                 //download
                 var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
                 if (navigator.msSaveBlob) {
@@ -188,7 +191,19 @@ var StreamStats;
                 }
             };
             ReportController.prototype.downloadGeoJSON = function () {
-                var GeoJSON = angular.toJson(this.studyAreaService.selectedStudyArea.Features[1].feature);
+                var _this = this;
+                var fc = this.studyAreaService.selectedStudyArea.FeatureCollection;
+                fc.features.forEach(function (f) {
+                    f.properties["Name"] = _this.studyAreaService.selectedStudyArea.WorkspaceID;
+                    if (f.id && f.id == "globalwatershed") {
+                        f.properties = [f.properties, _this.studyAreaService.studyAreaParameterList.reduce(function (dict, param) { dict[param.code] = param.value; return dict; }, {})].reduce(function (r, o) {
+                            Object.keys(o).forEach(function (k) { r[k] = o[k]; });
+                            return r;
+                        }, {});
+                        f.properties["FlowStatistics"] = _this.nssService.selectedStatisticsGroupList;
+                    } //endif
+                });
+                var GeoJSON = angular.toJson(fc);
                 var filename = 'data.geojson';
                 var blob = new Blob([GeoJSON], { type: 'text/csv;charset=utf-8;' });
                 if (navigator.msSaveBlob) {
@@ -212,8 +227,25 @@ var StreamStats;
                 }
             };
             ReportController.prototype.downloadShapeFile = function () {
-                var GeoJSON = angular.toJson(this.studyAreaService.selectedStudyArea.Features[1].feature);
-                shpwrite.download(this.studyAreaService.selectedStudyArea.Features[1].feature);
+                var _this = this;
+                //https://github.com/mapbox/shp-write
+                //https://www.npmjs.com/package/jszip
+                //https://stackoverflow.com/questions/34663546/empty-zip-file-when-using-jszip-and-jsziputils-with-angularjs-to-zip-multiple-im
+                var flowTable = null;
+                if (this.nssService.showFlowsTable)
+                    flowTable = this.flattenNSSTable();
+                var fc = this.studyAreaService.selectedStudyArea.FeatureCollection;
+                fc.features.forEach(function (f) {
+                    f.properties["Name"] = _this.studyAreaService.selectedStudyArea.WorkspaceID;
+                    if (f.id && f.id == "globalwatershed") {
+                        f.properties = [f.properties, _this.studyAreaService.studyAreaParameterList.reduce(function (dict, param) { dict[param.code] = param.value; return dict; }, {})].reduce(function (r, o) {
+                            Object.keys(o).forEach(function (k) { r[k] = o[k]; });
+                            return r;
+                        }, {});
+                    } //endif
+                });
+                //this will output a zip file
+                shpwrite.download(fc, flowTable, this.disclaimer + 'Application Version: ' + this.AppVersion);
             };
             ReportController.prototype.downloadPDF = function () {
                 var pdf = new jsPDF('p', 'pt', 'letter');
@@ -290,13 +322,13 @@ var StreamStats;
                 if (!this.studyAreaService.selectedStudyArea)
                     return;
                 this.overlays = {};
-                this.studyAreaService.selectedStudyArea.Features.forEach(function (item) {
+                this.studyAreaService.selectedStudyArea.FeatureCollection.features.forEach(function (item) {
                     //console.log('in each loop', JSON.stringify(item));
-                    if (item.name == 'globalwatershed') {
-                        _this.layers.overlays[item.name] = {
+                    if (item.id == 'globalwatershed') {
+                        _this.layers.overlays[item.id] = {
                             name: 'Basin Boundary',
                             type: 'geoJSONShape',
-                            data: item.feature,
+                            data: item,
                             visible: true,
                             layerOptions: {
                                 style: {
@@ -308,28 +340,21 @@ var StreamStats;
                                 }
                             }
                         };
-                        var bbox = _this.layers.overlays[item.name].data.features[0].bbox;
-                        _this.leafletData.getMap("reportMap").then(function (map) {
-                            //method to reset the map for modal weirdness
-                            map.invalidateSize();
-                            //console.log('in getmap: ', bbox);
-                            map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
-                        });
                     }
-                    else if (item.name == 'globalwatershedpoint') {
-                        _this.layers.overlays[item.name] = {
+                    else if (item.id == 'globalwatershedpoint') {
+                        _this.layers.overlays[item.id] = {
                             name: 'Basin Clicked Point',
                             type: 'geoJSONShape',
-                            data: item.feature,
+                            data: item,
                             visible: true,
                         };
                     }
-                    else if (item.name == 'regulatedWatershed') {
+                    else if (item.id == 'regulatedWatershed') {
                         //console.log('showing regulated watershed');
                         _this.layers.overlays["globalwatershedregulated"] = {
                             name: 'Basin Boundary (Regulated Area)',
                             type: 'geoJSONShape',
-                            data: item.feature,
+                            data: item,
                             visible: true,
                             layerOptions: {
                                 style: {
@@ -343,10 +368,10 @@ var StreamStats;
                         };
                     }
                     else {
-                        _this.layers.overlays[item.name] = {
-                            name: item.name,
+                        _this.layers.overlays[item.id] = {
+                            name: item.id,
                             type: 'geoJSONShape',
-                            data: item.feature,
+                            data: item,
                             visible: false,
                             layerOptions: {
                                 style: {
@@ -356,6 +381,13 @@ var StreamStats;
                             }
                         };
                     }
+                });
+                var bbox = this.studyAreaService.selectedStudyArea.FeatureCollection.bbox;
+                this.leafletData.getMap("reportMap").then(function (map) {
+                    //method to reset the map for modal weirdness
+                    map.invalidateSize();
+                    //console.log('in getmap: ', bbox);
+                    map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
                 });
             };
             ReportController.prototype.tableToCSV = function ($table) {
@@ -402,6 +434,34 @@ var StreamStats;
                     return index == 0 ? letter.toLowerCase() : letter.toUpperCase();
                 }).replace(/\s+/g, '');
             };
+            ReportController.prototype.flattenNSSTable = function () {
+                var nm = this.studyAreaService.selectedStudyArea.WorkspaceID;
+                var result = [];
+                try {
+                    this.nssService.selectedStatisticsGroupList.forEach(function (sgroup) {
+                        sgroup.RegressionRegions.forEach(function (regRegion) {
+                            regRegion.Results.forEach(function (regResult) {
+                                result.push({
+                                    Name: nm,
+                                    Region: regRegion.PercentWeight ? regRegion.PercentWeight + "% " + regRegion.Name : regRegion.Name,
+                                    Statistic: regResult.Name,
+                                    Value: regResult.Value,
+                                    Unit: regResult.Unit.Unit,
+                                    Disclaimers: regRegion.Disclaimer ? regRegion.Disclaimer : undefined,
+                                    Errors: (regResult.Errors && regResult.Errors.length > 0) ? regResult.Errors.map(function (err) { return err.Name + " : " + err.Value; }).join(', ') : undefined,
+                                    MaxLimit: regResult.IntervalBounds && regResult.IntervalBounds.Upper > 0 ? regResult.IntervalBounds.Upper : undefined,
+                                    MinLimit: regResult.IntervalBounds && regResult.IntervalBounds.Lower > 0 ? regResult.IntervalBounds.Lower : undefined,
+                                    EquivYears: regResult.EquivalentYears ? regResult.EquivalentYears : undefined
+                                });
+                            }); //next regResult
+                        }); //next regRegion
+                    }); //next sgroup
+                }
+                catch (e) {
+                    result.push({ Disclaimers: "Failed to output flowstats to table. " });
+                }
+                return result;
+            };
             return ReportController;
         }()); //end class
         //Constructor
@@ -409,7 +469,6 @@ var StreamStats;
         ReportController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService'];
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.ReportController', ReportController);
-        //.controller('StreamStats.Controllers.MapController', MapController)
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));
 })(StreamStats || (StreamStats = {})); //end module
 //# sourceMappingURL=ReportController.js.map

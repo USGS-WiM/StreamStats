@@ -60,31 +60,31 @@
                 </div>
             </div>
             <div class="sidebar-item">
-                <a ng-class="vm.selectedProcedure == 2  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(2)">Identify a Study Area<h5 ng-show="vm.studyAreaService.selectedStudyArea.Features"><strong>Basin Delineated</strong></h5><i ng-class="vm.selectedProcedure == 2 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
+                <a ng-class="vm.selectedProcedure == 2  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(2)">Identify a Study Area<h5 ng-show="vm.studyAreaService.selectedStudyArea.FeatureCollection"><strong>Basin Delineated</strong></h5><i ng-class="vm.selectedProcedure == 2 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
 
                 <div class="list-group-body" ng-show="vm.selectedProcedure == 2">
 
                     <div id="step2info" class="banner banner-no-icon" ng-hide="!vm.regionService.streamStatsAvailable">
                         <div class="banner-body">
-                            <p ng-show="!vm.studyAreaService.zoomLevel15 && !vm.studyAreaService.selectedStudyArea.Features"><strong>Step 1:</strong> Zoom in to level 15 or greater to enable the delineation tool</p>
-                            <p ng-show="vm.studyAreaService.zoomLevel15 && !vm.studyAreaService.doDelineateFlag && vm.studyAreaService.canUpdate && !vm.studyAreaService.selectedStudyArea.Features && !vm.studyAreaService.checkingDelineatedPoint"><strong>Step 2:</strong> Click the 'Delineate' button to activate the delineation tool</p>
+                            <p ng-show="!vm.studyAreaService.zoomLevel15 && !vm.studyAreaService.selectedStudyArea.FeatureCollection"><strong>Step 1:</strong> Zoom in to level 15 or greater to enable the delineation tool</p>
+                            <p ng-show="vm.studyAreaService.zoomLevel15 && !vm.studyAreaService.doDelineateFlag && vm.studyAreaService.canUpdate && !vm.studyAreaService.selectedStudyArea.FeatureCollection && !vm.studyAreaService.checkingDelineatedPoint"><strong>Step 2:</strong> Click the 'Delineate' button to activate the delineation tool</p>
                             <p ng-show="vm.studyAreaService.zoomLevel15 && vm.studyAreaService.doDelineateFlag"><strong>Step 3:</strong> Use your mouse or finger to click or tap a blue stream cell on the map</p>
                             <p ng-show="!vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint"><strong>Step 4:</strong> Wait for delineation process to complete...</p>
-                            <p ng-show="vm.studyAreaService.selectedStudyArea.Features"><strong>Step 5:</strong> Your delineation is complete.  You can now clear, edit, or download your basin, or choose a state or regional study specific function (if available).  Click <strong>continue </strong>when you are ready.</p>
+                            <p ng-show="vm.studyAreaService.selectedStudyArea.FeatureCollection"><strong>Step 5:</strong> Your delineation is complete.  You can now clear, edit, or download your basin, or choose a state or regional study specific function (if available).  Click <strong>continue </strong>when you are ready.</p>
                         </div>
                     </div>
 
                     
-                    <form ng-hide="vm.studyAreaService.selectedStudyArea.Features" style="padding-bottom: 15px;">
-                        <button id="delineateButton" type="button" class="btn-blue fullwidth" ng-click="vm.startDelineate()" ng-class="vm.studyAreaService.doDelineateFlag ? 'btn-orange' : 'btn-blue'" ng-hide="vm.studyAreaService.selectedStudyArea.Features" ng-disabled="!vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint || !vm.studyAreaService.zoomLevel15"><i ng-class="vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint ? 'fa fa-map-marker' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Delineate</button>
+                    <form ng-hide="vm.studyAreaService.selectedStudyArea.FeatureCollection" style="padding-bottom: 15px;">
+                        <button id="delineateButton" type="button" class="btn-blue fullwidth" ng-click="vm.startDelineate()" ng-class="vm.studyAreaService.doDelineateFlag ? 'btn-orange' : 'btn-blue'" ng-hide="vm.studyAreaService.selectedStudyArea.FeatureCollection" ng-disabled="!vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint || !vm.studyAreaService.zoomLevel15"><i ng-class="vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint ? 'fa fa-map-marker' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Delineate</button>
                         <div style="margin-top:10px;" ng-show="vm.regionService.selectedRegion.RegionID ==='MO_STL'">
                             <checkbox style="height:20px; border:1px solid rgba(0,0,0,.2)!important;" ng-model="vm.studyAreaService.surfacecontributionsonly"></checkbox><span>&nbsp;&nbsp;Surface Contributing Basin only</span>
                         </div>                       
                   </form>
                                           
-                            <div ng-show="vm.studyAreaService.selectedStudyArea.Features">
+                            <div ng-show="vm.studyAreaService.selectedStudyArea.FeatureCollection">
                                 <form style="padding: 5px 0;">
-                                    <button id="clearDelinationButton" type="button" class="btn-red fullwidth" ng-click="vm.resetWorkSpace()" ng-show="vm.studyAreaService.selectedStudyArea.Features" ng-disabled="!vm.studyAreaService.canUpdate"><span><i class="fa fa-trash-o"></i>&nbsp;&nbsp;Clear Basin</span></button>
+                                    <button id="clearDelinationButton" type="button" class="btn-red fullwidth" ng-click="vm.resetWorkSpace()" ng-show="vm.studyAreaService.selectedStudyArea.FeatureCollection" ng-disabled="!vm.studyAreaService.canUpdate"><span><i class="fa fa-trash-o"></i>&nbsp;&nbsp;Clear Basin</span></button>
                                 </form>
                                 <form style="padding: 5px 0;">
                                     <button type="button" class="btn-blue fullwidth" ng-click="vm.studyAreaService.showEditToolbar = !vm.studyAreaService.showEditToolbar" ng-disabled="!vm.studyAreaService.canUpdate"><span class="fa fa-edit"></span>&nbsp;&nbsp;Edit Basin</button>
