@@ -209,7 +209,9 @@ module StreamStats.Services {
                         if (response.data.layers && response.data.layers.features && response.data.layers.features[1].geometry.coordinates.length > 0) {
 
                             //this.selectedStudyArea.Server = response.headers()['x-usgswim-hostname'].toLowerCase();
-                            this.selectedStudyArea.FeatureCollection = response.data.hasOwnProperty("layers") ? response.data["layers"] : null;
+                            var fc: GeoJSON.FeatureCollection = response.data.hasOwnProperty("layers") ? response.data["layers"] : null;
+                            if (fc) fc.features.forEach(f => f.id = f.id.toString().toLowerCase());
+                            this.selectedStudyArea.FeatureCollection = fc;
                             this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
                             this.selectedStudyArea.Date = new Date();
 
@@ -320,7 +322,7 @@ module StreamStats.Services {
                     this.selectedStudyArea.FeatureCollection = {
                         type: "FeatureCollection",
                         features: this.reconfigureWatershedResponse(response.data.featurecollection),
-                        bbox: response.data.featurecollection.filter(f => f.name == "globalwatershed")[0].feature.features[0].bbox
+                        bbox: response.data.featurecollection.filter(f => f.name.toLowerCase() == "globalwatershed")[0].feature.features[0].bbox
                     };
                     this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
                     this.selectedStudyArea.Date = new Date();
@@ -485,7 +487,7 @@ module StreamStats.Services {
                             if (features.length < 1) {
                                 //remove from studyarea array                                
                                 for (var i = 0; i < this.selectedStudyArea.FeatureCollection.features.length; i++) {
-                                    if (this.selectedStudyArea.FeatureCollection.features[i].id === feature.id) {
+                                    if ((<string>this.selectedStudyArea.FeatureCollection.features[i].id).toLowerCase() === (<string>feature.id).toLowerCase()) {
                                         this.selectedStudyArea.FeatureCollection.features.splice(i, 1);
                                         break;
                                     }
@@ -837,7 +839,7 @@ module StreamStats.Services {
                     var feature: GeoJSON.Feature = {
                         type: "Feature",
                         geometry: fc.feature.features[i].geometry,
-                        id: fc.feature.features.length > 1? fc.name+"_"+fc.feature.features[i].properties["Name"]:fc.name,
+                        id: fc.feature.features.length > 1 ? fc.name + "_" + fc.feature.features[i].properties["Name"].toLowerCase() : fc.name.toLowerCase(),
                         properties: fc.feature.features[i].properties
                     }; 
                     featureArray.push(feature);
