@@ -159,7 +159,10 @@ var StreamStats;
                     if (_this.selectedStudyArea.RegionID == 'MO_STL') {
                         if (response.data.layers && response.data.layers.features && response.data.layers.features[1].geometry.coordinates.length > 0) {
                             //this.selectedStudyArea.Server = response.headers()['x-usgswim-hostname'].toLowerCase();
-                            _this.selectedStudyArea.FeatureCollection = response.data.hasOwnProperty("layers") ? response.data["layers"] : null;
+                            var fc = response.data.hasOwnProperty("layers") ? response.data["layers"] : null;
+                            if (fc)
+                                fc.features.forEach(function (f) { return f.id = f.id.toString().toLowerCase(); });
+                            _this.selectedStudyArea.FeatureCollection = fc;
                             _this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
                             _this.selectedStudyArea.Date = new Date();
                             _this.toaster.clear();
@@ -250,7 +253,7 @@ var StreamStats;
                     _this.selectedStudyArea.FeatureCollection = {
                         type: "FeatureCollection",
                         features: _this.reconfigureWatershedResponse(response.data.featurecollection),
-                        bbox: response.data.featurecollection.filter(function (f) { return f.name == "globalwatershed"; })[0].feature.features[0].bbox
+                        bbox: response.data.featurecollection.filter(function (f) { return f.name.toLowerCase() == "globalwatershed"; })[0].feature.features[0].bbox
                     };
                     _this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
                     _this.selectedStudyArea.Date = new Date();
@@ -388,7 +391,7 @@ var StreamStats;
                             if (features.length < 1) {
                                 //remove from studyarea array                                
                                 for (var i = 0; i < _this.selectedStudyArea.FeatureCollection.features.length; i++) {
-                                    if (_this.selectedStudyArea.FeatureCollection.features[i].id === feature.id) {
+                                    if (_this.selectedStudyArea.FeatureCollection.features[i].id.toLowerCase() === feature.id.toLowerCase()) {
                                         _this.selectedStudyArea.FeatureCollection.features.splice(i, 1);
                                         break;
                                     }
@@ -649,7 +652,7 @@ var StreamStats;
                         var feature = {
                             type: "Feature",
                             geometry: fc.feature.features[i].geometry,
-                            id: fc.feature.features.length > 1 ? fc.name + "_" + fc.feature.features[i].properties["Name"] : fc.name,
+                            id: fc.feature.features.length > 1 ? fc.name + "_" + fc.feature.features[i].properties["Name"].toLowerCase() : fc.name.toLowerCase(),
                             properties: fc.feature.features[i].properties
                         };
                         featureArray.push(feature);
