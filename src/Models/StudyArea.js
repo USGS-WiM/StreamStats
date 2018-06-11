@@ -15,7 +15,7 @@
 //Comments
 //08.20.2014 jkn - Created
 //Imports"
-// Interface
+// Interface\
 var StreamStats;
 (function (StreamStats) {
     var Models;

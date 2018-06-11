@@ -74,7 +74,8 @@ var StreamStats;
                     "Content-Type": "application/json"
                 };
                 var url = configuration.queryparams['Wateruse'].format(this.StartYear, this.EndYear, this.includePermits, this.includeReturns, this.computeDomesticWU);
-                var request = new WiM.Services.Helpers.RequestInfo(url, false, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(this.StudyArea.Features[1].feature.features[0].geometry));
+                var studyAreaGeom = this.StudyArea.FeatureCollection.features.filter(function (f) { return (f.id).toLowerCase() == "globalwatershed"; })[0].geometry;
+                var request = new WiM.Services.Helpers.RequestInfo(url, false, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(studyAreaGeom));
                 this.Execute(request).then(function (response) {
                     _this.showResults = true;
                     //sm when complete
@@ -340,7 +341,8 @@ var StreamStats;
                     "Authorization": "Basic dGVzdE1hbmFnZXI6RG9nMQ=="
                 };
                 var url = configuration.queryparams['WateruseSourceCSV'].format(this.StartYear, this.EndYear, this.includePermits, this.includeReturns, this.computeDomesticWU);
-                var request = new WiM.Services.Helpers.RequestInfo(url, false, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(this.StudyArea.Features[1].feature.features[0].geometry), headers);
+                var studyAreaGeom = this.StudyArea.FeatureCollection.features.filter(function (f) { return (f.id).toLowerCase() == "globalwatershed"; })[0].geometry;
+                var request = new WiM.Services.Helpers.RequestInfo(url, false, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(studyAreaGeom), headers);
                 this.Execute(request).then(function (response) {
                     var filename = 'wateruseSummaryBySource.csv';
                     var blob = new Blob([response.data], { type: 'text/csv;charset=utf-8;' });
