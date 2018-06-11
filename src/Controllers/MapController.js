@@ -857,43 +857,26 @@ var StreamStats;
                 this.regionServices.loadMapLayersByRegion(this.regionServices.selectedRegion.RegionID);
             };
             MapController.prototype.onSelectedStudyAreaChanged = function () {
-                //console.log('in onselectedstudyareachange1', this.studyArea.selectedStudyArea.Features)
                 var _this = this;
-                if (!this.studyArea.selectedStudyArea || !this.studyArea.selectedStudyArea.Features)
+                var bbox;
+                //console.log('in onselectedstudyareachange1', this.studyArea.selectedStudyArea.Features)
+                if (!this.studyArea.selectedStudyArea || !this.studyArea.selectedStudyArea.FeatureCollection)
                     return;
                 //clear out this.markers
                 this.markers = {};
-                //temp (soon to be permanent method for MO_STL)
-                if (this.studyArea.selectedStudyArea.RegionID == 'MO_STL') {
-                    this.removeOverlayLayers('GlobalWatershed', true);
-                    this.studyArea.selectedStudyArea.Features['features'].forEach(function (layer) {
-                        var item = angular.fromJson(angular.toJson(layer));
-                        var name = item.id.toLowerCase();
-                        _this.addGeoJSON(name, item);
-                        _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(name, "geojson", _this.geojson[name].style));
+                this.removeOverlayLayers('globalwatershed', true);
+                this.studyArea.selectedStudyArea.FeatureCollection['features'].forEach(function (layer) {
+                    var item = angular.fromJson(angular.toJson(layer));
+                    var name = item.id.toLowerCase();
+                    _this.addGeoJSON(name, item);
+                    _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(name, "geojson", _this.geojson[name].style));
+                });
+                //zoom to bounding box
+                if (this.studyArea.selectedStudyArea.FeatureCollection['bbox']) {
+                    bbox = this.studyArea.selectedStudyArea.FeatureCollection['bbox'];
+                    this.leafletData.getMap("mainMap").then(function (map) {
+                        map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]], {});
                     });
-                    if (this.studyArea.selectedStudyArea.Features['bbox']) {
-                        var bbox = this.studyArea.selectedStudyArea.Features['bbox'];
-                        this.leafletData.getMap("mainMap").then(function (map) {
-                            map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]], {});
-                        });
-                    }
-                }
-                else {
-                    this.studyArea.selectedStudyArea.Features.forEach(function (layer) {
-                        //console.log('in onselectedstudyareachange2',layer)
-                        _this.removeOverlayLayers('globalwatershed', true);
-                        var item = angular.fromJson(angular.toJson(layer));
-                        var name = item.name.toLowerCase();
-                        _this.addGeoJSON(name, item.feature);
-                        _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(name, "geojson", _this.geojson[name].style));
-                    });
-                    if (this.geojson['globalwatershed'].data.features[0].bbox) {
-                        var bbox = this.geojson['globalwatershed'].data.features[0].bbox;
-                        this.leafletData.getMap("mainMap").then(function (map) {
-                            map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]], {});
-                        });
-                    }
                 }
                 //query basin against Karst
                 if (this.regionServices.selectedRegion.Applications.indexOf("KarstCheck") > -1) {
@@ -1028,7 +1011,6 @@ var StreamStats;
                 }
             };
             MapController.prototype.onLayerChanged = function (sender, e) {
-                //console.log('in onLayerChanged', e, this.geojson, this.studyArea.selectedStudyArea.Features)
                 var _this = this;
                 if (e.PropertyName === "visible") {
                     if (!e.Value)
@@ -1036,24 +1018,15 @@ var StreamStats;
                     else {
                         //get feature
                         var value = null;
-                        //special case for 'MO_STL' will soon be permanant
-                        if (this.studyArea.selectedStudyArea.RegionID == 'MO_STL') {
-                            //need this in if now that we have network nav results
-                            this.studyArea.selectedStudyArea.Features['features'].forEach(function (layer) {
-                                var item = angular.fromJson(angular.toJson(layer));
-                                var name = item.id.toLowerCase();
-                                _this.addGeoJSON(name, item);
+                        //need this in if now that we have network nav results 
+                        if (this.studyArea.selectedStudyArea && this.studyArea.selectedStudyArea.FeatureCollection.features.length > 0) {
+                            this.studyArea.selectedStudyArea.FeatureCollection['features'].forEach(function (layer) {
+                                if (layer.id == e.LayerName) {
+                                    var item = angular.fromJson(angular.toJson(layer));
+                                    var name = item.id;
+                                    _this.addGeoJSON(name, item);
+                                }
                             });
-                        }
-                        else {
-                            //need this in if now that we have network nav results
-                            if (this.studyArea.selectedStudyArea && this.studyArea.selectedStudyArea.Features.length > 0) {
-                                for (var i = 0; i < this.studyArea.selectedStudyArea.Features.length; i++) {
-                                    var item = angular.fromJson(angular.toJson(this.studyArea.selectedStudyArea.Features[i]));
-                                    if (item.name == e.LayerName)
-                                        this.addGeoJSON(e.LayerName, item.feature);
-                                } //next
-                            }
                         }
                         if (this.explorationService.networkNavResults) {
                             for (var i = 0; i < this.explorationService.networkNavResults.length; i++) {
