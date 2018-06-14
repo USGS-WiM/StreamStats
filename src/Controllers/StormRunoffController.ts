@@ -63,6 +63,7 @@ module StreamStats.Controllers {
         public StudyArea: StreamStats.Models.IStudyArea;
         private modalInstance: ng.ui.bootstrap.IModalServiceInstance;
         public showResults: boolean;
+        public hideAlerts: boolean;
         private parameterloadedEventHandler: WiM.Event.EventHandler<Services.StudyAreaEventArgs>;
         private regionParameters: Array<Services.IParameter> = [];
 
@@ -72,19 +73,43 @@ module StreamStats.Controllers {
         public PrecipOptions: Array<Services.IParameter> = [];
 
         private _selectedPrecip: Services.IParameter;
+
         public get SelectedPrecip(): Services.IParameter {
             return this._selectedPrecip;
         }
+
         public set SelectedPrecip(val: Services.IParameter) {
             this._selectedPrecip = val;
+            //if (this._selectedPrecip.value == null) {
+            //    this.PIntensity = null;
+            //    //this._pIntensity = null;
+            //} else {
+            //    var dur = parseInt(this.SelectedPrecip.name.substr(0, 2));
+            //    this.PIntensity = (this.SelectedPrecip.value / dur).toUSGSvalue();
+            //    //this._pIntensity = (this.SelectedPrecip.value / dur).toUSGSvalue();
+            //}
             console.log(this._selectedPrecip.code);
         }
+
         public SelectedParameterList: Array<Services.IParameter> = [];
 
-        public _pIntensity: Services.IParameter;
-        public get PIntensity(): Services.IParameter {
-            return this._pIntensity;
-        }
+        public PIntensity?: number;
+        //private _pIntensity: number;
+
+        //public get PIntensity(): number {
+        //    return this._pIntensity;
+        //}
+
+        //public set PIntensity(val: number) {
+        //    if (this._selectedPrecip.value) {
+        //        var dur = parseInt(this.SelectedPrecip.name.substr(0, 2));
+        //        this._pIntensity = (this.SelectedPrecip.value / dur).toUSGSvalue();
+        //    } else {
+        //        this._pIntensity = val;
+        //    }
+        //}
+   
+        public DrnAreaAcres: number;
 
         public CanContinue: boolean;
         private parametersLoaded: boolean;
@@ -167,7 +192,7 @@ module StreamStats.Controllers {
                 }
                 else if (this.SelectedTab == 2) {
                     let equation = StormRunoffType.RationalMethod;
-                    var url = configuration.queryparams['StormRunoffRationalMethod'].format(this.SelectedParameterList[0].value, this.PIntensity.value, this.SelectedParameterList[1].value, this.SelectedPrecip.code);
+                    var url = configuration.queryparams['StormRunoffRationalMethod'].format(this.DrnAreaAcres, this.PIntensity, this.SelectedParameterList[1].value, this.SelectedPrecip.code);
                 }
 
                 var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url);
@@ -190,6 +215,7 @@ module StreamStats.Controllers {
                         //sm when error                    
                     }).finally(() => {
                         this.CanContinue = true;
+                        this.hideAlerts = true;
                     });
             }
             catch (e) {
@@ -202,6 +228,8 @@ module StreamStats.Controllers {
                 return true;
             }
             else {
+                this.showResults = false;
+                this.hideAlerts = false;
                 return false;
             }
         }
@@ -345,6 +373,7 @@ module StreamStats.Controllers {
                 var results = []; 
                 var hydrograph = [];
                 var hyetograph = [];
+                this.GraphXValues.length = 0;
                 var firsttime;
                 var count = 0;
                 for (var k in this.result) {
@@ -374,7 +403,7 @@ module StreamStats.Controllers {
                 this.loadPadY2(hyetograph);
                 this.loadDomainY2(hyetograph);
                 results.push({ values: hydrograph, key: "Discharge (ft³/s)", color: " #009900", type: "line", yAxis: 1 });
-                results.push({ values: hyetograph, key: "Cum. precipitation (inches)", color: "#0033ff", type: "line", yAxis: 2 });
+                results.push({ values: hyetograph, key: "Cum. precipitation (in)", color: "#0033ff", type: "line", yAxis: 2 });
                 
                 return results;
             } catch(e) {
@@ -534,12 +563,12 @@ module StreamStats.Controllers {
             this.ReportOptions = {
                 chart: {
                     type: 'multiChart',
-                    height: 250,
+                    height: 275,
                     width: 650,
                     margin: {
                         top: 10,
                         right: 80,
-                        bottom: 60,
+                        bottom: 80,
                         left: 90
                     },
                     x: function (d) {
@@ -548,13 +577,17 @@ module StreamStats.Controllers {
                     y: function (d) {
                         return d.y;
                     },
+                    legend: {
+                        align: false,
+                        padding: 50,
+                        width: 500
+                    },
                     dispatch: {
                         stateChange: function (e) { console.log("stateChange"); },
                         changeState: function (e) { console.log("changeState"); },
                         tooltipShow: function (e) { console.log("tooltipShow"); },
                         tooltipHide: function (e) { console.log("tooltipHide"); }
                     },
-                    showLegend: false,
                     useInteractiveGuideline: true,
                     interactiveLayer: {
                         tooltip: {
@@ -671,7 +704,7 @@ module StreamStats.Controllers {
                 },
                 title: {
                     enable: true,
-                    text: 'Runoff hydrograph from TR55 Method using ' + this.SelectedPrecip.name,
+                    text: 'Runoff hydrograph from ' + this.SelectedPrecip.name,
                     css: {
                         'font-size': '10pt',
                         'font-weight': 'bold'
@@ -724,18 +757,18 @@ module StreamStats.Controllers {
         private init(): void {            
             this.SelectedTab = StormRunoffType.TR55;
             this.showResults = false;
+            this.hideAlerts = false;
             this.CanContinue = true;
             this.showPrint = false;
             this.ReportData = new StormRunoffReportable();
-            this._pIntensity = <Services.IParameter> { name: "Precipitation Intensity", code: "PINT", value: null }; 
         }
 
         private loadParameters(): void{
             //unsubscribe first
             this.EventManager.UnSubscribeToEvent(Services.onSelectedStudyParametersLoaded, this.parameterloadedEventHandler);
-            if (this.SelectedTab == 2) {
-                this.calculatePIntensity();
-            }
+            this.DrnAreaAcres = this.SelectedParameterList[0].value * 640;
+            var dur = parseInt(this.SelectedPrecip.name.substr(0, 2));
+            this.PIntensity = (this.SelectedPrecip.value / dur).toUSGSvalue();
             this.CanContinue = true;
             //alert("Parameters loaded");
         }
@@ -755,17 +788,6 @@ module StreamStats.Controllers {
             this.PrecipOptions = this.regionParameters.filter(f => { return ["I6H2Y", "I6H100Y", "I24H2Y", "I24H100Y"].indexOf(f.code) != -1 });
             this.PrecipOptions.forEach(p => p.value = (isNaN(p.value) ? null : p.value));
             this.SelectedPrecip = this.PrecipOptions[0];
-        }
-        private calculatePIntensity(): void {
-            if (!this.SelectedPrecip.value) {
-                return;
-            }
-            this._pIntensity.name = "Precipitation Intensity";
-            this._pIntensity.code = this.SelectedPrecip.code;
-            this._pIntensity.unit = "inches/hour";
-
-            var dur = parseInt(this.SelectedPrecip.name.substr(0, 2));
-            this._pIntensity.value = this.SelectedPrecip.value / dur; 
         }
         private tableToCSV($table) {
 
@@ -901,12 +923,12 @@ module StreamStats.Controllers {
         //used for Y domain
         private loadDomainY(data): void {
             var max = Math.max.apply(Math, data.map(function (o) { return o.y; }));
-            this.domainY = [0, Math.round((max + max * 0.15) / 10) * 10]; 
+            this.domainY = [0, Math.round((max + max * 0.18) / 10) * 10]; 
         }
         //used for Y2 domain
         private loadDomainY2(data): void {
             var max = Math.max.apply(Math, data.map(function (o) { return o.y; }));
-            this.domainY2 = [0, max + max * 0.15];
+            this.domainY2 = [0, max + max * 0.18];
         }
         //used for Y2 label distance
         private loadPadY2(data): void {
