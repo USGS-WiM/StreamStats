@@ -81,3 +81,19 @@
         display: none !important;
     }
 }
+
+#legend .nv-legend {
+    transform: translate(-100px, 10px);
+}
+
+.green {
+    color: forestgreen;
+}
+
+.red {
+    color: red;
+}
+
+.orange {
+    color: orange;
+}

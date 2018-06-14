@@ -10,6 +10,7 @@ configuration.baseurls =
     'NSS': 'https://test.streamstats.usgs.gov/nssservices',
     'WaterUseServices': 'https://test.streamstats.usgs.gov/wateruseservices',
     'StormRunoffServices': 'https://test.streamstats.usgs.gov/runoffmodelingservices'
+ 
 }
 
 //override streamstats arguments if on production, these get overriden again in MapController after load balancer assigns a server

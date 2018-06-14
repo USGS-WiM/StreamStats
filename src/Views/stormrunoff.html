@@ -6,7 +6,7 @@
         </div>
         <button type="button" class="close hidden-print" ng-click="vm.Close()"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title hidden-print">Study Area Storm Event Runoff Summary</h4>
-        <h4 class="modal-title visible-print">Study Area Storm Event Runoff Summary for {{vm.SelectedPrecip.name}}</h4>
+        <h4 class="modal-title visible-print">Study Area Storm Event Runoff Summary for {{vm.SelectedPrecip.name}} ({{vm.SelectedTab == 1 ? "TR55" : "Rational Method"}})</h4>
     </div>
     <div class="modal-body">
         <!--<input ng-if="true" type="text" class="form-control" ng-model="vm.reportTitle" placeholder="Title">-->
@@ -22,27 +22,33 @@
                 <div ng-if="vm.SelectedTab == 2" class="wim-alert hidden-print">Enter values below or use StreamStats to calculate the required parameters. Then click "Continue" to view peak discharge.</div>
                 <div id="printArea">
                     <form id="mainForm" name="mainForm" class="hidden-print" novalidate>
-                        <select name="precipoptions" ng-model="vm.SelectedPrecip" ng-options="precip.name for precip in vm.PrecipOptions track by precip.code" ng-change="vm.update(precip)"></select>
+                        <select name="precipoptions" ng-model="vm.SelectedPrecip" ng-options="precip.name for precip in vm.PrecipOptions track by precip.code"></select>
                         <label ng-if="vm.SelectedTab == 1">Precipitation ({{vm.SelectedPrecip.unit}}):</label>
                         <label title="{{vm.getPrecipTitle()}}" ng-if="vm.SelectedTab == 2">Precipitation Intensity (inches/hour)</label>
-                        <input ng-if="vm.SelectedTab == 1" type="number" name="selectedp" ng-value="vm.SelectedPrecip.value" ng-model="vm.SelectedPrecip.value" required />
-                        <input ng-if="vm.SelectedTab == 2" type="number" name="pintens" id="pintens" ng-value="vm.PIntensity.value.toUSGSvalue()" ng-model="vm.PIntensity.value.toUSGSvalue()" required />
+                        <input ng-if="vm.SelectedTab == 1" type="number" ng-model="vm.SelectedPrecip.value" required />
+                        <input ng-if="vm.SelectedTab == 2" type="number" ng-model="vm.PIntensity" required />
                         <br />
-                        <div ng-repeat="characteristics in vm.SelectedParameterList track by $index">
+                        <div ng-repeat="characteristic in vm.SelectedParameterList track by $index">
                             <br />
-                            <label>{{characteristics.name}} ({{characteristics.unit}})</label>
-                            <input type="number" ng-model="characteristics.value" required />
+                            <label>{{characteristic.name}} ({{characteristic.code == "DRNAREA" && vm.SelectedTab == 2 ? "acres" : characteristic.unit}})</label>
+                            <input type="number" ng-if="characteristic.code == 'DRNAREA' && vm.SelectedTab == 2" ng-model="vm.DrnAreaAcres" required />
+                            <input type="number" ng-if="characteristic.code == 'DRNAREA' && vm.SelectedTab == 1" ng-model="characteristic.value" required />
+                            <input type="number" ng-if="characteristic.code != 'DRNAREA'" ng-model="characteristic.value" required />
                         </div>
+                        <label class="fullwidth alignc green" ng-if="vm.validateForm(mainForm) && !vm.hideAlerts"><span class="fa fa-check-circle"></span>&nbsp;&nbsp;Parameters Have Been Calculated</label>
+                        <label class="fullwidth" ng-if="!vm.validateForm(mainForm) || (vm.validateForm(mainForm) && vm.hideAlerts)">&nbsp;&nbsp;</label>
                         <div class="hidden-print">
                             <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1" ng-click="vm.CalculateParameters()" ng-hide="vm.validateForm(mainForm)"><span ng-class="vm.CanContinue ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></span>&nbsp;&nbsp;Calculate Missing Parameters</button>
                             <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1" ng-click="vm.GetStormRunoffResults()" ng-hide="!vm.validateForm(mainForm)"><span ng-class="vm.CanContinue ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></span>{{ vm.showResults ? '&nbsp;&nbsp;Recalculate Results' : '&nbsp;&nbsp;Continue' }}</button>
                         </div>
+                        <label class="fullwidth alignc orange" ng-if="!vm.validateForm(mainForm)"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Parameters Must Be Entered Before Results Can Be Calculated</label>
+                        <label ng-if="vm.validateForm(mainForm)">&nbsp;&nbsp;</label>
                     </form>
                     <div ng-if="vm.showResults">
                         <!-- TR55 tab -->
                         <div ng-if="vm.SelectedTab == 1" style="position:relative;">
                             <p class="fullwidth alignc hidden-print" style="font-size: 16px;"><b>Peak Runoff from {{vm.SelectedPrecip.name}} (TR55)</b></p>
-                            <div class="well">
+                            <div class="well visible-print">
                                 <h3>Parameters</h3>
                                 <table id="TR55ParameterTable" class="table table-condensed smalltext">
                                     <tbody>
@@ -77,8 +83,8 @@
                                 </table>
                             </div>
                             <div class="overflowTable well">
-                                <div style='width:650px; margin:auto;' class="page_break">
-                                    <nvd3 options='vm.ReportOptions' yDomain="vm.padY" data='vm.ReportData.TR55.Graph'></nvd3>
+                                <div style='width:650px; margin:auto;' class="page_break" id="legend">
+                                    <nvd3 options='vm.ReportOptions' data='vm.ReportData.TR55.Graph'></nvd3>
                                 </div>
                             </div>
                             <div class="overflowTable well" style="page-break-inside:avoid;">
@@ -98,12 +104,12 @@
                                             <td>{{item.rcn}}</td>
                                             <td>{{item.duration}}</td>
                                             <td>{{item.ia.toUSGSvalue()}}</td>
+                                            <td>{{item.s.toUSGSvalue()}}</td>
                                             <td>{{item.dP.toUSGSvalue()}}</td>
                                             <td>{{item.pIa.toUSGSvalue()}}</td>
                                             <td>{{item.pl.toUSGSvalue()}}</td>
                                             <td>{{item.pe.toUSGSvalue()}}</td>
                                             <td>{{item.dPe.toUSGSvalue()}}</td>
-                                            <td>{{item.s.toUSGSvalue()}}</td>
                                             <td>{{item.q.toUSGSvalue()}}</td>
                                         </tr>
                                     </tbody>
@@ -112,14 +118,14 @@
                         </div>
                         <!-- Rational Method tab -->
                         <div ng-if="vm.SelectedTab == 2" style="position:relative;">
-                            <p class="fullwidth alignc"><b>Peak Runoff from {{vm.SelectedPrecip.name}} (Rational Method)</b></p>
+                            <p class="fullwidth alignc hidden-print"><b>Peak Runoff from {{vm.SelectedPrecip.name}} (Rational Method)</b></p>
                             <div class="well visible-print">
                                 <h3>Parameters</h3>
                                 <table id="RMParameterTable" class="table table-condensed smalltext">
                                     <tbody>
                                         <tr>
-                                            <td>{{vm.PIntensity.name}} ({{vm.PIntensity.unit}}):</td>
-                                            <td><b>{{vm.PIntensity.value.toUSGSvalue()}}</b></td>
+                                            <td>Precipitation Intensity (inches/hour):</td>
+                                            <td><b>{{vm.PIntensity.toUSGSvalue()}}</b></td>
                                         </tr>
                                         <tr ng-repeat="characteristics in vm.SelectedParameterList track by $index">
                                             <td>{{characteristics.name}} ({{characteristics.unit}}):</td>
