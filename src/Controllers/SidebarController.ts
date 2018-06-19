@@ -486,7 +486,7 @@ module StreamStats.Controllers {
 
         private downloadGeoJSON() {
 
-            var GeoJSON = angular.toJson(this.studyAreaService.selectedStudyArea.Features[1].feature);
+            var GeoJSON = angular.toJson(this.studyAreaService.selectedStudyArea.FeatureCollection);
 
             var filename = 'data.geojson';
 
