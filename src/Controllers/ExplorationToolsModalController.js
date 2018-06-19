@@ -147,7 +147,7 @@ var StreamStats;
                                     //reset limit polygon with delineated basin
                                     //console.log('in here', this.studyAreaService.selectedStudyArea, this.studyAreaService.selectedStudyArea.Features[1].feature.features[0].geometry)
                                     limit.name = 'Polygon geometry from delineated watershed';
-                                    limit.value = _this.studyAreaService.selectedStudyArea.Features[1].feature.features[0].geometry;
+                                    limit.value = _this.studyAreaService.selectedStudyArea.FeatureCollection.features.filter(function (f) { return (f.id).toLowerCase() == "globalwatershed"; })[0].geometry;
                                 }
                             });
                         }

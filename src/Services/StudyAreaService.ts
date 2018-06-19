@@ -187,9 +187,6 @@ module StreamStats.Services {
 
             this.toaster.pop("wait", "Delineating Basin", "Please wait...", 0);
             this.canUpdate = false;
-
-            //console.log('loadstudy area', this.selectedStudyArea);
-
             var regionID = this.selectedStudyArea.RegionID;
             
             var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', regionID, this.selectedStudyArea.Pourpoint.Longitude.toString(),
@@ -201,11 +198,6 @@ module StreamStats.Services {
                     this.selectedStudyArea.Pourpoint.Latitude.toString(), this.surfacecontributionsonly);
             }
 
-            if (this.selectedStudyArea.RegionID == 'CRB' || this.selectedStudyArea.RegionID == 'DRB') {
-                this.selectedStudyArea
-            }
-
-
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
             request.withCredentials = true;
 
@@ -214,11 +206,12 @@ module StreamStats.Services {
 
                     //hack for st louis stormdrain
                     if (this.selectedStudyArea.RegionID == 'MO_STL') {
-
                         if (response.data.layers && response.data.layers.features && response.data.layers.features[1].geometry.coordinates.length > 0) {
 
                             //this.selectedStudyArea.Server = response.headers()['x-usgswim-hostname'].toLowerCase();
-                            this.selectedStudyArea.Features = response.data.hasOwnProperty("layers") ? response.data["layers"] : null;
+                            var fc: GeoJSON.FeatureCollection = response.data.hasOwnProperty("layers") ? response.data["layers"] : null;
+                            if (fc) fc.features.forEach(f => f.id = f.id.toString().toLowerCase());
+                            this.selectedStudyArea.FeatureCollection = fc;
                             this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
                             this.selectedStudyArea.Date = new Date();
 
@@ -234,26 +227,18 @@ module StreamStats.Services {
                     }
 
                     //otherwise old method
-                    else if (response.data.featurecollection && response.data.featurecollection[1] && response.data.featurecollection[1].feature.features.length > 0) {
+                    else if (response.data.hasOwnProperty("featurecollection") && response.data.featurecollection[1] && response.data.featurecollection[1].feature.features.length > 0) {
                         this.selectedStudyArea.Server = response.headers()['usgswim-hostname'].toLowerCase();
-                        this.selectedStudyArea.Features = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"] : null;
                         this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
+
+                        //reconfigure response
+                        this.selectedStudyArea.FeatureCollection = {
+                            type: "FeatureCollection",
+                            features: this.reconfigureWatershedResponse(response.data.featurecollection),
+                            bbox: response.data.featurecollection.filter(f=>f.name == "globalwatershed")[0].feature.features[0].bbox
+                        };
+
                         this.selectedStudyArea.Date = new Date();
-
-                        //stub code for global check, but the services need to be updated first
-                        //right now GlobalWshd is always 1
-
-                        //this.selectedStudyArea.isGlobal = false;
-                        //this.selectedStudyArea.Features.forEach((item) => { 
-                        //    if (item.name == "globalwatershed") {
-                        //        angular.forEach(item.feature.features[0].properties, (i,v) => {
-                        //            console.log(v, i);
-                        //            if (v == "GlobalWshd" && i == 1) {
-                        //                this.selectedStudyArea.isGlobal = true;
-                        //            }
-                        //        });
-                        //    }
-                        //});
 
                         this.toaster.clear();
                         this.eventManager.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);
@@ -264,6 +249,10 @@ module StreamStats.Services {
                         this.toaster.clear();
                         this.toaster.pop("error", "A watershed was not returned from the delineation request", "Please retry", 0);
                     }
+
+                    //clear properties
+                    this.selectedStudyArea.FeatureCollection.features.forEach(f => f.properties = {});
+
                     //sm when complete
                 },(error) => {
                     //sm when error
@@ -288,21 +277,19 @@ module StreamStats.Services {
 
                 this.Execute(request).then(
                     (response: any) => {                        
-                        this.selectedStudyArea.Features = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"] : null;                        
+                                               
                         this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
-                        this.selectedStudyArea.Date = new Date();                   
+                        this.selectedStudyArea.Date = new Date();   
+                        //reconfigure response
+                        this.selectedStudyArea.FeatureCollection = {
+                            type: "FeatureCollection",
+                            features: this.reconfigureWatershedResponse(response.data.featurecollection),                       
+                            bbox: response.data.featurecollection.filter(f => f.name == "globalwatershed")[0].feature.features[0].bbox
+                        };
 
-                        //set point
-                        this.selectedStudyArea.Features.forEach((layer) => { 
-                            var item = angular.fromJson(angular.toJson(layer));
-
-                            if (item.name == 'globalwatershedpoint') {
-                                //get and set geometry
-                                var geom = item.feature.features[0].bbox 
-                                this.selectedStudyArea.Pourpoint = new WiM.Models.Point(geom[1], geom[0], item.feature.crs.properties.code);
-                                return;
-                            }//end if
-                        });           
+                        var pointFeature = response.data.featurecollection.filter(f => f.name == "globalwatershedpoint")[0].feature.features[0]
+                        this.selectedStudyArea.Pourpoint = new WiM.Models.Point(pointFeature.bbox[1], pointFeature.bbox[0], pointFeature.crs.properties.code);                        
+                        
                     }, (error) => {
                         //sm when error
                         this.toaster.clear();
@@ -331,8 +318,12 @@ module StreamStats.Services {
                 (response: any) => {
                     //create new study area                    
                     this.AddStudyArea(new Models.StudyArea(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint));
-                    
-                    this.selectedStudyArea.Features = response.data.hasOwnProperty("featurecollection") ? response.data["featurecollection"] : null;
+
+                    this.selectedStudyArea.FeatureCollection = {
+                        type: "FeatureCollection",
+                        features: this.reconfigureWatershedResponse(response.data.featurecollection),
+                        bbox: response.data.featurecollection.filter(f => f.name.toLowerCase() == "globalwatershed")[0].feature.features[0].bbox
+                    };
                     this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
                     this.selectedStudyArea.Date = new Date();
 
@@ -459,7 +450,7 @@ module StreamStats.Services {
                     if (response.data.featurecollection && response.data.featurecollection.length > 0) {
                         var features = [];
                         angular.forEach(response.data.featurecollection, (feature, index) => {
-                            if (this.selectedStudyArea.Features.map(f => { return f.name }).indexOf(feature.name) === -1){
+                            if (this.selectedStudyArea.FeatureCollection.features.map(f => { return f.id }).indexOf(feature.name) === -1){
                                 features.push(feature.name)                               
                             }                            
                         });//next feature
@@ -484,28 +475,29 @@ module StreamStats.Services {
 
             this.Execute(request).then(
                 (response: any) => {
-
                     if (response.data.featurecollection && response.data.featurecollection.length > 0) {
                         this.toaster.clear();
                         //this.toaster.pop('success', "Additional features found", "Please continue", 5000);
                         //console.log('additional features:', response);
 
-                        angular.forEach(response.data.featurecollection, (feature, index) => {
+                        var features = this.reconfigureWatershedResponse(response.data.featurecollection);
+
+                        angular.forEach(features, (feature, index) => {
                             //console.log('test', feature, index);
-                            if (feature.feature.features.length < 1) {
+                            if (features.length < 1) {
                                 //remove from studyarea array                                
-                                for (var i = 0; i < this.selectedStudyArea.Features.length; i++) {
-                                    if (this.selectedStudyArea.Features[i].name === feature.name) {
-                                        this.selectedStudyArea.Features.splice(i, 1);
+                                for (var i = 0; i < this.selectedStudyArea.FeatureCollection.features.length; i++) {
+                                    if ((<string>this.selectedStudyArea.FeatureCollection.features[i].id).toLowerCase() === (<string>feature.id).toLowerCase()) {
+                                        this.selectedStudyArea.FeatureCollection.features.splice(i, 1);
                                         break;
                                     }
                                 }
                             }
                             else {
-                                this.selectedStudyArea.Features.push(feature);
-                                this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(feature.name, "geojson", { displayName: feature.name, imagesrc: null }, false));
+                                this.selectedStudyArea.FeatureCollection.features.push(feature);                                
                             }
 
+                            this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(<string>feature.id, "geojson", { displayName: feature.id, imagesrc: null }, false));
                         });
                     }
 
@@ -523,7 +515,7 @@ module StreamStats.Services {
             this.toaster.pop('wait', "Querying Land Cover Data with your Basin", "Please wait...", 0);
             //console.log('querying land cover');
 
-            var esriJSON = '{"geometryType":"esriGeometryPolygon","spatialReference":{"wkid":"4326"},"fields": [],"features":[{"geometry": {"type":"polygon", "rings":[' + JSON.stringify(this.selectedStudyArea.Features[1].feature.features[0].geometry.coordinates) + ']}}]}'
+            var esriJSON = '{"geometryType":"esriGeometryPolygon","spatialReference":{"wkid":"4326"},"fields": [],"features":[{"geometry": {"type":"polygon", "rings":[' + JSON.stringify((<any>this.selectedStudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).toLowerCase() == "globalwatershed" })[0].geometry).coordinates) + ']}}]}'
             //var watershed = angular.toJson(this.selectedStudyArea.Features[1].feature, null);
 
             var url = configuration.baseurls['NationalMapRasterServices'] + configuration.queryparams['NLCDQueryService'];
@@ -607,7 +599,6 @@ module StreamStats.Services {
                         //sm when complete
                         //console.log('Regression query failed, HTTP Error');
                         this.toaster.pop('error', "There was an HTTP error querying coordinated reach", "Please retry", 0);
-
                     });
         }
 
@@ -635,8 +626,14 @@ module StreamStats.Services {
                 this.toaster.pop('success', "Regression regions were succcessfully queried", "Please continue", 5000);
                 return;
             }//end if
-            
-            var watershed = angular.toJson(this.selectedStudyArea.Features[1].feature, null)
+
+            var watershed = angular.toJson(
+                {
+                    type: "FeatureCollection",
+                    crs: { type: "ESPG", properties: { code: 4326 } },
+                    features: this.selectedStudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).toLowerCase() == "globalwatershed" }),
+                }
+                , null);
            
             //var url = configuration.baseurls['NodeServer'] + configuration.queryparams['RegressionRegionQueryService'];
             //var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', watershed);
@@ -705,7 +702,7 @@ module StreamStats.Services {
             this.regressionRegionQueryLoading = true;
             this.regressionRegionQueryComplete = false;
 
-            var watershed = '{"rings":' + angular.toJson(this.selectedStudyArea.Features[1].feature.features[0].geometry.coordinates, null) + ',"spatialReference":{"wkid":4326}}';
+            var watershed = '{"rings":' + angular.toJson((<any>this.selectedStudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).toLowerCase() == "globalwatershed" })[0].geometry).coordinates, null) + ',"spatialReference":{"wkid":4326}}';
             var options = {
                 where: '1=1',
                 geometry: watershed,
@@ -780,7 +777,13 @@ module StreamStats.Services {
 
             this.regulationCheckComplete = false;
 
-            var watershed = angular.toJson(this.selectedStudyArea.Features[1].feature, null);
+            var watershed = angular.toJson(
+                {
+                    type: "FeatureCollection",
+                    crs: { type: "ESPG", properties: { code: 4326 } },
+                    features: this.selectedStudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).toLowerCase() == "globalwatershed" }),
+                }
+                , null);
 
             var url = configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['regulationService'].format(this.selectedStudyArea.RegionID.toLowerCase());
             var request: WiM.Services.Helpers.RequestInfo =
@@ -797,7 +800,10 @@ module StreamStats.Services {
                     if (response.data.percentarearegulated > 0) {
                         this.toaster.clear();
                         this.toaster.pop('success', "Map updated with Regulated Area", "Continue to 'Modify Basin Characteristics' to see area-weighted basin characteristics", 5000);
-                        this.selectedStudyArea.Features.push(response.data["featurecollection"][0]);
+
+                        var features = this.reconfigureWatershedResponse(response.data["featurecollection"])
+
+                        this.selectedStudyArea.FeatureCollection.features.push(features[0]);
                         this.regulationCheckResults = response.data;
                         //this.loadRegulatedParameterResults(this.regulationCheckResults.parameters);
                         this.selectedStudyArea.Disclaimers['isRegulated'] = true;     
@@ -819,15 +825,28 @@ module StreamStats.Services {
                     this.toaster.pop('error', "Error Checking for Upstream Regulation", "Please retry", 0);
                 }).finally(() => {
                     //this.toaster.clear();
-                    this.regulationCheckComplete = true;
-                     
-
+                    this.regulationCheckComplete = true;                   
             });
-        }
-
-        
+        }        
         //Helper Methods
-        //-+-+-+-+-+-+-+-+-+-+-+-      
+        //-+-+-+-+-+-+-+-+-+-+-+- 
+        private reconfigureWatershedResponse(watershedResponse: Array<any>): Array<GeoJSON.Feature>
+        {
+            var featureArray: Array<GeoJSON.Feature> =[];
+            watershedResponse.forEach(fc => {
+                for (var i =0;i<fc.feature.features.length;i++)
+                {
+                    var feature: GeoJSON.Feature = {
+                        type: "Feature",
+                        geometry: fc.feature.features[i].geometry,
+                        id: fc.feature.features.length > 1 ? fc.name + "_" + fc.feature.features[i].properties["Name"].toLowerCase() : fc.name.toLowerCase(),
+                        properties: fc.feature.features[i].properties
+                    }; 
+                    featureArray.push(feature);
+                }//next i
+            });    
+            return featureArray;
+        }
         private loadParameterResults(results: Array<WiM.Models.IParameter>) {
 
             //this.toaster.pop('wait', "Loading Basin Characteristics", "Please wait...", 0);
@@ -845,7 +864,6 @@ module StreamStats.Services {
             });
             //console.log('params', this.studyAreaParameterList);
         }
-
         private loadRegulatedParameterResults(regulatedResults: Array<Models.IRegulationParameter>) {
 
             this.toaster.pop('wait', "Loading Regulated Basin Characteristics", "Please wait...");
@@ -908,7 +926,7 @@ module StreamStats.Services {
         //-+-+-+-+-+-+-+-+-+-+-+- 
         private onStudyAreaChanged(sender: any, e: StudyAreaEventArgs) {
             //console.log('in onStudyAreaChanged');
-            if (!this.selectedStudyArea || !this.selectedStudyArea.Features || this.regressionRegionQueryComplete) return;
+            if (!this.selectedStudyArea || !this.selectedStudyArea.FeatureCollection || this.regressionRegionQueryComplete) return;
             //this.queryRegressionRegions();
         }
 

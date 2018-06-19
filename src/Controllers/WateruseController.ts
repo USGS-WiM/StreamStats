@@ -112,8 +112,9 @@ module StreamStats.Controllers {
             var headers = {
                 "Content-Type": "application/json"
             };
-            var url = configuration.queryparams['Wateruse'].format(this.StartYear, this.EndYear,this.includePermits,this.includeReturns,this.computeDomesticWU);
-            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, false, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(this.StudyArea.Features[1].feature.features[0].geometry));
+            var url = configuration.queryparams['Wateruse'].format(this.StartYear, this.EndYear, this.includePermits, this.includeReturns, this.computeDomesticWU);
+            var studyAreaGeom = this.StudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).toLowerCase() == "globalwatershed" })[0].geometry;
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, false, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(studyAreaGeom));
 
             this.Execute(request).then(
                 (response: any) => {  
@@ -400,7 +401,8 @@ module StreamStats.Controllers {
                 "Authorization": "Basic dGVzdE1hbmFnZXI6RG9nMQ=="
             };
             var url = configuration.queryparams['WateruseSourceCSV'].format(this.StartYear, this.EndYear, this.includePermits, this.includeReturns, this.computeDomesticWU);
-            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, false, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(this.StudyArea.Features[1].feature.features[0].geometry),headers);
+            var studyAreaGeom = this.StudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).toLowerCase() == "globalwatershed" })[0].geometry;
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, false, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(studyAreaGeom),headers);
 
             this.Execute(request).then(
                 (response: any) => {
