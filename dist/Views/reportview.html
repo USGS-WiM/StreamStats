@@ -89,6 +89,8 @@
                         <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isEdited">This watershed has been edited, computed flows may not apply.</div>
                         <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isInExclusionArea">{{vm.studyAreaService.selectedStudyArea.Disclaimers.isInExclusionArea}}</div>
                         <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.hasKarst">{{vm.studyAreaService.selectedStudyArea.Disclaimers.hasKarst}}</div>
+                        <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isSTL_MO">The resulting delineations are derived from digital elevation data and storm drain vectors that have been processed to enforce drainage through storm drains.</div>
+                        <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isSTL_MO && vm.nssService.selectedStatisticsGroupList.length > 0">Urban regression equations for peak flows were not developed using streamgages which incorporate storm drain delineations and therefore should be used with caution.</div>
                     </div>
 
                     <!--Parameter Table for Flow Report-->

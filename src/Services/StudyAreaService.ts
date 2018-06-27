@@ -207,7 +207,7 @@ module StreamStats.Services {
                     //hack for st louis stormdrain
                     if (this.selectedStudyArea.RegionID == 'MO_STL') {
                         if (response.data.layers && response.data.layers.features && response.data.layers.features[1].geometry.coordinates.length > 0) {
-
+                            this.selectedStudyArea.Disclaimers['isSTL_MO'] = true;
                             //this.selectedStudyArea.Server = response.headers()['x-usgswim-hostname'].toLowerCase();
                             var fc: GeoJSON.FeatureCollection = response.data.hasOwnProperty("layers") ? response.data["layers"] : null;
                             if (fc) fc.features.forEach(f => f.id = f.id.toString().toLowerCase());
