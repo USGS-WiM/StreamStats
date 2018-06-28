@@ -63,15 +63,8 @@ var StreamStats;
                 },
                 set: function (val) {
                     this._selectedPrecip = val;
-                    //if (this._selectedPrecip.value == null) {
-                    //    this.PIntensity = null;
-                    //    //this._pIntensity = null;
-                    //} else {
-                    //    var dur = parseInt(this.SelectedPrecip.name.substr(0, 2));
-                    //    this.PIntensity = (this.SelectedPrecip.value / dur).toUSGSvalue();
-                    //    //this._pIntensity = (this.SelectedPrecip.value / dur).toUSGSvalue();
-                    //}
-                    console.log(this._selectedPrecip.code);
+                    this.PIntensity = null;
+                    //console.log(this._selectedPrecip.code);
                 },
                 enumerable: true,
                 configurable: true
@@ -154,6 +147,17 @@ var StreamStats;
                     this.hideAlerts = false;
                     return false;
                 }
+            };
+            StormRunoffController.prototype.ClearResults = function () {
+                for (var i in this.studyAreaService.studyAreaParameterList) {
+                    this.studyAreaService.studyAreaParameterList[i].value = null;
+                    //this.SelectedParameterList[i].value = null;
+                }
+                this.SelectedPrecip = this.PrecipOptions[0];
+                this.SelectedPrecip.value = null;
+                this.DrnAreaAcres = null;
+                this.PIntensity = null;
+                this.showResults = false;
             };
             StormRunoffController.prototype.CalculateParameters = function () {
                 try {
