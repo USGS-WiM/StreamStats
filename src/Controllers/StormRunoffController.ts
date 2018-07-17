@@ -80,34 +80,13 @@ module StreamStats.Controllers {
 
         public set SelectedPrecip(val: Services.IParameter) {
             this._selectedPrecip = val;
-            //if (this._selectedPrecip.value == null) {
-            //    this.PIntensity = null;
-            //    //this._pIntensity = null;
-            //} else {
-            //    var dur = parseInt(this.SelectedPrecip.name.substr(0, 2));
-            //    this.PIntensity = (this.SelectedPrecip.value / dur).toUSGSvalue();
-            //    //this._pIntensity = (this.SelectedPrecip.value / dur).toUSGSvalue();
-            //}
-            console.log(this._selectedPrecip.code);
+            this.PIntensity = null;
+            //console.log(this._selectedPrecip.code);
         }
 
         public SelectedParameterList: Array<Services.IParameter> = [];
 
         public PIntensity?: number;
-        //private _pIntensity: number;
-
-        //public get PIntensity(): number {
-        //    return this._pIntensity;
-        //}
-
-        //public set PIntensity(val: number) {
-        //    if (this._selectedPrecip.value) {
-        //        var dur = parseInt(this.SelectedPrecip.name.substr(0, 2));
-        //        this._pIntensity = (this.SelectedPrecip.value / dur).toUSGSvalue();
-        //    } else {
-        //        this._pIntensity = val;
-        //    }
-        //}
    
         public DrnAreaAcres: number;
 
@@ -232,6 +211,20 @@ module StreamStats.Controllers {
                 this.hideAlerts = false;
                 return false;
             }
+        }
+
+        public ClearResults()
+        {
+            for (var i in this.studyAreaService.studyAreaParameterList) {
+                this.studyAreaService.studyAreaParameterList[i].value = null;
+                //this.SelectedParameterList[i].value = null;
+            }
+            this.SelectedPrecip = this.PrecipOptions[0];
+            this.SelectedPrecip.value = null;
+            this.DrnAreaAcres = null;
+            this.PIntensity = null;
+
+            this.showResults = false;
         }
 
         public CalculateParameters()
