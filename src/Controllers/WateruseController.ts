@@ -492,6 +492,13 @@ module StreamStats.Controllers {
                                 this.$timeout(() => {
                                     this.loadGraphLabels(0);
                                 }, 500);
+                            },
+                            resize: () => {
+                                console.log("resize");
+                                //must wrap in timer or method executes prematurely
+                                this.$timeout(() => {
+                                    this.loadGraphLabels(0);
+                                }, 500);
                             }
                         },
                         showValues: true,
@@ -519,7 +526,7 @@ module StreamStats.Controllers {
                         type: 'multiBarHorizontalChart',
                         height: 450,
                         visible: true,
-                        stacked: false,
+                        stacked: true,
                         showControls: false,
                         margin: {
                             top: 20,
@@ -573,7 +580,12 @@ module StreamStats.Controllers {
                     }
                 };
                
-                    });
+                });
+            $(window).resize(() => {
+                this.$timeout(() => {
+                    this.loadGraphLabels(0);
+                }, 500); 
+            });
         }
         private getMonth(index: number): string {
             switch (index) {
@@ -616,23 +628,46 @@ module StreamStats.Controllers {
             return wtype.toUpperCase();
         }  
         private loadGraphLabels(id): void {
-            var svg = d3.selectAll("g.nv-multibarHorizontal");
-            var lastBarID = svg.selectAll("g.nv-group").map((items: Array<any>) => { return items.length; });
-            var lastBars = svg.selectAll("g.nv-group").filter(
+            var svg = d3.selectAll('.nv-multibarHorizontal .nv-group')
+            // subtract 2 in order to account for returns
+            var lastBarID = svg.map((items: Array<any>) => { return items.length-2; });
+            var lastBars = svg.filter(
                 function (d, i) {
-                    return i == lastBarID[id] - 1;
-                }).selectAll("g.positive");
-
-            var groupLabels = svg.select("g.nv-barsWrap")
-            lastBars.each(
-                function (d, index) {
-                    var recWidth = d3.select(this).selectAll("rect")[0][0].attributes.width.value;
-                    var text = d3.select(this).selectAll("text");
-                    text.text(d3.format(',.3f')((Number(d.y)+Number(d.y0)).toFixed(3)));
-                    text.attr("x", recWidth);
-                    text.attr("dy", "1.32em");
-                    text.attr("text-anchor","start");
+                    return i == lastBarID[0];
                 });
+
+            svg.each(function (group, i) {
+            var g = d3.select(this);
+            // Remove previous labels if there is any
+            g.selectAll('text').remove();                
+            g.selectAll('.nv-bar').each(function (bar) {
+                var b = d3.select(this);
+                var barWidth = b.node().getBBox()['width'];
+                var barHeight = b.node().getBBox()['height'];                   
+
+                g.append('text')
+                    // Transforms shift the origin point then the x and y of the bar
+                    // is altered by this transform. In order to align the labels
+                    // we need to apply this transform to those.
+                    .attr('transform', b.attr('transform'))
+                    .text(function () {
+                        // Two decimals format
+                        if(i >= lastBarID[0])
+                            return d3.format(',.3f')((Number(bar.y) + Number(bar.y0)).toFixed(3));
+                    })
+                    .attr("dy", "1.5em")
+                    //.attr('y', function () {
+                    //    // Center label vertically
+                    //    var height = b.node().getBBox().height;
+                    //    return parseFloat(b.attr('y')) - 10; // 10 is the label's margin from the bar
+                    //})
+                    .attr('x', function () {
+                        var width = this.getBBox().width;
+                        return barWidth - width/2;
+                    })
+                    .attr('class', 'bar-values');
+            });
+        });
             
         }  
         private generateColorShade(minhue: number, maxhue:number):string {
