@@ -16,30 +16,32 @@
             <div class="group-wrapper">
 
                 <div>General</div>
-                <button ng-disabled="vm.studyArea.doDelineateFlag || ( vm.selectedExplorationTool && vm.selectedExplorationTool !=  navigationResource.code)" ng-class="!vm.explorationService.drawMeasurement ? 'btn-exploration-tools btn-blue fullwidth':'btn-orange fullwidth'" ng-click="vm.resetExplorationTools(); vm.explorationService.drawMeasurement = !vm.explorationService.drawMeasurement; vm.selectedExplorationTool = 'measurement'"><span><i class="fa fa-arrows-h"></i>&nbsp;&nbsp;Measure Tool</span></button>
+                <button ng-disabled="vm.studyArea.doDelineateFlag || ( vm.selectedExplorationTool && vm.selectedExplorationTool !=  navigationResource.code)|| vm.ProsperIsActive" ng-class="!vm.explorationService.drawMeasurement ? 'btn-exploration-tools btn-blue fullwidth':'btn-orange fullwidth'" ng-click="vm.resetExplorationTools(); vm.explorationService.drawMeasurement = !vm.explorationService.drawMeasurement; vm.selectedExplorationTool = 'measurement'"><span><i class="fa fa-arrows-h"></i>&nbsp;&nbsp;Measure Tool</span></button>
                 <div id="measurement-div" class="banner" ng-show="vm.explorationService.measurementData.length > 0" ng-bind="vm.explorationService.measurementData"></div>
-                <button ng-disabled="vm.studyArea.doDelineateFlag || ( vm.selectedExplorationTool && vm.selectedExplorationTool !=  navigationResource.code)" ng-class="!vm.explorationService.drawElevationProfile ? 'btn-exploration-tools btn-blue fullwidth':'btn-orange fullwidth'" ng-click="vm.resetExplorationTools(); vm.explorationService.drawElevationProfile = !vm.explorationService.drawElevationProfile; vm.selectedExplorationTool = 'elevation'"><span><i class="fa fa-line-chart"></i>&nbsp;&nbsp;Elevation Profile Tool</span></button>
+                <button ng-disabled="vm.studyArea.doDelineateFlag || ( vm.selectedExplorationTool && vm.selectedExplorationTool !=  navigationResource.code)|| vm.ProsperIsActive" ng-class="!vm.explorationService.drawElevationProfile ? 'btn-exploration-tools btn-blue fullwidth':'btn-orange fullwidth'" ng-click="vm.resetExplorationTools(); vm.explorationService.drawElevationProfile = !vm.explorationService.drawElevationProfile; vm.selectedExplorationTool = 'elevation'"><span><i class="fa fa-line-chart"></i>&nbsp;&nbsp;Elevation Profile Tool</span></button>
                 <div id="elevation-help-div" class="banner" ng-show="vm.explorationService.drawElevationProfile">Click the map to begin<br>Double click to end the drawing and query elevation</div>
-                <button ng-disabled="vm.studyArea.doDelineateFlag || ( vm.selectedExplorationTool && vm.selectedExplorationTool !=  navigationResource.code)" class="btn-blue fullwidth" ng-click="vm.resetExplorationTools(); vm.showLocation() ; vm.selectedExplorationTool = 'location'"><span><i class="fa fa-crosshairs"></i>&nbsp;&nbsp;Show your location</span></button>
+                <button ng-disabled="vm.studyArea.doDelineateFlag || ( vm.selectedExplorationTool && vm.selectedExplorationTool !=  navigationResource.code)|| vm.ProsperIsActive" class="btn-blue fullwidth" ng-click="vm.resetExplorationTools(); vm.showLocation() ; vm.selectedExplorationTool = 'location'"><span><i class="fa fa-crosshairs"></i>&nbsp;&nbsp;Show your location</span></button>
 
                 <div>Network Navigation</div>
                 <div>
 
                     <div ng-repeat="navigationResource in vm.explorationService.navigationResources" ng-switch on="navigationResource.code">
-                        <button ng-disabled="vm.explorationService.explorationMethodBusy || vm.studyArea.doDelineateFlag || ( vm.selectedExplorationTool && vm.selectedExplorationTool !=  navigationResource.code)" ng-class="vm.selectedExplorationMethodType !== navigationResource.id ? 'btn-exploration-tools btn-blue fullwidth':'btn-orange fullwidth'" ng-click="vm.setExplorationMethodType(navigationResource.id); vm.selectedExplorationTool = navigationResource.code"><span><i class="fa fa-tint" ng-switch-when='flowpath'></i><i class="fa fa-share-alt" ng-switch-when='networkpath'></i><i class="fa fa-sitemap fa-rotate-90" ng-switch-when='networktrace'></i>&nbsp;&nbsp;{{navigationResource.name}}</span></button>
+                        <button ng-disabled="vm.explorationService.explorationMethodBusy || vm.studyArea.doDelineateFlag || ( vm.selectedExplorationTool && vm.selectedExplorationTool !=  navigationResource.code) || vm.ProsperIsActive" ng-class="vm.selectedExplorationMethodType !== navigationResource.id ? 'btn-exploration-tools btn-blue fullwidth':'btn-orange fullwidth'" ng-click="vm.setExplorationMethodType(navigationResource.id); vm.selectedExplorationTool = navigationResource.code"><span><i class="fa fa-tint" ng-switch-when='flowpath'></i><i class="fa fa-share-alt" ng-switch-when='networkpath'></i><i class="fa fa-sitemap fa-rotate-90" ng-switch-when='networktrace'></i>&nbsp;&nbsp;{{navigationResource.name}}</span></button>
                         <!--<div ng-show="vm.selectedExplorationMethodType === navigationResource.id" class="wim-alert row" style="margin:0;">
 
-                            <div ng-show="vm.studyArea.selectedStudyArea.Pourpoint">
-                                <button class="btn-exploration-tools btn-green" ng-click="vm.addExplorationPointFromPourpoint(vm.studyArea.selectedStudyArea.Pourpoint.Latitude, vm.studyArea.selectedStudyArea.Pourpoint.Longitude, vm.studyArea.selectedStudyArea.Pourpoint.crs)"><span><i class="fa fa-map-marker"></i>&nbsp;&nbsp;Use pourpoint</span></button>
-                                <span>OR</span>
-                            </div>
-                            
-                            <span ng-show="vm.explorationService.selectedMethod.navigationPointCount === 0">Click Start Point Location</span>
-                            <span ng-show="vm.explorationService.selectedMethod.navigationPointCount === 1 && vm.explorationService.selectedMethod.minLocations === 2">Click End Point Location</span>
+                <div ng-show="vm.studyArea.selectedStudyArea.Pourpoint">
+                    <button class="btn-exploration-tools btn-green" ng-click="vm.addExplorationPointFromPourpoint(vm.studyArea.selectedStudyArea.Pourpoint.Latitude, vm.studyArea.selectedStudyArea.Pourpoint.Longitude, vm.studyArea.selectedStudyArea.Pourpoint.crs)"><span><i class="fa fa-map-marker"></i>&nbsp;&nbsp;Use pourpoint</span></button>
+                    <span>OR</span>
+                </div>
 
-                        </div>-->
+                <span ng-show="vm.explorationService.selectedMethod.navigationPointCount === 0">Click Start Point Location</span>
+                <span ng-show="vm.explorationService.selectedMethod.navigationPointCount === 1 && vm.explorationService.selectedMethod.minLocations === 2">Click End Point Location</span>
+
+            </div>-->
                     </div>
-                </div>         
+                </div>
+                <div>Other</div>
+                <button ng-disabled="vm.explorationService.explorationMethodBusy || vm.studyArea.doDelineateFlag || ( vm.selectedExplorationTool && vm.selectedExplorationTool !=  navigationResource.code)|| vm.ProsperIsActive" ng-class="vm.ProsperIsActive ? 'btn-orange fullwidth':'btn-exploration-tools btn-blue fullwidth'" ng-click="vm.ActivateProsper()"><span><i class="fa fa-project-diagram fa-rotate-180"></i>&nbsp;&nbsp;PROSPER Tool</span></button>
             </div>
         </div>
     </div>

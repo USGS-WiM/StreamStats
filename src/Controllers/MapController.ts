@@ -169,6 +169,11 @@ module StreamStats.Controllers {
         public set selectedExplorationMethodType(val: Services.ExplorationMethodType) {  
             this.explorationService.setMethod(val, {});
         }
+
+        private _prosperIsActive: boolean = false;
+        public get ProsperIsActive(): boolean {
+            return this._prosperIsActive;
+        }
         //public explorationMethodBusy: boolean = false;
         private environment: string;
         public explorationToolsExpanded: boolean = false;
@@ -379,7 +384,21 @@ module StreamStats.Controllers {
 
             this.explorationService.ExecuteSelectedModel();
         }
-        
+
+        public ActivateProsper(): void {
+            this._prosperIsActive = true;
+            //add prosper maplayers
+
+            this.layers.overlays["prosper"] = new Layer("ProsperLayer", configuration.baseurls['ScienceBase'] + configuration.queryparams['ProsperPredictions'],
+                "agsDynamic", true, {
+                    "opacity": 1,
+                    "layers": [0],
+                    "format": "png8",
+                    "f": "image"
+                });
+            this.modal.openModal(Services.SSModalType.e_prosper);
+
+        }
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         private init(): void { 

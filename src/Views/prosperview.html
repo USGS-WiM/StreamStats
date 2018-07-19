@@ -1,0 +1,28 @@
+﻿    <!-- Modal -->
+<div id="print-content"> 
+    <div class="modal-header">
+        <div class="visible-print identifier">
+            <img src="images/usgs-logo-black.png" alt="USGS Identifier" title="USGS Science for a Changing World" />
+        </div>
+        <button type="button" class="close hidden-print" ng-click="vm.Close()"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">PRObability of Streamflow PERmanence</h4>
+    </div>
+    <div class="modal-body">
+         <div>
+            <div class="form-group">
+ 
+            </div>
+        </div>
+
+    </div>
+
+    <div class="modal-footer hidden-print">
+        <div class="btn-group">
+            <button ng-if="vm.showResults && vm.SelectedTab == 1" type="button" class="btn-black" ng-click="vm.downloadCSV()"><span><i class="fa fa-download"></i>&nbsp;&nbsp;Download CSV</span></button>
+            <!--<button class="btn-wim-default" ng-click="vm.Reset()"><i class="fa fa-reset"></i>&nbsp;&nbsp;Reset</button>-->
+            <button ng-if="vm.showResults" class="btn-blue" ng-click="vm.print()" analytics-on analytics-event="Print" analytics-category="Report" analytics-label="Print"><i class="fa fa-print"></i>&nbsp;&nbsp;Print</button>
+            <button class="btn-wim-default" ng-click="vm.Close()"><i class="fa fa-close"></i>&nbsp;&nbsp;Close</button>
+        </div>
+    </div>
+
+</div>

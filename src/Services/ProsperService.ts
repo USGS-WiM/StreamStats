@@ -116,12 +116,6 @@ module StreamStats.Services {
         }
 
     }//end class
-    export enum ExplorationMethodType {
-        undefined = 0,
-        FLOWPATH = 1,
-        NETWORKPATH = 2,
-        NETWORKTRACE = 3
-    }
     factory.$inject = ['$http', '$q', 'toaster', 'WiM.Event.EventManager'];
     function factory($http: ng.IHttpService, $q: ng.IQService, toaster: any,eventmngr) {
         return new ProsperService($http, $q, toaster,eventmngr)
