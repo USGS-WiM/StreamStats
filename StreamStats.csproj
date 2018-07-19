@@ -83,6 +83,7 @@
     <Content Include="src\Views\navreportmodal.html" />
     <Content Include="src\Views\reportview.html" />
     <Content Include="src\Views\sidebarview.html" />
+    <Content Include="src\Views\prosperview.html" />
     <Content Include="src\Views\stormrunoff.html" />
     <Content Include="src\Views\wateruse.html" />
     <Content Include="web.config" />
