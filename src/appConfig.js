@@ -9,7 +9,8 @@ configuration.baseurls =
     'StreamStatsMapServices': 'https://testgis.streamstats.usgs.gov',
     'NSS': 'https://test.streamstats.usgs.gov/nssservices',
     'WaterUseServices': 'https://test.streamstats.usgs.gov/wateruseservices',
-    'StormRunoffServices': 'https://test.streamstats.usgs.gov/runoffmodelingservices'
+    'StormRunoffServices': 'https://test.streamstats.usgs.gov/runoffmodelingservices',
+    'ScienceBase': 'https://gis.usgs.gov/sciencebase2'
  
 }
 
@@ -52,7 +53,8 @@ configuration.queryparams =
     'WateruseConfig': '/regions/{0}/config',
     'coordinatedReachQueryService': '/arcgis/rest/services/coordinatedreaches/{0}/MapServer/0/query?geometry={1},{2},{3},{4}&geometryType=esriGeometryEnvelope&inSR={5}&spatialRel=esriSpatialRelIntersects&outFields={6}&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
     'StormRunoffTR55': '/TR55/GetResult?area={0}&precip={1}&crvnum={2}&pdur={3}',
-    'StormRunoffRationalMethod': '/RationalMethod?area={0}&precipint={1}&rcoeff={2}&pdur={3}'
+    'StormRunoffRationalMethod': '/RationalMethod?area={0}&precipint={1}&rcoeff={2}&pdur={3}',
+    'ProsperPredictions':'/rest/services/Catalog/5b416046e4b060350a125fe4/MapServer'
 }
 
 configuration.SupportTicketService = {
