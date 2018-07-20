@@ -76,6 +76,7 @@ var StreamStats;
                 this.events = null;
                 this.layercontrol = null;
                 this.regionLayer = null;
+                this._prosperIsActive = false;
                 this.explorationToolsExpanded = false;
                 $scope.vm = this;
                 this.toaster = toaster;
@@ -238,6 +239,13 @@ var StreamStats;
                 enumerable: true,
                 configurable: true
             });
+            Object.defineProperty(MapController.prototype, "ProsperIsActive", {
+                get: function () {
+                    return this._prosperIsActive;
+                },
+                enumerable: true,
+                configurable: true
+            });
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             MapController.prototype.setExplorationMethodType = function (val) {
@@ -255,6 +263,25 @@ var StreamStats;
                 var isOK = false;
                 this.explorationService.explorationMethodBusy = true;
                 this.explorationService.ExecuteSelectedModel();
+            };
+            MapController.prototype.ToggleProsper = function () {
+                if (this._prosperIsActive) {
+                    this._prosperIsActive = false;
+                    this.removeOverlayLayers("prosper");
+                }
+                else {
+                    this._prosperIsActive = true;
+                    //add prosper maplayers
+                    this.layers.overlays["prosper"] = new Layer("ProsperLayer", configuration.baseurls['ScienceBase'] + configuration.queryparams['ProsperPredictions'], "agsDynamic", true, {
+                        "opacity": 1,
+                        "layers": [0],
+                        "format": "png8",
+                        "f": "image"
+                    });
+                } //end if
+            };
+            MapController.prototype.ConfigureProsper = function () {
+                this.modal.openModal(StreamStats.Services.SSModalType.e_prosper);
             };
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+-

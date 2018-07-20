@@ -385,19 +385,25 @@ module StreamStats.Controllers {
             this.explorationService.ExecuteSelectedModel();
         }
 
-        public ActivateProsper(): void {
-            this._prosperIsActive = true;
-            //add prosper maplayers
-
-            this.layers.overlays["prosper"] = new Layer("ProsperLayer", configuration.baseurls['ScienceBase'] + configuration.queryparams['ProsperPredictions'],
-                "agsDynamic", true, {
-                    "opacity": 1,
-                    "layers": [0],
-                    "format": "png8",
-                    "f": "image"
-                });
+        public ToggleProsper(): void {
+            if (this._prosperIsActive) {
+                this._prosperIsActive = false;
+                this.removeOverlayLayers("prosper")
+            }
+            else {
+                this._prosperIsActive = true;
+                //add prosper maplayers
+                this.layers.overlays["prosper"] = new Layer("ProsperLayer", configuration.baseurls['ScienceBase'] + configuration.queryparams['ProsperPredictions'],
+                    "agsDynamic", true, {
+                        "opacity": 1,
+                        "layers": [0],
+                        "format": "png8",
+                        "f": "image"
+                    });
+            }//end if
+        }
+        public ConfigureProsper(): void {
             this.modal.openModal(Services.SSModalType.e_prosper);
-
         }
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
