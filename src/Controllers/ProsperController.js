@@ -23,12 +23,19 @@ var StreamStats;
             function ProsperController($scope, modal, pservices) {
                 $scope.vm = this;
                 this.modalInstance = modal;
+                this._prosperServices = pservices;
                 this.init();
-                this.prosperServices = pservices;
             }
             Object.defineProperty(ProsperController.prototype, "description", {
                 get: function () {
                     return "The U.S. Geological Survey (USGS) has developed the PRObability of Streamflow PERmanence (PROSPER) model, a GIS raster-based empirical model that provides streamflow permanence probabilities (probabilistic predictions) of a stream channel having year-round flow for any unregulated and minimally-impaired stream channel in the Pacific Northwest region, U.S. The model provides annual predictions for 2004-2016 at a 30-m spatial resolution based on monthly or annually updated values of climatic conditions and static physiographic variables associated with the upstream basin (Raw streamflow permanence probability rasters). Predictions correspond to pixels on the channel network consistent with the medium resolution National Hydrography Dataset channel network stream grid. Probabilities were converted to wet and dry streamflow permanence classes (Categorical wet/dry rasters) with an associated confidence (Threshold and confidence interval rasters).";
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(ProsperController.prototype, "availablePredictions", {
+                get: function () {
+                    return this._prosperServices.availablePredictions;
                 },
                 enumerable: true,
                 configurable: true
@@ -49,6 +56,7 @@ var StreamStats;
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             ProsperController.prototype.init = function () {
+                this.PredictionLayerToDisplay = this.availablePredictions[0];
             };
             return ProsperController;
         }()); //end Controller class

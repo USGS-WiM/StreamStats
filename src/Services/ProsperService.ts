@@ -25,13 +25,13 @@
 module StreamStats.Services {
     'use strict'
     export interface IProsperService {
-        availablePredictions: Array<IProsperPredictions>
-        selectedPredictions: Array<IProsperPredictions>
+        availablePredictions: Array<IProsperPrediction>
+        selectedPredictions: Array<IProsperPrediction>
 
         ResetSelectedPredictions(): void 
         GetPredictionValues(): void
     }
-    export interface IProsperPredictions {
+    export interface IProsperPrediction {
         id: number;
         name: string; 
         selected: boolean;
@@ -53,8 +53,8 @@ module StreamStats.Services {
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
         public toaster: any;
-        public availablePredictions:Array<IProsperPredictions>
-        public get selectedPredictions(): Array<IProsperPredictions> {
+        public availablePredictions:Array<IProsperPrediction>
+        public get selectedPredictions(): Array<IProsperPrediction> {
             return this.availablePredictions.filter(f => { return f.selected; });
         }
 
@@ -79,7 +79,8 @@ module StreamStats.Services {
         }
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
-        private init():void {
+        private init(): void {
+            this.availablePredictions = [];
             this.loadAvailablePredictions();
 
         }
@@ -98,10 +99,12 @@ module StreamStats.Services {
                         this.toaster.pop('error', "There was an error querying prosper predictions", response.data.error.message, 0);
                         return;
                     }
+                    this.availablePredictions.length = 0;
                     var layers: Array<any> = response.data.layers;
                     if (layers.length > 0) {
-                        this.availablePredictions = layers.map(l => { return { id: l.layerId, name: l.layerName.replace(/\.[^/.]+$/, ""), selected:false} })
-                        this.toaster.pop('success', "Selected reach is a coordinated reach", "Please continue", 5000);
+                        layers.map(l => { return { id: l.layerId, name: l.layerName.replace(/\.[^/.]+$/, ""), selected: false } }).forEach(p =>
+                            this.availablePredictions.push(p));
+                        
                     }
 
                 }, (error) => {
@@ -112,6 +115,9 @@ module StreamStats.Services {
 
             } catch (e) {
                 console.log("There was an error requesting available prosper predictions." + e)
+            }
+            finally {
+                this.toaster.clear();
             }
         }
 

@@ -5,15 +5,40 @@
             <img src="images/usgs-logo-black.png" alt="USGS Identifier" title="USGS Science for a Changing World" />
         </div>
         <button type="button" class="close hidden-print" ng-click="vm.Close()"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">PRObability of Streamflow PERmanence</h4>
+        <h4 class="modal-title">PRObability of Streamflow PERmanence (PROSPER)</h4>
     </div>
     <div class="modal-body">
-         <div>
-            <div class="form-group">
- 
+        <div class="row">
+            <div class="col-sm-6">
+                <h6>Project Description</h6>
+                <p>{{vm.description}}</p>
             </div>
-        </div>
 
+            <div class="col-sm-6">
+                <h6>Available Predictions</h6>
+                <table id="availablePredTable" class="table table-condensed">
+                    <thead class="table">
+                        <tr>
+                            <th>Include in query</th>
+                            <th>Layer to display</th>
+                            <th>Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="prediction in vm.availablePredictions">
+                            <td><checkbox style="border: 1px solid !important" large ng-model="prediction.selected"></checkbox></td>
+                            <td>
+                                <label class="rdo" for="predRadio{{$id}}" ng-click="vm.PredictionLayerToDisplay=prediction">
+                                    <input type="radio" id="predRadio{{$id}}" ng-checked="vm.PredictionLayerToDisplay.id === prediction.id" ng-value="prediction.id" />
+                                    <span></span>
+                                </label>
+                            </td>
+                            <td>{{prediction.name}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>   
     </div>
 
     <div class="modal-footer hidden-print">
@@ -22,6 +47,7 @@
             <!--<button class="btn-wim-default" ng-click="vm.Reset()"><i class="fa fa-reset"></i>&nbsp;&nbsp;Reset</button>-->
             <button ng-if="vm.showResults" class="btn-blue" ng-click="vm.print()" analytics-on analytics-event="Print" analytics-category="Report" analytics-label="Print"><i class="fa fa-print"></i>&nbsp;&nbsp;Print</button>
             <button class="btn-wim-default" ng-click="vm.Close()"><i class="fa fa-close"></i>&nbsp;&nbsp;Close</button>
+            <button ng-disabled="vm.selectedPredictions.length < 1" class="btn-wim-default" ng-click="vm.Query()"><i class="fa fa-question-circle"></i>&nbsp;&nbsp;Query Layers</button>
         </div>
     </div>
 
