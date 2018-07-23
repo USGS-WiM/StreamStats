@@ -74,6 +74,7 @@ var StreamStats;
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             ProsperService.prototype.init = function () {
+                this.availablePredictions = [];
                 this.loadAvailablePredictions();
             };
             ProsperService.prototype.loadAvailablePredictions = function () {
@@ -88,10 +89,12 @@ var StreamStats;
                             _this.toaster.pop('error', "There was an error querying prosper predictions", response.data.error.message, 0);
                             return;
                         }
+                        _this.availablePredictions.length = 0;
                         var layers = response.data.layers;
                         if (layers.length > 0) {
-                            _this.availablePredictions = layers.map(function (l) { return { id: l.layerId, name: l.layerName.replace(/\.[^/.]+$/, ""), selected: false }; });
-                            _this.toaster.pop('success', "Selected reach is a coordinated reach", "Please continue", 5000);
+                            layers.map(function (l) { return { id: l.layerId, name: l.layerName.replace(/\.[^/.]+$/, ""), selected: false }; }).forEach(function (p) {
+                                return _this.availablePredictions.push(p);
+                            });
                         }
                     }, function (error) {
                         //sm when complete
@@ -100,6 +103,9 @@ var StreamStats;
                 }
                 catch (e) {
                     console.log("There was an error requesting available prosper predictions." + e);
+                }
+                finally {
+                    this.toaster.clear();
                 }
             };
             return ProsperService;
