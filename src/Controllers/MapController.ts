@@ -256,11 +256,16 @@ module StreamStats.Controllers {
 
                 //console.log('test',this.explorationService.drawElevationProfile)
 
-                //listen for delineate click if ready
+                //listen for click
+                if (this._prosperServices.CanQuery) {
+                    this._prosperServices.GetPredictionValues(args.leafletEvent, this.bounds)
+                }
+
                 if (this.studyArea.doDelineateFlag) {
                     this.checkDelineatePoint(args.leafletEvent.latlng);
                     return;
                 }
+                
 
                 //check if in edit mode
                 if (this.studyArea.showEditToolbar) return;
@@ -329,6 +334,13 @@ module StreamStats.Controllers {
                 }
             });
 
+            $scope.$watch(() => this._prosperServices.DisplayedPrediction, (newval, oldval) => {
+                if (newval && this.ProsperIsActive) {   
+                    this.removeOverlayLayers("prosper",true)
+                    this.AddProsperLayer(newval.id);
+                }
+            });
+
 
             //$scope.$watch(() => this.explorationService.selectedMethod, (newval, oldval) => {
             //    if (newval) {
@@ -393,13 +405,7 @@ module StreamStats.Controllers {
             else {
                 this._prosperIsActive = true;
                 //add prosper maplayers
-                this.layers.overlays["prosper"] = new Layer("ProsperLayer", configuration.baseurls['ScienceBase'] + configuration.queryparams['ProsperPredictions'],
-                    "agsDynamic", true, {
-                        "opacity": 1,
-                        "layers": [0],
-                        "format": "png8",
-                        "f": "image"
-                    });
+                this.AddProsperLayer(this._prosperServices.DisplayedPrediction.id);
             }//end if
         }
         public ConfigureProsper(): void {
@@ -1182,7 +1188,15 @@ module StreamStats.Controllers {
             }
             
         }
-
+        private AddProsperLayer( id:number) {
+            this.layers.overlays["prosper"+id] = new Layer("Prosper Layer", configuration.baseurls['ScienceBase'] + configuration.queryparams['ProsperPredictions'],
+                "agsDynamic", true, {
+                    "opacity": 1,
+                    "layers": [id],
+                    "format": "png8",
+                    "f": "image"
+                });
+        }
         private removeGeoJson(layerName: string = "") {
             for (var k in this.geojson) {
                 if (typeof this.geojson[k] !== 'function') {

@@ -25,21 +25,26 @@
 module StreamStats.Services {
     'use strict'
     export interface IProsperService {
-        availablePredictions: Array<IProsperPrediction>
-        selectedPredictions: Array<IProsperPrediction>
+        CanQuery: boolean;
+        AvailablePredictions: Array<IProsperPrediction>
+        SelectedPredictions: Array<IProsperPrediction>
+        DisplayedPrediction: IProsperPrediction;
 
         ResetSelectedPredictions(): void 
-        GetPredictionValues(): void
+        GetPredictionValues(latlng:any, bounds:any): void
     }
     export interface IProsperPrediction {
         id: number;
         name: string; 
         selected: boolean;
     }
-    export var onSelectedMethodExecuteComplete: string = "onProsperPredictionValues";
+    export var onProsperLayerChanged: string = "onProsperLayerChanged";
 
     export class ProsperServiceEventArgs extends WiM.Event.EventArgs {
         //properties            
+        public layerID: number;
+        public name: string;
+        public value: number;
 
         constructor() {
             super();
@@ -52,15 +57,17 @@ module StreamStats.Services {
         
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
-        public toaster: any;
-        public availablePredictions:Array<IProsperPrediction>
-        public get selectedPredictions(): Array<IProsperPrediction> {
-            return this.availablePredictions.filter(f => { return f.selected; });
+        private toaster: any;
+        public AvailablePredictions:Array<IProsperPrediction>
+        public get SelectedPredictions(): Array<IProsperPrediction> {
+            return this.AvailablePredictions.filter(f => { return f.selected; });
         }
+        public DisplayedPrediction: IProsperPrediction;
+        public CanQuery: boolean;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        constructor($http: ng.IHttpService, private $q: ng.IQService, toaster, private eventManager: WiM.Event.IEventManager) {
+        constructor($http: ng.IHttpService, private $q: ng.IQService, toaster) {
             super($http, configuration.baseurls['ScienceBase'])
 
             this.toaster = toaster;
@@ -70,17 +77,52 @@ module StreamStats.Services {
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         public ResetSelectedPredictions():void {
-            if (this.availablePredictions.length < 1) return;
-            this.availablePredictions.forEach(ap => ap.selected = false);
+            if (this.AvailablePredictions.length < 1) return;
+            this.AvailablePredictions.forEach(ap => ap.selected = false);
 
         }
-        public GetPredictionValues(): void {
-            //do something and raise event when done
+        public GetPredictionValues(evnt: any, bounds: any): void {
+             this.toaster.pop('wait', "Querying prosper grids", "Please wait...", 0);
+
+            var ppt = this.getPointArray(evnt.latlng).join();
+            var imgdsplay = this.getDisplayImageArray(evnt.originalEvent.srcElement).join();
+            var extent = this.boundsToExtentArray(bounds).join();
+            var layers = this.SelectedPredictions.map(r => { return r.id }).join();
+            //imageDisplay={0}mapExtent={1}&geometry={2}&sr={3}
+            var url = configuration.queryparams['ProsperPredictions']+configuration.queryparams['ProsperIdentify']
+                .format(layers,imgdsplay,extent,ppt, 4326);
+
+            var request: WiM.Services.Helpers.RequestInfo =
+                new WiM.Services.Helpers.RequestInfo(url);
+
+            this.Execute(request).then(
+                (response: any) => {
+                    if (response.data.error) {
+                        //console.log('query error');
+                        this.toaster.pop('error', "There was an error querying prosper grids", response.data.error.message, 0);
+                        return;
+                    }
+
+                    if (response.data.results.length > 0) {
+
+                        var results = response.data.results.reduce((dict, r) => {
+                            dict[r.layerName.replace(/\.[^/.]+$/, "")] = r["attributes"]["Pixel Value"]; return dict;
+                        }, {})
+
+                        this.toaster.pop('success', "Selected reach is a coordinated reach", "Please continue", 5000);
+                    }
+
+                }, (error) => {
+                    //sm when complete
+                    //console.log('Regression query failed, HTTP Error');
+                    this.toaster.pop('error', "There was an error querying prosper grids", "Please retry", 0);
+                });
         }
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {
-            this.availablePredictions = [];
+            this.CanQuery = false;
+            this.AvailablePredictions = [];
             this.loadAvailablePredictions();
 
         }
@@ -99,12 +141,13 @@ module StreamStats.Services {
                         this.toaster.pop('error', "There was an error querying prosper predictions", response.data.error.message, 0);
                         return;
                     }
-                    this.availablePredictions.length = 0;
+                    this.AvailablePredictions.length = 0;
                     var layers: Array<any> = response.data.layers;
                     if (layers.length > 0) {
                         layers.map(l => { return { id: l.layerId, name: l.layerName.replace(/\.[^/.]+$/, ""), selected: false } }).forEach(p =>
-                            this.availablePredictions.push(p));
+                            this.AvailablePredictions.push(p));
                         
+                        this.DisplayedPrediction = this.AvailablePredictions[0];
                     }
 
                 }, (error) => {
@@ -120,11 +163,31 @@ module StreamStats.Services {
                 this.toaster.clear();
             }
         }
-
+        private boundsToExtentArray(bounds: any):Array<number> {
+            return [
+                bounds.southWest.lng,
+                bounds.southWest.lat,
+                bounds.northEast.lng,
+                bounds.northEast.lat
+            ];
+        }
+        private getDisplayImageArray(srcElem: any): Array<number> {
+            return [
+                srcElem.width,
+                srcElem.height,
+                96
+            ];
+        }
+        private getPointArray(latlng: any): Array<number> {
+            return [
+                latlng.lng,
+                latlng.lat
+            ];
+        }
     }//end class
-    factory.$inject = ['$http', '$q', 'toaster', 'WiM.Event.EventManager'];
-    function factory($http: ng.IHttpService, $q: ng.IQService, toaster: any,eventmngr) {
-        return new ProsperService($http, $q, toaster,eventmngr)
+    factory.$inject = ['$http', '$q', 'toaster'];
+    function factory($http: ng.IHttpService, $q: ng.IQService, toaster: any) {
+        return new ProsperService($http, $q, toaster)
     }
     angular.module('StreamStats.Services')
         .factory('StreamStats.Services.ProsperService', factory)

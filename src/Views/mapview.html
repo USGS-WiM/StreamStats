@@ -41,7 +41,7 @@
                     </div>
                 </div>
                 <div>Other</div>
-                <button ng-disabled="vm.explorationService.explorationMethodBusy || vm.studyArea.doDelineateFlag || ( vm.selectedExplorationTool && vm.selectedExplorationTool !=  navigationResource.code)|| vm.ProsperIsActive" ng-class="vm.ProsperIsActive ? 'btn-orange fullwidth':'btn-exploration-tools btn-blue fullwidth'" ng-click="vm.ToggleProsper()"><span><i class="fa fa-project-diagram fa-rotate-180"></i>&nbsp;&nbsp;PROSPER Tool</span></button>
+                <button ng-disabled="vm.explorationService.explorationMethodBusy || vm.studyArea.doDelineateFlag || ( vm.selectedExplorationTool && vm.selectedExplorationTool !=  navigationResource.code)" ng-class="vm.ProsperIsActive ? 'btn-orange fullwidth':'btn-exploration-tools btn-blue fullwidth'" ng-click="vm.ToggleProsper()"><span><i class="fa fa-project-diagram fa-rotate-180"></i>&nbsp;&nbsp;PROSPER Tool</span></button>
                 <a id="prosper-atag" ng-show="vm.ProsperIsActive" href ng-click="vm.ConfigureProsper()">Configure</a>
             </div>
         </div>
