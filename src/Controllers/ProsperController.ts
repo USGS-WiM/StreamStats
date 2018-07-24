@@ -27,25 +27,33 @@ module StreamStats.Controllers {
     }
 
     interface IProsperController {
+        Description: string;
+        AvailablePredictions: Array<Services.IProsperPrediction>
+        DisplayedPredictionLayer: Services.IProsperPrediction
+        SelectedPredictions: Array<Services.IProsperPrediction>
 
+        ChangeDisplayedLayer(value: Services.IProsperPrediction)
     }
 
     class ProsperController implements IProsperController {
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
         private modalInstance: ng.ui.bootstrap.IModalServiceInstance;    
-        public CanContiue: boolean;
         private _prosperServices: Services.IProsperService;
-        public get description():string {
+        public get Description():string {
             return "The U.S. Geological Survey (USGS) has developed the PRObability of Streamflow PERmanence (PROSPER) model, a GIS raster-based empirical model that provides streamflow permanence probabilities (probabilistic predictions) of a stream channel having year-round flow for any unregulated and minimally-impaired stream channel in the Pacific Northwest region, U.S. The model provides annual predictions for 2004-2016 at a 30-m spatial resolution based on monthly or annually updated values of climatic conditions and static physiographic variables associated with the upstream basin (Raw streamflow permanence probability rasters). Predictions correspond to pixels on the channel network consistent with the medium resolution National Hydrography Dataset channel network stream grid. Probabilities were converted to wet and dry streamflow permanence classes (Categorical wet/dry rasters) with an associated confidence (Threshold and confidence interval rasters)."
         }
-        public get availablePredictions(): Array<Services.IProsperPrediction> {
-            return this._prosperServices.availablePredictions;
+        public get AvailablePredictions(): Array<Services.IProsperPrediction> {
+            return this._prosperServices.AvailablePredictions;
         }
-        public PredictionLayerToDisplay: Services.IProsperPrediction;   
-        public get selectedPredictions(): Array<Services.IProsperPrediction>
+        
+        public get DisplayedPredictionLayer(): Services.IProsperPrediction
         {
-            return this._prosperServices.selectedPredictions;
+            return this._prosperServices.DisplayedPrediction;
+        }
+        public get SelectedPredictions(): Array<Services.IProsperPrediction>
+        {
+            return this._prosperServices.SelectedPredictions;
         }
       //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -73,11 +81,24 @@ module StreamStats.Controllers {
             
         }
 
+        public Query(): void {
+            this._prosperServices.CanQuery = true;
+            this.modalInstance.dismiss();
+
+        }
+        public ChangeDisplayedLayer(value: Services.IProsperPrediction)
+        {
+            if (this.DisplayedPredictionLayer == value) return;
+            this._prosperServices.DisplayedPrediction = value;
+            //raise event
+
+
+
+        }
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {
-            this.PredictionLayerToDisplay = this.availablePredictions[0];
-            
+                      
         }
         
     }//end Controller class

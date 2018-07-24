@@ -11,7 +11,7 @@
         <div class="row">
             <div class="col-sm-6">
                 <h6>Project Description</h6>
-                <p>{{vm.description}}</p>
+                <p>{{vm.Description}}</p>
             </div>
 
             <div class="col-sm-6">
@@ -20,16 +20,16 @@
                     <thead class="table">
                         <tr>
                             <th>Include in query</th>
-                            <th>Layer to display</th>
+                            <th>Displayed layer</th>
                             <th>Name</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr ng-repeat="prediction in vm.availablePredictions">
+                        <tr ng-repeat="prediction in vm.AvailablePredictions">
                             <td><checkbox style="border: 1px solid !important" large ng-model="prediction.selected"></checkbox></td>
                             <td>
-                                <label class="rdo" for="predRadio{{$id}}" ng-click="vm.PredictionLayerToDisplay=prediction">
-                                    <input type="radio" id="predRadio{{$id}}" ng-checked="vm.PredictionLayerToDisplay.id === prediction.id" ng-value="prediction.id" />
+                                <label class="rdo" for="predRadio{{$id}}" ng-click="vm.ChangeDisplayedLayer(prediction)">
+                                    <input type="radio" id="predRadio{{$id}}" ng-checked="vm.DisplayedPredictionLayer.id === prediction.id" ng-value="prediction.id" />
                                     <span></span>
                                 </label>
                             </td>

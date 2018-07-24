@@ -139,7 +139,10 @@ var StreamStats;
                 });
                 $scope.$on('leafletDirectiveMap.mainMap.click', function (event, args) {
                     //console.log('test',this.explorationService.drawElevationProfile)
-                    //listen for delineate click if ready
+                    //listen for click
+                    if (_this._prosperServices.CanQuery) {
+                        _this._prosperServices.GetPredictionValues(args.leafletEvent, _this.bounds);
+                    }
                     if (_this.studyArea.doDelineateFlag) {
                         _this.checkDelineatePoint(args.leafletEvent.latlng);
                         return;
@@ -201,6 +204,12 @@ var StreamStats;
                     if (newval) {
                         //console.log('in regionMapLayerListLoaded watch: ', this.regionServices.selectedRegion);
                         _this.addRegionOverlayLayers(_this.regionServices.selectedRegion.RegionID);
+                    }
+                });
+                $scope.$watch(function () { return _this._prosperServices.DisplayedPrediction; }, function (newval, oldval) {
+                    if (newval && _this.ProsperIsActive) {
+                        _this.removeOverlayLayers("prosper", true);
+                        _this.AddProsperLayer(newval.id);
                     }
                 });
                 //$scope.$watch(() => this.explorationService.selectedMethod, (newval, oldval) => {
@@ -273,12 +282,7 @@ var StreamStats;
                 else {
                     this._prosperIsActive = true;
                     //add prosper maplayers
-                    this.layers.overlays["prosper"] = new Layer("ProsperLayer", configuration.baseurls['ScienceBase'] + configuration.queryparams['ProsperPredictions'], "agsDynamic", true, {
-                        "opacity": 1,
-                        "layers": [0],
-                        "format": "png8",
-                        "f": "image"
-                    });
+                    this.AddProsperLayer(this._prosperServices.DisplayedPrediction.id);
                 } //end if
             };
             MapController.prototype.ConfigureProsper = function () {
@@ -921,6 +925,14 @@ var StreamStats;
                     this.nssService.queriedRegions = true;
                     //console.log('set queriedregions flag to true: ', this.nssService.queriedRegions);
                 }
+            };
+            MapController.prototype.AddProsperLayer = function (id) {
+                this.layers.overlays["prosper" + id] = new Layer("Prosper Layer", configuration.baseurls['ScienceBase'] + configuration.queryparams['ProsperPredictions'], "agsDynamic", true, {
+                    "opacity": 1,
+                    "layers": [id],
+                    "format": "png8",
+                    "f": "image"
+                });
             };
             MapController.prototype.removeGeoJson = function (layerName) {
                 if (layerName === void 0) { layerName = ""; }
