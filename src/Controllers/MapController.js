@@ -60,9 +60,10 @@ var StreamStats;
             return MapDefault;
         }());
         var MapController = (function () {
-            function MapController($scope, toaster, $analytics, $location, $stateParams, leafletBoundsHelper, leafletData, search, region, studyArea, StatisticsGroup, exploration, eventManager, modal, modalStack) {
+            function MapController($scope, toaster, $analytics, $location, $stateParams, leafletBoundsHelper, leafletData, search, region, studyArea, StatisticsGroup, exploration, _prosperServices, eventManager, modal, modalStack) {
                 var _this = this;
                 this.$scope = $scope;
+                this._prosperServices = _prosperServices;
                 this.modal = modal;
                 this.modalStack = modalStack;
                 this.center = null;
@@ -76,6 +77,7 @@ var StreamStats;
                 this.events = null;
                 this.layercontrol = null;
                 this.regionLayer = null;
+                this._prosperIsActive = false;
                 this.explorationToolsExpanded = false;
                 $scope.vm = this;
                 this.toaster = toaster;
@@ -137,7 +139,11 @@ var StreamStats;
                 });
                 $scope.$on('leafletDirectiveMap.mainMap.click', function (event, args) {
                     //console.log('test',this.explorationService.drawElevationProfile)
-                    //listen for delineate click if ready
+                    //listen for click
+                    if (_this._prosperServices.CanQuery) {
+                        _this._prosperServices.GetPredictionValues(args.leafletEvent, _this.bounds);
+                        return;
+                    }
                     if (_this.studyArea.doDelineateFlag) {
                         _this.checkDelineatePoint(args.leafletEvent.latlng);
                         return;
@@ -201,6 +207,12 @@ var StreamStats;
                         _this.addRegionOverlayLayers(_this.regionServices.selectedRegion.RegionID);
                     }
                 });
+                $scope.$watch(function () { return _this._prosperServices.DisplayedPrediction; }, function (newval, oldval) {
+                    if (newval && _this.ProsperIsActive) {
+                        _this.removeOverlayLayers("prosper", true);
+                        _this.AddProsperLayer(newval.id);
+                    }
+                });
                 //$scope.$watch(() => this.explorationService.selectedMethod, (newval, oldval) => {
                 //    if (newval) {
                 //        console.log('watch selectedMethod', newval);
@@ -238,6 +250,13 @@ var StreamStats;
                 enumerable: true,
                 configurable: true
             });
+            Object.defineProperty(MapController.prototype, "ProsperIsActive", {
+                get: function () {
+                    return this._prosperIsActive;
+                },
+                enumerable: true,
+                configurable: true
+            });
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             MapController.prototype.setExplorationMethodType = function (val) {
@@ -255,6 +274,23 @@ var StreamStats;
                 var isOK = false;
                 this.explorationService.explorationMethodBusy = true;
                 this.explorationService.ExecuteSelectedModel();
+            };
+            MapController.prototype.ToggleProsper = function () {
+                if (this._prosperIsActive) {
+                    this._prosperIsActive = false;
+                    this.removeOverlayLayers("prosper", true);
+                }
+                else {
+                    this._prosperIsActive = true;
+                    //add prosper maplayers
+                    this.AddProsperLayer(this._prosperServices.DisplayedPrediction.id);
+                    this.ConfigureProsper();
+                } //end if
+            };
+            MapController.prototype.ConfigureProsper = function () {
+                this.modal.openModal(StreamStats.Services.SSModalType.e_prosper);
+                //check if this bounds is outside of project bound, if so set proj extent
+                //this.bounds = this.leafletBoundsHelperService.createBoundsFromArray(this._prosperServices.projectExtent);
             };
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
@@ -894,6 +930,14 @@ var StreamStats;
                     //console.log('set queriedregions flag to true: ', this.nssService.queriedRegions);
                 }
             };
+            MapController.prototype.AddProsperLayer = function (id) {
+                this.layers.overlays["prosper" + id] = new Layer("Prosper Layer", configuration.baseurls['ScienceBase'] + configuration.queryparams['ProsperPredictions'], "agsDynamic", true, {
+                    "opacity": 1,
+                    "layers": [id],
+                    "format": "png8",
+                    "f": "image"
+                });
+            };
             MapController.prototype.removeGeoJson = function (layerName) {
                 if (layerName === void 0) { layerName = ""; }
                 for (var k in this.geojson) {
@@ -1155,7 +1199,7 @@ var StreamStats;
         }()); //end class
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        MapController.$inject = ['$scope', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack'];
+        MapController.$inject = ['$scope', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack'];
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.MapController', MapController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));
