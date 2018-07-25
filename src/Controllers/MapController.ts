@@ -185,7 +185,7 @@ module StreamStats.Controllers {
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack'];
-        constructor(public $scope: IMapControllerScope, toaster, $analytics, $location: ng.ILocationService, $stateParams, leafletBoundsHelper: any, leafletData: ILeafletData, search: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, exploration: Services.IExplorationService, private _prosperServices: Services.IProsperService, eventManager: WiM.Event.IEventManager, private modal: Services.IModalService, private modalStack: ng.ui.bootstrap.IModalStackService,) {
+        constructor(public $scope: IMapControllerScope, toaster, $analytics, $location: ng.ILocationService, $stateParams, leafletBoundsHelper: any, leafletData: ILeafletData, search: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, exploration: Services.IExplorationService, private _prosperServices: Services.IProsperService, eventManager: WiM.Event.IEventManager, private modal: Services.IModalService, private modalStack: ng.ui.bootstrap.IModalStackService) {
             $scope.vm = this;
             
             this.toaster = toaster;
@@ -259,6 +259,7 @@ module StreamStats.Controllers {
                 //listen for click
                 if (this._prosperServices.CanQuery) {
                     this._prosperServices.GetPredictionValues(args.leafletEvent, this.bounds)
+                    return;
                 }
 
                 if (this.studyArea.doDelineateFlag) {
@@ -400,16 +401,19 @@ module StreamStats.Controllers {
         public ToggleProsper(): void {
             if (this._prosperIsActive) {
                 this._prosperIsActive = false;
-                this.removeOverlayLayers("prosper")
+                this.removeOverlayLayers("prosper",true)
             }
             else {
                 this._prosperIsActive = true;
                 //add prosper maplayers
                 this.AddProsperLayer(this._prosperServices.DisplayedPrediction.id);
+                this.ConfigureProsper();
             }//end if
         }
         public ConfigureProsper(): void {
             this.modal.openModal(Services.SSModalType.e_prosper);
+            //check if this bounds is outside of project bound, if so set proj extent
+            //this.bounds = this.leafletBoundsHelperService.createBoundsFromArray(this._prosperServices.projectExtent);
         }
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-

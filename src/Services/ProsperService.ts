@@ -25,64 +25,69 @@
 module StreamStats.Services {
     'use strict'
     export interface IProsperService {
+        projectExtent: Array<Array<number>>;
         CanQuery: boolean;
         AvailablePredictions: Array<IProsperPrediction>
         SelectedPredictions: Array<IProsperPrediction>
-        DisplayedPrediction: IProsperPrediction;
+        DisplayedPrediction: IProsperPrediction;        
+        Result: IProsperPredictionResults;
 
         ResetSelectedPredictions(): void 
+        RestResults(): void
         GetPredictionValues(latlng:any, bounds:any): void
+    }
+    export interface IProsperPredictionResults {
+        point: any
+        date: Date;
+        data: Array<any>;
     }
     export interface IProsperPrediction {
         id: number;
         name: string; 
         selected: boolean;
     }
-    export var onProsperLayerChanged: string = "onProsperLayerChanged";
-
-    export class ProsperServiceEventArgs extends WiM.Event.EventArgs {
-        //properties            
-        public layerID: number;
-        public name: string;
-        public value: number;
-
-        constructor() {
-            super();
-        }
-
-    }
     class ProsperService extends WiM.Services.HTTPServiceBase implements IProsperService {
         //Events
-
         
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
+        public projectExtent: Array<Array<number>> = [[41.96765920367816, -125.48583984375], [49.603590524348704, -110.54443359375]]
         private toaster: any;
+        private modalservices: Services.IModalService;
         public AvailablePredictions:Array<IProsperPrediction>
         public get SelectedPredictions(): Array<IProsperPrediction> {
             return this.AvailablePredictions.filter(f => { return f.selected; });
         }
+        private _result: IProsperPredictionResults;
+        public get Result(): IProsperPredictionResults {
+            return this._result;
+        }
         public DisplayedPrediction: IProsperPrediction;
-        public CanQuery: boolean;
+        public CanQuery: boolean;        
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        constructor($http: ng.IHttpService, private $q: ng.IQService, toaster) {
+        constructor($http: ng.IHttpService, private $q: ng.IQService, toaster, modal: Services.IModalService) {
             super($http, configuration.baseurls['ScienceBase'])
 
             this.toaster = toaster;
+            this.modalservices = modal;
             this.init();
-
         }
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
-        public ResetSelectedPredictions():void {
+        public ResetSelectedPredictions(): void {
+            this.RestResults();
             if (this.AvailablePredictions.length < 1) return;
             this.AvailablePredictions.forEach(ap => ap.selected = false);
 
         }
+        public RestResults(): void {
+            this._result = null;
+        }
         public GetPredictionValues(evnt: any, bounds: any): void {
-             this.toaster.pop('wait', "Querying prosper grids", "Please wait...", 0);
+            this.toaster.pop('wait', "Querying prosper grids", "Please wait...", 0);
+            this._result = null;
 
             var ppt = this.getPointArray(evnt.latlng).join();
             var imgdsplay = this.getDisplayImageArray(evnt.originalEvent.srcElement).join();
@@ -97,6 +102,7 @@ module StreamStats.Services {
 
             this.Execute(request).then(
                 (response: any) => {
+                    this.toaster.clear();
                     if (response.data.error) {
                         //console.log('query error');
                         this.toaster.pop('error', "There was an error querying prosper grids", response.data.error.message, 0);
@@ -104,17 +110,27 @@ module StreamStats.Services {
                     }
 
                     if (response.data.results.length > 0) {
-
-                        var results = response.data.results.reduce((dict, r) => {
-                            dict[r.layerName.replace(/\.[^/.]+$/, "")] = r["attributes"]["Pixel Value"]; return dict;
-                        }, {})
-
-                        this.toaster.pop('success', "Selected reach is a coordinated reach", "Please continue", 5000);
+                        this._result = { 
+                            date: new Date(),
+                            point: evnt.latlng,
+                            data: response.data.results.map((r) => {
+                                    return {
+                                        "name": this.getCleanLabel(r.layerName),
+                                        "value": r["attributes"]["Pixel Value"]
+                                    };
+                                })
+                        };
+                       
+                        
+                        this.toaster.pop('success', "Finished", "See results report.", 5000);                        
+                        //open modal
+                        this.modalservices.openModal(SSModalType.e_prosper)
                     }
 
                 }, (error) => {
                     //sm when complete
                     //console.log('Regression query failed, HTTP Error');
+                    this.toaster.clear();
                     this.toaster.pop('error', "There was an error querying prosper grids", "Please retry", 0);
                 });
         }
@@ -122,6 +138,7 @@ module StreamStats.Services {
         //-+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {
             this.CanQuery = false;
+            this._result = null;
             this.AvailablePredictions = [];
             this.loadAvailablePredictions();
 
@@ -144,11 +161,13 @@ module StreamStats.Services {
                     this.AvailablePredictions.length = 0;
                     var layers: Array<any> = response.data.layers;
                     if (layers.length > 0) {
-                        layers.map(l => { return { id: l.layerId, name: l.layerName.replace(/\.[^/.]+$/, ""), selected: false } }).forEach(p =>
+                        layers.map(l => { return { id: l.layerId, name: this.getCleanLabel(l.layerName), selected: false } }).forEach(p =>
                             this.AvailablePredictions.push(p));
                         
                         this.DisplayedPrediction = this.AvailablePredictions[0];
                     }
+
+                    this.toaster.clear();
 
                 }, (error) => {
                     //sm when complete
@@ -158,9 +177,6 @@ module StreamStats.Services {
 
             } catch (e) {
                 console.log("There was an error requesting available prosper predictions." + e)
-            }
-            finally {
-                this.toaster.clear();
             }
         }
         private boundsToExtentArray(bounds: any):Array<number> {
@@ -184,10 +200,13 @@ module StreamStats.Services {
                 latlng.lat
             ];
         }
+        private getCleanLabel(label: string): string {
+            return label.replace(/\.[^/.]+$/, "")
+        }
     }//end class
-    factory.$inject = ['$http', '$q', 'toaster'];
-    function factory($http: ng.IHttpService, $q: ng.IQService, toaster: any) {
-        return new ProsperService($http, $q, toaster)
+    factory.$inject = ['$http', '$q', 'toaster', 'StreamStats.Services.ModalService'];
+    function factory($http: ng.IHttpService, $q: ng.IQService, toaster: any, modalService:Services.IModalService) {
+        return new ProsperService($http, $q, toaster, modalService)
     }
     angular.module('StreamStats.Services')
         .factory('StreamStats.Services.ProsperService', factory)

@@ -32,23 +32,19 @@ var StreamStats;
     var Services;
     (function (Services) {
         'use strict';
-        Services.onProsperLayerChanged = "onProsperLayerChanged";
-        var ProsperServiceEventArgs = (function (_super) {
-            __extends(ProsperServiceEventArgs, _super);
-            function ProsperServiceEventArgs() {
-                return _super.call(this) || this;
-            }
-            return ProsperServiceEventArgs;
-        }(WiM.Event.EventArgs));
-        Services.ProsperServiceEventArgs = ProsperServiceEventArgs;
         var ProsperService = (function (_super) {
             __extends(ProsperService, _super);
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
-            function ProsperService($http, $q, toaster) {
+            function ProsperService($http, $q, toaster, modal) {
                 var _this = _super.call(this, $http, configuration.baseurls['ScienceBase']) || this;
                 _this.$q = $q;
+                //Events
+                //Properties
+                //-+-+-+-+-+-+-+-+-+-+-+-
+                _this.projectExtent = [[41.96765920367816, -125.48583984375], [49.603590524348704, -110.54443359375]];
                 _this.toaster = toaster;
+                _this.modalservices = modal;
                 _this.init();
                 return _this;
             }
@@ -59,16 +55,28 @@ var StreamStats;
                 enumerable: true,
                 configurable: true
             });
+            Object.defineProperty(ProsperService.prototype, "Result", {
+                get: function () {
+                    return this._result;
+                },
+                enumerable: true,
+                configurable: true
+            });
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             ProsperService.prototype.ResetSelectedPredictions = function () {
+                this.RestResults();
                 if (this.AvailablePredictions.length < 1)
                     return;
                 this.AvailablePredictions.forEach(function (ap) { return ap.selected = false; });
             };
+            ProsperService.prototype.RestResults = function () {
+                this._result = null;
+            };
             ProsperService.prototype.GetPredictionValues = function (evnt, bounds) {
                 var _this = this;
                 this.toaster.pop('wait', "Querying prosper grids", "Please wait...", 0);
+                this._result = null;
                 var ppt = this.getPointArray(evnt.latlng).join();
                 var imgdsplay = this.getDisplayImageArray(evnt.originalEvent.srcElement).join();
                 var extent = this.boundsToExtentArray(bounds).join();
@@ -78,21 +86,31 @@ var StreamStats;
                     .format(layers, imgdsplay, extent, ppt, 4326);
                 var request = new WiM.Services.Helpers.RequestInfo(url);
                 this.Execute(request).then(function (response) {
+                    _this.toaster.clear();
                     if (response.data.error) {
                         //console.log('query error');
                         _this.toaster.pop('error', "There was an error querying prosper grids", response.data.error.message, 0);
                         return;
                     }
                     if (response.data.results.length > 0) {
-                        var results = response.data.results.reduce(function (dict, r) {
-                            dict[r.layerName.replace(/\.[^/.]+$/, "")] = r["attributes"]["Pixel Value"];
-                            return dict;
-                        }, {});
-                        _this.toaster.pop('success', "Selected reach is a coordinated reach", "Please continue", 5000);
+                        _this._result = {
+                            date: new Date(),
+                            point: evnt.latlng,
+                            data: response.data.results.map(function (r) {
+                                return {
+                                    "name": _this.getCleanLabel(r.layerName),
+                                    "value": r["attributes"]["Pixel Value"]
+                                };
+                            })
+                        };
+                        _this.toaster.pop('success', "Finished", "See results report.", 5000);
+                        //open modal
+                        _this.modalservices.openModal(Services.SSModalType.e_prosper);
                     }
                 }, function (error) {
                     //sm when complete
                     //console.log('Regression query failed, HTTP Error');
+                    _this.toaster.clear();
                     _this.toaster.pop('error', "There was an error querying prosper grids", "Please retry", 0);
                 });
             };
@@ -100,6 +118,7 @@ var StreamStats;
             //-+-+-+-+-+-+-+-+-+-+-+-
             ProsperService.prototype.init = function () {
                 this.CanQuery = false;
+                this._result = null;
                 this.AvailablePredictions = [];
                 this.loadAvailablePredictions();
             };
@@ -118,11 +137,12 @@ var StreamStats;
                         _this.AvailablePredictions.length = 0;
                         var layers = response.data.layers;
                         if (layers.length > 0) {
-                            layers.map(function (l) { return { id: l.layerId, name: l.layerName.replace(/\.[^/.]+$/, ""), selected: false }; }).forEach(function (p) {
+                            layers.map(function (l) { return { id: l.layerId, name: _this.getCleanLabel(l.layerName), selected: false }; }).forEach(function (p) {
                                 return _this.AvailablePredictions.push(p);
                             });
                             _this.DisplayedPrediction = _this.AvailablePredictions[0];
                         }
+                        _this.toaster.clear();
                     }, function (error) {
                         //sm when complete
                         _this.toaster.pop('error', "There was an HTTP error querying coordinated reach", "Please retry", 0);
@@ -130,9 +150,6 @@ var StreamStats;
                 }
                 catch (e) {
                     console.log("There was an error requesting available prosper predictions." + e);
-                }
-                finally {
-                    this.toaster.clear();
                 }
             };
             ProsperService.prototype.boundsToExtentArray = function (bounds) {
@@ -156,11 +173,14 @@ var StreamStats;
                     latlng.lat
                 ];
             };
+            ProsperService.prototype.getCleanLabel = function (label) {
+                return label.replace(/\.[^/.]+$/, "");
+            };
             return ProsperService;
         }(WiM.Services.HTTPServiceBase)); //end class
-        factory.$inject = ['$http', '$q', 'toaster'];
-        function factory($http, $q, toaster) {
-            return new ProsperService($http, $q, toaster);
+        factory.$inject = ['$http', '$q', 'toaster', 'StreamStats.Services.ModalService'];
+        function factory($http, $q, toaster, modalService) {
+            return new ProsperService($http, $q, toaster, modalService);
         }
         angular.module('StreamStats.Services')
             .factory('StreamStats.Services.ProsperService', factory);
