@@ -140,9 +140,11 @@ var StreamStats;
             };
             StormRunoffController.prototype.validateForm = function (mainForm) {
                 if (mainForm.$valid) {
+                    this.CheckDASize();
                     return true;
                 }
                 else {
+                    this.CheckDASize();
                     this.showResults = false;
                     this.hideAlerts = false;
                     return false;
@@ -176,6 +178,26 @@ var StreamStats;
                 }
                 catch (e) {
                     console.log("oops CalculateParams failed to load ", e);
+                }
+            };
+            StormRunoffController.prototype.CheckDASize = function () {
+                switch (this._selectedTab) {
+                    case StormRunoffType.TR55:
+                        if (this.SelectedParameterList[0].value > 25) {
+                            this.DASizeAlert = "Value is greater than recommended maximum threshold of 25 square miles";
+                        }
+                        else {
+                            this.DASizeAlert = null;
+                        }
+                        return;
+                    default:
+                        if (this.DrnAreaAcres > 90) {
+                            this.DASizeAlert = "Value is greater than recommended maximum threshold of 90 acres";
+                        }
+                        else {
+                            this.DASizeAlert = null;
+                        }
+                        return;
                 }
             };
             StormRunoffController.prototype.Close = function () {
@@ -665,7 +687,7 @@ var StreamStats;
             StormRunoffController.prototype.loadParameters = function () {
                 //unsubscribe first
                 this.EventManager.UnSubscribeToEvent(StreamStats.Services.onSelectedStudyParametersLoaded, this.parameterloadedEventHandler);
-                this.DrnAreaAcres = this.SelectedParameterList[0].value * 640;
+                this.DrnAreaAcres = (this.SelectedParameterList[0].value * 640).toUSGSvalue();
                 var dur = parseInt(this.SelectedPrecip.name.substr(0, 2));
                 this.PIntensity = (this.SelectedPrecip.value / dur).toUSGSvalue();
                 this.CanContinue = true;
@@ -686,7 +708,9 @@ var StreamStats;
                 }
                 this.PrecipOptions = this.regionParameters.filter(function (f) { return ["I6H2Y", "I6H100Y", "I24H2Y", "I24H100Y"].indexOf(f.code) != -1; });
                 this.PrecipOptions.forEach(function (p) { return p.value = (isNaN(p.value) ? null : p.value); });
-                this.SelectedPrecip = this.PrecipOptions[0];
+                if (!this.SelectedPrecip) {
+                    this.SelectedPrecip = this.PrecipOptions[0];
+                }
             };
             StormRunoffController.prototype.tableToCSV = function ($table) {
                 var $headers = $table.find('tr:has(th)'), $rows = $table.find('tr:has(td)')
