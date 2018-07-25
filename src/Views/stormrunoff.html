@@ -18,8 +18,8 @@
                     <li ng-class="{'active': vm.SelectedTab == 1}"><a ng-click="vm.SelectedTab=1">TR55</a></li>
                 </ul>
 
-                <div ng-if="vm.SelectedTab == 1" class="wim-alert hidden-print">Enter values below or use StreamStats to calculate the required parameters. Then click "Continue" to view peak discharge and hydrograph.</div>
-                <div ng-if="vm.SelectedTab == 2" class="wim-alert hidden-print">Enter values below or use StreamStats to calculate the required parameters. Then click "Continue" to view peak discharge.</div>
+                <div ng-if="vm.SelectedTab == 1" class="wim-alert hidden-print">Enter custom values below or <b>Calculate Missing Parameters</b>. Click <b>Continue</b> to view peak discharge and hydrograph.</div>
+                <div ng-if="vm.SelectedTab == 2" class="wim-alert hidden-print">Enter custom values below or <b>Calculate Missing Parameters</b>. Click <b>Continue</b> to view peak discharge.</div>
                 <div id="printArea">
                     <form id="mainForm" name="mainForm" class="hidden-print" novalidate>
                         <select name="precipoptions" ng-model="vm.SelectedPrecip" ng-options="precip.name for precip in vm.PrecipOptions track by precip.code"></select>

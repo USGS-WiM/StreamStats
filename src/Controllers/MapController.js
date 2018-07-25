@@ -419,6 +419,7 @@ var StreamStats;
                                 //show popup
                                 if (resultsCount > 0) {
                                     map.openPopup(popupContent.html(), [evt.latlng.lat, evt.latlng.lng], { maxHeight: 200 });
+                                    _this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'streamgageQuery' });
                                     _this.toaster.clear();
                                 }
                                 else {
