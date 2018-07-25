@@ -142,6 +142,7 @@ var StreamStats;
                     //listen for click
                     if (_this._prosperServices.CanQuery) {
                         _this._prosperServices.GetPredictionValues(args.leafletEvent, _this.bounds);
+                        return;
                     }
                     if (_this.studyArea.doDelineateFlag) {
                         _this.checkDelineatePoint(args.leafletEvent.latlng);
@@ -277,16 +278,19 @@ var StreamStats;
             MapController.prototype.ToggleProsper = function () {
                 if (this._prosperIsActive) {
                     this._prosperIsActive = false;
-                    this.removeOverlayLayers("prosper");
+                    this.removeOverlayLayers("prosper", true);
                 }
                 else {
                     this._prosperIsActive = true;
                     //add prosper maplayers
                     this.AddProsperLayer(this._prosperServices.DisplayedPrediction.id);
+                    this.ConfigureProsper();
                 } //end if
             };
             MapController.prototype.ConfigureProsper = function () {
                 this.modal.openModal(StreamStats.Services.SSModalType.e_prosper);
+                //check if this bounds is outside of project bound, if so set proj extent
+                //this.bounds = this.leafletBoundsHelperService.createBoundsFromArray(this._prosperServices.projectExtent);
             };
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
