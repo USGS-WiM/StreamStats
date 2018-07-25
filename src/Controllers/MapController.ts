@@ -577,6 +577,7 @@ module StreamStats.Controllers {
                             //show popup
                             if (resultsCount > 0) {
                                 map.openPopup(popupContent.html(), [evt.latlng.lat, evt.latlng.lng], { maxHeight: 200 });
+                                this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'streamgageQuery' });
                                 this.toaster.clear();
                             }
                             else {
