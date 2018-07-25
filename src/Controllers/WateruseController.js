@@ -428,6 +428,13 @@ var StreamStats;
                                     _this.$timeout(function () {
                                         _this.loadGraphLabels(0);
                                     }, 500);
+                                },
+                                resize: function () {
+                                    console.log("resize");
+                                    //must wrap in timer or method executes prematurely
+                                    _this.$timeout(function () {
+                                        _this.loadGraphLabels(0);
+                                    }, 500);
                                 }
                             },
                             showValues: true,
@@ -454,7 +461,7 @@ var StreamStats;
                             type: 'multiBarHorizontalChart',
                             height: 450,
                             visible: true,
-                            stacked: false,
+                            stacked: true,
                             showControls: false,
                             margin: {
                                 top: 20,
@@ -508,6 +515,11 @@ var StreamStats;
                         }
                     };
                 });
+                $(window).resize(function () {
+                    _this.$timeout(function () {
+                        _this.loadGraphLabels(0);
+                    }, 500);
+                });
             };
             WateruseController.prototype.getMonth = function (index) {
                 switch (index) {
@@ -547,19 +559,34 @@ var StreamStats;
                 return wtype.toUpperCase();
             };
             WateruseController.prototype.loadGraphLabels = function (id) {
-                var svg = d3.selectAll("g.nv-multibarHorizontal");
-                var lastBarID = svg.selectAll("g.nv-group").map(function (items) { return items.length; });
-                var lastBars = svg.selectAll("g.nv-group").filter(function (d, i) {
-                    return i == lastBarID[id] - 1;
-                }).selectAll("g.positive");
-                var groupLabels = svg.select("g.nv-barsWrap");
-                lastBars.each(function (d, index) {
-                    var recWidth = d3.select(this).selectAll("rect")[0][0].attributes.width.value;
-                    var text = d3.select(this).selectAll("text");
-                    text.text(d3.format(',.3f')((Number(d.y) + Number(d.y0)).toFixed(3)));
-                    text.attr("x", recWidth);
-                    text.attr("dy", "1.32em");
-                    text.attr("text-anchor", "start");
+                var svg = d3.selectAll('.nv-multibarHorizontal .nv-group');
+                // subtract 2 in order to account for returns
+                var lastBarID = svg.map(function (items) { return items.length - 2; });
+                var lastBars = svg.filter(function (d, i) {
+                    return i == lastBarID[0];
+                });
+                svg.each(function (group, i) {
+                    var g = d3.select(this);
+                    // Remove previous labels if there is any
+                    g.selectAll('text').remove();
+                    g.selectAll('.nv-bar').each(function (bar) {
+                        var b = d3.select(this);
+                        var barWidth = b.node().getBBox()['width'];
+                        var barHeight = b.node().getBBox()['height'];
+                        g.append('text')
+                            .attr('transform', b.attr('transform'))
+                            .text(function () {
+                            // Two decimals format
+                            if (i >= lastBarID[0])
+                                return d3.format(',.3f')((Number(bar.y) + Number(bar.y0)).toFixed(3));
+                        })
+                            .attr("dy", "1.5em")
+                            .attr('x', function () {
+                            var width = this.getBBox().width;
+                            return barWidth - width / 2;
+                        })
+                            .attr('class', 'bar-values');
+                    });
                 });
             };
             WateruseController.prototype.generateColorShade = function (minhue, maxhue) {
