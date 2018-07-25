@@ -116,6 +116,7 @@ module StreamStats.Controllers {
             return true;
         }
 
+        public DASizeAlert: String;
         public BrowserIE: boolean;
         public BrowserChrome: boolean;
         public ReportData: IStormRunoffReportable;
@@ -204,9 +205,11 @@ module StreamStats.Controllers {
 
         public validateForm(mainForm) {
             if (mainForm.$valid) {
+                this.CheckDASize();
                 return true;
             }
             else {
+                this.CheckDASize();
                 this.showResults = false;
                 this.hideAlerts = false;
                 return false;
@@ -245,8 +248,29 @@ module StreamStats.Controllers {
 
                 this.studyAreaService.loadParameters();
                 
+                
             } catch (e) {
                 console.log("oops CalculateParams failed to load ",e)
+            }
+        }
+
+        public CheckDASize()
+        {
+            switch (this._selectedTab) {
+                case StormRunoffType.TR55:
+                    if (this.SelectedParameterList[0].value > 25) {
+                        this.DASizeAlert = "Value is greater than recommended maximum threshold of 25 square miles"
+                    } else {
+                        this.DASizeAlert = null;
+                    }
+                    return;
+                default: //case StormRunoffType.RationalMethod
+                    if (this.DrnAreaAcres > 90) {
+                        this.DASizeAlert = "Value is greater than recommended maximum threshold of 90 acres"
+                    } else {
+                        this.DASizeAlert = null;
+                    }
+                    return;
             }
         }
 
@@ -759,7 +783,7 @@ module StreamStats.Controllers {
         private loadParameters(): void{
             //unsubscribe first
             this.EventManager.UnSubscribeToEvent(Services.onSelectedStudyParametersLoaded, this.parameterloadedEventHandler);
-            this.DrnAreaAcres = this.SelectedParameterList[0].value * 640;
+            this.DrnAreaAcres = (this.SelectedParameterList[0].value * 640).toUSGSvalue();
             var dur = parseInt(this.SelectedPrecip.name.substr(0, 2));
             this.PIntensity = (this.SelectedPrecip.value / dur).toUSGSvalue();
             this.CanContinue = true;
@@ -780,7 +804,9 @@ module StreamStats.Controllers {
             }
             this.PrecipOptions = this.regionParameters.filter(f => { return ["I6H2Y", "I6H100Y", "I24H2Y", "I24H100Y"].indexOf(f.code) != -1 });
             this.PrecipOptions.forEach(p => p.value = (isNaN(p.value) ? null : p.value));
-            this.SelectedPrecip = this.PrecipOptions[0];
+            if (!this.SelectedPrecip) {
+                this.SelectedPrecip = this.PrecipOptions[0];
+            }
         }
         private tableToCSV($table) {
 
