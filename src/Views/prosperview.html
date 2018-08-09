@@ -51,7 +51,7 @@
                 </table>
             </div>
             <div ng-if="vm.ResultsAvailable" class="col-sm-6">
-                <h6>Prediction Results</h6>
+                <h6>Prediction Results (SPC)</h6>
                 <nvd3 id="ResultsBar" options='vm.Graph.options' data='vm.Graph.data'></nvd3>
                 <div class="overflowTable" style="page-break-inside:avoid;">
                     <h6>Tabular Results</h6>
@@ -59,13 +59,15 @@
                         <thead>
                             <tr>
                                 <th title="Name">Name</th>
-                                <th>Confidence</th>
+                                <th>Confidence (SPC)</th>
+                                <th>Confidence (SPP)</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="item in vm.Table">
-                                <td>{{item.name}}</td>
-                                <td>{{item.value}}</td>
+                            <tr ng-repeat="(key, item) in vm.Table">
+                                <td>{{key}}</td>
+                                <td>{{item.SPC}}</td>
+                                <td>{{item.SPP}}</td>
                             </tr>
                         </tbody>
                     </table>

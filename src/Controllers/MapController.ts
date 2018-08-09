@@ -401,6 +401,7 @@ module StreamStats.Controllers {
         public ToggleProsper(): void {
             if (this._prosperIsActive) {
                 this._prosperIsActive = false;
+                this._prosperServices.CanQuery = false;
                 this.removeOverlayLayers("prosper",true)
             }
             else {

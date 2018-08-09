@@ -50,8 +50,9 @@ module StreamStats.Controllers {
         public get Date() {
             return this._results.date;
         }
-        public get Table():any {
-            return this._results.data;
+        private _table:any
+        public get Table(): any {
+            return this._table
         }
         private modalInstance: ng.ui.bootstrap.IModalServiceInstance;    
         private _prosperServices: Services.IProsperService;
@@ -155,22 +156,22 @@ module StreamStats.Controllers {
             }
             else {
                 this._resultsAvailable = true;
-                this._results = this._prosperServices.Result;
+                this.setResults(this._prosperServices.Result);
+                
                 this._graph = {
-                    data: [{
-                        key: "",
-                        values: this._results.data
-                    }],
+                    data: this.getGraphData(),
                     options: {
                         chart: {
+                            showLegend: false,
                             height: 450,
-                            type: 'discreteBarChart',
-                            staggerLabels: true,
+                            type: 'scatterChart',                            
                             showValues: false,
+                            pointShape: function (d) { return 'square' },
+                            pointSize: 10,
+                            pointDomain: [0, 10],
                             transitionDuration: 350,
                             rotateLabels: 45,
-                            x: function (d) { return d.name; },
-                            y: function (d) { return d.value; },
+                            yDomain:[5,-5],//handles reverse order
                             margin: {
                                 top: 20,
                                 right: 50,
@@ -178,15 +179,12 @@ module StreamStats.Controllers {
                                 left: 55
                             },
                             yAxis: {
-                                axisLabel: 'Confidence in prediction of streamflow permanence',
-                                axisLabelDistance: -10
-                            }
+                                axisLabel: 'Confidence in prediction of streamflow permanence'                               
+                            },
+                            scatter:{onlyCircles:false }
                         }
                     }
-                }
-                
-                //reset services
-                this._prosperServices.RestResults();
+                }                
             }
             
         }
@@ -240,6 +238,50 @@ module StreamStats.Controllers {
 
             }
         }//end tableToCSV
+        private setResults(results: Services.IProsperPredictionResults): void {
+            this._results = results;
+            this._table = {};
+            for (var item in this._results.data) {
+                for (var k = 0; k < this._results.data[item].length; k++) {
+                    var obj: any = this._results.data[item][k]
+                    if (!(obj.name in this._table)) this._table[obj.name] = {};
+                    this._table[obj.name][item] = obj.value
+                }//next k
+            }//next item
+            this._prosperServices.ResetResults();
+        }
+        private getGraphData(): Array<any>{
+            var catagories:Array<string> = this._results.data.SPC.map((pred) => {return pred.value}).filter((val, i, arr) =>arr.indexOf(val) === i);
+            var data = [];
+            catagories.forEach((cat)=> {
+                data.push({
+                            key: cat,
+                            color:this.getDefinedColor(cat),
+                            values: this._results.data.SPC.filter((pred) => pred.value === cat && pred.name.toLowerCase() !="mean").map(val => { return {x:parseInt(val.name),y:parseInt(val.value)} })
+                           })
+            })//next cat
+                
+
+            return data;
+
+        }
+        private getDefinedColor(index: string) {
+            switch (index) {
+                case "-5": return "rgb(255,102,102)";//light red
+                case "-4": return "rgb(255,164,102)";//red-orange
+                case "-3": return "rgb(255,202,102)";//orange
+                case "-2": return "rgb(255,242,102)";//yellow
+                case "-1": return "rgb(241,255,146)";//yellow-green
+                case "0": return "rgb(211,255,188)";//light green
+                case "1": return "rgb(169,255,228)";//green-blue
+                case "2": return "rgb(122,239,255)";//light blue
+                case "3": return "rgb(137,196,255)";//blue
+                case "4": return "rgb(134,155,255)";//violet
+                case "5": return "rgb(109,109,255)";//purple
+                default: return "rgb(64,0,64)";//black
+            }
+
+        }
     }//end Controller class
 
     angular.module('StreamStats.Controllers')
