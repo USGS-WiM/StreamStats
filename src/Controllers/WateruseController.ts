@@ -760,8 +760,8 @@ module StreamStats.Controllers {
         private RGBtoHEX(r, g, b): string {
 
             var red = this.ToHex(r);
-            var green = this.ToHex(r);
-            var blue = this.ToHex(r);
+            var green = this.ToHex(g);
+            var blue = this.ToHex(b);
             return red+green+blue;
 
         }

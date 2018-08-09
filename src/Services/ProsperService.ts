@@ -33,13 +33,13 @@ module StreamStats.Services {
         Result: IProsperPredictionResults;
 
         ResetSelectedPredictions(): void 
-        RestResults(): void
+        ResetResults(): void
         GetPredictionValues(latlng:any, bounds:any): void
     }
     export interface IProsperPredictionResults {
         point: any
         date: Date;
-        data: Array<any>;
+        data: any;
     }
     export interface IProsperPrediction {
         id: number;
@@ -77,12 +77,12 @@ module StreamStats.Services {
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         public ResetSelectedPredictions(): void {
-            this.RestResults();
+            this.ResetResults();
             if (this.AvailablePredictions.length < 1) return;
             this.AvailablePredictions.forEach(ap => ap.selected = false);
 
         }
-        public RestResults(): void {
+        public ResetResults(): void {
             this._result = null;
         }
         public GetPredictionValues(evnt: any, bounds: any): void {
@@ -94,45 +94,45 @@ module StreamStats.Services {
             var extent = this.boundsToExtentArray(bounds).join();
             var layers = this.SelectedPredictions.map(r => { return r.id }).join();
             //imageDisplay={0}mapExtent={1}&geometry={2}&sr={3}
-            var url = configuration.queryparams['ProsperPredictions']+configuration.queryparams['ProsperIdentify']
-                .format(layers,imgdsplay,extent,ppt, 4326);
+            var spc_url = configuration.queryparams['ProsperPredictions']+configuration.queryparams['ProsperIdentify']
+                .format(layers, imgdsplay, extent, ppt, 4326);
+            var spp_url = configuration.queryparams['ProsperSPPPredictions'] + configuration.queryparams['ProsperIdentify']
+                .format(layers, imgdsplay, extent, ppt, 4326);            
 
-            var request: WiM.Services.Helpers.RequestInfo =
-                new WiM.Services.Helpers.RequestInfo(url);
 
-            this.Execute(request).then(
+            this.$q.all([this.queryExecute(spc_url), this.queryExecute(spp_url)]).then(
                 (response: any) => {
                     this.toaster.clear();
-                    if (response.data.error) {
-                        //console.log('query error');
-                        this.toaster.pop('error', "There was an error querying prosper grids", response.data.error.message, 0);
-                        return;
-                    }
+                    this._result = {
+                        date: new Date(),
+                        point: evnt.latlng,
+                        data: {
+                            SPC: null,
+                            SPP:null
+                        }
+                    };
 
-                    if (response.data.results.length > 0) {
-                        this._result = { 
-                            date: new Date(),
-                            point: evnt.latlng,
-                            data: response.data.results.map((r) => {
-                                    return {
-                                        "name": this.getCleanLabel(r.layerName),
-                                        "value": r["attributes"]["Pixel Value"]
-                                    };
-                                })
-                        };
-                       
-                        
-                        this.toaster.pop('success', "Finished", "See results report.", 5000);                        
-                        //open modal
-                        this.modalservices.openModal(SSModalType.e_prosper)
-                    }
+                    for (var i = 0; i < response.length; i++) {
+                        if (i == 0) this._result.data.SPC = response[i]
+                        else this._result.data.SPP = response[i]
+
+                    //    for (var k = 0; k < response[i].length; k++) {
+                    //        var obj = response[i][k]
+                    //        if (!(obj.name in this._result.data)) this._result.data[obj.name] = {};
+                    //        this._result.data[obj.name][obj.code]=obj.value                            
+                    //    }//next k
+                    }//next i
+
+                    this.toaster.pop('success', "Finished", "See results report.", 5000);
+                    //open modal
+                    this.modalservices.openModal(SSModalType.e_prosper)
 
                 }, (error) => {
                     //sm when complete
                     //console.log('Regression query failed, HTTP Error');
                     this.toaster.clear();
                     this.toaster.pop('error', "There was an error querying prosper grids", "Please retry", 0);
-                });
+                });            
         }
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -201,7 +201,31 @@ module StreamStats.Services {
             ];
         }
         private getCleanLabel(label: string): string {
-            return label.replace(/\.[^/.]+$/, "")
+            //removes characters preceding '_' and after '.'
+            return label.replace(/[^_]*_|\.[^/.]+$/g, "")
+        }
+        private queryExecute(url:string): ng.IPromise<any> {
+            return this.Execute(new WiM.Services.Helpers.RequestInfo(url)).then(
+                (response: any) => {
+                    this.toaster.clear();
+                    if (response.data.error) {
+                        console.log('query error');
+                        throw response.data.error
+                    }
+
+                    if (response.data.results.length > 0) {                        
+                        return response.data.results.map((r) => {
+                            return {
+                                "name": this.getCleanLabel(r.layerName),
+                                "value": r["attributes"]["Pixel Value"]
+                            };
+                        });
+                    }//end if
+
+                }, (error) => {
+                    throw error
+                });
+
         }
     }//end class
     factory.$inject = ['$http', '$q', 'toaster', 'StreamStats.Services.ModalService'];

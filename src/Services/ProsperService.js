@@ -65,12 +65,12 @@ var StreamStats;
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             ProsperService.prototype.ResetSelectedPredictions = function () {
-                this.RestResults();
+                this.ResetResults();
                 if (this.AvailablePredictions.length < 1)
                     return;
                 this.AvailablePredictions.forEach(function (ap) { return ap.selected = false; });
             };
-            ProsperService.prototype.RestResults = function () {
+            ProsperService.prototype.ResetResults = function () {
                 this._result = null;
             };
             ProsperService.prototype.GetPredictionValues = function (evnt, bounds) {
@@ -82,31 +82,34 @@ var StreamStats;
                 var extent = this.boundsToExtentArray(bounds).join();
                 var layers = this.SelectedPredictions.map(function (r) { return r.id; }).join();
                 //imageDisplay={0}mapExtent={1}&geometry={2}&sr={3}
-                var url = configuration.queryparams['ProsperPredictions'] + configuration.queryparams['ProsperIdentify']
+                var spc_url = configuration.queryparams['ProsperPredictions'] + configuration.queryparams['ProsperIdentify']
                     .format(layers, imgdsplay, extent, ppt, 4326);
-                var request = new WiM.Services.Helpers.RequestInfo(url);
-                this.Execute(request).then(function (response) {
+                var spp_url = configuration.queryparams['ProsperSPPPredictions'] + configuration.queryparams['ProsperIdentify']
+                    .format(layers, imgdsplay, extent, ppt, 4326);
+                this.$q.all([this.queryExecute(spc_url), this.queryExecute(spp_url)]).then(function (response) {
                     _this.toaster.clear();
-                    if (response.data.error) {
-                        //console.log('query error');
-                        _this.toaster.pop('error', "There was an error querying prosper grids", response.data.error.message, 0);
-                        return;
-                    }
-                    if (response.data.results.length > 0) {
-                        _this._result = {
-                            date: new Date(),
-                            point: evnt.latlng,
-                            data: response.data.results.map(function (r) {
-                                return {
-                                    "name": _this.getCleanLabel(r.layerName),
-                                    "value": r["attributes"]["Pixel Value"]
-                                };
-                            })
-                        };
-                        _this.toaster.pop('success', "Finished", "See results report.", 5000);
-                        //open modal
-                        _this.modalservices.openModal(Services.SSModalType.e_prosper);
-                    }
+                    _this._result = {
+                        date: new Date(),
+                        point: evnt.latlng,
+                        data: {
+                            SPC: null,
+                            SPP: null
+                        }
+                    };
+                    for (var i = 0; i < response.length; i++) {
+                        if (i == 0)
+                            _this._result.data.SPC = response[i];
+                        else
+                            _this._result.data.SPP = response[i];
+                        //    for (var k = 0; k < response[i].length; k++) {
+                        //        var obj = response[i][k]
+                        //        if (!(obj.name in this._result.data)) this._result.data[obj.name] = {};
+                        //        this._result.data[obj.name][obj.code]=obj.value                            
+                        //    }//next k
+                    } //next i
+                    _this.toaster.pop('success', "Finished", "See results report.", 5000);
+                    //open modal
+                    _this.modalservices.openModal(Services.SSModalType.e_prosper);
                 }, function (error) {
                     //sm when complete
                     //console.log('Regression query failed, HTTP Error');
@@ -174,7 +177,28 @@ var StreamStats;
                 ];
             };
             ProsperService.prototype.getCleanLabel = function (label) {
-                return label.replace(/\.[^/.]+$/, "");
+                //removes characters preceding '_' and after '.'
+                return label.replace(/[^_]*_|\.[^/.]+$/g, "");
+            };
+            ProsperService.prototype.queryExecute = function (url) {
+                var _this = this;
+                return this.Execute(new WiM.Services.Helpers.RequestInfo(url)).then(function (response) {
+                    _this.toaster.clear();
+                    if (response.data.error) {
+                        console.log('query error');
+                        throw response.data.error;
+                    }
+                    if (response.data.results.length > 0) {
+                        return response.data.results.map(function (r) {
+                            return {
+                                "name": _this.getCleanLabel(r.layerName),
+                                "value": r["attributes"]["Pixel Value"]
+                            };
+                        });
+                    } //end if
+                }, function (error) {
+                    throw error;
+                });
             };
             return ProsperService;
         }(WiM.Services.HTTPServiceBase)); //end class

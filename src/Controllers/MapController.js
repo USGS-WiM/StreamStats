@@ -278,6 +278,7 @@ var StreamStats;
             MapController.prototype.ToggleProsper = function () {
                 if (this._prosperIsActive) {
                     this._prosperIsActive = false;
+                    this._prosperServices.CanQuery = false;
                     this.removeOverlayLayers("prosper", true);
                 }
                 else {
