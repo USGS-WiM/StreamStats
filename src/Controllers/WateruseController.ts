@@ -83,7 +83,7 @@ module StreamStats.Controllers {
             return this._yearRange;
         }
         public includePermits: boolean;
-        public includeReturns: boolean;
+        public computeReturns: boolean;
         public computeDomesticWU: boolean;
 
         public CanContiue: boolean;
@@ -112,7 +112,7 @@ module StreamStats.Controllers {
             var headers = {
                 "Content-Type": "application/json"
             };
-            var url = configuration.queryparams['Wateruse'].format(this.StartYear, this.EndYear, this.includePermits, this.includeReturns, this.computeDomesticWU);
+            var url = configuration.queryparams['Wateruse'].format(this.StartYear, this.EndYear, this.includePermits, this.computeReturns, this.computeDomesticWU);
             var studyAreaGeom = this.StudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).toLowerCase() == "globalwatershed" })[0].geometry;
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, false, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(studyAreaGeom));
 
@@ -400,7 +400,7 @@ module StreamStats.Controllers {
                 "Accept": "text/csv",
                 "Authorization": "Basic dGVzdE1hbmFnZXI6RG9nMQ=="
             };
-            var url = configuration.queryparams['WateruseSourceCSV'].format(this.StartYear, this.EndYear, this.includePermits, this.includeReturns, this.computeDomesticWU);
+            var url = configuration.queryparams['WateruseSourceCSV'].format(this.StartYear, this.EndYear, this.includePermits, this.computeReturns, this.computeDomesticWU);
             var studyAreaGeom = this.StudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).toLowerCase() == "globalwatershed" })[0].geometry;
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, false, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(studyAreaGeom),headers);
 
@@ -449,8 +449,8 @@ module StreamStats.Controllers {
                     this._startYear = result.minYear;
                     this._endYear = result.maxYear;
                     this.includePermits = result.hasPermits;
-                    this.includeReturns = result.hasReturns;
-                    this.computeDomesticWU = false;
+                    this.computeReturns = result.canComputeReturns;
+                    this.computeDomesticWU = this.StudyArea.RegionID.toLowerCase() == 'oh';
                     this._yearRange = { floor: result.minYear, draggableRange: true, noSwitching: true, showTicks: false, ceil: result.maxYear };
                     }, (error) => {;
                         this._startYear = 2005;

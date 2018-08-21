@@ -73,7 +73,7 @@ var StreamStats;
                 var headers = {
                     "Content-Type": "application/json"
                 };
-                var url = configuration.queryparams['Wateruse'].format(this.StartYear, this.EndYear, this.includePermits, this.includeReturns, this.computeDomesticWU);
+                var url = configuration.queryparams['Wateruse'].format(this.StartYear, this.EndYear, this.includePermits, this.computeReturns, this.computeDomesticWU);
                 var studyAreaGeom = this.StudyArea.FeatureCollection.features.filter(function (f) { return (f.id).toLowerCase() == "globalwatershed"; })[0].geometry;
                 var request = new WiM.Services.Helpers.RequestInfo(url, false, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(studyAreaGeom));
                 this.Execute(request).then(function (response) {
@@ -340,7 +340,7 @@ var StreamStats;
                     "Accept": "text/csv",
                     "Authorization": "Basic dGVzdE1hbmFnZXI6RG9nMQ=="
                 };
-                var url = configuration.queryparams['WateruseSourceCSV'].format(this.StartYear, this.EndYear, this.includePermits, this.includeReturns, this.computeDomesticWU);
+                var url = configuration.queryparams['WateruseSourceCSV'].format(this.StartYear, this.EndYear, this.includePermits, this.computeReturns, this.computeDomesticWU);
                 var studyAreaGeom = this.StudyArea.FeatureCollection.features.filter(function (f) { return (f.id).toLowerCase() == "globalwatershed"; })[0].geometry;
                 var request = new WiM.Services.Helpers.RequestInfo(url, false, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(studyAreaGeom), headers);
                 this.Execute(request).then(function (response) {
@@ -384,8 +384,8 @@ var StreamStats;
                     _this._startYear = result.minYear;
                     _this._endYear = result.maxYear;
                     _this.includePermits = result.hasPermits;
-                    _this.includeReturns = result.hasReturns;
-                    _this.computeDomesticWU = false;
+                    _this.computeReturns = result.canComputeReturns;
+                    _this.computeDomesticWU = _this.StudyArea.RegionID.toLowerCase() == 'oh';
                     _this._yearRange = { floor: result.minYear, draggableRange: true, noSwitching: true, showTicks: false, ceil: result.maxYear };
                 }, function (error) {
                     ;
