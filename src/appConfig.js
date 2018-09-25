@@ -356,7 +356,21 @@ configuration.regions = [
     { "RegionID": "PA", "Name": "Pennsylvania", "Bounds": [[39.719313,-80.526045],[42.267327,-74.700062]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "PR", "Name": "Puerto Rico", "Bounds": [[17.922222, -67.938339], [18.519443, -65.241958]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
     { "RegionID": "RI", "Name": "Rhode Island", "Bounds": [[41.322769,-71.866678],[42.013713,-71.117132]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
-    { "RegionID": "SC", "Name": "South Carolina", "Bounds": [[32.068173,-83.350685],[35.208356,-78.579453]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
+    { "RegionID": "SC", "Name": "South Carolina", "Bounds": [[32.068173,-83.350685],[35.208356,-78.579453]], "Layers": 
+     	{
+            "SCDOT_Bridges": {
+                "name": "Bridges",
+                "url": "https://rest.palmettoeoc.net/arcgis/rest/services/SC_Base_Data/Transportation/MapServer",
+                "type": 'agsDynamic',
+                "visible": true,
+                "layerOptions": {
+                    "zIndex": 1,
+                    "format": "png8",
+                    "layers": [6],
+                    "f": "image"
+                }
+            }
+        }, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "SD", "Name": "South Dakota", "Bounds": [[42.488459,-104.061036],[45.943547,-96.439394]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "TN", "Name": "Tennessee", "Bounds": [[34.988759,-90.305448],[36.679683,-81.652272]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "TX", "Name": "Texas", "Bounds": [[25.845557,-106.650062],[36.493912,-93.507389]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
