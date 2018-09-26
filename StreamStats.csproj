@@ -83,6 +83,7 @@
     <Content Include="src\Views\navreportmodal.html" />
     <Content Include="src\Views\reportview.html" />
     <Content Include="src\Views\sidebarview.html" />
+    <Content Include="src\Views\prosperview.html" />
     <Content Include="src\Views\stormrunoff.html" />
     <Content Include="src\Views\wateruse.html" />
     <Content Include="web.config" />
@@ -116,12 +117,14 @@
     <TypeScriptCompile Include="src\Controllers\ReportController.ts" />
     <TypeScriptCompile Include="src\Controllers\SidebarController.ts" />
     <TypeScriptCompile Include="src\Controllers\StormRunoffController.ts" />
+    <TypeScriptCompile Include="src\Controllers\ProsperController.ts" />
     <TypeScriptCompile Include="src\Controllers\WateruseController.ts" />
     <TypeScriptCompile Include="src\Models\CoordinatedReach.ts" />
     <TypeScriptCompile Include="src\Models\NetworkNavModels.ts" />
     <TypeScriptCompile Include="src\Models\RegulationParameter.ts" />
     <TypeScriptCompile Include="src\Models\StudyArea.ts" />
     <TypeScriptCompile Include="src\Models\WatershedEDL.ts" />
+    <TypeScriptCompile Include="src\Services\ProsperService.ts" />
     <TypeScriptCompile Include="src\Services\ExplorationService.ts" />
     <TypeScriptCompile Include="src\Services\ModalService.ts" />
     <TypeScriptCompile Include="src\Services\nssService.ts" />

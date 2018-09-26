@@ -136,6 +136,16 @@ module StreamStats.Services {
                             backdrop: 'static',
                             windowClass: 'windowZ'
                         };
+                    case SSModalType.e_prosper:
+                        return {
+                            templateUrl: 'Views/prosperview.html',
+                            controller: 'StreamStats.Controllers.ProsperController',
+                            size: 'sm',
+                            backdropClass: 'backdropZ',
+                            backdrop: 'static',
+                            windowClass: 'windowZ',
+
+                        };
      
                     default:
                         return null;
@@ -155,7 +165,8 @@ module StreamStats.Services {
         e_help = 4,
         e_navreport = 5,
         e_exploration = 6,
-        e_stormrunnoff =7
+        e_stormrunnoff = 7,
+        e_prosper = 8
         
     }
 

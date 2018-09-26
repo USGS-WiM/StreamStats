@@ -165,14 +165,14 @@ var StreamStats;
                 try {
                     this.CanContinue = false;
                     this.EventManager.SubscribeToEvent(StreamStats.Services.onSelectedStudyParametersLoaded, this.parameterloadedEventHandler);
-                    var url = configuration.baseurls.SSURGOexCO.queryparams['SSURGOexCO'].format(this.studyAreaService.selectedStudyArea.FeatureCollection.bbox);
-                    var request = new WiM.Services.Helpers.RequestInfo(url);
+                    var url = configuration.baseurls['ScienceBase'] + configuration.queryparams['SSURGOexCOMS'] + configuration.queryparams['SSURGOexCO'].format(this.studyAreaService.selectedStudyArea.FeatureCollection.bbox);
+                    var request = new WiM.Services.Helpers.RequestInfo(url, true);
                     this.Execute(request).then(function (response) {
                         _this.showResults = true;
                         //sm when complete
                         _this.excludearea = response.data;
-                        if (_this.excludearea.count.value > 0) {
-                            alert("Due to a lack of SSURGO data in the selected basin, the computed runoff curve number should be used at your discretion.");
+                        if (_this.excludearea.count > 0) {
+                            alert("The selected basin may have inadequate SSURGO data to properly compute the runoff curve number.");
                         }
                     }, function (error) {
                         var x = error;
