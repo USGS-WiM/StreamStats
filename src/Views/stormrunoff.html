@@ -28,9 +28,9 @@
                         <input ng-if="vm.SelectedTab == 1" type="number" ng-model="vm.SelectedPrecip.value" required />
                         <input ng-if="vm.SelectedTab == 2" type="number" ng-model="vm.PIntensity" required />
                         <br />
-                        <div ng-repeat="characteristic in vm.SelectedParameterList track by $index">
+                        <div ng-repeat="characteristic in vm.SelectedParameterList track by $index" style="max-width:inherit;">
                             <br />
-                            <div style="white-space:nowrap">
+                            <div> <!-- style="white-space:nowrap;">-->
                                 <label>{{characteristic.name}} ({{characteristic.code == "DRNAREA" && vm.SelectedTab == 2 ? "acres" : characteristic.unit}})</label>
                                 <label ng-if="characteristic.code == 'DRNAREA' && vm.DASizeAlert" class="orange"><span class="fa fa-exclamation-triangle orange"></span>&nbsp;{{vm.DASizeAlert}}</label>
                             </div>
@@ -41,11 +41,11 @@
                         <label class="fullwidth alignc" ng-if="vm.validateForm(mainForm) && !vm.hideAlerts"><span class="fa fa-check"></span>&nbsp;Parameters Have Been Calculated</label>
                         <label class="fullwidth" ng-if="!vm.validateForm(mainForm) || (vm.validateForm(mainForm) && vm.hideAlerts)">&nbsp;&nbsp;</label>
                         <div class="hidden-print">
-                            <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.CalculateParameters()" ng-hide="vm.validateForm(mainForm)"><span ng-class="vm.CanContinue ? 'fa fa-calculator' : 'fa fa-refresh fa-spin'"></span>&nbsp;Calculate Missing Parameters</button>
-                            <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-red" ng-click="vm.ClearResults()" ng-hide="!vm.validateForm(mainForm)"><span class="fa fa-trash-o"></span>&nbsp;Clear All</button>
-                            <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.GetStormRunoffResults()" ng-hide="!vm.validateForm(mainForm)"><span ng-class="vm.CanContinue ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></span>{{ vm.showResults ? '&nbsp;Recalculate Results' : '&nbsp;Continue' }}</button>
+                            <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.CalculateParameters()" ng-hide="vm.validateForm(mainForm)"><span ng-class="vm.CanContinue ? 'fa fa-calculator' : 'fa fa-refresh fa-spin'"></span>&nbsp;&nbsp;Calculate Missing Parameters</button>
+                            <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-red" ng-click="vm.ClearResults()" ng-hide="!vm.validateForm(mainForm)"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;Clear All</button>
+                            <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.GetStormRunoffResults()" ng-hide="!vm.validateForm(mainForm)"><span ng-class="vm.CanContinue ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></span>{{ vm.showResults ? '&nbsp;&nbsp;Recalculate Results' : '&nbsp;&nbsp;Continue' }}</button>
                         </div>
-                        <label class="fullwidth alignc orange" ng-if="!vm.validateForm(mainForm)"><span class="fa fa-exclamation-triangle"></span>&nbsp;Parameters Must Be Entered Before Results Can Be Calculated</label>
+                        <label class="fullwidth alignc orange" ng-if="!vm.validateForm(mainForm)"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Parameters Must Be Entered Before Results Can Be Calculated</label>
                         <label ng-if="vm.validateForm(mainForm)">&nbsp;&nbsp;</label>
                     </form>
                     <div ng-if="vm.showResults">

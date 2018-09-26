@@ -63,7 +63,6 @@
     <None Include=".typingsrc" />
     <Content Include="gulpfile.js" />
     <Content Include="src\appConfig.js" />
-    <Content Include="src\Assets\JS\d3Extension.js" />
     <Content Include="src\css\custom.css" />
     <Content Include="src\css\main.css" />
     <Content Include="src\images\usgs-logo-black.png" />
