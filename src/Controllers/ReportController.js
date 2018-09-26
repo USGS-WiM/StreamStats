@@ -445,6 +445,7 @@ var StreamStats;
                                     Name: nm,
                                     Region: regRegion.PercentWeight ? regRegion.PercentWeight.toFixed(0) + "% " + regRegion.Name : regRegion.Name,
                                     Statistic: regResult.Name,
+                                    Code: regResult.code,
                                     Value: regResult.Value.toUSGSvalue(),
                                     Unit: regResult.Unit.Unit,
                                     Disclaimers: regRegion.Disclaimer ? regRegion.Disclaimer : undefined,

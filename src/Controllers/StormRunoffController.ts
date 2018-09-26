@@ -236,16 +236,17 @@ module StreamStats.Controllers {
             try {
                 this.CanContinue = false;
                 this.EventManager.SubscribeToEvent(Services.onSelectedStudyParametersLoaded, this.parameterloadedEventHandler);
-                var url = configuration.baseurls.SSURGOexCO.queryparams['SSURGOexCO'].format(this.studyAreaService.selectedStudyArea.FeatureCollection.bbox);
-                var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url);
-
+                
+                var url: string = configuration.baseurls['ScienceBase'] + configuration.queryparams['SSURGOexCOMS'] + configuration.queryparams['SSURGOexCO'].format(this.studyAreaService.selectedStudyArea.FeatureCollection.bbox);
+                var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
+                
                 this.Execute(request).then(
                     (response: any) => {
                         this.showResults = true;
                         //sm when complete
                         this.excludearea = response.data;
-                        if (this.excludearea.count.value > 0) {
-                            alert("Due to a lack of SSURGO data in the selected basin, the computed runoff curve number should be used at your discretion.");
+                        if (this.excludearea.count > 0) {
+                            alert("The selected basin may have inadequate SSURGO data to properly compute the runoff curve number.");
                         }
                     }, (error) => {
                         var x = error;
@@ -255,6 +256,7 @@ module StreamStats.Controllers {
                         this.hideAlerts = true;
                     }
                 );
+
                 //add to studyareaservice if not already there
                 for (var i = 0; i < this.SelectedParameterList.length; i++) {
                     let param = this.SelectedParameterList[i];

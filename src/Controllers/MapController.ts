@@ -169,6 +169,11 @@ module StreamStats.Controllers {
         public set selectedExplorationMethodType(val: Services.ExplorationMethodType) {  
             this.explorationService.setMethod(val, {});
         }
+
+        private _prosperIsActive: boolean = false;
+        public get ProsperIsActive(): boolean {
+            return this._prosperIsActive;
+        }
         //public explorationMethodBusy: boolean = false;
         private environment: string;
         public explorationToolsExpanded: boolean = false;
@@ -179,8 +184,8 @@ module StreamStats.Controllers {
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack'];
-        constructor(public $scope: IMapControllerScope, toaster, $analytics, $location: ng.ILocationService, $stateParams, leafletBoundsHelper: any, leafletData: ILeafletData, search: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, exploration: Services.IExplorationService, eventManager: WiM.Event.IEventManager, private modal: Services.IModalService, private modalStack: ng.ui.bootstrap.IModalStackService,) {
+        static $inject = ['$scope', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack'];
+        constructor(public $scope: IMapControllerScope, toaster, $analytics, $location: ng.ILocationService, $stateParams, leafletBoundsHelper: any, leafletData: ILeafletData, search: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, exploration: Services.IExplorationService, private _prosperServices: Services.IProsperService, eventManager: WiM.Event.IEventManager, private modal: Services.IModalService, private modalStack: ng.ui.bootstrap.IModalStackService) {
             $scope.vm = this;
             
             this.toaster = toaster;
@@ -251,11 +256,17 @@ module StreamStats.Controllers {
 
                 //console.log('test',this.explorationService.drawElevationProfile)
 
-                //listen for delineate click if ready
+                //listen for click
+                if (this._prosperServices.CanQuery) {
+                    this._prosperServices.GetPredictionValues(args.leafletEvent, this.bounds)
+                    return;
+                }
+
                 if (this.studyArea.doDelineateFlag) {
                     this.checkDelineatePoint(args.leafletEvent.latlng);
                     return;
                 }
+                
 
                 //check if in edit mode
                 if (this.studyArea.showEditToolbar) return;
@@ -324,6 +335,13 @@ module StreamStats.Controllers {
                 }
             });
 
+            $scope.$watch(() => this._prosperServices.DisplayedPrediction, (newval, oldval) => {
+                if (newval && this.ProsperIsActive) {   
+                    this.removeOverlayLayers("prosper",true)
+                    this.AddProsperLayer(newval.id);
+                }
+            });
+
 
             //$scope.$watch(() => this.explorationService.selectedMethod, (newval, oldval) => {
             //    if (newval) {
@@ -379,7 +397,25 @@ module StreamStats.Controllers {
 
             this.explorationService.ExecuteSelectedModel();
         }
-        
+
+        public ToggleProsper(): void {
+            if (this._prosperIsActive) {
+                this._prosperIsActive = false;
+                this._prosperServices.CanQuery = false;
+                this.removeOverlayLayers("prosper",true)
+            }
+            else {
+                this._prosperIsActive = true;
+                //add prosper maplayers
+                this.AddProsperLayer(this._prosperServices.DisplayedPrediction.id);
+                this.ConfigureProsper();
+            }//end if
+        }
+        public ConfigureProsper(): void {
+            this.modal.openModal(Services.SSModalType.e_prosper);
+            //check if this bounds is outside of project bound, if so set proj extent
+            //this.bounds = this.leafletBoundsHelperService.createBoundsFromArray(this._prosperServices.projectExtent);
+        }
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         private init(): void { 
@@ -1157,7 +1193,15 @@ module StreamStats.Controllers {
             }
             
         }
-
+        private AddProsperLayer( id:number) {
+            this.layers.overlays["prosper"+id] = new Layer("Prosper Layer", configuration.baseurls['ScienceBase'] + configuration.queryparams['ProsperPredictions'],
+                "agsDynamic", true, {
+                    "opacity": 1,
+                    "layers": [id],
+                    "format": "png8",
+                    "f": "image"
+                });
+        }
         private removeGeoJson(layerName: string = "") {
             for (var k in this.geojson) {
                 if (typeof this.geojson[k] !== 'function') {
