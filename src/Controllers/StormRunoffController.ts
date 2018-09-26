@@ -95,6 +95,7 @@ module StreamStats.Controllers {
         public showPrint: boolean;
         public ReportOptions: any;
         public result: any;
+        public excludearea: any;
 
         private _selectedTab: StormRunoffType;
         public get SelectedTab(): StormRunoffType {
@@ -106,6 +107,7 @@ module StreamStats.Controllers {
                 this.selectRunoffType();
             }//end if           
         }
+
         public get SelectedParametersAreValid(): boolean {
             for (var i = 0; i < this.SelectedParameterList.length; i++) {
                 var item = this.SelectedParameterList[i];
@@ -152,8 +154,6 @@ module StreamStats.Controllers {
             this.print = function () {
                 window.print();
             };
-
-            //this.BrowserAlert();
         }  
         
         //Methods  
@@ -166,6 +166,7 @@ module StreamStats.Controllers {
                 var headers = {
                     "Content-Type": "application/json"
                 };
+
                 if (this.SelectedTab == 1) {
                     let equation = StormRunoffType.TR55;
                     var url = configuration.queryparams['StormRunoffTR55'].format(this.SelectedParameterList[0].value, this.SelectedPrecip.value, this.SelectedParameterList[1].value, this.SelectedPrecip.code);
@@ -222,11 +223,11 @@ module StreamStats.Controllers {
                 this.studyAreaService.studyAreaParameterList[i].value = null;
                 //this.SelectedParameterList[i].value = null;
             }
+
             this.SelectedPrecip = this.PrecipOptions[0];
             this.SelectedPrecip.value = null;
             this.DrnAreaAcres = null;
             this.PIntensity = null;
-
             this.showResults = false;
         }
 
@@ -235,7 +236,26 @@ module StreamStats.Controllers {
             try {
                 this.CanContinue = false;
                 this.EventManager.SubscribeToEvent(Services.onSelectedStudyParametersLoaded, this.parameterloadedEventHandler);
-            //add to studyareaservice if not already there
+                var url = configuration.baseurls.SSURGOexCO.queryparams['SSURGOexCO'].format(this.studyAreaService.selectedStudyArea.FeatureCollection.bbox);
+                var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url);
+
+                this.Execute(request).then(
+                    (response: any) => {
+                        this.showResults = true;
+                        //sm when complete
+                        this.excludearea = response.data;
+                        if (this.excludearea.count.value > 0) {
+                            alert("Due to a lack of SSURGO data in the selected basin, the computed runoff curve number should be used at your discretion.");
+                        }
+                    }, (error) => {
+                        var x = error;
+                        //sm when error                    
+                    }).finally(() => {
+                        this.CanContinue = true;
+                        this.hideAlerts = true;
+                    }
+                );
+                //add to studyareaservice if not already there
                 for (var i = 0; i < this.SelectedParameterList.length; i++) {
                     let param = this.SelectedParameterList[i];
                     if (this.checkArrayForObj(this.studyAreaService.studyAreaParameterList, param) == -1){
@@ -246,9 +266,7 @@ module StreamStats.Controllers {
                 if (this.SelectedPrecip != null && this.checkArrayForObj(this.studyAreaService.studyAreaParameterList, this.SelectedPrecip) == -1)
                     this.studyAreaService.studyAreaParameterList.push(this.SelectedPrecip);
 
-                this.studyAreaService.loadParameters();
-                
-                
+                this.studyAreaService.loadParameters();                 
             } catch (e) {
                 console.log("oops CalculateParams failed to load ",e)
             }
@@ -265,8 +283,8 @@ module StreamStats.Controllers {
                     }
                     return;
                 default: //case StormRunoffType.RationalMethod
-                    if (this.DrnAreaAcres > 90) {
-                        this.DASizeAlert = "Value is greater than recommended maximum threshold of 90 acres"
+                    if (this.DrnAreaAcres > 200) {
+                        this.DASizeAlert = "Value is greater than recommended maximum threshold of 200 acres"
                     } else {
                         this.DASizeAlert = null;
                     }
@@ -277,12 +295,12 @@ module StreamStats.Controllers {
         public Close(): void {
             this.modalInstance.dismiss('cancel')
         }
+
         public Reset(): void {
             this.init();
         }
 
         private downloadCSV() {
-
             //ga event
             this.angulartics.eventTrack('Download', { category: 'Report', label: 'CSV' });
 
@@ -348,6 +366,7 @@ module StreamStats.Controllers {
 
             //download
             var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
+
             if (navigator.msSaveBlob) { // IE 10+
                 navigator.msSaveBlob(blob, filename);
             } else {
@@ -393,6 +412,7 @@ module StreamStats.Controllers {
                 this.GraphXValues.length = 0;
                 var firsttime;
                 var count = 0;
+
                 for (var k in this.result) {
                     var dur = this.result[k].duration;
                     var t;
@@ -402,17 +422,21 @@ module StreamStats.Controllers {
                     hydrograph.push({ x: t, y: this.result[k].q });
                     hyetograph.push({ x: t, y: this.result[k].p });
                 }
+
                 hydrograph.sort((a, b) => a.x - b.x);
                 hyetograph.sort((a, b) => a.x - b.x);
                 firsttime = hydrograph[0].x;
+
                 for (var time in hydrograph) {
                     hydrograph[time].label = this.getTimeSpan(firsttime, hydrograph[time].x);
                     hyetograph[time].label = this.getTimeSpan(firsttime, hyetograph[time].x);
                 }
+
                 for (var d in hydrograph) {
                     hydrograph[d].hours = this.computeHours(firsttime, hydrograph[d].x);
                     hyetograph[d].hours = this.computeHours(firsttime, hydrograph[d].x);
                 }
+
                 this.loadGraphLabels(hydrograph);
                 this.loadGraphXValues(hydrograph);
                 this.loadPadY(hydrograph);
@@ -434,6 +458,7 @@ module StreamStats.Controllers {
             this.ReportData.TR55.ExcessPrecip = 0;
             var tableFields: any = [];
             var tableValues: any = [];
+
             try {
                 for (var k in this.result) {
                     var dur = this.result[k].duration;
@@ -455,14 +480,14 @@ module StreamStats.Controllers {
                     this.setInfiltration(this.result[k].pl);
                     this.setExcessPrecip(this.result[k].dPe);
                 }
+
                 tableValues.sort((a, b) => a.time - b.time);
                 firsttime = tableValues[0].time;
+
                 for (var t in tableValues) {
                     tableValues[t].span = this.getTimeSpan(firsttime, tableValues[t].time);
                 }
                 return { "values": tableValues, "Fields": tableFields}
-
-
             } catch (e) {
                 var x = e;
             }
@@ -573,7 +598,6 @@ module StreamStats.Controllers {
             } catch (e) {
                 var x = e;
             }
-
         }
 
         private setGraphOptions(): void {
@@ -619,13 +643,16 @@ module StreamStats.Controllers {
                                 } else {
                                     h = hours;
                                 }
+
                                 if (minutes < 10) {
                                     m = "0" + minutes;
                                 } else {
                                     m = minutes;
                                 }
+
                                 var time = h + ":" + m;
                                 var rows = "";
+
                                 for (var i in d.series) {
                                     var x = parseFloat(d.series[i].value);
                                     var ydatatype;
@@ -646,6 +673,7 @@ module StreamStats.Controllers {
                                         "<td><strong>" + ydatatype + "</strong></td>" +
                                         "</tr>";
                                 }
+
                                 var header = "<thead>" +
                                         "<tr>" +
                                     "<td colspan='3'><b>" + time + "</b> (HH:mm)</td>" +
@@ -738,7 +766,6 @@ module StreamStats.Controllers {
 
         private detectIE(): boolean {
             var ua = window.navigator.userAgent;
-
             var msie = ua.indexOf('MSIE ');
             var version;
 
@@ -749,6 +776,7 @@ module StreamStats.Controllers {
             }
 
             var trident = ua.indexOf('Trident/');
+
             if (trident > 0) {
                 // IE 11 => return version number
                 var rv = ua.indexOf('rv:');
@@ -768,9 +796,9 @@ module StreamStats.Controllers {
 
             return false;
         }
+
         //Helper Methods
-        //-+-+-+-+-+-+-+-+-+-+-+-
-        
+        //-+-+-+-+-+-+-+-+-+-+-+-        
         private init(): void {            
             this.SelectedTab = StormRunoffType.TR55;
             this.showResults = false;
@@ -789,6 +817,7 @@ module StreamStats.Controllers {
             this.CanContinue = true;
             //alert("Parameters loaded");
         }
+
         private selectRunoffType() {
             switch (this._selectedTab) {
                 case StormRunoffType.TR55:
@@ -802,14 +831,16 @@ module StreamStats.Controllers {
                     this.showResults = false;
                     break;
             }
+
             this.PrecipOptions = this.regionParameters.filter(f => { return ["I6H2Y", "I6H100Y", "I24H2Y", "I24H100Y"].indexOf(f.code) != -1 });
             this.PrecipOptions.forEach(p => p.value = (isNaN(p.value) ? null : p.value));
+
             if (!this.SelectedPrecip) {
                 this.SelectedPrecip = this.PrecipOptions[0];
             }
         }
-        private tableToCSV($table) {
 
+        private tableToCSV($table) {
             var $headers = $table.find('tr:has(th)')
                 , $rows = $table.find('tr:has(td)')
 
@@ -838,6 +869,7 @@ module StreamStats.Controllers {
                     .split(tmpRowDelim).join(rowDelim)
                     .split(tmpColDelim).join(colDelim);
             }
+
             // Grab and format a row from the table
             function grabRow(i, row) {
 
@@ -849,6 +881,7 @@ module StreamStats.Controllers {
                 return $cols.map(grabCol)
                     .get().join(tmpColDelim);
             }
+
             // Grab and format a column from the table 
             function grabCol(j, col) {
                 var $col = $(col),
@@ -858,6 +891,7 @@ module StreamStats.Controllers {
 
             }
         }
+
         private checkArrayForObj(arr, obj):number {
             for (var i = 0; i < arr.length; i++) {
                 if (angular.equals(arr[i], obj)) {
@@ -866,9 +900,11 @@ module StreamStats.Controllers {
             };
             return -1;
         }
+
         private rand(min: number, max: number): any {
             return parseInt(<any>(Math.random() * (max - min + 1)), 10) + min;
         }
+
         private computeTime(time, dur): any {
             var newtime = new Date('January 1, 2018 00:00:00');
             //for SW region, time is a percentage
@@ -880,12 +916,14 @@ module StreamStats.Controllers {
 
             return newtime;
         }
+
         private computeHours(firsttime, newtime): any {
             var millisec = newtime - firsttime;
             var hours = millisec / (1000 * 60 * 60); 
 
             return hours;
         }
+
         private getTimeSpan(firsttime, newtime): any {
             var millisec = newtime - firsttime;
             var minutes = ((millisec / (1000 * 60)) % 60);
@@ -898,6 +936,7 @@ module StreamStats.Controllers {
             } else {
                 h = hours;
             }
+
             if (minutes < 10) {
                 m = "0" + minutes;
             } else {
@@ -906,11 +945,13 @@ module StreamStats.Controllers {
 
             return h + ":" + m;
         }
+
         private loadGraphLabels(data): void {
             for (var i in data) {
                 this.GraphLabels[i] = data[i].span;
             }
         }
+
         private loadGraphXValues(data): void {
             var count = 0;
             if (this.duration == 24) {
@@ -926,6 +967,7 @@ module StreamStats.Controllers {
                 }
             }
         }
+
         //used for Y2 label distance
         private loadPadY(data): void {
             var max = Math.max.apply(Math, data.map(function (o) { return o.y; }));
@@ -939,16 +981,19 @@ module StreamStats.Controllers {
                 this.padY = 30;
             }
         }
+
         //used for Y domain
         private loadDomainY(data): void {
             var max = Math.max.apply(Math, data.map(function (o) { return o.y; }));
             this.domainY = [0, Math.round((max + max * 0.18) / 10) * 10]; 
         }
+
         //used for Y2 domain
         private loadDomainY2(data): void {
             var max = Math.max.apply(Math, data.map(function (o) { return o.y; }));
             this.domainY2 = [0, max + max * 0.18];
         }
+
         //used for Y2 label distance
         private loadPadY2(data): void {
             var max = Math.max.apply(Math, data.map(function (o) { return o.y; }));
@@ -958,6 +1003,7 @@ module StreamStats.Controllers {
                 this.padY2 = -10;
             }
         }
+
         private sortByKey(array, key): any {
             return array.sort(function (a, b) {
                 var x = a[key]; var y = b[key];

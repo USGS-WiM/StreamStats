@@ -55,7 +55,6 @@ var StreamStats;
                     window.print();
                 };
                 return _this;
-                //this.BrowserAlert();
             }
             Object.defineProperty(StormRunoffController.prototype, "SelectedPrecip", {
                 get: function () {
@@ -162,9 +161,26 @@ var StreamStats;
                 this.showResults = false;
             };
             StormRunoffController.prototype.CalculateParameters = function () {
+                var _this = this;
                 try {
                     this.CanContinue = false;
                     this.EventManager.SubscribeToEvent(StreamStats.Services.onSelectedStudyParametersLoaded, this.parameterloadedEventHandler);
+                    var url = configuration.baseurls.SSURGOexCO.queryparams['SSURGOexCO'].format(this.studyAreaService.selectedStudyArea.FeatureCollection.bbox);
+                    var request = new WiM.Services.Helpers.RequestInfo(url);
+                    this.Execute(request).then(function (response) {
+                        _this.showResults = true;
+                        //sm when complete
+                        _this.excludearea = response.data;
+                        if (_this.excludearea.count.value > 0) {
+                            alert("Due to a lack of SSURGO data in the selected basin, the computed runoff curve number should be used at your discretion.");
+                        }
+                    }, function (error) {
+                        var x = error;
+                        //sm when error                    
+                    }).finally(function () {
+                        _this.CanContinue = true;
+                        _this.hideAlerts = true;
+                    });
                     //add to studyareaservice if not already there
                     for (var i = 0; i < this.SelectedParameterList.length; i++) {
                         var param = this.SelectedParameterList[i];
@@ -191,8 +207,8 @@ var StreamStats;
                         }
                         return;
                     default:
-                        if (this.DrnAreaAcres > 90) {
-                            this.DASizeAlert = "Value is greater than recommended maximum threshold of 90 acres";
+                        if (this.DrnAreaAcres > 200) {
+                            this.DASizeAlert = "Value is greater than recommended maximum threshold of 200 acres";
                         }
                         else {
                             this.DASizeAlert = null;
@@ -675,7 +691,7 @@ var StreamStats;
                 return false;
             };
             //Helper Methods
-            //-+-+-+-+-+-+-+-+-+-+-+-
+            //-+-+-+-+-+-+-+-+-+-+-+-        
             StormRunoffController.prototype.init = function () {
                 this.SelectedTab = StormRunoffType.TR55;
                 this.showResults = false;
