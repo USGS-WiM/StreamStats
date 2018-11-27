@@ -499,10 +499,7 @@ module StreamStats.Controllers {
             //console.log('in query regional layers');
             this.toaster.pop("wait", "Information", "Querying Points...", 0);
             this.cursorStyle = 'wait';
-            this.markers = {};
-
-            //report ga event
-            this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'queryPoints' });
+            this.markers = {};        
 
             this.leafletData.getMap("mainMap").then((map: any) => {
                 this.leafletData.getLayers("mainMap").then((maplayers: any) => {
@@ -534,110 +531,6 @@ module StreamStats.Controllers {
                         }
                         this.queryContent.requestCount++;        
                     }//next lyr
-                    //QUERY STATE LAYERS (if applicable)
-                    ////if (this.regionServices.selectedRegion) {
-                    ////    maplayers.overlays[this.regionServices.selectedRegion.RegionID + "_region"].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).run((error: any, results: any) => {
-                    ////        //console.log('queried state/regional layers');
-
-                    ////        var regionLayers = $("<div>").attr("id", 'regionLayers').appendTo(popupContent);
-
-                    ////        this.toaster.clear();
-                    ////        this.cursorStyle = 'pointer';
-
-                    ////        //loop over each identify result
-                    ////        results.features.forEach((queryResult) => {
-
-                    ////            //get layer name for result
-                    ////            this.layers.overlays[this.regionServices.selectedRegion.RegionID + "_region"].layerArray.forEach((item) => {
-                    ////                if (item.layerId === queryResult.layerId) {
-
-                    ////                    var layerName = item.layerName;
-                    ////                    if (layerName === 'Bridge') {
-
-                    ////                        resultsCount += 1;
-                    ////                        regionLayers.append('<h5>' + layerName + '</h5>');
-                    ////                        //loop over properties of each result
-                    ////                        angular.forEach(queryResult.properties, function (value, key) {
-                    ////                            regionLayers.append('<strong>' + key + ': </strong>' + value + '</br>');
-
-                    ////                        }); 
-                    ////                    }
-                    ////                }
-                    ////                if (resultsCount > 0) {
-                    ////                    map.openPopup(popupContent.html(), [evt.latlng.lat, evt.latlng.lng], { maxHeight: 200 });
-                    ////                    this.toaster.clear();
-                    ////                }
-                    ////                else {
-                    ////                    this.toaster.pop("warning", "Information", "No points were found at this location", 5000);
-                    ////                }
-                    ////            });
-                    ////        });
-                    ////    });
-                    ////}
-
-                    //////QUERY NATIONAL LAYERS
-                    ////maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).run((error: any, results: any) => {
-                    ////    //console.log('queried national layers');
-
-                    ////    var nationalLayers = $("<div>").attr("id", 'nationalLayers').appendTo(popupContent);
-
-                    ////    this.toaster.clear();
-                    ////    this.cursorStyle = 'pointer';
-
-                    ////    //loop over each identify result
-                    ////    results.features.forEach((queryResult) => {
-
-                    ////        //get layer name for result
-                    ////        var layerName;
-                    ////        this.layers.overlays["SSLayer"].layerArray.forEach((item) => {
-                    ////            if (item.layerId === queryResult.layerId) layerName = item.layerName;
-                    ////        });
-                    ////        //console.log('query result:', layerName, queryResult);
-    
-                    ////        //clean up streamgages results
-                    ////        if (layerName === 'Streamgages') {
-                    ////            resultsCount += 1;
-                    ////            var streamgagePopupKeyList = [{ name: 'sta_id', label: 'Station ID' }, { name: 'sta_name', label: 'Station Name' }, { name: 'latitude', label: 'Latitude' }, { name: 'longitude', label: 'Longitude' }, { name: 'featureurl', label: 'URL' }];
-                    ////            nationalLayers.append('<h5>' + layerName + '</h5>');
-                    ////            angular.forEach(streamgagePopupKeyList, function (obj, v) {
-
-                    ////                //loop over properties of each result
-                    ////                angular.forEach(queryResult.properties, function (value, key) {
-
-                    ////                    if (obj.name === key) {
-                    ////                        if (key == "featureurl") {
-
-                    ////                            var siteNo = value.split('site_no=')[1];
-                    ////                            var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm'
-
-                    ////                            nationalLayers.append('<strong>NWIS page: </strong><a href="' + value + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br>');
-
-                    ////                        }
-                    ////                        else {
-                    ////                            nationalLayers.append('<strong>' + obj.label + ': </strong>' + value + '</br>');
-                    ////                        }
-                    ////                    }
-                    ////                });
-                    ////            });
-                    ////        }
-
-                    ////        //otherwise just dump key values for non streamgage layers
-                    ////        else {
-                    ////            //nationalLayers.append('<h5>' + layerName + '</h5>');
-                    ////            //nationalLayers.append('<strong>' + key + ': </strong>' + value + '</br>');
-                    ////        }
-                         
-                    ////        //show popup
-                    ////        if (resultsCount > 0) {
-                    ////            map.openPopup(popupContent.html(), [evt.latlng.lat, evt.latlng.lng], { maxHeight: 200 });
-                    ////            this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'streamgageQuery' });
-                    ////            this.toaster.clear();
-                    ////        }
-                    ////        else {
-                    ////            this.toaster.pop("warning", "Information", "No points were found at this location", 5000);
-                    ////        }
-                    ////    });
-                    ////});
                 });
             });
         }
@@ -650,6 +543,9 @@ module StreamStats.Controllers {
                     if (["StreamGrid", "ExcludePolys", "Region", "Subregion", "Basin", "Subbasin", "Watershed", "Subwatershed"].indexOf(item.layerName) > -1) return;                    
                     querylayers.append('<h5>' + item.layerName + '</h5>');
                     this.queryContent.responseCount++;
+                    //report ga event
+                    this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'queryPoints' });
+
                     //show only specified fields (if applicable)
                     if (this.layers.overlays[lyr].hasOwnProperty("queryProperties") && this.layers.overlays[lyr].queryProperties.hasOwnProperty(item.layerName)) {
                         let queryProperties = this.layers.overlays[lyr].queryProperties[item.layerName];
@@ -1009,7 +905,7 @@ module StreamStats.Controllers {
 
         private basinEditor() {
 
-            var basin = angular.fromJson(angular.toJson(this.geojson['globalwatershed'].data.features[0]));
+            var basin = angular.fromJson(angular.toJson(this.geojson['globalwatershed'].data));
             var basinConverted = [];
             basin.geometry.coordinates[0].forEach((item) => { basinConverted.push([item[1], item[0]]) });
 
@@ -1073,7 +969,7 @@ module StreamStats.Controllers {
                         //console.log('edited basin', basin);
                         
                         //show new polygon
-                        this.geojson['globalwatershed'].data.features[0] = basin;
+                        this.geojson['globalwatershed'].data = basin;
                         drawnItems.clearLayers();
                         //console.log('editedAreas', angular.toJson(this.studyArea.WatershedEditDecisionList));
                     });
