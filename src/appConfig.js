@@ -233,7 +233,7 @@ configuration.regions = [
                 "queryProperties": { "Regulation Points": {"Source_Fea":"Description", "Source_Dat": "Source" } }
             }
         },
-        "Applications": ["Regulation", "RegulationFlows", "StormRunoff"],
+        "Applications": ["Regulation", "StormRunoff"],
         "regionEnabled": true,
         "ScenariosAvailable": true
     },
