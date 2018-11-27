@@ -56,7 +56,9 @@ configuration.queryparams =
         'StormRunoffRationalMethod': '/RationalMethod?area={0}&precipint={1}&rcoeff={2}&pdur={3}',
         'ProsperPredictions': '/rest/services/Catalog/5b416046e4b060350a125fe4/MapServer',
         'ProsperSPPPredictions': '/rest/services/Catalog/5b416046e4b060350a125fe4/MapServer',
-        'ProsperIdentify': '/identify?layers=all:{0}&tolerance=5&returnGeometry=false&imageDisplay={1}&mapExtent={2}&geometry={3}&sr={4}&geometryType=esriGeometryPoint&f=json'
+        'ProsperIdentify': '/identify?layers=all:{0}&tolerance=5&returnGeometry=false&imageDisplay={1}&mapExtent={2}&geometry={3}&sr={4}&geometryType=esriGeometryPoint&f=json',
+        'SSURGOexCOMS': '/rest/services/Catalog/5b96f40ce4b0702d0e8272bf/MapServer',
+        'SSURGOexCO': '/0/query?geometry={0}&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelContains&returnGeometry=false&returnIdsOnly=false&returnCountOnly=true&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson'
     };
 
 configuration.SupportTicketService = {
