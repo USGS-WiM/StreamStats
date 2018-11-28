@@ -299,27 +299,32 @@ module StreamStats.Controllers {
         }
 
         public downloadShapeFile() {
-            //https://github.com/mapbox/shp-write
-            //https://www.npmjs.com/package/jszip
-            //https://stackoverflow.com/questions/34663546/empty-zip-file-when-using-jszip-and-jsziputils-with-angularjs-to-zip-multiple-im
-            var flowTable: Array<INSSResultTable> = null;
+            try {
+                //https://github.com/mapbox/shp-write
+                //https://www.npmjs.com/package/jszip
+                //https://stackoverflow.com/questions/34663546/empty-zip-file-when-using-jszip-and-jsziputils-with-angularjs-to-zip-multiple-im
+                var flowTable: Array<INSSResultTable> = null;
 
-            if (this.nssService.showFlowsTable)
-                flowTable = this.flattenNSSTable();
+                if (this.nssService.showFlowsTable)
+                    flowTable = this.flattenNSSTable();
 
-            var fc:GeoJSON.FeatureCollection = this.studyAreaService.selectedStudyArea.FeatureCollection
-            fc.features.forEach(f => {
-                f.properties["Name"] = this.studyAreaService.selectedStudyArea.WorkspaceID;
-                if (f.id && f.id == "globalwatershed") {
-                    f.properties = [f.properties, this.studyAreaService.studyAreaParameterList.reduce((dict, param) => { dict[param.code] = param.value; return dict; }, {})].reduce(function (r, o) {
-                        Object.keys(o).forEach(function (k) { r[k] = o[k]; });
-                        return r;
-                    }, {});
-                }//endif
+                var fc:GeoJSON.FeatureCollection = this.studyAreaService.selectedStudyArea.FeatureCollection
+                fc.features.forEach(f => {
+                    f.properties["Name"] = this.studyAreaService.selectedStudyArea.WorkspaceID;
+                    if (f.id && f.id == "globalwatershed") {
+                        f.properties = [f.properties, this.studyAreaService.studyAreaParameterList.reduce((dict, param) => { dict[param.code] = param.value; return dict; }, {})].reduce(function (r, o) {
+                            Object.keys(o).forEach(function (k) { r[k] = o[k]; });
+                            return r;
+                        }, {});
+                    }//endif
 
-            });
-            //this will output a zip file
-            shpwrite.download(fc, flowTable, this.disclaimer + 'Application Version: ' + this.AppVersion);    
+                });
+                //this will output a zip file
+                shpwrite.download(fc, flowTable, this.disclaimer + 'Application Version: ' + this.AppVersion);    
+
+            } catch (e) {
+                console.log(e)
+            }
         }
 
         private downloadPDF() {
