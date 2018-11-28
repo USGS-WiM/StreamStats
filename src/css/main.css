@@ -102,7 +102,9 @@ button:hover{
 */
 
 #reportMap .leaflet-control-layers.leaflet-control {
-	display: block;
+    display: block;
+    max-height: 350px;
+    overflow: auto;
 }
 
 
@@ -137,6 +139,7 @@ button:hover{
 #mainMap .leaflet-control-locate {
     display: none;
 }
+
 
 
 .leaflet-popup-content-wrapper,.leaflet-popup-content
