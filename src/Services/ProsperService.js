@@ -32,7 +32,7 @@ var StreamStats;
     var Services;
     (function (Services) {
         'use strict';
-        var ProsperService = (function (_super) {
+        var ProsperService = /** @class */ (function (_super) {
             __extends(ProsperService, _super);
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
@@ -81,12 +81,16 @@ var StreamStats;
                 var imgdsplay = this.getDisplayImageArray(evnt.originalEvent.srcElement).join();
                 var extent = this.boundsToExtentArray(bounds).join();
                 var layers = this.SelectedPredictions.map(function (r) { return r.id; }).join();
+                var layers_spp1 = this.SelectedPredictions.filter(function (r) { return r.id < 8; }).map(function (r) { return r.id; });
+                var layers_spp2 = this.SelectedPredictions.filter(function (r) { return r.id > 7; }).map(function (r) { return r.id - 8; });
                 //imageDisplay={0}mapExtent={1}&geometry={2}&sr={3}
                 var spc_url = configuration.queryparams['ProsperPredictions'] + configuration.queryparams['ProsperIdentify']
                     .format(layers, imgdsplay, extent, ppt, 4326);
-                var spp_url = configuration.queryparams['ProsperSPPPredictions'] + configuration.queryparams['ProsperIdentify']
-                    .format(layers, imgdsplay, extent, ppt, 4326);
-                this.$q.all([this.queryExecute(spc_url), this.queryExecute(spp_url)]).then(function (response) {
+                var spp_url1 = configuration.queryparams['ProsperSPPPredictions1'] + configuration.queryparams['ProsperIdentify']
+                    .format(layers_spp1, imgdsplay, extent, ppt, 4326);
+                var spp_url2 = configuration.queryparams['ProsperSPPPredictions2'] + configuration.queryparams['ProsperIdentify']
+                    .format(layers_spp2, imgdsplay, extent, ppt, 4326);
+                this.$q.all([this.queryExecute(spc_url), this.queryExecute(spp_url1), this.queryExecute(spp_url2)]).then(function (response) {
                     _this.toaster.clear();
                     _this._result = {
                         date: new Date(),
@@ -96,11 +100,18 @@ var StreamStats;
                             SPP: null
                         }
                     };
+                    var spp_data = [];
                     for (var i = 0; i < response.length; i++) {
                         if (i == 0)
                             _this._result.data.SPC = response[i];
-                        else
-                            _this._result.data.SPP = response[i];
+                        else if (i == 1 && layers_spp1.length > 0)
+                            spp_data = response[i];
+                        else if (i == 2 && layers_spp2.length > 0) {
+                            spp_data = spp_data.concat(response[i]);
+                            for (var i = 0; i < spp_data.length; i++)
+                                spp_data[i].name = spp_data[i].name.charAt(0).toUpperCase() + spp_data[i].name.slice(1).toLowerCase();
+                        }
+                        _this._result.data.SPP = spp_data;
                         //    for (var k = 0; k < response[i].length; k++) {
                         //        var obj = response[i][k]
                         //        if (!(obj.name in this._result.data)) this._result.data[obj.name] = {};
