@@ -89,6 +89,8 @@
                         <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isEdited">This watershed has been edited, computed flows may not apply.</div>
                         <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isInExclusionArea">{{vm.studyAreaService.selectedStudyArea.Disclaimers.isInExclusionArea}}</div>
                         <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.hasKarst">{{vm.studyAreaService.selectedStudyArea.Disclaimers.hasKarst}}</div>
+                        <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isSTL_MO">The resulting delineations are derived from digital elevation data and storm drain vectors that have been processed to enforce drainage through storm drains.</div>
+                        <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isSTL_MO && vm.nssService.selectedStatisticsGroupList.length > 0">Urban regression equations for peak flows were not developed using streamgages which incorporate storm drain delineations and therefore should be used with caution.</div>
                     </div>
 
                     <!--Parameter Table for Flow Report-->
@@ -113,7 +115,7 @@
                                         <td ng-bind="parameter.Code"></td>
                                         <td ng-bind="parameter.Name"></td>
                                         <td ng-class="(parameter.Value < parameter.Limits.Min) || (parameter.Value > parameter.Limits.Max) ? 'wim-warning' : ''">{{parameter.Value == -99999 ? 'undefined' : parameter.Value}}</td>
-                                        <td ng-if="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated && vm.showRegulation" ng-class="(parameter.Value < parameter.Limits.Min) || (parameter.Value > parameter.Limits.Max) ? 'wim-warning' : ''">{{parameter.unRegulatedValue == -99999 ? 'undefined' : parameter.unRegulatedValue.toFixed(3)}}</td>
+                                        <td ng-if="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated && vm.showRegulation" ng-class="(parameter.Value < parameter.Limits.Min) || (parameter.Value > parameter.Limits.Max) ? 'wim-warning' : ''">{{parameter.unRegulatedValue == -99999 ? 'undefined' : parameter.unRegulatedValue}}</td>
                                         <td ng-bind="parameter.UnitType.Unit"></td>
                                         <td ng-bind="parameter.Limits.Min"></td>
                                         <td ng-bind="parameter.Limits.Max"></td>
@@ -168,6 +170,10 @@
                     </div>
                 </div>
                 <div class="disclaimerReport">
+                    <p ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isSTL_MO">
+                        USGS Storm Drain Disclaimer:
+                        The Storm Drain methods are being provided to meet the need for timely best science and are released on the condition that neither the USGS nor the U.S. Government may be held liable for any damages resulting from authorized or unauthorized use. At his time these methods are provisional and are subject to revision until thoroughly reviewed and approved.
+                    </p>
                     <p>
                         USGS Data Disclaimer:
                         Unless otherwise stated, all data, metadata and related materials are considered to satisfy the quality standards relative to the purpose for which the data were collected. Although these data and associated metadata have been reviewed for accuracy and completeness and approved for release by the U.S. Geological Survey (USGS), no warranty expressed or implied is made regarding the display or utility of the data for other purposes, nor on all computer systems, nor shall the act of distribution constitute any such warranty.
@@ -187,17 +193,13 @@
             <div id="downloadButtons" class="hidden-print">
                 <div class="btn-group wim-btn-group" dropdown is-open="status.isopen">
                   <button type="button" class="btn-black" dropdown-toggle ng-disabled="disabled">
-                      <i class='fa fa-download'></i>&nbsp;&nbsp;Download Basin <span class="caret"></span>
+                      <i class='fa fa-download'></i>&nbsp;&nbsp;Download<span class="caret"></span>
                   </button>
                   <ul class="dropdown-menu" role="menu">
-                    <li><a href="#" ng-click="vm.downloadGeoJSON()" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="GeoJSON"><span class="fa fa-download"></span>&nbsp;&nbsp;GeoJSON</a></li>
-                    <li><a href="{{vm.studyAreaService.servicesURL}}/streamstatsservices/download?workspaceID={{vm.studyAreaService.selectedStudyArea.WorkspaceID}}&format=Shape" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="Shapefile"><span class="fa fa-download"></span>&nbsp;&nbsp;Shapefile</a></li>
-                    <li><a href="{{vm.studyAreaService.servicesURL}}/streamstatsservices/download?workspaceID={{vm.studyAreaService.selectedStudyArea.WorkspaceID}}" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="File GDB"><span class="fa fa-download"></span>&nbsp;&nbsp;ESRI File GDB</a></li>
+                      <li><a href="#" ng-click="vm.downloadGeoJSON()" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="GeoJSON"><span class="fa fa-download"></span>&nbsp;&nbsp;GeoJSON</a></li>
+                      <li><a href="#" ng-click="vm.downloadCSV()" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="CSV"><span class="fa fa-download"></span>&nbsp;&nbsp;CSV</a></li>
+                      <li><a href="#" ng-click="vm.downloadShapeFile()" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="ShapeFile"><span class="fa fa-download"></span>&nbsp;&nbsp;ShapeFile</a></li>
                   </ul>
-                </div>
-                <div class="btn-group wim-btn-group">
-                    <button type="button" class="btn-black" ng-click="vm.downloadCSV()" ><span><i class="fa fa-download"></i>&nbsp;&nbsp;Download CSV</span></button>
-                     <!--<button type="button" class="btn-wim-sm btn-wim-default" ng-click="vm.downloadPDF()" ><span><i class="fa fa-download"></i>&nbsp;&nbsp;Download PDF</span></button>-->
                 </div>
             </div>
         </div>

@@ -60,9 +60,10 @@ var StreamStats;
             return MapDefault;
         }());
         var MapController = (function () {
-            function MapController($scope, toaster, $analytics, $location, $stateParams, leafletBoundsHelper, leafletData, search, region, studyArea, StatisticsGroup, exploration, eventManager, modal, modalStack) {
+            function MapController($scope, toaster, $analytics, $location, $stateParams, leafletBoundsHelper, leafletData, search, region, studyArea, StatisticsGroup, exploration, _prosperServices, eventManager, modal, modalStack) {
                 var _this = this;
                 this.$scope = $scope;
+                this._prosperServices = _prosperServices;
                 this.modal = modal;
                 this.modalStack = modalStack;
                 this.center = null;
@@ -76,6 +77,7 @@ var StreamStats;
                 this.events = null;
                 this.layercontrol = null;
                 this.regionLayer = null;
+                this._prosperIsActive = false;
                 this.explorationToolsExpanded = false;
                 $scope.vm = this;
                 this.toaster = toaster;
@@ -137,7 +139,11 @@ var StreamStats;
                 });
                 $scope.$on('leafletDirectiveMap.mainMap.click', function (event, args) {
                     //console.log('test',this.explorationService.drawElevationProfile)
-                    //listen for delineate click if ready
+                    //listen for click
+                    if (_this._prosperServices.CanQuery) {
+                        _this._prosperServices.GetPredictionValues(args.leafletEvent, _this.bounds);
+                        return;
+                    }
                     if (_this.studyArea.doDelineateFlag) {
                         _this.checkDelineatePoint(args.leafletEvent.latlng);
                         return;
@@ -201,6 +207,12 @@ var StreamStats;
                         _this.addRegionOverlayLayers(_this.regionServices.selectedRegion.RegionID);
                     }
                 });
+                $scope.$watch(function () { return _this._prosperServices.DisplayedPrediction; }, function (newval, oldval) {
+                    if (newval && _this.ProsperIsActive) {
+                        _this.removeOverlayLayers("prosper", true);
+                        _this.AddProsperLayer(newval.id);
+                    }
+                });
                 //$scope.$watch(() => this.explorationService.selectedMethod, (newval, oldval) => {
                 //    if (newval) {
                 //        console.log('watch selectedMethod', newval);
@@ -238,6 +250,13 @@ var StreamStats;
                 enumerable: true,
                 configurable: true
             });
+            Object.defineProperty(MapController.prototype, "ProsperIsActive", {
+                get: function () {
+                    return this._prosperIsActive;
+                },
+                enumerable: true,
+                configurable: true
+            });
             //Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             MapController.prototype.setExplorationMethodType = function (val) {
@@ -255,6 +274,24 @@ var StreamStats;
                 var isOK = false;
                 this.explorationService.explorationMethodBusy = true;
                 this.explorationService.ExecuteSelectedModel();
+            };
+            MapController.prototype.ToggleProsper = function () {
+                if (this._prosperIsActive) {
+                    this._prosperIsActive = false;
+                    this._prosperServices.CanQuery = false;
+                    this.removeOverlayLayers("prosper", true);
+                }
+                else {
+                    this._prosperIsActive = true;
+                    //add prosper maplayers
+                    this.AddProsperLayer(this._prosperServices.DisplayedPrediction.id);
+                    this.ConfigureProsper();
+                } //end if
+            };
+            MapController.prototype.ConfigureProsper = function () {
+                this.modal.openModal(StreamStats.Services.SSModalType.e_prosper);
+                //check if this bounds is outside of project bound, if so set proj extent
+                //this.bounds = this.leafletBoundsHelperService.createBoundsFromArray(this._prosperServices.projectExtent);
             };
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
@@ -330,8 +367,6 @@ var StreamStats;
                 this.toaster.pop("wait", "Information", "Querying Points...", 0);
                 this.cursorStyle = 'wait';
                 this.markers = {};
-                //report ga event
-                this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'queryPoints' });
                 this.leafletData.getMap("mainMap").then(function (map) {
                     _this.leafletData.getLayers("mainMap").then(function (maplayers) {
                         //check to make sure layer is visible
@@ -341,93 +376,78 @@ var StreamStats;
                             _this.toaster.pop("warning", "Warning", "You must be at Zoom Level 9 or greater to query points", 5000);
                             return;
                         }
-                        var popupContent = $("<div>").attr("id", 'popupContent');
-                        var resultsCount = 0;
-                        //QUERY STATE LAYERS (if applicable)
-                        if (_this.regionServices.selectedRegion) {
-                            maplayers.overlays[_this.regionServices.selectedRegion.RegionID + "_region"].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).run(function (error, results) {
-                                //console.log('queried state/regional layers');
-                                var regionLayers = $("<div>").attr("id", 'regionLayers').appendTo(popupContent);
-                                _this.toaster.clear();
-                                _this.cursorStyle = 'pointer';
-                                //loop over each identify result
-                                results.features.forEach(function (queryResult) {
-                                    //get layer name for result
-                                    _this.layers.overlays[_this.regionServices.selectedRegion.RegionID + "_region"].layerArray.forEach(function (item) {
-                                        if (item.layerId === queryResult.layerId) {
-                                            var layerName = item.layerName;
-                                            if (layerName === 'Bridge') {
-                                                resultsCount += 1;
-                                                regionLayers.append('<h5>' + layerName + '</h5>');
-                                                //loop over properties of each result
-                                                angular.forEach(queryResult.properties, function (value, key) {
-                                                    regionLayers.append('<strong>' + key + ': </strong>' + value + '</br>');
-                                                });
-                                            }
-                                        }
-                                        if (resultsCount > 0) {
-                                            map.openPopup(popupContent.html(), [evt.latlng.lat, evt.latlng.lng], { maxHeight: 200 });
-                                            _this.toaster.clear();
-                                        }
-                                        else {
-                                            _this.toaster.pop("warning", "Information", "No points were found at this location", 5000);
-                                        }
-                                    });
-                                });
-                            });
-                        }
-                        //QUERY NATIONAL LAYERS
-                        maplayers.overlays["SSLayer"].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).run(function (error, results) {
-                            //console.log('queried national layers');
-                            var nationalLayers = $("<div>").attr("id", 'nationalLayers').appendTo(popupContent);
-                            _this.toaster.clear();
-                            _this.cursorStyle = 'pointer';
-                            //loop over each identify result
-                            results.features.forEach(function (queryResult) {
-                                //get layer name for result
-                                var layerName;
-                                _this.layers.overlays["SSLayer"].layerArray.forEach(function (item) {
-                                    if (item.layerId === queryResult.layerId)
-                                        layerName = item.layerName;
-                                });
-                                //console.log('query result:', layerName, queryResult);
-                                //clean up streamgages results
-                                if (layerName === 'Streamgages') {
-                                    resultsCount += 1;
-                                    var streamgagePopupKeyList = [{ name: 'sta_id', label: 'Station ID' }, { name: 'sta_name', label: 'Station Name' }, { name: 'latitude', label: 'Latitude' }, { name: 'longitude', label: 'Longitude' }, { name: 'featureurl', label: 'URL' }];
-                                    nationalLayers.append('<h5>' + layerName + '</h5>');
-                                    angular.forEach(streamgagePopupKeyList, function (obj, v) {
-                                        //loop over properties of each result
-                                        angular.forEach(queryResult.properties, function (value, key) {
-                                            if (obj.name === key) {
-                                                if (key == "featureurl") {
-                                                    var siteNo = value.split('site_no=')[1];
-                                                    var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm';
-                                                    nationalLayers.append('<strong>NWIS page: </strong><a href="' + value + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br>');
-                                                }
-                                                else {
-                                                    nationalLayers.append('<strong>' + obj.label + ': </strong>' + value + '</br>');
-                                                }
-                                            }
-                                        });
-                                    });
-                                }
-                                else {
-                                    //nationalLayers.append('<h5>' + layerName + '</h5>');
-                                    //nationalLayers.append('<strong>' + key + ': </strong>' + value + '</br>');
-                                }
-                                //show popup
-                                if (resultsCount > 0) {
-                                    map.openPopup(popupContent.html(), [evt.latlng.lat, evt.latlng.lng], { maxHeight: 200 });
-                                    _this.toaster.clear();
-                                }
-                                else {
-                                    _this.toaster.pop("warning", "Information", "No points were found at this location", 5000);
-                                }
-                            });
-                        });
+                        _this.queryContent = { requestCount: 0, Content: $("<div>").attr("id", 'popupContent'), responseCount: 0 };
+                        var _loop_1 = function (lyr) {
+                            if (!maplayers.overlays.hasOwnProperty(lyr))
+                                return "continue";
+                            //skip these layers
+                            if (["MaskLayer", "draw"].indexOf(lyr) > -1)
+                                return "continue";
+                            //visible Layers only
+                            if (!map.hasLayer(maplayers.overlays[lyr]))
+                                return "continue";
+                            switch (_this.layers.overlays[lyr].type) {
+                                case "agsFeature":
+                                    //query
+                                    maplayers.overlays[lyr].query().nearby(evt.latlng, 4).returnGeometry(false).run(function (error, results) { return _this.handleQueryResult(lyr, error, results, map, evt.latlng); });
+                                    break;
+                                default:
+                                    maplayers.overlays[lyr].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).run(function (error, results) { return _this.handleQueryResult(lyr, error, results, map, evt.latlng); });
+                            }
+                            _this.queryContent.requestCount++;
+                        };
+                        for (var lyr in maplayers.overlays) {
+                            _loop_1(lyr);
+                        } //next lyr
                     });
                 });
+            };
+            MapController.prototype.handleQueryResult = function (lyr, error, results, map, latlng) {
+                var _this = this;
+                var querylayers = $("<div>").attr("id", lyr).appendTo(this.queryContent.Content);
+                this.queryContent.requestCount--;
+                results.features.forEach(function (queryResult) {
+                    _this.layers.overlays[lyr].layerArray.forEach(function (item) {
+                        if (item.layerId !== queryResult.layerId)
+                            return;
+                        if (["StreamGrid", "ExcludePolys", "Region", "Subregion", "Basin", "Subbasin", "Watershed", "Subwatershed"].indexOf(item.layerName) > -1)
+                            return;
+                        querylayers.append('<h5>' + item.layerName + '</h5>');
+                        _this.queryContent.responseCount++;
+                        //report ga event
+                        _this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'queryPoints' });
+                        //show only specified fields (if applicable)
+                        if (_this.layers.overlays[lyr].hasOwnProperty("queryProperties") && _this.layers.overlays[lyr].queryProperties.hasOwnProperty(item.layerName)) {
+                            var queryProperties_1 = _this.layers.overlays[lyr].queryProperties[item.layerName];
+                            Object.keys(queryProperties_1).map(function (k) {
+                                if (item.layerName == "Streamgages" && k == "featureurl") {
+                                    var siteNo = queryResult.properties[k].split('site_no=')[1];
+                                    var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm';
+                                    querylayers.append('<strong>NWIS page: </strong><a href="' + queryProperties_1[k] + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br>');
+                                    _this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'streamgageQuery' });
+                                }
+                                else {
+                                    querylayers.append('<strong>' + queryProperties_1[k] + ': </strong>' + queryResult.properties[k] + '</br>');
+                                }
+                            });
+                        }
+                        else {
+                            angular.forEach(queryResult.properties, function (value, key) {
+                                querylayers.append('<strong>' + key + ': </strong>' + value + '</br>');
+                            });
+                        }
+                    });
+                });
+                if (this.queryContent.requestCount < 1) {
+                    this.toaster.clear();
+                    this.cursorStyle = 'pointer';
+                    if (this.queryContent.responseCount > 0) {
+                        map.openPopup(this.queryContent.Content.html(), [latlng.lat, latlng.lng], { maxHeight: 200 });
+                    }
+                    else {
+                        this.toaster.pop("warning", "Information", "No points were found at this location", 5000);
+                    }
+                }
             };
             MapController.prototype.elevationProfile = function () {
                 var _this = this;
@@ -694,7 +714,7 @@ var StreamStats;
             };
             MapController.prototype.basinEditor = function () {
                 var _this = this;
-                var basin = angular.fromJson(angular.toJson(this.geojson['globalwatershed'].data.features[0]));
+                var basin = angular.fromJson(angular.toJson(this.geojson['globalwatershed'].data));
                 var basinConverted = [];
                 basin.geometry.coordinates[0].forEach(function (item) { basinConverted.push([item[1], item[0]]); });
                 this.leafletData.getMap("mainMap").then(function (map) {
@@ -741,7 +761,7 @@ var StreamStats;
                             editPolygon.forEach(function (item) { basin.geometry.coordinates[0].push([item[1], item[0]]); });
                             //console.log('edited basin', basin);
                             //show new polygon
-                            _this.geojson['globalwatershed'].data.features[0] = basin;
+                            _this.geojson['globalwatershed'].data = basin;
                             drawnItems.clearLayers();
                             //console.log('editedAreas', angular.toJson(this.studyArea.WatershedEditDecisionList));
                         });
@@ -857,43 +877,26 @@ var StreamStats;
                 this.regionServices.loadMapLayersByRegion(this.regionServices.selectedRegion.RegionID);
             };
             MapController.prototype.onSelectedStudyAreaChanged = function () {
-                //console.log('in onselectedstudyareachange1', this.studyArea.selectedStudyArea.Features)
                 var _this = this;
-                if (!this.studyArea.selectedStudyArea || !this.studyArea.selectedStudyArea.Features)
+                var bbox;
+                //console.log('in onselectedstudyareachange1', this.studyArea.selectedStudyArea.Features)
+                if (!this.studyArea.selectedStudyArea || !this.studyArea.selectedStudyArea.FeatureCollection)
                     return;
                 //clear out this.markers
                 this.markers = {};
-                //temp (soon to be permanent method for MO_STL)
-                if (this.studyArea.selectedStudyArea.RegionID == 'MO_STL') {
-                    this.removeOverlayLayers('GlobalWatershed', true);
-                    this.studyArea.selectedStudyArea.Features['features'].forEach(function (layer) {
-                        var item = angular.fromJson(angular.toJson(layer));
-                        var name = item.id.toLowerCase();
-                        _this.addGeoJSON(name, item);
-                        _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(name, "geojson", _this.geojson[name].style));
+                this.removeOverlayLayers('globalwatershed', true);
+                this.studyArea.selectedStudyArea.FeatureCollection['features'].forEach(function (layer) {
+                    var item = angular.fromJson(angular.toJson(layer));
+                    var name = item.id.toLowerCase();
+                    _this.addGeoJSON(name, item);
+                    _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(name, "geojson", _this.geojson[name].style));
+                });
+                //zoom to bounding box
+                if (this.studyArea.selectedStudyArea.FeatureCollection['bbox']) {
+                    bbox = this.studyArea.selectedStudyArea.FeatureCollection['bbox'];
+                    this.leafletData.getMap("mainMap").then(function (map) {
+                        map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]], {});
                     });
-                    if (this.studyArea.selectedStudyArea.Features['bbox']) {
-                        var bbox = this.studyArea.selectedStudyArea.Features['bbox'];
-                        this.leafletData.getMap("mainMap").then(function (map) {
-                            map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]], {});
-                        });
-                    }
-                }
-                else {
-                    this.studyArea.selectedStudyArea.Features.forEach(function (layer) {
-                        //console.log('in onselectedstudyareachange2',layer)
-                        _this.removeOverlayLayers('globalwatershed', true);
-                        var item = angular.fromJson(angular.toJson(layer));
-                        var name = item.name.toLowerCase();
-                        _this.addGeoJSON(name, item.feature);
-                        _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(name, "geojson", _this.geojson[name].style));
-                    });
-                    if (this.geojson['globalwatershed'].data.features[0].bbox) {
-                        var bbox = this.geojson['globalwatershed'].data.features[0].bbox;
-                        this.leafletData.getMap("mainMap").then(function (map) {
-                            map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]], {});
-                        });
-                    }
                 }
                 //query basin against Karst
                 if (this.regionServices.selectedRegion.Applications.indexOf("KarstCheck") > -1) {
@@ -909,6 +912,14 @@ var StreamStats;
                     this.nssService.queriedRegions = true;
                     //console.log('set queriedregions flag to true: ', this.nssService.queriedRegions);
                 }
+            };
+            MapController.prototype.AddProsperLayer = function (id) {
+                this.layers.overlays["prosper" + id] = new Layer("Prosper Layer", configuration.baseurls['ScienceBase'] + configuration.queryparams['ProsperPredictions'], "agsDynamic", true, {
+                    "opacity": 1,
+                    "layers": [id],
+                    "format": "png8",
+                    "f": "image"
+                });
             };
             MapController.prototype.removeGeoJson = function (layerName) {
                 if (layerName === void 0) { layerName = ""; }
@@ -1028,7 +1039,6 @@ var StreamStats;
                 }
             };
             MapController.prototype.onLayerChanged = function (sender, e) {
-                //console.log('in onLayerChanged', e, this.geojson, this.studyArea.selectedStudyArea.Features)
                 var _this = this;
                 if (e.PropertyName === "visible") {
                     if (!e.Value)
@@ -1036,24 +1046,15 @@ var StreamStats;
                     else {
                         //get feature
                         var value = null;
-                        //special case for 'MO_STL' will soon be permanant
-                        if (this.studyArea.selectedStudyArea.RegionID == 'MO_STL') {
-                            //need this in if now that we have network nav results
-                            this.studyArea.selectedStudyArea.Features['features'].forEach(function (layer) {
-                                var item = angular.fromJson(angular.toJson(layer));
-                                var name = item.id.toLowerCase();
-                                _this.addGeoJSON(name, item);
+                        //need this in if now that we have network nav results 
+                        if (this.studyArea.selectedStudyArea && this.studyArea.selectedStudyArea.FeatureCollection.features.length > 0) {
+                            this.studyArea.selectedStudyArea.FeatureCollection['features'].forEach(function (layer) {
+                                if (layer.id == e.LayerName) {
+                                    var item = angular.fromJson(angular.toJson(layer));
+                                    var name = item.id;
+                                    _this.addGeoJSON(name, item);
+                                }
                             });
-                        }
-                        else {
-                            //need this in if now that we have network nav results
-                            if (this.studyArea.selectedStudyArea && this.studyArea.selectedStudyArea.Features.length > 0) {
-                                for (var i = 0; i < this.studyArea.selectedStudyArea.Features.length; i++) {
-                                    var item = angular.fromJson(angular.toJson(this.studyArea.selectedStudyArea.Features[i]));
-                                    if (item.name == e.LayerName)
-                                        this.addGeoJSON(e.LayerName, item.feature);
-                                } //next
-                            }
                         }
                         if (this.explorationService.networkNavResults) {
                             for (var i = 0; i < this.explorationService.networkNavResults.length; i++) {
@@ -1181,7 +1182,7 @@ var StreamStats;
         }()); //end class
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        MapController.$inject = ['$scope', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack'];
+        MapController.$inject = ['$scope', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack'];
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.MapController', MapController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));

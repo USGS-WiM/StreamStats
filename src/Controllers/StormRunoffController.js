@@ -55,7 +55,6 @@ var StreamStats;
                     window.print();
                 };
                 return _this;
-                //this.BrowserAlert();
             }
             Object.defineProperty(StormRunoffController.prototype, "SelectedPrecip", {
                 get: function () {
@@ -63,14 +62,8 @@ var StreamStats;
                 },
                 set: function (val) {
                     this._selectedPrecip = val;
-                    console.log(this._selectedPrecip.code);
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(StormRunoffController.prototype, "PIntensity", {
-                get: function () {
-                    return this._pIntensity;
+                    this.PIntensity = null;
+                    //console.log(this._selectedPrecip.code);
                 },
                 enumerable: true,
                 configurable: true
@@ -117,7 +110,7 @@ var StreamStats;
                     }
                     else if (this.SelectedTab == 2) {
                         var equation_2 = StormRunoffType.RationalMethod;
-                        var url = configuration.queryparams['StormRunoffRationalMethod'].format(this.SelectedParameterList[0].value, this.PIntensity.value, this.SelectedParameterList[1].value, this.SelectedPrecip.code);
+                        var url = configuration.queryparams['StormRunoffRationalMethod'].format(this.DrnAreaAcres, this.PIntensity, this.SelectedParameterList[1].value, this.SelectedPrecip.code);
                     }
                     var request = new WiM.Services.Helpers.RequestInfo(url);
                     this.Execute(request).then(function (response) {
@@ -137,6 +130,7 @@ var StreamStats;
                         //sm when error                    
                     }).finally(function () {
                         _this.CanContinue = true;
+                        _this.hideAlerts = true;
                     });
                 }
                 catch (e) {
@@ -145,16 +139,48 @@ var StreamStats;
             };
             StormRunoffController.prototype.validateForm = function (mainForm) {
                 if (mainForm.$valid) {
+                    this.CheckDASize();
                     return true;
                 }
                 else {
+                    this.CheckDASize();
+                    this.showResults = false;
+                    this.hideAlerts = false;
                     return false;
                 }
             };
+            StormRunoffController.prototype.ClearResults = function () {
+                for (var i in this.studyAreaService.studyAreaParameterList) {
+                    this.studyAreaService.studyAreaParameterList[i].value = null;
+                    //this.SelectedParameterList[i].value = null;
+                }
+                this.SelectedPrecip = this.PrecipOptions[0];
+                this.SelectedPrecip.value = null;
+                this.DrnAreaAcres = null;
+                this.PIntensity = null;
+                this.showResults = false;
+            };
             StormRunoffController.prototype.CalculateParameters = function () {
+                var _this = this;
                 try {
                     this.CanContinue = false;
                     this.EventManager.SubscribeToEvent(StreamStats.Services.onSelectedStudyParametersLoaded, this.parameterloadedEventHandler);
+                    var url = configuration.baseurls['ScienceBase'] + configuration.queryparams['SSURGOexCOMS'] + configuration.queryparams['SSURGOexCO'].format(this.studyAreaService.selectedStudyArea.FeatureCollection.bbox);
+                    var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                    this.Execute(request).then(function (response) {
+                        _this.showResults = true;
+                        //sm when complete
+                        _this.excludearea = response.data;
+                        if (_this.excludearea.count > 0) {
+                            alert("The selected basin may have inadequate SSURGO data to properly compute the runoff curve number.");
+                        }
+                    }, function (error) {
+                        var x = error;
+                        //sm when error                    
+                    }).finally(function () {
+                        _this.CanContinue = true;
+                        _this.hideAlerts = true;
+                    });
                     //add to studyareaservice if not already there
                     for (var i = 0; i < this.SelectedParameterList.length; i++) {
                         var param = this.SelectedParameterList[i];
@@ -168,6 +194,26 @@ var StreamStats;
                 }
                 catch (e) {
                     console.log("oops CalculateParams failed to load ", e);
+                }
+            };
+            StormRunoffController.prototype.CheckDASize = function () {
+                switch (this._selectedTab) {
+                    case StormRunoffType.TR55:
+                        if (this.SelectedParameterList[0].value > 25) {
+                            this.DASizeAlert = "Value is greater than recommended maximum threshold of 25 square miles";
+                        }
+                        else {
+                            this.DASizeAlert = null;
+                        }
+                        return;
+                    default:
+                        if (this.DrnAreaAcres > 200) {
+                            this.DASizeAlert = "Value is greater than recommended maximum threshold of 200 acres";
+                        }
+                        else {
+                            this.DASizeAlert = null;
+                        }
+                        return;
                 }
             };
             StormRunoffController.prototype.Close = function () {
@@ -276,11 +322,14 @@ var StreamStats;
                     var results = [];
                     var hydrograph = [];
                     var hyetograph = [];
+                    this.GraphXValues.length = 0;
                     var firsttime;
+                    var count = 0;
                     for (var k in this.result) {
                         var dur = this.result[k].duration;
                         var t;
                         var kf = parseFloat(k);
+                        this.duration = dur;
                         t = this.computeTime(kf, dur);
                         hydrograph.push({ x: t, y: this.result[k].q });
                         hyetograph.push({ x: t, y: this.result[k].p });
@@ -303,7 +352,7 @@ var StreamStats;
                     this.loadPadY2(hyetograph);
                     this.loadDomainY2(hyetograph);
                     results.push({ values: hydrograph, key: "Discharge (ft³/s)", color: " #009900", type: "line", yAxis: 1 });
-                    results.push({ values: hyetograph, key: "Cum. precipitation (inches)", color: "#0033ff", type: "line", yAxis: 2 });
+                    results.push({ values: hyetograph, key: "Cum. precipitation (in)", color: "#0033ff", type: "line", yAxis: 2 });
                     return results;
                 }
                 catch (e) {
@@ -457,12 +506,12 @@ var StreamStats;
                 this.ReportOptions = {
                     chart: {
                         type: 'multiChart',
-                        height: 250,
+                        height: 275,
                         width: 650,
                         margin: {
                             top: 10,
                             right: 80,
-                            bottom: 60,
+                            bottom: 80,
                             left: 90
                         },
                         x: function (d) {
@@ -471,13 +520,17 @@ var StreamStats;
                         y: function (d) {
                             return d.y;
                         },
+                        legend: {
+                            align: false,
+                            padding: 50,
+                            width: 500
+                        },
                         dispatch: {
                             stateChange: function (e) { console.log("stateChange"); },
                             changeState: function (e) { console.log("changeState"); },
                             tooltipShow: function (e) { console.log("tooltipShow"); },
                             tooltipHide: function (e) { console.log("tooltipHide"); }
                         },
-                        showLegend: false,
                         useInteractiveGuideline: true,
                         interactiveLayer: {
                             tooltip: {
@@ -541,6 +594,25 @@ var StreamStats;
                                 var minutes = d * 60 % 60;
                                 var h;
                                 var m;
+                                //var count;
+                                //if (this.duration == 24) {
+                                //    count++;
+                                //    if (count % 3 != 0) {
+                                //        if (hours < 10) {
+                                //            h = "0" + hours;
+                                //        } else {
+                                //            h = hours;
+                                //        }
+                                //        if (minutes < 10) {
+                                //            m = "0" + minutes;
+                                //        } else {
+                                //            m = minutes;
+                                //        }
+                                //        return h + ":" + m
+                                //    } else {
+                                //        return "";
+                                //    }
+                                //} else {
                                 if (hours < 10) {
                                     h = "0" + hours;
                                 }
@@ -554,6 +626,7 @@ var StreamStats;
                                     m = minutes;
                                 }
                                 return h + ":" + m;
+                                //}
                             },
                             rotateLabels: '45'
                         },
@@ -578,7 +651,7 @@ var StreamStats;
                     },
                     title: {
                         enable: true,
-                        text: 'Runoff hydrograph from TR55 Method using ' + this.SelectedPrecip.name,
+                        text: 'Runoff hydrograph from ' + this.SelectedPrecip.name,
                         css: {
                             'font-size': '10pt',
                             'font-weight': 'bold'
@@ -618,21 +691,21 @@ var StreamStats;
                 return false;
             };
             //Helper Methods
-            //-+-+-+-+-+-+-+-+-+-+-+-
+            //-+-+-+-+-+-+-+-+-+-+-+-        
             StormRunoffController.prototype.init = function () {
                 this.SelectedTab = StormRunoffType.TR55;
                 this.showResults = false;
+                this.hideAlerts = false;
                 this.CanContinue = true;
                 this.showPrint = false;
                 this.ReportData = new StormRunoffReportable();
-                this._pIntensity = { name: "Precipitation Intensity", code: "PINT", value: null };
             };
             StormRunoffController.prototype.loadParameters = function () {
                 //unsubscribe first
                 this.EventManager.UnSubscribeToEvent(StreamStats.Services.onSelectedStudyParametersLoaded, this.parameterloadedEventHandler);
-                if (this.SelectedTab == 2) {
-                    this.calculatePIntensity();
-                }
+                this.DrnAreaAcres = (this.SelectedParameterList[0].value * 640).toUSGSvalue();
+                var dur = parseInt(this.SelectedPrecip.name.substr(0, 2));
+                this.PIntensity = (this.SelectedPrecip.value / dur).toUSGSvalue();
                 this.CanContinue = true;
                 //alert("Parameters loaded");
             };
@@ -651,17 +724,9 @@ var StreamStats;
                 }
                 this.PrecipOptions = this.regionParameters.filter(function (f) { return ["I6H2Y", "I6H100Y", "I24H2Y", "I24H100Y"].indexOf(f.code) != -1; });
                 this.PrecipOptions.forEach(function (p) { return p.value = (isNaN(p.value) ? null : p.value); });
-                this.SelectedPrecip = this.PrecipOptions[0];
-            };
-            StormRunoffController.prototype.calculatePIntensity = function () {
-                if (!this.SelectedPrecip.value) {
-                    return;
+                if (!this.SelectedPrecip) {
+                    this.SelectedPrecip = this.PrecipOptions[0];
                 }
-                this._pIntensity.name = "Precipitation Intensity";
-                this._pIntensity.code = this.SelectedPrecip.code;
-                this._pIntensity.unit = "inches/hour";
-                var dur = parseInt(this.SelectedPrecip.name.substr(0, 2));
-                this._pIntensity.value = this.SelectedPrecip.value / dur;
             };
             StormRunoffController.prototype.tableToCSV = function ($table) {
                 var $headers = $table.find('tr:has(th)'), $rows = $table.find('tr:has(td)')
@@ -716,7 +781,10 @@ var StreamStats;
             };
             StormRunoffController.prototype.computeTime = function (time, dur) {
                 var newtime = new Date('January 1, 2018 00:00:00');
-                var z = dur * 60 * (0.01 * time);
+                //for SW region, time is a percentage
+                //var z = dur * 60 * (0.01 * time);
+                //for NW region, time is in hours
+                var z = time * 60;
                 newtime.setMinutes(z);
                 return newtime;
             };
@@ -751,8 +819,19 @@ var StreamStats;
                 }
             };
             StormRunoffController.prototype.loadGraphXValues = function (data) {
-                for (var i in data) {
-                    this.GraphXValues[i] = data[i].hours;
+                var count = 0;
+                if (this.duration == 24) {
+                    for (var i in data) {
+                        count++;
+                        if (count % 2 != 0) {
+                            this.GraphXValues.push(data[i].hours);
+                        }
+                    }
+                }
+                else {
+                    for (var i in data) {
+                        this.GraphXValues[i] = data[i].hours;
+                    }
                 }
             };
             //used for Y2 label distance
@@ -774,12 +853,12 @@ var StreamStats;
             //used for Y domain
             StormRunoffController.prototype.loadDomainY = function (data) {
                 var max = Math.max.apply(Math, data.map(function (o) { return o.y; }));
-                this.domainY = [0, Math.round((max + max * 0.15) / 10) * 10];
+                this.domainY = [0, Math.round((max + max * 0.18) / 10) * 10];
             };
             //used for Y2 domain
             StormRunoffController.prototype.loadDomainY2 = function (data) {
                 var max = Math.max.apply(Math, data.map(function (o) { return o.y; }));
-                this.domainY2 = [0, max + max * 0.15];
+                this.domainY2 = [0, max + max * 0.18];
             };
             //used for Y2 label distance
             StormRunoffController.prototype.loadPadY2 = function (data) {

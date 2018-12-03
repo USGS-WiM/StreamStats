@@ -83,7 +83,7 @@ module StreamStats.Controllers {
             return this._yearRange;
         }
         public includePermits: boolean;
-        public includeReturns: boolean;
+        public computeReturns: boolean;
         public computeDomesticWU: boolean;
 
         public CanContiue: boolean;
@@ -112,8 +112,9 @@ module StreamStats.Controllers {
             var headers = {
                 "Content-Type": "application/json"
             };
-            var url = configuration.queryparams['Wateruse'].format(this.StartYear, this.EndYear,this.includePermits,this.includeReturns,this.computeDomesticWU);
-            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, false, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(this.StudyArea.Features[1].feature.features[0].geometry));
+            var url = configuration.queryparams['Wateruse'].format(this.StartYear, this.EndYear, this.includePermits, this.computeReturns, this.computeDomesticWU);
+            var studyAreaGeom = this.StudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).toLowerCase() == "globalwatershed" })[0].geometry;
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, false, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(studyAreaGeom));
 
             this.Execute(request).then(
                 (response: any) => {  
@@ -399,8 +400,9 @@ module StreamStats.Controllers {
                 "Accept": "text/csv",
                 "Authorization": "Basic dGVzdE1hbmFnZXI6RG9nMQ=="
             };
-            var url = configuration.queryparams['WateruseSourceCSV'].format(this.StartYear, this.EndYear, this.includePermits, this.includeReturns, this.computeDomesticWU);
-            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, false, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(this.StudyArea.Features[1].feature.features[0].geometry),headers);
+            var url = configuration.queryparams['WateruseSourceCSV'].format(this.StartYear, this.EndYear, this.includePermits, this.computeReturns, this.computeDomesticWU);
+            var studyAreaGeom = this.StudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).toLowerCase() == "globalwatershed" })[0].geometry;
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, false, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(studyAreaGeom),headers);
 
             this.Execute(request).then(
                 (response: any) => {
@@ -447,8 +449,8 @@ module StreamStats.Controllers {
                     this._startYear = result.minYear;
                     this._endYear = result.maxYear;
                     this.includePermits = result.hasPermits;
-                    this.includeReturns = result.hasReturns;
-                    this.computeDomesticWU = false;
+                    this.computeReturns = result.canComputeReturns;
+                    this.computeDomesticWU = this.StudyArea.RegionID.toLowerCase() == 'oh';
                     this._yearRange = { floor: result.minYear, draggableRange: true, noSwitching: true, showTicks: false, ceil: result.maxYear };
                     }, (error) => {;
                         this._startYear = 2005;
@@ -469,7 +471,7 @@ module StreamStats.Controllers {
                         stacked: true,
                         showControls: false,
                         margin: {
-                            top: 20,
+                            top: 60,
                             right: 30,
                             bottom: 60,
                             left: 55
@@ -486,6 +488,13 @@ module StreamStats.Controllers {
                             },
                             renderEnd: () => {
                                 //console.log("renderend");
+                                //must wrap in timer or method executes prematurely
+                                this.$timeout(() => {
+                                    this.loadGraphLabels(0);
+                                }, 500);
+                            },
+                            resize: () => {
+                                console.log("resize");
                                 //must wrap in timer or method executes prematurely
                                 this.$timeout(() => {
                                     this.loadGraphLabels(0);
@@ -509,7 +518,15 @@ module StreamStats.Controllers {
                                 return d3.format(',.3f')(d);
                             }
                     },
-                                refreshDataOnly: true
+                        refreshDataOnly: true,
+                        legend: {
+                            margin: {
+                                top: 5,
+                                right: 40,
+                                left: 40,
+                                bottom: 50
+                            }
+                        }
                     }
                 };
                 this.MonthlyReturnReportOptions = {
@@ -517,7 +534,7 @@ module StreamStats.Controllers {
                         type: 'multiBarHorizontalChart',
                         height: 450,
                         visible: true,
-                        stacked: false,
+                        stacked: true,
                         showControls: false,
                         margin: {
                             top: 20,
@@ -571,7 +588,12 @@ module StreamStats.Controllers {
                     }
                 };
                
-                    });
+                });
+            $(window).resize(() => {
+                this.$timeout(() => {
+                    this.loadGraphLabels(0);
+                }, 500); 
+            });
         }
         private getMonth(index: number): string {
             switch (index) {
@@ -614,23 +636,50 @@ module StreamStats.Controllers {
             return wtype.toUpperCase();
         }  
         private loadGraphLabels(id): void {
-            var svg = d3.selectAll("g.nv-multibarHorizontal");
-            var lastBarID = svg.selectAll("g.nv-group").map((items: Array<any>) => { return items.length; });
-            var lastBars = svg.selectAll("g.nv-group").filter(
+            var svg = d3.selectAll('.nv-multibarHorizontal .nv-group')
+            // subtract 2 in order to account for returns
+            var lastBarID = svg.map((items: Array<any>) => { return items.length-2; });
+            var lastBars = svg.filter(
                 function (d, i) {
-                    return i == lastBarID[id] - 1;
-                }).selectAll("g.positive");
-
-            var groupLabels = svg.select("g.nv-barsWrap")
-            lastBars.each(
-                function (d, index) {
-                    var recWidth = d3.select(this).selectAll("rect")[0][0].attributes.width.value;
-                    var text = d3.select(this).selectAll("text");
-                    text.text(d3.format(',.3f')((Number(d.y)+Number(d.y0)).toFixed(3)));
-                    text.attr("x", recWidth);
-                    text.attr("dy", "1.32em");
-                    text.attr("text-anchor","start");
+                    return i == lastBarID[0];
                 });
+
+            svg.each(function (group, i) {
+            var g = d3.select(this);
+            // Remove previous labels if there is any
+            g.selectAll('text').remove();                
+            g.selectAll('.nv-bar').each(function (bar) {
+                var b = d3.select(this);
+                var barWidth = b.node().getBBox()['width'];
+                var barHeight = b.node().getBBox()['height'];                   
+
+                g.append('text')
+                    // Transforms shift the origin point then the x and y of the bar
+                    // is altered by this transform. In order to align the labels
+                    // we need to apply this transform to those.
+                    .attr('transform', b.attr('transform'))
+                    .text(function () {
+                        // Two decimals format
+                        if(i >= lastBarID[0])
+                            if (bar.y < 0.001) {
+                                return 0;
+                            } else {
+                                return d3.format(',.3f')((Number(bar.y) + Number(bar.y0)).toFixed(3));
+                            }
+                    })
+                    .attr("dy", "1.5em")
+                    //.attr('y', function () {
+                    //    // Center label vertically
+                    //    var height = b.node().getBBox().height;
+                    //    return parseFloat(b.attr('y')) - 10; // 10 is the label's margin from the bar
+                    //})
+                    .attr('x', function () {
+                        var width = this.getBBox().width;
+                        return barWidth - width/2;
+                    })
+                    .attr('class', 'bar-values');
+            });
+        });
             
         }  
         private generateColorShade(minhue: number, maxhue:number):string {
@@ -723,8 +772,8 @@ module StreamStats.Controllers {
         private RGBtoHEX(r, g, b): string {
 
             var red = this.ToHex(r);
-            var green = this.ToHex(r);
-            var blue = this.ToHex(r);
+            var green = this.ToHex(g);
+            var blue = this.ToHex(b);
             return red+green+blue;
 
         }

@@ -1,0 +1,90 @@
+﻿    <!-- Modal -->
+<div id="print-content"> 
+    <div class="modal-header">
+        <div class="visible-print identifier">
+            <img src="images/usgs-logo-black.png" alt="USGS Identifier" title="USGS Science for a Changing World" />
+        </div>
+        <button type="button" class="close hidden-print" ng-click="vm.Close()"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">PRObability of Streamflow PERmanence (PROSPER)</h4>
+    </div>    
+    <div id="printArea" class="modal-body">
+        <div ng-if="vm.ResultsAvailable">            
+            <h2><strong>StreamStats PROSPER Report</strong></h2>            
+            <div class="row">
+                <div class="col-md-7"><strong>Clicked Point (Latitude, Longitude):</strong></div>
+                <div class="col-md-5">{{vm.Location.lat.toFixed(5)}}, {{vm.Location.lng.toFixed(5)}}</div>
+            </div>
+            <div class="row">
+                <div class="col-md-7"><strong>Time:</strong></div>
+                <div class="col-md-5">{{vm.Date| date:'yyyy-MM-dd HH:mm:ss Z'}}</div>
+            </div>
+            <hr>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                <h6>Project Description</h6>
+                <p>{{vm.Description}}</p>
+            </div>
+
+            <div ng-if="!vm.ResultsAvailable" class="col-sm-6">
+                <h6>Available Predictions</h6>
+                <table id="availablePredTable" class="table table-condensed">
+                    <thead class="table">
+                        <tr>
+                            <th>Include in query</th>
+                            <th>Displayed layer</th>
+                            <th>Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="prediction in vm.AvailablePredictions">
+                            <td><checkbox style="border: 1px solid !important" large ng-model="prediction.selected"></checkbox></td>
+                            <td>
+                                <label class="rdo" for="predRadio{{$id}}" ng-click="vm.ChangeDisplayedLayer(prediction)">
+                                    <input type="radio" id="predRadio{{$id}}" ng-checked="vm.DisplayedPredictionLayer.id === prediction.id" ng-value="prediction.id" />
+                                    <span></span>
+                                </label>
+                            </td>
+                            <td>{{prediction.name}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div ng-if="vm.ResultsAvailable" class="col-sm-6">
+                <h6>Prediction Results (SPC)</h6>
+                <nvd3 id="ResultsBar" options='vm.Graph.options' data='vm.Graph.data'></nvd3>
+                <div class="overflowTable" style="page-break-inside:avoid;">
+                    <h6>Tabular Results</h6>
+                    <table id="prosperResults" class="table table-condensed" style="page-break-inside:avoid; font-size: 11px;">
+                        <thead>
+                            <tr>
+                                <th title="Name">Name</th>
+                                <th>Confidence (SPC)</th>
+                                <th>Confidence (SPP)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="(key, item) in vm.Table">
+                                <td>{{key}}</td>
+                                <td>{{item.SPC}}</td>
+                                <td>{{item.SPP}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer hidden-print">
+        <div class="btn-group">
+            <button ng-if="vm.ResultsAvailable" type="button" class="btn-black" ng-click="vm.DownloadCSV()"><span><i class="fa fa-download"></i>&nbsp;&nbsp;Download CSV</span></button>
+            <button ng-if="vm.ResultsAvailable" class="btn-blue" ng-click="vm.Print()" analytics-on analytics-event="Print" analytics-category="Report" analytics-label="Print"><i class="fa fa-print"></i>&nbsp;&nbsp;Print</button>
+            <button ng-if="vm.ResultsAvailable" class="btn-wim-default" ng-click="vm.Reset()"><i class="fa fa-reset"></i>&nbsp;&nbsp;Reset</button>
+
+            <button class="btn-wim-default" ng-click="vm.Close()"><i class="fa fa-close"></i>&nbsp;&nbsp;Close</button>
+            <button ng-if="!vm.ResultsAvailable" ng-disabled="vm.SelectedPredictions.length < 1" class="btn-wim-default" ng-click="vm.Query()"><i class="fa fa-question-circle"></i>&nbsp;&nbsp;Query Layers</button>
+        </div>
+    </div>
+
+</div>
