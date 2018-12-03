@@ -32,7 +32,7 @@ var StreamStats;
     var Services;
     (function (Services) {
         'use strict';
-        var ProsperService = /** @class */ (function (_super) {
+        var ProsperService = (function (_super) {
             __extends(ProsperService, _super);
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-

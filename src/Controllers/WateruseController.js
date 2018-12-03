@@ -407,7 +407,7 @@ var StreamStats;
                             stacked: true,
                             showControls: false,
                             margin: {
-                                top: 20,
+                                top: 60,
                                 right: 30,
                                 bottom: 60,
                                 left: 55
@@ -453,7 +453,15 @@ var StreamStats;
                                     return d3.format(',.3f')(d);
                                 }
                             },
-                            refreshDataOnly: true
+                            refreshDataOnly: true,
+                            legend: {
+                                margin: {
+                                    top: 5,
+                                    right: 40,
+                                    left: 40,
+                                    bottom: 50
+                                }
+                            }
                         }
                     };
                     _this.MonthlyReturnReportOptions = {
@@ -578,7 +586,12 @@ var StreamStats;
                             .text(function () {
                             // Two decimals format
                             if (i >= lastBarID[0])
-                                return d3.format(',.3f')((Number(bar.y) + Number(bar.y0)).toFixed(3));
+                                if (bar.y < 0.001) {
+                                    return 0;
+                                }
+                                else {
+                                    return d3.format(',.3f')((Number(bar.y) + Number(bar.y0)).toFixed(3));
+                                }
                         })
                             .attr("dy", "1.5em")
                             .attr('x', function () {

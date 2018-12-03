@@ -487,7 +487,7 @@ var StreamStats;
                     //console.log('query success');
                     this.selectedStudyArea.RegressionRegions = [{
                             "name": "Peak_Urban_Statewide_SIR_2010_5073",
-                            "code": "gc1486",
+                            "code": "gc1771",
                             "percent": 100.0,
                             "areasqmeter": -9999,
                             "maskareasqmeter": -9999
