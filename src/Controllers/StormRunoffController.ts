@@ -63,6 +63,7 @@ module StreamStats.Controllers {
         public StudyArea: StreamStats.Models.IStudyArea;
         private modalInstance: ng.ui.bootstrap.IModalServiceInstance;
         public showResults: boolean;
+        public hideAlerts: boolean;
         private parameterloadedEventHandler: WiM.Event.EventHandler<Services.StudyAreaEventArgs>;
         private regionParameters: Array<Services.IParameter> = [];
 
@@ -72,25 +73,29 @@ module StreamStats.Controllers {
         public PrecipOptions: Array<Services.IParameter> = [];
 
         private _selectedPrecip: Services.IParameter;
+
         public get SelectedPrecip(): Services.IParameter {
             return this._selectedPrecip;
         }
+
         public set SelectedPrecip(val: Services.IParameter) {
             this._selectedPrecip = val;
-            console.log(this._selectedPrecip.code);
+            this.PIntensity = null;
+            //console.log(this._selectedPrecip.code);
         }
+
         public SelectedParameterList: Array<Services.IParameter> = [];
 
-        public _pIntensity: Services.IParameter;
-        public get PIntensity(): Services.IParameter {
-            return this._pIntensity;
-        }
+        public PIntensity?: number;
+   
+        public DrnAreaAcres: number;
 
         public CanContinue: boolean;
         private parametersLoaded: boolean;
         public showPrint: boolean;
         public ReportOptions: any;
         public result: any;
+        public excludearea: any;
 
         private _selectedTab: StormRunoffType;
         public get SelectedTab(): StormRunoffType {
@@ -102,6 +107,7 @@ module StreamStats.Controllers {
                 this.selectRunoffType();
             }//end if           
         }
+
         public get SelectedParametersAreValid(): boolean {
             for (var i = 0; i < this.SelectedParameterList.length; i++) {
                 var item = this.SelectedParameterList[i];
@@ -112,6 +118,7 @@ module StreamStats.Controllers {
             return true;
         }
 
+        public DASizeAlert: String;
         public BrowserIE: boolean;
         public BrowserChrome: boolean;
         public ReportData: IStormRunoffReportable;
@@ -122,6 +129,7 @@ module StreamStats.Controllers {
         public domainY = [];
         public domainY2 = [];
         public angulartics: any;
+        public duration: any;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -146,8 +154,6 @@ module StreamStats.Controllers {
             this.print = function () {
                 window.print();
             };
-
-            //this.BrowserAlert();
         }  
         
         //Methods  
@@ -160,13 +166,14 @@ module StreamStats.Controllers {
                 var headers = {
                     "Content-Type": "application/json"
                 };
+
                 if (this.SelectedTab == 1) {
                     let equation = StormRunoffType.TR55;
                     var url = configuration.queryparams['StormRunoffTR55'].format(this.SelectedParameterList[0].value, this.SelectedPrecip.value, this.SelectedParameterList[1].value, this.SelectedPrecip.code);
                 }
                 else if (this.SelectedTab == 2) {
                     let equation = StormRunoffType.RationalMethod;
-                    var url = configuration.queryparams['StormRunoffRationalMethod'].format(this.SelectedParameterList[0].value, this.PIntensity.value, this.SelectedParameterList[1].value, this.SelectedPrecip.code);
+                    var url = configuration.queryparams['StormRunoffRationalMethod'].format(this.DrnAreaAcres, this.PIntensity, this.SelectedParameterList[1].value, this.SelectedPrecip.code);
                 }
 
                 var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url);
@@ -189,6 +196,7 @@ module StreamStats.Controllers {
                         //sm when error                    
                     }).finally(() => {
                         this.CanContinue = true;
+                        this.hideAlerts = true;
                     });
             }
             catch (e) {
@@ -198,11 +206,29 @@ module StreamStats.Controllers {
 
         public validateForm(mainForm) {
             if (mainForm.$valid) {
+                this.CheckDASize();
                 return true;
             }
             else {
+                this.CheckDASize();
+                this.showResults = false;
+                this.hideAlerts = false;
                 return false;
             }
+        }
+
+        public ClearResults()
+        {
+            for (var i in this.studyAreaService.studyAreaParameterList) {
+                this.studyAreaService.studyAreaParameterList[i].value = null;
+                //this.SelectedParameterList[i].value = null;
+            }
+
+            this.SelectedPrecip = this.PrecipOptions[0];
+            this.SelectedPrecip.value = null;
+            this.DrnAreaAcres = null;
+            this.PIntensity = null;
+            this.showResults = false;
         }
 
         public CalculateParameters()
@@ -210,7 +236,28 @@ module StreamStats.Controllers {
             try {
                 this.CanContinue = false;
                 this.EventManager.SubscribeToEvent(Services.onSelectedStudyParametersLoaded, this.parameterloadedEventHandler);
-            //add to studyareaservice if not already there
+                
+                var url: string = configuration.baseurls['ScienceBase'] + configuration.queryparams['SSURGOexCOMS'] + configuration.queryparams['SSURGOexCO'].format(this.studyAreaService.selectedStudyArea.FeatureCollection.bbox);
+                var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
+                
+                this.Execute(request).then(
+                    (response: any) => {
+                        this.showResults = true;
+                        //sm when complete
+                        this.excludearea = response.data;
+                        if (this.excludearea.count > 0) {
+                            alert("The selected basin may have inadequate SSURGO data to properly compute the runoff curve number.");
+                        }
+                    }, (error) => {
+                        var x = error;
+                        //sm when error                    
+                    }).finally(() => {
+                        this.CanContinue = true;
+                        this.hideAlerts = true;
+                    }
+                );
+
+                //add to studyareaservice if not already there
                 for (var i = 0; i < this.SelectedParameterList.length; i++) {
                     let param = this.SelectedParameterList[i];
                     if (this.checkArrayForObj(this.studyAreaService.studyAreaParameterList, param) == -1){
@@ -221,22 +268,41 @@ module StreamStats.Controllers {
                 if (this.SelectedPrecip != null && this.checkArrayForObj(this.studyAreaService.studyAreaParameterList, this.SelectedPrecip) == -1)
                     this.studyAreaService.studyAreaParameterList.push(this.SelectedPrecip);
 
-                this.studyAreaService.loadParameters();
-                
+                this.studyAreaService.loadParameters();                 
             } catch (e) {
                 console.log("oops CalculateParams failed to load ",e)
+            }
+        }
+
+        public CheckDASize()
+        {
+            switch (this._selectedTab) {
+                case StormRunoffType.TR55:
+                    if (this.SelectedParameterList[0].value > 25) {
+                        this.DASizeAlert = "Value is greater than recommended maximum threshold of 25 square miles"
+                    } else {
+                        this.DASizeAlert = null;
+                    }
+                    return;
+                default: //case StormRunoffType.RationalMethod
+                    if (this.DrnAreaAcres > 200) {
+                        this.DASizeAlert = "Value is greater than recommended maximum threshold of 200 acres"
+                    } else {
+                        this.DASizeAlert = null;
+                    }
+                    return;
             }
         }
 
         public Close(): void {
             this.modalInstance.dismiss('cancel')
         }
+
         public Reset(): void {
             this.init();
         }
 
         private downloadCSV() {
-
             //ga event
             this.angulartics.eventTrack('Download', { category: 'Report', label: 'CSV' });
 
@@ -302,6 +368,7 @@ module StreamStats.Controllers {
 
             //download
             var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
+
             if (navigator.msSaveBlob) { // IE 10+
                 navigator.msSaveBlob(blob, filename);
             } else {
@@ -344,26 +411,34 @@ module StreamStats.Controllers {
                 var results = []; 
                 var hydrograph = [];
                 var hyetograph = [];
+                this.GraphXValues.length = 0;
                 var firsttime;
+                var count = 0;
+
                 for (var k in this.result) {
                     var dur = this.result[k].duration;
                     var t;
                     var kf = parseFloat(k);
+                    this.duration = dur;
                     t = this.computeTime(kf, dur);
                     hydrograph.push({ x: t, y: this.result[k].q });
                     hyetograph.push({ x: t, y: this.result[k].p });
                 }
+
                 hydrograph.sort((a, b) => a.x - b.x);
                 hyetograph.sort((a, b) => a.x - b.x);
                 firsttime = hydrograph[0].x;
+
                 for (var time in hydrograph) {
                     hydrograph[time].label = this.getTimeSpan(firsttime, hydrograph[time].x);
                     hyetograph[time].label = this.getTimeSpan(firsttime, hyetograph[time].x);
                 }
+
                 for (var d in hydrograph) {
                     hydrograph[d].hours = this.computeHours(firsttime, hydrograph[d].x);
                     hyetograph[d].hours = this.computeHours(firsttime, hydrograph[d].x);
                 }
+
                 this.loadGraphLabels(hydrograph);
                 this.loadGraphXValues(hydrograph);
                 this.loadPadY(hydrograph);
@@ -371,7 +446,7 @@ module StreamStats.Controllers {
                 this.loadPadY2(hyetograph);
                 this.loadDomainY2(hyetograph);
                 results.push({ values: hydrograph, key: "Discharge (ft³/s)", color: " #009900", type: "line", yAxis: 1 });
-                results.push({ values: hyetograph, key: "Cum. precipitation (inches)", color: "#0033ff", type: "line", yAxis: 2 });
+                results.push({ values: hyetograph, key: "Cum. precipitation (in)", color: "#0033ff", type: "line", yAxis: 2 });
                 
                 return results;
             } catch(e) {
@@ -385,6 +460,7 @@ module StreamStats.Controllers {
             this.ReportData.TR55.ExcessPrecip = 0;
             var tableFields: any = [];
             var tableValues: any = [];
+
             try {
                 for (var k in this.result) {
                     var dur = this.result[k].duration;
@@ -406,14 +482,14 @@ module StreamStats.Controllers {
                     this.setInfiltration(this.result[k].pl);
                     this.setExcessPrecip(this.result[k].dPe);
                 }
+
                 tableValues.sort((a, b) => a.time - b.time);
                 firsttime = tableValues[0].time;
+
                 for (var t in tableValues) {
                     tableValues[t].span = this.getTimeSpan(firsttime, tableValues[t].time);
                 }
                 return { "values": tableValues, "Fields": tableFields}
-
-
             } catch (e) {
                 var x = e;
             }
@@ -524,19 +600,18 @@ module StreamStats.Controllers {
             } catch (e) {
                 var x = e;
             }
-
         }
 
         private setGraphOptions(): void {
             this.ReportOptions = {
                 chart: {
                     type: 'multiChart',
-                    height: 250,
+                    height: 275,
                     width: 650,
                     margin: {
                         top: 10,
                         right: 80,
-                        bottom: 60,
+                        bottom: 80,
                         left: 90
                     },
                     x: function (d) {
@@ -545,13 +620,17 @@ module StreamStats.Controllers {
                     y: function (d) {
                         return d.y;
                     },
+                    legend: {
+                        align: false,
+                        padding: 50,
+                        width: 500
+                    },
                     dispatch: {
                         stateChange: function (e) { console.log("stateChange"); },
                         changeState: function (e) { console.log("changeState"); },
                         tooltipShow: function (e) { console.log("tooltipShow"); },
                         tooltipHide: function (e) { console.log("tooltipHide"); }
                     },
-                    showLegend: false,
                     useInteractiveGuideline: true,
                     interactiveLayer: {
                         tooltip: {
@@ -566,13 +645,16 @@ module StreamStats.Controllers {
                                 } else {
                                     h = hours;
                                 }
+
                                 if (minutes < 10) {
                                     m = "0" + minutes;
                                 } else {
                                     m = minutes;
                                 }
+
                                 var time = h + ":" + m;
                                 var rows = "";
+
                                 for (var i in d.series) {
                                     var x = parseFloat(d.series[i].value);
                                     var ydatatype;
@@ -593,6 +675,7 @@ module StreamStats.Controllers {
                                         "<td><strong>" + ydatatype + "</strong></td>" +
                                         "</tr>";
                                 }
+
                                 var header = "<thead>" +
                                         "<tr>" +
                                     "<td colspan='3'><b>" + time + "</b> (HH:mm)</td>" +
@@ -612,18 +695,38 @@ module StreamStats.Controllers {
                             var minutes = d * 60 % 60;
                             var h;
                             var m;
+                            //var count;
 
-                            if (hours < 10) {
-                                h = "0" + hours;
-                            } else {
-                                h = hours;
-                            }
-                            if (minutes < 10) {
-                                m = "0" + minutes;
-                            } else {
-                                m = minutes;
-                            }
-                            return h + ":" + m
+                            //if (this.duration == 24) {
+                            //    count++;
+                            //    if (count % 3 != 0) {
+                            //        if (hours < 10) {
+                            //            h = "0" + hours;
+                            //        } else {
+                            //            h = hours;
+                            //        }
+                            //        if (minutes < 10) {
+                            //            m = "0" + minutes;
+                            //        } else {
+                            //            m = minutes;
+                            //        }
+                            //        return h + ":" + m
+                            //    } else {
+                            //        return "";
+                            //    }
+                            //} else {
+                                if (hours < 10) {
+                                    h = "0" + hours;
+                                } else {
+                                    h = hours;
+                                }
+                                if (minutes < 10) {
+                                    m = "0" + minutes;
+                                } else {
+                                    m = minutes;
+                                }
+                                return h + ":" + m
+                            //}
                         },
                         rotateLabels: '45'
                     },
@@ -648,7 +751,7 @@ module StreamStats.Controllers {
                 },
                 title: {
                     enable: true,
-                    text: 'Runoff hydrograph from TR55 Method using ' + this.SelectedPrecip.name,
+                    text: 'Runoff hydrograph from ' + this.SelectedPrecip.name,
                     css: {
                         'font-size': '10pt',
                         'font-weight': 'bold'
@@ -665,7 +768,6 @@ module StreamStats.Controllers {
 
         private detectIE(): boolean {
             var ua = window.navigator.userAgent;
-
             var msie = ua.indexOf('MSIE ');
             var version;
 
@@ -676,6 +778,7 @@ module StreamStats.Controllers {
             }
 
             var trident = ua.indexOf('Trident/');
+
             if (trident > 0) {
                 // IE 11 => return version number
                 var rv = ua.indexOf('rv:');
@@ -695,27 +798,28 @@ module StreamStats.Controllers {
 
             return false;
         }
+
         //Helper Methods
-        //-+-+-+-+-+-+-+-+-+-+-+-
-        
+        //-+-+-+-+-+-+-+-+-+-+-+-        
         private init(): void {            
             this.SelectedTab = StormRunoffType.TR55;
             this.showResults = false;
+            this.hideAlerts = false;
             this.CanContinue = true;
             this.showPrint = false;
             this.ReportData = new StormRunoffReportable();
-            this._pIntensity = <Services.IParameter> { name: "Precipitation Intensity", code: "PINT", value: null }; 
         }
 
         private loadParameters(): void{
             //unsubscribe first
             this.EventManager.UnSubscribeToEvent(Services.onSelectedStudyParametersLoaded, this.parameterloadedEventHandler);
-            if (this.SelectedTab == 2) {
-                this.calculatePIntensity();
-            }
+            this.DrnAreaAcres = (this.SelectedParameterList[0].value * 640).toUSGSvalue();
+            var dur = parseInt(this.SelectedPrecip.name.substr(0, 2));
+            this.PIntensity = (this.SelectedPrecip.value / dur).toUSGSvalue();
             this.CanContinue = true;
             //alert("Parameters loaded");
         }
+
         private selectRunoffType() {
             switch (this._selectedTab) {
                 case StormRunoffType.TR55:
@@ -729,23 +833,16 @@ module StreamStats.Controllers {
                     this.showResults = false;
                     break;
             }
+
             this.PrecipOptions = this.regionParameters.filter(f => { return ["I6H2Y", "I6H100Y", "I24H2Y", "I24H100Y"].indexOf(f.code) != -1 });
             this.PrecipOptions.forEach(p => p.value = (isNaN(p.value) ? null : p.value));
-            this.SelectedPrecip = this.PrecipOptions[0];
-        }
-        private calculatePIntensity(): void {
-            if (!this.SelectedPrecip.value) {
-                return;
+
+            if (!this.SelectedPrecip) {
+                this.SelectedPrecip = this.PrecipOptions[0];
             }
-            this._pIntensity.name = "Precipitation Intensity";
-            this._pIntensity.code = this.SelectedPrecip.code;
-            this._pIntensity.unit = "inches/hour";
-
-            var dur = parseInt(this.SelectedPrecip.name.substr(0, 2));
-            this._pIntensity.value = this.SelectedPrecip.value / dur; 
         }
-        private tableToCSV($table) {
 
+        private tableToCSV($table) {
             var $headers = $table.find('tr:has(th)')
                 , $rows = $table.find('tr:has(td)')
 
@@ -774,6 +871,7 @@ module StreamStats.Controllers {
                     .split(tmpRowDelim).join(rowDelim)
                     .split(tmpColDelim).join(colDelim);
             }
+
             // Grab and format a row from the table
             function grabRow(i, row) {
 
@@ -785,6 +883,7 @@ module StreamStats.Controllers {
                 return $cols.map(grabCol)
                     .get().join(tmpColDelim);
             }
+
             // Grab and format a column from the table 
             function grabCol(j, col) {
                 var $col = $(col),
@@ -794,6 +893,7 @@ module StreamStats.Controllers {
 
             }
         }
+
         private checkArrayForObj(arr, obj):number {
             for (var i = 0; i < arr.length; i++) {
                 if (angular.equals(arr[i], obj)) {
@@ -802,23 +902,30 @@ module StreamStats.Controllers {
             };
             return -1;
         }
+
         private rand(min: number, max: number): any {
             return parseInt(<any>(Math.random() * (max - min + 1)), 10) + min;
         }
+
         private computeTime(time, dur): any {
             var newtime = new Date('January 1, 2018 00:00:00');
-            var z = dur * 60 * (0.01 * time);
+            //for SW region, time is a percentage
+            //var z = dur * 60 * (0.01 * time);
+            //for NW region, time is in hours
+            var z = time * 60;
 
             newtime.setMinutes(z);
 
             return newtime;
         }
+
         private computeHours(firsttime, newtime): any {
             var millisec = newtime - firsttime;
             var hours = millisec / (1000 * 60 * 60); 
 
             return hours;
         }
+
         private getTimeSpan(firsttime, newtime): any {
             var millisec = newtime - firsttime;
             var minutes = ((millisec / (1000 * 60)) % 60);
@@ -831,6 +938,7 @@ module StreamStats.Controllers {
             } else {
                 h = hours;
             }
+
             if (minutes < 10) {
                 m = "0" + minutes;
             } else {
@@ -839,16 +947,29 @@ module StreamStats.Controllers {
 
             return h + ":" + m;
         }
+
         private loadGraphLabels(data): void {
             for (var i in data) {
                 this.GraphLabels[i] = data[i].span;
             }
         }
+
         private loadGraphXValues(data): void {
-            for (var i in data) {
-                this.GraphXValues[i] = data[i].hours;
+            var count = 0;
+            if (this.duration == 24) {
+                for (var i in data) {
+                    count++;
+                    if (count % 2 != 0) {
+                        this.GraphXValues.push(data[i].hours);
+                    }
+                }
+            } else {
+                for (var i in data) {
+                    this.GraphXValues[i] = data[i].hours;
+                }
             }
         }
+
         //used for Y2 label distance
         private loadPadY(data): void {
             var max = Math.max.apply(Math, data.map(function (o) { return o.y; }));
@@ -862,16 +983,19 @@ module StreamStats.Controllers {
                 this.padY = 30;
             }
         }
+
         //used for Y domain
         private loadDomainY(data): void {
             var max = Math.max.apply(Math, data.map(function (o) { return o.y; }));
-            this.domainY = [0, Math.round((max + max * 0.15) / 10) * 10]; 
+            this.domainY = [0, Math.round((max + max * 0.18) / 10) * 10]; 
         }
+
         //used for Y2 domain
         private loadDomainY2(data): void {
             var max = Math.max.apply(Math, data.map(function (o) { return o.y; }));
-            this.domainY2 = [0, max + max * 0.15];
+            this.domainY2 = [0, max + max * 0.18];
         }
+
         //used for Y2 label distance
         private loadPadY2(data): void {
             var max = Math.max.apply(Math, data.map(function (o) { return o.y; }));
@@ -881,6 +1005,7 @@ module StreamStats.Controllers {
                 this.padY2 = -10;
             }
         }
+
         private sortByKey(array, key): any {
             return array.sort(function (a, b) {
                 var x = a[key]; var y = b[key];

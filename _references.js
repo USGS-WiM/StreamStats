@@ -11,5 +11,5 @@
 /// <reference path="node_modules/wim_angular/dist/typings/Events/EventHandler.d.ts" />
 /// <reference path="node_modules/wim_angular/dist/typings/Services/Helpers/RequestTransform.d.ts" />
 /// <reference path="node_modules/wim_angular/dist/typings/Directives/wimlegend.d.ts" />
-/// <reference path="node_modules/wim_angular/dist/typings/Events/eventmanager.d.ts" /> 
+/// <reference path="node_modules/wim_angular/dist/typings/Events/eventmanager.d.ts" />
 //# sourceMappingURL=_references.js.map

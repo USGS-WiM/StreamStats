@@ -204,7 +204,7 @@ module StreamStats.Controllers {
                                 //reset limit polygon with delineated basin
                                 //console.log('in here', this.studyAreaService.selectedStudyArea, this.studyAreaService.selectedStudyArea.Features[1].feature.features[0].geometry)
                                 limit.name = 'Polygon geometry from delineated watershed';
-                                limit.value = this.studyAreaService.selectedStudyArea.Features[1].feature.features[0].geometry;
+                                limit.value = this.studyAreaService.selectedStudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).toLowerCase() =="globalwatershed" })[0].geometry;
                             }
                         });
                     }

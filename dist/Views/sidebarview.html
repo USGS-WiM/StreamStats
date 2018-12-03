@@ -60,31 +60,31 @@
                 </div>
             </div>
             <div class="sidebar-item">
-                <a ng-class="vm.selectedProcedure == 2  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(2)">Identify a Study Area<h5 ng-show="vm.studyAreaService.selectedStudyArea.Features"><strong>Basin Delineated</strong></h5><i ng-class="vm.selectedProcedure == 2 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
+                <a ng-class="vm.selectedProcedure == 2  ? 'list-group-item-active': 'list-group-item'" ng-click="vm.setProcedureType(2)">Identify a Study Area<h5 ng-show="vm.studyAreaService.selectedStudyArea.FeatureCollection"><strong>Basin Delineated</strong></h5><i ng-class="vm.selectedProcedure == 2 ? 'fa fa-chevron-right pull-right': 'fa fa-chevron-down pull-right'"></i></a>
 
                 <div class="list-group-body" ng-show="vm.selectedProcedure == 2">
 
                     <div id="step2info" class="banner banner-no-icon" ng-hide="!vm.regionService.streamStatsAvailable">
                         <div class="banner-body">
-                            <p ng-show="!vm.studyAreaService.zoomLevel15 && !vm.studyAreaService.selectedStudyArea.Features"><strong>Step 1:</strong> Zoom in to level 15 or greater to enable the delineation tool</p>
-                            <p ng-show="vm.studyAreaService.zoomLevel15 && !vm.studyAreaService.doDelineateFlag && vm.studyAreaService.canUpdate && !vm.studyAreaService.selectedStudyArea.Features && !vm.studyAreaService.checkingDelineatedPoint"><strong>Step 2:</strong> Click the 'Delineate' button to activate the delineation tool</p>
+                            <p ng-show="!vm.studyAreaService.zoomLevel15 && !vm.studyAreaService.selectedStudyArea.FeatureCollection"><strong>Step 1:</strong> Zoom in to level 15 or greater to enable the delineation tool</p>
+                            <p ng-show="vm.studyAreaService.zoomLevel15 && !vm.studyAreaService.doDelineateFlag && vm.studyAreaService.canUpdate && !vm.studyAreaService.selectedStudyArea.FeatureCollection && !vm.studyAreaService.checkingDelineatedPoint"><strong>Step 2:</strong> Click the 'Delineate' button to activate the delineation tool</p>
                             <p ng-show="vm.studyAreaService.zoomLevel15 && vm.studyAreaService.doDelineateFlag"><strong>Step 3:</strong> Use your mouse or finger to click or tap a blue stream cell on the map</p>
                             <p ng-show="!vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint"><strong>Step 4:</strong> Wait for delineation process to complete...</p>
-                            <p ng-show="vm.studyAreaService.selectedStudyArea.Features"><strong>Step 5:</strong> Your delineation is complete.  You can now clear, edit, or download your basin, or choose a state or regional study specific function (if available).  Click <strong>continue </strong>when you are ready.</p>
+                            <p ng-show="vm.studyAreaService.selectedStudyArea.FeatureCollection"><strong>Step 5:</strong> Your delineation is complete.  You can now clear, edit, or download your basin, or choose a state or regional study specific function (if available).  Click <strong>continue </strong>when you are ready.</p>
                         </div>
                     </div>
 
                     
-                    <form ng-hide="vm.studyAreaService.selectedStudyArea.Features" style="padding-bottom: 15px;">
-                        <button id="delineateButton" type="button" class="btn-blue fullwidth" ng-click="vm.startDelineate()" ng-class="vm.studyAreaService.doDelineateFlag ? 'btn-orange' : 'btn-blue'" ng-hide="vm.studyAreaService.selectedStudyArea.Features" ng-disabled="!vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint || !vm.studyAreaService.zoomLevel15"><i ng-class="vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint ? 'fa fa-map-marker' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Delineate</button>
+                    <form ng-hide="vm.studyAreaService.selectedStudyArea.FeatureCollection" style="padding-bottom: 15px;">
+                        <button id="delineateButton" type="button" class="btn-blue fullwidth" ng-click="vm.startDelineate()" ng-class="vm.studyAreaService.doDelineateFlag ? 'btn-orange' : 'btn-blue'" ng-hide="vm.studyAreaService.selectedStudyArea.FeatureCollection" ng-disabled="!vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint || !vm.studyAreaService.zoomLevel15"><i ng-class="vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint ? 'fa fa-map-marker' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Delineate</button>
                         <div style="margin-top:10px;" ng-show="vm.regionService.selectedRegion.RegionID ==='MO_STL'">
                             <checkbox style="height:20px; border:1px solid rgba(0,0,0,.2)!important;" ng-model="vm.studyAreaService.surfacecontributionsonly"></checkbox><span>&nbsp;&nbsp;Surface Contributing Basin only</span>
                         </div>                       
                   </form>
                                           
-                            <div ng-show="vm.studyAreaService.selectedStudyArea.Features">
+                            <div ng-show="vm.studyAreaService.selectedStudyArea.FeatureCollection">
                                 <form style="padding: 5px 0;">
-                                    <button id="clearDelinationButton" type="button" class="btn-red fullwidth" ng-click="vm.resetWorkSpace()" ng-show="vm.studyAreaService.selectedStudyArea.Features" ng-disabled="!vm.studyAreaService.canUpdate"><span><i class="fa fa-trash-o"></i>&nbsp;&nbsp;Clear Basin</span></button>
+                                    <button id="clearDelinationButton" type="button" class="btn-red fullwidth" ng-click="vm.resetWorkSpace()" ng-show="vm.studyAreaService.selectedStudyArea.FeatureCollection" ng-disabled="!vm.studyAreaService.canUpdate"><span><i class="fa fa-trash-o"></i>&nbsp;&nbsp;Clear Basin</span></button>
                                 </form>
                                 <form style="padding: 5px 0;">
                                     <button type="button" class="btn-blue fullwidth" ng-click="vm.studyAreaService.showEditToolbar = !vm.studyAreaService.showEditToolbar" ng-disabled="!vm.studyAreaService.canUpdate"><span class="fa fa-edit"></span>&nbsp;&nbsp;Edit Basin</button>
@@ -111,10 +111,10 @@
                             <strong>State/Region Specific Functions</strong>
                             <p>The following additional functions are available for {{vm.regionService.selectedRegion.Name}}.</p>
                             <form style="padding: 5px 0;">
-                                <button ng-show="vm.regionService.selectedRegion.Applications.indexOf('Regulation') != -1" ng-click="vm.checkRegulation()" type="button" class="btn-black fullwidth" ng-disabled="!vm.studyAreaService.regulationCheckComplete"><i ng-class="vm.studyAreaService.regulationCheckComplete ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Check for upstream regulation</button>
-                                <button ng-show="vm.regionService.selectedRegion.Applications.indexOf('StormRunoff') != -1" ng-click="vm.OpenStormRunoff()" type="button" class="btn-black fullwidth"><i class="fa fa-steam"></i>&nbsp;&nbsp;Open Storm Runoff Models</button>
-                                <button ng-show="vm.regionService.selectedRegion.Applications.indexOf('Wateruse') != -1" ng-click="vm.OpenWateruse()" type="button" class="btn-black fullwidth"><i class="fa fa-empire"></i>&nbsp;&nbsp;Check for Water Use</button>
-                                <div class="banner" ng-show="vm.regionService.selectedRegion.Applications.indexOf('KarstCheck') != -1" >Check Delineated Basin for Karst Overlap (automatic)</div>
+                                <button ng-show="vm.regionService.selectedRegion.Applications.indexOf('Regulation') != -1" ng-click="vm.checkRegulation()" type="button" class="btn-black fullwidth" ng-disabled="!vm.studyAreaService.regulationCheckComplete" analytics-on analytics-event="Navigation" analytics-category="SideBar" analytics-label="CheckRegulation"><i ng-class="vm.studyAreaService.regulationCheckComplete ? 'fa fa-flash' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Check for upstream regulation</button>
+                                <button ng-show="vm.regionService.selectedRegion.Applications.indexOf('StormRunoff') != -1" ng-click="vm.OpenStormRunoff()" type="button" class="btn-black fullwidth"><i class="fa fa-steam" analytics-on analytics-event="Navigation" analytics-category="SideBar" analytics-label="StormRunoff"></i>&nbsp;&nbsp;Open Storm Runoff Models</button>
+                                <button ng-show="vm.regionService.selectedRegion.Applications.indexOf('Wateruse') != -1" ng-click="vm.OpenWateruse()" type="button" class="btn-black fullwidth"><i class="fa fa-empire" analytics-on analytics-event="Navigation" analytics-category="SideBar" analytics-label="WaterUse"></i>&nbsp;&nbsp;Check for Water Use</button>
+                                <div class="banner" ng-show="vm.regionService.selectedRegion.Applications.indexOf('KarstCheck') != -1">Check Delineated Basin for Karst Overlap (automatic)</div>
                                 <div class="banner" ng-show="vm.regionService.selectedRegion.Applications.indexOf('CoordinatedReach') != -1">Check for Coordinated Reach (automatic)</div>
                             </form>
 
@@ -130,7 +130,7 @@
                                             <ul class="dropdown-menu" role="menu">
                                                 <li><a href="#" ng-click="vm.downloadGeoJSON()" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="GeoJSON"><span class="fa fa-download"></span>&nbsp;&nbsp;GeoJSON</a></li>
                                                 <li><a href="{{vm.studyAreaService.servicesURL}}/streamstatsservices/download?workspaceID={{vm.studyAreaService.selectedStudyArea.WorkspaceID}}&format=Shape" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="Shapefile"><span class="fa fa-download"></span>&nbsp;&nbsp;Shapefile</a></li>
-                                                <li><a href="{{vm.studyAreaService.servicesURL}}/streamstatsservices/download?workspaceID={{vm.studyAreaService.selectedStudyArea.WorkspaceID}}" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="File GDB"><span class="fa fa-download"></span>&nbsp;&nbsp;ESRI File GDB</a></li>
+                                                <!--<li><a href="{{vm.studyAreaService.servicesURL}}/streamstatsservices/download?workspaceID={{vm.studyAreaService.selectedStudyArea.WorkspaceID}}" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="File GDB"><span class="fa fa-download"></span>&nbsp;&nbsp;ESRI File GDB</a></li>-->
                                             </ul>
                                         </div>
                                     </form>

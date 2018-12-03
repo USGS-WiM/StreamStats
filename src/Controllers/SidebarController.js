@@ -381,7 +381,7 @@ var StreamStats;
                 this.modalService.openModal(StreamStats.Services.SSModalType.e_stormrunnoff);
             };
             SidebarController.prototype.downloadGeoJSON = function () {
-                var GeoJSON = angular.toJson(this.studyAreaService.selectedStudyArea.Features[1].feature);
+                var GeoJSON = angular.toJson(this.studyAreaService.selectedStudyArea.FeatureCollection);
                 var filename = 'data.geojson';
                 var blob = new Blob([GeoJSON], { type: 'text/csv;charset=utf-8;' });
                 if (navigator.msSaveBlob) {
