@@ -121,7 +121,10 @@ module StreamStats.Services {
                         else if (i == 1 && layers_spp1.length > 0) spp_data = response[i]
                         else if (i == 2 && layers_spp2.length > 0) {
                             spp_data = spp_data.concat(response[i]);
-                            for (var i = 0; i < spp_data.length; i++) spp_data[i].name = spp_data[i].name.charAt(0).toUpperCase() + spp_data[i].name.slice(1).toLowerCase();
+                            for (var i = 0; i < spp_data.length; i++) {
+                                spp_data[i].name = spp_data[i].name.charAt(0).toUpperCase() + spp_data[i].name.slice(1).toLowerCase();
+                                spp_data[i].value = Math.round(spp_data[i].value * 100) / 100;
+                            }
                         }
                     this._result.data.SPP = spp_data;
 

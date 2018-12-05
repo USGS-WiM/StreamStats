@@ -75,10 +75,11 @@ module StreamStats.Controllers {
         {
             return this._prosperServices.SelectedPredictions;
         }
-        private _graph:any
+        private _graph: any;
         public get Graph(): any {
             return this._graph;
         }
+        private _xValues: any;
        
       //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -171,15 +172,21 @@ module StreamStats.Controllers {
                             pointDomain: [0, 10],
                             transitionDuration: 350,
                             rotateLabels: 45,
-                            yDomain:[5,-5],//handles reverse order
+                            yDomain:[-5, 5],//handles reverse order
                             margin: {
                                 top: 20,
                                 right: 50,
                                 bottom: 100,
-                                left: 55
+                                left: 60
                             },
                             yAxis: {
-                                axisLabel: 'Confidence in prediction of streamflow permanence'                               
+                                axisLabel: 'Streamflow Permanence Class',
+                                tickValues: [-5,-4,-3,-2,-1,0,1,2,3,4,5]
+                            },
+                            xAxis: {
+                                tickValues: this._xValues,
+                                showMaxMin: false,
+                                rotateLabels: 45
                             },
                             scatter:{onlyCircles:false }
                         }
@@ -241,11 +248,13 @@ module StreamStats.Controllers {
         private setResults(results: Services.IProsperPredictionResults): void {
             this._results = results;
             this._table = {};
+            this._xValues = [];
             for (var item in this._results.data) {
                 for (var k = 0; k < this._results.data[item].length; k++) {
                     var obj: any = this._results.data[item][k]
+                    if (obj.name.charAt(0) == "2") this._xValues.push(obj.name);
                     if (!(obj.name in this._table)) this._table[obj.name] = {};
-                    this._table[obj.name][item] = obj.value
+                    this._table[obj.name][item] = obj.value;
                 }//next k
             }//next item
             this._prosperServices.ResetResults();
