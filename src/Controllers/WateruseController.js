@@ -16,14 +16,14 @@ var StreamStats;
     var Controllers;
     (function (Controllers) {
         'use strict';
-        var WaterUseReportable = (function () {
+        var WaterUseReportable = /** @class */ (function () {
             function WaterUseReportable() {
                 this.Annual = { Graph: {}, Table: {} };
                 this.Monthly = { Graph: { withdrawals: null, returns: null }, Table: {} };
             }
             return WaterUseReportable;
         }());
-        var WateruseController = (function (_super) {
+        var WateruseController = /** @class */ (function (_super) {
             __extends(WateruseController, _super);
             function WateruseController($scope, $http, studyAreaService, modal, $timeout) {
                 var _this = _super.call(this, $http, configuration.baseurls.WaterUseServices) || this;
@@ -407,7 +407,7 @@ var StreamStats;
                             stacked: true,
                             showControls: false,
                             margin: {
-                                top: 20,
+                                top: 60,
                                 right: 30,
                                 bottom: 60,
                                 left: 55
@@ -453,7 +453,15 @@ var StreamStats;
                                     return d3.format(',.3f')(d);
                                 }
                             },
-                            refreshDataOnly: true
+                            refreshDataOnly: true,
+                            legend: {
+                                margin: {
+                                    top: 5,
+                                    right: 40,
+                                    left: 40,
+                                    bottom: 50
+                                }
+                            }
                         }
                     };
                     _this.MonthlyReturnReportOptions = {
@@ -578,7 +586,12 @@ var StreamStats;
                             .text(function () {
                             // Two decimals format
                             if (i >= lastBarID[0])
-                                return d3.format(',.3f')((Number(bar.y) + Number(bar.y0)).toFixed(3));
+                                if (bar.y < 0.001) {
+                                    return 0;
+                                }
+                                else {
+                                    return d3.format(',.3f')((Number(bar.y) + Number(bar.y0)).toFixed(3));
+                                }
                         })
                             .attr("dy", "1.5em")
                             .attr('x', function () {
@@ -683,11 +696,11 @@ var StreamStats;
             WateruseController.prototype.rand = function (min, max) {
                 return parseInt((Math.random() * (max - min + 1)), 10) + min;
             };
+            //Constructor
+            //-+-+-+-+-+-+-+-+-+-+-+-
+            WateruseController.$inject = ['$scope', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance', '$timeout'];
             return WateruseController;
         }(WiM.Services.HTTPServiceBase)); //end wimLayerControlController class
-        //Constructor
-        //-+-+-+-+-+-+-+-+-+-+-+-
-        WateruseController.$inject = ['$scope', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance', '$timeout'];
         var WaterUseType;
         (function (WaterUseType) {
             WaterUseType[WaterUseType["Annual"] = 1] = "Annual";

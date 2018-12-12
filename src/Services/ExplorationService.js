@@ -34,7 +34,7 @@ var StreamStats;
         'use strict';
         Services.onSelectExplorationMethod = "onSelectExplorationMethod";
         Services.onSelectedMethodExecuteComplete = "onSelectedMethodExecuteComplete";
-        var ExplorationServiceEventArgs = (function (_super) {
+        var ExplorationServiceEventArgs = /** @class */ (function (_super) {
             __extends(ExplorationServiceEventArgs, _super);
             function ExplorationServiceEventArgs() {
                 return _super.call(this) || this;
@@ -42,7 +42,7 @@ var StreamStats;
             return ExplorationServiceEventArgs;
         }(WiM.Event.EventArgs));
         Services.ExplorationServiceEventArgs = ExplorationServiceEventArgs;
-        var ExplorationService = (function (_super) {
+        var ExplorationService = /** @class */ (function (_super) {
             __extends(ExplorationService, _super);
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-

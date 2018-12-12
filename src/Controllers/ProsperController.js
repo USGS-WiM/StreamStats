@@ -56,7 +56,11 @@ var StreamStats;
             });
             Object.defineProperty(ProsperController.prototype, "Description", {
                 get: function () {
-                    return "The U.S. Geological Survey (USGS) has developed the PRObability of Streamflow PERmanence (PROSPER) model, a GIS raster-based empirical model that provides streamflow permanence probabilities (probabilistic predictions) of a stream channel having year-round flow for any unregulated and minimally-impaired stream channel in the Pacific Northwest region, U.S. The model provides annual predictions for 2004-2016 at a 30-m spatial resolution based on monthly or annually updated values of climatic conditions and static physiographic variables associated with the upstream basin (Raw streamflow permanence probability rasters). Predictions correspond to pixels on the channel network consistent with the medium resolution National Hydrography Dataset channel network stream grid. Probabilities were converted to wet and dry streamflow permanence classes (Categorical wet/dry rasters) with an associated confidence (Threshold and confidence interval rasters).";
+                    var desc = "The PRObability of Streamflow PERmanence (PROSPER) model provides annual (2004-2016) streamflow permanence probabilities (SPPs; probabilistic predictions) and streamflow permanence classes (SPCs; " +
+                        "categorical wet/dry with an associated confidence level). Probabilities are of a stream channel having year-round flow at a 30-m spatial resolution. " +
+                        "<a href = 'https://doi.org/10.1016/j.hydroa.2018.100005' target = '_blank' > Click here for more information.</a><br><br><b>Contact " +
+                        "information:</b><br>Roy Sando<br>U.S. Geological Survey, Wyoming-Montana Water Science Center<br>Email: <a href='mailto:tsando@usgs.gov' target='_blank'>tsando@usgs.gov</a> <br>Phone: 406-457-5953";
+                    return desc;
                 },
                 enumerable: true,
                 configurable: true
