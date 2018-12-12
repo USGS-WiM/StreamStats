@@ -61,7 +61,18 @@ module StreamStats.Controllers {
             return this._resultsAvailable;
         }
         public get Description():string {
-            return "The U.S. Geological Survey (USGS) has developed the PRObability of Streamflow PERmanence (PROSPER) model, a GIS raster-based empirical model that provides streamflow permanence probabilities (probabilistic predictions) of a stream channel having year-round flow for any unregulated and minimally-impaired stream channel in the Pacific Northwest region, U.S. The model provides annual predictions for 2004-2016 at a 30-m spatial resolution based on monthly or annually updated values of climatic conditions and static physiographic variables associated with the upstream basin (Raw streamflow permanence probability rasters). Predictions correspond to pixels on the channel network consistent with the medium resolution National Hydrography Dataset channel network stream grid. Probabilities were converted to wet and dry streamflow permanence classes (Categorical wet/dry rasters) with an associated confidence (Threshold and confidence interval rasters)."
+            var desc = "The PRObability of Streamflow PERmanence (PROSPER) model provides annual (2004-2016)" +
+            "streamflow permanence probabilities (SPPs; probabilistic predictions) and streamflow permanence" +
+            "classes(SPCs; categorical wet/ dry with an associated confidence level). Probabilities are of a stream" +
+            "channel having year- round flow at a 30- m spatial resolution.Model methods, output, and appropriate" +
+            "uses are detailed in Jaeger et al. (2018).Interpretation of a pixel as wet or dry will be based on" +
+            "combined consideration of the SPP, the sign of the SPC (negative for dry, positive for wet), and the" +
+            "associated confidence (1 - 5 representing 50% - 95 %).For example, predictions with a negative" +
+            "(positive) sign, high confidence level indicated by an SPC of - 5(5), and an SPP of less than (greater" +
+            "than) 0.5 will be the most reliable."+
+                "<a href = 'https://doi.org/10.1016/j.hydroa.2018.100005' target = '_blank' > Click here for more information.</a><br><br><b>Contact " +
+                "information:</b><br>Roy Sando<br>U.S. Geological Survey, Wyoming-Montana Water Science Center<br>Email: <a href='mailto:tsando@usgs.gov' target='_blank'>tsando@usgs.gov</a> <br>Phone: 406-457-5953";
+            return desc;
         }
         public get AvailablePredictions(): Array<Services.IProsperPrediction> {
             return this._prosperServices.AvailablePredictions;
@@ -75,10 +86,11 @@ module StreamStats.Controllers {
         {
             return this._prosperServices.SelectedPredictions;
         }
-        private _graph:any
+        private _graph: any;
         public get Graph(): any {
             return this._graph;
         }
+        private _xValues: any;
        
       //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -171,15 +183,21 @@ module StreamStats.Controllers {
                             pointDomain: [0, 10],
                             transitionDuration: 350,
                             rotateLabels: 45,
-                            yDomain:[5,-5],//handles reverse order
+                            yDomain:[-5, 5],//handles reverse order
                             margin: {
                                 top: 20,
                                 right: 50,
                                 bottom: 100,
-                                left: 55
+                                left: 60
                             },
                             yAxis: {
-                                axisLabel: 'Confidence in prediction of streamflow permanence'                               
+                                axisLabel: 'Streamflow Permanence Class',
+                                tickValues: [-5,-4,-3,-2,-1,0,1,2,3,4,5]
+                            },
+                            xAxis: {
+                                tickValues: this._xValues,
+                                showMaxMin: false,
+                                rotateLabels: 45
                             },
                             scatter:{onlyCircles:false }
                         }
@@ -241,11 +259,13 @@ module StreamStats.Controllers {
         private setResults(results: Services.IProsperPredictionResults): void {
             this._results = results;
             this._table = {};
+            this._xValues = [];
             for (var item in this._results.data) {
                 for (var k = 0; k < this._results.data[item].length; k++) {
                     var obj: any = this._results.data[item][k]
+                    if (obj.name.charAt(0) == "2") this._xValues.push(obj.name);
                     if (!(obj.name in this._table)) this._table[obj.name] = {};
-                    this._table[obj.name][item] = obj.value
+                    this._table[obj.name][item] = obj.value;
                 }//next k
             }//next item
             this._prosperServices.ResetResults();

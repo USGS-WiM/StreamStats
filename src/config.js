@@ -54,7 +54,7 @@ var StreamStats;
         'leaflet-directive',
         'StreamStats.Services',
         'StreamStats.Controllers',
-        'WiM.Services', 'WiM.Event', 'wim_angular', 'rzModule', 'nvd3'
+        'WiM.Services', 'WiM.Event', 'wim_angular', 'rzModule', 'nvd3', 'ngSanitize'
     ])
         .config(config);
 })(StreamStats || (StreamStats = {})); //end module 

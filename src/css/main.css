@@ -1724,3 +1724,13 @@ input[name=distanceValue] {
     white-space: pre-wrap;
     text-align: left;
 }
+
+/*project description*/
+.projDesc table, .projDesc th, .projDesc td {
+    border: 1px solid black;
+    padding: 0px 5px;
+}
+
+.projDesc {
+    font-size: 12px;
+}
