@@ -19,7 +19,7 @@ var StreamStats;
     var Controllers;
     (function (Controllers) {
         'use string';
-        var NavigationReportModalController = /** @class */ (function () {
+        var NavigationReportModalController = (function () {
             function NavigationReportModalController($scope, $sce, modal, modalservice) {
                 $scope.vm = this;
                 this.sce = $sce;
@@ -70,11 +70,11 @@ var StreamStats;
                 //    }).finally(() => {
                 //    });
             };
-            //Constructor
-            //-+-+-+-+-+-+-+-+-+-+-+-
-            NavigationReportModalController.$inject = ['$scope', '$sce', '$modalInstance', 'StreamStats.Services.ModalService'];
             return NavigationReportModalController;
         }()); //end  class
+        //Constructor
+        //-+-+-+-+-+-+-+-+-+-+-+-
+        NavigationReportModalController.$inject = ['$scope', '$sce', '$modalInstance', 'StreamStats.Services.ModalService'];
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.NavigationReportModalController', NavigationReportModalController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));

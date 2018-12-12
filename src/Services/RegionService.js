@@ -33,20 +33,20 @@ var StreamStats;
     var Services;
     (function (Services) {
         'use strict';
-        var Region = /** @class */ (function () {
+        var Region = (function () {
             function Region() {
             }
             return Region;
         }()); //end class
         Services.Region = Region;
-        var Parameter = /** @class */ (function () {
+        var Parameter = (function () {
             function Parameter() {
             }
             return Parameter;
         }()); //end class
         Services.Parameter = Parameter;
         Services.onSelectedRegionChanged = "onSelectedRegionChanged";
-        var RegionService = /** @class */ (function (_super) {
+        var RegionService = (function (_super) {
             __extends(RegionService, _super);
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-

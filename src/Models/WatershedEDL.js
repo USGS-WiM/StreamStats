@@ -20,7 +20,7 @@ var StreamStats;
 (function (StreamStats) {
     var Models;
     (function (Models) {
-        var WatershedEditDecisionList = /** @class */ (function () {
+        var WatershedEditDecisionList = (function () {
             function WatershedEditDecisionList() {
                 this.append = [];
                 this.remove = [];

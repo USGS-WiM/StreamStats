@@ -3,7 +3,7 @@
 var StreamStats;
 (function (StreamStats) {
     //'use strict';
-    var config = /** @class */ (function () {
+    var config = (function () {
         function config($stateProvider, $urlRouterProvider, $locationProvider, $logProvider, $compilerProvider) {
             this.$stateProvider = $stateProvider;
             this.$urlRouterProvider = $urlRouterProvider;
@@ -43,9 +43,9 @@ var StreamStats;
             if (configuration.environment == "production")
                 this.$compilerProvider.debugInfoEnabled(false);
         } //end constructor
-        config.$inject = ['$stateProvider', '$urlRouterProvider', '$locationProvider', '$logProvider', '$compileProvider'];
         return config;
     }()); //end class
+    config.$inject = ['$stateProvider', '$urlRouterProvider', '$locationProvider', '$logProvider', '$compileProvider'];
     angular.module('StreamStats', [
         'ui.router', 'ui.bootstrap', 'ui.checkbox',
         'mobile-angular-ui',
