@@ -29,7 +29,7 @@ var StreamStats;
     var Controllers;
     (function (Controllers) {
         'use string';
-        var AboutController = /** @class */ (function (_super) {
+        var AboutController = (function (_super) {
             __extends(AboutController, _super);
             function AboutController($scope, $http, $sce, modalService, region, studyAreaService, modal) {
                 var _this = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
@@ -248,11 +248,11 @@ var StreamStats;
                     var expires = "";
                 document.cookie = name + "=" + value + expires + "; path=/";
             };
-            //Constructor
-            //-+-+-+-+-+-+-+-+-+-+-+-
-            AboutController.$inject = ['$scope', '$http', '$sce', 'StreamStats.Services.ModalService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', '$modalInstance'];
             return AboutController;
         }(WiM.Services.HTTPServiceBase)); //end  class
+        //Constructor
+        //-+-+-+-+-+-+-+-+-+-+-+-
+        AboutController.$inject = ['$scope', '$http', '$sce', 'StreamStats.Services.ModalService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', '$modalInstance'];
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.AboutController', AboutController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));

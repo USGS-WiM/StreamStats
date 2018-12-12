@@ -16,14 +16,14 @@ var StreamStats;
     var Controllers;
     (function (Controllers) {
         'use strict';
-        var StormRunoffReportable = /** @class */ (function () {
+        var StormRunoffReportable = (function () {
             function StormRunoffReportable() {
                 this.TR55 = { Graph: {}, Table: {}, PeakQ: {}, Infiltration: {}, ExcessPrecip: {} };
                 this.RationalMethod = { Graph: {}, Table: {}, PeakQ: {}, Infiltration: {}, ExcessPrecip: {} };
             }
             return StormRunoffReportable;
         }());
-        var StormRunoffController = /** @class */ (function (_super) {
+        var StormRunoffController = (function (_super) {
             __extends(StormRunoffController, _super);
             function StormRunoffController($scope, $analytics, $http, studyAreaService, StatisticsGroup, region, modal, $timeout, EventManager) {
                 var _this = _super.call(this, $http, configuration.baseurls.StormRunoffServices) || this;
@@ -206,7 +206,7 @@ var StreamStats;
                             this.DASizeAlert = null;
                         }
                         return;
-                    default://case StormRunoffType.RationalMethod
+                    default:
                         if (this.DrnAreaAcres > 200) {
                             this.DASizeAlert = "Value is greater than recommended maximum threshold of 200 acres";
                         }
@@ -716,7 +716,7 @@ var StreamStats;
                         this.SelectedParameterList.forEach(function (p) { return p.value = (isNaN(p.value) ? null : p.value); });
                         this.showResults = false;
                         break;
-                    default://case StormRunoffType.RationalMethod
+                    default:
                         this.SelectedParameterList = this.regionParameters.filter(function (f) { return ["DRNAREA", "RUNCO_CO"].indexOf(f.code) != -1; });
                         this.SelectedParameterList.forEach(function (p) { return p.value = (isNaN(p.value) ? null : p.value); });
                         this.showResults = false;
@@ -877,11 +877,11 @@ var StreamStats;
                     return ((x < y) ? -1 : ((x > y) ? 1 : 0));
                 });
             };
-            //Constructor
-            //-+-+-+-+-+-+-+-+-+-+-+-
-            StormRunoffController.$inject = ['$scope', '$analytics', '$http', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.RegionService', '$modalInstance', '$timeout', 'WiM.Event.EventManager'];
             return StormRunoffController;
         }(WiM.Services.HTTPServiceBase)); //end wimLayerControlController class   
+        //Constructor
+        //-+-+-+-+-+-+-+-+-+-+-+-
+        StormRunoffController.$inject = ['$scope', '$analytics', '$http', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.RegionService', '$modalInstance', '$timeout', 'WiM.Event.EventManager'];
         var StormRunoffType;
         (function (StormRunoffType) {
             StormRunoffType[StormRunoffType["TR55"] = 1] = "TR55";
