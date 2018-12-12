@@ -23,7 +23,7 @@ var StreamStats;
     var Services;
     (function (Services) {
         'use strict';
-        var ModalService = (function () {
+        var ModalService = /** @class */ (function () {
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
             function ModalService($modal) {

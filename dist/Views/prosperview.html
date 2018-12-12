@@ -23,7 +23,7 @@
         <div class="row">
             <div class="col-sm-6">
                 <h6>Project Description</h6>
-                <p>{{vm.Description}}</p>
+                <p class="projDesc" ng-bind-html="vm.Description"></p>
             </div>
 
             <div ng-if="!vm.ResultsAvailable" class="col-sm-6">

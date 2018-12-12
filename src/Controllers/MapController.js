@@ -20,14 +20,14 @@ var StreamStats;
     var Controllers;
     (function (Controllers) {
         'use strict';
-        var MapPoint = (function () {
+        var MapPoint = /** @class */ (function () {
             function MapPoint() {
                 this.lat = 0;
                 this.lng = 0;
             }
             return MapPoint;
         }());
-        var Center = (function () {
+        var Center = /** @class */ (function () {
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
             function Center(lt, lg, zm) {
@@ -37,7 +37,7 @@ var StreamStats;
             }
             return Center;
         }());
-        var Layer = (function () {
+        var Layer = /** @class */ (function () {
             function Layer(nm, ul, ty, vis, op) {
                 if (op === void 0) { op = undefined; }
                 this.name = nm;
@@ -48,7 +48,7 @@ var StreamStats;
             }
             return Layer;
         }());
-        var MapDefault = (function () {
+        var MapDefault = /** @class */ (function () {
             function MapDefault(mxZm, mnZm, zmCtrl) {
                 if (mxZm === void 0) { mxZm = null; }
                 if (mnZm === void 0) { mnZm = null; }
@@ -59,7 +59,7 @@ var StreamStats;
             }
             return MapDefault;
         }());
-        var MapController = (function () {
+        var MapController = /** @class */ (function () {
             function MapController($scope, toaster, $analytics, $location, $stateParams, leafletBoundsHelper, leafletData, search, region, studyArea, StatisticsGroup, exploration, _prosperServices, eventManager, modal, modalStack) {
                 var _this = this;
                 this.$scope = $scope;
@@ -391,7 +391,7 @@ var StreamStats;
                                     //query
                                     maplayers.overlays[lyr].query().nearby(evt.latlng, 4).returnGeometry(false).run(function (error, results) { return _this.handleQueryResult(lyr, error, results, map, evt.latlng); });
                                     break;
-                                default:
+                                default://agsDynamic
                                     maplayers.overlays[lyr].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).run(function (error, results) { return _this.handleQueryResult(lyr, error, results, map, evt.latlng); });
                             }
                             _this.queryContent.requestCount++;
@@ -423,7 +423,7 @@ var StreamStats;
                                 if (item.layerName == "Streamgages" && k == "featureurl") {
                                     var siteNo = queryResult.properties[k].split('site_no=')[1];
                                     var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm';
-                                    querylayers.append('<strong>NWIS page: </strong><a href="' + queryProperties_1[k] + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br>');
+                                    querylayers.append('<strong>NWIS page: </strong><a href="' + queryResult.properties[k] + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br>');
                                     _this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'streamgageQuery' });
                                 }
                                 else {
@@ -1178,11 +1178,11 @@ var StreamStats;
                 if (isInExclusionArea)
                     this.studyArea.selectedStudyArea.Disclaimers['isInExclusionArea'] = 'The delineation point is in an exclusion area. ' + excludeReason;
             };
+            //Constructor
+            //-+-+-+-+-+-+-+-+-+-+-+-
+            MapController.$inject = ['$scope', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack'];
             return MapController;
         }()); //end class
-        //Constructor
-        //-+-+-+-+-+-+-+-+-+-+-+-
-        MapController.$inject = ['$scope', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack'];
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.MapController', MapController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));

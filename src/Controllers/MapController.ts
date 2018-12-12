@@ -553,7 +553,7 @@ module StreamStats.Controllers {
                             if (item.layerName == "Streamgages" && k == "featureurl") {
                                 var siteNo = queryResult.properties[k].split('site_no=')[1];
                                 var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm'
-                                querylayers.append('<strong>NWIS page: </strong><a href="' + queryProperties[k] + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br>');
+                                querylayers.append('<strong>NWIS page: </strong><a href="' + queryResult.properties[k] + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br>');
                                 this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'streamgageQuery' });
                             }
                             else {
