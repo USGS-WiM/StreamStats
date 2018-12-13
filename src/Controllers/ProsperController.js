@@ -20,8 +20,9 @@ var StreamStats;
     (function (Controllers) {
         'use strict';
         var ProsperController = (function () {
-            function ProsperController($scope, modal, pservices) {
+            function ProsperController($scope, modal, $sce, pservices) {
                 $scope.vm = this;
+                this.sce = $sce;
                 this.modalInstance = modal;
                 this._prosperServices = pservices;
                 this.init();
@@ -54,6 +55,10 @@ var StreamStats;
                 enumerable: true,
                 configurable: true
             });
+            ProsperController.prototype.convertUnsafe = function (x) {
+                return this.sce.trustAsHtml(x);
+            };
+            ;
             Object.defineProperty(ProsperController.prototype, "Description", {
                 get: function () {
                     var desc = "The PRObability of Streamflow PERmanence (PROSPER) model provides annual (2004-2016)" +
@@ -67,7 +72,7 @@ var StreamStats;
                         "than) 0.5 will be the most reliable." +
                         "<a href = 'https://doi.org/10.1016/j.hydroa.2018.100005' target = '_blank' > Click here for more information.</a><br><br><b>Contact " +
                         "information:</b><br>Roy Sando<br>U.S. Geological Survey, Wyoming-Montana Water Science Center<br>Email: <a href='mailto:tsando@usgs.gov' target='_blank'>tsando@usgs.gov</a> <br>Phone: 406-457-5953";
-                    return desc;
+                    return this.sce.trustAsHtml(desc);
                 },
                 enumerable: true,
                 configurable: true
@@ -284,7 +289,7 @@ var StreamStats;
         }()); //end Controller class
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        ProsperController.$inject = ['$scope', '$modalInstance', 'StreamStats.Services.ProsperService'];
+        ProsperController.$inject = ['$scope', '$modalInstance', '$sce', 'StreamStats.Services.ProsperService'];
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.ProsperController', ProsperController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));

@@ -43,6 +43,7 @@ module StreamStats.Controllers {
     class ProsperController implements IProsperController {
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
+        public sce: any;
         private _results: Services.IProsperPredictionResults;
         public get Location() {
             return this._results.point;
@@ -60,6 +61,9 @@ module StreamStats.Controllers {
         public get ResultsAvailable():boolean {
             return this._resultsAvailable;
         }
+        public convertUnsafe(x: string) {
+            return this.sce.trustAsHtml(x);
+        };
         public get Description():string {
             var desc = "The PRObability of Streamflow PERmanence (PROSPER) model provides annual (2004-2016)" +
             "streamflow permanence probabilities (SPPs; probabilistic predictions) and streamflow permanence" +
@@ -72,7 +76,7 @@ module StreamStats.Controllers {
             "than) 0.5 will be the most reliable."+
                 "<a href = 'https://doi.org/10.1016/j.hydroa.2018.100005' target = '_blank' > Click here for more information.</a><br><br><b>Contact " +
                 "information:</b><br>Roy Sando<br>U.S. Geological Survey, Wyoming-Montana Water Science Center<br>Email: <a href='mailto:tsando@usgs.gov' target='_blank'>tsando@usgs.gov</a> <br>Phone: 406-457-5953";
-            return desc;
+            return this.sce.trustAsHtml(desc);
         }
         public get AvailablePredictions(): Array<Services.IProsperPrediction> {
             return this._prosperServices.AvailablePredictions;
@@ -94,9 +98,10 @@ module StreamStats.Controllers {
        
       //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$modalInstance','StreamStats.Services.ProsperService'];
-        constructor($scope: IProsperScope, modal:ng.ui.bootstrap.IModalServiceInstance, pservices:StreamStats.Services.IProsperService) {
+        static $inject = ['$scope', '$modalInstance', '$sce','StreamStats.Services.ProsperService'];
+        constructor($scope: IProsperScope, modal: ng.ui.bootstrap.IModalServiceInstance, $sce: any, pservices:StreamStats.Services.IProsperService) {
             $scope.vm = this;
+            this.sce = $sce;
             this.modalInstance = modal;           
             this._prosperServices = pservices;
             this.init();   
