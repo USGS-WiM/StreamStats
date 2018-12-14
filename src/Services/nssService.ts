@@ -36,7 +36,7 @@ module StreamStats.Services {
         showFlowsTable: boolean;
         clearNSSdata();
         queriedRegions: boolean;
-
+        getflattenNSSTable(name: string): Array<INSSResultTable>
         reportGenerated: boolean;  
     }
     export interface IStatisticsGroup {
@@ -76,8 +76,17 @@ module StreamStats.Services {
         public Disclaimers: any;
     }//end class
 
+    export interface INSSResultTable {
+        Name?: string;
+        Region?: string;
+        Statistic?: string;
+        Value?: Number;
+        Unit?: string;
+        CitationUrl?: string;
+        Disclaimers: string;
+    }
 
-    class nssService extends WiM.Services.HTTPServiceBase {       
+    class nssService extends WiM.Services.HTTPServiceBase implements InssService {       
         //Events
         private _onSelectedStatisticsGroupChanged: WiM.Event.Delegate<WiM.Event.EventArgs>;
         public get onSelectedStatisticsGroupChanged(): WiM.Event.Delegate<WiM.Event.EventArgs> {
@@ -355,7 +364,7 @@ module StreamStats.Services {
             });
         }
 
-        private getSelectedCitations(citationUrl: string, statGroup: any): any {
+        public getSelectedCitations(citationUrl: string, statGroup: any): any {
 
             ////nested requests for citations
             //console.log('citations: ', citationUrl, statGroup, this.getSelectedCitationsCounter);
@@ -382,7 +391,35 @@ module StreamStats.Services {
                 });
         }
 
-
+        public getflattenNSSTable(name: string): Array<INSSResultTable> {
+            var result = [];
+            try {
+                this.selectedStatisticsGroupList.forEach(sgroup => {
+                    sgroup.RegressionRegions.forEach(regRegion => {
+                        regRegion.Results.forEach(regResult => {
+                            result.push(
+                                {
+                                    Name: name,
+                                    Region: regRegion.PercentWeight ? regRegion.PercentWeight.toFixed(0) + "% " + regRegion.Name : regRegion.Name,
+                                    Statistic: regResult.Name,
+                                    Code: regResult.code,
+                                    Value: regResult.Value.toUSGSvalue(),
+                                    Unit: regResult.Unit.Unit,
+                                    Disclaimers: regRegion.Disclaimer ? regRegion.Disclaimer : undefined,
+                                    Errors: (regResult.Errors && regResult.Errors.length > 0) ? regResult.Errors.map(err => err.Name + " : " + err.Value).join(', ') : undefined,
+                                    MaxLimit: regResult.IntervalBounds && regResult.IntervalBounds.Upper > 0 ? regResult.IntervalBounds.Upper.toUSGSvalue() : undefined,
+                                    MinLimit: regResult.IntervalBounds && regResult.IntervalBounds.Lower > 0 ? regResult.IntervalBounds.Lower.toUSGSvalue() : undefined,
+                                    EquivYears: regResult.EquivalentYears ? regResult.EquivalentYears : undefined
+                                });
+                        });//next regResult
+                    });//next regRegion
+                });//next sgroup
+            }
+            catch (e) {
+                result.push({ Disclaimers: "Failed to output flowstats to table. " });
+            }
+            return result;
+        }
         //HelperMethods
         //-+-+-+-+-+-+-+-+-+-+-+-
         private cleanRegressionRegions(RegressionRegions:Array<any>): void {
