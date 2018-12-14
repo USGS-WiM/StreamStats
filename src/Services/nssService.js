@@ -295,6 +295,34 @@ var StreamStats;
                 }).finally(function () {
                 });
             };
+            nssService.prototype.getflattenNSSTable = function (name) {
+                var result = [];
+                try {
+                    this.selectedStatisticsGroupList.forEach(function (sgroup) {
+                        sgroup.RegressionRegions.forEach(function (regRegion) {
+                            regRegion.Results.forEach(function (regResult) {
+                                result.push({
+                                    Name: name,
+                                    Region: regRegion.PercentWeight ? regRegion.PercentWeight.toFixed(0) + "% " + regRegion.Name : regRegion.Name,
+                                    Statistic: regResult.Name,
+                                    Code: regResult.code,
+                                    Value: regResult.Value.toUSGSvalue(),
+                                    Unit: regResult.Unit.Unit,
+                                    Disclaimers: regRegion.Disclaimer ? regRegion.Disclaimer : undefined,
+                                    Errors: (regResult.Errors && regResult.Errors.length > 0) ? regResult.Errors.map(function (err) { return err.Name + " : " + err.Value; }).join(', ') : undefined,
+                                    MaxLimit: regResult.IntervalBounds && regResult.IntervalBounds.Upper > 0 ? regResult.IntervalBounds.Upper.toUSGSvalue() : undefined,
+                                    MinLimit: regResult.IntervalBounds && regResult.IntervalBounds.Lower > 0 ? regResult.IntervalBounds.Lower.toUSGSvalue() : undefined,
+                                    EquivYears: regResult.EquivalentYears ? regResult.EquivalentYears : undefined
+                                });
+                            }); //next regResult
+                        }); //next regRegion
+                    }); //next sgroup
+                }
+                catch (e) {
+                    result.push({ Disclaimers: "Failed to output flowstats to table. " });
+                }
+                return result;
+            };
             //HelperMethods
             //-+-+-+-+-+-+-+-+-+-+-+-
             nssService.prototype.cleanRegressionRegions = function (RegressionRegions) {
