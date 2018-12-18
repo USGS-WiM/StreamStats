@@ -404,6 +404,25 @@ var StreamStats;
                     }
                 }
             };
+            SidebarController.prototype.downloadShapeFile = function () {
+                try {
+                    //https://github.com/mapbox/shp-write
+                    //https://www.npmjs.com/package/jszip
+                    //https://stackoverflow.com/questions/34663546/empty-zip-file-when-using-jszip-and-jsziputils-with-angularjs-to-zip-multiple-im
+                    var flowTable = null;
+                    if (this.nssService.showFlowsTable)
+                        flowTable = this.nssService.getflattenNSSTable(this.studyAreaService.selectedStudyArea.WorkspaceID);
+                    var fc = this.studyAreaService.getflattenStudyArea();
+                    //this will output a zip file
+                    var disclaimer = "USGS Data Disclaimer: Unless otherwise stated, all data, metadata and related materials are considered to satisfy the quality standards relative to the purpose for which the data were collected. Although these data and associated metadata have been reviewed for accuracy and completeness and approved for release by the U.S. Geological Survey (USGS), no warranty expressed or implied is made regarding the display or utility of the data for other purposes, nor on all computer systems, nor shall the act of distribution constitute any such warranty." + '\n' +
+                        "USGS Software Disclaimer: This software has been approved for release by the U.S. Geological Survey (USGS). Although the software has been subjected to rigorous review, the USGS reserves the right to update the software as needed pursuant to further analysis and review. No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty. Furthermore, the software is released on condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from its authorized or unauthorized use." + '\n' +
+                        "USGS Product Names Disclaimer: Any use of trade, firm, or product names is for descriptive purposes only and does not imply endorsement by the U.S. Government." + '\n\n';
+                    shpwrite.download(fc, flowTable, disclaimer + 'Application Version: ' + configuration.version);
+                }
+                catch (e) {
+                    console.log(e);
+                }
+            };
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             SidebarController.prototype.init = function () {
