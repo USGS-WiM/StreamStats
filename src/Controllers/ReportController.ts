@@ -67,15 +67,7 @@ module StreamStats.Controllers {
             this.zoom = zm;
         }
     }
-    export interface INSSResultTable {
-        Name?: string;
-        Region?: string;
-        Statistic?: string;
-        Value?: Number;
-        Unit?: string;
-        CitationUrl?: string;
-        Disclaimers: string;
-    }
+
     class ReportController implements IReportController  {
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -300,25 +292,13 @@ module StreamStats.Controllers {
 
         public downloadShapeFile() {
             try {
-                //https://github.com/mapbox/shp-write
-                //https://www.npmjs.com/package/jszip
-                //https://stackoverflow.com/questions/34663546/empty-zip-file-when-using-jszip-and-jsziputils-with-angularjs-to-zip-multiple-im
-                var flowTable: Array<INSSResultTable> = null;
+                var flowTable: Array<Services.INSSResultTable> = null;
 
                 if (this.nssService.showFlowsTable)
-                    flowTable = this.flattenNSSTable();
+                    flowTable = this.nssService.getflattenNSSTable(this.studyAreaService.selectedStudyArea.WorkspaceID);
 
-                var fc:GeoJSON.FeatureCollection = this.studyAreaService.selectedStudyArea.FeatureCollection
-                fc.features.forEach(f => {
-                    f.properties["Name"] = this.studyAreaService.selectedStudyArea.WorkspaceID;
-                    if (f.id && f.id == "globalwatershed") {
-                        f.properties = [f.properties, this.studyAreaService.studyAreaParameterList.reduce((dict, param) => { dict[param.code] = param.value; return dict; }, {})].reduce(function (r, o) {
-                            Object.keys(o).forEach(function (k) { r[k] = o[k]; });
-                            return r;
-                        }, {});
-                    }//endif
+                var fc: GeoJSON.FeatureCollection = this.studyAreaService.getflattenStudyArea();
 
-                });
                 //this will output a zip file
                 shpwrite.download(fc, flowTable, this.disclaimer + 'Application Version: ' + this.AppVersion);    
 
@@ -535,38 +515,7 @@ module StreamStats.Controllers {
                 return index == 0 ? letter.toLowerCase() : letter.toUpperCase();
             }).replace(/\s+/g, '');
         }
-        private flattenNSSTable(): Array<INSSResultTable>
-        {
-            var nm = this.studyAreaService.selectedStudyArea.WorkspaceID;
-            var result = [];
-            try {
-                this.nssService.selectedStatisticsGroupList.forEach(sgroup => {
-                    sgroup.RegressionRegions.forEach(regRegion => {
-                        regRegion.Results.forEach(regResult => {
-                            result.push(
-                                {
-                                    Name: nm,
-                                    Region: regRegion.PercentWeight ? regRegion.PercentWeight.toFixed(0) + "% " + regRegion.Name : regRegion.Name,
-                                    Statistic: regResult.Name,
-                                    Code: regResult.code,
-                                    Value: regResult.Value.toUSGSvalue(),
-                                    Unit: regResult.Unit.Unit,
-                                    Disclaimers: regRegion.Disclaimer ? regRegion.Disclaimer : undefined,
-                                    Errors: (regResult.Errors && regResult.Errors.length > 0) ? regResult.Errors.map(err => err.Name + " : " + err.Value).join(', ') : undefined,
-                                    MaxLimit: regResult.IntervalBounds && regResult.IntervalBounds.Upper > 0 ? regResult.IntervalBounds.Upper.toUSGSvalue() : undefined,
-                                    MinLimit: regResult.IntervalBounds && regResult.IntervalBounds.Lower > 0 ? regResult.IntervalBounds.Lower.toUSGSvalue() : undefined,
-                                    EquivYears: regResult.EquivalentYears ? regResult.EquivalentYears:undefined
-                                });
-                        });//next regResult
-                    });//next regRegion
-                });//next sgroup
-            }
-            catch (e)
-            {
-                result.push({ Disclaimers: "Failed to output flowstats to table. " });                
-            }
-            return result;
-        }
+        
 
 
     }//end class

@@ -227,24 +227,11 @@ var StreamStats;
                 }
             };
             ReportController.prototype.downloadShapeFile = function () {
-                var _this = this;
                 try {
-                    //https://github.com/mapbox/shp-write
-                    //https://www.npmjs.com/package/jszip
-                    //https://stackoverflow.com/questions/34663546/empty-zip-file-when-using-jszip-and-jsziputils-with-angularjs-to-zip-multiple-im
                     var flowTable = null;
                     if (this.nssService.showFlowsTable)
-                        flowTable = this.flattenNSSTable();
-                    var fc = this.studyAreaService.selectedStudyArea.FeatureCollection;
-                    fc.features.forEach(function (f) {
-                        f.properties["Name"] = _this.studyAreaService.selectedStudyArea.WorkspaceID;
-                        if (f.id && f.id == "globalwatershed") {
-                            f.properties = [f.properties, _this.studyAreaService.studyAreaParameterList.reduce(function (dict, param) { dict[param.code] = param.value; return dict; }, {})].reduce(function (r, o) {
-                                Object.keys(o).forEach(function (k) { r[k] = o[k]; });
-                                return r;
-                            }, {});
-                        } //endif
-                    });
+                        flowTable = this.nssService.getflattenNSSTable(this.studyAreaService.selectedStudyArea.WorkspaceID);
+                    var fc = this.studyAreaService.getflattenStudyArea();
                     //this will output a zip file
                     shpwrite.download(fc, flowTable, this.disclaimer + 'Application Version: ' + this.AppVersion);
                 }
@@ -438,35 +425,6 @@ var StreamStats;
                 return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function (letter, index) {
                     return index == 0 ? letter.toLowerCase() : letter.toUpperCase();
                 }).replace(/\s+/g, '');
-            };
-            ReportController.prototype.flattenNSSTable = function () {
-                var nm = this.studyAreaService.selectedStudyArea.WorkspaceID;
-                var result = [];
-                try {
-                    this.nssService.selectedStatisticsGroupList.forEach(function (sgroup) {
-                        sgroup.RegressionRegions.forEach(function (regRegion) {
-                            regRegion.Results.forEach(function (regResult) {
-                                result.push({
-                                    Name: nm,
-                                    Region: regRegion.PercentWeight ? regRegion.PercentWeight.toFixed(0) + "% " + regRegion.Name : regRegion.Name,
-                                    Statistic: regResult.Name,
-                                    Code: regResult.code,
-                                    Value: regResult.Value.toUSGSvalue(),
-                                    Unit: regResult.Unit.Unit,
-                                    Disclaimers: regRegion.Disclaimer ? regRegion.Disclaimer : undefined,
-                                    Errors: (regResult.Errors && regResult.Errors.length > 0) ? regResult.Errors.map(function (err) { return err.Name + " : " + err.Value; }).join(', ') : undefined,
-                                    MaxLimit: regResult.IntervalBounds && regResult.IntervalBounds.Upper > 0 ? regResult.IntervalBounds.Upper.toUSGSvalue() : undefined,
-                                    MinLimit: regResult.IntervalBounds && regResult.IntervalBounds.Lower > 0 ? regResult.IntervalBounds.Lower.toUSGSvalue() : undefined,
-                                    EquivYears: regResult.EquivalentYears ? regResult.EquivalentYears : undefined
-                                });
-                            }); //next regResult
-                        }); //next regRegion
-                    }); //next sgroup
-                }
-                catch (e) {
-                    result.push({ Disclaimers: "Failed to output flowstats to table. " });
-                }
-                return result;
             };
             return ReportController;
         }()); //end class

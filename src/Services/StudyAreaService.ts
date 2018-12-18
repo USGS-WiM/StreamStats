@@ -53,7 +53,8 @@ module StreamStats.Services {
         showModifyBasinCharacterstics: boolean;
         getAdditionalFeatureList();
         getAdditionalFeatures(featureString: string);
-        surfacecontributionsonly:boolean
+        surfacecontributionsonly: boolean
+        getflattenStudyArea(): any
     }
 
     export var onSelectedStudyAreaChanged: string = "onSelectedStudyAreaChanged";
@@ -827,7 +828,28 @@ module StreamStats.Services {
                     //this.toaster.clear();
                     this.regulationCheckComplete = true;                   
             });
-        }        
+        }  
+        public getflattenStudyArea(): any
+        {
+            var result: GeoJSON.FeatureCollection = null;
+            try {
+                var result = this.selectedStudyArea.FeatureCollection
+                result.features.forEach(f => {
+                    f.properties["Name"] = this.selectedStudyArea.WorkspaceID;
+                    if (f.id && f.id == "globalwatershed") {
+                        f.properties = [f.properties, this.studyAreaParameterList.reduce((dict, param) => { dict[param.code] = param.value; return dict; }, {})].reduce(function (r, o) {
+                            Object.keys(o).forEach(function (k) { r[k] = o[k]; });
+                            return r;
+                        }, {});
+                    }//endif
+                });
+            }
+            catch (e) {
+                result = null;
+                console.log('Failed to flatted shapefile.')
+                }
+            return result;
+        }
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+- 
         private reconfigureWatershedResponse(watershedResponse: Array<any>): Array<GeoJSON.Feature>

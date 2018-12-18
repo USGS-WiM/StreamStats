@@ -3,7 +3,7 @@
     "name": "StreamStats",
     "organization": "U.S. Geological Survey",
     "description": "StreamStats client application",
-    "version": "v4.1.6",
+    "version": "v4.3.0",
     "statusOptionsURL":"https://github.com/GSA/code-gov-web/blob/master/src/assets/schemas/2.0.0.json#L144-L152",
 	"status": "Production",	
 
@@ -40,7 +40,7 @@
     },
 
     "date": {
-      "metadataLastUpdated": "2017-10-25"
+      "metadataLastUpdated": "2018-12-12"
     }
   }
 ]

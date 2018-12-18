@@ -15,6 +15,7 @@
     "angular-bootstrap": "~0.12.1",
     "angular-leaflet-directive": "~0.10.0",
     "angular-nvd3": "^1.0.5",
+    "angular-sanitize": "^1.7.5",
     "angular-ui-router": "0.2.15",
     "angularjs-slider": "^2.9.0",
     "angularjs-toaster": "github:jirikavi/AngularJS-Toaster",

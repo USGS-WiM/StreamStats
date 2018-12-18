@@ -23,7 +23,7 @@
         <div class="row">
             <div class="col-sm-6">
                 <h6>Project Description</h6>
-                <p>{{vm.Description}}</p>
+                <p class="projDesc" ng-bind-html="vm.Description"></p>
             </div>
 
             <div ng-if="!vm.ResultsAvailable" class="col-sm-6">
@@ -59,8 +59,8 @@
                         <thead>
                             <tr>
                                 <th title="Name">Name</th>
-                                <th>Confidence (SPC)</th>
-                                <th>Confidence (SPP)</th>
+                                <th>Streamflow Permanence Class (SPC)</th>
+                                <th>Streamflow Permanence Probability (SPP)</th>
                             </tr>
                         </thead>
                         <tbody>

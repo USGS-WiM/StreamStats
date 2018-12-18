@@ -644,6 +644,27 @@ var StreamStats;
                     _this.regulationCheckComplete = true;
                 });
             };
+            StudyAreaService.prototype.getflattenStudyArea = function () {
+                var _this = this;
+                var result = null;
+                try {
+                    var result = this.selectedStudyArea.FeatureCollection;
+                    result.features.forEach(function (f) {
+                        f.properties["Name"] = _this.selectedStudyArea.WorkspaceID;
+                        if (f.id && f.id == "globalwatershed") {
+                            f.properties = [f.properties, _this.studyAreaParameterList.reduce(function (dict, param) { dict[param.code] = param.value; return dict; }, {})].reduce(function (r, o) {
+                                Object.keys(o).forEach(function (k) { r[k] = o[k]; });
+                                return r;
+                            }, {});
+                        } //endif
+                    });
+                }
+                catch (e) {
+                    result = null;
+                    console.log('Failed to flatted shapefile.');
+                }
+                return result;
+            };
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+- 
             StudyAreaService.prototype.reconfigureWatershedResponse = function (watershedResponse) {
