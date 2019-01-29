@@ -406,9 +406,6 @@ var StreamStats;
             };
             SidebarController.prototype.downloadShapeFile = function () {
                 try {
-                    //https://github.com/mapbox/shp-write
-                    //https://www.npmjs.com/package/jszip
-                    //https://stackoverflow.com/questions/34663546/empty-zip-file-when-using-jszip-and-jsziputils-with-angularjs-to-zip-multiple-im
                     var flowTable = null;
                     if (this.nssService.showFlowsTable)
                         flowTable = this.nssService.getflattenNSSTable(this.studyAreaService.selectedStudyArea.WorkspaceID);
