@@ -54,9 +54,9 @@ configuration.queryparams =
         'coordinatedReachQueryService': '/arcgis/rest/services/coordinatedreaches/{0}/MapServer/0/query?geometry={1},{2},{3},{4}&geometryType=esriGeometryEnvelope&inSR={5}&spatialRel=esriSpatialRelIntersects&outFields={6}&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
         'StormRunoffTR55': '/TR55/GetResult?area={0}&precip={1}&crvnum={2}&pdur={3}',
         'StormRunoffRationalMethod': '/RationalMethod?area={0}&precipint={1}&rcoeff={2}&pdur={3}',
-        'ProsperPredictions': '/rest/services/Catalog/5b416046e4b060350a125fe4/MapServer',
-        'ProsperSPPPredictions1': '/rest/services/Catalog/5b895182e4b0702d0e7cd017/MapServer',
-        'ProsperSPPPredictions2': '/rest/services/Catalog/5b8958a1e4b0702d0e7cd03c/MapServer',
+        'ProsperPredictions': '/rest/services/Catalog/5c5204e4e4b0708288fb42e2/MapServer',
+        'ProsperSPPPredictions1': '/rest/services/Catalog/5c538c11e4b0708288fd078b/MapServer',
+        'ProsperSPPPredictions2': '/rest/services/Catalog/5c538c71e4b0708288fd078e/MapServer',
         'ProsperIdentify': '/identify?layers=all:{0}&tolerance=5&returnGeometry=false&imageDisplay={1}&mapExtent={2}&geometry={3}&sr={4}&geometryType=esriGeometryPoint&f=json',
         'SSURGOexCOMS': '/rest/services/Catalog/5b96f40ce4b0702d0e8272bf/MapServer',
         'SSURGOexCO': '/0/query?geometry={0}&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelContains&returnGeometry=false&returnIdsOnly=false&returnCountOnly=true&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson'
