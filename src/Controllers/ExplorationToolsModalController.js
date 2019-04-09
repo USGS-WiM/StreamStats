@@ -19,7 +19,7 @@ var StreamStats;
     var Controllers;
     (function (Controllers) {
         'use string';
-        var ExplorationToolsModalController = (function () {
+        var ExplorationToolsModalController = /** @class */ (function () {
             function ExplorationToolsModalController($scope, $analytics, $sce, modal, modalservice, exploration, studyArea) {
                 $scope.vm = this;
                 this.sce = $sce;
@@ -71,13 +71,13 @@ var StreamStats;
                 });
                 //download
                 var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
-                if (navigator.msSaveBlob) {
+                if (navigator.msSaveBlob) { // IE 10+
                     navigator.msSaveBlob(blob, filename);
                 }
                 else {
                     var link = document.createElement("a");
                     var url = URL.createObjectURL(blob);
-                    if (link.download !== undefined) {
+                    if (link.download !== undefined) { // feature detection
                         // Browsers that support HTML5 download attribute
                         link.setAttribute("href", url);
                         link.setAttribute("download", filename);
@@ -181,11 +181,11 @@ var StreamStats;
                     }
                 });
             };
+            //Constructor
+            //-+-+-+-+-+-+-+-+-+-+-+-
+            ExplorationToolsModalController.$inject = ['$scope', '$analytics', '$sce', '$modalInstance', 'StreamStats.Services.ModalService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.StudyAreaService'];
             return ExplorationToolsModalController;
         }()); //end  class
-        //Constructor
-        //-+-+-+-+-+-+-+-+-+-+-+-
-        ExplorationToolsModalController.$inject = ['$scope', '$analytics', '$sce', '$modalInstance', 'StreamStats.Services.ModalService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.StudyAreaService'];
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.ExplorationToolsModalController', ExplorationToolsModalController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));

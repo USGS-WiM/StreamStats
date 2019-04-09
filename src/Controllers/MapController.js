@@ -20,14 +20,14 @@ var StreamStats;
     var Controllers;
     (function (Controllers) {
         'use strict';
-        var MapPoint = (function () {
+        var MapPoint = /** @class */ (function () {
             function MapPoint() {
                 this.lat = 0;
                 this.lng = 0;
             }
             return MapPoint;
         }());
-        var Center = (function () {
+        var Center = /** @class */ (function () {
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
             function Center(lt, lg, zm) {
@@ -37,7 +37,7 @@ var StreamStats;
             }
             return Center;
         }());
-        var Layer = (function () {
+        var Layer = /** @class */ (function () {
             function Layer(nm, ul, ty, vis, op) {
                 if (op === void 0) { op = undefined; }
                 this.name = nm;
@@ -48,7 +48,7 @@ var StreamStats;
             }
             return Layer;
         }());
-        var MapDefault = (function () {
+        var MapDefault = /** @class */ (function () {
             function MapDefault(mxZm, mnZm, zmCtrl) {
                 if (mxZm === void 0) { mxZm = null; }
                 if (mnZm === void 0) { mnZm = null; }
@@ -59,7 +59,7 @@ var StreamStats;
             }
             return MapDefault;
         }());
-        var MapController = (function () {
+        var MapController = /** @class */ (function () {
             function MapController($scope, toaster, $analytics, $location, $stateParams, leafletBoundsHelper, leafletData, search, region, studyArea, StatisticsGroup, exploration, _prosperServices, eventManager, modal, modalStack) {
                 var _this = this;
                 this.$scope = $scope;
@@ -178,6 +178,7 @@ var StreamStats;
                         } //next i
                         _this.modal.openModal(StreamStats.Services.SSModalType.e_exploration);
                     }
+                    //query streamgage is default map click action
                     else {
                         _this.queryPoints(args.leafletEvent);
                     }
@@ -391,7 +392,7 @@ var StreamStats;
                                     //query
                                     maplayers.overlays[lyr].query().nearby(evt.latlng, 4).returnGeometry(false).run(function (error, results) { return _this.handleQueryResult(lyr, error, results, map, evt.latlng); });
                                     break;
-                                default:
+                                default: //agsDynamic
                                     maplayers.overlays[lyr].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).run(function (error, results) { return _this.handleQueryResult(lyr, error, results, map, evt.latlng); });
                             }
                             _this.queryContent.requestCount++;
@@ -431,7 +432,7 @@ var StreamStats;
                                 }
                             });
                         }
-                        else {
+                        else { //show all fields
                             angular.forEach(queryResult.properties, function (value, key) {
                                 querylayers.append('<strong>' + key + ': </strong>' + value + '</br>');
                             });
@@ -644,6 +645,7 @@ var StreamStats;
                         if (map.getZoom() < 15) {
                             _this.toaster.pop("error", "Delineation not allowed at this zoom level", 'Please zoom in to level 15 or greater', 5000);
                         }
+                        //good to go
                         else {
                             _this.toaster.clear();
                             _this.studyArea.checkingDelineatedPoint = true;
@@ -691,6 +693,7 @@ var StreamStats;
                                     _this.studyArea.checkingDelineatedPoint = false;
                                     _this.startDelineate(latlng, false);
                                 }
+                                //otherwise parse exclude Codes
                                 else {
                                     _this.studyArea.checkingDelineatedPoint = false;
                                     var excludeCode = results.features[0].properties.ExcludeCod;
@@ -1025,6 +1028,7 @@ var StreamStats;
                             }
                         };
                 }
+                //additional features get generic styling for now
                 else {
                     this.geojson[LayerName] =
                         {
@@ -1178,11 +1182,11 @@ var StreamStats;
                 if (isInExclusionArea)
                     this.studyArea.selectedStudyArea.Disclaimers['isInExclusionArea'] = 'The delineation point is in an exclusion area. ' + excludeReason;
             };
+            //Constructor
+            //-+-+-+-+-+-+-+-+-+-+-+-
+            MapController.$inject = ['$scope', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack'];
             return MapController;
         }()); //end class
-        //Constructor
-        //-+-+-+-+-+-+-+-+-+-+-+-
-        MapController.$inject = ['$scope', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack'];
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.MapController', MapController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));
