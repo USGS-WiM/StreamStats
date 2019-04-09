@@ -6,7 +6,8 @@ configuration.baseurls =
     {
         'NWISurl': 'https://waterservices.usgs.gov/nwis',
         'StreamStatsServices': 'https://test.streamstats.usgs.gov',
-        'StreamStatsMapServices': 'https://testgis.streamstats.usgs.gov',
+        'StreamStatsMapServices': 'https://gis.streamstats.usgs.gov',
+        'nssservicesv2':'https://test.streamstats.usgs.gov/nssservicesv2',
         'NSS': 'https://test.streamstats.usgs.gov/nssservices',
         'WaterUseServices': 'https://test.streamstats.usgs.gov/wateruseservices',
         'StormRunoffServices': 'https://test.streamstats.usgs.gov/runoffmodelingservices',
@@ -46,7 +47,7 @@ configuration.queryparams =
         'regionService': '/arcgis/rest/services/ss_studyAreas_prod/MapServer/identify',
         'NLCDQueryService': '/LandCover/USGS_EROS_LandCover_NLCD/MapServer/4',
         'regulationService': '/arcgis/rest/services/regulations/{0}/MapServer/exts/RegulationRESTSOE/Regulation',
-        'RegressionRegionQueryService': '/arcgis/rest/services/nss/regions/MapServer/exts/PercentOverlayRESTSOE/PercentOverlay',
+        'RegressionRegionQueryService': '/regressionregions/get',
         'SSNavigationServices': '/navigationservices/navigation',
         'Wateruse': '/summary?year={0}&endyear={1}&includePermits={2}&computeReturns={3}&computeDomestic={4}',
         'WateruseSourceCSV': '/summary/bysource?year={0}&endyear={1}&includePermits={2}&computeReturns={3}&computeDomestic={4}',

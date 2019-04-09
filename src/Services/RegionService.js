@@ -2,9 +2,12 @@
 //----- RegionService -----------------------------------------------------
 //------------------------------------------------------------------------------
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -33,20 +36,20 @@ var StreamStats;
     var Services;
     (function (Services) {
         'use strict';
-        var Region = (function () {
+        var Region = /** @class */ (function () {
             function Region() {
             }
             return Region;
         }()); //end class
         Services.Region = Region;
-        var Parameter = (function () {
+        var Parameter = /** @class */ (function () {
             function Parameter() {
             }
             return Parameter;
         }()); //end class
         Services.Parameter = Parameter;
         Services.onSelectedRegionChanged = "onSelectedRegionChanged";
-        var RegionService = (function (_super) {
+        var RegionService = /** @class */ (function (_super) {
             __extends(RegionService, _super);
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
