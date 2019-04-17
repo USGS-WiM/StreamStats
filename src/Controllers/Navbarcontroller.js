@@ -2,9 +2,12 @@
 //----- NavbarController ------------------------------------------------------
 //------------------------------------------------------------------------------
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -30,7 +33,7 @@ var StreamStats;
     var Controllers;
     (function (Controllers) {
         'use strict';
-        var NavbarController = (function (_super) {
+        var NavbarController = /** @class */ (function (_super) {
             __extends(NavbarController, _super);
             function NavbarController($scope, $http, modal, studyArea) {
                 var _this = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
@@ -105,11 +108,11 @@ var StreamStats;
                     var expires = "";
                 document.cookie = name + "=" + value + expires + "; path=/";
             };
+            //Constructor
+            //-+-+-+-+-+-+-+-+-+-+-+-
+            NavbarController.$inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.StudyAreaService'];
             return NavbarController;
         }(WiM.Services.HTTPServiceBase)); //end class
-        //Constructor
-        //-+-+-+-+-+-+-+-+-+-+-+-
-        NavbarController.$inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.StudyAreaService'];
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.NavbarController', NavbarController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));

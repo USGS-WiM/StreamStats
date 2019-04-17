@@ -2,9 +2,12 @@
 //----- StudyAreaService -------------------------------------------------------
 //------------------------------------------------------------------------------
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -34,7 +37,7 @@ var StreamStats;
         'use strict';
         Services.onSelectExplorationMethod = "onSelectExplorationMethod";
         Services.onSelectedMethodExecuteComplete = "onSelectedMethodExecuteComplete";
-        var ExplorationServiceEventArgs = (function (_super) {
+        var ExplorationServiceEventArgs = /** @class */ (function (_super) {
             __extends(ExplorationServiceEventArgs, _super);
             function ExplorationServiceEventArgs() {
                 return _super.call(this) || this;
@@ -42,7 +45,7 @@ var StreamStats;
             return ExplorationServiceEventArgs;
         }(WiM.Event.EventArgs));
         Services.ExplorationServiceEventArgs = ExplorationServiceEventArgs;
-        var ExplorationService = (function (_super) {
+        var ExplorationService = /** @class */ (function (_super) {
             __extends(ExplorationService, _super);
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-

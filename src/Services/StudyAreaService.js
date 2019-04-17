@@ -2,9 +2,12 @@
 //----- StudyAreaService -------------------------------------------------------
 //------------------------------------------------------------------------------
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -36,7 +39,7 @@ var StreamStats;
         Services.onSelectedStudyParametersLoaded = "onSelectedStudyParametersLoaded";
         Services.onStudyAreaReset = "onStudyAreaReset";
         Services.onEditClick = "onEditClick";
-        var StudyAreaEventArgs = (function (_super) {
+        var StudyAreaEventArgs = /** @class */ (function (_super) {
             __extends(StudyAreaEventArgs, _super);
             function StudyAreaEventArgs(studyArea, saVisible, paramState, additionalFeatures) {
                 if (studyArea === void 0) { studyArea = null; }
@@ -53,7 +56,7 @@ var StreamStats;
             return StudyAreaEventArgs;
         }(WiM.Event.EventArgs));
         Services.StudyAreaEventArgs = StudyAreaEventArgs;
-        var StudyAreaService = (function (_super) {
+        var StudyAreaService = /** @class */ (function (_super) {
             __extends(StudyAreaService, _super);
             //public requestParameterList: Array<any>; jkn
             //Constructor
@@ -176,6 +179,7 @@ var StreamStats;
                             _this.toaster.pop("error", "A watershed was not returned from the delineation request", "Please retry", 0);
                         }
                     }
+                    //otherwise old method
                     else if (response.data.hasOwnProperty("featurecollection") && response.data.featurecollection[1] && response.data.featurecollection[1].feature.features.length > 0) {
                         _this.selectedStudyArea.Server = response.headers()['usgswim-hostname'].toLowerCase();
                         _this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
