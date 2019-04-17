@@ -1,5 +1,5 @@
 ﻿    <!-- Modal -->
-<div id="print-content"> 
+<div id="print-content">
     <div class="modal-header">
         <div class="visible-print identifier">
             <img src="images/usgs-logo-black.png" alt="USGS Identifier" title="USGS Science for a Changing World" />
@@ -30,7 +30,8 @@
                         <br />
                         <div ng-repeat="characteristic in vm.SelectedParameterList track by $index" style="max-width:inherit;">
                             <br />
-                            <div> <!-- style="white-space:nowrap;">-->
+                            <div>
+                                <!-- style="white-space:nowrap;">-->
                                 <label>{{characteristic.name}} ({{characteristic.code == "DRNAREA" && vm.SelectedTab == 2 ? "acres" : characteristic.unit}})</label>
                                 <label ng-if="characteristic.code == 'DRNAREA' && vm.DASizeAlert" class="orange"><span class="fa fa-exclamation-triangle orange"></span>&nbsp;{{vm.DASizeAlert}}</label>
                             </div>
@@ -52,7 +53,12 @@
                         <!-- TR55 tab -->
                         <div ng-if="vm.SelectedTab == 1" style="position:relative;">
                             <p class="fullwidth alignc hidden-print" style="font-size: 16px;"><b>Peak Runoff from {{vm.SelectedPrecip.name}} (TR55)</b></p>
-                            <div class="well visible-print">
+                            <!--Study Area Disclaimers-->
+                            <div class="well well-sm" ng-show="vm.DASizeAlert">
+                                <h3>General Disclaimers</h3>
+                                <div class="wim-alert-warning">Drainage area is greater than recommended maximum threshold of 25 square miles.</div>
+                            </div>
+                            <div class="well">
                                 <h3>Parameters</h3>
                                 <table id="TR55ParameterTable" class="table table-condensed smalltext">
                                     <tbody>
@@ -66,8 +72,6 @@
                                         </tr>
                                     </tbody>
                                 </table>
-                            </div>
-                            <div class="well">
                                 <h3>Summary</h3>
                                 <table id="TR55SummaryTable" class="table table-condensed smalltext">
                                     <tbody>
@@ -85,13 +89,11 @@
                                         </tr>
                                     </tbody>
                                 </table>
-                            </div>
-                            <div class="overflowTable well">
+
                                 <div style='width:650px; margin:auto;' class="page_break" id="legend">
                                     <nvd3 options='vm.ReportOptions' data='vm.ReportData.TR55.Graph'></nvd3>
                                 </div>
-                            </div>
-                            <div class="overflowTable well" style="page-break-inside:avoid;">
+
                                 <h3>Tabular Hydrograph</h3>
                                 <table id="TR55TabularHydrograph" class="table table-condensed" style="page-break-inside:avoid; font-size: 11px;">
                                     <thead>
@@ -118,12 +120,21 @@
                                         </tr>
                                     </tbody>
                                 </table>
-                            </div>
+
+                                <h4>Citations</h4>
+                                <a href="https://pubs.usgs.gov/of/2007/1441/" target="_blank">Asante, K.O., Artan, G.A., Pervez, S., Bandaragoda, C., and Verdin, J.P., 2008, Technical Manual for the Geospatial Stream Flow Model (GeoSFM): U.S. Geological Survey Open-File Report 2007–1441, 65 p., accessed June 2016</a><br /><br />
+                                <a href="http://www2.cde.state.co.us/artemis/nrmonos/nr38c862006internet/" target="_blank">Colorado Department of Natural Resources, 2006, Colorado Floodplain and Stormwater Criteria Manual, Volume 2, 468 p., accessed June 15, 2016</a><br /><br />
+                                <a href="https://www.nrcs.usda.gov/Internet/FSE_DOCUMENTS/stelprdb1044171.pdf" target="_blank">Soil Conservation Service, United States Department of Agriculture, 1986, Urban Hydrology for Small Watersheds, Tech. Release 55, 164 p., accessed October 2017</a>
+</div>
                         </div>
                         <!-- Rational Method tab -->
                         <div ng-if="vm.SelectedTab == 2" style="position:relative;">
                             <p class="fullwidth alignc hidden-print"><b>Peak Runoff from {{vm.SelectedPrecip.name}} (Rational Method)</b></p>
-                            <div class="well visible-print">
+                            <div class="well well-sm" ng-show="vm.DASizeAlert">
+                                <h3>General Disclaimers</h3>
+                                <div class="wim-alert-warning">Drainage area is greater than recommended maximum threshold of 200 acres.</div>
+                            </div>
+                            <div class="well">
                                 <h3>Parameters</h3>
                                 <table id="RMParameterTable" class="table table-condensed smalltext">
                                     <tbody>
@@ -137,8 +148,6 @@
                                         </tr>
                                     </tbody>
                                 </table>
-                            </div>
-                            <div class="well">
                                 <h3>Summary</h3>
                                 <table id="RMSummaryTable" class="table table-condensed smalltext">
                                     <tbody>
@@ -148,15 +157,34 @@
                                         </tr>
                                     </tbody>
                                 </table>
+                                <h4>Citations</h4>
+                                Kuichling, E., 1889, The relation between the rainfall and the discharge of sewers in populous districts: Transactions, American Society of Civil Engineers v. 20, 60 p.<br /><br />
+                                <a href="https://www.researchgate.net/publication/265233885Development_of_Guidance_for_Runoff_Coefficient_Selection_and_Modified_Rational_Unit_Hydrograph_Method_for_Hydrologic_Design" target="_blank">Dhakal N., 2012, Development of Guidance for Runoff Coefficient Selection and Modified Rational Unit Hydrograph Method for Hydrologic Design, 176 p., accessed October 5, 2016</a>
                             </div>
+                        </div>
+                        <div class="disclaimerReport">
+                            <p ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isSTL_MO">
+                                USGS Storm Drain Disclaimer:
+                                The Storm Drain methods are being provided to meet the need for timely best science and are released on the condition that neither the USGS nor the U.S. Government may be held liable for any damages resulting from authorized or unauthorized use. At his time these methods are provisional and are subject to revision until thoroughly reviewed and approved.
+                            </p>
+                            <p>
+                                USGS Data Disclaimer:
+                                Unless otherwise stated, all data, metadata and related materials are considered to satisfy the quality standards relative to the purpose for which the data were collected. Although these data and associated metadata have been reviewed for accuracy and completeness and approved for release by the U.S. Geological Survey (USGS), no warranty expressed or implied is made regarding the display or utility of the data for other purposes, nor on all computer systems, nor shall the act of distribution constitute any such warranty.
+                            </p>
+                            <p>
+                                USGS Software Disclaimer:
+                                This software has been approved for release by the U.S. Geological Survey (USGS). Although the software has been subjected to rigorous review, the USGS reserves the right to update the software as needed pursuant to further analysis and review. No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty. Furthermore, the software is released on condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from its authorized or unauthorized use.
+                            </p>
+                            <p>
+                                USGS Product Names Disclaimer:
+                                Any use of trade, firm, or product names is for descriptive purposes only and does not imply endorsement by the U.S. Government.
+                            </p>
+                            <p>Application Version: {{vm.AppVersion}}</p>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <!--<div style="background:blue">
-            <center><img src="Assets/images/usgs_logo_animated.svg"></center>
-        </div>-->
+        </div>        
     </div>
 
     <div class="modal-footer hidden-print">

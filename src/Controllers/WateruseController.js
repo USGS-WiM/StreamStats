@@ -2,9 +2,12 @@
 //----- WaterUse ---------------------------------------------------------------
 //------------------------------------------------------------------------------
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -16,14 +19,14 @@ var StreamStats;
     var Controllers;
     (function (Controllers) {
         'use strict';
-        var WaterUseReportable = (function () {
+        var WaterUseReportable = /** @class */ (function () {
             function WaterUseReportable() {
                 this.Annual = { Graph: {}, Table: {} };
                 this.Monthly = { Graph: { withdrawals: null, returns: null }, Table: {} };
             }
             return WaterUseReportable;
         }());
-        var WateruseController = (function (_super) {
+        var WateruseController = /** @class */ (function (_super) {
             __extends(WateruseController, _super);
             function WateruseController($scope, $http, studyAreaService, modal, $timeout) {
                 var _this = _super.call(this, $http, configuration.baseurls.WaterUseServices) || this;
@@ -314,13 +317,13 @@ var StreamStats;
                 csvFile += ProcessMonthlyWateruseTable();
                 //download
                 var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
-                if (navigator.msSaveBlob) {
+                if (navigator.msSaveBlob) { // IE 10+
                     navigator.msSaveBlob(blob, filename);
                 }
                 else {
                     var link = document.createElement("a");
                     var url = URL.createObjectURL(blob);
-                    if (link.download !== undefined) {
+                    if (link.download !== undefined) { // feature detection
                         // Browsers that support HTML5 download attribute
                         link.setAttribute("href", url);
                         link.setAttribute("download", filename);
@@ -346,13 +349,13 @@ var StreamStats;
                 this.Execute(request).then(function (response) {
                     var filename = 'wateruseSummaryBySource.csv';
                     var blob = new Blob([response.data], { type: 'text/csv;charset=utf-8;' });
-                    if (navigator.msSaveBlob) {
+                    if (navigator.msSaveBlob) { // IE 10+
                         navigator.msSaveBlob(request, filename);
                     }
                     else {
                         var link = document.createElement("a");
                         var url = URL.createObjectURL(blob);
-                        if (link.download !== undefined) {
+                        if (link.download !== undefined) { // feature detection
                             // Browsers that support HTML5 download attribute
                             link.setAttribute("href", url);
                             link.setAttribute("download", filename);
@@ -582,6 +585,9 @@ var StreamStats;
                         var barWidth = b.node().getBBox()['width'];
                         var barHeight = b.node().getBBox()['height'];
                         g.append('text')
+                            // Transforms shift the origin point then the x and y of the bar
+                            // is altered by this transform. In order to align the labels
+                            // we need to apply this transform to those.
                             .attr('transform', b.attr('transform'))
                             .text(function () {
                             // Two decimals format
@@ -594,6 +600,11 @@ var StreamStats;
                                 }
                         })
                             .attr("dy", "1.5em")
+                            //.attr('y', function () {
+                            //    // Center label vertically
+                            //    var height = b.node().getBBox().height;
+                            //    return parseFloat(b.attr('y')) - 10; // 10 is the label's margin from the bar
+                            //})
                             .attr('x', function () {
                             var width = this.getBBox().width;
                             return barWidth - width / 2;
@@ -696,11 +707,11 @@ var StreamStats;
             WateruseController.prototype.rand = function (min, max) {
                 return parseInt((Math.random() * (max - min + 1)), 10) + min;
             };
+            //Constructor
+            //-+-+-+-+-+-+-+-+-+-+-+-
+            WateruseController.$inject = ['$scope', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance', '$timeout'];
             return WateruseController;
         }(WiM.Services.HTTPServiceBase)); //end wimLayerControlController class
-        //Constructor
-        //-+-+-+-+-+-+-+-+-+-+-+-
-        WateruseController.$inject = ['$scope', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance', '$timeout'];
         var WaterUseType;
         (function (WaterUseType) {
             WaterUseType[WaterUseType["Annual"] = 1] = "Annual";
