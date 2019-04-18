@@ -377,7 +377,7 @@ module StreamStats.Controllers {
                     this.studyAreaService.selectedStudyArea.RegressionRegions.forEach((percentOverlay) => {
                         //console.log('here3', percentOverlay)
                         if (regRegion.Code != null && percentOverlay.code.indexOf(regRegion.Code.toUpperCase()) > -1) {
-                            this.areaSQMI = percentOverlay.maskareasqmeter * 0.000000386102159;
+                            this.areaSQMI = percentOverlay.area;
                         }
                     });
                 });

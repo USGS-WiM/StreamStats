@@ -7,7 +7,11 @@ var __extends = (this && this.__extends) || (function () {
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
             function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
         return extendStatics(d, b);
+<<<<<<< HEAD
     }
+=======
+    };
+>>>>>>> 68c114f47eb605137c0b9244039abc3d599f8ca3
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -135,7 +139,7 @@ var StreamStats;
                                 response.data[0].RegressionRegions.forEach(function (regressionRegion) {
                                     percentWeights.forEach(function (regressionRegionPercentWeight) {
                                         if (regressionRegionPercentWeight.code.indexOf(regressionRegion.Code.toUpperCase()) > -1)
-                                            regressionRegion["PercentWeight"] = regressionRegionPercentWeight.percent;
+                                            regressionRegion["PercentWeight"] = regressionRegionPercentWeight.percentWeight;
                                     });
                                 });
                                 statGroup.RegressionRegions = response.data[0].RegressionRegions;
