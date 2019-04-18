@@ -332,7 +332,7 @@ configuration.regions = [
                     "layerOptions": {
                         "zIndex": 1,
                         "format": "png8",
-                        "layers": [0],
+                        "layers": [1],
                         "f": "image"
                     },
                     "queryProperties": { "Pipe": { "PIPEMATERI": "Pipe Material", "WIDTH": "Width", "LENGTH": "Length" } }
