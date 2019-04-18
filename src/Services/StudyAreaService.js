@@ -7,7 +7,11 @@ var __extends = (this && this.__extends) || (function () {
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
             function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
         return extendStatics(d, b);
+<<<<<<< HEAD
     }
+=======
+    };
+>>>>>>> 68c114f47eb605137c0b9244039abc3d599f8ca3
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -486,30 +490,12 @@ var StreamStats;
                 //console.log('in load query regression regions');
                 this.regressionRegionQueryLoading = true;
                 this.regressionRegionQueryComplete = false;
-                //hack for MO_STL - only available regression region for MO_stl
-                if (this.selectedStudyArea.RegionID == 'MO_STL') {
-                    //console.log('query success');
-                    this.selectedStudyArea.RegressionRegions = [{
-                            "name": "Peak_Urban_Statewide_SIR_2010_5073",
-                            "code": "gc1771",
-                            "percent": 100.0,
-                            "areasqmeter": -9999,
-                            "maskareasqmeter": -9999
-                        }];
-                    this.regressionRegionQueryComplete = true;
-                    this.regressionRegionQueryLoading = false;
-                    this.toaster.pop('success', "Regression regions were succcessfully queried", "Please continue", 5000);
-                    return;
-                } //end if
-                var watershed = angular.toJson({
-                    type: "FeatureCollection",
-                    crs: { type: "ESPG", properties: { code: 4326 } },
-                    features: this.selectedStudyArea.FeatureCollection.features.filter(function (f) { return (f.id).toLowerCase() == "globalwatershed"; }),
-                }, null);
-                //var url = configuration.baseurls['NodeServer'] + configuration.queryparams['RegressionRegionQueryService'];
-                //var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', watershed);
-                var url = configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['RegressionRegionQueryService'];
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', { geometry: watershed, f: 'json' }, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, WiM.Services.Helpers.paramsTransform);
+                var headers = {
+                    "Content-Type": "application/json"
+                };
+                var url = configuration.baseurls['nssservicesv2'] + configuration.queryparams['RegressionRegionQueryService'];
+                var studyAreaGeom = this.selectedStudyArea.FeatureCollection.features.filter(function (f) { return (f.id).toLowerCase() == "globalwatershed"; })[0].geometry;
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(studyAreaGeom));
                 this.Execute(request).then(function (response) {
                     //console.log(response.data);
                     _this.toaster.clear();
