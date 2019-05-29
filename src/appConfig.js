@@ -1,12 +1,13 @@
 var configuration = {};
-configuration.version = "4.3.0";
+configuration.version = "4.3.1";
 configuration.environment = 'development';
 
 configuration.baseurls =
     {
         'NWISurl': 'https://waterservices.usgs.gov/nwis',
         'StreamStatsServices': 'https://test.streamstats.usgs.gov',
-        'StreamStatsMapServices': 'https://testgis.streamstats.usgs.gov',
+        'StreamStatsMapServices': 'https://gis.streamstats.usgs.gov',
+        'nssservicesv2':'https://test.streamstats.usgs.gov/nssservicesv2',
         'NSS': 'https://test.streamstats.usgs.gov/nssservices',
         'WaterUseServices': 'https://test.streamstats.usgs.gov/wateruseservices',
         'StormRunoffServices': 'https://test.streamstats.usgs.gov/runoffmodelingservices',
@@ -46,7 +47,7 @@ configuration.queryparams =
         'regionService': '/arcgis/rest/services/ss_studyAreas_prod/MapServer/identify',
         'NLCDQueryService': '/LandCover/USGS_EROS_LandCover_NLCD/MapServer/4',
         'regulationService': '/arcgis/rest/services/regulations/{0}/MapServer/exts/RegulationRESTSOE/Regulation',
-        'RegressionRegionQueryService': '/arcgis/rest/services/nss/regions/MapServer/exts/PercentOverlayRESTSOE/PercentOverlay',
+        'RegressionRegionQueryService': '/regressionregions/bylocation',
         'SSNavigationServices': '/navigationservices/navigation',
         'Wateruse': '/summary?year={0}&endyear={1}&includePermits={2}&computeReturns={3}&computeDomestic={4}',
         'WateruseSourceCSV': '/summary/bysource?year={0}&endyear={1}&includePermits={2}&computeReturns={3}&computeDomestic={4}',
@@ -54,9 +55,9 @@ configuration.queryparams =
         'coordinatedReachQueryService': '/arcgis/rest/services/coordinatedreaches/{0}/MapServer/0/query?geometry={1},{2},{3},{4}&geometryType=esriGeometryEnvelope&inSR={5}&spatialRel=esriSpatialRelIntersects&outFields={6}&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
         'StormRunoffTR55': '/TR55/GetResult?area={0}&precip={1}&crvnum={2}&pdur={3}',
         'StormRunoffRationalMethod': '/RationalMethod?area={0}&precipint={1}&rcoeff={2}&pdur={3}',
-        'ProsperPredictions': '/rest/services/Catalog/5b416046e4b060350a125fe4/MapServer',
-        'ProsperSPPPredictions1': '/rest/services/Catalog/5b895182e4b0702d0e7cd017/MapServer',
-        'ProsperSPPPredictions2': '/rest/services/Catalog/5b8958a1e4b0702d0e7cd03c/MapServer',
+        'ProsperPredictions': '/rest/services/Catalog/5c5204e4e4b0708288fb42e2/MapServer',
+        'ProsperSPPPredictions1': '/rest/services/Catalog/5c538c11e4b0708288fd078b/MapServer',
+        'ProsperSPPPredictions2': '/rest/services/Catalog/5c538c71e4b0708288fd078e/MapServer',
         'ProsperIdentify': '/identify?layers=all:{0}&tolerance=5&returnGeometry=false&imageDisplay={1}&mapExtent={2}&geometry={3}&sr={4}&geometryType=esriGeometryPoint&f=json',
         'SSURGOexCOMS': '/rest/services/Catalog/5b96f40ce4b0702d0e8272bf/MapServer',
         'SSURGOexCO': '/0/query?geometry={0}&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelContains&returnGeometry=false&returnIdsOnly=false&returnCountOnly=true&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson'
@@ -331,7 +332,7 @@ configuration.regions = [
                     "layerOptions": {
                         "zIndex": 1,
                         "format": "png8",
-                        "layers": [0],
+                        "layers": [1],
                         "f": "image"
                     },
                     "queryProperties": { "Pipe": { "PIPEMATERI": "Pipe Material", "WIDTH": "Width", "LENGTH": "Length" } }
@@ -341,7 +342,7 @@ configuration.regions = [
         "Applications": [], "regionEnabled": true, "ScenariosAvailable": true
     },
     { "RegionID": "MP", "Name": "Northern Mariana Islands", "Bounds": [[14.105276, 144.89859], [20.556385, 145.870788]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
-    { "RegionID": "MS", "Name": "Mississippi", "Bounds": [[30.194935, -91.643682], [35.005041, -88.090468]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": false },
+    { "RegionID": "MS", "Name": "Mississippi", "Bounds": [[30.194935, -91.643682], [35.005041, -88.090468]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     {
         "RegionID": "MT", "Name": "Montana", "Bounds": [[44.353639, -116.063531], [49.000026, -104.043072]], "Layers":
             {
@@ -457,13 +458,13 @@ configuration.regions = [
     { "RegionID": "VA", "Name": "Virginia", "Bounds": [[36.541623, -83.675177], [39.456998, -75.242219]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "VT", "Name": "Vermont", "Bounds": [[42.725852, -73.436], [45.013351, -71.505372]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "VI", "Name": "Virgin Islands", "Bounds": [[17.676666, -65.026947], [18.377777, -64.560287]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
-    { "RegionID": "WA", "Name": "Washington", "Bounds": [[45.543092, -124.732769], [48.999931, -116.919132]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": false },
+    { "RegionID": "WA", "Name": "Washington", "Bounds": [[45.543092, -124.732769], [48.999931, -116.919132]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "WI", "Name": "Wisconsin", "Bounds": [[42.489152, -92.885397], [46.952479, -86.967712]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": false },
     { "RegionID": "WV", "Name": "West Virginia", "Bounds": [[37.20491, -82.647158], [40.637203, -77.727467]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
     { "RegionID": "WY", "Name": "Wyoming", "Bounds": [[40.994289, -111.053428], [45.002793, -104.051705]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
     { "RegionID": "CRB", "Name": "Connecticut River Basin", "Bounds": [[41.227366, -73.254776], [45.305324, -71.059248]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": false },
     { "RegionID": "DRB", "Name": "Delaware River Basin", "Bounds": [[38.666626, -76.452907], [42.507076, -74.319593]], "Layers": {}, "Applications": ["Wateruse"], "regionEnabled": true, "ScenariosAvailable": false },
-    { "RegionID": "RRB", "Name": "Rainy River Basin", "Bounds": [[47.268377, -95.64855], [50.054196, -89.766532]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": false }
+    { "RegionID": "RRB", "Name": "Rainy River Basin", "Bounds": [[47.268377, -95.64855], [50.054196, -89.766532]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true }
 
 ];//end regions
 
