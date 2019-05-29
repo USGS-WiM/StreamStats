@@ -20,7 +20,7 @@ var StreamStats;
     var Controllers;
     (function (Controllers) {
         'use strinct';
-        var Center = (function () {
+        var Center = /** @class */ (function () {
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
             function Center(lt, lg, zm) {
@@ -30,7 +30,7 @@ var StreamStats;
             }
             return Center;
         }());
-        var ReportController = (function () {
+        var ReportController = /** @class */ (function () {
             function ReportController($scope, $analytics, $modalInstance, studyArea, StatisticsGroup, leafletData, regionService) {
                 var _this = this;
                 this.regionService = regionService;
@@ -62,7 +62,6 @@ var StreamStats;
                 this.print = function () {
                     window.print();
                 };
-                this.getPercentWeights();
             }
             Object.defineProperty(ReportController.prototype, "showReport", {
                 get: function () {
@@ -170,13 +169,13 @@ var StreamStats;
                 csvFile += this.disclaimer + 'Application Version: ' + this.AppVersion;
                 //download
                 var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
-                if (navigator.msSaveBlob) {
+                if (navigator.msSaveBlob) { // IE 10+
                     navigator.msSaveBlob(blob, filename);
                 }
                 else {
                     var link = document.createElement("a");
                     var url = URL.createObjectURL(blob);
-                    if (link.download !== undefined) {
+                    if (link.download !== undefined) { // feature detection
                         // Browsers that support HTML5 download attribute
                         link.setAttribute("href", url);
                         link.setAttribute("download", filename);
@@ -206,13 +205,13 @@ var StreamStats;
                 var GeoJSON = angular.toJson(fc);
                 var filename = 'data.geojson';
                 var blob = new Blob([GeoJSON], { type: 'text/csv;charset=utf-8;' });
-                if (navigator.msSaveBlob) {
+                if (navigator.msSaveBlob) { // IE 10+
                     navigator.msSaveBlob(blob, filename);
                 }
                 else {
                     var link = document.createElement("a");
                     var url = URL.createObjectURL(blob);
-                    if (link.download !== undefined) {
+                    if (link.download !== undefined) { // feature detection
                         // Browsers that support HTML5 download attribute
                         link.setAttribute("href", url);
                         link.setAttribute("download", filename);
@@ -294,20 +293,18 @@ var StreamStats;
                     keyboard: false
                 };
             };
-            ReportController.prototype.getPercentWeights = function () {
-                var _this = this;
-                this.nssService.selectedStatisticsGroupList.forEach(function (statGroup) {
-                    //console.log('here1', statGroup)
-                    statGroup.RegressionRegions.forEach(function (regRegion) {
-                        //console.log('here2', regRegion)
-                        _this.studyAreaService.selectedStudyArea.RegressionRegions.forEach(function (percentOverlay) {
-                            //console.log('here3', percentOverlay)
-                            if (regRegion.Code != null && percentOverlay.code.indexOf(regRegion.Code.toUpperCase()) > -1) {
-                                _this.areaSQMI = percentOverlay.maskareasqmeter * 0.000000386102159;
-                            }
-                        });
-                    });
-                });
+            ReportController.prototype.GetRegressionRegionHeader = function (regressionregion) {
+                var header = regressionregion.Name.split('_').join(' ');
+                if (regressionregion.PercentWeight && regressionregion.PercentWeight < 100) {
+                    for (var i = 0; i < this.studyAreaService.selectedStudyArea.RegressionRegions.length; i++) {
+                        var rr = this.studyAreaService.selectedStudyArea.RegressionRegions[i];
+                        if (regressionregion.Code != null && rr.code.indexOf(regressionregion.Code.toUpperCase()) > -1) {
+                            header = '{0} Percent ({1} square miles) {2}'.format(regressionregion.PercentWeight.toFixed(0), rr.area.toUSGSvalue(), header);
+                            break;
+                        } //endif
+                    } //next i
+                }
+                return '[' + header + ']';
             };
             ReportController.prototype.showFeatures = function () {
                 var _this = this;
@@ -359,6 +356,7 @@ var StreamStats;
                             }
                         };
                     }
+                    //additional features get generic styling for now
                     else {
                         _this.layers.overlays[item.id] = {
                             name: item.id,
@@ -426,11 +424,11 @@ var StreamStats;
                     return index == 0 ? letter.toLowerCase() : letter.toUpperCase();
                 }).replace(/\s+/g, '');
             };
+            //Constructor
+            //-+-+-+-+-+-+-+-+-+-+-+-
+            ReportController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService'];
             return ReportController;
         }()); //end class
-        //Constructor
-        //-+-+-+-+-+-+-+-+-+-+-+-
-        ReportController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService'];
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.ReportController', ReportController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));

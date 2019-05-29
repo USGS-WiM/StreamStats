@@ -2,9 +2,12 @@
 //----- Network Navigation ---------------------------------------------------------------
 //------------------------------------------------------------------------------
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -31,7 +34,7 @@ var StreamStats;
 (function (StreamStats) {
     var Models;
     (function (Models) {
-        var NetworkNav = (function () {
+        var NetworkNav = /** @class */ (function () {
             //Constructor
             function NetworkNav(methodtype, navigationInfo) {
                 this.navigationID = methodtype;
@@ -84,7 +87,7 @@ var StreamStats;
             return NetworkNav;
         }()); //end class
         Models.NetworkNav = NetworkNav;
-        var NetworkPath = (function (_super) {
+        var NetworkPath = /** @class */ (function (_super) {
             __extends(NetworkPath, _super);
             //https://ssdev.cr.usgs.gov/streamstatsservices/navigation/1.geojson?rcode=RRB&startpoint=[-94.311504,48.443681]&endpoint=[-94.349721,48.450215]&crs=4326
             //properties
@@ -95,7 +98,7 @@ var StreamStats;
             return NetworkPath;
         }(NetworkNav)); //end class
         Models.NetworkPath = NetworkPath;
-        var FlowPath = (function (_super) {
+        var FlowPath = /** @class */ (function (_super) {
             __extends(FlowPath, _super);
             //Constructor
             function FlowPath() {
@@ -116,7 +119,7 @@ var StreamStats;
             return FlowPath;
         }(NetworkNav)); //end class
         Models.FlowPath = FlowPath;
-        var NetworkTrace = (function (_super) {
+        var NetworkTrace = /** @class */ (function (_super) {
             __extends(NetworkTrace, _super);
             //Constructor
             function NetworkTrace() {

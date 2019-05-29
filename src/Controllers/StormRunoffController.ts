@@ -91,11 +91,13 @@ module StreamStats.Controllers {
         public DrnAreaAcres: number;
 
         public CanContinue: boolean;
+        public CanShowDisclaimers: boolean;
         private parametersLoaded: boolean;
         public showPrint: boolean;
         public ReportOptions: any;
         public result: any;
         public excludearea: any;
+        public AppVersion: string;
 
         private _selectedTab: StormRunoffType;
         public get SelectedTab(): StormRunoffType {
@@ -144,6 +146,7 @@ module StreamStats.Controllers {
             this.studyAreaService = studyAreaService;
             this.regionParameters = region.parameterList;
             this.BrowserIE = this.detectIE();
+            this.AppVersion = configuration.version;
 
             this.parameterloadedEventHandler = new WiM.Event.EventHandler<Services.StudyAreaEventArgs>((sender: any, e: Services.StudyAreaEventArgs) => {
                 if (e.parameterLoaded) this.loadParameters()

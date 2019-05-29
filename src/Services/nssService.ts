@@ -206,7 +206,9 @@ module StreamStats.Services {
                                 
                                 response.data[0].RegressionRegions.forEach((regressionRegion) => {
                                     percentWeights.forEach((regressionRegionPercentWeight) => {
-                                        if (regressionRegionPercentWeight.code.indexOf(regressionRegion.Code.toUpperCase())>-1) regressionRegion["PercentWeight"] = regressionRegionPercentWeight.percent;
+                                        if (regressionRegionPercentWeight.code.indexOf(regressionRegion.Code.toUpperCase()) > -1) {
+                                            regressionRegion["PercentWeight"] = regressionRegionPercentWeight.percentWeight;                                            
+                                        }
                                     })
                                 });
 

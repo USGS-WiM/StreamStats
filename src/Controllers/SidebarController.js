@@ -20,7 +20,7 @@ var StreamStats;
     var Controllers;
     (function (Controllers) {
         'use strinct';
-        var SidebarController = (function () {
+        var SidebarController = /** @class */ (function () {
             function SidebarController($scope, toaster, $analytics, region, studyArea, StatisticsGroup, modal, leafletData, exploration, EventManager) {
                 var _this = this;
                 this.EventManager = EventManager;
@@ -164,6 +164,7 @@ var StreamStats;
                         });
                     }
                 }
+                //add it to the list and get its required parameters
                 else {
                     this.nssService.selectedStatisticsGroupList.push(statisticsGroup);
                     if (this.studyAreaService.selectedStudyArea.CoordinatedReach != null && statisticsGroup.Code.toUpperCase() == "PFS") {
@@ -384,13 +385,13 @@ var StreamStats;
                 var GeoJSON = angular.toJson(this.studyAreaService.selectedStudyArea.FeatureCollection);
                 var filename = 'data.geojson';
                 var blob = new Blob([GeoJSON], { type: 'text/csv;charset=utf-8;' });
-                if (navigator.msSaveBlob) {
+                if (navigator.msSaveBlob) { // IE 10+
                     navigator.msSaveBlob(blob, filename);
                 }
                 else {
                     var link = document.createElement("a");
                     var url = URL.createObjectURL(blob);
-                    if (link.download !== undefined) {
+                    if (link.download !== undefined) { // feature detection
                         // Browsers that support HTML5 download attribute
                         link.setAttribute("href", url);
                         link.setAttribute("download", filename);
@@ -406,9 +407,6 @@ var StreamStats;
             };
             SidebarController.prototype.downloadShapeFile = function () {
                 try {
-                    //https://github.com/mapbox/shp-write
-                    //https://www.npmjs.com/package/jszip
-                    //https://stackoverflow.com/questions/34663546/empty-zip-file-when-using-jszip-and-jsziputils-with-angularjs-to-zip-multiple-im
                     var flowTable = null;
                     if (this.nssService.showFlowsTable)
                         flowTable = this.nssService.getflattenNSSTable(this.studyAreaService.selectedStudyArea.WorkspaceID);
@@ -497,11 +495,11 @@ var StreamStats;
                 catch (e) {
                 }
             };
+            //Constructor
+            //-+-+-+-+-+-+-+-+-+-+-+-
+            SidebarController.$inject = ['$scope', 'toaster', '$analytics', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ModalService', 'leafletData', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager'];
             return SidebarController;
         }()); //end class
-        //Constructor
-        //-+-+-+-+-+-+-+-+-+-+-+-
-        SidebarController.$inject = ['$scope', 'toaster', '$analytics', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ModalService', 'leafletData', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager'];
         var ProcedureType;
         (function (ProcedureType) {
             ProcedureType[ProcedureType["INIT"] = 1] = "INIT";
