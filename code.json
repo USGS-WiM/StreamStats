@@ -17,7 +17,7 @@
       ]
     },
 
-    "homepageURL": "https://wim.usgs.gov",
+    "homepageURL": "https://streamstats.usgs.gov",
     "downloadURL": "https://github.com/USGS-WiM/StreamStats/archive/master.zip",
     "disclaimerURL": "https://github.com/USGS-WiM/StreamStats/blob/master/DISCLAIMER.md",
     "repositoryUrl": "https://github.com/USGS-WiM/StreamStats",
@@ -26,12 +26,15 @@
     "laborHours": null,
 
     "tags": [
-      "Streamstats",
-      "Services"
+      "Streamstats", "interactive map",
+	    "flow statistics",
+      "client"
     ],
 
     "languages": [
-      "typescript","javascript"
+	    "typescript",
+	    "javascript",
+	    "AngularJS"
     ],
 
     "contact": {
@@ -40,7 +43,7 @@
     },
 
     "date": {
-      "metadataLastUpdated": "2018-12-12"
+      "metadataLastUpdated": "2019-04-19"
     }
   }
 ]
