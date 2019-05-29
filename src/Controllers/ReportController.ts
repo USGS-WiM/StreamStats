@@ -103,7 +103,6 @@ module StreamStats.Controllers {
             var canshow = Object.keys(this.studyAreaService.selectedStudyArea.Disclaimers).length > 0;            
             return canshow;            
         }
-        public areaSQMI: any
         public get showRegulation(): boolean {
             if (this.regionService.selectedRegion.Applications.indexOf("RegulationFlows") > -1) return true;
             else return false;                
@@ -137,9 +136,6 @@ module StreamStats.Controllers {
             this.print = function () {
                 window.print();
             };
-
-            this.getPercentWeights()
-
         }
 
         //Methods
@@ -368,20 +364,19 @@ module StreamStats.Controllers {
                 keyboard: false
             }
         }
-        private getPercentWeights() {
+        public GetRegressionRegionHeader(regressionregion: any): any {
 
-            this.nssService.selectedStatisticsGroupList.forEach((statGroup) => {
-                //console.log('here1', statGroup)
-                statGroup.RegressionRegions.forEach((regRegion) => {
-                    //console.log('here2', regRegion)
-                    this.studyAreaService.selectedStudyArea.RegressionRegions.forEach((percentOverlay) => {
-                        //console.log('here3', percentOverlay)
-                        if (regRegion.Code != null && percentOverlay.code.indexOf(regRegion.Code.toUpperCase()) > -1) {
-                            this.areaSQMI = percentOverlay.area;
-                        }
-                    });
-                });
-            });
+            let header = regressionregion.Name.split('_').join(' ');
+            if (regressionregion.PercentWeight && regressionregion.PercentWeight < 100) {
+                for (var i = 0; i < this.studyAreaService.selectedStudyArea.RegressionRegions.length; i++) {
+                    let rr = this.studyAreaService.selectedStudyArea.RegressionRegions[i]
+                    if (regressionregion.Code != null && rr.code.indexOf(regressionregion.Code.toUpperCase())>-1) {
+                        header = '{0} Percent ({1} square miles) {2}'.format( regressionregion.PercentWeight.toFixed(0), rr.area.toUSGSvalue(),header);
+                        break;
+                    }//endif
+                }//next i
+            }
+            return '['+header+']';                        
         }
         private showFeatures(): void {
 
