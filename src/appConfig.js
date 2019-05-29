@@ -47,7 +47,7 @@ configuration.queryparams =
         'regionService': '/arcgis/rest/services/ss_studyAreas_prod/MapServer/identify',
         'NLCDQueryService': '/LandCover/USGS_EROS_LandCover_NLCD/MapServer/4',
         'regulationService': '/arcgis/rest/services/regulations/{0}/MapServer/exts/RegulationRESTSOE/Regulation',
-        'RegressionRegionQueryService': '/regressionregions/get',
+        'RegressionRegionQueryService': '/regressionregions/bylocation',
         'SSNavigationServices': '/navigationservices/navigation',
         'Wateruse': '/summary?year={0}&endyear={1}&includePermits={2}&computeReturns={3}&computeDomestic={4}',
         'WateruseSourceCSV': '/summary/bysource?year={0}&endyear={1}&includePermits={2}&computeReturns={3}&computeDomestic={4}',
@@ -342,7 +342,7 @@ configuration.regions = [
         "Applications": [], "regionEnabled": true, "ScenariosAvailable": true
     },
     { "RegionID": "MP", "Name": "Northern Mariana Islands", "Bounds": [[14.105276, 144.89859], [20.556385, 145.870788]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
-    { "RegionID": "MS", "Name": "Mississippi", "Bounds": [[30.194935, -91.643682], [35.005041, -88.090468]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": false },
+    { "RegionID": "MS", "Name": "Mississippi", "Bounds": [[30.194935, -91.643682], [35.005041, -88.090468]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     {
         "RegionID": "MT", "Name": "Montana", "Bounds": [[44.353639, -116.063531], [49.000026, -104.043072]], "Layers":
             {
@@ -464,7 +464,7 @@ configuration.regions = [
     { "RegionID": "WY", "Name": "Wyoming", "Bounds": [[40.994289, -111.053428], [45.002793, -104.051705]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
     { "RegionID": "CRB", "Name": "Connecticut River Basin", "Bounds": [[41.227366, -73.254776], [45.305324, -71.059248]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": false },
     { "RegionID": "DRB", "Name": "Delaware River Basin", "Bounds": [[38.666626, -76.452907], [42.507076, -74.319593]], "Layers": {}, "Applications": ["Wateruse"], "regionEnabled": true, "ScenariosAvailable": false },
-    { "RegionID": "RRB", "Name": "Rainy River Basin", "Bounds": [[47.268377, -95.64855], [50.054196, -89.766532]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": false }
+    { "RegionID": "RRB", "Name": "Rainy River Basin", "Bounds": [[47.268377, -95.64855], [50.054196, -89.766532]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true }
 
 ];//end regions
 
