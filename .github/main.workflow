@@ -1,6 +1,6 @@
 workflow "Deploy to Test" {
   on = "push"
-  resolves = ["GitHub Action for AWS"]
+  resolves = ["GitHub Action for Slack"]
 }
 
 action "Filters for GitHub Actions" {
@@ -13,4 +13,11 @@ action "GitHub Action for AWS" {
   needs = ["Filters for GitHub Actions"]
   args = "s3 cp $GITHUB_WORKSPACE/dist/ s3://test.streamstats.usgs.gov/ss/  --recursive"
   secrets = ["AWS_SECRET_ACCESS_KEY", "AWS_ACCESS_KEY_ID"]
+}
+
+action "GitHub Action for Slack" {
+  uses = "Ilshidur/action-slack@6aeb2acb39f91da283faf4c76898a723a03b2264"
+  needs = ["GitHub Action for AWS"]
+  args = " Successfully deployed to  https://streamstats.usgs.gov/ss"
+  secrets = ["SLACK_WEBHOOK_URL"]
 }
