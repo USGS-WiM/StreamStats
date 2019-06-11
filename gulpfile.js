@@ -55,9 +55,9 @@ function inc(importance) {
 }
 
 //tasks for version tags
-gulp.task('patch', ['dist'], function () { return inc('patch'); })
-gulp.task('feature', ['dist'], function () { return inc('minor'); })
-gulp.task('release', ['dist'], function () { return inc('major'); })
+gulp.task('patch', ['dist'], function () { return inc('patch'); });
+gulp.task('feature', ['dist'], function () { return inc('minor'); });
+gulp.task('release', ['dist'], function () { return inc('major'); });
 
 //push task for versioning
 gulp.task('push', function () {
