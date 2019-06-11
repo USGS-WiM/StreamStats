@@ -27,8 +27,6 @@ module StreamStats.Controllers {
 
     declare var jsPDF;
     declare var shpwrite;
-    declare var turf;
-
     'use strinct';
     interface IReportControllerScope extends ng.IScope {
         vm: ReportController;
@@ -405,12 +403,11 @@ module StreamStats.Controllers {
         private addGeoJSON(LayerName: string|number, feature: any) {
 
             if (LayerName == 'globalwatershed') {
-                console.log("Report load: " + feature.geometry.coordinates.reduce((count, row) => count + row.length, 0));
                 this.layers.overlays[LayerName] =
                     {
                         name: 'Basin Boundary',
                         type: 'geoJSONShape',
-                        data: turf.simplify(angular.fromJson(angular.toJson(feature)), { tolerance: 0.01, highQuality: false, mutate: true }),
+                        data: this.studyAreaService.simplify(angular.fromJson(angular.toJson(feature))),
                         visible: true,
                         layerOptions: {
                             style: {
