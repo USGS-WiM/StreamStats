@@ -935,10 +935,10 @@ var StreamStats;
             };
             MapController.prototype.addGeoJSON = function (LayerName, feature) {
                 if (LayerName == 'globalwatershed') {
-                    console.log("MapLoad: " + feature.geometry.coordinates.reduce(function (count, row) { return count + row.length; }, 0));
+                    var data = this.studyArea.simplify(feature);
                     this.geojson[LayerName] =
                         {
-                            data: turf.simplify(feature, { tolerance: 0.01, highQuality: false, mutate: true }),
+                            data: data,
                             style: {
                                 //https://www.base64-image.de/
                                 displayName: "Basin Boundary",

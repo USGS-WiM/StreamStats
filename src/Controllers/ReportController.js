@@ -327,12 +327,11 @@ var StreamStats;
             };
             ReportController.prototype.addGeoJSON = function (LayerName, feature) {
                 if (LayerName == 'globalwatershed') {
-                    console.log("Report load: " + feature.geometry.coordinates.reduce(function (count, row) { return count + row.length; }, 0));
                     this.layers.overlays[LayerName] =
                         {
                             name: 'Basin Boundary',
                             type: 'geoJSONShape',
-                            data: turf.simplify(angular.fromJson(angular.toJson(feature)), { tolerance: 0.01, highQuality: false, mutate: true }),
+                            data: this.studyAreaService.simplify(angular.fromJson(angular.toJson(feature))),
                             visible: true,
                             layerOptions: {
                                 style: {
