@@ -27,6 +27,7 @@ module StreamStats.Controllers {
 
     declare var greinerHormann;
     declare var ga;
+    declare var turf;
 
     'use strict';
     interface ILeafletData {
@@ -1169,9 +1170,10 @@ module StreamStats.Controllers {
         private addGeoJSON(LayerName: string, feature: any) {
 
             if (LayerName == 'globalwatershed') {
+                console.log("MapLoad: " + feature.geometry.coordinates.reduce((count, row) => count + row.length, 0));
                 this.geojson[LayerName] =
                     {
-                        data: feature,
+                    data: turf.simplify(feature, { tolerance: 0.01, highQuality: false, mutate:true }),
                         style: {
                             //https://www.base64-image.de/
                             displayName: "Basin Boundary",
