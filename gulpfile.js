@@ -28,12 +28,12 @@ function inc(importance) {
 
     //bump appConfig version
     gulp.src('./src/appConfig.js')
-        .pipe(replace(/configuration.version(={1})/g, 'newVer'))
+        .pipe(replace(/configuration.version = "([^"]+)"/g, 'configuration.version = "' + newVer + '"'))
         .pipe(gulp.dest('./src/'));
         //.pipe(git.add());
 
     gulp.src('./dist/appConfig.js')
-        .pipe(replace(/configuration.version="([^"]+)"/g, 'configuration.version="' + newVer + '"'))
+        .pipe(replace(/configuration.version = "([^"]+)"/g, 'configuration.version = "' + newVer + '"'))
         .pipe(gulp.dest('./dist/'));
         //.pipe(git.add());
 
