@@ -18,6 +18,6 @@ action "GitHub Action for AWS" {
 action "GitHub Action for Slack" {
   uses = "Ilshidur/action-slack@6aeb2acb39f91da283faf4c76898a723a03b2264"
   needs = ["GitHub Action for AWS"]
-  args = " Successfully deployed to  https://streamstats.usgs.gov/ss"
+  args = " Successfully deployed to  https://test.streamstats.usgs.gov/ss"
   secrets = ["SLACK_WEBHOOK"]
 }
