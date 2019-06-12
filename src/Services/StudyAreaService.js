@@ -656,14 +656,14 @@ var StreamStats;
                 var tolerance = 0;
                 try {
                     var verticies = feature.geometry.coordinates.reduce(function (count, row) { return count + row.length; }, 0);
-                    if (verticies < 100) {
+                    if (verticies < 5000) {
                         // no need to simpify
                         return feature;
                     }
-                    else if (verticies < 1000) {
+                    else if (verticies < 10000) {
                         tolerance = 0.0001;
                     }
-                    else if (verticies < 2000) {
+                    else if (verticies < 100000) {
                         tolerance = 0.001;
                     }
                     else {
