@@ -842,7 +842,7 @@ module StreamStats.Services {
                 else {
                     tolerance = 0.01
                 }
-
+                this.toaster.pop('warning', "Displaying simplified Basin.", "See FAQ for more information.", 0);
                 return turf.simplify(feature, { tolerance: tolerance, highQuality: false, mutate: true })
 
             } catch (e) {
