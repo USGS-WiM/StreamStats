@@ -421,7 +421,7 @@ var StreamStats;
                         if (_this.layers.overlays[lyr].hasOwnProperty("queryProperties") && _this.layers.overlays[lyr].queryProperties.hasOwnProperty(item.layerName)) {
                             var queryProperties_1 = _this.layers.overlays[lyr].queryProperties[item.layerName];
                             Object.keys(queryProperties_1).map(function (k) {
-                                if (item.layerName == "Streamgages" && k == "featureurl") {
+                                if (item.layerName == "Streamgages" && k == "FeatureURL") {
                                     var siteNo = queryResult.properties[k].split('site_no=')[1];
                                     var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm';
                                     querylayers.append('<strong>NWIS page: </strong><a href="' + queryResult.properties[k] + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br>');

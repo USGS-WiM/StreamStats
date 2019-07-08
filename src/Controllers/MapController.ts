@@ -550,7 +550,7 @@ module StreamStats.Controllers {
                     if (this.layers.overlays[lyr].hasOwnProperty("queryProperties") && this.layers.overlays[lyr].queryProperties.hasOwnProperty(item.layerName)) {
                         let queryProperties = this.layers.overlays[lyr].queryProperties[item.layerName];
                         Object.keys(queryProperties).map(k => {
-                            if (item.layerName == "Streamgages" && k == "featureurl") {
+                            if (item.layerName == "Streamgages" && k == "FeatureURL") {
                                 var siteNo = queryResult.properties[k].split('site_no=')[1];
                                 var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm'
                                 querylayers.append('<strong>NWIS page: </strong><a href="' + queryResult.properties[k] + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br>');
