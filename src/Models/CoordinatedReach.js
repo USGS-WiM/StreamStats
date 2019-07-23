@@ -59,11 +59,11 @@ var StreamStats;
                         if (this.FlowCoefficients.hasOwnProperty(key)) {
                             var item = this.FlowCoefficients[key];
                             result.push({
-                                Code: key,
-                                Description: this.getDescription(key),
-                                Name: this.getName(key),
-                                Unit: { Unit: "cubic feet per second", Abbr: "ft^3/s" },
-                                Value: this.getValue(item, parameters[0].value)
+                                code: key,
+                                description: this.getDescription(key),
+                                name: this.getName(key),
+                                unit: { unit: "cubic feet per second", abbr: "ft^3/s" },
+                                value: this.getValue(item, parameters[0].value)
                             });
                         } //end if
                     } //next item
@@ -90,11 +90,11 @@ var StreamStats;
                         });
                     } //next key
                     var ssg = {
-                        ID: 0,
-                        Name: this.Name,
-                        Code: this.ID,
-                        Parameters: params,
-                        Results: result
+                        id: 0,
+                        name: this.Name,
+                        code: this.ID,
+                        parameters: params,
+                        results: result
                     };
                     return ssg;
                 }

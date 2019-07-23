@@ -159,15 +159,15 @@ module StreamStats.Controllers {
             var processScenarioParamTable = (statGroup) => {
                 var finalVal = '';
      
-                statGroup.RegressionRegions.forEach((regressionRegion) => {
+                statGroup.regressionRegions.forEach((regressionRegion) => {
 
                     //bail if in Area-Averaged section
-                    if (regressionRegion.Name == 'Area-Averaged') return;
+                    if (regressionRegion.name == 'Area-Averaged') return;
   
                     //table header
                     var regionPercent = '';
-                    if (regressionRegion.PercentWeight) regionPercent = regressionRegion.PercentWeight.toFixed(0) + ' Percent ';
-                    finalVal += '\r\n' + statGroup.Name + ' Parameters,' + regionPercent + regressionRegion.Name.split("_").join(" ") + '\r\n';
+                    if (regressionRegion.percentWeight) regionPercent = regressionRegion.percentWeight.toFixed(0) + ' Percent ';
+                    finalVal += '\r\n' + statGroup.name + ' Parameters,' + regionPercent + regressionRegion.name.split("_").join(" ") + '\r\n';
 
                     //get this table by ID --need to use this type of selected because jquery doesn't like the possibility of colons in div id
                     finalVal += this.tableToCSV($(document.getElementById(this.camelize(statGroup.Name + regressionRegion.Name + 'ScenarioParamTable')))) + '\r\n';
@@ -178,9 +178,9 @@ module StreamStats.Controllers {
 
             var processDisclaimers = (statGroup) => {
                 //console.log('Process disclaimers statGroup: ', statGroup);
-                var finalVal = '*** ' + statGroup.Name + ' Disclaimers ***\r\n';
+                var finalVal = '*** ' + statGroup.name + ' Disclaimers ***\r\n';
 
-                angular.forEach(statGroup.Disclaimers, (i, v) => {
+                angular.forEach(statGroup.disclaimer, (i, v) => {
                     finalVal += v + ',' + i + '\r\n';
                 });
 
@@ -191,22 +191,22 @@ module StreamStats.Controllers {
                 //console.log('ScenarioFlowTable statGroup: ', statGroup);
                 var finalVal = '';
 
-                statGroup.RegressionRegions.forEach((regressionRegion) => {
+                statGroup.regressionRegions.forEach((regressionRegion) => {
                     //console.log('ScenarioFlowTable regressionRegion: ', regressionRegion);
 
-                    if (regressionRegion.Results) {
+                    if (regressionRegion.results) {
 
                         //table header
                         var regionPercent = '';
-                        if (regressionRegion.PercentWeight) regionPercent = regressionRegion.PercentWeight.toFixed(0) + ' Percent ';
-                        finalVal += statGroup.Name + ' Flow Report,' + regionPercent + regressionRegion.Name.split("_").join(" ") + '\r\n';
+                        if (regressionRegion.percentWeight) regionPercent = regressionRegion.percentWeight.toFixed(0) + ' Percent ';
+                        finalVal += statGroup.name + ' Flow Report,' + regionPercent + regressionRegion.name.split("_").join(" ") + '\r\n';
 
                         //add explanatory row if needed
-                        if (regressionRegion.Results[0].IntervalBounds && regressionRegion.Results[0].Errors && regressionRegion.Results[0].Errors.length > 0) finalVal +=
+                        if (regressionRegion.results[0].intervalBounds && regressionRegion.results[0].errors && regressionRegion.results[0].errors.length > 0) finalVal +=
                          '"PIl: Prediction Interval- Lower, PIu: Prediction Interval- Upper, SEp: Standard Error of Prediction, SE: Standard Error (other-- see report)"\r\n'
 
                         //get this table by ID --need to use this type of selected because jquery doesn't like the possibility of colons in div id
-                        finalVal += this.tableToCSV($(document.getElementById(this.camelize(statGroup.Name + regressionRegion.Name + 'ScenarioFlowTable')))) + '\r\n\r\n';
+                        finalVal += this.tableToCSV($(document.getElementById(this.camelize(statGroup.name + regressionRegion.name + 'ScenarioFlowTable')))) + '\r\n\r\n';
                     }
                 });
                 return finalVal + '\r\n';
@@ -221,7 +221,7 @@ module StreamStats.Controllers {
             //next loop over stat groups
             this.nssService.selectedStatisticsGroupList.forEach((statGroup) => {
                 csvFile += processScenarioParamTable(statGroup);
-                if (statGroup.Disclaimers && (statGroup.Disclaimers.Warnings || statGroup.Disclaimers.Errors)) csvFile += processDisclaimers(statGroup);
+                if (statGroup.disclaimers && (statGroup.disclaimers.Warnings || statGroup.disclaimers.Errors)) csvFile += processDisclaimers(statGroup);
                 csvFile += processScenarioFlowTable(statGroup);
             });
 
@@ -370,12 +370,12 @@ module StreamStats.Controllers {
         }
         public GetRegressionRegionHeader(regressionregion: any): any {
 
-            let header = regressionregion.Name.split('_').join(' ');
-            if (regressionregion.PercentWeight && regressionregion.PercentWeight < 100) {
+            let header = regressionregion.name.split('_').join(' ');
+            if (regressionregion.percentWeight && regressionregion.percentWeight < 100) {
                 for (var i = 0; i < this.studyAreaService.selectedStudyArea.RegressionRegions.length; i++) {
                     let rr = this.studyAreaService.selectedStudyArea.RegressionRegions[i]
-                    if (regressionregion.Code != null && rr.code.indexOf(regressionregion.Code.toUpperCase())>-1) {
-                        header = '{0} Percent ({1} square miles) {2}'.format( regressionregion.PercentWeight.toFixed(0), rr.area.toUSGSvalue(),header);
+                    if (regressionregion.code != null && rr.code.indexOf(regressionregion.code.toUpperCase())>-1) {
+                        header = '{0} Percent ({1} square miles) {2}'.format( regressionregion.percentWeight.toFixed(0), rr.area.toUSGSvalue(),header);
                         break;
                     }//endif
                 }//next i

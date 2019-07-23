@@ -38,6 +38,7 @@ var StreamStats;
                 this.multipleParameterSelectorAdd = true;
                 this.explorationService = exploration;
                 StatisticsGroup.onSelectedStatisticsGroupChanged.subscribe(this._onSelectedStatisticsGroupChangedHandler);
+                this.nssService.onSenarioExtensionChanged.subscribe(this._onSenarioExtensionChangedHandler);
                 //watch for map based region changes here
                 $scope.$watch(function () { return _this.regionService.selectedRegion; }, function (newval, oldval) {
                     //console.log('region change', oldval, newval);
@@ -167,13 +168,13 @@ var StreamStats;
                 //add it to the list and get its required parameters
                 else {
                     this.nssService.selectedStatisticsGroupList.push(statisticsGroup);
-                    if (this.studyAreaService.selectedStudyArea.CoordinatedReach != null && statisticsGroup.Code.toUpperCase() == "PFS") {
+                    if (this.studyAreaService.selectedStudyArea.CoordinatedReach != null && statisticsGroup.code.toUpperCase() == "PFS") {
                         this.addParameterToStudyAreaList("DRNAREA");
                         this.nssService.showFlowsTable = true;
                         return;
                     } //end if
                     //get list of params for selected StatisticsGroup
-                    this.nssService.loadParametersByStatisticsGroup(this.regionService.selectedRegion.RegionID, statisticsGroup.ID, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) {
+                    this.nssService.loadParametersByStatisticsGroup(this.regionService.selectedRegion.RegionID, statisticsGroup.id, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) {
                         return elem.code;
                     }).join(","), this.studyAreaService.selectedStudyArea.RegressionRegions);
                 }
@@ -250,7 +251,7 @@ var StreamStats;
                 this.toaster.pop('wait', "Opening Report", "Please wait...", 5000);
                 //ga event
                 this.angulartics.eventTrack('CalculateFlows', {
-                    category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.nssService.selectedStatisticsGroupList.map(function (elem) { return elem.Name; }).join(",")
+                    category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.nssService.selectedStatisticsGroupList.map(function (elem) { return elem.name; }).join(",")
                 });
                 if (this.nssService.selectedStatisticsGroupList.length > 0 && this.nssService.showFlowsTable) {
                     var strippedoutStatisticGroups = [];
@@ -258,21 +259,21 @@ var StreamStats;
                         //first remove from nssservice
                         for (var i = 0; i < this.nssService.selectedStatisticsGroupList.length; i++) {
                             var sg = this.nssService.selectedStatisticsGroupList[i];
-                            if (sg.Code.toUpperCase() === "PFS") {
-                                sg.Citations = [{ Author: "Indiana DNR,", Title: "Coordinated Discharges of Selected Streams in Indiana.", CitationURL: "http://www.in.gov/dnr/water/4898.htm" }];
-                                sg.RegressionRegions = [];
+                            if (sg.code.toUpperCase() === "PFS") {
+                                sg.citations = [{ Author: "Indiana DNR,", Title: "Coordinated Discharges of Selected Streams in Indiana.", CitationURL: "http://www.in.gov/dnr/water/4898.htm" }];
+                                sg.regressionRegions = [];
                                 var result = this.studyAreaService.selectedStudyArea.CoordinatedReach.Execute(this.studyAreaService.studyAreaParameterList.filter(function (p) { return p.code === "DRNAREA"; }));
-                                sg.RegressionRegions.push(result);
+                                sg.regressionRegions.push(result);
                                 strippedoutStatisticGroups.push(sg);
                                 this.nssService.selectedStatisticsGroupList.splice(i, 1);
                                 break;
                             } //end if
                         } //next
                     } //end if
-                    this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList, "value", this.regionService.selectedRegion.RegionID, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) { return elem.code; }).join(","));
+                    this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList, "value", this.regionService.selectedRegion.RegionID);
                     if (this.regionService.selectedRegion.Applications.indexOf("RegulationFlows") != -1) {
                         setTimeout(function () {
-                            _this.nssService.estimateFlows(_this.studyAreaService.studyAreaParameterList, "unRegulatedValue", _this.regionService.selectedRegion.RegionID, _this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) { return elem.code; }).join(","), true);
+                            _this.nssService.estimateFlows(_this.studyAreaService.studyAreaParameterList, "unRegulatedValue", _this.regionService.selectedRegion.RegionID, true);
                         }, 500);
                     }
                     //add it back in.
@@ -335,15 +336,15 @@ var StreamStats;
                 this.nssService.selectedStatisticsGroupList.length > 0 ? this.nssService.showFlowsTable = true : this.nssService.showFlowsTable = false;
                 //loop over whole statisticsgroups
                 this.nssService.selectedStatisticsGroupList.forEach(function (statisticsGroup) {
-                    if (statisticsGroup.RegressionRegions) {
+                    if (statisticsGroup.regressionRegions) {
                         //get their parameters
-                        statisticsGroup.RegressionRegions.forEach(function (regressionRegion) {
+                        statisticsGroup.regressionRegions.forEach(function (regressionRegion) {
                             //loop over list of state/region parameters to see if there is a match
-                            regressionRegion.Parameters.forEach(function (param) {
+                            regressionRegion.parameters.forEach(function (param) {
                                 var found = false;
                                 for (var i = 0; i < _this.regionService.parameterList.length; i++) {
                                     var parameter = _this.regionService.parameterList[i];
-                                    if (parameter.code.toLowerCase() == param.Code.toLowerCase()) {
+                                    if (parameter.code.toLowerCase() == param.code.toLowerCase()) {
                                         _this.addParameterToStudyAreaList(parameter.code);
                                         found = true;
                                         break;
@@ -355,9 +356,9 @@ var StreamStats;
                                     //add to region parameterList
                                     var newParam = {
                                         name: param.name,
-                                        description: param.Description,
-                                        code: param.Code,
-                                        unit: param.UnitType.Unit,
+                                        description: param.description,
+                                        code: param.code,
+                                        unit: param.unitType.unit,
                                         value: null,
                                         regulatedValue: null,
                                         unRegulatedValue: null,
@@ -368,12 +369,15 @@ var StreamStats;
                                     //push the param that was not in the original regionService paramaterList
                                     _this.regionService.parameterList.push(newParam);
                                     //select it
-                                    _this.addParameterToStudyAreaList(param.Code);
+                                    _this.addParameterToStudyAreaList(param.code);
                                 }
                             }); // next param
                         }); // next regressionRegion
                     } //end if
                 }); //next statisticgroup
+            };
+            SidebarController.prototype.onScenarioExtensionChanged = function (sender, e) {
+                console.log("made it", e.extensions);
             };
             SidebarController.prototype.OpenWateruse = function () {
                 this.modalService.openModal(StreamStats.Services.SSModalType.e_wateruse);
@@ -428,6 +432,9 @@ var StreamStats;
                 //init event handler
                 this._onSelectedStatisticsGroupChangedHandler = new WiM.Event.EventHandler(function () {
                     _this.onSelectedStatisticsGroupChanged();
+                });
+                this._onSenarioExtensionChangedHandler = new WiM.Event.EventHandler(function (sender, e) {
+                    _this.onScenarioExtensionChanged(sender, e);
                 });
             };
             //special function for searching arrays but ignoring angular hashkey

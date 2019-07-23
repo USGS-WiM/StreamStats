@@ -48,6 +48,7 @@ module StreamStats.Controllers {
         //Events
         //-+-+-+-+-+-+-+-+-+-+-+-
         private _onSelectedStatisticsGroupChangedHandler: WiM.Event.EventHandler<WiM.Event.EventArgs>;
+        private _onSenarioExtensionChangedHandler: WiM.Event.EventHandler<Services.NSSEventArgs>;
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
         public sideBarCollapsed: boolean;
@@ -92,6 +93,8 @@ module StreamStats.Controllers {
             this.explorationService = exploration;
             
             StatisticsGroup.onSelectedStatisticsGroupChanged.subscribe(this._onSelectedStatisticsGroupChangedHandler);
+            this.nssService.onSenarioExtensionChanged.subscribe(this._onSenarioExtensionChangedHandler);
+
 
             //watch for map based region changes here
             $scope.$watch(() => this.regionService.selectedRegion,(newval, oldval) => {
@@ -216,14 +219,14 @@ module StreamStats.Controllers {
             else {
                 this.nssService.selectedStatisticsGroupList.push(statisticsGroup);
 
-                if (this.studyAreaService.selectedStudyArea.CoordinatedReach != null && statisticsGroup.Code.toUpperCase() == "PFS") {
+                if (this.studyAreaService.selectedStudyArea.CoordinatedReach != null && statisticsGroup.code.toUpperCase() == "PFS") {
                     this.addParameterToStudyAreaList("DRNAREA");
                     this.nssService.showFlowsTable = true
                     return;
                 }//end if
                 
                 //get list of params for selected StatisticsGroup
-                this.nssService.loadParametersByStatisticsGroup(this.regionService.selectedRegion.RegionID, statisticsGroup.ID, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) {
+                this.nssService.loadParametersByStatisticsGroup(this.regionService.selectedRegion.RegionID, statisticsGroup.id, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) {
                     return elem.code;
                 }).join(","), this.studyAreaService.selectedStudyArea.RegressionRegions);
             }
@@ -330,7 +333,7 @@ module StreamStats.Controllers {
 
             //ga event
             this.angulartics.eventTrack('CalculateFlows', {
-                category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.nssService.selectedStatisticsGroupList.map(function (elem) { return elem.Name; }).join(",") });
+                category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.nssService.selectedStatisticsGroupList.map(function (elem) { return elem.name; }).join(",") });
 
             if (this.nssService.selectedStatisticsGroupList.length > 0 && this.nssService.showFlowsTable) {
                 var strippedoutStatisticGroups = []; 
@@ -338,11 +341,11 @@ module StreamStats.Controllers {
                     //first remove from nssservice
                     for (var i = 0; i < this.nssService.selectedStatisticsGroupList.length; i++) {
                         var sg = this.nssService.selectedStatisticsGroupList[i];
-                        if (sg.Code.toUpperCase() === "PFS") {
-                            sg.Citations = [{ Author: "Indiana DNR,", Title: "Coordinated Discharges of Selected Streams in Indiana.", CitationURL: "http://www.in.gov/dnr/water/4898.htm" }];
-                            sg.RegressionRegions = [];
+                        if (sg.code.toUpperCase() === "PFS") {
+                            sg.citations = [{ Author: "Indiana DNR,", Title: "Coordinated Discharges of Selected Streams in Indiana.", CitationURL: "http://www.in.gov/dnr/water/4898.htm" }];
+                            sg.regressionRegions = [];
                             var result = this.studyAreaService.selectedStudyArea.CoordinatedReach.Execute(this.studyAreaService.studyAreaParameterList.filter(p => { return p.code === "DRNAREA" }))
-                            sg.RegressionRegions.push(result); 
+                            sg.regressionRegions.push(result); 
                             strippedoutStatisticGroups.push(sg);
                             this.nssService.selectedStatisticsGroupList.splice(i, 1);
                             break;
@@ -351,10 +354,10 @@ module StreamStats.Controllers {
 
                     
                 }//end if
-                this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList,"value", this.regionService.selectedRegion.RegionID, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) { return elem.code; }).join(","));
+                this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList,"value", this.regionService.selectedRegion.RegionID);
                 if (this.regionService.selectedRegion.Applications.indexOf("RegulationFlows") !=-1) {
                     setTimeout(() => {
-                        this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList, "unRegulatedValue", this.regionService.selectedRegion.RegionID, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) { return elem.code; }).join(","), true);
+                        this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList, "unRegulatedValue", this.regionService.selectedRegion.RegionID, true);
                     }, 500);
                 }
 
@@ -430,18 +433,18 @@ module StreamStats.Controllers {
             //loop over whole statisticsgroups
             this.nssService.selectedStatisticsGroupList.forEach((statisticsGroup) => {
 
-                if (statisticsGroup.RegressionRegions) {
+                if (statisticsGroup.regressionRegions) {
 
                     //get their parameters
-                    statisticsGroup.RegressionRegions.forEach((regressionRegion) => {
+                    statisticsGroup.regressionRegions.forEach((regressionRegion) => {
 
                         //loop over list of state/region parameters to see if there is a match
-                        regressionRegion.Parameters.forEach((param) => {
+                        regressionRegion.parameters.forEach((param) => {
 
                             var found = false;
                             for (var i = 0; i < this.regionService.parameterList.length; i++) {
                                 var parameter = this.regionService.parameterList[i];
-                                if (parameter.code.toLowerCase() == param.Code.toLowerCase()) {
+                                if (parameter.code.toLowerCase() == param.code.toLowerCase()) {
                                     this.addParameterToStudyAreaList(parameter.code);
                                     found = true;
                                     break;
@@ -455,9 +458,9 @@ module StreamStats.Controllers {
                                 //add to region parameterList
                                 var newParam = {
                                     name: param.name,
-                                    description: param.Description,
-                                    code: param.Code,
-                                    unit: param.UnitType.Unit,
+                                    description: param.description,
+                                    code: param.code,
+                                    unit: param.unitType.unit,
                                     value: null,
                                     regulatedValue: null,
                                     unRegulatedValue: null,
@@ -470,12 +473,16 @@ module StreamStats.Controllers {
                                 this.regionService.parameterList.push(newParam);
 
                                 //select it
-                                this.addParameterToStudyAreaList(param.Code);
+                                this.addParameterToStudyAreaList(param.code);
                             }
                         });// next param
                     });// next regressionRegion
                 }//end if
             });//next statisticgroup
+        }
+
+        public onScenarioExtensionChanged(sender:any, e:Services.NSSEventArgs) {
+            console.log("made it", e.extensions);
         }
 
         public OpenWateruse() {
@@ -539,6 +546,9 @@ module StreamStats.Controllers {
             //init event handler
             this._onSelectedStatisticsGroupChangedHandler = new WiM.Event.EventHandler<WiM.Event.EventArgs>(() => {
                 this.onSelectedStatisticsGroupChanged();
+            });
+            this._onSenarioExtensionChangedHandler = new WiM.Event.EventHandler<Services.NSSEventArgs>((sender: any, e: Services.NSSEventArgs) => {
+                this.onScenarioExtensionChanged(sender, e);
             });
         }
 

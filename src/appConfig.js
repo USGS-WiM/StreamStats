@@ -8,7 +8,7 @@ configuration.baseurls =
         'StreamStatsServices': 'https://test.streamstats.usgs.gov',
         'StreamStatsMapServices': 'https://gis.streamstats.usgs.gov',
         'nssservicesv2':'https://test.streamstats.usgs.gov/nssservicesv2',
-        'NSS': 'https://test.streamstats.usgs.gov/nssservices',
+        'NSS': 'https://test.streamstats.usgs.gov/nssservicesv2',
         'WaterUseServices': 'https://test.streamstats.usgs.gov/wateruseservices',
         'StormRunoffServices': 'https://test.streamstats.usgs.gov/runoffmodelingservices',
         'ScienceBase': 'https://gis.usgs.gov/sciencebase2'
@@ -22,6 +22,7 @@ if (window.location.host === 'streamstats.usgs.gov') {
         configuration.baseurls.NSS = 'https://streamstats.usgs.gov/nssservices',
         configuration.baseurls.WaterUseServices = 'https://streamstats.usgs.gov/wateruseservices',
         configuration.baseurls.StormRunoffServices = 'https://streamstats.usgs.gov/runoffmodelingservices',
+        configuration.baseurls.nssservicesv2 = 'https://streamstats.usgs.gov/nssservicesv2',
         configuration.environment = 'production';
 }
 
@@ -30,9 +31,9 @@ configuration.queryparams =
         "NWISsite": '/site/?format=mapper,1.0&stateCd={0}&siteType=GL,OC,OC-CO,ES,LK,ST,ST-CA,ST-DCH,ST-TS&hasDataTypeCd=iv',
         'KrigService': '/krig?state={0}&xlocation={1}&ylocation={2}&sr={3}',
         'RegressionScenarios': '/{0}/estimate?state={1}',
-        'statisticsGroupLookup': '/statisticgroups.json?region={0}&regressionregions={1}',
-        'statisticsGroupParameterLookup': '/scenarios.json?region={0}&statisticgroups={1}&regressionregions={2}&configs=2',
-        'estimateFlows': '/scenarios/estimate.json?region={0}&statisticgroups={1}&regressionregions={2}&configs=2',
+        'statisticsGroupLookup': '/statisticgroups?regions={0}&regressionregions={1}',
+        'statisticsGroupParameterLookup': '/scenarios?regions={0}&statisticgroups={1}&regressionregions={2}&configs=2',
+        'estimateFlows': '/scenarios/estimate?regions={0}&configs=2',
         'SSdelineation': '/streamstatsservices/watershed.{0}?rcode={1}&xlocation={2}&ylocation={3}&crs={4}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
         'SSstormwaterDelineation': '/stormwaterservices/watershed?rcode={0}&xlocation={1}&ylocation={2}&surfacecontributiononly={3}',
         'SSwatershedByWorkspace': '/streamstatsservices/watershed.{0}?rcode={1}&workspaceID={2}&crs={3}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
@@ -248,37 +249,8 @@ configuration.regions = [
     { "RegionID": "GU", "Name": "Guam", "Bounds": [[13.234996, 144.634155], [13.65361, 144.953308]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "HI", "Name": "Hawaii", "Bounds": [[18.921786, -160.242406], [22.22912, -154.791096]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     {
-        "RegionID": "IA", "Name": "Iowa", "Bounds": [[40.371946, -96.640709], [43.501457, -90.142796]], "Layers":
-            {
-                //'FLA': {
-                //    "name": "Flow Anywhere Model",
-                //    "url": 'https://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowAnywhere/MapServer',
-                //    "type": 'agsDynamic',
-                //    "visible": true,
-                //    "layerOptions": {
-                //        "opacity": 0.5
-                //    }
-                //},
-                //'FDCTM': {
-                //    "name": "Flow Duration Curve Transfer Model",
-                //    "url": 'https://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowDuration2/MapServer',
-                //    "type": 'agsDynamic',
-                //    "visible": true,
-                //    "layerOptions": {
-                //        "opacity": 0.5
-                //    }
-                //},
-                //'PRMS': {
-                //    "name": "PRMS",
-                //    "url": 'https://wim.usgs.gov/arcgis/rest/services/IowaPRMSMapper/IOWA_PRMS/MapServer',
-                //    "type": 'agsDynamic',
-                //    "visible": false,
-                //    "layerOptions": {
-                //        "opacity": 0.5
-                //    }
-                //}
-            },
-        "Applications": [],
+        "RegionID": "IA", "Name": "Iowa", "Bounds": [[40.371946, -96.640709], [43.501457, -90.142796]], "Layers":{},
+        "Applications": ["FDCTM"],
         "regionEnabled": true,
         "ScenariosAvailable": true
     },
