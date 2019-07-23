@@ -27,11 +27,12 @@ module StreamStats.Services {
     'use strict'
     export interface InssService {
         onSelectedStatisticsGroupChanged: WiM.Event.Delegate<WiM.Event.EventArgs>;
+        onSenarioExtensionChanged: WiM.Event.Delegate<NSSEventArgs>;
         statisticsGroupList: Array<IStatisticsGroup>;
         selectedStatisticsGroupList: Array<IStatisticsGroup>;
         loadStatisticsGroupTypes(rcode: string, regressionregion: string):Array<any>;
         loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregion: string, percentWeights: any);
-        estimateFlows(studyAreaParameterList: Array<IParameter>, paramValueField: string, rcode: string, regressionregion: string, append?: boolean)
+        estimateFlows(studyAreaParameterList: Array<IParameter>, paramValueField: string, rcode: string, append?: boolean)
         showBasinCharacteristicsTable: boolean;
         showFlowsTable: boolean;
         clearNSSdata();
@@ -40,50 +41,60 @@ module StreamStats.Services {
         reportGenerated: boolean;  
     }
     export interface IStatisticsGroup {
-        ID: string;
-        Name: string;
-        Code: string;
-        RegressionRegions: Array<any>;
-        Citations: any;
-        Disclaimers: any;
+        id: string;
+        name: string;
+        code: string;
+        regressionRegions: Array<any>;
+        citations: any;
+        disclaimers: any;
     }
     export interface IRegressionRegion {
-        ID: number;
-        Name: string;
-        Code: string;
-        Parameters: Array<IParameter>
-        Results: Array<IRegressionResult>
+        id: number;
+        name: string;
+        code: string;
+        parameters: Array<IParameter>
+        results: Array<IRegressionResult>
     }
     export interface IRegressionResult {
-        Name: string;
-        Code: string;
-        Description: string;
-        Value: number;
-        Unit: IUnit;
+        name: string;
+        code: string;
+        description: string;
+        value: number;
+        unit: IUnit;
     }
     export interface IUnit {
-        Unit: string;
-        Abbr: string;
+        unit: string;
+        abbr: string;
     }
 
     export class StatisticsGroup implements IStatisticsGroup {
         //properties
-        public ID: string;
-        public Name: string;
-        public Code: string;
-        public RegressionRegions: Array<any>;
-        public Citations: any;
-        public Disclaimers: any;
+        public id: string;
+        public name: string;
+        public code: string;
+        public regressionRegions: Array<any>;
+        public citations: any;
+        public disclaimers: any;
     }//end class
 
     export interface INSSResultTable {
-        Name?: string;
-        Region?: string;
-        Statistic?: string;
-        Value?: Number;
-        Unit?: string;
-        CitationUrl?: string;
-        Disclaimers: string;
+        name?: string;
+        region?: string;
+        statistic?: string;
+        value?: Number;
+        unit?: string;
+        citationUrl?: string;
+        disclaimers: string;
+    }
+
+    export class NSSEventArgs extends WiM.Event.EventArgs {
+        //properties
+        public extensions:Array<string>
+        constructor(extensions = null,) {
+            super();
+            this.extensions = extensions;
+        }
+
     }
 
     class nssService extends WiM.Services.HTTPServiceBase implements InssService {       
@@ -91,6 +102,10 @@ module StreamStats.Services {
         private _onSelectedStatisticsGroupChanged: WiM.Event.Delegate<WiM.Event.EventArgs>;
         public get onSelectedStatisticsGroupChanged(): WiM.Event.Delegate<WiM.Event.EventArgs> {
             return this._onSelectedStatisticsGroupChanged;
+        }
+        private _onScenarioExtensionChanged: WiM.Event.Delegate<NSSEventArgs>;
+        public get onSenarioExtensionChanged(): WiM.Event.Delegate<NSSEventArgs> {
+            return this._onScenarioExtensionChanged;
         }
 
         //Properties
@@ -111,11 +126,13 @@ module StreamStats.Services {
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        constructor($http: ng.IHttpService, private $q: ng.IQService, toaster, modal) {
+        constructor($http: ng.IHttpService, private $q: ng.IQService, toaster, modal, private regionservice: Services.IRegionService) {
             super($http, configuration.baseurls['NSS']);
             this.toaster = toaster;
             this.modalService = modal;
             this._onSelectedStatisticsGroupChanged = new WiM.Event.Delegate<WiM.Event.EventArgs>();
+            this._onScenarioExtensionChanged = new WiM.Event.Delegate<NSSEventArgs>();
+
             this.clearNSSdata();
         }
 
@@ -155,7 +172,15 @@ module StreamStats.Services {
                         this.loadingStatisticsGroup = false;
                         
                         angular.forEach(response.data, (value, key) =>  {
-                            this.statisticsGroupList.push(value);
+                            this.statisticsGroupList.push(value);                            
+                            if (this.regionservice.selectedRegion.Applications.indexOf("FDCTM") > -1 && value.id == 5)
+                            {
+                                let val = JSON.parse(JSON.stringify(value));
+                                val.id += "_fdctm";
+                                val.name = "Flow-Duration QPPQ Method";
+                                this.statisticsGroupList.push(val);
+                            }
+
                         });
                     }
                     this.toaster.clear();
@@ -188,31 +213,43 @@ module StreamStats.Services {
 
             //console.log('in load StatisticsGroup parameters', rcode, statisticsGroupID,regressionregions);
             if (!rcode && !statisticsGroupID && !regressionregions) return;
-            var url = configuration.baseurls['NSS'] + configuration.queryparams['statisticsGroupParameterLookup'].format(rcode,statisticsGroupID,regressionregions);
+            var url = configuration.baseurls['NSS'] + configuration.queryparams['statisticsGroupParameterLookup'];
+            if (this.regionservice.selectedRegion.Applications.indexOf("FDCTM") > -1 && statisticsGroupID.toString().indexOf("_fdctm") > -1) {
+                statisticsGroupID = statisticsGroupID.replace("_fdctm", "");
+                url = url + "&extensions=QPPQ";
+            } 
+            url = url.format(rcode, statisticsGroupID, regressionregions);
+
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
 
             this.Execute(request).then(
                 (response: any) => {
 
+                    if (response.data[0].regressionRegions[0].extensions && response.data[0].regressionRegions[0].extensions.length > 0) {
+                        let ext = response.data[0].regressionRegions[0].extensions
+                        this._onScenarioExtensionChanged.raise(this, new NSSEventArgs(ext) );
+                    }
+
                     //check to make sure there is a valid response
-                    if (response.data[0].RegressionRegions[0].Parameters && response.data[0].RegressionRegions[0].Parameters.length > 0) {
+                    if (response.data[0].regressionRegions[0].parameters && response.data[0].regressionRegions[0].parameters.length > 0) {
 
                         //add Regression Regions to StatisticsGroupList and add percent weights
                         this.selectedStatisticsGroupList.forEach((statGroup) => {
-                            if (response.data[0].StatisticGroupName == statGroup.Name) {
+                            if ((response.data[0].statisticGroupID == statGroup.id) ||
+                                (this.regionservice.selectedRegion.Applications.indexOf("FDCTM") > -1 && statGroup.id.indexOf(response.data[0].statisticGroupID, 0) > -1)) {
 
-                                statGroup['StatisticGroupName'] = statGroup.Name;
-                                statGroup['StatisticGroupID'] = statGroup.ID;
+                                statGroup['statisticGroupName'] = statGroup.name;
+                                statGroup['statisticGroupID'] = statGroup.id.toString().replace("_fdctm", "");
                                 
-                                response.data[0].RegressionRegions.forEach((regressionRegion) => {
+                                response.data[0].regressionRegions.forEach((regressionRegion) => {
                                     percentWeights.forEach((regressionRegionPercentWeight) => {
-                                        if (regressionRegionPercentWeight.code.indexOf(regressionRegion.Code.toUpperCase()) > -1) {
-                                            regressionRegion["PercentWeight"] = regressionRegionPercentWeight.percentWeight;                                            
+                                        if (regressionRegionPercentWeight.code.indexOf(regressionRegion.code.toUpperCase()) > -1) {
+                                            regressionRegion["percentWeight"] = regressionRegionPercentWeight.percentWeight;                                            
                                         }
                                     })
                                 });
 
-                                statGroup.RegressionRegions = response.data[0].RegressionRegions;
+                                statGroup.regressionRegions = response.data[0].regressionRegions;
 
                                 this._onSelectedStatisticsGroupChanged.raise(null, WiM.Event.EventArgs.Empty);
                             }
@@ -232,7 +269,7 @@ module StreamStats.Services {
                 });
         }
 
-        public estimateFlows(studyAreaParameterList: Array<IParameter>, paramValueField:string, rcode: string, regressionregion: string, append:boolean = false) {
+        public estimateFlows(studyAreaParameterList: Array<IParameter>, paramValueField:string, rcode: string, append:boolean = false) {
 
             if (!this.canUpdate && !append) return;           
             //loop over all selected StatisticsGroups
@@ -242,16 +279,16 @@ module StreamStats.Services {
                     this.toaster.pop('wait', "Estimating Flows", "Please wait...", 0);
                 }
                 this.estimateFlowsCounter++;
-                this.cleanRegressionRegions(statGroup.RegressionRegions);
+                this.cleanRegressionRegions(statGroup.regressionRegions);
 
                 //console.log('in estimate flows method for ', statGroup.Name, statGroup);
-                statGroup.RegressionRegions.forEach((regressionRegion) => {                    
-                    regressionRegion.Parameters.forEach((regressionParam) => {                        
+                statGroup.regressionRegions.forEach((regressionRegion) => {                    
+                    regressionRegion.parameters.forEach((regressionParam) => {                        
                         studyAreaParameterList.forEach((param) => {
                             //console.log('search for matching params ', regressionParam.Code.toLowerCase(), param.code.toLowerCase());
-                            if (regressionParam.Code.toLowerCase() == param.code.toLowerCase()) {
+                            if (regressionParam.code.toLowerCase() == param.code.toLowerCase()) {
                                 //console.log('updating parameter in scenario object for: ', regressionParam.Code, ' from: ', regressionParam.Value, ' to: ', param.value);
-                                regressionParam.Value = param[paramValueField];
+                                regressionParam.value = param[paramValueField];
                             }
                         });
                     });
@@ -259,36 +296,40 @@ module StreamStats.Services {
 
                 //Make a copy of the object and delete any existing results
                 var updatedScenarioObject = angular.fromJson(angular.toJson(statGroup));
-                updatedScenarioObject.RegressionRegions.forEach((regressionRegion) => {
+                updatedScenarioObject.regressionRegions.forEach((regressionRegion) => {
                     //delete results object if it exists
-                    if (regressionRegion.Results)
-                        delete regressionRegion.Results;
+                    if (regressionRegion.results)
+                        delete regressionRegion.results;
                 });
                 updatedScenarioObject = angular.toJson([updatedScenarioObject], null);
 
                 //do request
-                var url = configuration.baseurls['NSS'] + configuration.queryparams['estimateFlows'].format(rcode, statGroup.ID, regressionregion);
+                var url = configuration.baseurls['NSS'] + configuration.queryparams['estimateFlows'].format(rcode);
+                if (this.regionservice.selectedRegion.Applications.indexOf("FDCTM") > -1 && typeof statGroup.id == "string" && statGroup.id.indexOf("_fdctm") > -1) {
+                    
+                    url = url + "&extensions=QPPQ";
+                }
                 var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, 1, 'json', updatedScenarioObject);
 
-                statGroup.Citations = [];
+                statGroup.citations = [];
                 this.Execute(request).then(
                     (response: any) => {
 
                         //console.log('estimate flows: ', response);
 
                         //nested requests for citations
-                        var citationUrl = response.data[0].Links[0].Href;
+                        var citationUrl = response.data[0].links[0].href;
                         if(!append) this.getSelectedCitations(citationUrl, statGroup);
 
                         //get header values
                         if (response.headers()['usgswim-messages']) {
                             var headerMsgs = response.headers()['usgswim-messages'].split(';');
-                            statGroup.Disclaimers = {};
+                            statGroup.disclaimers = {};
 
                             headerMsgs.forEach((item) => {
                                 var headerMsg = item.split(':');
-                                if (headerMsg[0] == 'warning') statGroup.Disclaimers['Warnings'] = headerMsg[1].trim();
-                                if (headerMsg[0] == 'error') statGroup.Disclaimers['Error'] = headerMsg[1].trim();
+                                if (headerMsg[0] == 'warning') statGroup.disclaimers['Warnings'] = headerMsg[1].trim();
+                                if (headerMsg[0] == 'error') statGroup.disclaimers['Error'] = headerMsg[1].trim();
                                 //comment out for not, not useful
                                 //if (headerMsg[0] == 'info') statGroup.Disclaimers['Info'] = headerMsg[1].trim();
                             });
@@ -297,35 +338,35 @@ module StreamStats.Services {
 
                         //if (append) console.log('in estimate flows for regulated basins: ', response);
                         //make sure there are some results
-                        if (response.data[0].RegressionRegions.length > 0 && response.data[0].RegressionRegions[0].Results && response.data[0].RegressionRegions[0].Results.length > 0) {
+                        if (response.data[0].regressionRegions.length > 0 && response.data[0].regressionRegions[0].results && response.data[0].regressionRegions[0].results.length > 0) {
                             if (!append) {
-                                statGroup.RegressionRegions = [];
-                                statGroup.RegressionRegions = response.data[0].RegressionRegions;
+                                statGroup.regressionRegions = [];
+                                statGroup.regressionRegions = response.data[0].regressionRegions;
                             }
                             else {
                                 //loop over and append params
-                                statGroup.RegressionRegions.forEach((rr) => {
+                                statGroup.regressionRegions.forEach((rr) => {
                                     //console.log('in estimate flows for regulated basins: ', rr);
-                                    rr.Parameters.forEach((p) => {
-                                        var responseRegions = response.data[0].RegressionRegions;
+                                    rr.parameters.forEach((p) => {
+                                        var responseRegions = response.data[0].regressionRegions;
                                         for (var i = 0; i < responseRegions.length; i++){
-                                            if (responseRegions[i].ID === rr.ID) {
-                                                for (var j = 0; j < responseRegions[i].Parameters.length; j++) {
-                                                    if (responseRegions[i].Parameters[j].Code == p.Code) {
-                                                        p[paramValueField] = responseRegions[i].Parameters[j].Value;
+                                            if (responseRegions[i].id === rr.id) {
+                                                for (var j = 0; j < responseRegions[i].parameters.length; j++) {
+                                                    if (responseRegions[i].Parameters[j].code == p.Code) {
+                                                        p[paramValueField] = responseRegions[i].parameters[j].value;
                                                     }
                                                 }//next j
                                             }//end if
                                         };//next i
                                         
                                     });//end p
-                                    rr.Results.forEach((r) => {
-                                        var responseRegions = response.data[0].RegressionRegions;
+                                    rr.results.forEach((r) => {
+                                        var responseRegions = response.data[0].regressionRegions;
                                         for (var i = 0; i < responseRegions.length; i++) {
-                                            if (responseRegions[i].ID === rr.ID) {
-                                                for (var j = 0; j < responseRegions[i].Results.length; j++) {
-                                                    if (responseRegions[i].Results[j].code == r.code) {
-                                                        r[paramValueField] = responseRegions[i].Results[j].Value;
+                                            if (responseRegions[i].id === rr.id) {
+                                                for (var j = 0; j < responseRegions[i].results.length; j++) {
+                                                    if (responseRegions[i].results[j].code == r.code) {
+                                                        r[paramValueField] = responseRegions[i].results[j].value;
                                                     }
                                                 }//next j
                                             }//end if
@@ -342,7 +383,7 @@ module StreamStats.Services {
                         }
                         else {
                             this.toaster.clear();
-                            this.toaster.pop('error', "There was an error Estimating Flows for " + statGroup.Name, "No results were returned", 0);
+                            this.toaster.pop('error', "There was an error Estimating Flows for " + statGroup.name, "No results were returned", 0);
                             //this.isDone = true;
                             //console.log("Zero length flow response, check equations in NSS service");
                         }
@@ -370,8 +411,9 @@ module StreamStats.Services {
 
             ////nested requests for citations
             //console.log('citations: ', citationUrl, statGroup, this.getSelectedCitationsCounter);
-            
-            var url = citationUrl;
+
+            //temporary fix until I fix nssservicesv2 hypermedia
+            var url = "https://"+citationUrl.replace("?","nssservicesv2/citations?");
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, 0, 'json');
 
             this.Execute(request).then(
@@ -379,15 +421,15 @@ module StreamStats.Services {
 
                     //console.log('get citations: ', response);
 
-                    if (response.data[0] && response.data[0].ID) {
+                    if (response.data[0] && response.data[0].id) {
                         angular.forEach(response.data, (value, key) => {
-                            statGroup.Citations.push(value);
+                            statGroup.citations.push(value);
                         })
                     }
                     //sm when complete
                 },(error) => {
                     //sm when error
-                    this.toaster.pop('error', "There was an error getting selected Citations for " + statGroup.Name, "No results were returned", 0);
+                    this.toaster.pop('error', "There was an error getting selected Citations for " + statGroup.name, "No results were returned", 0);
                 }).finally(() => {
 
                 });
@@ -397,7 +439,7 @@ module StreamStats.Services {
             var result = [];
             try {
                 this.selectedStatisticsGroupList.forEach(sgroup => {
-                    sgroup.RegressionRegions.forEach(regRegion => {
+                    sgroup.regressionRegions.forEach(regRegion => {
                         regRegion.Results.forEach(regResult => {
                             result.push(
                                 {
@@ -441,9 +483,9 @@ module StreamStats.Services {
         }
     }//end class
 
-    factory.$inject = ['$http', '$q', 'toaster', 'StreamStats.Services.ModalService'];
-    function factory($http: ng.IHttpService, $q: ng.IQService, toaster: any, modal: Services.IModalService) {
-        return new nssService($http, $q, toaster, modal)
+    factory.$inject = ['$http', '$q', 'toaster', 'StreamStats.Services.ModalService', 'StreamStats.Services.RegionService'];
+    function factory($http: ng.IHttpService, $q: ng.IQService, toaster: any, modal: Services.IModalService, regionservice) {
+        return new nssService($http, $q, toaster, modal, regionservice)
     }
     angular.module('StreamStats.Services')
         .factory('StreamStats.Services.nssService', factory)

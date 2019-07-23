@@ -25,6 +25,7 @@ var StreamStats;
                 this.RegionID = region;
                 this.Pourpoint = point;
                 this.CoordinatedReach = null;
+                this.ActiveExtension = [];
             }
             return StudyArea;
         }()); //end class

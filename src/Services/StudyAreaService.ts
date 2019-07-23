@@ -125,9 +125,11 @@ module StreamStats.Services {
             eventManager.AddEvent<StudyAreaEventArgs>(onSelectedStudyParametersLoaded);
             eventManager.AddEvent<StudyAreaEventArgs>(onSelectedStudyAreaChanged);
             eventManager.AddEvent<StudyAreaEventArgs>(onStudyAreaReset);
+
             eventManager.SubscribeToEvent(onSelectedStudyAreaChanged, new WiM.Event.EventHandler<StudyAreaEventArgs>((sender: any, e: StudyAreaEventArgs) => {
                 this.onStudyAreaChanged(sender, e);
             }));
+
             eventManager.AddEvent<WiM.Event.EventArgs>(onEditClick);
             this._studyAreaList = [];
 
