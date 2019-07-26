@@ -89,3 +89,6 @@
 .orange {
     color: orange;
 }
+.daterangepicker {
+    z-index: 30000 !important;
+}

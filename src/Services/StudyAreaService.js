@@ -58,20 +58,24 @@ var StreamStats;
         Services.StudyAreaEventArgs = StudyAreaEventArgs;
         var StudyAreaService = /** @class */ (function (_super) {
             __extends(StudyAreaService, _super);
-            //public requestParameterList: Array<any>; jkn
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
-            function StudyAreaService($http, $q, eventManager, toaster) {
+            function StudyAreaService($http, $q, eventManager, toaster, modal) {
                 var _this = _super.call(this, $http, configuration.baseurls['StreamStatsServices']) || this;
                 _this.$http = $http;
                 _this.$q = $q;
                 _this.eventManager = eventManager;
                 _this.surfacecontributionsonly = false;
+                _this.doQueryNWIS = false;
+                _this.modalservices = modal;
                 eventManager.AddEvent(Services.onSelectedStudyParametersLoaded);
                 eventManager.AddEvent(Services.onSelectedStudyAreaChanged);
                 eventManager.AddEvent(Services.onStudyAreaReset);
                 eventManager.SubscribeToEvent(Services.onSelectedStudyAreaChanged, new WiM.Event.EventHandler(function (sender, e) {
                     _this.onStudyAreaChanged(sender, e);
+                }));
+                eventManager.SubscribeToEvent(Services.onScenarioExtensionChanged, new WiM.Event.EventHandler(function (sender, e) {
+                    _this.onNSSExtensionChanged(sender, e);
                 }));
                 eventManager.AddEvent(Services.onEditClick);
                 _this._studyAreaList = [];
@@ -98,6 +102,16 @@ var StreamStats;
                         this._selectedStudyArea = val;
                         this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);
                     }
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(StudyAreaService.prototype, "selectedStudyAreaExtensions", {
+                get: function () {
+                    if (this.selectedStudyArea == null)
+                        return null;
+                    else
+                        return this.selectedStudyArea.NSS_Extensions;
                 },
                 enumerable: true,
                 configurable: true
@@ -589,6 +603,44 @@ var StreamStats;
                     _this.regressionRegionQueryLoading = false;
                 });
             };
+            StudyAreaService.prototype.queryNWIS = function (latlng) {
+                var _this = this;
+                if (!latlng || !latlng.lng || !latlng.lat)
+                    return;
+                var ppt = latlng;
+                var ex = new L.Circle([ppt.lat, ppt.lng], 100).getBounds();
+                //bBox=-103.767211,44.342474,-103.765657,44.343642
+                var url = configuration.baseurls['NWISurl'] + configuration.queryparams['NWISsite']
+                    .format(ex.getWest().toFixed(7), ex.getSouth().toFixed(7), ex.getEast().toFixed(7), ex.getNorth().toFixed(7));
+                var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                this.Execute(request).then(function (response) {
+                    if (response.data.error) {
+                        //console.log('query error');
+                        _this.toaster.pop('error', "There was an error querying NWIS", response.data.error.message, 0);
+                        return;
+                    }
+                    if (response.data) {
+                        var data = response.data.split('\n').filter(function (r) { return (!r.startsWith("#") || !r); });
+                        var headers = data.shift().split('\t');
+                        //remove extra line
+                        data.shift();
+                        do {
+                            var station = data.shift();
+                            if (station[headers.indexOf("parm_cd")] == "00060") {
+                                console.log(station[headers.indexOf("site_no")]);
+                            }
+                        } while (data.length > 0);
+                        //reopen modal
+                        _this.toaster.pop('success', "Found USGS NWIS reference gage", "Please continue", 5000);
+                        _this.modalservices.openModal(Services.SSModalType.e_extensionsupport);
+                        _this.doQueryNWIS = false;
+                    }
+                }, function (error) {
+                    //sm when complete
+                    //console.log('Regression query failed, HTTP Error');
+                    _this.toaster.pop('warning', "No USGS NWIS reference gage found at this location.", "Try zooming in closer or a different location", 5000);
+                });
+            };
             StudyAreaService.prototype.upstreamRegulation = function () {
                 var _this = this;
                 //console.log('upstream regulation');
@@ -760,11 +812,19 @@ var StreamStats;
                     return;
                 //this.queryRegressionRegions();
             };
+            StudyAreaService.prototype.onNSSExtensionChanged = function (sender, e) {
+                var _this = this;
+                console.log('onNSSExtensionChanged');
+                e.extensions.forEach(function (f) {
+                    if (_this.selectedStudyArea.NSS_Extensions.indexOf(f) == -1)
+                        _this.selectedStudyArea.NSS_Extensions.push(f);
+                });
+            };
             return StudyAreaService;
         }(WiM.Services.HTTPServiceBase)); //end class
-        factory.$inject = ['$http', '$q', 'WiM.Event.EventManager', 'toaster'];
-        function factory($http, $q, eventManager, toaster) {
-            return new StudyAreaService($http, $q, eventManager, toaster);
+        factory.$inject = ['$http', '$q', 'WiM.Event.EventManager', 'toaster', 'StreamStats.Services.ModalService'];
+        function factory($http, $q, eventManager, toaster, modalService) {
+            return new StudyAreaService($http, $q, eventManager, toaster, modalService);
         }
         angular.module('StreamStats.Services')
             .factory('StreamStats.Services.StudyAreaService', factory);

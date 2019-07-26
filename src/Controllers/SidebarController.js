@@ -24,6 +24,7 @@ var StreamStats;
             function SidebarController($scope, toaster, $analytics, region, studyArea, StatisticsGroup, modal, leafletData, exploration, EventManager) {
                 var _this = this;
                 this.EventManager = EventManager;
+                this.dateRange = { dates: { startDate: new Date(), endDate: new Date() }, minDate: new Date(1900, 1, 1), maxDate: new Date() };
                 $scope.vm = this;
                 this.init();
                 this.toaster = toaster;
@@ -38,7 +39,6 @@ var StreamStats;
                 this.multipleParameterSelectorAdd = true;
                 this.explorationService = exploration;
                 StatisticsGroup.onSelectedStatisticsGroupChanged.subscribe(this._onSelectedStatisticsGroupChangedHandler);
-                this.nssService.onSenarioExtensionChanged.subscribe(this._onSenarioExtensionChangedHandler);
                 //watch for map based region changes here
                 $scope.$watch(function () { return _this.regionService.selectedRegion; }, function (newval, oldval) {
                     //console.log('region change', oldval, newval);
@@ -58,6 +58,11 @@ var StreamStats;
                     else
                         _this.setProcedureType(3);
                 });
+                $scope.$watchCollection(function () { return _this.studyAreaService.selectedStudyAreaExtensions; }, function (newval, oldval) {
+                    if (newval == oldval)
+                        return;
+                    _this.scenarioHasExtenstions = (_this.studyAreaService.selectedStudyAreaExtensions.length > 0);
+                });
                 EventManager.SubscribeToEvent(StreamStats.Services.onSelectedStudyParametersLoaded, new WiM.Event.EventHandler(function (sender, e) {
                     _this.parametersLoaded = e.parameterLoaded;
                     if (!_this.parametersLoaded)
@@ -65,6 +70,7 @@ var StreamStats;
                     else
                         _this.setProcedureType(4);
                 }));
+                this.modalService.openModal(StreamStats.Services.SSModalType.e_extensionsupport);
             }
             Object.defineProperty(SidebarController.prototype, "ParameterValuesMissing", {
                 get: function () {
@@ -227,6 +233,10 @@ var StreamStats;
                 });
                 //console.log('in Calculate Parameters');
                 this.studyAreaService.loadParameters();
+                //open modal for extensions
+                if (this.scenarioHasExtenstions) {
+                    this.modalService.openModal(StreamStats.Services.SSModalType.e_extensionsupport);
+                }
             };
             SidebarController.prototype.submitBasinEdits = function () {
                 this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'sumbitEdits' });
@@ -376,9 +386,6 @@ var StreamStats;
                     } //end if
                 }); //next statisticgroup
             };
-            SidebarController.prototype.onScenarioExtensionChanged = function (sender, e) {
-                console.log("made it", e.extensions);
-            };
             SidebarController.prototype.OpenWateruse = function () {
                 this.modalService.openModal(StreamStats.Services.SSModalType.e_wateruse);
             };
@@ -432,9 +439,6 @@ var StreamStats;
                 //init event handler
                 this._onSelectedStatisticsGroupChangedHandler = new WiM.Event.EventHandler(function () {
                     _this.onSelectedStatisticsGroupChanged();
-                });
-                this._onSenarioExtensionChangedHandler = new WiM.Event.EventHandler(function (sender, e) {
-                    _this.onScenarioExtensionChanged(sender, e);
                 });
             };
             //special function for searching arrays but ignoring angular hashkey

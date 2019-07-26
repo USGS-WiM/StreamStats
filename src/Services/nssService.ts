@@ -27,7 +27,6 @@ module StreamStats.Services {
     'use strict'
     export interface InssService {
         onSelectedStatisticsGroupChanged: WiM.Event.Delegate<WiM.Event.EventArgs>;
-        onSenarioExtensionChanged: WiM.Event.Delegate<NSSEventArgs>;
         statisticsGroupList: Array<IStatisticsGroup>;
         selectedStatisticsGroupList: Array<IStatisticsGroup>;
         loadStatisticsGroupTypes(rcode: string, regressionregion: string):Array<any>;
@@ -86,7 +85,7 @@ module StreamStats.Services {
         citationUrl?: string;
         disclaimers: string;
     }
-
+    export var onScenarioExtensionChanged: string = "onScenarioExtensionChanged";
     export class NSSEventArgs extends WiM.Event.EventArgs {
         //properties
         public extensions:Array<string>
@@ -103,10 +102,7 @@ module StreamStats.Services {
         public get onSelectedStatisticsGroupChanged(): WiM.Event.Delegate<WiM.Event.EventArgs> {
             return this._onSelectedStatisticsGroupChanged;
         }
-        private _onScenarioExtensionChanged: WiM.Event.Delegate<NSSEventArgs>;
-        public get onSenarioExtensionChanged(): WiM.Event.Delegate<NSSEventArgs> {
-            return this._onScenarioExtensionChanged;
-        }
+
 
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-loadingParametersByStatisticsGroupCounter
@@ -126,12 +122,11 @@ module StreamStats.Services {
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        constructor($http: ng.IHttpService, private $q: ng.IQService, toaster, modal, private regionservice: Services.IRegionService) {
+        constructor($http: ng.IHttpService, private $q: ng.IQService, toaster, modal, private regionservice: Services.IRegionService, private eventManager: WiM.Event.IEventManager) {
             super($http, configuration.baseurls['NSS']);
             this.toaster = toaster;
             this.modalService = modal;
-            this._onSelectedStatisticsGroupChanged = new WiM.Event.Delegate<WiM.Event.EventArgs>();
-            this._onScenarioExtensionChanged = new WiM.Event.Delegate<NSSEventArgs>();
+            this._onSelectedStatisticsGroupChanged = new WiM.Event.Delegate<WiM.Event.EventArgs>();            
 
             this.clearNSSdata();
         }
@@ -227,7 +222,7 @@ module StreamStats.Services {
 
                     if (response.data[0].regressionRegions[0].extensions && response.data[0].regressionRegions[0].extensions.length > 0) {
                         let ext = response.data[0].regressionRegions[0].extensions
-                        this._onScenarioExtensionChanged.raise(this, new NSSEventArgs(ext) );
+                        this.eventManager.RaiseEvent(Services.onScenarioExtensionChanged, this, new NSSEventArgs(ext) );
                     }
 
                     //check to make sure there is a valid response
@@ -483,9 +478,9 @@ module StreamStats.Services {
         }
     }//end class
 
-    factory.$inject = ['$http', '$q', 'toaster', 'StreamStats.Services.ModalService', 'StreamStats.Services.RegionService'];
-    function factory($http: ng.IHttpService, $q: ng.IQService, toaster: any, modal: Services.IModalService, regionservice) {
-        return new nssService($http, $q, toaster, modal, regionservice)
+    factory.$inject = ['$http', '$q', 'toaster', 'StreamStats.Services.ModalService', 'StreamStats.Services.RegionService', 'WiM.Event.EventManager'];
+    function factory($http: ng.IHttpService, $q: ng.IQService, toaster: any, modal: Services.IModalService, regionservice, eventManager: WiM.Event.IEventManager) {
+        return new nssService($http, $q, toaster, modal, regionservice, eventManager)
     }
     angular.module('StreamStats.Services')
         .factory('StreamStats.Services.nssService', factory)
