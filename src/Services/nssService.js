@@ -42,6 +42,7 @@ var StreamStats;
             return StatisticsGroup;
         }()); //end class
         Services.StatisticsGroup = StatisticsGroup;
+        Services.onScenarioExtensionChanged = "onScenarioExtensionChanged";
         var NSSEventArgs = /** @class */ (function (_super) {
             __extends(NSSEventArgs, _super);
             function NSSEventArgs(extensions) {
@@ -57,27 +58,20 @@ var StreamStats;
             __extends(nssService, _super);
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-
-            function nssService($http, $q, toaster, modal, regionservice) {
+            function nssService($http, $q, toaster, modal, regionservice, eventManager) {
                 var _this = _super.call(this, $http, configuration.baseurls['NSS']) || this;
                 _this.$q = $q;
                 _this.regionservice = regionservice;
+                _this.eventManager = eventManager;
                 _this.toaster = toaster;
                 _this.modalService = modal;
                 _this._onSelectedStatisticsGroupChanged = new WiM.Event.Delegate();
-                _this._onScenarioExtensionChanged = new WiM.Event.Delegate();
                 _this.clearNSSdata();
                 return _this;
             }
             Object.defineProperty(nssService.prototype, "onSelectedStatisticsGroupChanged", {
                 get: function () {
                     return this._onSelectedStatisticsGroupChanged;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(nssService.prototype, "onSenarioExtensionChanged", {
-                get: function () {
-                    return this._onScenarioExtensionChanged;
                 },
                 enumerable: true,
                 configurable: true
@@ -158,7 +152,7 @@ var StreamStats;
                 this.Execute(request).then(function (response) {
                     if (response.data[0].regressionRegions[0].extensions && response.data[0].regressionRegions[0].extensions.length > 0) {
                         var ext = response.data[0].regressionRegions[0].extensions;
-                        _this._onScenarioExtensionChanged.raise(_this, new NSSEventArgs(ext));
+                        _this.eventManager.RaiseEvent(Services.onScenarioExtensionChanged, _this, new NSSEventArgs(ext));
                     }
                     //check to make sure there is a valid response
                     if (response.data[0].regressionRegions[0].parameters && response.data[0].regressionRegions[0].parameters.length > 0) {
@@ -386,9 +380,9 @@ var StreamStats;
             };
             return nssService;
         }(WiM.Services.HTTPServiceBase)); //end class
-        factory.$inject = ['$http', '$q', 'toaster', 'StreamStats.Services.ModalService', 'StreamStats.Services.RegionService'];
-        function factory($http, $q, toaster, modal, regionservice) {
-            return new nssService($http, $q, toaster, modal, regionservice);
+        factory.$inject = ['$http', '$q', 'toaster', 'StreamStats.Services.ModalService', 'StreamStats.Services.RegionService', 'WiM.Event.EventManager'];
+        function factory($http, $q, toaster, modal, regionservice, eventManager) {
+            return new nssService($http, $q, toaster, modal, regionservice, eventManager);
         }
         angular.module('StreamStats.Services')
             .factory('StreamStats.Services.nssService', factory);

@@ -67,6 +67,7 @@ module StreamStats.Models {
             this.Pourpoint = point;
             this.CoordinatedReach = null;
             this.ActiveExtension = [];
+            this.NSS_Extensions = [];
         }
 
     }//end class

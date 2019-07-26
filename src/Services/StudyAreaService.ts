@@ -56,6 +56,9 @@ module StreamStats.Services {
         surfacecontributionsonly: boolean
         getflattenStudyArea(): any
         simplify(Feature: any);
+        selectedStudyAreaExtensions: Array<any>;
+        doQueryNWIS: boolean;
+        queryNWIS(point:any): void;
     }
 
     export var onSelectedStudyAreaChanged: string = "onSelectedStudyAreaChanged";
@@ -103,6 +106,10 @@ module StreamStats.Services {
         public get selectedStudyArea(): Models.IStudyArea {
             return this._selectedStudyArea           
         }
+        public get selectedStudyAreaExtensions(): Array<any> {
+            if (this.selectedStudyArea == null) return null;
+            else return this.selectedStudyArea.NSS_Extensions
+        }
         public studyAreaParameterList: Array<IParameter>;
         public drawControl: any;
         public showEditToolbar: boolean;
@@ -116,18 +123,25 @@ module StreamStats.Services {
         public baseMap: Object;
         public showModifyBasinCharacterstics: boolean;
         public surfacecontributionsonly: boolean = false;
+        public doQueryNWIS: boolean = false;
         //public requestParameterList: Array<any>; jkn
+        private modalservices: IModalService;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        constructor(public $http: ng.IHttpService, private $q: ng.IQService, private eventManager: WiM.Event.IEventManager, toaster) {
+        constructor(public $http: ng.IHttpService, private $q: ng.IQService, private eventManager: WiM.Event.IEventManager, toaster, modal: Services.IModalService) {
             super($http, configuration.baseurls['StreamStatsServices'])
+            this.modalservices = modal;
             eventManager.AddEvent<StudyAreaEventArgs>(onSelectedStudyParametersLoaded);
             eventManager.AddEvent<StudyAreaEventArgs>(onSelectedStudyAreaChanged);
             eventManager.AddEvent<StudyAreaEventArgs>(onStudyAreaReset);
 
             eventManager.SubscribeToEvent(onSelectedStudyAreaChanged, new WiM.Event.EventHandler<StudyAreaEventArgs>((sender: any, e: StudyAreaEventArgs) => {
                 this.onStudyAreaChanged(sender, e);
+            }));
+
+            eventManager.SubscribeToEvent(onScenarioExtensionChanged, new WiM.Event.EventHandler<NSSEventArgs>((sender: any, e: NSSEventArgs) => {
+                this.onNSSExtensionChanged(sender, e);
             }));
 
             eventManager.AddEvent<WiM.Event.EventArgs>(onEditClick);
@@ -747,6 +761,54 @@ module StreamStats.Services {
                 });
         }
 
+        public queryNWIS(latlng: any) {
+            if (!latlng || !latlng.lng || !latlng.lat) return;
+            var ppt = latlng;
+            var ex = new L.Circle([ppt.lat, ppt.lng], 100).getBounds();
+            //bBox=-103.767211,44.342474,-103.765657,44.343642
+            var url = configuration.baseurls['NWISurl'] + configuration.queryparams['NWISsite']
+                .format(ex.getWest().toFixed(7), ex.getSouth().toFixed(7), ex.getEast().toFixed(7), ex.getNorth().toFixed(7));
+
+            var request: WiM.Services.Helpers.RequestInfo =
+                new WiM.Services.Helpers.RequestInfo(url, true);
+            this.Execute(request).then(
+                (response: any) => {
+                    if (response.data.error) {
+                        //console.log('query error');
+                        this.toaster.pop('error', "There was an error querying NWIS", response.data.error.message, 0);
+                        return;
+                    }
+
+                    if (response.data) {
+                        // !r doesn't seem to be filtering out last row :( 
+                        // stopping here for now !!!
+
+                        var data = response.data.split('\n').filter(r => { return (!r.startsWith("#") || !r) });
+                        var headers:Array<string> = data.shift().split('\t');
+                        //remove extra line
+                        data.shift();
+
+                        do {
+                            var station = data.shift();
+                            if (station[headers.indexOf("parm_cd")] == "00060") {
+                                console.log(station[headers.indexOf("site_no")]);
+                            }
+                        } while (data.length>0);
+
+                        //reopen modal
+                        this.toaster.pop('success', "Found USGS NWIS reference gage", "Please continue", 5000);
+                        this.modalservices.openModal(SSModalType.e_extensionsupport);
+                        this.doQueryNWIS = false;
+                    }
+
+                }, (error) => {
+                    //sm when complete
+                    //console.log('Regression query failed, HTTP Error');
+                    this.toaster.pop('warning', "No USGS NWIS reference gage found at this location.",
+                                        "Try zooming in closer or a different location", 5000);
+                });
+        }
+
         public upstreamRegulation() {
 
             //console.log('upstream regulation');
@@ -952,12 +1014,19 @@ module StreamStats.Services {
             if (!this.selectedStudyArea || !this.selectedStudyArea.FeatureCollection || this.regressionRegionQueryComplete) return;
             //this.queryRegressionRegions();
         }
+        private onNSSExtensionChanged(sender: any, e: NSSEventArgs) {
+            console.log('onNSSExtensionChanged');
+            e.extensions.forEach(f => {
+                if (this.selectedStudyArea.NSS_Extensions.indexOf(f) == -1)
+                    this.selectedStudyArea.NSS_Extensions.push(f);
+            });
+        }
 
     }//end class
 
-    factory.$inject = ['$http', '$q', 'WiM.Event.EventManager', 'toaster'];
-    function factory($http: ng.IHttpService, $q: ng.IQService, eventManager: WiM.Event.IEventManager, toaster:any) {
-        return new StudyAreaService($http,$q, eventManager, toaster)
+    factory.$inject = ['$http', '$q', 'WiM.Event.EventManager', 'toaster', 'StreamStats.Services.ModalService'];
+    function factory($http: ng.IHttpService, $q: ng.IQService, eventManager: WiM.Event.IEventManager, toaster: any, modalService: Services.IModalService) {
+        return new StudyAreaService($http,$q, eventManager, toaster,modalService)
     }
     angular.module('StreamStats.Services')
         .factory('StreamStats.Services.StudyAreaService', factory)

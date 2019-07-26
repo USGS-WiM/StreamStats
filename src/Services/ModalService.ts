@@ -146,6 +146,15 @@ module StreamStats.Services {
                             windowClass: 'windowZ',
 
                         };
+                    case SSModalType.e_extensionsupport:
+                        return {
+                            templateUrl: 'Views/extensionview.html',
+                            controller: 'StreamStats.Controllers.ExtensionModalController',
+                            size: 'sm',
+                            backdropClass: 'backdropZ',
+                            backdrop: 'static',
+                            windowClass: 'windowZ',
+                        };
      
                     default:
                         return null;
@@ -166,7 +175,8 @@ module StreamStats.Services {
         e_navreport = 5,
         e_exploration = 6,
         e_stormrunnoff = 7,
-        e_prosper = 8
+        e_prosper = 8,
+        e_extensionsupport =9
         
     }
 

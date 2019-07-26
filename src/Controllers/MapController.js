@@ -157,6 +157,10 @@ var StreamStats;
                     //check if in elevation profile mode
                     if (_this.explorationService.drawElevationProfile)
                         return;
+                    if (_this.studyArea.doQueryNWIS) {
+                        _this.studyArea.queryNWIS(args.leafletEvent.latlng);
+                        return;
+                    }
                     //network navigation
                     if (exploration.selectedMethod != null && exploration.selectedMethod.locations.length <= exploration.selectedMethod.minLocations) {
                         console.log('in mapcontroller add point', exploration.selectedMethod.navigationPointCount, exploration.selectedMethod.locations.length);

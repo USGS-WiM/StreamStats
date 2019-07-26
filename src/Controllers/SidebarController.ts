@@ -43,8 +43,18 @@ module StreamStats.Controllers {
         setProcedureType(pType: ProcedureType): void;
         toggleSideBar(): void;
     }
+
+    interface IDateRange {
+        dates: {
+            startDate: Date;
+            endDate: Date;
+        }
+        minDate?: Date;
+        maxDate?: Date;
+    }
     
     class SidebarController implements ISidebarController {
+        public dateRange: IDateRange;
         //Events
         //-+-+-+-+-+-+-+-+-+-+-+-
         private _onSelectedStatisticsGroupChangedHandler: WiM.Event.EventHandler<WiM.Event.EventArgs>;
@@ -72,11 +82,14 @@ module StreamStats.Controllers {
             }//next i
             return false;
         }
+        private scenarioHasExtenstions: Boolean;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', 'toaster', '$analytics', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ModalService', 'leafletData', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager'];
         constructor($scope: ISidebarControllerScope, toaster, $analytics, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, modal: Services.IModalService, leafletData: ILeafletData, exploration: Services.IExplorationService, private EventManager:WiM.Event.IEventManager) {
+            this.dateRange = { dates: { startDate: new Date(), endDate: new Date() }, minDate: new Date(1900, 1, 1), maxDate: new Date() };
+
             $scope.vm = this;
             this.init();
 
@@ -93,9 +106,7 @@ module StreamStats.Controllers {
             this.explorationService = exploration;
             
             StatisticsGroup.onSelectedStatisticsGroupChanged.subscribe(this._onSelectedStatisticsGroupChangedHandler);
-            this.nssService.onSenarioExtensionChanged.subscribe(this._onSenarioExtensionChangedHandler);
-
-
+            
             //watch for map based region changes here
             $scope.$watch(() => this.regionService.selectedRegion,(newval, oldval) => {
                 //console.log('region change', oldval, newval);
@@ -110,12 +121,19 @@ module StreamStats.Controllers {
                 else if (!this.regionService.selectedRegion.ScenariosAvailable) this.setProcedureType(2);
                 else this.setProcedureType(3);
             });
+            $scope.$watchCollection(() => this.studyAreaService.selectedStudyAreaExtensions, (newval, oldval) => {
+                if (newval == oldval) return;
+                this.scenarioHasExtenstions = (this.studyAreaService.selectedStudyAreaExtensions.length >0 )               
+            });
 
             EventManager.SubscribeToEvent(Services.onSelectedStudyParametersLoaded, new WiM.Event.EventHandler<Services.StudyAreaEventArgs>((sender: any, e: Services.StudyAreaEventArgs) => {
                 this.parametersLoaded = e.parameterLoaded;
                 if (!this.parametersLoaded) this.setProcedureType(3);
                 else this.setProcedureType(4);
             }));
+
+            this.modalService.openModal(Services.SSModalType.e_extensionsupport);
+
         }
 
         public setProcedureType(pType: ProcedureType) {    
@@ -296,6 +314,10 @@ module StreamStats.Controllers {
 
             //console.log('in Calculate Parameters');
             this.studyAreaService.loadParameters();
+            //open modal for extensions
+            if (this.scenarioHasExtenstions) {
+                this.modalService.openModal(Services.SSModalType.e_extensionsupport);
+            }
         }
 
         public submitBasinEdits() {
@@ -481,10 +503,6 @@ module StreamStats.Controllers {
             });//next statisticgroup
         }
 
-        public onScenarioExtensionChanged(sender:any, e:Services.NSSEventArgs) {
-            console.log("made it", e.extensions);
-        }
-
         public OpenWateruse() {
             this.modalService.openModal(Services.SSModalType.e_wateruse);
         }
@@ -546,9 +564,6 @@ module StreamStats.Controllers {
             //init event handler
             this._onSelectedStatisticsGroupChangedHandler = new WiM.Event.EventHandler<WiM.Event.EventArgs>(() => {
                 this.onSelectedStatisticsGroupChanged();
-            });
-            this._onSenarioExtensionChangedHandler = new WiM.Event.EventHandler<Services.NSSEventArgs>((sender: any, e: Services.NSSEventArgs) => {
-                this.onScenarioExtensionChanged(sender, e);
             });
         }
 
