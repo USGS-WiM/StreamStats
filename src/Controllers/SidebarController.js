@@ -70,7 +70,6 @@ var StreamStats;
                     else
                         _this.setProcedureType(4);
                 }));
-                this.modalService.openModal(StreamStats.Services.SSModalType.e_extensionsupport);
             }
             Object.defineProperty(SidebarController.prototype, "ParameterValuesMissing", {
                 get: function () {

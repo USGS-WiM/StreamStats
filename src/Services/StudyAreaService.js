@@ -607,6 +607,11 @@ var StreamStats;
                 var _this = this;
                 if (!latlng || !latlng.lng || !latlng.lat)
                     return;
+                if (!this.selectedStudyAreaExtensions)
+                    return;
+                var sid = this.selectedStudyAreaExtensions.reduce(function (acc, val) { return acc.concat(val.parameters); }, []).filter(function (f) { return (f.code).toLowerCase() == "sid"; });
+                if (sid.length < 0)
+                    return;
                 var ppt = latlng;
                 var ex = new L.Circle([ppt.lat, ppt.lng], 100).getBounds();
                 //bBox=-103.767211,44.342474,-103.765657,44.343642
@@ -620,20 +625,31 @@ var StreamStats;
                         return;
                     }
                     if (response.data) {
-                        var data = response.data.split('\n').filter(function (r) { return (!r.startsWith("#") || !r); });
+                        var siteList = [];
+                        var data = response.data.split('\n').filter(function (r) { return (!r.startsWith("#") && r != ""); });
                         var headers = data.shift().split('\t');
-                        //remove extra line
+                        //remove extra random line
                         data.shift();
                         do {
-                            var station = data.shift();
+                            var station = data.shift().split('\t');
                             if (station[headers.indexOf("parm_cd")] == "00060") {
                                 console.log(station[headers.indexOf("site_no")]);
+                                //this.selectedStudyAreaExtensions
+                                var rg = new StreamStats.Models.ReferenceGage(station[headers.indexOf("site_no")], station[headers.indexOf("station_nm")]);
+                                rg.Latitude_DD = station[headers.indexOf("dec_lat_va")];
+                                rg.Longitude_DD = station[headers.indexOf("dec_long_va")];
+                                //add to list of reference gages
+                                siteList.push(rg);
                             }
                         } while (data.length > 0);
-                        //reopen modal
-                        _this.toaster.pop('success', "Found USGS NWIS reference gage", "Please continue", 5000);
-                        _this.modalservices.openModal(Services.SSModalType.e_extensionsupport);
-                        _this.doQueryNWIS = false;
+                        if (siteList.length > 0) {
+                            sid[0].options = siteList;
+                            sid[0].value = siteList[0];
+                            _this.toaster.pop('success', "Found USGS NWIS reference gage", "Please continue", 5000);
+                            //reopen modal
+                            _this.modalservices.openModal(Services.SSModalType.e_extensionsupport);
+                            _this.doQueryNWIS = false;
+                        }
                     }
                 }, function (error) {
                     //sm when complete

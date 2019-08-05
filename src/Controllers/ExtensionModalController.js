@@ -21,17 +21,22 @@ var StreamStats;
         'use string';
         var ExtensionModalController = /** @class */ (function () {
             function ExtensionModalController($scope, $analytics, modal, modalservice, studyArea) {
+                var _this = this;
                 //QPPQ
                 this.dateRange = null;
-                this.referenceGage = null;
+                this.selectedReferenceGage = null;
                 $scope.vm = this;
                 this.angulartics = $analytics;
                 this.modalInstance = modal;
                 this.studyAreaService = studyArea;
+                this.dateRangeOptions = {
+                    locale: { format: 'MMMM D, YYYY' },
+                    eventHandlers: { 'hide.daterangepicker': function (e) { return _this.SetDate(e); } }
+                };
                 //init required values
-                this.referenceGage = new StreamStats.Models.ReferenceGage("", "");
-                //this.init();
-                //this.load();            
+                this.selectedReferenceGage = new StreamStats.Models.ReferenceGage("", "");
+                this.init();
+                this.load();
             }
             //Methods  
             //-+-+-+-+-+-+-+-+-+-+-+-
@@ -50,18 +55,29 @@ var StreamStats;
                 this.modalInstance.dismiss('cancel');
                 //this.explorationService.explorationPointType = name;
             };
+            ExtensionModalController.prototype.SetDate = function (event) {
+                var _this = this;
+                //set selected dates to 
+                var dates = this.studyAreaService.selectedStudyAreaExtensions.reduce(function (acc, val) { return acc.concat(val.parameters); }, []).filter(function (f) { return (['sdate', 'edate'].indexOf((f.code)) > -1); });
+                dates.forEach(function (dt) {
+                    if (dt.code === "sdate")
+                        dt.value = _this.dateRange.dates.startDate;
+                    if (dt.code === "edate")
+                        dt.value = _this.dateRange.dates.endDate;
+                });
+            };
             //Helper Methods
             //-+-+-+-+-+-+-+-+-+-+-+-
             ExtensionModalController.prototype.init = function () {
                 //default
-                this.referenceGage = null;
+                this.selectedReferenceGage = null;
                 //load from services
                 if (this.studyAreaService.selectedStudyAreaExtensions == null)
                     return;
                 this.title = this.studyAreaService.selectedStudyAreaExtensions.map(function (c) { return c.name; }).join(", ");
                 var parameters = this.studyAreaService.selectedStudyAreaExtensions.reduce(function (acc, val) { return acc.concat(val.parameters.map(function (c) { return c.code; })); }, []);
                 if (['sid'].some(function (r) { return parameters.indexOf(r) > -1; })) {
-                    this.referenceGage = new StreamStats.Models.ReferenceGage("", "");
+                    this.selectedReferenceGage = new StreamStats.Models.ReferenceGage("", "");
                 } //endif
                 if (['sdate', 'edate'].every(function (elem) { return parameters.indexOf(elem) > -1; })) {
                     this.dateRange = { dates: { startDate: this.addDay(new Date(), -30), endDate: this.addDay(new Date(), -1) }, minDate: new Date(1900, 1, 1), maxDate: this.addDay(new Date(), -1) };
@@ -73,8 +89,9 @@ var StreamStats;
                     var f = parameters.pop();
                     if (typeof f.value === 'string')
                         continue;
-                    if (this.referenceGage && ['sid'].indexOf(f.code) > -1) {
-                        this.referenceGage = f.value;
+                    if (this.selectedReferenceGage && ['sid'].indexOf(f.code) > -1) {
+                        this.selectedReferenceGage = f.value;
+                        this.referenceGageList = f.options;
                     }
                     if (this.dateRange && ['sdate', 'edate'].indexOf(f.code) > -1) {
                         if (f.code == "sdate")
@@ -94,20 +111,16 @@ var StreamStats;
                         return false;
                     }
                 }
-                if (this.referenceGage) {
-                    if (this.referenceGage.StationID == "") {
+                if (this.selectedReferenceGage) {
+                    if (this.selectedReferenceGage.StationID == "") {
                         return false;
                     }
                 }
                 //load service
                 this.studyAreaService.selectedStudyAreaExtensions.forEach(function (ext) {
                     ext.parameters.forEach(function (p) {
-                        if (p.code == "sdate")
-                            p.value = _this.dateRange.dates.startDate;
-                        if (p.code == "edate")
-                            p.value = _this.dateRange.dates.startDate;
                         if (p.code == "sid") {
-                            p.value = _this.referenceGage;
+                            p.value = _this.selectedReferenceGage.StationID;
                         }
                         ;
                     });
