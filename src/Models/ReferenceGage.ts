@@ -42,6 +42,7 @@ module StreamStats.Models {
         public URL: string;
         public correlation: number;
 
+
         // Constructor
         constructor(id: string, name: string) {
             this.StationID = id;

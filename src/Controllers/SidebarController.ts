@@ -131,9 +131,6 @@ module StreamStats.Controllers {
                 if (!this.parametersLoaded) this.setProcedureType(3);
                 else this.setProcedureType(4);
             }));
-
-            this.modalService.openModal(Services.SSModalType.e_extensionsupport);
-
         }
 
         public setProcedureType(pType: ProcedureType) {    

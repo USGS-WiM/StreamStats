@@ -51,7 +51,9 @@ module StreamStats.Controllers {
         
         //QPPQ
         public dateRange: IDateRange = null;
-        public referenceGage: StreamStats.Models.IReferenceGage = null;
+        public dateRangeOptions;
+        public selectedReferenceGage: StreamStats.Models.IReferenceGage = null;
+        public referenceGageList: Array<StreamStats.Models.IReferenceGage>
         
    
 
@@ -62,12 +64,16 @@ module StreamStats.Controllers {
             $scope.vm = this;
             this.angulartics = $analytics;
             this.modalInstance = modal;
-            this.studyAreaService = studyArea;          
+            this.studyAreaService = studyArea; 
+            this.dateRangeOptions = {
+                locale: { format: 'MMMM D, YYYY' },
+                eventHandlers: { 'hide.daterangepicker': (e) => this.SetDate(e) }
+            };
 
             //init required values
-            this.referenceGage = new Models.ReferenceGage("", ""); 
-            //this.init();
-            //this.load();            
+            this.selectedReferenceGage = new Models.ReferenceGage("", ""); 
+            this.init();
+            this.load();            
         }
 
         //Methods  
@@ -91,13 +97,22 @@ module StreamStats.Controllers {
             //this.explorationService.explorationPointType = name;
         }
 
+        public SetDate(event) {
+            //set selected dates to 
+            var dates: Array<any> = this.studyAreaService.selectedStudyAreaExtensions.reduce((acc, val) => acc.concat(val.parameters), []).filter(f => { return (['sdate', 'edate'].indexOf(<string>(f.code)) > -1) });
+            dates.forEach(dt => {
+                if (dt.code === "sdate") dt.value = this.dateRange.dates.startDate;
+                if (dt.code === "edate") dt.value = this.dateRange.dates.endDate;
+            });
+
+        }
         
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {
             //default
             
-            this.referenceGage = null;
+            this.selectedReferenceGage = null;
 
             //load from services
             if (this.studyAreaService.selectedStudyAreaExtensions == null) return;
@@ -105,7 +120,7 @@ module StreamStats.Controllers {
             let parameters = this.studyAreaService.selectedStudyAreaExtensions.reduce((acc, val) => acc.concat(val.parameters.map(c => c.code)), []);
 
             if (['sid'].some(r => parameters.indexOf(r) > -1)) {
-                this.referenceGage = new Models.ReferenceGage("", ""); 
+                this.selectedReferenceGage = new Models.ReferenceGage("", ""); 
             }//endif
             if (['sdate', 'edate'].every(elem => parameters.indexOf(elem) > -1))
             {
@@ -120,8 +135,9 @@ module StreamStats.Controllers {
                 let f = parameters.pop();
                 if (typeof f.value === 'string') continue;
 
-                if (this.referenceGage && ['sid'].indexOf(f.code) > -1) {
-                    this.referenceGage = f.value;
+                if (this.selectedReferenceGage && ['sid'].indexOf(f.code) > -1) {
+                    this.selectedReferenceGage = f.value;
+                    this.referenceGageList = f.options;
                 }
                 if (this.dateRange && ['sdate', 'edate'].indexOf(f.code) > -1) {
                     if (f.code == "sdate") this.dateRange.dates.startDate = f.value;
@@ -142,20 +158,16 @@ module StreamStats.Controllers {
                 }
             }
 
-            if (this.referenceGage) {
-                if (this.referenceGage.StationID == "")
+            if (this.selectedReferenceGage) {
+                if (this.selectedReferenceGage.StationID == "")
                 {
                     return false;
                 }
             }
-
-
             //load service
             this.studyAreaService.selectedStudyAreaExtensions.forEach(ext => {
                 ext.parameters.forEach(p => {
-                    if (p.code == "sdate") p.value = this.dateRange.dates.startDate;
-                    if (p.code == "edate") p.value = this.dateRange.dates.startDate;
-                    if (p.code == "sid") { p.value = this.referenceGage };
+                    if (p.code == "sid") { p.value = this.selectedReferenceGage.StationID };
                 })
             });
 

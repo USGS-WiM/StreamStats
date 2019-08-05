@@ -763,6 +763,10 @@ module StreamStats.Services {
 
         public queryNWIS(latlng: any) {
             if (!latlng || !latlng.lng || !latlng.lat) return;
+            if (!this.selectedStudyAreaExtensions) return; 
+            var sid: Array<any> = this.selectedStudyAreaExtensions.reduce((acc, val) => acc.concat(val.parameters), []).filter(f => { return (<string>(f.code)).toLowerCase() == "sid" });
+            if (sid.length < 0) return;
+
             var ppt = latlng;
             var ex = new L.Circle([ppt.lat, ppt.lng], 100).getBounds();
             //bBox=-103.767211,44.342474,-103.765657,44.343642
@@ -771,6 +775,7 @@ module StreamStats.Services {
 
             var request: WiM.Services.Helpers.RequestInfo =
                 new WiM.Services.Helpers.RequestInfo(url, true);
+
             this.Execute(request).then(
                 (response: any) => {
                     if (response.data.error) {
@@ -780,25 +785,33 @@ module StreamStats.Services {
                     }
 
                     if (response.data) {
-                        // !r doesn't seem to be filtering out last row :( 
-                        // stopping here for now !!!
-
-                        var data = response.data.split('\n').filter(r => { return (!r.startsWith("#") || !r) });
+                        var siteList:Array<Models.IReferenceGage> = [];
+                        var data = response.data.split('\n').filter(r => { return (!r.startsWith("#") && r != "") });
                         var headers:Array<string> = data.shift().split('\t');
-                        //remove extra line
+                        //remove extra random line
                         data.shift();
-
                         do {
-                            var station = data.shift();
+                            var station = data.shift().split('\t');
                             if (station[headers.indexOf("parm_cd")] == "00060") {
                                 console.log(station[headers.indexOf("site_no")]);
+                                //this.selectedStudyAreaExtensions
+                                let rg = new Models.ReferenceGage(station[headers.indexOf("site_no")], station[headers.indexOf("station_nm")]);
+                                rg.Latitude_DD = station[headers.indexOf("dec_lat_va")];
+                                rg.Longitude_DD = station[headers.indexOf("dec_long_va")];                               
+                                //add to list of reference gages
+                                siteList.push(rg);
                             }
-                        } while (data.length>0);
+                        } while (data.length > 0);
 
-                        //reopen modal
-                        this.toaster.pop('success', "Found USGS NWIS reference gage", "Please continue", 5000);
-                        this.modalservices.openModal(SSModalType.e_extensionsupport);
-                        this.doQueryNWIS = false;
+                        if (siteList.length > 0) {                           
+                            sid[0].options = siteList;
+                            sid[0].value = siteList[0];
+
+                            this.toaster.pop('success', "Found USGS NWIS reference gage", "Please continue", 5000);
+                             //reopen modal
+                            this.modalservices.openModal(SSModalType.e_extensionsupport);
+                            this.doQueryNWIS = false;
+                        }
                     }
 
                 }, (error) => {
