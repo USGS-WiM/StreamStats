@@ -110,7 +110,18 @@ module StreamStats.Controllers {
             if (this.regionService.selectedRegion.Applications.indexOf("RegulationFlows") > -1) return true;
             else return false;                
         }
-
+        public get ActiveExtensions(): Array<any> {
+            if (this.studyAreaService.selectedStudyArea.NSS_Extensions && this.studyAreaService.selectedStudyArea.NSS_Extensions.length > 0)
+                return this.studyAreaService.selectedStudyArea.NSS_Extensions
+            else return null;
+        }
+        private _graphData: any = {
+            data: {},
+            options: {}
+        };
+        public get GraphData():any {
+            return this._graphData;
+        }
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService'];
@@ -250,6 +261,7 @@ module StreamStats.Controllers {
             }
 
         }
+
         public downloadGeoJSON() {
 
             var fc: GeoJSON.FeatureCollection = this.studyAreaService.selectedStudyArea.FeatureCollection
@@ -306,7 +318,7 @@ module StreamStats.Controllers {
             }
         }
 
-        private downloadPDF() {
+        public downloadPDF() {
             var pdf = new jsPDF('p', 'pt', 'letter');
             // source can be HTML-formatted string, or a reference
             // to an actual DOM element from which the text will be scraped.
@@ -350,6 +362,104 @@ module StreamStats.Controllers {
                 }, margins);
         }
 
+        public ActivateGraphs(result: any) {
+            result.graphdata = {
+                exceedance: {
+                    data: [{ values: [], area: true, color: '#7777ff' }],
+                    options: {
+                        chart: {
+                            type: 'lineChart',
+                            height: 450,
+                            margin: {
+                                top: 20,
+                                right: 30,
+                                bottom: 60,
+                                left: 65
+                            },
+                            x: function (d) { return d.label; },
+                            y: function (d) { return d.value; },
+                            showLegend: false,
+                            valueFormat: function (d) {
+                                return d3.format(',.3f')(d);
+                            },
+                            xAxis: {
+                                showMaxMin: false
+
+                            },
+                            yAxis: {
+                                axisLabel: 'Discharge (cfs)',
+                                tickFormat: function (d) {
+                                    return d3.format(',.0f')(d);
+                                },
+                                tickValues: [1, 10, 100, 1000, 10000, 1000000]
+                            },
+                            yScale: d3.scale.log(),
+                            title: {
+                                enable: true,
+                                text: "Flow Duration Curve Transfer Method (QPPQ) Model Estimated Exceedance Probabilities"
+                            }
+                        }
+                    }
+                },
+                flow: {
+                    data: [
+                        { key: result.referanceGage.name, values: result.referanceGage.discharge.observations.map(obs => { return { x: new Date(obs.date).getTime(), y: obs.value.toUSGSvalue()} })},
+                        { key: "Estimated", values: result.estimatedFlow.observations.map(obs => { return { x: new Date(obs.date).getTime(), y: obs.value.toUSGSvalue() } }) }
+                    ],
+                    options: {
+                        chart: {
+                            type: 'lineChart',
+                            height: 450,
+                            margin: {
+                                top: 20,
+                                right: 20,
+                                bottom: 50,
+                                left: 75
+                            },
+                            x: function (d) {
+                                return new Date(d.x).getTime();
+                            },
+                            y: function (d) {
+                                return d.y;
+                            },
+                            useInteractiveGuideline: false,
+                            interactive: false,
+                            tooltips: true,
+                            xAxis: {
+                                tickFormat: function (d) {
+                                    return d3.time.format('%x')(new Date(d));
+                                },
+                                rotateLabels: 30,
+                                showMaxMin: false
+
+
+                            },
+                            yAxis: {
+                                axisLabel: 'Estimated Discharge (cfs)',
+                                tickFormat: function (d) {
+                                    return d3.format('.02f')(d);
+                                },
+                                showMaxMin: false
+
+                            },
+                            zoom: {
+                                enabled: true,
+                                scaleExtent: [1, 10],
+                                useFixedDomain: false,
+                                useNiceScale: false,
+                                horizontalOff: false,
+                                verticalOff: false,
+                                unzoomEventType: 'dblclick.zoom'
+                            }
+                        }
+                    }
+                }
+            };
+
+            for (var key in result.exceedanceProbabilities) {
+                result.graphdata.exceedance.data[0].values.push({ label: key, value: result.exceedanceProbabilities[key] })
+            }//next key
+        }
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         private initMap(): void {
@@ -522,9 +632,6 @@ module StreamStats.Controllers {
                 return index == 0 ? letter.toLowerCase() : letter.toUpperCase();
             }).replace(/\s+/g, '');
         }
-        
-
-
     }//end class
     angular.module('StreamStats.Controllers')
         .controller('StreamStats.Controllers.ReportController', ReportController)

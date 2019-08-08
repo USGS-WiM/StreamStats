@@ -43,12 +43,15 @@ var StreamStats;
         }()); //end class
         Services.StatisticsGroup = StatisticsGroup;
         Services.onScenarioExtensionChanged = "onScenarioExtensionChanged";
+        Services.onScenarioExtensionResultsChanged = "onScenarioExtensionResultsChanged";
         var NSSEventArgs = /** @class */ (function (_super) {
             __extends(NSSEventArgs, _super);
-            function NSSEventArgs(extensions) {
+            function NSSEventArgs(extensions, results) {
                 if (extensions === void 0) { extensions = null; }
+                if (results === void 0) { results = null; }
                 var _this = _super.call(this) || this;
                 _this.extensions = extensions;
+                _this.results = results;
                 return _this;
             }
             return NSSEventArgs;
@@ -218,6 +221,11 @@ var StreamStats;
                         //delete results object if it exists
                         if (regressionRegion.results)
                             delete regressionRegion.results;
+                        if (regressionRegion.extensions)
+                            regressionRegion.extensions.forEach(function (e) {
+                                if (e.result)
+                                    delete e.result;
+                            });
                     });
                     updatedScenarioObject = angular.toJson([updatedScenarioObject], null);
                     //do request
@@ -254,6 +262,11 @@ var StreamStats;
                             if (!append) {
                                 statGroup.regressionRegions = [];
                                 statGroup.regressionRegions = response.data[0].regressionRegions;
+                                response.data[0].regressionRegions.forEach(function (rr) {
+                                    if (rr.extensions) {
+                                        _this.eventManager.RaiseEvent(Services.onScenarioExtensionResultsChanged, _this, new NSSEventArgs(null, rr.extensions));
+                                    } //end if
+                                });
                             }
                             else {
                                 //loop over and append params
@@ -270,7 +283,7 @@ var StreamStats;
                                                 } //next j
                                             } //end if
                                         }
-                                        ; //next i
+                                        ; //next i                                        
                                     }); //end p
                                     rr.results.forEach(function (r) {
                                         var responseRegions = response.data[0].regressionRegions;
@@ -286,9 +299,7 @@ var StreamStats;
                                         ; //next i
                                     }); //end r
                                 }); //end rr
-                                //loop over and append statistic
                             }
-                            //overwrite existing Regressions Regions array with new one from request that includes results
                         }
                         else {
                             _this.toaster.clear();
@@ -308,6 +319,9 @@ var StreamStats;
                             _this.toaster.clear();
                             _this.estimateFlowsCounter = 0;
                             _this.canUpdate = true;
+                            //move to nssService
+                            _this.modalService.openModal(Services.SSModalType.e_report);
+                            _this.reportGenerated = true;
                         } //end if                       
                     });
                 });

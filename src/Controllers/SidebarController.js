@@ -289,9 +289,6 @@ var StreamStats;
                     if (sg != null)
                         this.nssService.selectedStatisticsGroupList.push(sg);
                 }
-                //move to nssService
-                this.modalService.openModal(StreamStats.Services.SSModalType.e_report);
-                this.nssService.reportGenerated = true;
                 //pass mainMap basemap to studyAreaService
                 this.leafletData.getMap("mainMap").then(function (map) {
                     _this.leafletData.getLayers("mainMap").then(function (maplayers) {

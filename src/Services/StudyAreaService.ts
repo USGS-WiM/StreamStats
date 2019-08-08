@@ -26,6 +26,7 @@ module StreamStats.Services {
     declare var turf;
     'use strict'
     export interface IStudyAreaService {
+        onStudyAreaServiceBusyChanged: WiM.Event.Delegate<WiM.Event.EventArgs>;
         selectedStudyArea: Models.IStudyArea;
         loadParameters();
         loadStudyBoundary();
@@ -58,7 +59,8 @@ module StreamStats.Services {
         simplify(Feature: any);
         selectedStudyAreaExtensions: Array<any>;
         doQueryNWIS: boolean;
-        queryNWIS(point:any): void;
+        queryNWIS(point: any): void;
+        GetKriggedReferenceGages(): void;
     }
 
     export var onSelectedStudyAreaChanged: string = "onSelectedStudyAreaChanged";
@@ -82,6 +84,12 @@ module StreamStats.Services {
     }
 
     class StudyAreaService extends WiM.Services.HTTPServiceBase implements IStudyAreaService {
+        //Events
+        private _onStudyAreaServiceFinishedChanged: WiM.Event.Delegate<WiM.Event.EventArgs> = new WiM.Event.Delegate<WiM.Event.EventArgs>(); ;
+        public get onStudyAreaServiceBusyChanged(): WiM.Event.Delegate<WiM.Event.EventArgs> {
+            return this._onStudyAreaServiceFinishedChanged;
+        }
+
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
         public toaster: any;
@@ -126,6 +134,7 @@ module StreamStats.Services {
         public doQueryNWIS: boolean = false;
         //public requestParameterList: Array<any>; jkn
         private modalservices: IModalService;
+        
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -142,6 +151,10 @@ module StreamStats.Services {
 
             eventManager.SubscribeToEvent(onScenarioExtensionChanged, new WiM.Event.EventHandler<NSSEventArgs>((sender: any, e: NSSEventArgs) => {
                 this.onNSSExtensionChanged(sender, e);
+            }));
+
+            eventManager.SubscribeToEvent(onScenarioExtensionResultsChanged, new WiM.Event.EventHandler<NSSEventArgs>((sender: any, e: NSSEventArgs) => {
+                this.onNSSExtensionResultsChanged(sender, e);
             }));
 
             eventManager.AddEvent<WiM.Event.EventArgs>(onEditClick);
@@ -822,6 +835,43 @@ module StreamStats.Services {
                 });
         }
 
+        public GetKriggedReferenceGages(): void {
+            var url = configuration.queryparams['KrigService'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude, this.selectedStudyArea.Pourpoint.Latitude, this.selectedStudyArea.Pourpoint.crs);
+
+            if (!this.selectedStudyAreaExtensions) return;
+            var sid: Array<any> = this.selectedStudyAreaExtensions.reduce((acc, val) => acc.concat(val.parameters), []).filter(f => { return (<string>(f.code)).toLowerCase() == "sid" });
+            if (sid.length < 0) return;
+
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url);
+            this.Execute(request).then(
+                (response: any) => {
+                    var siteList: Array<Models.IReferenceGage> = [];
+                    //console.log('delineation response headers: ', response.headers());                    
+                    var result = response.data;
+                    //sm when complete 
+                    for (var i = 0; i < result.length; i++) {
+                        var gage = new Models.ReferenceGage(result[i].id, result[i].name);
+                        gage.DrainageArea_sqMI = result[i].drainageArea;
+                        gage.correlation = result[i].correlation;
+                        siteList.push(gage);
+                    }//next i
+
+                    if (siteList.length > 0) {
+                        sid[0].options = siteList;
+                        sid[0].value = siteList[0];
+
+                        this.toaster.pop('success', "Found reference gages", "Please continue", 5000);
+                    }
+
+                }, (error) => {
+                    this.toaster.pop('warning', "No reference gage found at this location.",
+                        "Please try again", 5000);
+
+                }).finally(() => {
+                    this._onStudyAreaServiceFinishedChanged.raise(null, WiM.Event.EventArgs.Empty);
+                });
+        }
+
         public upstreamRegulation() {
 
             //console.log('upstream regulation');
@@ -880,6 +930,7 @@ module StreamStats.Services {
                     this.regulationCheckComplete = true;                   
             });
         }  
+
         public getflattenStudyArea(): any
         {
             var result: GeoJSON.FeatureCollection = null;
@@ -901,6 +952,7 @@ module StreamStats.Services {
                 }
             return result;
         }
+
         public simplify(feature: any): any {
             var tolerance = 0;
             try {
@@ -1032,6 +1084,17 @@ module StreamStats.Services {
             e.extensions.forEach(f => {
                 if (this.selectedStudyArea.NSS_Extensions.indexOf(f) == -1)
                     this.selectedStudyArea.NSS_Extensions.push(f);
+            });
+        }
+        private onNSSExtensionResultsChanged(sender: any, e: NSSEventArgs) {
+            
+            e.results.forEach(ex => {
+
+                var item = this.selectedStudyArea.NSS_Extensions.filter(f => f.code == ex.code);
+                if (item.length < 1) return;
+                //should only be 1
+                item[0].parameters = angular.copy(ex.parameters);
+                item[0].result = angular.copy(ex.result);
             });
         }
 
