@@ -86,12 +86,16 @@ module StreamStats.Services {
         disclaimers: string;
     }
     export var onScenarioExtensionChanged: string = "onScenarioExtensionChanged";
+    export var onScenarioExtensionResultsChanged: string = "onScenarioExtensionResultsChanged";
     export class NSSEventArgs extends WiM.Event.EventArgs {
         //properties
-        public extensions:Array<string>
-        constructor(extensions = null,) {
+        public extensions: Array<string>
+        public results :Array<any>
+
+        constructor(extensions = null, results= null) {
             super();
             this.extensions = extensions;
+            this.results = results;
         }
 
     }
@@ -295,6 +299,12 @@ module StreamStats.Services {
                     //delete results object if it exists
                     if (regressionRegion.results)
                         delete regressionRegion.results;
+                    if (regressionRegion.extensions)
+                        (<Array<any>>regressionRegion.extensions).forEach(e => {
+                            if (e.result) delete e.result;
+                        });
+                        
+
                 });
                 updatedScenarioObject = angular.toJson([updatedScenarioObject], null);
 
@@ -337,6 +347,11 @@ module StreamStats.Services {
                             if (!append) {
                                 statGroup.regressionRegions = [];
                                 statGroup.regressionRegions = response.data[0].regressionRegions;
+                                response.data[0].regressionRegions.forEach((rr) => {
+                                    if (rr.extensions) {
+                                        this.eventManager.RaiseEvent(Services.onScenarioExtensionResultsChanged, this, new NSSEventArgs(null, rr.extensions));
+                                    }//end if
+                                });
                             }
                             else {
                                 //loop over and append params
@@ -344,6 +359,7 @@ module StreamStats.Services {
                                     //console.log('in estimate flows for regulated basins: ', rr);
                                     rr.parameters.forEach((p) => {
                                         var responseRegions = response.data[0].regressionRegions;
+
                                         for (var i = 0; i < responseRegions.length; i++){
                                             if (responseRegions[i].id === rr.id) {
                                                 for (var j = 0; j < responseRegions[i].parameters.length; j++) {
@@ -352,9 +368,9 @@ module StreamStats.Services {
                                                     }
                                                 }//next j
                                             }//end if
-                                        };//next i
-                                        
+                                        };//next i                                        
                                     });//end p
+
                                     rr.results.forEach((r) => {
                                         var responseRegions = response.data[0].regressionRegions;
                                         for (var i = 0; i < responseRegions.length; i++) {
@@ -366,15 +382,9 @@ module StreamStats.Services {
                                                 }//next j
                                             }//end if
                                         };//next i
-
                                     });//end r
                                 });//end rr
-                                //loop over and append statistic
                             }
-                                                     
-                            //overwrite existing Regressions Regions array with new one from request that includes results
-                            
-
                         }
                         else {
                             this.toaster.clear();
@@ -396,6 +406,9 @@ module StreamStats.Services {
                             this.toaster.clear();
                             this.estimateFlowsCounter = 0;
                             this.canUpdate = true;
+                            //move to nssService
+                            this.modalService.openModal(Services.SSModalType.e_report);
+                            this.reportGenerated = true;
                         }//end if                       
                         
                     });

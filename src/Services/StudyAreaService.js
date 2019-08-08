@@ -65,6 +65,8 @@ var StreamStats;
                 _this.$http = $http;
                 _this.$q = $q;
                 _this.eventManager = eventManager;
+                //Events
+                _this._onStudyAreaServiceFinishedChanged = new WiM.Event.Delegate();
                 _this.surfacecontributionsonly = false;
                 _this.doQueryNWIS = false;
                 _this.modalservices = modal;
@@ -77,6 +79,9 @@ var StreamStats;
                 eventManager.SubscribeToEvent(Services.onScenarioExtensionChanged, new WiM.Event.EventHandler(function (sender, e) {
                     _this.onNSSExtensionChanged(sender, e);
                 }));
+                eventManager.SubscribeToEvent(Services.onScenarioExtensionResultsChanged, new WiM.Event.EventHandler(function (sender, e) {
+                    _this.onNSSExtensionResultsChanged(sender, e);
+                }));
                 eventManager.AddEvent(Services.onEditClick);
                 _this._studyAreaList = [];
                 _this.toaster = toaster;
@@ -84,6 +89,14 @@ var StreamStats;
                 _this.servicesURL = configuration.baseurls['StreamStatsServices'];
                 return _this;
             }
+            ;
+            Object.defineProperty(StudyAreaService.prototype, "onStudyAreaServiceBusyChanged", {
+                get: function () {
+                    return this._onStudyAreaServiceFinishedChanged;
+                },
+                enumerable: true,
+                configurable: true
+            });
             Object.defineProperty(StudyAreaService.prototype, "StudyAreaList", {
                 get: function () {
                     return this._studyAreaList;
@@ -657,6 +670,37 @@ var StreamStats;
                     _this.toaster.pop('warning', "No USGS NWIS reference gage found at this location.", "Try zooming in closer or a different location", 5000);
                 });
             };
+            StudyAreaService.prototype.GetKriggedReferenceGages = function () {
+                var _this = this;
+                var url = configuration.queryparams['KrigService'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude, this.selectedStudyArea.Pourpoint.Latitude, this.selectedStudyArea.Pourpoint.crs);
+                if (!this.selectedStudyAreaExtensions)
+                    return;
+                var sid = this.selectedStudyAreaExtensions.reduce(function (acc, val) { return acc.concat(val.parameters); }, []).filter(function (f) { return (f.code).toLowerCase() == "sid"; });
+                if (sid.length < 0)
+                    return;
+                var request = new WiM.Services.Helpers.RequestInfo(url);
+                this.Execute(request).then(function (response) {
+                    var siteList = [];
+                    //console.log('delineation response headers: ', response.headers());                    
+                    var result = response.data;
+                    //sm when complete 
+                    for (var i = 0; i < result.length; i++) {
+                        var gage = new StreamStats.Models.ReferenceGage(result[i].id, result[i].name);
+                        gage.DrainageArea_sqMI = result[i].drainageArea;
+                        gage.correlation = result[i].correlation;
+                        siteList.push(gage);
+                    } //next i
+                    if (siteList.length > 0) {
+                        sid[0].options = siteList;
+                        sid[0].value = siteList[0];
+                        _this.toaster.pop('success', "Found reference gages", "Please continue", 5000);
+                    }
+                }, function (error) {
+                    _this.toaster.pop('warning', "No reference gage found at this location.", "Please try again", 5000);
+                }).finally(function () {
+                    _this._onStudyAreaServiceFinishedChanged.raise(null, WiM.Event.EventArgs.Empty);
+                });
+            };
             StudyAreaService.prototype.upstreamRegulation = function () {
                 var _this = this;
                 //console.log('upstream regulation');
@@ -834,6 +878,17 @@ var StreamStats;
                 e.extensions.forEach(function (f) {
                     if (_this.selectedStudyArea.NSS_Extensions.indexOf(f) == -1)
                         _this.selectedStudyArea.NSS_Extensions.push(f);
+                });
+            };
+            StudyAreaService.prototype.onNSSExtensionResultsChanged = function (sender, e) {
+                var _this = this;
+                e.results.forEach(function (ex) {
+                    var item = _this.selectedStudyArea.NSS_Extensions.filter(function (f) { return f.code == ex.code; });
+                    if (item.length < 1)
+                        return;
+                    //should only be 1
+                    item[0].parameters = angular.copy(ex.parameters);
+                    item[0].result = angular.copy(ex.result);
                 });
             };
             return StudyAreaService;

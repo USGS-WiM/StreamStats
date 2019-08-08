@@ -22,6 +22,7 @@ var StreamStats;
         var ExtensionModalController = /** @class */ (function () {
             function ExtensionModalController($scope, $analytics, modal, modalservice, studyArea) {
                 var _this = this;
+                this.isBusy = false;
                 //QPPQ
                 this.dateRange = null;
                 this.selectedReferenceGage = null;
@@ -31,10 +32,8 @@ var StreamStats;
                 this.studyAreaService = studyArea;
                 this.dateRangeOptions = {
                     locale: { format: 'MMMM D, YYYY' },
-                    eventHandlers: { 'hide.daterangepicker': function (e) { return _this.SetDate(e); } }
+                    eventHandlers: { 'hide.daterangepicker': function (e) { return _this.SetExtensionDate(e); } }
                 };
-                //init required values
-                this.selectedReferenceGage = new StreamStats.Models.ReferenceGage("", "");
                 this.init();
                 this.load();
             }
@@ -46,19 +45,27 @@ var StreamStats;
             ExtensionModalController.prototype.ok = function () {
                 //validate info
                 if (this.verifyExtensionCanContinue()) {
-                    //close
                     this.close();
                 }
             };
-            ExtensionModalController.prototype.addReferanceGageFromMap = function (name) {
+            ExtensionModalController.prototype.setReferenceGageFromMap = function (name) {
+                this.isBusy = true;
                 this.studyAreaService.doQueryNWIS = true;
                 this.modalInstance.dismiss('cancel');
-                //this.explorationService.explorationPointType = name;
             };
-            ExtensionModalController.prototype.SetDate = function (event) {
+            ExtensionModalController.prototype.setBestCorrelatedReferenceGage = function () {
+                var _this = this;
+                //subscribe
+                this.isBusy = true;
+                this.studyAreaService.onStudyAreaServiceBusyChanged.subscribe(new WiM.Event.EventHandler(function () {
+                    _this.onStudyServiceBusyChanged();
+                }));
+                this.studyAreaService.GetKriggedReferenceGages();
+            };
+            ExtensionModalController.prototype.SetExtensionDate = function (event) {
                 var _this = this;
                 //set selected dates to 
-                var dates = this.studyAreaService.selectedStudyAreaExtensions.reduce(function (acc, val) { return acc.concat(val.parameters); }, []).filter(function (f) { return (['sdate', 'edate'].indexOf((f.code)) > -1); });
+                var dates = this.getExtensionParameters(['sdate', 'edate']);
                 dates.forEach(function (dt) {
                     if (dt.code === "sdate")
                         dt.value = _this.dateRange.dates.startDate;
@@ -75,16 +82,20 @@ var StreamStats;
                 if (this.studyAreaService.selectedStudyAreaExtensions == null)
                     return;
                 this.title = this.studyAreaService.selectedStudyAreaExtensions.map(function (c) { return c.name; }).join(", ");
-                var parameters = this.studyAreaService.selectedStudyAreaExtensions.reduce(function (acc, val) { return acc.concat(val.parameters.map(function (c) { return c.code; })); }, []);
-                if (['sid'].some(function (r) { return parameters.indexOf(r) > -1; })) {
+                var parameters = this.getExtensionParameters();
+                var pcodes = parameters.map(function (p) { return p.code; });
+                if (['sid'].some(function (r) { return pcodes.indexOf(r) > -1; })) {
                     this.selectedReferenceGage = new StreamStats.Models.ReferenceGage("", "");
                 } //endif
-                if (['sdate', 'edate'].every(function (elem) { return parameters.indexOf(elem) > -1; })) {
+                if (['sdate', 'edate'].every(function (elem) { return pcodes.indexOf(elem) > -1; })) {
                     this.dateRange = { dates: { startDate: this.addDay(new Date(), -30), endDate: this.addDay(new Date(), -1) }, minDate: new Date(1900, 1, 1), maxDate: this.addDay(new Date(), -1) };
+                    //set start date
+                    parameters[pcodes.indexOf('sdate')].value = this.dateRange.dates.startDate;
+                    parameters[pcodes.indexOf('edate')].value = this.dateRange.dates.endDate;
                 } //endif
             };
             ExtensionModalController.prototype.load = function () {
-                var parameters = this.studyAreaService.selectedStudyAreaExtensions.reduce(function (acc, val) { return acc.concat(val.parameters); }, []);
+                var parameters = this.getExtensionParameters();
                 do {
                     var f = parameters.pop();
                     if (typeof f.value === 'string')
@@ -135,6 +146,22 @@ var StreamStats;
                 catch (e) {
                     return d;
                 }
+            };
+            ExtensionModalController.prototype.getExtensionParameters = function (codes) {
+                if (codes === void 0) { codes = null; }
+                var parameters = this.studyAreaService.selectedStudyAreaExtensions.reduce(function (acc, val) { return acc.concat(val.parameters); }, []);
+                if (codes) {
+                    parameters = parameters.filter(function (f) { return (codes.indexOf((f.code)) > -1); });
+                }
+                return parameters;
+            };
+            ExtensionModalController.prototype.onStudyServiceBusyChanged = function () {
+                var _this = this;
+                this.studyAreaService.onStudyAreaServiceBusyChanged.unsubscribe(new WiM.Event.EventHandler(function () {
+                    _this.onStudyServiceBusyChanged();
+                }));
+                this.load();
+                this.isBusy = false;
             };
             //Constructor
             //-+-+-+-+-+-+-+-+-+-+-+-

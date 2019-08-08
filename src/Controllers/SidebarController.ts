@@ -58,7 +58,7 @@ module StreamStats.Controllers {
         //Events
         //-+-+-+-+-+-+-+-+-+-+-+-
         private _onSelectedStatisticsGroupChangedHandler: WiM.Event.EventHandler<WiM.Event.EventArgs>;
-        private _onSenarioExtensionChangedHandler: WiM.Event.EventHandler<Services.NSSEventArgs>;
+        private _onStudyAreaServiceBusyChangedHandler: WiM.Event.EventHandler<WiM.Event.EventArgs>;
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
         public sideBarCollapsed: boolean;
@@ -385,9 +385,7 @@ module StreamStats.Controllers {
                     this.nssService.selectedStatisticsGroupList.push(sg);
             }
 
-            //move to nssService
-            this.modalService.openModal(Services.SSModalType.e_report);
-            this.nssService.reportGenerated = true;
+           
 
             //pass mainMap basemap to studyAreaService
             this.leafletData.getMap("mainMap").then((map: any) => {

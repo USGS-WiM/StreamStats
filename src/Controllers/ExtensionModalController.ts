@@ -48,6 +48,7 @@ module StreamStats.Controllers {
 
         public angulartics: any;
         public title: string;
+        public isBusy: boolean = false;
         
         //QPPQ
         public dateRange: IDateRange = null;
@@ -55,8 +56,6 @@ module StreamStats.Controllers {
         public selectedReferenceGage: StreamStats.Models.IReferenceGage = null;
         public referenceGageList: Array<StreamStats.Models.IReferenceGage>
         
-   
-
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.ModalService', 'StreamStats.Services.StudyAreaService'];
@@ -67,44 +66,44 @@ module StreamStats.Controllers {
             this.studyAreaService = studyArea; 
             this.dateRangeOptions = {
                 locale: { format: 'MMMM D, YYYY' },
-                eventHandlers: { 'hide.daterangepicker': (e) => this.SetDate(e) }
+                eventHandlers: { 'hide.daterangepicker': (e) => this.SetExtensionDate(e) }
             };
 
-            //init required values
-            this.selectedReferenceGage = new Models.ReferenceGage("", ""); 
             this.init();
             this.load();            
         }
-
         //Methods  
         //-+-+-+-+-+-+-+-+-+-+-+-
         public close(): void {
             this.modalInstance.dismiss('cancel');
         }
-
         public ok(): void {
             //validate info
             if (this.verifyExtensionCanContinue()) {
-                //close
                 this.close();
             }
             
         }
-        public addReferanceGageFromMap(name) {
+        public setReferenceGageFromMap(name) {
+            this.isBusy = true;
             this.studyAreaService.doQueryNWIS = true;
             this.modalInstance.dismiss('cancel');
-           
-            //this.explorationService.explorationPointType = name;
         }
-
-        public SetDate(event) {
+        public setBestCorrelatedReferenceGage() {
+            //subscribe
+            this.isBusy = true;
+            this.studyAreaService.onStudyAreaServiceBusyChanged.subscribe( new WiM.Event.EventHandler<WiM.Event.EventArgs>(() => {
+                this.onStudyServiceBusyChanged();
+            }));
+            this.studyAreaService.GetKriggedReferenceGages();
+        }
+        public SetExtensionDate(event) {
             //set selected dates to 
-            var dates: Array<any> = this.studyAreaService.selectedStudyAreaExtensions.reduce((acc, val) => acc.concat(val.parameters), []).filter(f => { return (['sdate', 'edate'].indexOf(<string>(f.code)) > -1) });
+            var dates: Array<any> = this.getExtensionParameters(['sdate', 'edate']);
             dates.forEach(dt => {
                 if (dt.code === "sdate") dt.value = this.dateRange.dates.startDate;
                 if (dt.code === "edate") dt.value = this.dateRange.dates.endDate;
             });
-
         }
         
         //Helper Methods
@@ -117,19 +116,24 @@ module StreamStats.Controllers {
             //load from services
             if (this.studyAreaService.selectedStudyAreaExtensions == null) return;
             this.title = this.studyAreaService.selectedStudyAreaExtensions.map(c => c.name).join(", ");
-            let parameters = this.studyAreaService.selectedStudyAreaExtensions.reduce((acc, val) => acc.concat(val.parameters.map(c => c.code)), []);
+            let parameters = this.getExtensionParameters();
+            let pcodes =parameters.map(p => p.code)
 
-            if (['sid'].some(r => parameters.indexOf(r) > -1)) {
+            if (['sid'].some(r => pcodes.indexOf(r) > -1)) {
                 this.selectedReferenceGage = new Models.ReferenceGage("", ""); 
             }//endif
-            if (['sdate', 'edate'].every(elem => parameters.indexOf(elem) > -1))
+            if (['sdate', 'edate'].every(elem => pcodes.indexOf(elem) > -1))
             {
                 this.dateRange = { dates: { startDate: this.addDay(new Date(), -30), endDate: this.addDay(new Date(), -1) }, minDate: new Date(1900, 1, 1), maxDate: this.addDay(new Date(), -1) };
+                //set start date
+                parameters[pcodes.indexOf('sdate')].value = this.dateRange.dates.startDate;
+                parameters[pcodes.indexOf('edate')].value = this.dateRange.dates.endDate;
+
             }//endif
 
         }
         private load(): void {
-            let parameters:Array<any> = this.studyAreaService.selectedStudyAreaExtensions.reduce((acc, val) => acc.concat(val.parameters), []);
+            let parameters:Array<any> = this.getExtensionParameters();
 
             do {
                 let f = parameters.pop();
@@ -182,8 +186,23 @@ module StreamStats.Controllers {
                 return d;
             }
         }
-       
+        private getExtensionParameters(codes: Array<string> = null): Array<any> {
 
+            var parameters = this.studyAreaService.selectedStudyAreaExtensions.reduce((acc, val) => acc.concat(val.parameters), []);
+            if (codes) {
+                parameters = parameters.filter(f => { return (codes.indexOf(<string>(f.code)) > -1) });
+            }
+
+            return parameters;
+        }
+        private onStudyServiceBusyChanged() {
+            this.studyAreaService.onStudyAreaServiceBusyChanged.unsubscribe(new WiM.Event.EventHandler<WiM.Event.EventArgs>(() => {
+                this.onStudyServiceBusyChanged();
+            }));
+
+            this.load();
+            this.isBusy = false;
+        }
     }//end  class
 
     angular.module('StreamStats.Controllers')

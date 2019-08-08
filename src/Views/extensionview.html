@@ -15,27 +15,29 @@
         <div ng-if="vm.selectedReferenceGage" class="form-group">
             <h5>Select/Enter a reference gage.<small style="color:red">&nbsp;&nbsp;(Required)</small></h5>
 
-            <div class="btn-group btn-wim-group-1 wim-dropdown" dropdown is-open="status.isopen">
-                <button type="button" class="btn-wim-default" dropdown-toggle ng-disabled="disabled">
-                    <i class='fa fa-download'></i>&nbsp;&nbsp;{{vm.selectedReferenceGage.StationID}} {{vm.selectedReferenceGage.Name}}<span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" role="menu">
-                    <li ng-repeat="item in vm.referenceGageList"><a ng-click="vm.selectedReferenceGage = item" title="{{item.hasOwnProperty('correlation')? 'Corrilation: ' + item.correlation:''}}">({{item.StationID}}) {{item.Name}}</a></li>
-                </ul>
-            </div>
+            <span>
+                <div ng-if="vm.selectedReferenceGage.StationID !=='' " class="btn-group btn-wim-group-1 wim-dropdown" dropdown is-open="status.isopen">
+                    <button type="button" class="btn-wim-default" dropdown-toggle ng-disabled="disabled">
+                        {{vm.selectedReferenceGage.StationID}} {{vm.selectedReferenceGage.Name}}<span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li ng-repeat="item in vm.referenceGageList"><a ng-click="vm.selectedReferenceGage = item" title="{{item.hasOwnProperty('correlation')? 'Corrilation: ' + item.correlation.toUSGSvalue():''}}">({{item.StationID}}) {{item.Name}}</a></li>
+                    </ul>
+                </div>
+                <button class="btn-exploration-tools btn-green" ng-click="vm.setReferenceGageFromMap()" ng-disabled="vm.isBusy"><span><i ng-class=" vm.isBusy? 'fa fa-refresh fa-spin':'fa fa-map-marker'"></i>&nbsp;&nbsp;Select from Map</span></button>
+                <button class="btn-exploration-tools btn-green" ng-click="vm.setBestCorrelatedReferenceGage()" ng-disabled="vm.isBusy"><span><i ng-class="vm.isBusy? 'fa fa-crosshairs fa-spin':'fa fa-crosshairs'"></i>&nbsp;&nbsp;Best Correlated</span></button>
+            </span>
 
             <!--<div ng-repeat="modified_configuration in vm.explorationService.selectedMethod.navigationConfiguration">
-                <h6 ng-show="modified_configuration.name === configuration.name">Latitude: {{modified_configuration.value.coordinates[1]}} Longitude: {{modified_configuration.value.coordinates[0]}} </h6>
-            </div>-->
-            <button class="btn-exploration-tools btn-green" ng-click="vm.addReferanceGageFromMap()"><span><i class="fa fa-map-marker"></i>&nbsp;&nbsp;Select from Map</span></button>
-
+        <h6 ng-show="modified_configuration.name === configuration.name">Latitude: {{modified_configuration.value.coordinates[1]}} Longitude: {{modified_configuration.value.coordinates[0]}} </h6>
+    </div>-->
         </div>
 
 
     </div>
             <div class="modal-footer  hidden-print">
                 <div class="btn-group">
-                    <button class="btn-wim-default" ng-click="vm.ok()"><i class="fa fa-close"></i>&nbsp;&nbsp;Ok</button>
+                    <button ng-disabled="vm.isBusy" class="btn-wim-default" ng-click="vm.ok()"><i class="fa fa-close"></i>&nbsp;&nbsp;Ok</button>
                 </div>
             </div>
         </div>
