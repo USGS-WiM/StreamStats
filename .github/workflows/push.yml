@@ -1,6 +1,6 @@
 on: push
- branches:
-        -staging
+  branches:
+    - staging
 name: Deploy to Test
 jobs:
   filtersForGitHubActions:
