@@ -1,5 +1,6 @@
-on: push
-  branches:
+on:
+  push:
+    branches:
     - staging
 name: Deploy to Test
 jobs:
