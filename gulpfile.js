@@ -184,5 +184,5 @@ gulp.task('connect', function () {
 
 // Open
 gulp.task('serve', ['connect'], function () {
-    open("http://localhost:9000");
+    open("http://localhost:9000", { url: true });
 });
