@@ -54,7 +54,7 @@
     "gulp-useref": "^3.1.6",
     "jshint": "^2.9.6",
     "jshint-stylish": "^2.2.1",
-    "open": "6.0.0",
+    "open": "7.0.0",
     "semver": "^4.3.3"
   }
 }
