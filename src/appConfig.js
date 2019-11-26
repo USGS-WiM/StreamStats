@@ -1,5 +1,5 @@
 var configuration = {};
-configuration.version = "4.3.1";
+configuration.version = "4.3.10";
 configuration.environment = 'development';
 
 configuration.baseurls =
@@ -42,7 +42,7 @@ configuration.queryparams =
         'SSavailableFeatures': '/streamstatsservices/features.json?workspaceID={0}',
         'SSfeatures': '/streamstatsservices/features.geojson?workspaceID={0}&crs={1}&includefeatures={2}&simplify=true',
         'SSStateLayers': '/arcgis/rest/services/StreamStats/stateServices/MapServer',
-        'SSNationalLayers': '/arcgis/rest/services/StreamStats/nationalLayers/MapServer',
+        'SSNationalLayers': '/arcgis/rest/services/StreamStats/nationalLayer/MapServer',
         'FARefGage': '/2/query?geometry={0}&geometryType=esriGeometryPoint&inSR={1}&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
         'regionService': '/arcgis/rest/services/ss_studyAreas_prod/MapServer/identify',
         'NLCDQueryService': '/LandCover/USGS_EROS_LandCover_NLCD/MapServer/4',
@@ -518,7 +518,7 @@ configuration.overlayedLayers = {
                 "label": "Unknown"
             }]
         }],
-        "queryProperties": { "Streamgages":{ "sta_id": "Station ID", "sta_name": "Station Name", "latitude": "Latitude", "longitude": "Longitude", "featureurl": "URL" }}
+        "queryProperties": { "Streamgages":{ "STA_ID": "Station ID", "STA_NAME": "Station Name", "Latitude": "Latitude", "Longitude": "Longitude", "FeatureURL": "URL" }}
     },//end maskLayer    
     "MaskLayer": {
         "name": "Area of Interest",

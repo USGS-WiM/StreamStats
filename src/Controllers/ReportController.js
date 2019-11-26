@@ -43,6 +43,7 @@ var StreamStats;
                 this.overlays = null;
                 this.center = null;
                 this.layers = null;
+                this.geojson = null;
                 $scope.vm = this;
                 this.angulartics = $analytics;
                 this.studyAreaService = studyArea;
@@ -284,6 +285,7 @@ var StreamStats;
                     baselayers: configuration.basemaps,
                     overlays: {}
                 };
+                this.geojson = {};
                 L.Icon.Default.imagePath = 'images';
                 this.defaults = {
                     scrollWheelZoom: false,
@@ -313,11 +315,23 @@ var StreamStats;
                 this.overlays = {};
                 this.studyAreaService.selectedStudyArea.FeatureCollection.features.forEach(function (item) {
                     //console.log('in each loop', JSON.stringify(item));
-                    if (item.id == 'globalwatershed') {
-                        _this.layers.overlays[item.id] = {
+                    _this.addGeoJSON(item.id, item);
+                });
+                var bbox = this.studyAreaService.selectedStudyArea.FeatureCollection.bbox;
+                this.leafletData.getMap("reportMap").then(function (map) {
+                    //method to reset the map for modal weirdness
+                    map.invalidateSize();
+                    //console.log('in getmap: ', bbox);
+                    map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
+                });
+            };
+            ReportController.prototype.addGeoJSON = function (LayerName, feature) {
+                if (LayerName == 'globalwatershed') {
+                    this.layers.overlays[LayerName] =
+                        {
                             name: 'Basin Boundary',
                             type: 'geoJSONShape',
-                            data: item,
+                            data: this.studyAreaService.simplify(angular.fromJson(angular.toJson(feature))),
                             visible: true,
                             layerOptions: {
                                 style: {
@@ -329,56 +343,47 @@ var StreamStats;
                                 }
                             }
                         };
-                    }
-                    else if (item.id == 'globalwatershedpoint') {
-                        _this.layers.overlays[item.id] = {
-                            name: 'Basin Clicked Point',
-                            type: 'geoJSONShape',
-                            data: item,
-                            visible: true,
-                        };
-                    }
-                    else if (item.id == 'regulatedWatershed') {
-                        //console.log('showing regulated watershed');
-                        _this.layers.overlays["globalwatershedregulated"] = {
-                            name: 'Basin Boundary (Regulated Area)',
-                            type: 'geoJSONShape',
-                            data: item,
-                            visible: true,
-                            layerOptions: {
-                                style: {
-                                    fillColor: "red",
-                                    weight: 2,
-                                    opacity: 1,
-                                    color: 'white',
-                                    fillOpacity: 0.5
-                                }
+                }
+                else if (LayerName == 'globalwatershedpoint') {
+                    this.layers.overlays[LayerName] = {
+                        name: 'Basin Clicked Point',
+                        type: 'geoJSONShape',
+                        data: feature,
+                        visible: true,
+                    };
+                }
+                else if (LayerName == 'regulatedWatershed') {
+                    this.layers.overlays[LayerName] = {
+                        name: 'Basin Boundary (Regulated Area)',
+                        type: 'geoJSONShape',
+                        data: feature,
+                        visible: true,
+                        layerOptions: {
+                            style: {
+                                fillColor: "red",
+                                weight: 2,
+                                opacity: 1,
+                                color: 'white',
+                                fillOpacity: 0.5
                             }
-                        };
-                    }
-                    //additional features get generic styling for now
-                    else {
-                        _this.layers.overlays[item.id] = {
-                            name: item.id,
-                            type: 'geoJSONShape',
-                            data: item,
-                            visible: false,
-                            layerOptions: {
-                                style: {
-                                    fillColor: "red",
-                                    color: 'red'
-                                }
+                        }
+                    };
+                }
+                //additional features get generic styling for now
+                else {
+                    this.layers.overlays[LayerName] = {
+                        name: LayerName,
+                        type: 'geoJSONShape',
+                        data: feature,
+                        visible: false,
+                        layerOptions: {
+                            style: {
+                                fillColor: "red",
+                                color: 'red'
                             }
-                        };
-                    }
-                });
-                var bbox = this.studyAreaService.selectedStudyArea.FeatureCollection.bbox;
-                this.leafletData.getMap("reportMap").then(function (map) {
-                    //method to reset the map for modal weirdness
-                    map.invalidateSize();
-                    //console.log('in getmap: ', bbox);
-                    map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
-                });
+                        }
+                    };
+                }
             };
             ReportController.prototype.tableToCSV = function ($table) {
                 var $headers = $table.find('tr:has(th)'), $rows = $table.find('tr:has(td)')

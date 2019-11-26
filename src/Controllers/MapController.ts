@@ -25,7 +25,7 @@
 //Imports"
 module StreamStats.Controllers {
 
-    declare var greinerHormann;
+    declare var turf;
     declare var ga;
 
     'use strict';
@@ -550,7 +550,7 @@ module StreamStats.Controllers {
                     if (this.layers.overlays[lyr].hasOwnProperty("queryProperties") && this.layers.overlays[lyr].queryProperties.hasOwnProperty(item.layerName)) {
                         let queryProperties = this.layers.overlays[lyr].queryProperties[item.layerName];
                         Object.keys(queryProperties).map(k => {
-                            if (item.layerName == "Streamgages" && k == "featureurl") {
+                            if (item.layerName == "Streamgages" && k == "FeatureURL") {
                                 var siteNo = queryResult.properties[k].split('site_no=')[1];
                                 var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm'
                                 querylayers.append('<strong>NWIS page: </strong><a href="' + queryResult.properties[k] + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br>');
@@ -905,9 +905,12 @@ module StreamStats.Controllers {
 
         private basinEditor() {
 
-            var basin = angular.fromJson(angular.toJson(this.geojson['globalwatershed'].data));
-            var basinConverted = [];
-            basin.geometry.coordinates[0].forEach((item) => { basinConverted.push([item[1], item[0]]) });
+            var basinCopyGeoJSON = angular.fromJson(angular.toJson(this.geojson['globalwatershed'].data));
+
+            //attempt to remove single cell pinched polygon ends
+            basinCopyGeoJSON.geometry.coordinates = basinCopyGeoJSON.geometry.coordinates.filter(function (item) {
+                return item.length > 5;
+            });
 
             this.leafletData.getMap("mainMap").then((map: any) => {
                 this.leafletData.getLayers("mainMap").then((maplayers: any) => {
@@ -923,24 +926,20 @@ module StreamStats.Controllers {
 
                         map.removeEventListener('draw:created');
 
-                        var layer = e.layer;
-                        drawnItems.addLayer(layer);
+                        var editLayer = e.layer;
+                        drawnItems.addLayer(editLayer);
 
-                        //convert edit polygon coords
-                        var editArea = layer.toGeoJSON().geometry.coordinates[0];
-                        var editAreaConverted = [];
-                        editArea.forEach((item) => { editAreaConverted.push([item[1], item[0]]) });
-
-                        var sourcePolygon = L.polygon(basinConverted);
-                        var clipPolygon = L.polygon(editAreaConverted);
+                        var sourcePolygon = basinCopyGeoJSON;
+                        var clipPolygon = editLayer.toGeoJSON();
 
                         if (this.studyArea.drawControlOption == 'add') {
 
                             this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'addArea' });
 
-                            //console.log('add layer', layer.toGeoJSON());
-                            var editPolygon = greinerHormann.union(sourcePolygon, clipPolygon);
-                            this.studyArea.WatershedEditDecisionList.append.push(layer.toGeoJSON());
+                            //console.log('sourcePolygon:', sourcePolygon);
+                            var editPolygon = turf.union(sourcePolygon, clipPolygon)
+
+                            this.studyArea.WatershedEditDecisionList.append.push(clipPolygon);
                             //this.studyArea.Disclaimers['isEdited'] = true;
                         }
 
@@ -949,27 +948,27 @@ module StreamStats.Controllers {
                             this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'removeArea' });
 
                             //console.log('remove layer', layer.toGeoJSON());
-                            var editPolygon = greinerHormann.diff(sourcePolygon, clipPolygon);
+                            var editPolygon = turf.difference(sourcePolygon, clipPolygon);
 
                             //check for split polygon
                             //console.log('editPoly', editPolygon.length);
-                            if (editPolygon.length == 2) {
+                            if (editPolygon.geometry.coordinates.length == 2) {
                                 alert('Splitting polygons is not permitted');
                                 drawnItems.clearLayers();
                                 return;
                             }
 
-                            this.studyArea.WatershedEditDecisionList.remove.push(layer.toGeoJSON());
+                            this.studyArea.WatershedEditDecisionList.remove.push(clipPolygon);
                             //this.studyArea.Disclaimers['isEdited'] = true;
                         }
 
                         //set studyArea basin to new edited polygon
-                        basin.geometry.coordinates[0] = [];
-                        editPolygon.forEach((item) => { basin.geometry.coordinates[0].push([item[1], item[0]]) });
-                        //console.log('edited basin', basin);
+                        basinCopyGeoJSON.geometry.coordinates = editPolygon.geometry.coordinates;
+                        //editPolygon.geometry.coordinates.forEach((item) => { basin.geometry.coordinates[0].push([item[1], item[0]]) });
+                        //console.log('edited basin', basinCopyGeoJSON);
                         
                         //show new polygon
-                        this.geojson['globalwatershed'].data = basin;
+                        this.geojson['globalwatershed'].data = editPolygon;
                         drawnItems.clearLayers();
                         //console.log('editedAreas', angular.toJson(this.studyArea.WatershedEditDecisionList));
                     });
@@ -1168,10 +1167,11 @@ module StreamStats.Controllers {
         }
         private addGeoJSON(LayerName: string, feature: any) {
 
-            if (LayerName == 'globalwatershed') {
+            if (LayerName == 'globalwatershed') {                
+                var data = this.studyArea.simplify(feature);
                 this.geojson[LayerName] =
                     {
-                        data: feature,
+                    data: data,
                         style: {
                             //https://www.base64-image.de/
                             displayName: "Basin Boundary",

@@ -28,13 +28,13 @@ function inc(importance) {
 
     //bump appConfig version
     gulp.src('./src/appConfig.js')
-        .pipe(replace(/configuration.version="([^"]+)"/g, 'configuration.version="' + newVer + '"'))
-        .pipe(gulp.dest('./src/'))
+        .pipe(replace(/configuration.version = "([^"]+)"/g, 'configuration.version = "' + newVer + '"'))
+        .pipe(gulp.dest('./src/'));
         //.pipe(git.add());
 
     gulp.src('./dist/appConfig.js')
-        .pipe(replace(/configuration.version="([^"]+)"/g, 'configuration.version="' + newVer + '"'))
-        .pipe(gulp.dest('./dist/'))
+        .pipe(replace(/configuration.version = "([^"]+)"/g, 'configuration.version = "' + newVer + '"'))
+        .pipe(gulp.dest('./dist/'));
         //.pipe(git.add());
 
     // get all the files to bump version in 
@@ -55,9 +55,9 @@ function inc(importance) {
 }
 
 //tasks for version tags
-gulp.task('patch', ['dist'], function () { return inc('patch'); })
-gulp.task('feature', ['dist'], function () { return inc('minor'); })
-gulp.task('release', ['dist'], function () { return inc('major'); })
+gulp.task('patch', ['dist'], function () { return inc('patch'); });
+gulp.task('feature', ['dist'], function () { return inc('minor'); });
+gulp.task('release', ['dist'], function () { return inc('major'); });
 
 //push task for versioning
 gulp.task('push', function () {
@@ -184,5 +184,5 @@ gulp.task('connect', function () {
 
 // Open
 gulp.task('serve', ['connect'], function () {
-    open("http://localhost:9000");
+    open("http://localhost:9000", { url: true });
 });
