@@ -55,6 +55,7 @@ module StreamStats.Services {
         getAdditionalFeatures(featureString: string);
         surfacecontributionsonly: boolean
         getflattenStudyArea(): any
+        simplify(Feature: any);
     }
 
     export var onSelectedStudyAreaChanged: string = "onSelectedStudyAreaChanged";
@@ -615,7 +616,8 @@ module StreamStats.Services {
                 "Content-Type": "application/json"
             };
             var url = configuration.baseurls['nssservicesv2'] + configuration.queryparams['RegressionRegionQueryService'];
-            var studyAreaGeom = this.selectedStudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).toLowerCase() == "globalwatershed" })[0].geometry;
+            var studyArea = this.simplify(angular.fromJson(angular.toJson(this.selectedStudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).toLowerCase() == "globalwatershed" })[0])));
+            var studyAreaGeom = studyArea.geometry; //this.selectedStudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).toLowerCase() == "globalwatershed" })[0].geometry;
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(studyAreaGeom));     
 
             this.Execute(request).then(
@@ -821,6 +823,31 @@ module StreamStats.Services {
                 console.log('Failed to flatted shapefile.')
                 }
             return result;
+        }
+        public simplify(feature: any): any {
+            var tolerance = 0;
+            try {
+                var verticies = feature.geometry.coordinates.reduce((count, row) => count + row.length, 0);
+                
+                if (verticies < 5000) {
+                    // no need to simpify
+                    return feature;
+                }
+                else if (verticies < 10000) {
+                    tolerance = 0.0001;
+                }
+                else if (verticies < 100000) {
+                    tolerance = 0.001
+                }
+                else {
+                    tolerance = 0.01
+                }
+                this.toaster.pop('warning', "Displaying simplified Basin.", "See FAQ for more information.", 0);
+                return turf.simplify(feature, { tolerance: tolerance, highQuality: false, mutate: true })
+
+            } catch (e) {
+
+            }
         }
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+- 
