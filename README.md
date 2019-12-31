@@ -15,7 +15,6 @@ Install global dependencies
 ```bash
 npm install -g gulp
 npm install -g typings
-npm install -g live-server
 ```
 
 ## Getting Started

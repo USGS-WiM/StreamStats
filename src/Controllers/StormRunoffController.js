@@ -2,9 +2,12 @@
 //----- Storm runnoff controller------------------------------------------------
 //------------------------------------------------------------------------------
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -207,7 +210,7 @@ var StreamStats;
                             this.DASizeAlert = null;
                         }
                         return;
-                    default://case StormRunoffType.RationalMethod
+                    default: //case StormRunoffType.RationalMethod
                         if (this.DrnAreaAcres > 200) {
                             this.DASizeAlert = "Value is greater than recommended maximum threshold of 200 acres";
                         }
@@ -284,13 +287,13 @@ var StreamStats;
                 }
                 //download
                 var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
-                if (navigator.msSaveBlob) {
+                if (navigator.msSaveBlob) { // IE 10+
                     navigator.msSaveBlob(blob, filename);
                 }
                 else {
                     var link = document.createElement("a");
                     var url = URL.createObjectURL(blob);
-                    if (link.download !== undefined) {
+                    if (link.download !== undefined) { // feature detection
                         // Browsers that support HTML5 download attribute
                         link.setAttribute("href", url);
                         link.setAttribute("download", filename);
@@ -717,7 +720,7 @@ var StreamStats;
                         this.SelectedParameterList.forEach(function (p) { return p.value = (isNaN(p.value) ? null : p.value); });
                         this.showResults = false;
                         break;
-                    default://case StormRunoffType.RationalMethod
+                    default: //case StormRunoffType.RationalMethod
                         this.SelectedParameterList = this.regionParameters.filter(function (f) { return ["DRNAREA", "RUNCO_CO"].indexOf(f.code) != -1; });
                         this.SelectedParameterList.forEach(function (p) { return p.value = (isNaN(p.value) ? null : p.value); });
                         this.showResults = false;
