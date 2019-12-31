@@ -164,6 +164,7 @@ var StreamStats;
                         });
                     }
                 }
+                //add it to the list and get its required parameters
                 else {
                     this.nssService.selectedStatisticsGroupList.push(statisticsGroup);
                     if (this.studyAreaService.selectedStudyArea.CoordinatedReach != null && statisticsGroup.Code.toUpperCase() == "PFS") {
@@ -401,13 +402,13 @@ var StreamStats;
                 var GeoJSON = angular.toJson(this.studyAreaService.selectedStudyArea.FeatureCollection);
                 var filename = 'data.geojson';
                 var blob = new Blob([GeoJSON], { type: 'text/csv;charset=utf-8;' });
-                if (navigator.msSaveBlob) {
+                if (navigator.msSaveBlob) { // IE 10+
                     navigator.msSaveBlob(blob, filename);
                 }
                 else {
                     var link = document.createElement("a");
                     var url = URL.createObjectURL(blob);
-                    if (link.download !== undefined) {
+                    if (link.download !== undefined) { // feature detection
                         // Browsers that support HTML5 download attribute
                         link.setAttribute("href", url);
                         link.setAttribute("download", filename);
