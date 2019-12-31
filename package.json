@@ -8,6 +8,7 @@
     "Martyn Smith <marsmith@usgs.gov>"
   ],
   "scripts": {
+    "live": "live-server --open=/src/",
     "build": "npm install -g gulp && npm install -g typings && npm install && typings install && gulp"
   },
   "license": "MIT",
@@ -57,6 +58,7 @@
     "gulp-useref": "^3.1.6",
     "jshint": "^2.9.6",
     "jshint-stylish": "^2.2.1",
+    "lite-server": "^2.5.4",
     "open": "7.0.0",
     "semver": "^4.3.3"
   }
