@@ -164,7 +164,6 @@ var StreamStats;
                         });
                     }
                 }
-                //add it to the list and get its required parameters
                 else {
                     this.nssService.selectedStatisticsGroupList.push(statisticsGroup);
                     if (this.studyAreaService.selectedStudyArea.CoordinatedReach != null && statisticsGroup.Code.toUpperCase() == "PFS") {
@@ -217,6 +216,23 @@ var StreamStats;
                 else if (parameter.checked && index == -1) {
                     //add it
                     this.studyAreaService.studyAreaParameterList.push(parameter);
+                }
+                this.checkParameters();
+            };
+            SidebarController.prototype.checkParameters = function () {
+                // change select all parameters toggle to match if all params are checked or not
+                var allChecked = true;
+                for (var _i = 0, _a = this.regionService.parameterList; _i < _a.length; _i++) {
+                    var param = _a[_i];
+                    if (!param.checked) {
+                        allChecked = false;
+                    }
+                }
+                if (allChecked) {
+                    this.multipleParameterSelectorAdd = false;
+                }
+                else {
+                    this.multipleParameterSelectorAdd = true;
                 }
             };
             SidebarController.prototype.calculateParameters = function () {
@@ -385,13 +401,13 @@ var StreamStats;
                 var GeoJSON = angular.toJson(this.studyAreaService.selectedStudyArea.FeatureCollection);
                 var filename = 'data.geojson';
                 var blob = new Blob([GeoJSON], { type: 'text/csv;charset=utf-8;' });
-                if (navigator.msSaveBlob) { // IE 10+
+                if (navigator.msSaveBlob) {
                     navigator.msSaveBlob(blob, filename);
                 }
                 else {
                     var link = document.createElement("a");
                     var url = URL.createObjectURL(blob);
-                    if (link.download !== undefined) { // feature detection
+                    if (link.download !== undefined) {
                         // Browsers that support HTML5 download attribute
                         link.setAttribute("href", url);
                         link.setAttribute("download", filename);

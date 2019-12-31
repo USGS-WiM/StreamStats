@@ -178,7 +178,6 @@ var StreamStats;
                         } //next i
                         _this.modal.openModal(StreamStats.Services.SSModalType.e_exploration);
                     }
-                    //query streamgage is default map click action
                     else {
                         _this.queryPoints(args.leafletEvent);
                     }
@@ -392,7 +391,7 @@ var StreamStats;
                                     //query
                                     maplayers.overlays[lyr].query().nearby(evt.latlng, 4).returnGeometry(false).run(function (error, results) { return _this.handleQueryResult(lyr, error, results, map, evt.latlng); });
                                     break;
-                                default: //agsDynamic
+                                default://agsDynamic
                                     maplayers.overlays[lyr].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).run(function (error, results) { return _this.handleQueryResult(lyr, error, results, map, evt.latlng); });
                             }
                             _this.queryContent.requestCount++;
@@ -432,7 +431,7 @@ var StreamStats;
                                 }
                             });
                         }
-                        else { //show all fields
+                        else {
                             angular.forEach(queryResult.properties, function (value, key) {
                                 querylayers.append('<strong>' + key + ': </strong>' + value + '</br>');
                             });
@@ -645,7 +644,6 @@ var StreamStats;
                         if (map.getZoom() < 15) {
                             _this.toaster.pop("error", "Delineation not allowed at this zoom level", 'Please zoom in to level 15 or greater', 5000);
                         }
-                        //good to go
                         else {
                             _this.toaster.clear();
                             _this.studyArea.checkingDelineatedPoint = true;
@@ -693,7 +691,6 @@ var StreamStats;
                                     _this.studyArea.checkingDelineatedPoint = false;
                                     _this.startDelineate(latlng, false);
                                 }
-                                //otherwise parse exclude Codes
                                 else {
                                     _this.studyArea.checkingDelineatedPoint = false;
                                     var excludeCode = results.features[0].properties.ExcludeCod;
@@ -1027,7 +1024,6 @@ var StreamStats;
                             }
                         };
                 }
-                //additional features get generic styling for now
                 else {
                     this.geojson[LayerName] =
                         {

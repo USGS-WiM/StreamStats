@@ -170,13 +170,13 @@ var StreamStats;
                 csvFile += this.disclaimer + 'Application Version: ' + this.AppVersion;
                 //download
                 var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
-                if (navigator.msSaveBlob) { // IE 10+
+                if (navigator.msSaveBlob) {
                     navigator.msSaveBlob(blob, filename);
                 }
                 else {
                     var link = document.createElement("a");
                     var url = URL.createObjectURL(blob);
-                    if (link.download !== undefined) { // feature detection
+                    if (link.download !== undefined) {
                         // Browsers that support HTML5 download attribute
                         link.setAttribute("href", url);
                         link.setAttribute("download", filename);
@@ -206,13 +206,13 @@ var StreamStats;
                 var GeoJSON = angular.toJson(fc);
                 var filename = 'data.geojson';
                 var blob = new Blob([GeoJSON], { type: 'text/csv;charset=utf-8;' });
-                if (navigator.msSaveBlob) { // IE 10+
+                if (navigator.msSaveBlob) {
                     navigator.msSaveBlob(blob, filename);
                 }
                 else {
                     var link = document.createElement("a");
                     var url = URL.createObjectURL(blob);
-                    if (link.download !== undefined) { // feature detection
+                    if (link.download !== undefined) {
                         // Browsers that support HTML5 download attribute
                         link.setAttribute("href", url);
                         link.setAttribute("download", filename);
@@ -369,7 +369,6 @@ var StreamStats;
                         }
                     };
                 }
-                //additional features get generic styling for now
                 else {
                     this.layers.overlays[LayerName] = {
                         name: LayerName,
