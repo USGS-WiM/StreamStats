@@ -282,7 +282,23 @@ module StreamStats.Controllers {
                 //add it
                 this.studyAreaService.studyAreaParameterList.push(parameter);
             }
+            this.checkParameters();
 
+        }
+
+        public checkParameters() {
+            // change select all parameters toggle to match if all params are checked or not
+            let allChecked = true;
+            for (let param of this.regionService.parameterList) {
+                if (!param.checked) {
+                    allChecked = false;
+                }
+            }
+            if (allChecked) {
+                this.multipleParameterSelectorAdd = false;
+            } else {
+                this.multipleParameterSelectorAdd = true;
+            }
         }
 
         public calculateParameters() {
