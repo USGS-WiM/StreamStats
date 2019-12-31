@@ -7,6 +7,9 @@
     "Jeremy Newson <jknewson@usgs.gov>",
     "Martyn Smith <marsmith@usgs.gov>"
   ],
+  "scripts": {
+    "build": "npm install -g gulp && npm install -g typings && npm install && typings install && gulp"
+  },
   "license": "MIT",
   "dependencies": {
     "@turf/turf": "^5.1.6",
