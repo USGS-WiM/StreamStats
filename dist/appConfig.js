@@ -247,41 +247,7 @@ configuration.regions = [
     { "RegionID": "GA", "Name": "Georgia", "Bounds": [[30.361291, -85.60896], [35.000366, -80.894753]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "GU", "Name": "Guam", "Bounds": [[13.234996, 144.634155], [13.65361, 144.953308]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "HI", "Name": "Hawaii", "Bounds": [[18.921786, -160.242406], [22.22912, -154.791096]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
-    {
-        "RegionID": "IA", "Name": "Iowa", "Bounds": [[40.371946, -96.640709], [43.501457, -90.142796]], "Layers":
-            {
-                //'FLA': {
-                //    "name": "Flow Anywhere Model",
-                //    "url": 'https://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowAnywhere/MapServer',
-                //    "type": 'agsDynamic',
-                //    "visible": true,
-                //    "layerOptions": {
-                //        "opacity": 0.5
-                //    }
-                //},
-                //'FDCTM': {
-                //    "name": "Flow Duration Curve Transfer Model",
-                //    "url": 'https://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowDuration2/MapServer',
-                //    "type": 'agsDynamic',
-                //    "visible": true,
-                //    "layerOptions": {
-                //        "opacity": 0.5
-                //    }
-                //},
-                //'PRMS': {
-                //    "name": "PRMS",
-                //    "url": 'https://wim.usgs.gov/arcgis/rest/services/IowaPRMSMapper/IOWA_PRMS/MapServer',
-                //    "type": 'agsDynamic',
-                //    "visible": false,
-                //    "layerOptions": {
-                //        "opacity": 0.5
-                //    }
-                //}
-            },
-        "Applications": [],
-        "regionEnabled": true,
-        "ScenariosAvailable": true
-    },
+    { "RegionID": "IA", "Name": "Iowa", "Bounds": [[40.371946, -96.640709], [43.501457, -90.142796]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "ID", "Name": "Idaho", "Bounds": [[41.994599, -117.236921], [48.99995, -111.046771]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "IL", "Name": "Illinois", "Bounds": [[36.986822, -91.516284], [42.509363, -87.507909]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "IN", "Name": "Indiana", "Bounds": [[37.776224, -88.10149], [41.76554, -84.787446]], "Layers": {}, "Applications": ["CoordinatedReach"], "regionEnabled": true, "ScenariosAvailable": true },
@@ -519,21 +485,21 @@ configuration.overlayedLayers = {
             }]
         }],
         "queryProperties": { "Streamgages":{ "STA_ID": "Station ID", "STA_NAME": "Station Name", "Latitude": "Latitude", "Longitude": "Longitude", "FeatureURL": "URL" }}
-    },//end maskLayer    
+    },//end ssLayer    
     "MaskLayer": {
         "name": "Area of Interest",
-        "url": "https://txgeo.usgs.gov/arcgis/rest/services/Mapping/Mask/MapServer",
-        "type": 'agsTiled',
+        "url": "https://streamstats.usgs.gov/maptiles/MaskLayer/{z}/{y}/{x}.png",
+        "type": 'xyz',
         "visible": true,
         "layerOptions": {
-            "opacity": 0.6,
+            "opacity": 0.4,
             "maxZoom": 10,
             "zIndex": 9999
         },
         "layerParams": {
             "showOnSelector": false,
         }
-    },//end ssLayer    
+    },//end maskLayer    
     "draw": {
         "name": 'draw',
         "type": 'group',
