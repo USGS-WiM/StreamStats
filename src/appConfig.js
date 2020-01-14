@@ -20,6 +20,7 @@ if (window.location.host === 'streamstats.usgs.gov') {
     configuration.baseurls.StreamStatsServices = 'https://streamstats.usgs.gov',
         configuration.baseurls.StreamStatsMapServices = 'https://gis.streamstats.usgs.gov',
         configuration.baseurls.NSS = 'https://streamstats.usgs.gov/nssservices',
+        configuration.baseurls.nssservicesv2 = 'https://streamstats.usgs.gov/nssservicesv2',
         configuration.baseurls.WaterUseServices = 'https://streamstats.usgs.gov/wateruseservices',
         configuration.baseurls.StormRunoffServices = 'https://streamstats.usgs.gov/runoffmodelingservices',
         configuration.environment = 'production';
