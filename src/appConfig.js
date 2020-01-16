@@ -498,7 +498,7 @@ configuration.overlayedLayers = {
         "type": 'xyz',
         "visible": true,
         "layerOptions": {
-            "opacity": 0.4,
+            "opacity": 0.6,
             "maxZoom": 10,
             "zIndex": 9999
         },
