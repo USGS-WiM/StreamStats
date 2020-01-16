@@ -23,6 +23,7 @@
     <link rel="stylesheet" href="../node_modules/nvd3/build/nv.d3.css" />
     <link rel="stylesheet" href="../node_modules/wim_angular/dist/css/wimLegend.css" />
     <link rel="stylesheet" href="../node_modules/usgs-search-api/dist/search_api.css" />
+    <link rel="stylesheet" href="../node_modules/daterangepicker/daterangepicker.css" />
     <!-- endbuild -->
     <!-- build:css styles/custom.min.css -->
     <link rel="stylesheet" href="../node_modules/wim-styles/core/css/wim.css" />
@@ -32,11 +33,15 @@
     <link rel="stylesheet" href="css/custom.css" />
     <!-- endbuild -->
     <!-- build:js scripts/vendor.min.js -->
+    <script src="../node_modules/jquery/dist/jquery.js"></script>
     <script src="../node_modules/angular/angular.js"></script>
     <script src="../node_modules/angulartics/dist/angulartics.min.js"></script>
     <script src="../node_modules/angulartics-google-analytics/dist/angulartics-google-analytics.min.js"></script>
     <script src="../node_modules/angular-bootstrap/ui-bootstrap.js"></script>
     <script src="../node_modules/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="../node_modules/moment/moment.js"></script>
+    <script src="../node_modules/daterangepicker/daterangepicker.js"></script>
+    <script src="../node_modules/angular-daterangepicker/js/angular-daterangepicker.js"></script>
     <script src="../node_modules/angularjs-toaster/toaster.js"></script>
     <script src="../node_modules/angular-leaflet-directive/dist/angular-leaflet-directive.js"></script>
     <script src="../node_modules/angular-ui-router/release/angular-ui-router.js"></script>
@@ -67,7 +72,6 @@
     <script src="../node_modules/wim_angular/dist/Services/Helpers/RequestTransform.js"></script>
     <script src="../node_modules/wim_angular/dist/Events/EventManager.js"></script>
     <script src="../node_modules/wim_angular/dist/Directives/wimLegend.js"></script>
-    <script src="../node_modules/jquery/dist/jquery.js"></script>
     <script src='../node_modules/@turf/turf/turf.min.js'></script>
     <script src="../node_modules/usgs-search-api/dist/search_api.js"></script>
     <script src="Assets/JS/shpwrite_modified.js"></script>
@@ -80,6 +84,7 @@
     <script src="Models/RegulationParameter.js"></script>
     <script src="Models/NetworkNavModels.js"></script>
     <script src="Models/CoordinatedReach.js"></script>
+    <script src="Models/ReferenceGage.js"></script>
     <!-- Services ref-->
     <script src="Services/service.module.js"></script>
     <script src="Services/nssService.js"></script>
@@ -101,6 +106,7 @@
     <script src="Controllers/NavigationReportModalController.js"></script>
     <script src="Controllers/ExplorationToolsModalController.js"></script>
     <script src="Controllers/ProsperController.js"></script>
+    <script src="Controllers/ExtensionModalController.js"></script>
     <!-- Directives ref-->
     <!-- endbuild -->
     <script src="appConfig.js"></script>

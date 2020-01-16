@@ -277,7 +277,10 @@ module StreamStats.Controllers {
 
                 //check if in elevation profile mode
                 if (this.explorationService.drawElevationProfile) return; 
-
+                if (this.studyArea.doQueryNWIS) {
+                    this.studyArea.queryNWIS(args.leafletEvent.latlng);
+                    return;
+                }
                 //network navigation
                 if (exploration.selectedMethod != null && exploration.selectedMethod.locations.length <= exploration.selectedMethod.minLocations) {
 
@@ -301,7 +304,6 @@ module StreamStats.Controllers {
 
                     this.modal.openModal(Services.SSModalType.e_exploration);
                 }
-
                 //query streamgage is default map click action
                 else {
                     this.queryPoints(args.leafletEvent);
