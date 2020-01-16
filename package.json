@@ -7,6 +7,10 @@
     "Jeremy Newson <jknewson@usgs.gov>",
     "Martyn Smith <marsmith@usgs.gov>"
   ],
+  "scripts": {
+    "live": "live-server --open=/src/",
+    "build": "npm install -g gulp && npm install -g typings && npm install && typings install && gulp"
+  },
   "license": "MIT",
   "dependencies": {
     "@turf/turf": "^5.1.6",
@@ -17,7 +21,7 @@
     "angular-leaflet-directive": "~0.10.0",
     "angular-nvd3": "^1.0.5",
     "angular-sanitize": "^1.7.5",
-    "angular-ui-router": "0.2.15",
+    "angular-ui-router": "^0.3.2",
     "angularjs-slider": "^2.9.0",
     "angularjs-toaster": "github:jirikavi/AngularJS-Toaster",
     "angulartics": "~1.0.3",
@@ -57,6 +61,7 @@
     "jshint": "^2.9.6",
     "jshint-stylish": "^2.2.1",
     "open": "7.0.0",
-    "semver": "^4.3.3"
+    "semver": "^4.3.3",
+    "live-server": "^1.2.1"
   }
 }

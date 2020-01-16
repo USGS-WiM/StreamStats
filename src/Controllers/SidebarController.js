@@ -224,6 +224,23 @@ var StreamStats;
                     //add it
                     this.studyAreaService.studyAreaParameterList.push(parameter);
                 }
+                this.checkParameters();
+            };
+            SidebarController.prototype.checkParameters = function () {
+                // change select all parameters toggle to match if all params are checked or not
+                var allChecked = true;
+                for (var _i = 0, _a = this.regionService.parameterList; _i < _a.length; _i++) {
+                    var param = _a[_i];
+                    if (!param.checked) {
+                        allChecked = false;
+                    }
+                }
+                if (allChecked) {
+                    this.multipleParameterSelectorAdd = false;
+                }
+                else {
+                    this.multipleParameterSelectorAdd = true;
+                }
             };
             SidebarController.prototype.calculateParameters = function () {
                 //ga event

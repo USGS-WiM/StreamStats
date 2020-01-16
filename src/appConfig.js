@@ -250,7 +250,7 @@ configuration.regions = [
     { "RegionID": "HI", "Name": "Hawaii", "Bounds": [[18.921786, -160.242406], [22.22912, -154.791096]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     {
         "RegionID": "IA", "Name": "Iowa", "Bounds": [[40.371946, -96.640709], [43.501457, -90.142796]], "Layers":{},
-        "Applications": ["FDCTM"],
+        "Applications": [],
         "regionEnabled": true,
         "ScenariosAvailable": true
     },
@@ -491,21 +491,21 @@ configuration.overlayedLayers = {
             }]
         }],
         "queryProperties": { "Streamgages":{ "STA_ID": "Station ID", "STA_NAME": "Station Name", "Latitude": "Latitude", "Longitude": "Longitude", "FeatureURL": "URL" }}
-    },//end maskLayer    
+    },//end ssLayer    
     "MaskLayer": {
         "name": "Area of Interest",
-        "url": "https://txgeo.usgs.gov/arcgis/rest/services/Mapping/Mask/MapServer",
-        "type": 'agsTiled',
+        "url": "https://streamstats.usgs.gov/maptiles/MaskLayer/{z}/{y}/{x}.png",
+        "type": 'xyz',
         "visible": true,
         "layerOptions": {
-            "opacity": 0.6,
+            "opacity": 0.4,
             "maxZoom": 10,
             "zIndex": 9999
         },
         "layerParams": {
             "showOnSelector": false,
         }
-    },//end ssLayer    
+    },//end maskLayer    
     "draw": {
         "name": 'draw',
         "type": 'group',
