@@ -721,9 +721,11 @@ var StreamStats;
             };
             MapController.prototype.basinEditor = function () {
                 var _this = this;
-                var basin = angular.fromJson(angular.toJson(this.geojson['globalwatershed'].data));
-                var basinConverted = [];
-                basin.geometry.coordinates[0].forEach(function (item) { basinConverted.push([item[1], item[0]]); });
+                var basinCopyGeoJSON = angular.fromJson(angular.toJson(this.geojson['globalwatershed'].data));
+                //attempt to remove single cell pinched polygon ends
+                basinCopyGeoJSON.geometry.coordinates = basinCopyGeoJSON.geometry.coordinates.filter(function (item) {
+                    return item.length > 5;
+                });
                 this.leafletData.getMap("mainMap").then(function (map) {
                     _this.leafletData.getLayers("mainMap").then(function (maplayers) {
                         //create draw control
@@ -734,41 +736,37 @@ var StreamStats;
                         //listen for end of draw
                         map.on('draw:created', function (e) {
                             map.removeEventListener('draw:created');
-                            var layer = e.layer;
-                            drawnItems.addLayer(layer);
-                            //convert edit polygon coords
-                            var editArea = layer.toGeoJSON().geometry.coordinates[0];
-                            var editAreaConverted = [];
-                            editArea.forEach(function (item) { editAreaConverted.push([item[1], item[0]]); });
-                            var sourcePolygon = L.polygon(basinConverted);
-                            var clipPolygon = L.polygon(editAreaConverted);
+                            var editLayer = e.layer;
+                            drawnItems.addLayer(editLayer);
+                            var sourcePolygon = basinCopyGeoJSON;
+                            var clipPolygon = editLayer.toGeoJSON();
                             if (_this.studyArea.drawControlOption == 'add') {
                                 _this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'addArea' });
-                                //console.log('add layer', layer.toGeoJSON());
-                                var editPolygon = greinerHormann.union(sourcePolygon, clipPolygon);
-                                _this.studyArea.WatershedEditDecisionList.append.push(layer.toGeoJSON());
+                                //console.log('sourcePolygon:', sourcePolygon);
+                                var editPolygon = turf.union(sourcePolygon, clipPolygon);
+                                _this.studyArea.WatershedEditDecisionList.append.push(clipPolygon);
                                 //this.studyArea.Disclaimers['isEdited'] = true;
                             }
                             if (_this.studyArea.drawControlOption == 'remove') {
                                 _this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'removeArea' });
                                 //console.log('remove layer', layer.toGeoJSON());
-                                var editPolygon = greinerHormann.diff(sourcePolygon, clipPolygon);
+                                var editPolygon = turf.difference(sourcePolygon, clipPolygon);
                                 //check for split polygon
                                 //console.log('editPoly', editPolygon.length);
-                                if (editPolygon.length == 2) {
+                                if (editPolygon.geometry.coordinates.length == 2) {
                                     alert('Splitting polygons is not permitted');
                                     drawnItems.clearLayers();
                                     return;
                                 }
-                                _this.studyArea.WatershedEditDecisionList.remove.push(layer.toGeoJSON());
+                                _this.studyArea.WatershedEditDecisionList.remove.push(clipPolygon);
                                 //this.studyArea.Disclaimers['isEdited'] = true;
                             }
                             //set studyArea basin to new edited polygon
-                            basin.geometry.coordinates[0] = [];
-                            editPolygon.forEach(function (item) { basin.geometry.coordinates[0].push([item[1], item[0]]); });
-                            //console.log('edited basin', basin);
+                            basinCopyGeoJSON.geometry.coordinates = editPolygon.geometry.coordinates;
+                            //editPolygon.geometry.coordinates.forEach((item) => { basin.geometry.coordinates[0].push([item[1], item[0]]) });
+                            //console.log('edited basin', basinCopyGeoJSON);
                             //show new polygon
-                            _this.geojson['globalwatershed'].data = basin;
+                            _this.geojson['globalwatershed'].data = editPolygon;
                             drawnItems.clearLayers();
                             //console.log('editedAreas', angular.toJson(this.studyArea.WatershedEditDecisionList));
                         });
