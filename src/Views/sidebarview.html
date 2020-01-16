@@ -186,7 +186,10 @@
 
                         <div ng-init="vm.showBasinCharacterstics = false" ng-show="vm.showBasinCharacterstics">
                             <form style="padding: 5px 0;">
-                                <button class="btn-blue fullwidth" ng-class="vm.multipleParameterSelectorAdd ? 'btn-black': 'btn-blue'" ng-click="vm.multipleParameterSelector()"><span>Select All Basin Characteristics</span></button>
+                                <button class="btn-blue fullwidth" ng-class="!vm.multipleParameterSelectorAdd ? 'btn-black': 'btn-blue'" ng-click="vm.multipleParameterSelector()">
+                                    <span ng-if="vm.multipleParameterSelectorAdd">Select All Basin Characteristics</span>
+                                    <span ng-if="!vm.multipleParameterSelectorAdd">Unselect All Basin Characteristics</span>
+                                </button>
                             </form>
                             <table class="table table-condensed">
                                 <thead class="param-table">
