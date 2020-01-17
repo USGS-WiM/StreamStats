@@ -280,7 +280,7 @@ module StreamStats.Services {
                 this.estimateFlowsCounter++;
                 this.cleanRegressionRegions(statGroup.regressionRegions);
 
-                //console.log('in estimate flows method for ', statGroup.Name, statGroup);
+                //console.log('in estimate flows method for ', statGroup.name, statGroup);
                 statGroup.regressionRegions.forEach((regressionRegion) => {                    
                     regressionRegion.parameters.forEach((regressionParam) => {                        
                         studyAreaParameterList.forEach((param) => {
@@ -338,7 +338,7 @@ module StreamStats.Services {
                                 //comment out for not, not useful
                                 //if (headerMsg[0] == 'info') statGroup.Disclaimers['Info'] = headerMsg[1].trim();
                             });
-                            //console.log('headerMsgs: ', statGroup.Name, statGroup.Disclaimers);
+                            //console.log('headerMsgs: ', statGroup.name, statGroup.Disclaimers);
                         }
 
                         //if (append) console.log('in estimate flows for regulated basins: ', response);
@@ -448,20 +448,20 @@ module StreamStats.Services {
             try {
                 this.selectedStatisticsGroupList.forEach(sgroup => {
                     sgroup.regressionRegions.forEach(regRegion => {
-                        regRegion.Results.forEach(regResult => {
+                        regRegion.results.forEach(regResult => {
                             result.push(
                                 {
                                     Name: name,
-                                    Region: regRegion.PercentWeight ? regRegion.PercentWeight.toFixed(0) + "% " + regRegion.Name : regRegion.Name,
-                                    Statistic: regResult.Name,
+                                    Region: regRegion.percentWeight ? regRegion.percentWeight.toFixed(0) + "% " + regRegion.name : regRegion.name,
+                                    Statistic: regResult.name,
                                     Code: regResult.code,
-                                    Value: regResult.Value.toUSGSvalue(),
-                                    Unit: regResult.Unit.Unit,
-                                    Disclaimers: regRegion.Disclaimer ? regRegion.Disclaimer : undefined,
-                                    Errors: (regResult.Errors && regResult.Errors.length > 0) ? regResult.Errors.map(err => err.Name + " : " + err.Value).join(', ') : undefined,
-                                    MaxLimit: regResult.IntervalBounds && regResult.IntervalBounds.Upper > 0 ? regResult.IntervalBounds.Upper.toUSGSvalue() : undefined,
-                                    MinLimit: regResult.IntervalBounds && regResult.IntervalBounds.Lower > 0 ? regResult.IntervalBounds.Lower.toUSGSvalue() : undefined,
-                                    EquivYears: regResult.EquivalentYears ? regResult.EquivalentYears : undefined
+                                    Value: regResult.value.toUSGSvalue(),
+                                    Unit: regResult.unit.unit,
+                                    Disclaimers: regRegion.disclaimer ? regRegion.disclaimer : undefined,
+                                    Errors: (regResult.errors && regResult.errors.length > 0) ? regResult.errors.map(err => err.name + " : " + err.value).join(', ') : undefined,
+                                    MaxLimit: regResult.intervalBounds && regResult.intervalBounds.upper > 0 ? regResult.intervalBounds.upper.toUSGSvalue() : undefined,
+                                    MinLimit: regResult.intervalBounds && regResult.intervalBounds.lower > 0 ? regResult.intervalBounds.lower.toUSGSvalue() : undefined,
+                                    EquivYears: regResult.equivalentYears ? regResult.equivalentYears : undefined
                                 });
                         });//next regResult
                     });//next regRegion
@@ -477,7 +477,7 @@ module StreamStats.Services {
         private cleanRegressionRegions(RegressionRegions:Array<any>): void {
             for (var i = 0; i < RegressionRegions.length; i++) {
                 var regRegion = RegressionRegions[i];
-                if (regRegion.Name === 'Area-Averaged') {
+                if (regRegion.name === 'Area-Averaged') {
                     RegressionRegions.splice(i, 1);
                     continue;
                 }//end if

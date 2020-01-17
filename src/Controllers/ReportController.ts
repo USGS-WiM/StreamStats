@@ -181,7 +181,7 @@ module StreamStats.Controllers {
                     finalVal += '\r\n' + statGroup.name + ' Parameters,' + regionPercent + regressionRegion.name.split("_").join(" ") + '\r\n';
 
                     //get this table by ID --need to use this type of selected because jquery doesn't like the possibility of colons in div id
-                    finalVal += this.tableToCSV($(document.getElementById(this.camelize(statGroup.Name + regressionRegion.Name + 'ScenarioParamTable')))) + '\r\n';
+                    finalVal += this.tableToCSV($(document.getElementById(this.camelize(statGroup.name + regressionRegion.name + 'ScenarioParamTable')))) + '\r\n';
                     
                 });
                 return finalVal + '\r\n';
