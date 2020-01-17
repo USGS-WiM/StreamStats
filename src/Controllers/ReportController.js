@@ -143,7 +143,7 @@ var StreamStats;
                             regionPercent = regressionRegion.percentWeight.toFixed(0) + ' Percent ';
                         finalVal += '\r\n' + statGroup.name + ' Parameters,' + regionPercent + regressionRegion.name.split("_").join(" ") + '\r\n';
                         //get this table by ID --need to use this type of selected because jquery doesn't like the possibility of colons in div id
-                        finalVal += _this.tableToCSV($(document.getElementById(_this.camelize(statGroup.Name + regressionRegion.Name + 'ScenarioParamTable')))) + '\r\n';
+                        finalVal += _this.tableToCSV($(document.getElementById(_this.camelize(statGroup.name + regressionRegion.name + 'ScenarioParamTable')))) + '\r\n';
                     });
                     return finalVal + '\r\n';
                 };

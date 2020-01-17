@@ -203,7 +203,7 @@ var StreamStats;
                     }
                     _this.estimateFlowsCounter++;
                     _this.cleanRegressionRegions(statGroup.regressionRegions);
-                    //console.log('in estimate flows method for ', statGroup.Name, statGroup);
+                    //console.log('in estimate flows method for ', statGroup.name, statGroup);
                     statGroup.regressionRegions.forEach(function (regressionRegion) {
                         regressionRegion.parameters.forEach(function (regressionParam) {
                             studyAreaParameterList.forEach(function (param) {
@@ -254,7 +254,7 @@ var StreamStats;
                                 //comment out for not, not useful
                                 //if (headerMsg[0] == 'info') statGroup.Disclaimers['Info'] = headerMsg[1].trim();
                             });
-                            //console.log('headerMsgs: ', statGroup.Name, statGroup.Disclaimers);
+                            //console.log('headerMsgs: ', statGroup.name, statGroup.Disclaimers);
                         }
                         //if (append) console.log('in estimate flows for regulated basins: ', response);
                         //make sure there are some results
@@ -352,19 +352,19 @@ var StreamStats;
                 try {
                     this.selectedStatisticsGroupList.forEach(function (sgroup) {
                         sgroup.regressionRegions.forEach(function (regRegion) {
-                            regRegion.Results.forEach(function (regResult) {
+                            regRegion.results.forEach(function (regResult) {
                                 result.push({
                                     Name: name,
-                                    Region: regRegion.PercentWeight ? regRegion.PercentWeight.toFixed(0) + "% " + regRegion.Name : regRegion.Name,
-                                    Statistic: regResult.Name,
+                                    Region: regRegion.percentWeight ? regRegion.percentWeight.toFixed(0) + "% " + regRegion.name : regRegion.name,
+                                    Statistic: regResult.name,
                                     Code: regResult.code,
-                                    Value: regResult.Value.toUSGSvalue(),
-                                    Unit: regResult.Unit.Unit,
-                                    Disclaimers: regRegion.Disclaimer ? regRegion.Disclaimer : undefined,
-                                    Errors: (regResult.Errors && regResult.Errors.length > 0) ? regResult.Errors.map(function (err) { return err.Name + " : " + err.Value; }).join(', ') : undefined,
-                                    MaxLimit: regResult.IntervalBounds && regResult.IntervalBounds.Upper > 0 ? regResult.IntervalBounds.Upper.toUSGSvalue() : undefined,
-                                    MinLimit: regResult.IntervalBounds && regResult.IntervalBounds.Lower > 0 ? regResult.IntervalBounds.Lower.toUSGSvalue() : undefined,
-                                    EquivYears: regResult.EquivalentYears ? regResult.EquivalentYears : undefined
+                                    Value: regResult.value.toUSGSvalue(),
+                                    Unit: regResult.unit.unit,
+                                    Disclaimers: regRegion.disclaimer ? regRegion.disclaimer : undefined,
+                                    Errors: (regResult.errors && regResult.errors.length > 0) ? regResult.errors.map(function (err) { return err.name + " : " + err.value; }).join(', ') : undefined,
+                                    MaxLimit: regResult.intervalBounds && regResult.intervalBounds.upper > 0 ? regResult.intervalBounds.upper.toUSGSvalue() : undefined,
+                                    MinLimit: regResult.intervalBounds && regResult.intervalBounds.lower > 0 ? regResult.intervalBounds.lower.toUSGSvalue() : undefined,
+                                    EquivYears: regResult.equivalentYears ? regResult.equivalentYears : undefined
                                 });
                             }); //next regResult
                         }); //next regRegion
@@ -380,7 +380,7 @@ var StreamStats;
             nssService.prototype.cleanRegressionRegions = function (RegressionRegions) {
                 for (var i = 0; i < RegressionRegions.length; i++) {
                     var regRegion = RegressionRegions[i];
-                    if (regRegion.Name === 'Area-Averaged') {
+                    if (regRegion.name === 'Area-Averaged') {
                         RegressionRegions.splice(i, 1);
                         continue;
                     } //end if

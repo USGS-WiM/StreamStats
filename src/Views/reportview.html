@@ -97,8 +97,8 @@
                     <div class="well well-sm" ng-show="vm.nssService.showFlowsTable" ng-repeat="statisticsGroup in vm.nssService.selectedStatisticsGroupList">
 
                         <div ng-repeat="regressionRegion in statisticsGroup.regressionRegions" ng-if="regressionRegion.parameters.length > 0">
-                            <h3>{{StatisticsGroup.name}} Parameters<small ng-bind="vm.GetRegressionRegionHeader(regressionRegion)"></small></h3>
-                            <table id="{{vm.camelize(StatisticsGroup.name + RegressionRegion.name + 'ScenarioParamTable')}}" class="scenarioParamTable table table-condensed">
+                            <h3>{{statisticsGroup.name}} Parameters<small ng-bind="vm.GetRegressionRegionHeader(regressionRegion)"></small></h3>
+                            <table id="{{vm.camelize(statisticsGroup.name + regressionRegion.name + 'ScenarioParamTable')}}" class="scenarioParamTable table table-condensed">
                                 <thead class="param-table">
                                     <tr>
                                         <th>Parameter Code</th>
@@ -134,7 +134,7 @@
 
                             <h3>{{statisticsGroup.name}} Flow Report<small ng-bind="vm.GetRegressionRegionHeader(regressionRegion)"></small></h3>
                             <small ng-show="regressionRegion.results[0].intervalBounds || regressionRegion.results[0].errors && regressionRegion.results[0].errors.length > 0">PIl: Prediction Interval-Lower, PIu: Prediction Interval-Upper, SEp: Standard Error of Prediction, SE: Standard Error (other -- see report)</small>
-                            <table id="{{vm.camelize(StatisticsGroup.name + regressionRegion.name + 'ScenarioFlowTable')}}" class="scenarioFlowTable table table-condensed">
+                            <table id="{{vm.camelize(statisticsGroup.name + regressionRegion.name + 'ScenarioFlowTable')}}" class="scenarioFlowTable table table-condensed">
                                 <thead class="flow-table">
                                     <tr>
                                         <th>Statistic</th>
