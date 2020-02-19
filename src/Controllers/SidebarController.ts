@@ -185,6 +185,7 @@ module StreamStats.Controllers {
             this.studyAreaService.clearStudyArea();
             this.studyAreaService.zoomLevel15 = true;
             this.nssService.clearNSSdata();
+            this.multipleParameterSelectorAdd = false;
         }
 
         public startSearch(e) {
@@ -399,6 +400,10 @@ module StreamStats.Controllers {
                 //add it back in.
                 if(sg != null)
                     this.nssService.selectedStatisticsGroupList.push(sg);
+            } else {
+                this.toaster.clear();
+                this.modalService.openModal(Services.SSModalType.e_report);
+                this.nssService.reportGenerated = true;
             }
 
            

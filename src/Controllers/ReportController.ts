@@ -84,6 +84,7 @@ module StreamStats.Controllers {
         public center: ICenter = null;
         public bounds: any;
         public layers: IMapLayers = null;
+        public extensions;
 
         public geojson: Object = null;
 
@@ -135,6 +136,7 @@ module StreamStats.Controllers {
             this.reportTitle = 'StreamStats Report';
             this.reportComments = 'Some comments here';
             this.AppVersion = configuration.version;
+            this.extensions = this.ActiveExtensions;
             this.initMap();
             
 

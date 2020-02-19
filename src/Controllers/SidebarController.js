@@ -133,6 +133,7 @@ var StreamStats;
                 this.studyAreaService.clearStudyArea();
                 this.studyAreaService.zoomLevel15 = true;
                 this.nssService.clearNSSdata();
+                this.multipleParameterSelectorAdd = false;
             };
             SidebarController.prototype.startSearch = function (e) {
                 e.stopPropagation();
@@ -305,6 +306,11 @@ var StreamStats;
                     //add it back in.
                     if (sg != null)
                         this.nssService.selectedStatisticsGroupList.push(sg);
+                }
+                else {
+                    this.toaster.clear();
+                    this.modalService.openModal(StreamStats.Services.SSModalType.e_report);
+                    this.nssService.reportGenerated = true;
                 }
                 //pass mainMap basemap to studyAreaService
                 this.leafletData.getMap("mainMap").then(function (map) {
