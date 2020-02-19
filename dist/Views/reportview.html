@@ -170,8 +170,8 @@
                     </div>
 
                     <!--Extensions results-->
-                    <div class="well well-sm" ng-show="vm.ActiveExtensions">
-                        <div ng-repeat="sc in vm.ActiveExtensions">                            
+                    <div class="well well-sm" ng-show="vm.extensions">
+                        <div ng-repeat="sc in vm.extensions">                            
                             <div ng-if="sc.code == 'QPPQ'" ng-init=vm.ActivateGraphs(sc.result)>
                                 <h3>{{sc.name}} ({{sc.code}})</h3>
                                 <div ng-repeat="p in sc.parameters" ng-if="['sdate','edate'].indexOf(p.code) >-1">
