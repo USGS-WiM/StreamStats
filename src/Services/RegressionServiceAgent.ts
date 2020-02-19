@@ -30,7 +30,7 @@ module StreamStats.ServiceAgent {
     'use strict';
 
 
-    class FDCTMAgent extends ServiceAgentBase  implements IFDCTMAgent, IScenarioAgent {
+    class FDCTMAgent  implements IFDCTMAgent, IScenarioAgent {
         // Properties
         public canInit: boolean;
         public canLoad: boolean;
@@ -38,10 +38,7 @@ module StreamStats.ServiceAgent {
 
 
         // Constructor
-        constructor($http: ng.IHttpService) {
-            super($http, configuration.appSettings['RegressionService']);
-            
-        }
+        constructor($http: ng.IHttpService) { }
 
         //Methods
         public Init(): ng.IPromise<Models.IScenario> {

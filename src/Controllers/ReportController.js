@@ -56,6 +56,7 @@ var StreamStats;
                 this.reportTitle = 'StreamStats Report';
                 this.reportComments = 'Some comments here';
                 this.AppVersion = configuration.version;
+                this.extensions = this.ActiveExtensions;
                 this.initMap();
                 $scope.$on('leafletDirectiveMap.reportMap.load', function (event, args) {
                     //console.log('report map load');
