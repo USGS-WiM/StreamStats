@@ -376,7 +376,7 @@ var StreamStats;
                                     showMaxMin: false
                                 },
                                 zoom: {
-                                    enabled: true,
+                                    enabled: false,
                                     scaleExtent: [1, 10],
                                     useFixedDomain: false,
                                     useNiceScale: false,
