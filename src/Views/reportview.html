@@ -114,7 +114,7 @@
                                     <tr ng-repeat="parameter in regressionRegion.parameters">
                                         <td ng-bind="parameter.code"></td>
                                         <td ng-bind="parameter.name"></td>
-                                        <td ng-class="(parameter.value < parameter.limits.min) || (parameter.Value > parameter.limits.Max) ? 'wim-warning' : ''">{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
+                                        <td ng-class="(parameter.value < parameter.limits.min) || (parameter.value > parameter.limits.max) ? 'wim-warning' : ''">{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
                                         <td ng-if="vm.studyAreaService.selectedStudyArea.disclaimers.isRegulated && vm.showRegulation" ng-class="(parameter.value < parameter.limits.min) || (parameter.value > parameter.limits.max) ? 'wim-warning' : ''">{{parameter.unRegulatedValue == -99999 ? 'undefined' : parameter.unRegulatedValue}}</td>
                                         <td ng-bind="parameter.unitType.unit"></td>
                                         <td ng-bind="parameter.limits.min"></td>
