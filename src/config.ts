@@ -57,7 +57,7 @@ module StreamStats {
         'leaflet-directive',
         'StreamStats.Services',
         'StreamStats.Controllers',
-        'WiM.Services', 'WiM.Event', 'wim_angular', 'rzModule', 'nvd3', 'daterangepicker'
+        'WiM.Services', 'WiM.Event', 'wim_angular', 'rzModule', 'nvd3', 'daterangepicker', 'saveSvgAsPng'
         ])
         .config(config);
 }//end module 
