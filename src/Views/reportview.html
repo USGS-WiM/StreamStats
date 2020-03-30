@@ -56,7 +56,7 @@
                 <div ng-show="vm.showReport">
 
                     <!--Parameter Table if just basin chars-->
-                    <div class="well well-sm" ng-show="vm.nssService.showBasinCharacteristicsTable">
+                    <div class="well well-sm" ng-show="vm.nssService.showBasinCharacteristicsTable && (vm.nssService.selectedStatisticsGroupList.length > 1 || (vm.extensions && vm.extensions[0].code != 'QPPQ'))">
                         <h3>Basin Characteristics</h3>
                         <table id="mainParamTable" class="mainParamTable table table-condensed">
                             <thead class="param-table">
@@ -208,7 +208,7 @@
                                 </div>
 
                                 <!--FDCTM Exceedance Probablities-->
-                                <h3>Exceedance Probablities</h3>
+                                <h3>Exceedance Probabilities</h3>
                                 <nvd3 id="exceedancegraph" options=sc.result.graphdata.exceedance.options data=sc.result.graphdata.exceedance.data></nvd3>
                                 <a ng-click="isExceedanceTableOpen = !isExceedanceTableOpen">
                                     <span ng-show="isExceedanceTableOpen">Hide</span>
