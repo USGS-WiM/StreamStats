@@ -27,6 +27,7 @@ module StreamStats.Controllers {
 
     declare var jsPDF;
     declare var shpwrite;
+    declare var saveSvgAsPng;
     'use strinct';
     interface IReportControllerScope extends ng.IScope {
         vm: ReportController;
@@ -294,7 +295,6 @@ module StreamStats.Controllers {
                         }
                       }
                     saveSvgAsPng(svg2, "flowgraph.png");
-                    
                 }
             }
 
