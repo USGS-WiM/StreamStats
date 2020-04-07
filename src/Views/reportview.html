@@ -179,9 +179,9 @@
                                 </div>
 
                                 <!--Reference gage-->
-                                <div id="ReferenceGage" class="well well-sm">
+                                <div class="well well-sm">
                                     <h3>Reference gage</h3>
-                                    <table class="table table-condensed">
+                                    <table id="ReferanceGage" class="table table-condensed">
                                         <tbody>
                                             <tr>
                                                 <td>Station ID:</td>
@@ -209,15 +209,16 @@
 
                                 <!--FDCTM Exceedance Probablities-->
                                 <h3>Exceedance Probabilities</h3>
+                                <button ng-click="vm.downloadPNG('exceedancegraph')">Download PNG</button>
                                 <nvd3 id="exceedancegraph" options=sc.result.graphdata.exceedance.options data=sc.result.graphdata.exceedance.data></nvd3>
-                                <a ng-click="isExceedanceTableOpen = !isExceedanceTableOpen">
-                                    <span ng-show="isExceedanceTableOpen">Hide</span>
-                                    <span ng-hide="isExceedanceTableOpen">Show</span> table
+                                <a ng-click="vm.isExceedanceTableOpen = !vm.isExceedanceTableOpen">
+                                    <span ng-show="vm.isExceedanceTableOpen">Hide</span>
+                                    <span ng-hide="vm.isExceedanceTableOpen">Show</span> table
                                 </a>
-                                <div ng-if="isExceedanceTableOpen" id="Exceedance Probablities">
-                                    <div id="exceedanceTable" class="well well-sm">
+                                <div ng-if="vm.isExceedanceTableOpen" id="Exceedance Probabilities">
+                                    <div class="well well-sm">
 
-                                        <table class="table table-condensed" title="Exceedance Probabilities">
+                                        <table id="exceedanceTable" class="table table-condensed" title="Exceedance Probabilities">
                                             <thead>
                                                 <tr>
                                                     <th>Exceedance</th>
@@ -236,14 +237,15 @@
 
                                 <!--Estimated Flow -->
                                 <h3>Estimated Flows</h3>
+                                <button ng-click="vm.downloadPNG('flowgraph')">Download PNG</button>
                                 <nvd3 id="flowgraph" options=sc.result.graphdata.flow.options data=sc.result.graphdata.flow.data></nvd3>
-                                <a ng-click="isFlowTableOpen = !isFlowTableOpen">
-                                    <span ng-show="isFlowTableOpen">Hide</span>
-                                    <span ng-hide="isFlowTableOpen">Show</span> table
+                                <a ng-click="vm.isFlowTableOpen = !vm.isFlowTableOpen">
+                                    <span ng-show="vm.isFlowTableOpen">Hide</span>
+                                    <span ng-hide="vm.isFlowTableOpen">Show</span> table
                                 </a>
-                                <div ng-if="isFlowTableOpen" id="flowTable" class="well well-sm">
+                                <div ng-if="vm.isFlowTableOpen" class="well well-sm">
                                     <!--Table-->
-                                    <table class="table table-condensed" title="Estimated Flows">
+                                    <table id="flowTable" class="table table-condensed" title="Estimated Flows">
                                         <thead>
                                             <tr>
                                                 <th></th>
@@ -298,7 +300,7 @@
                   </button>
                   <ul class="dropdown-menu" role="menu">
                       <li><a href="#" ng-click="vm.downloadGeoJSON()" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="GeoJSON"><span class="fa fa-download"></span>&nbsp;&nbsp;GeoJSON</a></li>
-                      <li><a href="#" ng-click="vm.downloadCSV()" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="CSV"><span class="fa fa-download"></span>&nbsp;&nbsp;CSV</a></li>
+                      <li><a href="#" ng-click="vm.isFlowTableOpen = true; vm.isExceedanceTableOpen = true; vm.downloadCSV()" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="CSV"><span class="fa fa-download"></span>&nbsp;&nbsp;CSV</a></li>
                       <li><a href="#" ng-click="vm.downloadShapeFile()" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="ShapeFile"><span class="fa fa-download"></span>&nbsp;&nbsp;ShapeFile</a></li>
                   </ul>
                 </div>

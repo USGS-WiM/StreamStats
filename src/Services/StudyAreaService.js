@@ -796,7 +796,7 @@ var StreamStats;
                         var feature = {
                             type: "Feature",
                             geometry: fc.feature.features[i].geometry,
-                            id: fc.feature.features.length > 1 ? fc.name + "_" + fc.feature.features[i].properties["Name"].toLowerCase() : fc.name.toLowerCase(),
+                            id: fc.feature.features.length > 1 && fc.feature.features[i].properties["Name"] ? fc.name + "_" + fc.feature.features[i].properties["Name"].toLowerCase() : fc.name.toLowerCase(),
                             properties: fc.feature.features[i].properties
                         };
                         featureArray.push(feature);
