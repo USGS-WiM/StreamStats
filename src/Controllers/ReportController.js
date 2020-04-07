@@ -44,6 +44,8 @@ var StreamStats;
                 this.center = null;
                 this.layers = null;
                 this.geojson = null;
+                this.isExceedanceTableOpen = false;
+                this.isFlowTableOpen = false;
                 this._graphData = {
                     data: {},
                     options: {}
@@ -128,12 +130,12 @@ var StreamStats;
                 this.angulartics.eventTrack('Download', { category: 'Report', label: 'CSV' });
                 var filename = 'data.csv';
                 var processMainParameterTable = function (data) {
-                    var finalVal = 'Basin Characteristics\n';
+                    var finalVal = '\nBasin Characteristics\n';
                     finalVal += _this.tableToCSV($('#mainParamTable'));
-                    return finalVal + '\r\n';
+                    return finalVal + '\n';
                 };
                 var processScenarioParamTable = function (statGroup) {
-                    var finalVal = '';
+                    var finalVal = '\n';
                     statGroup.regressionRegions.forEach(function (regressionRegion) {
                         //bail if in Area-Averaged section
                         if (regressionRegion.name == 'Area-Averaged')
@@ -142,11 +144,11 @@ var StreamStats;
                         var regionPercent = '';
                         if (regressionRegion.percentWeight)
                             regionPercent = regressionRegion.percentWeight.toFixed(0) + ' Percent ';
-                        finalVal += '\r\n' + statGroup.name + ' Parameters,' + regionPercent + regressionRegion.name.split("_").join(" ") + '\r\n';
+                        finalVal += statGroup.name + ' Parameters,' + regionPercent + regressionRegion.name.split("_").join(" ") + '\r\n';
                         //get this table by ID --need to use this type of selected because jquery doesn't like the possibility of colons in div id
-                        finalVal += _this.tableToCSV($(document.getElementById(_this.camelize(statGroup.name + regressionRegion.name + 'ScenarioParamTable')))) + '\r\n';
+                        finalVal += _this.tableToCSV($(document.getElementById(_this.camelize(statGroup.name + regressionRegion.name + 'ScenarioParamTable')))) + '\n';
                     });
-                    return finalVal + '\r\n';
+                    return finalVal + '\n';
                 };
                 var processDisclaimers = function (statGroup) {
                     //console.log('Process disclaimers statGroup: ', statGroup);
@@ -172,13 +174,13 @@ var StreamStats;
                                 finalVal +=
                                     '"PIl: Prediction Interval- Lower, PIu: Prediction Interval- Upper, SEp: Standard Error of Prediction, SE: Standard Error (other-- see report)"\r\n';
                             //get this table by ID --need to use this type of selected because jquery doesn't like the possibility of colons in div id
-                            finalVal += _this.tableToCSV($(document.getElementById(_this.camelize(statGroup.name + regressionRegion.name + 'ScenarioFlowTable')))) + '\r\n\r\n';
+                            finalVal += _this.tableToCSV($(document.getElementById(_this.camelize(statGroup.name + regressionRegion.name + 'ScenarioFlowTable')))) + '\n';
                         }
                     });
-                    return finalVal + '\r\n';
+                    return finalVal + '\n';
                 };
                 //main file header with site information
-                var csvFile = 'StreamStats Output Report\n\n' + 'State/Region ID,' + this.studyAreaService.selectedStudyArea.RegionID.toUpperCase() + '\nWorkspace ID,' + this.studyAreaService.selectedStudyArea.WorkspaceID + '\nLatitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + '\nLongitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5) + '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n\n';
+                var csvFile = 'StreamStats Output Report\n\n' + 'State/Region ID,' + this.studyAreaService.selectedStudyArea.RegionID.toUpperCase() + '\nWorkspace ID,' + this.studyAreaService.selectedStudyArea.WorkspaceID + '\nLatitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + '\nLongitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5) + '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n';
                 //first write main parameter table
                 if (this.nssService.selectedStatisticsGroupList.length > 1 || (this.extensions && this.extensions[0].code != 'QPPQ')) {
                     csvFile += processMainParameterTable(this.studyAreaService.studyAreaParameterList);
@@ -190,90 +192,61 @@ var StreamStats;
                         csvFile += processDisclaimers(statGroup);
                     csvFile += processScenarioFlowTable(statGroup);
                 });
-                // add in QPPQ section
-                var extVal = '\r\n';
-                for (var _i = 0, _a = this.extensions; _i < _a.length; _i++) {
-                    var sc = _a[_i];
-                    if (sc.code == 'QPPQ') {
-                        extVal += sc.name += ' (' + sc.code + ')' + '\r\n';
-                        for (var _b = 0, _c = sc.parameters; _b < _c.length; _b++) {
-                            var p = _c[_b];
-                            if (['sdate', 'edate'].indexOf(p.code) > -1) {
-                                var date = new Date(p.value);
-                                extVal += p.name + ':, ' + date.toLocaleDateString() + '\r\n'; // .toLocaleString()?
+                // add in QPPQ section, need tables open to add to csv
+                this.isExceedanceTableOpen = true;
+                this.isFlowTableOpen = true;
+                var self = this;
+                setTimeout(function () {
+                    var extVal = '';
+                    for (var _i = 0, _a = self.extensions; _i < _a.length; _i++) {
+                        var sc = _a[_i];
+                        if (sc.code == 'QPPQ') {
+                            extVal += sc.name += ' (' + sc.code + ')' + '\n';
+                            for (var _b = 0, _c = sc.parameters; _b < _c.length; _b++) {
+                                var p = _c[_b];
+                                if (['sdate', 'edate'].indexOf(p.code) > -1) {
+                                    var date = new Date(p.value);
+                                    extVal += p.name + ':, ' + date.toLocaleDateString() + '\n';
+                                }
                             }
+                            // add reference gage table TODO: getting random quotation marks without \n, double new lines with \n after 'Reference gage'
+                            extVal += '\nReference gage';
+                            extVal += self.tableToCSV($('#ReferanceGage'));
+                            // add exceedance table
+                            extVal += '\n\nExceedance Probabilities\n';
+                            extVal += self.tableToCSV($('#exceedanceTable'));
+                            // add flow table
+                            extVal += '\nEstimated Flows\n';
+                            extVal += self.tableToCSV($('#flowTable'));
                         }
-                        // TODO: add links to station IDs?
-                        // TODO: clean up? don't need all these lines
-                        extVal += '\r\nReference gage\r\nStation ID:,' + sc.result.referanceGage.stationID + '\r\n';
-                        extVal += 'Name:,"' + sc.result.referanceGage.name + '"\r\nLatitude:,' + sc.result.referanceGage.latitude_DD + ' Decimal degrees\r\n';
-                        extVal += 'Longitude:,' + sc.result.referanceGage.longitude_DD + ' Decimal Degrees\r\nDrainage Area:,' + sc.result.referanceGage.drainageArea_sqMI + ' square miles\r\n';
-                        extVal += '\r\nExceedance Probabilities\r\n';
-                        extVal += 'Exceedance,FlowExceeded\r\n';
-                        Object.keys(sc.result.exceedanceProbabilities).forEach(function (key, value) {
-                            if (value) {
-                                value = value.toUSGSvalue();
-                            }
-                            extVal += key + ',' + value + '\r\n';
-                        });
-                        extVal += '\r\nEstimated Flows\r\n';
-                        extVal += ',Discharge (cfs)\r\nDate,Estimated,"' + sc.result.referanceGage.name + '"\r\n';
-                        for (var _d = 0, _e = sc.result.estimatedFlow.observations; _d < _e.length; _d++) {
-                            var obs = _e[_d];
-                            var idx = sc.result.estimatedFlow.observations.indexOf(obs);
-                            if (obs.value) {
-                                obs.value = obs.value.toUSGSvalue();
-                            }
-                            var dischargeValue = sc.result.referanceGage.discharge.observations[idx].value;
-                            if (dischargeValue) {
-                                dischargeValue = dischargeValue.toUSGSvalue();
-                            }
-                            extVal += obs.date.split('T')[0] + ',' + obs.value + ',' + dischargeValue + '\r\n';
-                        }
-                        // for now just having a file download window pop up for each graph, maybe zip the files?
-                        var svg;
-                        var svg2;
-                        var children = document.getElementById('exceedancegraph').children;
-                        for (var i = 0; i < children.length; i++) {
-                            if (children[i].tagName === 'svg') {
-                                svg = children[i];
-                            }
-                        }
-                        saveSvgAsPng(svg, "exceedancegraph.png");
-                        var svg2 = d3.select('#flowgraph')[0];
-                        var children2 = document.getElementById('flowgraph').children;
-                        for (var i = 0; i < children2.length; i++) {
-                            if (children2[i].tagName === 'svg') {
-                                svg2 = children2[i];
-                            }
-                        }
-                        saveSvgAsPng(svg2, "flowgraph.png");
                     }
-                }
-                csvFile += extVal + '\r\n\r\n';
-                //disclaimer
-                csvFile += this.disclaimer + 'Application Version: ' + this.AppVersion;
-                //download
-                var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
-                if (navigator.msSaveBlob) { // IE 10+
-                    navigator.msSaveBlob(blob, filename);
-                }
-                else {
-                    var link = document.createElement("a");
-                    var url = URL.createObjectURL(blob);
-                    if (link.download !== undefined) { // feature detection
-                        // Browsers that support HTML5 download attribute
-                        link.setAttribute("href", url);
-                        link.setAttribute("download", filename);
-                        link.style.visibility = 'hidden';
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
+                    csvFile += extVal + '\n\n';
+                    //disclaimer
+                    csvFile += self.disclaimer + 'Application Version: ' + self.AppVersion;
+                    //download
+                    var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
+                    if (navigator.msSaveBlob) { // IE 10+
+                        navigator.msSaveBlob(blob, filename);
                     }
                     else {
-                        window.open(url);
+                        var link = document.createElement("a");
+                        var url = URL.createObjectURL(blob);
+                        if (link.download !== undefined) { // feature detection
+                            // Browsers that support HTML5 download attribute
+                            link.setAttribute("href", url);
+                            link.setAttribute("download", filename);
+                            link.style.visibility = 'hidden';
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                        }
+                        else {
+                            window.open(url);
+                        }
                     }
-                }
+                    this.isExceedanceTableOpen = false;
+                    this.isFlowTableOpen = false;
+                }, 300);
             };
             ReportController.prototype.downloadGeoJSON = function () {
                 var _this = this;
@@ -324,6 +297,16 @@ var StreamStats;
                     console.log(e);
                 }
             };
+            ReportController.prototype.downloadPNG = function (graph) {
+                var svg;
+                var children = document.getElementById(graph).children;
+                for (var i = 0; i < children.length; i++) {
+                    if (children[i].tagName === 'svg') {
+                        svg = children[i];
+                    }
+                }
+                saveSvgAsPng(svg, graph + ".png");
+            };
             ReportController.prototype.downloadPDF = function () {
                 var pdf = new jsPDF('p', 'pt', 'letter');
                 // source can be HTML-formatted string, or a reference
@@ -363,6 +346,7 @@ var StreamStats;
                 }, margins);
             };
             ReportController.prototype.ActivateGraphs = function (result) {
+                // TODO: fix flow graph yaxis label - gets overlapped with tick labels sometimes
                 result.graphdata = {
                     exceedance: {
                         data: [{ values: [], area: true, color: '#7777ff' }],

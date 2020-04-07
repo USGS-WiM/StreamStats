@@ -235,7 +235,7 @@ module StreamStats.Services {
                         //add Regression Regions to StatisticsGroupList and add percent weights
                         this.selectedStatisticsGroupList.forEach((statGroup) => {
                             if ((response.data[0].statisticGroupID == statGroup.id) ||
-                                (this.regionservice.selectedRegion.Applications.indexOf("FDCTM") > -1 && statGroup.id.indexOf(response.data[0].statisticGroupID, 0) > -1)) {
+                                (this.regionservice.selectedRegion.Applications.indexOf("FDCTM") > -1 && typeof(statGroup.id) == 'string' && statGroup.id.indexOf(response.data[0].statisticGroupID, 0) > -1)) {
 
                                 statGroup['statisticGroupName'] = statGroup.name;
                                 statGroup['statisticGroupID'] = statGroup.id.toString().replace("_fdctm", "");
