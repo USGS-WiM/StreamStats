@@ -196,31 +196,34 @@ var StreamStats;
                 this.isExceedanceTableOpen = true;
                 this.isFlowTableOpen = true;
                 var self = this;
+                // timeout here to give the tables time to open in view
                 setTimeout(function () {
                     var extVal = '';
-                    for (var _i = 0, _a = self.extensions; _i < _a.length; _i++) {
-                        var sc = _a[_i];
-                        if (sc.code == 'QPPQ') {
-                            extVal += sc.name += ' (' + sc.code + ')' + '\n';
-                            for (var _b = 0, _c = sc.parameters; _b < _c.length; _b++) {
-                                var p = _c[_b];
-                                if (['sdate', 'edate'].indexOf(p.code) > -1) {
-                                    var date = new Date(p.value);
-                                    extVal += p.name + ':, ' + date.toLocaleDateString() + '\n';
+                    if (self.extensions) {
+                        for (var _i = 0, _a = self.extensions; _i < _a.length; _i++) {
+                            var sc = _a[_i];
+                            if (sc.code == 'QPPQ') {
+                                extVal += sc.name += ' (' + sc.code + ')' + '\n';
+                                for (var _b = 0, _c = sc.parameters; _b < _c.length; _b++) {
+                                    var p = _c[_b];
+                                    if (['sdate', 'edate'].indexOf(p.code) > -1) {
+                                        var date = new Date(p.value);
+                                        extVal += p.name + ':, ' + date.toLocaleDateString() + '\n';
+                                    }
                                 }
+                                // add reference gage table TODO: getting random quotation marks without \n, double new lines with \n after 'Reference gage'
+                                extVal += '\n';
+                                extVal += self.tableToCSV($('#ReferanceGage'));
+                                // add exceedance table
+                                extVal += '\n\nExceedance Probabilities\n';
+                                extVal += self.tableToCSV($('#exceedanceTable'));
+                                // add flow table
+                                extVal += '\n\nEstimated Flows\n';
+                                extVal += self.tableToCSV($('#flowTable'));
                             }
-                            // add reference gage table TODO: getting random quotation marks without \n, double new lines with \n after 'Reference gage'
-                            extVal += '\nReference gage';
-                            extVal += self.tableToCSV($('#ReferanceGage'));
-                            // add exceedance table
-                            extVal += '\n\nExceedance Probabilities\n';
-                            extVal += self.tableToCSV($('#exceedanceTable'));
-                            // add flow table
-                            extVal += '\nEstimated Flows\n';
-                            extVal += self.tableToCSV($('#flowTable'));
                         }
+                        csvFile += extVal + '\n\n';
                     }
-                    csvFile += extVal + '\n\n';
                     //disclaimer
                     csvFile += self.disclaimer + 'Application Version: ' + self.AppVersion;
                     //download
@@ -245,7 +248,7 @@ var StreamStats;
                         }
                     }
                     this.isExceedanceTableOpen = false;
-                    this.isFlowTableOpen = false;
+                    this.isFlowTableOpen = false; // TODO: not working
                 }, 300);
             };
             ReportController.prototype.downloadGeoJSON = function () {
