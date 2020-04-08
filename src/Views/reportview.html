@@ -180,8 +180,12 @@
 
                                 <!--Reference gage-->
                                 <div class="well well-sm">
-                                    <h3>Reference gage</h3>
                                     <table id="ReferanceGage" class="table table-condensed">
+                                        <thead>
+                                            <tr>
+                                                <th>Reference Gage</th>
+                                            </tr>
+                                        </thead>
                                         <tbody>
                                             <tr>
                                                 <td>Station ID:</td>
@@ -208,12 +212,12 @@
                                 </div>
 
                                 <!--FDCTM Exceedance Probablities-->
-                                <h3>Exceedance Probabilities</h3>
-                                <button ng-click="vm.downloadPNG('exceedancegraph')">Download PNG</button>
+                                <h3 class="reportChartHeader">Exceedance Probabilities</h3>
+                                <button class="chartExportButton" ng-click="vm.downloadPNG('exceedancegraph')">Download PNG</button>
                                 <nvd3 id="exceedancegraph" options=sc.result.graphdata.exceedance.options data=sc.result.graphdata.exceedance.data></nvd3>
                                 <a ng-click="vm.isExceedanceTableOpen = !vm.isExceedanceTableOpen">
                                     <span ng-show="vm.isExceedanceTableOpen">Hide</span>
-                                    <span ng-hide="vm.isExceedanceTableOpen">Show</span> table
+                                    <span ng-hide="vm.isExceedanceTableOpen">Show</span> table<br>
                                 </a>
                                 <div ng-if="vm.isExceedanceTableOpen" id="Exceedance Probabilities">
                                     <div class="well well-sm">
@@ -236,8 +240,8 @@
                                 </div>
 
                                 <!--Estimated Flow -->
-                                <h3>Estimated Flows</h3>
-                                <button ng-click="vm.downloadPNG('flowgraph')">Download PNG</button>
+                                <h3 class="reportChartHeader">Estimated Flows</h3>
+                                <button class="chartExportButton" ng-click="vm.downloadPNG('flowgraph')">Download PNG</button>
                                 <nvd3 id="flowgraph" options=sc.result.graphdata.flow.options data=sc.result.graphdata.flow.data></nvd3>
                                 <a ng-click="vm.isFlowTableOpen = !vm.isFlowTableOpen">
                                     <span ng-show="vm.isFlowTableOpen">Hide</span>

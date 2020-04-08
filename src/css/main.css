@@ -1740,3 +1740,11 @@ input[name=distanceValue] {
 .projDesc {
     font-size: 12px;
 }
+
+.chartExportButton {
+    float: right;
+}
+
+.reportChartHeader {
+    display: inline-block;
+}
