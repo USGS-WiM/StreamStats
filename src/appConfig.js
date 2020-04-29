@@ -8,7 +8,7 @@ configuration.baseurls =
         'StreamStatsServices': 'https://test.streamstats.usgs.gov',
         'StreamStatsMapServices': 'https://gis.streamstats.usgs.gov',
         'nssservicesv2':'https://test.streamstats.usgs.gov/nssservicesv2',
-        'NSS': 'https://test.streamstats.usgs.gov/nssservicesv2',
+        'NSS': 'https://test.streamstats.usgs.gov/nssservices',
         'WaterUseServices': 'https://test.streamstats.usgs.gov/wateruseservices',
         'StormRunoffServices': 'https://test.streamstats.usgs.gov/runoffmodelingservices',
         'ScienceBase': 'https://gis.usgs.gov/sciencebase2'
