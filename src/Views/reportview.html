@@ -287,7 +287,12 @@
                         USGS Product Names Disclaimer:
                         Any use of trade, firm, or product names is for descriptive purposes only and does not imply endorsement by the U.S. Government.
                     </p>
-                    <p>Application Version: {{vm.AppVersion}}</p>
+                    <p>
+                        <span>Application Version: {{vm.AppVersion}}</span>
+                        <span ng-show="vm.environment == 'development'">[Development Version: Not for public consumption]</span>
+                    </p>
+
+
                 </div>
             </div>
 
