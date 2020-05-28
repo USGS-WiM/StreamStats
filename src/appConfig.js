@@ -7,7 +7,7 @@ configuration.baseurls =
         'NWISurl': 'https://waterservices.usgs.gov/nwis',
         'StreamStatsServices': 'https://test.streamstats.usgs.gov',
         'StreamStatsMapServices': 'https://gis.streamstats.usgs.gov',
-        'nssservicesv2':'https://test.streamstats.usgs.gov/nssservicesv2',
+        'nssservicesv2':'https://test.streamstats.usgs.gov/nssservices',
         'NSS': 'https://test.streamstats.usgs.gov/nssservices',
         'WaterUseServices': 'https://test.streamstats.usgs.gov/wateruseservices',
         'StormRunoffServices': 'https://test.streamstats.usgs.gov/runoffmodelingservices',
