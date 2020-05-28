@@ -8,7 +8,7 @@
     "Martyn Smith <marsmith@usgs.gov>"
   ],
   "scripts": {
-    "live": "live-server --open=/src/",
+    "start": "concurrently --kill-others \"tsc --watch\" \"live-server --open=/src/\"",
     "build": "npm install -g gulp && npm install -g typings && npm install && typings install && gulp"
   },
   "license": "MIT",
@@ -33,7 +33,7 @@
     "jquery": "^3.4.0",
     "leaflet": "0.7.7",
     "leaflet-draw": "^0.4.14",
-    "leaflet.elevation": "github:mrmufflon/Leaflet.Elevation",
+    "leaflet.elevation": "github:mrmufflon/Leaflet.Elevation#b7943da40c85fa2351484776e7c3e93bef7aed01",
     "leaflet.locatecontrol": "^0.60.0",
     "marker-creator": "github:usgs-wim/marker-creator#master",
     "mobile-angular-ui": "1.2.1",
@@ -42,9 +42,10 @@
     "save-svg-as-png": "^1.4.6",
     "usgs-search-api": "github:usgs/search_api",
     "wim-styles": "github:usgs-wim/wim-styles#master",
-    "wim_angular": "git+https://github.com/USGS-WiM/wim_angular.git#master"
+    "wim_angular": "github:usgs-wim/wim_angular#master"
   },
   "devDependencies": {
+    "concurrently": "^5.1.0",
     "del": "^1.1.1",
     "gulp": "3.9.1",
     "gulp-autoprefixer": "0.0.7",
@@ -60,8 +61,8 @@
     "gulp-useref": "^3.1.6",
     "jshint": "^2.9.6",
     "jshint-stylish": "^2.2.1",
+    "live-server": "^1.2.1",
     "open": "7.0.0",
-    "semver": "^4.3.3",
-    "live-server": "^1.2.1"
+    "semver": "^4.3.3"
   }
 }
