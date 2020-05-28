@@ -97,7 +97,7 @@
                     <div class="well well-sm" ng-show="vm.nssService.showFlowsTable" ng-repeat="statisticsGroup in vm.nssService.selectedStatisticsGroupList">
 
                         <div ng-repeat="regressionRegion in statisticsGroup.regressionRegions" ng-if="regressionRegion.parameters.length > 0">
-                            <h3>{{statisticsGroup.name}} Parameters<small ng-bind="vm.GetRegressionRegionHeader(regressionRegion)"></small></h3>
+                            <h3>{{statisticsGroup.name}} Parameters&nbsp;&nbsp;<span ng-bind="vm.GetRegressionRegionHeader(regressionRegion)"></span></h3>
                             <table id="{{vm.camelize(statisticsGroup.name + regressionRegion.name + 'ScenarioParamTable')}}" class="scenarioParamTable table table-condensed">
                                 <thead class="param-table">
                                     <tr>
@@ -128,12 +128,12 @@
                         <div ng-repeat="regressionRegion in statisticsGroup.regressionRegions">
                             <!--Scenario Disclaimers-->
                             <div ng-show="regressionRegion.disclaimer">
-                                <h3>{{statisticsGroup.name}} Disclaimers<small ng-bind="vm.GetRegressionRegionHeader(regressionRegion)"></small></h3>
+                                <h3>{{statisticsGroup.name}} Disclaimers&nbsp;&nbsp;<span ng-bind="vm.GetRegressionRegionHeader(regressionRegion)"></span></h3>
                                 <div class="wim-alert-warning">{{regressionRegion.disclaimer}}</div>
                             </div>
 
-                            <h3>{{statisticsGroup.name}} Flow Report<small ng-bind="vm.GetRegressionRegionHeader(regressionRegion)"></small></h3>
-                            <small ng-show="regressionRegion.results[0].intervalBounds || regressionRegion.results[0].errors && regressionRegion.results[0].errors.length > 0">PIl: Prediction Interval-Lower, PIu: Prediction Interval-Upper, SEp: Standard Error of Prediction, SE: Standard Error (other -- see report)</small>
+                            <h3>{{statisticsGroup.name}} Flow Report&nbsp;&nbsp;<span ng-bind="vm.GetRegressionRegionHeader(regressionRegion)"></span></h3>
+                            <span ng-show="regressionRegion.results[0].intervalBounds || regressionRegion.results[0].errors && regressionRegion.results[0].errors.length > 0">PIl: Prediction Interval-Lower, PIu: Prediction Interval-Upper, SEp: Standard Error of Prediction, SE: Standard Error (other -- see report)</spam>
                             <table id="{{vm.camelize(statisticsGroup.name + regressionRegion.name + 'ScenarioFlowTable')}}" class="scenarioFlowTable table table-condensed">
                                 <thead class="flow-table">
                                     <tr>
@@ -287,7 +287,12 @@
                         USGS Product Names Disclaimer:
                         Any use of trade, firm, or product names is for descriptive purposes only and does not imply endorsement by the U.S. Government.
                     </p>
-                    <p>Application Version: {{vm.AppVersion}}</p>
+                    <p>
+                        <span>Application Version: {{vm.AppVersion}}</span>
+                        <span ng-show="vm.environment == 'development'">[Development Version: Not for public consumption]</span>
+                    </p>
+
+
                 </div>
             </div>
 
