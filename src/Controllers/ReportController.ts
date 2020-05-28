@@ -97,6 +97,7 @@ module StreamStats.Controllers {
         public AppVersion: string;
         public isExceedanceTableOpen = false;
         public isFlowTableOpen = false;
+        private environment: string;
         public get showReport(): boolean {
             if (!this.studyAreaService.studyAreaParameterList) return false;
             for (var i = 0; i < this.studyAreaService.studyAreaParameterList.length; i++) {
@@ -140,6 +141,7 @@ module StreamStats.Controllers {
             this.reportComments = 'Some comments here';
             this.AppVersion = configuration.version;
             this.extensions = this.ActiveExtensions;
+            this.environment = configuration.environment;
             this.initMap();
             
 
