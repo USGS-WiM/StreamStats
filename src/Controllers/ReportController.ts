@@ -27,6 +27,7 @@ module StreamStats.Controllers {
 
     declare var jsPDF;
     declare var shpwrite;
+    declare var saveSvgAsPng;
     'use strinct';
     interface IReportControllerScope extends ng.IScope {
         vm: ReportController;
@@ -94,6 +95,8 @@ module StreamStats.Controllers {
         public reportComments: string;
         public angulartics: any;
         public AppVersion: string;
+        public isExceedanceTableOpen = false;
+        public isFlowTableOpen = false;
         private environment: string;
         public get showReport(): boolean {
             if (!this.studyAreaService.studyAreaParameterList) return false;
@@ -166,13 +169,13 @@ module StreamStats.Controllers {
             var filename = 'data.csv';
 
             var processMainParameterTable = (data) => {
-                var finalVal = 'Basin Characteristics\n';
+                var finalVal = '\nBasin Characteristics\n';
                 finalVal += this.tableToCSV($('#mainParamTable'));
-                return finalVal + '\r\n';
+                return finalVal + '\n';
             };
 
             var processScenarioParamTable = (statGroup) => {
-                var finalVal = '';
+                var finalVal = '\n';
      
                 statGroup.regressionRegions.forEach((regressionRegion) => {
 
@@ -182,13 +185,13 @@ module StreamStats.Controllers {
                     //table header
                     var regionPercent = '';
                     if (regressionRegion.percentWeight) regionPercent = regressionRegion.percentWeight.toFixed(0) + ' Percent ';
-                    finalVal += '\r\n' + statGroup.name + ' Parameters,' + regionPercent + regressionRegion.name.split("_").join(" ") + '\r\n';
+                    finalVal += statGroup.name + ' Parameters,' + regionPercent + regressionRegion.name.split("_").join(" ") + '\r\n';
 
                     //get this table by ID --need to use this type of selected because jquery doesn't like the possibility of colons in div id
-                    finalVal += this.tableToCSV($(document.getElementById(this.camelize(statGroup.name + regressionRegion.name + 'ScenarioParamTable')))) + '\r\n';
+                    finalVal += this.tableToCSV($(document.getElementById(this.camelize(statGroup.name + regressionRegion.name + 'ScenarioParamTable')))) + '\n';
                     
                 });
-                return finalVal + '\r\n';
+                return finalVal + '\n';
             };
 
             var processDisclaimers = (statGroup) => {
@@ -221,17 +224,19 @@ module StreamStats.Controllers {
                          '"PIl: Prediction Interval- Lower, PIu: Prediction Interval- Upper, SEp: Standard Error of Prediction, SE: Standard Error (other-- see report)"\r\n'
 
                         //get this table by ID --need to use this type of selected because jquery doesn't like the possibility of colons in div id
-                        finalVal += this.tableToCSV($(document.getElementById(this.camelize(statGroup.name + regressionRegion.name + 'ScenarioFlowTable')))) + '\r\n\r\n';
+                        finalVal += this.tableToCSV($(document.getElementById(this.camelize(statGroup.name + regressionRegion.name + 'ScenarioFlowTable')))) + '\n';
                     }
                 });
-                return finalVal + '\r\n';
+                return finalVal + '\n';
             };
 
             //main file header with site information
-            var csvFile = 'StreamStats Output Report\n\n' + 'State/Region ID,' + this.studyAreaService.selectedStudyArea.RegionID.toUpperCase() + '\nWorkspace ID,' + this.studyAreaService.selectedStudyArea.WorkspaceID + '\nLatitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + '\nLongitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5) + '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n\n';
+            var csvFile = 'StreamStats Output Report\n\n' + 'State/Region ID,' + this.studyAreaService.selectedStudyArea.RegionID.toUpperCase() + '\nWorkspace ID,' + this.studyAreaService.selectedStudyArea.WorkspaceID + '\nLatitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + '\nLongitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5) + '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n';
 
             //first write main parameter table
-            csvFile += processMainParameterTable(this.studyAreaService.studyAreaParameterList);
+            if (this.nssService.selectedStatisticsGroupList.length > 1 || (this.extensions && this.extensions[0].code != 'QPPQ')) {
+                csvFile += processMainParameterTable(this.studyAreaService.studyAreaParameterList);
+            }
 
             //next loop over stat groups
             this.nssService.selectedStatisticsGroupList.forEach((statGroup) => {
@@ -240,29 +245,67 @@ module StreamStats.Controllers {
                 csvFile += processScenarioFlowTable(statGroup);
             });
 
-            //disclaimer
-            csvFile += this.disclaimer + 'Application Version: ' +this.AppVersion;
 
-            //download
-            var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
-            if (navigator.msSaveBlob) { // IE 10+
-                navigator.msSaveBlob(blob, filename);
-            } else {
-                var link = <any>document.createElement("a");
-                var url = URL.createObjectURL(blob);
-                if (link.download !== undefined) { // feature detection
-                    // Browsers that support HTML5 download attribute
-                    link.setAttribute("href", url);
-                    link.setAttribute("download", filename);
-                    link.style.visibility = 'hidden';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
+            // add in QPPQ section, need tables open to add to csv
+            this.isExceedanceTableOpen = true; this.isFlowTableOpen = true;
+            
+            var self = this;
+            // timeout here to give the tables time to open in view
+            setTimeout(function() {
+                var extVal = '';
+                if (self.extensions) {
+                    for (var sc of self.extensions) {
+                        if (sc.code == 'QPPQ') {
+                            extVal += sc.name += ' (' + sc.code + ')' + '\n';
+                            for (var p of sc.parameters) {
+                                if (['sdate','edate'].indexOf(p.code) >-1) {
+                                    var date = new Date(p.value);
+                                    extVal += p.name + ':, ' + date.toLocaleDateString() + '\n';
+                                }
+                            }
+                        
+                            // add reference gage table TODO: getting random quotation marks without \n, double new lines with \n after 'Reference gage'
+                            extVal += '\n';
+                            extVal += self.tableToCSV($('#ReferanceGage'))
+    
+                            // add exceedance table
+                            extVal += '\n\nExceedance Probabilities\n';
+                            extVal += self.tableToCSV($('#exceedanceTable'));
+    
+                            // add flow table
+                            extVal += '\n\nEstimated Flows\n';
+                            extVal += self.tableToCSV($('#flowTable'));
+                        }
+                    }
+
+                    csvFile += extVal + '\n\n';
                 }
-                else {
-                    window.open(url);
+
+                //disclaimer
+                csvFile += self.disclaimer + 'Application Version: ' + self.AppVersion;
+
+                //download
+                var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
+                if (navigator.msSaveBlob) { // IE 10+
+                    navigator.msSaveBlob(blob, filename);
+                } else {
+                    var link = <any>document.createElement("a");
+                    var url = URL.createObjectURL(blob);
+                    if (link.download !== undefined) { // feature detection
+                        // Browsers that support HTML5 download attribute
+                        link.setAttribute("href", url);
+                        link.setAttribute("download", filename);
+                        link.style.visibility = 'hidden';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }
+                    else {
+                        window.open(url);
+                    }
                 }
-            }
+                this.isExceedanceTableOpen = false; this.isFlowTableOpen = false; // TODO: not working
+            }, 300);
 
         }
 
@@ -322,6 +365,18 @@ module StreamStats.Controllers {
             }
         }
 
+        public downloadPNG(graph) {
+            var svg;
+            var children = document.getElementById(graph).children;
+
+            for (var i = 0; i < children.length; i++) {
+                if (children[i].tagName === 'svg') {
+                    svg = children[i];
+                }
+            }
+            saveSvgAsPng(svg, graph + ".png");
+        }
+
         public downloadPDF() {
             var pdf = new jsPDF('p', 'pt', 'letter');
             // source can be HTML-formatted string, or a reference
@@ -367,6 +422,7 @@ module StreamStats.Controllers {
         }
 
         public ActivateGraphs(result: any) {
+            // TODO: fix flow graph yaxis label - gets overlapped with tick labels sometimes
             result.graphdata = {
                 exceedance: {
                     data: [{ values: [], area: true, color: '#7777ff' }],
@@ -447,7 +503,7 @@ module StreamStats.Controllers {
 
                             },
                             zoom: {
-                                enabled: true,
+                                enabled: false,
                                 scaleExtent: [1, 10],
                                 useFixedDomain: false,
                                 useNiceScale: false,

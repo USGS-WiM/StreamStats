@@ -162,7 +162,7 @@ var StreamStats;
                         //add Regression Regions to StatisticsGroupList and add percent weights
                         _this.selectedStatisticsGroupList.forEach(function (statGroup) {
                             if ((response.data[0].statisticGroupID == statGroup.id) ||
-                                (_this.regionservice.selectedRegion.Applications.indexOf("FDCTM") > -1 && statGroup.id.indexOf(response.data[0].statisticGroupID, 0) > -1)) {
+                                (_this.regionservice.selectedRegion.Applications.indexOf("FDCTM") > -1 && typeof (statGroup.id) == 'string' && statGroup.id.indexOf(response.data[0].statisticGroupID, 0) > -1)) {
                                 statGroup['statisticGroupName'] = statGroup.name;
                                 statGroup['statisticGroupID'] = statGroup.id.toString().replace("_fdctm", "");
                                 response.data[0].regressionRegions.forEach(function (regressionRegion) {

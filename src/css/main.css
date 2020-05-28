@@ -496,7 +496,10 @@ div.leaflet-top > .elevation {
     .dropdown-menu{
     max-height: 150px;
     width: 90%;
-    /*overflow-y:scroll;*/
+  }
+
+  .reference-gage .dropdown-menu {
+    overflow-y: auto;
   }
 
 /*Active sidebar item*/
@@ -1480,6 +1483,9 @@ div.leaflet-top > .elevation {
     text-decoration: none !important;
 }
 
+.reference-gage button {
+    margin-bottom: 10px;
+}
 
 .angular-leaflet-control-layers-expanded h6{
     font-size: 12.5px !important;
@@ -1733,4 +1739,12 @@ input[name=distanceValue] {
 
 .projDesc {
     font-size: 12px;
+}
+
+.chartExportButton {
+    float: right;
+}
+
+.reportChartHeader {
+    display: inline-block;
 }

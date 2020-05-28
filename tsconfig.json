@@ -1,7 +1,9 @@
 {
-    "compilerOptions": {
-      "target": "es5",
-      "module": "commonjs",
-      "sourceMap": true
-    }
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "watch": true,
+    "sourceMap": true,
+    "noEmitOnError": false
   }
+}
