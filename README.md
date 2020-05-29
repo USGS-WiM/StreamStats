@@ -23,25 +23,28 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Installing
 
-https://help.github.com/articles/cloning-a-repository/
+Clone the repository (https://help.github.com/articles/cloning-a-repository/)
 
-Inside of your project folder (after git fork and clone):
+```bash
+git clone https://github.com/USGS-WiM/StreamStats
+```
+
+Inside of your project folder (after clone):
 ```bash
 npm install
 typings install 
 ```
-Note: [upgrade from tsd to typings] (https://github.com/DefinitelyTyped/tsd/issues/269)
 
 ## Building and testing
 
 Serve files with hot module replacement (live reload)
 ```
-npm run live
+npm start
 ```
 
 To build a production version of the app:
 ```
-gulp
+npm build
 ```
 
 ## Contributing
@@ -69,14 +72,13 @@ gulp release   # makes v0.2.1 → v1.0.0
 ##### Step 2.   
  Push the commit that contains the json files with bumped versions to your personal github repo 
  
-```
+```bash
 git add .
 git commit -m "bump version"
-git push origin staging
 ```
 
 ##### Step 3.   
- Create and merge pull request to master with version incremented (github.com)
+ Create pull request with version incremented (github.com)
 
 ##### Step 4.  
 Create new release on github.com
