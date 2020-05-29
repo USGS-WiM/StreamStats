@@ -1128,6 +1128,12 @@ var StreamStats;
                     "format": "png8",
                     "f": "image"
                 });
+                //bring streamgages (all national layers) to front
+                this.leafletData.getLayers("mainMap").then(function (maplayers) {
+                    console.log("HERE", maplayers);
+                    maplayers.overlays[regionId + "_region"].bringToBack();
+                    maplayers.overlays.SSLayer.bringToFront();
+                });
                 //get any other layers specified in config
                 var layers = this.regionServices.selectedRegion.Layers;
                 if (layers == undefined)
