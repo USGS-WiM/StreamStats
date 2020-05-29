@@ -1402,7 +1402,6 @@ module StreamStats.Controllers {
 
             //bring streamgages (all national layers) to front
             this.leafletData.getLayers("mainMap").then((maplayers: any) => { 
-                console.log("HERE", maplayers);
                 maplayers.overlays[regionId + "_region"].bringToBack();
                 maplayers.overlays.SSLayer.bringToFront();
             });

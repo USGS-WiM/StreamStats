@@ -1130,7 +1130,6 @@ var StreamStats;
                 });
                 //bring streamgages (all national layers) to front
                 this.leafletData.getLayers("mainMap").then(function (maplayers) {
-                    console.log("HERE", maplayers);
                     maplayers.overlays[regionId + "_region"].bringToBack();
                     maplayers.overlays.SSLayer.bringToFront();
                 });
