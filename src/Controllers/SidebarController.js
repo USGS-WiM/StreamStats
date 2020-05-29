@@ -258,6 +258,7 @@ var StreamStats;
             SidebarController.prototype.submitBasinEdits = function () {
                 this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'sumbitEdits' });
                 this.studyAreaService.showEditToolbar = false;
+                this.toaster.pop('wait', "Submitting edited basin", "Please wait...", 0);
                 //check if basin has been edited, if so we need to re-query regression regions
                 if (this.studyAreaService.selectedStudyArea.Disclaimers['isEdited']) {
                     //clear out any scenarios and other stuff
