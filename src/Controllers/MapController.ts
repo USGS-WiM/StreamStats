@@ -549,7 +549,7 @@ module StreamStats.Controllers {
                     this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'queryPoints' });
 
                     //show only specified fields (if applicable)
-                    if (this.layers.overlays[lyr].hasOwnProperty("queryProperties") && this.layers.overlays[lyr].queryProperties.hasOwnProperty(item.layerName)) {
+                    if (this.layers.overlays[lyr].hasOwnProperty("queryProperties") && this.layers.overlays[lyr].queryProperties.hasOwnProperty(item.layerName)) {          
                         let queryProperties = this.layers.overlays[lyr].queryProperties[item.layerName];
                         Object.keys(queryProperties).map(k => {
                             if (item.layerName == "Streamgages" && k == "FeatureURL") {
