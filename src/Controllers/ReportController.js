@@ -61,6 +61,7 @@ var StreamStats;
                 this.extensions = this.ActiveExtensions;
                 this.environment = configuration.environment;
                 this.initMap();
+                console.log(StatisticsGroup);
                 $scope.$on('leafletDirectiveMap.reportMap.load', function (event, args) {
                     //console.log('report map load');
                     _this.showFeatures();
@@ -144,7 +145,7 @@ var StreamStats;
                         //table header
                         var regionPercent = '';
                         if (regressionRegion.percentWeight)
-                            regionPercent = regressionRegion.percentWeight.toFixed(0) + ' Percent ';
+                            regionPercent = regressionRegion.percentWeight.toFixed(1) + ' Percent ';
                         finalVal += statGroup.name + ' Parameters,' + regionPercent + regressionRegion.name.split("_").join(" ") + '\r\n';
                         //get this table by ID --need to use this type of selected because jquery doesn't like the possibility of colons in div id
                         finalVal += _this.tableToCSV($(document.getElementById(_this.camelize(statGroup.name + regressionRegion.name + 'ScenarioParamTable')))) + '\n';
@@ -168,7 +169,7 @@ var StreamStats;
                             //table header
                             var regionPercent = '';
                             if (regressionRegion.percentWeight)
-                                regionPercent = regressionRegion.percentWeight.toFixed(0) + ' Percent ';
+                                regionPercent = regressionRegion.percentWeight.toFixed(1) + ' Percent ';
                             finalVal += statGroup.name + ' Flow Report,' + regionPercent + regressionRegion.name.split("_").join(" ") + '\r\n';
                             //add explanatory row if needed
                             if (regressionRegion.results[0].intervalBounds && regressionRegion.results[0].errors && regressionRegion.results[0].errors.length > 0)
@@ -467,7 +468,7 @@ var StreamStats;
                     for (var i = 0; i < this.studyAreaService.selectedStudyArea.RegressionRegions.length; i++) {
                         var rr = this.studyAreaService.selectedStudyArea.RegressionRegions[i];
                         if (regressionregion.code != null && rr.code.indexOf(regressionregion.code.toUpperCase()) > -1) {
-                            header = '{0} Percent ({1} square miles) {2}'.format(regressionregion.percentWeight.toFixed(0), rr.area.toUSGSvalue(), header);
+                            header = '{0} Percent ({1} square miles) {2}'.format(regressionregion.percentWeight.toFixed(1), rr.area.toUSGSvalue(), header);
                             break;
                         } //endif
                     } //next i
