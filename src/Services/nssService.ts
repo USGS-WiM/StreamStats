@@ -453,7 +453,7 @@ module StreamStats.Services {
                             result.push(
                                 {
                                     Name: name,
-                                    Region: regRegion.percentWeight ? regRegion.percentWeight.toFixed(0) + "% " + regRegion.name : regRegion.name,
+                                    Region: regRegion.percentWeight ? regRegion.percentWeight.toFixed(1) + "% " + regRegion.name : regRegion.name,
                                     Statistic: regResult.name,
                                     Code: regResult.code,
                                     Value: regResult.value.toUSGSvalue(),
