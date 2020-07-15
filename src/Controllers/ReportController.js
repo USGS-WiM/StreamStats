@@ -61,7 +61,6 @@ var StreamStats;
                 this.extensions = this.ActiveExtensions;
                 this.environment = configuration.environment;
                 this.initMap();
-                console.log(StatisticsGroup);
                 $scope.$on('leafletDirectiveMap.reportMap.load', function (event, args) {
                     //console.log('report map load');
                     _this.showFeatures();
