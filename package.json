@@ -13,7 +13,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@turf/turf": "^5.1.6",
+    "@turf/turf": "^3.5.2",
     "@types/geojson": "^7946.0.4",
     "angular": "1.7.8",
     "angular-bootstrap": "~0.12.1",
