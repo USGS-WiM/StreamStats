@@ -742,23 +742,16 @@ var StreamStats;
                             var clipPolygon = editLayer.toGeoJSON();
                             console.log('finish draw:', clipPolygon);
                             if (_this.studyArea.drawControlOption == 'add') {
-                                console.log('start union');
                                 _this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'addArea' });
                                 //console.log('sourcePolygon:', sourcePolygon);
-                                //attempts to fix topology issues
-                                var sourcePolygon1 = turf.truncate(sourcePolygon, { "precision": 3, "coordinates": 2, "mutate": true });
-                                var sourcePolygon2 = turf.cleanCoords(sourcePolygon1);
-                                var editPolygon = turf.union(sourcePolygon2, clipPolygon);
+                                var editPolygon = turf.union(sourcePolygon, clipPolygon);
                                 _this.studyArea.WatershedEditDecisionList.append.push(clipPolygon);
                                 //this.studyArea.Disclaimers['isEdited'] = true;
                             }
                             if (_this.studyArea.drawControlOption == 'remove') {
                                 _this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'removeArea' });
-                                //attempts to fix topology issues
-                                var sourcePolygon1 = turf.truncate(sourcePolygon, { "precision": 3, "coordinates": 2, "mutate": true });
-                                var sourcePolygon2 = turf.cleanCoords(sourcePolygon1);
                                 //console.log('remove layer', layer.toGeoJSON());
-                                var editPolygon = turf.difference(sourcePolygon2, clipPolygon);
+                                var editPolygon = turf.difference(sourcePolygon, clipPolygon);
                                 //check for split polygon
                                 //console.log('editPoly', editPolygon.length);
                                 if (editPolygon.geometry.coordinates.length == 2) {
