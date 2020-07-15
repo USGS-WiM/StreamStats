@@ -138,7 +138,6 @@ var StreamStats;
                 this.eventManager.RaiseEvent(Services.onEditClick, this, WiM.Event.EventArgs.Empty);
             };
             StudyAreaService.prototype.undoEdit = function () {
-                //console.log('undo edit');
                 delete this.selectedStudyArea.Disclaimers['isEdited'];
                 this.WatershedEditDecisionList = new StreamStats.Models.WatershedEditDecisionList();
                 this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);

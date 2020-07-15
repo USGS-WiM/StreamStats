@@ -721,11 +721,6 @@ var StreamStats;
             };
             MapController.prototype.basinEditor = function () {
                 var _this = this;
-                var basinCopyGeoJSON = angular.fromJson(angular.toJson(this.geojson['globalwatershed'].data));
-                //attempt to remove single cell pinched polygon ends
-                basinCopyGeoJSON.geometry.coordinates = basinCopyGeoJSON.geometry.coordinates.filter(function (item) {
-                    return item.length > 5;
-                });
                 this.leafletData.getMap("mainMap").then(function (map) {
                     _this.leafletData.getLayers("mainMap").then(function (maplayers) {
                         //create draw control
@@ -738,38 +733,34 @@ var StreamStats;
                             map.removeEventListener('draw:created');
                             var editLayer = e.layer;
                             drawnItems.addLayer(editLayer);
-                            var sourcePolygon = basinCopyGeoJSON;
+                            //var sourcePolygon = basinCopyGeoJSON;
                             var clipPolygon = editLayer.toGeoJSON();
                             console.log('finish draw:', clipPolygon);
                             if (_this.studyArea.drawControlOption == 'add') {
+                                _this.addGeoJSON('adds', clipPolygon);
                                 _this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'addArea' });
-                                //console.log('sourcePolygon:', sourcePolygon);
-                                var editPolygon = turf.union(sourcePolygon, clipPolygon);
                                 _this.studyArea.WatershedEditDecisionList.append.push(clipPolygon);
-                                //this.studyArea.Disclaimers['isEdited'] = true;
                             }
                             if (_this.studyArea.drawControlOption == 'remove') {
+                                _this.addGeoJSON('removes', clipPolygon);
                                 _this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'removeArea' });
-                                //console.log('remove layer', layer.toGeoJSON());
-                                var editPolygon = turf.difference(sourcePolygon, clipPolygon);
-                                //check for split polygon
-                                //console.log('editPoly', editPolygon.length);
-                                if (editPolygon.geometry.coordinates.length == 2) {
-                                    alert('Splitting polygons is not permitted');
-                                    drawnItems.clearLayers();
-                                    return;
-                                }
                                 _this.studyArea.WatershedEditDecisionList.remove.push(clipPolygon);
-                                //this.studyArea.Disclaimers['isEdited'] = true;
                             }
-                            //set studyArea basin to new edited polygon
-                            basinCopyGeoJSON.geometry.coordinates = editPolygon.geometry.coordinates;
-                            //editPolygon.geometry.coordinates.forEach((item) => { basin.geometry.coordinates[0].push([item[1], item[0]]) });
-                            //console.log('edited basin', basinCopyGeoJSON);
-                            //show new polygon
-                            _this.geojson['globalwatershed'].data = editPolygon;
+                            //if we have adds and removes we need to check for intersections
+                            if (_this.geojson.hasOwnProperty('adds') && _this.geojson.hasOwnProperty('removes')) {
+                                //console.log('checking for intersections')
+                                var intersects = _this.fcIntersects(_this.geojson['removes'].data, _this.geojson['adds'].data);
+                                if (intersects) {
+                                    _this.toaster.pop("warning", "Warning", "Overlapping add and remove edit areas are not allowed", 5000);
+                                    _this.removeGeoJson('adds');
+                                    _this.removeGeoJson('removes');
+                                    _this.studyArea.undoEdit();
+                                }
+                            }
+                            else {
+                                //console.log('skipping edit intersection check')
+                            }
                             drawnItems.clearLayers();
-                            //console.log('editedAreas', angular.toJson(this.studyArea.WatershedEditDecisionList));
                         });
                     });
                 });
@@ -927,6 +918,20 @@ var StreamStats;
                     "f": "image"
                 });
             };
+            MapController.prototype.fcIntersects = function (fc1, fc2) {
+                console.log('checing intersections', fc1, fc2);
+                var found = false;
+                //check for intersections
+                fc1.features.forEach(function (layer1) {
+                    fc2.features.forEach(function (layer2) {
+                        var intersection = turf.intersect(layer1, layer2);
+                        if (intersection != undefined) {
+                            found = true;
+                        }
+                    });
+                });
+                return found;
+            };
             MapController.prototype.removeGeoJson = function (layerName) {
                 if (layerName === void 0) { layerName = ""; }
                 for (var k in this.geojson) {
@@ -1032,6 +1037,50 @@ var StreamStats;
                             }
                         };
                 }
+                else if (LayerName == 'adds') {
+                    console.log('in adds', this.geojson);
+                    //if it already exists just add the polygon
+                    if (this.geojson.hasOwnProperty(LayerName)) {
+                        this.geojson[LayerName].data.features.push(feature);
+                    }
+                    else {
+                        this.geojson[LayerName] =
+                            {
+                                data: {
+                                    "type": "FeatureCollection",
+                                    "features": [feature]
+                                },
+                                visible: true,
+                                style: {
+                                    displayName: LayerName,
+                                    fillColor: "green",
+                                    color: 'green'
+                                }
+                            };
+                    }
+                }
+                else if (LayerName == 'removes') {
+                    console.log('in removes', this.geojson);
+                    //if it already exists just add the polygon
+                    if (this.geojson.hasOwnProperty(LayerName)) {
+                        this.geojson[LayerName].data.features.push(feature);
+                    }
+                    else {
+                        this.geojson[LayerName] =
+                            {
+                                data: {
+                                    "type": "FeatureCollection",
+                                    "features": [feature]
+                                },
+                                visible: true,
+                                style: {
+                                    displayName: LayerName,
+                                    fillColor: "red",
+                                    color: 'red'
+                                }
+                            };
+                    }
+                }
                 //additional features get generic styling for now
                 else {
                     this.geojson[LayerName] =
@@ -1040,8 +1089,8 @@ var StreamStats;
                             visible: true,
                             style: {
                                 displayName: LayerName,
-                                fillColor: "red",
-                                color: 'red'
+                                fillColor: "blue",
+                                color: 'blue'
                             }
                         };
                 }
