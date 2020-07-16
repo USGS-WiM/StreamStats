@@ -447,8 +447,7 @@ configuration.overlayedLayers = {
         "type": 'agsDynamic',
         "visible": true,
         "layerOptions": {
-            "zIndex": 1,
-            "opacity": 0.6,
+            "opacity": 1,
             "format": "png8",
             "f": "image"
         },

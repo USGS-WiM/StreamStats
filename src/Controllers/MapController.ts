@@ -919,51 +919,72 @@ module StreamStats.Controllers {
                     //listen for end of draw
                     map.on('draw:created', (e) => {
 
+                        //turn off the listener, we now have a shape
                         map.removeEventListener('draw:created');
 
+                        //convert edit item into geoJSON so we can temporarily store it
                         var editLayer = e.layer;
                         drawnItems.addLayer(editLayer);
-
-                        //var sourcePolygon = basinCopyGeoJSON;
                         var clipPolygon = editLayer.toGeoJSON();
 
-                        console.log('finish draw:', clipPolygon)
+                        //console.log('finish draw:', clipPolygon)
+                        
                         if (this.studyArea.drawControlOption == 'add') {
 
-                            this.addGeoJSON('adds', clipPolygon);
-                            this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'addArea' });
-                            this.studyArea.WatershedEditDecisionList.append.push(clipPolygon);
+                            if (this.checkEditIntersects('adds', clipPolygon)) {
+                                this.toaster.pop("warning", "Warning", "Overlapping add and remove edit areas are not allowed", 5000);
+                            }
+
+                            else{
+                                this.addGeoJSON('adds', clipPolygon);
+                                this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'addArea' });
+                                this.studyArea.WatershedEditDecisionList.append.push(clipPolygon);
+                            }
+
                         }
 
                         if (this.studyArea.drawControlOption == 'remove') {
 
-                            this.addGeoJSON('removes', clipPolygon);
-                            this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'removeArea' });
-                            this.studyArea.WatershedEditDecisionList.remove.push(clipPolygon);
-                        }
-
-                        //if we have adds and removes we need to check for intersections
-                        if (this.geojson.hasOwnProperty('adds') && this.geojson.hasOwnProperty('removes')) {
-                            //console.log('checking for intersections')
-                            var intersects = this.fcIntersects(this.geojson['removes'].data, this.geojson['adds'].data)
-
-                            if (intersects) {
+                            if (this.checkEditIntersects('removes', clipPolygon)) {
                                 this.toaster.pop("warning", "Warning", "Overlapping add and remove edit areas are not allowed", 5000);
-
-                                this.removeGeoJson('adds');
-                                this.removeGeoJson('removes');
-                                this.studyArea.undoEdit();
                             }
-                        }
-                        else {
-                            //console.log('skipping edit intersection check')
-                        }
 
+                            else{
+                                this.addGeoJSON('removes', clipPolygon);
+                                this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'removeArea' });
+                                this.studyArea.WatershedEditDecisionList.remove.push(clipPolygon);
+                            }
+
+                        }
 
                         drawnItems.clearLayers();
                     });
                 });
             });
+        }
+
+        private checkEditIntersects(editType, editPolygon){
+
+            var found = false;
+            var oppositeEditType;
+
+            (editType === 'adds') ? oppositeEditType = 'removes': oppositeEditType = 'adds';
+
+            //console.log('checking edit intersections:', editType, oppositeEditType)
+
+            //first check if we have both adds and removes we need to check for intersections
+            if (this.geojson.hasOwnProperty(oppositeEditType)) {
+
+                //check for intersections
+                this.geojson[oppositeEditType].data.features.forEach(function(layer){
+                    var intersection = turf.intersect(editPolygon, layer);
+                    if(intersection!=undefined){
+                        found = true;
+                    }
+                });
+            }
+
+            return found;
         }
         
         private canSelectExplorationTool(methodval: Services.ExplorationMethodType): boolean {            
@@ -1084,6 +1105,7 @@ module StreamStats.Controllers {
                     );
             });
         }
+
         private onSelectedRegionChanged() {
             //console.log('in onselected region changed', this.regionServices.regionList, this.regionServices.selectedRegion);
             if (!this.regionServices.selectedRegion) return;
@@ -1138,6 +1160,7 @@ module StreamStats.Controllers {
             }
             
         }
+
         private AddProsperLayer( id:number) {
             this.layers.overlays["prosper"+id] = new Layer("Prosper Layer", configuration.baseurls['ScienceBase'] + configuration.queryparams['ProsperPredictions'],
                 "agsDynamic", true, {
@@ -1147,25 +1170,6 @@ module StreamStats.Controllers {
                     "f": "image"
                 });
         }
-
-        private fcIntersects(fc1, fc2){
-
-            console.log('checing intersections', fc1,fc2)
-
-            var found = false;
-
-            //check for intersections
-            fc1.features.forEach(function(layer1){
-                fc2.features.forEach(function(layer2){
-                    var intersection = turf.intersect(layer1, layer2);
-                    if(intersection!=undefined){
-                        found = true;
-                    }
-                });
-            });
-            return found;
-        }
-
         
         private removeGeoJson(layerName: string = "") {
             for (var k in this.geojson) {
@@ -1175,6 +1179,7 @@ module StreamStats.Controllers {
                 }
             }
         }
+
         private addGeoJSON(LayerName: string, feature: any) {
 
             if (LayerName == 'globalwatershed') {                
@@ -1284,8 +1289,6 @@ module StreamStats.Controllers {
 
             else if (LayerName == 'adds') {
 
-                console.log('in adds', this.geojson)
-
                 //if it already exists just add the polygon
                 if (this.geojson.hasOwnProperty(LayerName)) {
                     this.geojson[LayerName].data.features.push(feature);
@@ -1311,8 +1314,6 @@ module StreamStats.Controllers {
 
 
             else if (LayerName == 'removes') {
-
-                console.log('in removes', this.geojson)
 
                 //if it already exists just add the polygon
                 if (this.geojson.hasOwnProperty(LayerName)) {
