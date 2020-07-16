@@ -1,26 +1,8 @@
-//------------------------------------------------------------------------------
-//----- Point ------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//-------1---------2---------3---------4---------5---------6---------7---------8
-//       01234567890123456789012345678901234567890123456789012345678901234567890
-//-------+---------+---------+---------+---------+---------+---------+---------+
-// copyright:   2014 WiM - USGS
-//    authors:  Jeremy K. Newson USGS Wisconsin Internet Mapping
-//             
-// 
-//   purpose:  
-//          
-//discussion:
-//
-//Comments
-//08.20.2014 jkn - Created
-//Imports"
-// Interface
 var StreamStats;
 (function (StreamStats) {
     var Models;
     (function (Models) {
-        var CoordinatedReach = /** @class */ (function () {
+        var CoordinatedReach = (function () {
             function CoordinatedReach(name, id) {
                 this._name = "Coordinated Reach: " + name;
                 this._id = id;
@@ -65,8 +47,8 @@ var StreamStats;
                                 unit: { unit: "cubic feet per second", abbr: "ft^3/s" },
                                 value: this.getValue(item, parameters[0].value)
                             });
-                        } //end if
-                    } //next item
+                        }
+                    }
                     var params = [];
                     params.push({
                         Code: parameters[0].code,
@@ -74,7 +56,6 @@ var StreamStats;
                         Name: parameters[0].name,
                         UnitType: { Abbr: parameters[0].unit, Unit: parameters[0].unit }
                     });
-                    //http://www.in.gov/dnr/water/4898.htm
                     for (var key in this.FlowCoefficients) {
                         params.push({
                             Code: key + "CoeffA",
@@ -88,7 +69,7 @@ var StreamStats;
                             Name: key + " CoefficientB",
                             UnitType: { Abbr: "dim", Unit: "dimensionless" }
                         });
-                    } //next key
+                    }
                     var ssg = {
                         id: 0,
                         name: this.Name,
@@ -153,19 +134,17 @@ var StreamStats;
                 return "{0} year Peak Flood".format(result);
             };
             CoordinatedReach.prototype.getValue = function (item, drnArea) {
-                //compute flow = acoeff*DRNArea^bcoeff
                 try {
                     if (!item.CoefficientA || !item.CoefficientB || !drnArea)
                         return null;
-                    return item.CoefficientA * Math.pow(drnArea, item.CoefficientB); //** is equivalent to Math.pow
+                    return item.CoefficientA * Math.pow(drnArea, item.CoefficientB);
                 }
                 catch (e) {
                     return null;
                 }
             };
             return CoordinatedReach;
-        }()); //end class
+        }());
         Models.CoordinatedReach = CoordinatedReach;
     })(Models = StreamStats.Models || (StreamStats.Models = {}));
-})(StreamStats || (StreamStats = {})); //end module 
-//# sourceMappingURL=CoordinatedReach.js.map
+})(StreamStats || (StreamStats = {}));

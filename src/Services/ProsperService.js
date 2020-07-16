@@ -1,6 +1,3 @@
-//------------------------------------------------------------------------------
-//----- ProsperService -------------------------------------------------------
-//------------------------------------------------------------------------------
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -14,37 +11,16 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-//-------1---------2---------3---------4---------5---------6---------7---------8
-//       01234567890123456789012345678901234567890123456789012345678901234567890
-//-------+---------+---------+---------+---------+---------+---------+---------+
-// copyright:   2018 WiM - USGS
-//    authors:  Jeremy K. Newson USGS Wisconsin Internet Mapping
-//             
-// 
-//   purpose:  The service agent is responsible for initiating service calls, 
-//             capturing the data that's returned and forwarding the data back to 
-//             the ViewModel.
-//          
-//discussion:
-// using https://gis.usgs.gov/sciencebase2/rest/services/Catalog/5b416046e4b060350a125fe4/MapServer/legend?f=pjson
-//Comments
-//07.17.2018 jkn - Created
-//Import
 var StreamStats;
 (function (StreamStats) {
     var Services;
     (function (Services) {
         'use strict';
-        var ProsperService = /** @class */ (function (_super) {
+        var ProsperService = (function (_super) {
             __extends(ProsperService, _super);
-            //Constructor
-            //-+-+-+-+-+-+-+-+-+-+-+-
             function ProsperService($http, $q, toaster, modal) {
                 var _this = _super.call(this, $http, configuration.baseurls['ScienceBase']) || this;
                 _this.$q = $q;
-                //Events
-                //Properties
-                //-+-+-+-+-+-+-+-+-+-+-+-
                 _this.projectExtent = [[41.96765920367816, -125.48583984375], [49.603590524348704, -110.54443359375]];
                 _this.toaster = toaster;
                 _this.modalservices = modal;
@@ -65,8 +41,6 @@ var StreamStats;
                 enumerable: true,
                 configurable: true
             });
-            //Methods
-            //-+-+-+-+-+-+-+-+-+-+-+-
             ProsperService.prototype.ResetSelectedPredictions = function () {
                 this.ResetResults();
                 if (this.AvailablePredictions.length < 1)
@@ -86,7 +60,6 @@ var StreamStats;
                 var layers = this.SelectedPredictions.map(function (r) { return r.id; }).join();
                 var layers_spp1 = this.SelectedPredictions.filter(function (r) { return r.id < 8; }).map(function (r) { return r.id; });
                 var layers_spp2 = this.SelectedPredictions.filter(function (r) { return r.id > 7; }).map(function (r) { return r.id - 8; });
-                //imageDisplay={0}mapExtent={1}&geometry={2}&sr={3}
                 var spc_url = configuration.queryparams['ProsperPredictions'] + configuration.queryparams['ProsperIdentify']
                     .format(layers, imgdsplay, extent, ppt, 4326);
                 var spp_url1 = configuration.queryparams['ProsperSPPPredictions1'] + configuration.queryparams['ProsperIdentify']
@@ -117,24 +90,14 @@ var StreamStats;
                             }
                         }
                         _this._result.data.SPP = spp_data;
-                        //    for (var k = 0; k < response[i].length; k++) {
-                        //        var obj = response[i][k]
-                        //        if (!(obj.name in this._result.data)) this._result.data[obj.name] = {};
-                        //        this._result.data[obj.name][obj.code]=obj.value                            
-                        //    }//next k
-                    } //next i
+                    }
                     _this.toaster.pop('success', "Finished", "See results report.", 5000);
-                    //open modal
                     _this.modalservices.openModal(Services.SSModalType.e_prosper);
                 }, function (error) {
-                    //sm when complete
-                    //console.log('Regression query failed, HTTP Error');
                     _this.toaster.clear();
                     _this.toaster.pop('error', "There was an error querying prosper grids", "Please retry", 0);
                 });
             };
-            //Helper Methods
-            //-+-+-+-+-+-+-+-+-+-+-+-
             ProsperService.prototype.init = function () {
                 this.CanQuery = false;
                 this._result = null;
@@ -149,7 +112,6 @@ var StreamStats;
                     var request = new WiM.Services.Helpers.RequestInfo(url);
                     this.Execute(request).then(function (response) {
                         if (response.data.error) {
-                            //console.log('query error');
                             _this.toaster.pop('error', "There was an error querying prosper predictions", response.data.error.message, 0);
                             return;
                         }
@@ -163,7 +125,6 @@ var StreamStats;
                         }
                         _this.toaster.clear();
                     }, function (error) {
-                        //sm when complete
                         _this.toaster.pop('error', "There was an HTTP error querying coordinated reach", "Please retry", 0);
                     });
                 }
@@ -193,7 +154,6 @@ var StreamStats;
                 ];
             };
             ProsperService.prototype.getCleanLabel = function (label) {
-                //removes characters preceding '_' and after '.'
                 return label.replace(/[^_]*_|\.[^/.]+$/g, "");
             };
             ProsperService.prototype.queryExecute = function (url) {
@@ -211,13 +171,13 @@ var StreamStats;
                                 "value": r["attributes"]["Pixel Value"]
                             };
                         });
-                    } //end if
+                    }
                 }, function (error) {
                     throw error;
                 });
             };
             return ProsperService;
-        }(WiM.Services.HTTPServiceBase)); //end class
+        }(WiM.Services.HTTPServiceBase));
         factory.$inject = ['$http', '$q', 'toaster', 'StreamStats.Services.ModalService'];
         function factory($http, $q, toaster, modalService) {
             return new ProsperService($http, $q, toaster, modalService);
@@ -225,5 +185,4 @@ var StreamStats;
         angular.module('StreamStats.Services')
             .factory('StreamStats.Services.ProsperService', factory);
     })(Services = StreamStats.Services || (StreamStats.Services = {}));
-})(StreamStats || (StreamStats = {})); //end module 
-//# sourceMappingURL=ProsperService.js.map
+})(StreamStats || (StreamStats = {}));

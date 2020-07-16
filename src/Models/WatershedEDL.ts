@@ -26,12 +26,14 @@ module StreamStats.Models {
     export interface IEditDecisionList {
         append: Array<any>;
         remove: Array<any>;
+        length: Number;
     }
 
     export class WatershedEditDecisionList implements IEditDecisionList {
         //properties
         public append: Array<any>;
         public remove: Array<any>;
+        public length: Number;
 
         constructor() {
             this.append = [];

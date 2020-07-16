@@ -2,8 +2,13 @@
   "compilerOptions": {
     "target": "es5",
     "module": "commonjs",
-    "watch": true,
-    "sourceMap": true,
-    "noEmitOnError": false
-  }
+    "declaration": false,
+    "noImplicitAny": false,
+    "removeComments": true,
+    "noLib": false
+},
+"exclude": [
+    "node_modules",
+    "*.js"
+]
 }

@@ -22,7 +22,7 @@
 //Comments
 //04.15.2015 jkn - Created
 
-//Imports"
+//Imports
 module StreamStats.Controllers {
 
     declare var turf;
@@ -549,7 +549,7 @@ module StreamStats.Controllers {
                     this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'queryPoints' });
 
                     //show only specified fields (if applicable)
-                    if (this.layers.overlays[lyr].hasOwnProperty("queryProperties") && this.layers.overlays[lyr].queryProperties.hasOwnProperty(item.layerName)) {
+                    if (this.layers.overlays[lyr].hasOwnProperty("queryProperties") && this.layers.overlays[lyr].queryProperties.hasOwnProperty(item.layerName)) {          
                         let queryProperties = this.layers.overlays[lyr].queryProperties[item.layerName];
                         Object.keys(queryProperties).map(k => {
                             if (item.layerName == "Streamgages" && k == "FeatureURL") {
@@ -907,13 +907,6 @@ module StreamStats.Controllers {
 
         private basinEditor() {
 
-            var basinCopyGeoJSON = angular.fromJson(angular.toJson(this.geojson['globalwatershed'].data));
-
-            //attempt to remove single cell pinched polygon ends
-            basinCopyGeoJSON.geometry.coordinates = basinCopyGeoJSON.geometry.coordinates.filter(function (item) {
-                return item.length > 5;
-            });
-
             this.leafletData.getMap("mainMap").then((map: any) => {
                 this.leafletData.getLayers("mainMap").then((maplayers: any) => {
 
@@ -926,69 +919,72 @@ module StreamStats.Controllers {
                     //listen for end of draw
                     map.on('draw:created', (e) => {
 
+                        //turn off the listener, we now have a shape
                         map.removeEventListener('draw:created');
 
+                        //convert edit item into geoJSON so we can temporarily store it
                         var editLayer = e.layer;
                         drawnItems.addLayer(editLayer);
-
-                        var sourcePolygon = basinCopyGeoJSON;
                         var clipPolygon = editLayer.toGeoJSON();
 
-                        console.log('finish draw:', clipPolygon)
-
+                        //console.log('finish draw:', clipPolygon)
+                        
                         if (this.studyArea.drawControlOption == 'add') {
 
-                            console.log('start union')
+                            if (this.checkEditIntersects('adds', clipPolygon)) {
+                                this.toaster.pop("warning", "Warning", "Overlapping add and remove edit areas are not allowed", 5000);
+                            }
 
-                            this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'addArea' });
+                            else{
+                                this.addGeoJSON('adds', clipPolygon);
+                                this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'addArea' });
+                                this.studyArea.WatershedEditDecisionList.append.push(clipPolygon);
+                            }
 
-                            //console.log('sourcePolygon:', sourcePolygon);
-
-                            //attempts to fix topology issues
-                            var sourcePolygon1 = turf.truncate(sourcePolygon, { "precision": 3, "coordinates": 2, "mutate": true});
-                            var sourcePolygon2 = turf.cleanCoords(sourcePolygon1)
-
-                            var editPolygon = turf.union(sourcePolygon2, clipPolygon)
-
-                            this.studyArea.WatershedEditDecisionList.append.push(clipPolygon);
-                            //this.studyArea.Disclaimers['isEdited'] = true;
                         }
 
                         if (this.studyArea.drawControlOption == 'remove') {
 
-                            this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'removeArea' });
-
-                            //attempts to fix topology issues
-                            var sourcePolygon1 = turf.truncate(sourcePolygon, { "precision": 3, "coordinates": 2, "mutate": true});
-                            var sourcePolygon2 = turf.cleanCoords(sourcePolygon1)
-
-                            //console.log('remove layer', layer.toGeoJSON());
-                            var editPolygon = turf.difference(sourcePolygon2, clipPolygon);
-
-                            //check for split polygon
-                            //console.log('editPoly', editPolygon.length);
-                            if (editPolygon.geometry.coordinates.length == 2) {
-                                alert('Splitting polygons is not permitted');
-                                drawnItems.clearLayers();
-                                return;
+                            if (this.checkEditIntersects('removes', clipPolygon)) {
+                                this.toaster.pop("warning", "Warning", "Overlapping add and remove edit areas are not allowed", 5000);
                             }
 
-                            this.studyArea.WatershedEditDecisionList.remove.push(clipPolygon);
-                            //this.studyArea.Disclaimers['isEdited'] = true;
+                            else{
+                                this.addGeoJSON('removes', clipPolygon);
+                                this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'removeArea' });
+                                this.studyArea.WatershedEditDecisionList.remove.push(clipPolygon);
+                            }
+
                         }
 
-                        //set studyArea basin to new edited polygon
-                        basinCopyGeoJSON.geometry.coordinates = editPolygon.geometry.coordinates;
-                        //editPolygon.geometry.coordinates.forEach((item) => { basin.geometry.coordinates[0].push([item[1], item[0]]) });
-                        //console.log('edited basin', basinCopyGeoJSON);
-                        
-                        //show new polygon
-                        this.geojson['globalwatershed'].data = editPolygon;
                         drawnItems.clearLayers();
-                        //console.log('editedAreas', angular.toJson(this.studyArea.WatershedEditDecisionList));
                     });
                 });
             });
+        }
+
+        private checkEditIntersects(editType, editPolygon){
+
+            var found = false;
+            var oppositeEditType;
+
+            (editType === 'adds') ? oppositeEditType = 'removes': oppositeEditType = 'adds';
+
+            //console.log('checking edit intersections:', editType, oppositeEditType)
+
+            //first check if we have both adds and removes we need to check for intersections
+            if (this.geojson.hasOwnProperty(oppositeEditType)) {
+
+                //check for intersections
+                this.geojson[oppositeEditType].data.features.forEach(function(layer){
+                    var intersection = turf.intersect(editPolygon, layer);
+                    if(intersection!=undefined){
+                        found = true;
+                    }
+                });
+            }
+
+            return found;
         }
         
         private canSelectExplorationTool(methodval: Services.ExplorationMethodType): boolean {            
@@ -1109,6 +1105,7 @@ module StreamStats.Controllers {
                     );
             });
         }
+
         private onSelectedRegionChanged() {
             //console.log('in onselected region changed', this.regionServices.regionList, this.regionServices.selectedRegion);
             if (!this.regionServices.selectedRegion) return;
@@ -1163,6 +1160,7 @@ module StreamStats.Controllers {
             }
             
         }
+
         private AddProsperLayer( id:number) {
             this.layers.overlays["prosper"+id] = new Layer("Prosper Layer", configuration.baseurls['ScienceBase'] + configuration.queryparams['ProsperPredictions'],
                 "agsDynamic", true, {
@@ -1172,6 +1170,7 @@ module StreamStats.Controllers {
                     "f": "image"
                 });
         }
+        
         private removeGeoJson(layerName: string = "") {
             for (var k in this.geojson) {
                 if (typeof this.geojson[k] !== 'function') {
@@ -1180,6 +1179,7 @@ module StreamStats.Controllers {
                 }
             }
         }
+
         private addGeoJSON(LayerName: string, feature: any) {
 
             if (LayerName == 'globalwatershed') {                
@@ -1287,6 +1287,55 @@ module StreamStats.Controllers {
                     }
             }
 
+            else if (LayerName == 'adds') {
+
+                //if it already exists just add the polygon
+                if (this.geojson.hasOwnProperty(LayerName)) {
+                    this.geojson[LayerName].data.features.push(feature);
+                }
+        
+                else {
+                    this.geojson[LayerName] =
+                    {
+                        data: {
+                            "type": "FeatureCollection",
+                            "features": [feature]
+                        },
+                        visible: true,
+                        style: {
+                            displayName: LayerName,
+                            fillColor: "green",
+                            color: 'green'
+                        }                 
+                    }
+                }
+
+            }
+
+
+            else if (LayerName == 'removes') {
+
+                //if it already exists just add the polygon
+                if (this.geojson.hasOwnProperty(LayerName)) {
+                    this.geojson[LayerName].data.features.push(feature);
+                }
+        
+                else {
+                    this.geojson[LayerName] =
+                    {
+                        data: {
+                            "type": "FeatureCollection",
+                            "features": [feature]
+                        },
+                        visible: true,
+                        style: {
+                            displayName: LayerName,
+                            fillColor: "red",
+                            color: 'red'
+                        }                 
+                    }
+                } 
+            }  
 
             //additional features get generic styling for now
             else {
@@ -1296,8 +1345,8 @@ module StreamStats.Controllers {
                         visible: true,
                         style: {
                             displayName: LayerName,
-                            fillColor: "red",
-                            color: 'red'
+                            fillColor: "blue",
+                            color: 'blue'
                         }                 
                     }
             }
@@ -1399,6 +1448,12 @@ module StreamStats.Controllers {
                     "format": "png8",
                     "f": "image"
                 });
+
+            //bring streamgages (all national layers) to front
+            this.leafletData.getLayers("mainMap").then((maplayers: any) => { 
+                maplayers.overlays[regionId + "_region"].bringToBack();
+                maplayers.overlays.SSLayer.bringToFront();
+            });
             
             //get any other layers specified in config
             var layers = this.regionServices.selectedRegion.Layers;
