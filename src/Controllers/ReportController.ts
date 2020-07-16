@@ -184,7 +184,7 @@ module StreamStats.Controllers {
   
                     //table header
                     var regionPercent = '';
-                    if (regressionRegion.percentWeight) regionPercent = regressionRegion.percentWeight.toFixed(0) + ' Percent ';
+                    if (regressionRegion.percentWeight) regionPercent = regressionRegion.percentWeight.toFixed(1) + ' Percent ';
                     finalVal += statGroup.name + ' Parameters,' + regionPercent + regressionRegion.name.split("_").join(" ") + '\r\n';
 
                     //get this table by ID --need to use this type of selected because jquery doesn't like the possibility of colons in div id
@@ -216,7 +216,7 @@ module StreamStats.Controllers {
 
                         //table header
                         var regionPercent = '';
-                        if (regressionRegion.percentWeight) regionPercent = regressionRegion.percentWeight.toFixed(0) + ' Percent ';
+                        if (regressionRegion.percentWeight) regionPercent = regressionRegion.percentWeight.toFixed(1) + ' Percent ';
                         finalVal += statGroup.name + ' Flow Report,' + regionPercent + regressionRegion.name.split("_").join(" ") + '\r\n';
 
                         //add explanatory row if needed
@@ -545,7 +545,7 @@ module StreamStats.Controllers {
                 for (var i = 0; i < this.studyAreaService.selectedStudyArea.RegressionRegions.length; i++) {
                     let rr = this.studyAreaService.selectedStudyArea.RegressionRegions[i]
                     if (regressionregion.code != null && rr.code.indexOf(regressionregion.code.toUpperCase())>-1) {
-                        header = '{0} Percent ({1} square miles) {2}'.format( regressionregion.percentWeight.toFixed(0), rr.area.toUSGSvalue(),header);
+                        header = '{0} Percent ({1} square miles) {2}'.format( regressionregion.percentWeight.toFixed(1), rr.area.toUSGSvalue(),header);
                         break;
                     }//endif
                 }//next i

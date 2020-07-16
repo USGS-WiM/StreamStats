@@ -1,9 +1,6 @@
-//https://lgorithms.blogspot.com/2013/07/angularui-router-as-infrastructure-of.html
-//https://www.funnyant.com/angularjs-ui-router/
 var StreamStats;
 (function (StreamStats) {
-    //'use strict';
-    var config = /** @class */ (function () {
+    var config = (function () {
         function config($stateProvider, $urlRouterProvider, $locationProvider, $logProvider, $compilerProvider) {
             this.$stateProvider = $stateProvider;
             this.$urlRouterProvider = $urlRouterProvider;
@@ -13,7 +10,6 @@ var StreamStats;
             this.$stateProvider
                 .state("main", {
                 url: '/?rcode&workspaceID',
-                //reloadOnSearch:true,
                 template: '<ui-view/>',
                 views: {
                     'map': {
@@ -22,7 +18,6 @@ var StreamStats;
                     },
                     'sidebar': {
                         templateUrl: "Views/sidebarview.html",
-                        //abstract:true,
                         controller: "StreamStats.Controllers.SidebarController"
                     },
                     'navbar': {
@@ -34,18 +29,16 @@ var StreamStats;
                         controller: "StreamStats.Controllers.ReportController"
                     }
                 }
-            }); //end main state 
+            });
             this.$urlRouterProvider.otherwise('/');
             this.$locationProvider.html5Mode(true);
-            //turns of angular-leaflet console spam
             this.$logProvider.debugEnabled(false);
-            //flag for production => remove debug info
             if (configuration.environment == "production")
                 this.$compilerProvider.debugInfoEnabled(false);
-        } //end constructor
+        }
         config.$inject = ['$stateProvider', '$urlRouterProvider', '$locationProvider', '$logProvider', '$compileProvider'];
         return config;
-    }()); //end class
+    }());
     angular.module('StreamStats', [
         'ui.router', 'ui.bootstrap', 'ui.checkbox',
         'mobile-angular-ui',
@@ -57,5 +50,4 @@ var StreamStats;
         'WiM.Services', 'WiM.Event', 'wim_angular', 'rzModule', 'nvd3', 'daterangepicker'
     ])
         .config(config);
-})(StreamStats || (StreamStats = {})); //end module 
-//# sourceMappingURL=config.js.map
+})(StreamStats || (StreamStats = {}));

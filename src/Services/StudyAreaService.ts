@@ -28,6 +28,7 @@ module StreamStats.Services {
     export interface IStudyAreaService {
         onStudyAreaServiceBusyChanged: WiM.Event.Delegate<WiM.Event.EventArgs>;
         selectedStudyArea: Models.IStudyArea;
+        undoEdit();
         loadParameters();
         loadStudyBoundary();
         upstreamRegulation();
@@ -175,7 +176,6 @@ module StreamStats.Services {
         }
 
         public undoEdit() {
-            //console.log('undo edit');
             delete this.selectedStudyArea.Disclaimers['isEdited'];
             this.WatershedEditDecisionList = new Models.WatershedEditDecisionList();
             this.eventManager.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);

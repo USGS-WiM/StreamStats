@@ -1314,31 +1314,30 @@ div.leaflet-top > .elevation {
     font-weight: 400 !important;
     font-size: 14px !important;
 }
-    .toast .toast-title:after {
-        display: inline-block;
-        float: right;
-        content: '\f12a';
-        font-size: 12px;
-        font-family: "Ionicons";
-        color: #FFF;
-        position: relative;
-        top: -5px;
-        left: 5px;
-        opacity: 0.5;
-        transition: 0.1s;
-    }
+.toast .toast-title:after {
+    display: inline-block;
+    float: right;
+    content: '\f12a';
+    font-size: 12px;
+    font-family: "Ionicons";
+    color: #FFF;
+    position: relative;
+    top: -5px;
+    left: 5px;
+    opacity: 0.5;
+    transition: 0.1s;
+}
 .toast:after{
     display: none !important;
     box-shadow: none !important;
 }
-    .toast:hover {
-        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23) !important;
-    }
-        .toast:hover .toast-title:after {
-            opacity: 1;
-            transition: 0.1s;
-        }
-
+.toast:hover {
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23) !important;
+}
+.toast:hover .toast-title:after {
+    opacity: 1;
+    transition: 0.1s;
+}
 
 
 /*
