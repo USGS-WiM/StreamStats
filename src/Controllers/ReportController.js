@@ -1,28 +1,9 @@
-//------------------------------------------------------------------------------
-//----- ReportrController ------------------------------------------------------
-//------------------------------------------------------------------------------
-//-------1---------2---------3---------4---------5---------6---------7---------8
-//       01234567890123456789012345678901234567890123456789012345678901234567890
-//-------+---------+---------+---------+---------+---------+---------+---------+
-// copyright:   2014 WiM - USGS
-//    authors:  Jeremy K. Newson USGS Wisconsin Internet Mapping
-//   purpose:  
-//discussion:   Controllers are typically built to reflect a View. 
-//              and should only contailn business logic needed for a single view. For example, if a View 
-//              contains a ListBox of objects, a Selected object, and a Save button, the Controller 
-//              will have an ObservableCollection ObectList, 
-//              Model SelectedObject, and SaveCommand.
-//Comments
-//04.14.2015 jkn - Created
-//Imports"
 var StreamStats;
 (function (StreamStats) {
     var Controllers;
     (function (Controllers) {
         'use strinct';
-        var Center = /** @class */ (function () {
-            //Constructor
-            //-+-+-+-+-+-+-+-+-+-+-+-
+        var Center = (function () {
             function Center(lt, lg, zm) {
                 this.lat = lt;
                 this.lng = lg;
@@ -30,12 +11,10 @@ var StreamStats;
             }
             return Center;
         }());
-        var ReportController = /** @class */ (function () {
+        var ReportController = (function () {
             function ReportController($scope, $analytics, $modalInstance, studyArea, StatisticsGroup, leafletData, regionService) {
                 var _this = this;
                 this.regionService = regionService;
-                //Properties
-                //-+-+-+-+-+-+-+-+-+-+-+-
                 this.disclaimer = "USGS Data Disclaimer: Unless otherwise stated, all data, metadata and related materials are considered to satisfy the quality standards relative to the purpose for which the data were collected. Although these data and associated metadata have been reviewed for accuracy and completeness and approved for release by the U.S. Geological Survey (USGS), no warranty expressed or implied is made regarding the display or utility of the data for other purposes, nor on all computer systems, nor shall the act of distribution constitute any such warranty." + '\n' +
                     "USGS Software Disclaimer: This software has been approved for release by the U.S. Geological Survey (USGS). Although the software has been subjected to rigorous review, the USGS reserves the right to update the software as needed pursuant to further analysis and review. No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty. Furthermore, the software is released on condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from its authorized or unauthorized use." + '\n' +
                     "USGS Product Names Disclaimer: Any use of trade, firm, or product names is for descriptive purposes only and does not imply endorsement by the U.S. Government." + '\n\n';
@@ -62,7 +41,6 @@ var StreamStats;
                 this.environment = configuration.environment;
                 this.initMap();
                 $scope.$on('leafletDirectiveMap.reportMap.load', function (event, args) {
-                    //console.log('report map load');
                     _this.showFeatures();
                 });
                 this.close = function () {
@@ -123,11 +101,8 @@ var StreamStats;
                 enumerable: true,
                 configurable: true
             });
-            //Methods
-            //-+-+-+-+-+-+-+-+-+-+-+-
             ReportController.prototype.downloadCSV = function () {
                 var _this = this;
-                //ga event
                 this.angulartics.eventTrack('Download', { category: 'Report', label: 'CSV' });
                 var filename = 'data.csv';
                 var processMainParameterTable = function (data) {
@@ -138,21 +113,17 @@ var StreamStats;
                 var processScenarioParamTable = function (statGroup) {
                     var finalVal = '\n';
                     statGroup.regressionRegions.forEach(function (regressionRegion) {
-                        //bail if in Area-Averaged section
                         if (regressionRegion.name == 'Area-Averaged')
                             return;
-                        //table header
                         var regionPercent = '';
                         if (regressionRegion.percentWeight)
                             regionPercent = regressionRegion.percentWeight.toFixed(1) + ' Percent ';
                         finalVal += statGroup.name + ' Parameters,' + regionPercent + regressionRegion.name.split("_").join(" ") + '\r\n';
-                        //get this table by ID --need to use this type of selected because jquery doesn't like the possibility of colons in div id
                         finalVal += _this.tableToCSV($(document.getElementById(_this.camelize(statGroup.name + regressionRegion.name + 'ScenarioParamTable')))) + '\n';
                     });
                     return finalVal + '\n';
                 };
                 var processDisclaimers = function (statGroup) {
-                    //console.log('Process disclaimers statGroup: ', statGroup);
                     var finalVal = '*** ' + statGroup.name + ' Disclaimers ***\r\n';
                     angular.forEach(statGroup.disclaimer, function (i, v) {
                         finalVal += v + ',' + i + '\r\n';
@@ -160,44 +131,34 @@ var StreamStats;
                     return finalVal + '\r\n';
                 };
                 var processScenarioFlowTable = function (statGroup) {
-                    //console.log('ScenarioFlowTable statGroup: ', statGroup);
                     var finalVal = '';
                     statGroup.regressionRegions.forEach(function (regressionRegion) {
-                        //console.log('ScenarioFlowTable regressionRegion: ', regressionRegion);
                         if (regressionRegion.results) {
-                            //table header
                             var regionPercent = '';
                             if (regressionRegion.percentWeight)
                                 regionPercent = regressionRegion.percentWeight.toFixed(1) + ' Percent ';
                             finalVal += statGroup.name + ' Flow Report,' + regionPercent + regressionRegion.name.split("_").join(" ") + '\r\n';
-                            //add explanatory row if needed
                             if (regressionRegion.results[0].intervalBounds && regressionRegion.results[0].errors && regressionRegion.results[0].errors.length > 0)
                                 finalVal +=
                                     '"PIl: Prediction Interval- Lower, PIu: Prediction Interval- Upper, SEp: Standard Error of Prediction, SE: Standard Error (other-- see report)"\r\n';
-                            //get this table by ID --need to use this type of selected because jquery doesn't like the possibility of colons in div id
                             finalVal += _this.tableToCSV($(document.getElementById(_this.camelize(statGroup.name + regressionRegion.name + 'ScenarioFlowTable')))) + '\n';
                         }
                     });
                     return finalVal + '\n';
                 };
-                //main file header with site information
                 var csvFile = 'StreamStats Output Report\n\n' + 'State/Region ID,' + this.studyAreaService.selectedStudyArea.RegionID.toUpperCase() + '\nWorkspace ID,' + this.studyAreaService.selectedStudyArea.WorkspaceID + '\nLatitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + '\nLongitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5) + '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n';
-                //first write main parameter table
                 if (this.nssService.selectedStatisticsGroupList.length > 1 || (this.extensions && this.extensions[0].code != 'QPPQ')) {
                     csvFile += processMainParameterTable(this.studyAreaService.studyAreaParameterList);
                 }
-                //next loop over stat groups
                 this.nssService.selectedStatisticsGroupList.forEach(function (statGroup) {
                     csvFile += processScenarioParamTable(statGroup);
                     if (statGroup.disclaimers && (statGroup.disclaimers.Warnings || statGroup.disclaimers.Errors))
                         csvFile += processDisclaimers(statGroup);
                     csvFile += processScenarioFlowTable(statGroup);
                 });
-                // add in QPPQ section, need tables open to add to csv
                 this.isExceedanceTableOpen = true;
                 this.isFlowTableOpen = true;
                 var self = this;
-                // timeout here to give the tables time to open in view
                 setTimeout(function () {
                     var extVal = '';
                     if (self.extensions) {
@@ -212,31 +173,25 @@ var StreamStats;
                                         extVal += p.name + ':, ' + date.toLocaleDateString() + '\n';
                                     }
                                 }
-                                // add reference gage table TODO: getting random quotation marks without \n, double new lines with \n after 'Reference gage'
                                 extVal += '\n';
                                 extVal += self.tableToCSV($('#ReferanceGage'));
-                                // add exceedance table
                                 extVal += '\n\nExceedance Probabilities\n';
                                 extVal += self.tableToCSV($('#exceedanceTable'));
-                                // add flow table
                                 extVal += '\n\nEstimated Flows\n';
                                 extVal += self.tableToCSV($('#flowTable'));
                             }
                         }
                         csvFile += extVal + '\n\n';
                     }
-                    //disclaimer
                     csvFile += self.disclaimer + 'Application Version: ' + self.AppVersion;
-                    //download
                     var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
-                    if (navigator.msSaveBlob) { // IE 10+
+                    if (navigator.msSaveBlob) {
                         navigator.msSaveBlob(blob, filename);
                     }
                     else {
                         var link = document.createElement("a");
                         var url = URL.createObjectURL(blob);
-                        if (link.download !== undefined) { // feature detection
-                            // Browsers that support HTML5 download attribute
+                        if (link.download !== undefined) {
                             link.setAttribute("href", url);
                             link.setAttribute("download", filename);
                             link.style.visibility = 'hidden';
@@ -249,7 +204,7 @@ var StreamStats;
                         }
                     }
                     this.isExceedanceTableOpen = false;
-                    this.isFlowTableOpen = false; // TODO: not working
+                    this.isFlowTableOpen = false;
                 }, 300);
             };
             ReportController.prototype.downloadGeoJSON = function () {
@@ -263,19 +218,18 @@ var StreamStats;
                             return r;
                         }, {});
                         f.properties["FlowStatistics"] = _this.nssService.selectedStatisticsGroupList;
-                    } //endif
+                    }
                 });
                 var GeoJSON = angular.toJson(fc);
                 var filename = 'data.geojson';
                 var blob = new Blob([GeoJSON], { type: 'text/csv;charset=utf-8;' });
-                if (navigator.msSaveBlob) { // IE 10+
+                if (navigator.msSaveBlob) {
                     navigator.msSaveBlob(blob, filename);
                 }
                 else {
                     var link = document.createElement("a");
                     var url = URL.createObjectURL(blob);
-                    if (link.download !== undefined) { // feature detection
-                        // Browsers that support HTML5 download attribute
+                    if (link.download !== undefined) {
                         link.setAttribute("href", url);
                         link.setAttribute("download", filename);
                         link.style.visibility = 'hidden';
@@ -294,7 +248,6 @@ var StreamStats;
                     if (this.nssService.showFlowsTable)
                         flowTable = this.nssService.getflattenNSSTable(this.studyAreaService.selectedStudyArea.WorkspaceID);
                     var fc = this.studyAreaService.getflattenStudyArea();
-                    //this will output a zip file
                     shpwrite.download(fc, flowTable, this.disclaimer + 'Application Version: ' + this.AppVersion);
                 }
                 catch (e) {
@@ -313,20 +266,9 @@ var StreamStats;
             };
             ReportController.prototype.downloadPDF = function () {
                 var pdf = new jsPDF('p', 'pt', 'letter');
-                // source can be HTML-formatted string, or a reference
-                // to an actual DOM element from which the text will be scraped.
-                //var source = $('#customers')[0];
-                //var source = angular.element(document.getElementById('printArea'));
                 var source = document.getElementById('printArea').innerHTML;
-                //console.log(source);
-                // we support special element handlers. Register them with jQuery-style 
-                // ID selector for either ID or node name. ("#iAmID", "div", "span" etc.)
-                // There is no support for any other type of selectors 
-                // (class, of compound) at this time.
                 var specialElementHandlers = {
-                    // element with id of "bypass" - jQuery style selector
                     '#bypassme': function (element, renderer) {
-                        // true = "handled elsewhere, bypass text extraction"
                         return true;
                     }
                 };
@@ -336,21 +278,14 @@ var StreamStats;
                     left: 40,
                     width: 522
                 };
-                // all coords and widths are in jsPDF instance's declared units
-                // 'inches' in this case
-                pdf.fromHTML(source, // HTML string or DOM elem ref.
-                margins.left, // x coord
-                margins.top, {
+                pdf.fromHTML(source, margins.left, margins.top, {
                     'width': margins.width,
                     'elementHandlers': specialElementHandlers
                 }, function (dispose) {
-                    // dispose: object with X, Y of the last line add to the PDF 
-                    //          this allow the insertion of new lines after html
                     pdf.save('Test.pdf');
                 }, margins);
             };
             ReportController.prototype.ActivateGraphs = function (result) {
-                // TODO: fix flow graph yaxis label - gets overlapped with tick labels sometimes
                 result.graphdata = {
                     exceedance: {
                         data: [{ values: [], area: true, color: '#7777ff' }],
@@ -441,10 +376,8 @@ var StreamStats;
                 };
                 for (var key in result.exceedanceProbabilities) {
                     result.graphdata.exceedance.data[0].values.push({ label: key, value: result.exceedanceProbabilities[key] });
-                } //next key
+                }
             };
-            //Helper Methods
-            //-+-+-+-+-+-+-+-+-+-+-+-
             ReportController.prototype.initMap = function () {
                 this.center = new Center(39, -96, 4);
                 this.layers = {
@@ -469,8 +402,8 @@ var StreamStats;
                         if (regressionregion.code != null && rr.code.indexOf(regressionregion.code.toUpperCase()) > -1) {
                             header = '{0} Percent ({1} square miles) {2}'.format(regressionregion.percentWeight.toFixed(1), rr.area.toUSGSvalue(), header);
                             break;
-                        } //endif
-                    } //next i
+                        }
+                    }
                 }
                 return '[' + header + ']';
             };
@@ -480,14 +413,11 @@ var StreamStats;
                     return;
                 this.overlays = {};
                 this.studyAreaService.selectedStudyArea.FeatureCollection.features.forEach(function (item) {
-                    //console.log('in each loop', JSON.stringify(item));
                     _this.addGeoJSON(item.id, item);
                 });
                 var bbox = this.studyAreaService.selectedStudyArea.FeatureCollection.bbox;
                 this.leafletData.getMap("reportMap").then(function (map) {
-                    //method to reset the map for modal weirdness
                     map.invalidateSize();
-                    //console.log('in getmap: ', bbox);
                     map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
                 });
             };
@@ -535,7 +465,6 @@ var StreamStats;
                         }
                     };
                 }
-                //additional features get generic styling for now
                 else {
                     this.layers.overlays[LayerName] = {
                         name: LayerName,
@@ -552,42 +481,28 @@ var StreamStats;
                 }
             };
             ReportController.prototype.tableToCSV = function ($table) {
-                var $headers = $table.find('tr:has(th)'), $rows = $table.find('tr:has(td)')
-                // Temporary delimiter characters unlikely to be typed by keyboard
-                // This is to avoid accidentally splitting the actual contents
-                , tmpColDelim = String.fromCharCode(11) // vertical tab character
-                , tmpRowDelim = String.fromCharCode(0) // null character
-                // actual delimiter characters for CSV format
-                , colDelim = '","', rowDelim = '"\r\n"';
-                // Grab text from table into CSV formatted string
+                var $headers = $table.find('tr:has(th)'), $rows = $table.find('tr:has(td)'), tmpColDelim = String.fromCharCode(11), tmpRowDelim = String.fromCharCode(0), colDelim = '","', rowDelim = '"\r\n"';
                 var csv = '"';
                 csv += formatRows($headers.map(grabRow));
                 csv += rowDelim;
                 csv += formatRows($rows.map(grabRow)) + '"';
                 return csv;
-                //------------------------------------------------------------
-                // Helper Functions 
-                //------------------------------------------------------------
-                // Format the output so it has the appropriate delimiters
                 function formatRows(rows) {
                     return rows.get().join(tmpRowDelim)
                         .split(tmpRowDelim).join(rowDelim)
                         .split(tmpColDelim).join(colDelim);
                 }
-                // Grab and format a row from the table
                 function grabRow(i, row) {
                     var $row = $(row);
-                    //for some reason $cols = $row.find('td') || $row.find('th') won't work...
                     var $cols = $row.find('td');
                     if (!$cols.length)
                         $cols = $row.find('th');
                     return $cols.map(grabCol)
                         .get().join(tmpColDelim);
                 }
-                // Grab and format a column from the table 
                 function grabCol(j, col) {
                     var $col = $(col), $text = $col.text();
-                    return $text.replace('"', '""'); // escape double quotes
+                    return $text.replace('"', '""');
                 }
             };
             ReportController.prototype.camelize = function (str) {
@@ -595,13 +510,10 @@ var StreamStats;
                     return index == 0 ? letter.toLowerCase() : letter.toUpperCase();
                 }).replace(/\s+/g, '');
             };
-            //Constructor
-            //-+-+-+-+-+-+-+-+-+-+-+-
             ReportController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService'];
             return ReportController;
-        }()); //end class
+        }());
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.ReportController', ReportController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));
-})(StreamStats || (StreamStats = {})); //end module
-//# sourceMappingURL=ReportController.js.map
+})(StreamStats || (StreamStats = {}));

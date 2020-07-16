@@ -1,29 +1,12 @@
-//------------------------------------------------------------------------------
-//----- ExplorationToolsModalController ----------------------------------------
-//------------------------------------------------------------------------------
-//-------1---------2---------3---------4---------5---------6---------7---------8
-//       01234567890123456789012345678901234567890123456789012345678901234567890
-//-------+---------+---------+---------+---------+---------+---------+---------+
-// copyright:   2019 WiM - USGS
-//    authors:  Jeremy K. Newson USGS Web Informatics and Mapping
-//             
-// 
-//   purpose:  Example of Modal Controller
-//          
-//discussion:
-//Comments
-//07.24.2019 jkn - Created
-//Import
 var StreamStats;
 (function (StreamStats) {
     var Controllers;
     (function (Controllers) {
         'use string';
-        var ExtensionModalController = /** @class */ (function () {
+        var ExtensionModalController = (function () {
             function ExtensionModalController($scope, $analytics, modal, modalservice, studyArea) {
                 var _this = this;
                 this.isBusy = false;
-                //QPPQ
                 this.dateRange = null;
                 this.selectedReferenceGage = null;
                 $scope.vm = this;
@@ -37,13 +20,10 @@ var StreamStats;
                 this.init();
                 this.load();
             }
-            //Methods  
-            //-+-+-+-+-+-+-+-+-+-+-+-
             ExtensionModalController.prototype.close = function () {
                 this.modalInstance.dismiss('cancel');
             };
             ExtensionModalController.prototype.ok = function () {
-                //validate info
                 if (this.verifyExtensionCanContinue()) {
                     this.close();
                 }
@@ -55,7 +35,6 @@ var StreamStats;
             };
             ExtensionModalController.prototype.setBestCorrelatedReferenceGage = function () {
                 var _this = this;
-                //subscribe
                 this.isBusy = true;
                 this.studyAreaService.onStudyAreaServiceBusyChanged.subscribe(new WiM.Event.EventHandler(function () {
                     _this.onStudyServiceBusyChanged();
@@ -64,7 +43,6 @@ var StreamStats;
             };
             ExtensionModalController.prototype.SetExtensionDate = function (event) {
                 var _this = this;
-                //set selected dates to 
                 var dates = this.getExtensionParameters(['sdate', 'edate']);
                 dates.forEach(function (dt) {
                     if (dt.code === "sdate")
@@ -73,12 +51,8 @@ var StreamStats;
                         dt.value = _this.dateRange.dates.endDate;
                 });
             };
-            //Helper Methods
-            //-+-+-+-+-+-+-+-+-+-+-+-
             ExtensionModalController.prototype.init = function () {
-                //default
                 this.selectedReferenceGage = null;
-                //load from services
                 if (this.studyAreaService.selectedStudyAreaExtensions == null)
                     return;
                 this.title = this.studyAreaService.selectedStudyAreaExtensions.map(function (c) { return c.name; }).join(", ");
@@ -86,13 +60,12 @@ var StreamStats;
                 var pcodes = parameters.map(function (p) { return p.code; });
                 if (['sid'].some(function (r) { return pcodes.indexOf(r) > -1; })) {
                     this.selectedReferenceGage = new StreamStats.Models.ReferenceGage("", "");
-                } //endif
+                }
                 if (['sdate', 'edate'].every(function (elem) { return pcodes.indexOf(elem) > -1; })) {
                     this.dateRange = { dates: { startDate: this.addDay(new Date(), -30), endDate: this.addDay(new Date(), -1) }, minDate: new Date(1900, 1, 1), maxDate: this.addDay(new Date(), -1) };
-                    //set start date
                     parameters[pcodes.indexOf('sdate')].value = this.dateRange.dates.startDate;
                     parameters[pcodes.indexOf('edate')].value = this.dateRange.dates.endDate;
-                } //endif
+                }
             };
             ExtensionModalController.prototype.load = function () {
                 var parameters = this.getExtensionParameters();
@@ -114,7 +87,6 @@ var StreamStats;
             };
             ExtensionModalController.prototype.verifyExtensionCanContinue = function () {
                 var _this = this;
-                //check dates
                 if (this.dateRange) {
                     if (!((this.dateRange.dates.startDate <= this.dateRange.maxDate || this.dateRange.dates.endDate <= this.dateRange.maxDate) &&
                         (this.dateRange.dates.startDate >= this.dateRange.minDate || this.dateRange.dates.endDate >= this.dateRange.minDate) &&
@@ -127,7 +99,6 @@ var StreamStats;
                         return false;
                     }
                 }
-                //load service
                 this.studyAreaService.selectedStudyAreaExtensions.forEach(function (ext) {
                     ext.parameters.forEach(function (p) {
                         if (p.code == "sid") {
@@ -163,13 +134,10 @@ var StreamStats;
                 this.load();
                 this.isBusy = false;
             };
-            //Constructor
-            //-+-+-+-+-+-+-+-+-+-+-+-
             ExtensionModalController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.ModalService', 'StreamStats.Services.StudyAreaService'];
             return ExtensionModalController;
-        }()); //end  class
+        }());
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.ExtensionModalController', ExtensionModalController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));
-})(StreamStats || (StreamStats = {})); //end module 
-//# sourceMappingURL=ExtensionModalController.js.map
+})(StreamStats || (StreamStats = {}));

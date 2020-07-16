@@ -22,7 +22,7 @@
 //Comments
 //04.15.2015 jkn - Created
 
-//Imports"
+//Imports
 module StreamStats.Controllers {
 
     declare var turf;
