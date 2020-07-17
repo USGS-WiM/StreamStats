@@ -75,7 +75,7 @@
                             <td ng-bind="characteristic.name"></td>
                             <td ng-bind="characteristic.value"></td>
                             <td ng-bind="characteristic.units"></td>
-                            <td ng-bind="characteristic.citationID"></td>
+                            <td ><a href="#{{characteristic.citationID}}">{{characteristic.citationID}}</a></td>
                           <tr>
                       </tbody>
                 </table>
@@ -108,7 +108,7 @@
                                     <td ng-bind="statistic.name"></td>
                                     <td ng-bind="statistic.value"></td>
                                     <td ng-bind="statistic.units"></td>
-                                    <td ng-bind="statistic.citationID"></td>
+                                    <td ><a href="#{{statistic.citationID}}">{{statistic.citationID}}</a></td>
                                 </tr>
                 
                             </tbody>
@@ -134,7 +134,7 @@
                     </thead>
                     <tbody >
                         <tr ng-repeat="citation in vm.gage.citations" ng-form="citationsForm">
-                            <td ng-bind="citation.id"></td>
+                            <td ng-bind="citation.id" id="{{citation.id}}"></td>
                             <td><a href="{{citation.url}}">{{citation.author}}&nbsp;{{citation.title}}</a></td>
                         </tr>
                     </tbody>
