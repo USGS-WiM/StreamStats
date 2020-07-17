@@ -1,0 +1,150 @@
+﻿<!-- Modal -->
+
+<div class="modal-header">
+    <button class="close"
+            ng-click="vm.Close()">
+        &times;
+    </button>
+    <h4 class="modal-title">StreamStats Data-Collection Station Report</h4>
+</div>
+<div class="modal-body">
+
+    <div style="padding-top: 10px;">
+
+        <div class="panel panel-default">
+            <div class="panel-heading">Gage Information</div>
+            <div class="panel-body">
+ 
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th >Name</th>
+                            <th >Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                          <th scope="row">USGS Station Number</th>
+                          <td><a href="https://waterdata.usgs.gov/monitoring-location/{{vm.gage.siteid}}">{{vm.gage.siteid}}&nbsp;&nbsp;</a><a href="https://nwis.waterdata.usgs.gov/nwis/inventory/?site_no={{vm.gage.siteid}}">(Legacy NWIS link)</a></td>
+                        </tr>
+                        <tr>
+                          <th scope="row">Station Name</th>
+                          <td>{{vm.gage.sitename}}</td>
+                           </tr>
+                        <tr>
+                            <th scope="row">Station Type</th>
+                            <td>{{vm.gage.stationtype}}</td>
+                        </tr>
+                        <tr>
+                          <th scope="row">Latitude</th>
+                          <td>{{vm.gage.lat}}</td>
+                         </tr>
+                         <tr>
+                            <th scope="row">Longitude</th>
+                            <td>{{vm.gage.lng}}</td>
+                         </tr>
+                         <tr>
+                            <th scope="row">Is regulated?</th>
+                            <td>{{vm.gage.isRegulated}}</td>
+                         </tr>
+                         <tr>
+                            <th scope="row">Agency</th>
+                            <td>{{vm.gage.agency}}</td>
+                         </tr>
+                      </tbody>
+                </table>
+            </div>
+        </div>
+
+        
+        <div class="panel panel-default" ng-show="vm.gage.characteristics.length > 0">
+            <div class="panel-heading">Physical Characteristics</div>
+            <div class="panel-body">
+ 
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th >Characteristic Name</th>
+                            <th >Value</th>
+                            <th >Units</th>
+                            <th >Citation</th>
+                        </tr>
+                    </thead>
+                    <tbody >
+                        <tr ng-repeat="characteristic in vm.gage.characteristics" ng-form="characteristicForm">
+                            <td ng-bind="characteristic.name"></td>
+                            <td ng-bind="characteristic.value"></td>
+                            <td ng-bind="characteristic.units"></td>
+                            <td ng-bind="characteristic.citationID"></td>
+                          <tr>
+                      </tbody>
+                </table>
+
+                
+            </div>
+        </div>
+
+        <div class="panel panel-default" ng-show="vm.gage.statisticsgroups.length > 0">
+            <div class="panel-heading">Streamflow Statistics</div>
+            <div class="panel-body">
+                
+                <div class="panel panel-default" ng-repeat="statisticGroup in vm.gage.statisticsgroups" ng-form="statisticGroupForm">
+                    <div class="panel-heading">{{statisticGroup.name}}</div>
+                    <div class="panel-body">
+
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th >Statistic Name</th>
+                                    <th >Value</th>
+                                    <th >Units</th>
+                                    <th >Citation</th>
+                                    <!-- <th>Preffered?</th>
+                                    <th>Years of Record</th> -->
+                                </tr>
+                            </thead>
+                            <tbody >
+                                <tr ng-repeat="statistic in statisticGroup.statistics" ng-form="statisticsForm">
+                                    <td ng-bind="statistic.name"></td>
+                                    <td ng-bind="statistic.value"></td>
+                                    <td ng-bind="statistic.units"></td>
+                                    <td ng-bind="statistic.citationID"></td>
+                                </tr>
+                
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+ 
+            </div>
+        </div>
+
+        <div class="panel panel-default" ng-show="vm.gage.citations.length > 0">
+            <div class="panel-heading">Citations</div>
+            <div class="panel-body">
+ 
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th >ID</th>
+                            <th >Citation</th>
+                        </tr>
+                    </thead>
+                    <tbody >
+                        <tr ng-repeat="citation in vm.gage.citations" ng-form="citationsForm">
+                            <td ng-bind="citation.id"></td>
+                            <td><a href="{{citation.url}}">{{citation.author}}&nbsp;{{citation.title}}</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal-footer">
+    <button ng-click="vm.Close()" class="btn-black"><i class="fa fa-close"></i><span>&nbsp;&nbsp;Close</span></button>
+</div>
