@@ -7,27 +7,33 @@
     "Jeremy Newson <jknewson@usgs.gov>",
     "Martyn Smith <marsmith@usgs.gov>"
   ],
+  "scripts": {
+    "live": "live-server --open=/src/",
+    "build": "npm install -g gulp && npm install -g typings && npm install && typings install && gulp"
+  },
   "license": "MIT",
   "dependencies": {
     "@turf/turf": "^5.1.6",
     "@types/geojson": "^7946.0.4",
     "angular": "1.7.8",
     "angular-bootstrap": "~0.12.1",
+    "angular-daterangepicker": "^0.2.3-alpha1",
     "angular-leaflet-directive": "~0.10.0",
     "angular-nvd3": "^1.0.5",
     "angular-sanitize": "^1.7.5",
-    "angular-ui-router": "0.2.15",
+    "angular-ui-router": "^0.3.2",
     "angularjs-slider": "^2.9.0",
     "angularjs-toaster": "github:jirikavi/AngularJS-Toaster",
     "angulartics": "~1.0.3",
     "angulartics-google-analytics": "~0.1.4",
     "d3": "~3.5.12",
+    "daterangepicker": "^3.0.5",
     "esri-leaflet": "1.0.4",
     "font-awesome": "~4.3.0",
     "jquery": "^3.4.0",
     "leaflet": "0.7.7",
     "leaflet-draw": "^0.4.14",
-    "leaflet.elevation": "github:mrmufflon/Leaflet.Elevation",
+    "leaflet.elevation": "github:mrmufflon/Leaflet.Elevation#b7943da40c85fa2351484776e7c3e93bef7aed01",
     "leaflet.locatecontrol": "^0.60.0",
     "marker-creator": "github:usgs-wim/marker-creator#master",
     "mobile-angular-ui": "1.2.1",
@@ -55,6 +61,7 @@
     "jshint": "^2.9.6",
     "jshint-stylish": "^2.2.1",
     "open": "7.0.0",
-    "semver": "^4.3.3"
+    "semver": "^4.3.3",
+    "live-server": "^1.2.1"
   }
 }

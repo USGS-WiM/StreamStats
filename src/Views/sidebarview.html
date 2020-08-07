@@ -174,7 +174,7 @@
                         <div class="banner warning" ng-show="(vm.nssService.statisticsGroupList.length == 0  && !vm.nssService.loadingStatisticsGroup) || (vm.studyAreaService.selectedStudyArea.RegressionRegions && vm.studyAreaService.selectedStudyArea.RegressionRegions.length === 0)"><span ng-show="vm.regionService.selectedRegion.ScenariosAvailable">Failed to load scenarios or no scenarios available</span><span ng-hide="vm.regionService.selectedRegion.ScenariosAvailable">Scenario computation has not been enabled yet for {{vm.regionService.selectedRegion.Name}}</span></div>
 
                         <form style="padding: 5px 0" ng-if="vm.nssService.statisticsGroupList.length > 0 && vm.studyAreaService.selectedStudyArea.RegressionRegions.length > 0" ng-repeat="statisticsGroup in vm.nssService.statisticsGroupList">
-                            <button class="fullwidth" ng-disabled="vm.studyAreaService.parametersLoading" ng-class="vm.checkArrayForObj(vm.nssService.selectedStatisticsGroupList, statisticsGroup) != -1 ? 'btn-blue': ''" ng-click="vm.setStatisticsGroup(statisticsGroup)"><span>{{statisticsGroup.Name}} </span></button>
+                            <button class="fullwidth" ng-disabled="vm.studyAreaService.parametersLoading" ng-class="vm.checkArrayForObj(vm.nssService.selectedStatisticsGroupList, statisticsGroup) != -1 ? 'btn-blue': ''" ng-click="vm.setStatisticsGroup(statisticsGroup)"><span>{{statisticsGroup.name}} </span></button>
                         </form>
                     </div>
 
@@ -186,7 +186,10 @@
 
                         <div ng-init="vm.showBasinCharacterstics = false" ng-show="vm.showBasinCharacterstics">
                             <form style="padding: 5px 0;">
-                                <button class="btn-blue fullwidth" ng-class="vm.multipleParameterSelectorAdd ? 'btn-black': 'btn-blue'" ng-click="vm.multipleParameterSelector()"><span>Select All Basin Characteristics</span></button>
+                                <button class="btn-blue fullwidth" ng-class="!vm.multipleParameterSelectorAdd ? 'btn-black': 'btn-blue'" ng-click="vm.multipleParameterSelector()">
+                                    <span ng-if="vm.multipleParameterSelectorAdd">Select All Basin Characteristics</span>
+                                    <span ng-if="!vm.multipleParameterSelectorAdd">Unselect All Basin Characteristics</span>
+                                </button>
                             </form>
                             <table class="table table-condensed">
                                 <thead class="param-table">
