@@ -421,7 +421,9 @@ module StreamStats.Services {
             //console.log('citations: ', citationUrl, statGroup, this.getSelectedCitationsCounter);
 
             //temporary fix until I fix nssservicesv2 hypermedia
-            var url = "https://"+citationUrl.replace("?","nssservicesv2/citations?");
+            var url;
+            if (citationUrl.indexOf('https://') == -1) url = 'https://' + citationUrl;
+            else url = citationUrl;
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, 0, 'json');
 
             this.Execute(request).then(

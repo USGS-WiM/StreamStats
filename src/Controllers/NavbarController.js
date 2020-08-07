@@ -117,4 +117,4 @@ var StreamStats;
             .controller('StreamStats.Controllers.NavbarController', NavbarController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));
 })(StreamStats || (StreamStats = {})); //end module
-//# sourceMappingURL=NavbarController.js.map
+//# sourceMappingURL=Navbarcontroller.js.map

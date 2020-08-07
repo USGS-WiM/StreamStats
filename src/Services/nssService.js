@@ -331,7 +331,11 @@ var StreamStats;
                 //console.log('citations: ', citationUrl, statGroup, this.getSelectedCitationsCounter);
                 var _this = this;
                 //temporary fix until I fix nssservicesv2 hypermedia
-                var url = "https://" + citationUrl.replace("?", "nssservicesv2/citations?");
+                var url;
+                if (citationUrl.indexOf('https://') == -1)
+                    url = 'https://' + citationUrl;
+                else
+                    url = citationUrl;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, 0, 'json');
                 this.Execute(request).then(function (response) {
                     //console.log('get citations: ', response);
