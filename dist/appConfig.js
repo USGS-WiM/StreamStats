@@ -8,7 +8,7 @@ configuration.baseurls =
         'StreamStatsServices': 'https://test.streamstats.usgs.gov',
         'StreamStatsMapServices': 'https://gis.streamstats.usgs.gov',
         'nssservicesv2':'https://test.streamstats.usgs.gov/nssservicesv2',
-        'NSS': 'https://test.streamstats.usgs.gov/nssservices',
+        'NSS': 'https://test.streamstats.usgs.gov/nssservicesv2',
         'WaterUseServices': 'https://test.streamstats.usgs.gov/wateruseservices',
         'StormRunoffServices': 'https://test.streamstats.usgs.gov/runoffmodelingservices',
         'ScienceBase': 'https://gis.usgs.gov/sciencebase2'
@@ -19,21 +19,22 @@ configuration.baseurls =
 if (window.location.host === 'streamstats.usgs.gov') {
     configuration.baseurls.StreamStatsServices = 'https://streamstats.usgs.gov',
         configuration.baseurls.StreamStatsMapServices = 'https://gis.streamstats.usgs.gov',
-        configuration.baseurls.NSS = 'https://streamstats.usgs.gov/nssservices',
+        configuration.baseurls.NSS = 'https://streamstats.usgs.gov/nssservicesv2',
         configuration.baseurls.nssservicesv2 = 'https://streamstats.usgs.gov/nssservicesv2',
         configuration.baseurls.WaterUseServices = 'https://streamstats.usgs.gov/wateruseservices',
         configuration.baseurls.StormRunoffServices = 'https://streamstats.usgs.gov/runoffmodelingservices',
+        configuration.baseurls.nssservicesv2 = 'https://streamstats.usgs.gov/nssservicesv2',
         configuration.environment = 'production';
 }
 
 configuration.queryparams =
     {
-        "NWISsite": '/site/?format=mapper,1.0&stateCd={0}&siteType=GL,OC,OC-CO,ES,LK,ST,ST-CA,ST-DCH,ST-TS&hasDataTypeCd=iv',
-        'KrigService': '/krig?state={0}&xlocation={1}&ylocation={2}&sr={3}',
+        'NWISsite':'/site/?format=rdb,1.0&bBox={0},{1},{2},{3}&seriesCatalogOutput=true&outputDataTypeCd=dv&parameterCd=00060&siteStatus=all&hasDataTypeCd=dv',
+        'KrigService': '/krigservices/sites/{0}/krig?&x={1}&y={2}&crs={3}',
         'RegressionScenarios': '/{0}/estimate?state={1}',
-        'statisticsGroupLookup': '/statisticgroups.json?region={0}&regressionregions={1}',
-        'statisticsGroupParameterLookup': '/scenarios.json?region={0}&statisticgroups={1}&regressionregions={2}&configs=2',
-        'estimateFlows': '/scenarios/estimate.json?region={0}&statisticgroups={1}&regressionregions={2}&configs=2',
+        'statisticsGroupLookup': '/statisticgroups?regions={0}&regressionregions={1}',
+        'statisticsGroupParameterLookup': '/scenarios?regions={0}&statisticgroups={1}&regressionregions={2}&configs=2',
+        'estimateFlows': '/scenarios/estimate?regions={0}&configs=2',
         'SSdelineation': '/streamstatsservices/watershed.{0}?rcode={1}&xlocation={2}&ylocation={3}&crs={4}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
         'SSstormwaterDelineation': '/stormwaterservices/watershed?rcode={0}&xlocation={1}&ylocation={2}&surfacecontributiononly={3}',
         'SSwatershedByWorkspace': '/streamstatsservices/watershed.{0}?rcode={1}&workspaceID={2}&crs={3}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
@@ -249,36 +250,7 @@ configuration.regions = [
     { "RegionID": "GU", "Name": "Guam", "Bounds": [[13.234996, 144.634155], [13.65361, 144.953308]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "HI", "Name": "Hawaii", "Bounds": [[18.921786, -160.242406], [22.22912, -154.791096]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     {
-        "RegionID": "IA", "Name": "Iowa", "Bounds": [[40.371946, -96.640709], [43.501457, -90.142796]], "Layers":
-            {
-                //'FLA': {
-                //    "name": "Flow Anywhere Model",
-                //    "url": 'https://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowAnywhere/MapServer',
-                //    "type": 'agsDynamic',
-                //    "visible": true,
-                //    "layerOptions": {
-                //        "opacity": 0.5
-                //    }
-                //},
-                //'FDCTM': {
-                //    "name": "Flow Duration Curve Transfer Model",
-                //    "url": 'https://wim.usgs.gov/arcgis/rest/services/CedarRiverMapper/IowaFlowDuration2/MapServer',
-                //    "type": 'agsDynamic',
-                //    "visible": true,
-                //    "layerOptions": {
-                //        "opacity": 0.5
-                //    }
-                //},
-                //'PRMS': {
-                //    "name": "PRMS",
-                //    "url": 'https://wim.usgs.gov/arcgis/rest/services/IowaPRMSMapper/IOWA_PRMS/MapServer',
-                //    "type": 'agsDynamic',
-                //    "visible": false,
-                //    "layerOptions": {
-                //        "opacity": 0.5
-                //    }
-                //}
-            },
+        "RegionID": "IA", "Name": "Iowa", "Bounds": [[40.371946, -96.640709], [43.501457, -90.142796]], "Layers":{},
         "Applications": [],
         "regionEnabled": true,
         "ScenariosAvailable": true
@@ -377,7 +349,7 @@ configuration.regions = [
     { "RegionID": "OK", "Name": "Oklahoma", "Bounds": [[33.621136, -102.997709], [37.001478, -94.428552]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "OR", "Name": "Oregon", "Bounds": [[41.987672, -124.559617], [46.236091, -116.470418]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "PA", "Name": "Pennsylvania", "Bounds": [[39.719313, -80.526045], [42.267327, -74.700062]], "Layers": {}, "Applications": ["Wateruse"], "regionEnabled": true, "ScenariosAvailable": true },
-    { "RegionID": "PR", "Name": "Puerto Rico", "Bounds": [[17.922222, -67.938339], [18.519443, -65.241958]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
+    { "RegionID": "PR", "Name": "Puerto Rico", "Bounds": [[17.922222, -67.938339], [18.519443, -65.241958]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
     { "RegionID": "RI", "Name": "Rhode Island", "Bounds": [[41.322769, -71.866678], [42.013713, -71.117132]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     {
         "RegionID": "SC", "Name": "South Carolina", "Bounds": [[32.068173, -83.350685], [35.208356, -78.579453]], "Layers":
@@ -520,11 +492,11 @@ configuration.overlayedLayers = {
             }]
         }],
         "queryProperties": { "Streamgages":{ "STA_ID": "Station ID", "STA_NAME": "Station Name", "Latitude": "Latitude", "Longitude": "Longitude", "FeatureURL": "URL" }}
-    },//end maskLayer    
+    },//end ssLayer    
     "MaskLayer": {
         "name": "Area of Interest",
-        "url": "https://txgeo.usgs.gov/arcgis/rest/services/Mapping/Mask/MapServer",
-        "type": 'agsTiled',
+        "url": "https://streamstats.usgs.gov/maptiles/MaskLayer/{z}/{y}/{x}.png",
+        "type": 'xyz',
         "visible": true,
         "layerOptions": {
             "opacity": 0.6,
@@ -534,7 +506,7 @@ configuration.overlayedLayers = {
         "layerParams": {
             "showOnSelector": false,
         }
-    },//end ssLayer    
+    },//end maskLayer    
     "draw": {
         "name": 'draw',
         "type": 'group',

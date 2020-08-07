@@ -118,6 +118,15 @@ var StreamStats;
                                 backdrop: 'static',
                                 windowClass: 'windowZ',
                             };
+                        case SSModalType.e_extensionsupport:
+                            return {
+                                templateUrl: 'Views/extensionview.html',
+                                controller: 'StreamStats.Controllers.ExtensionModalController',
+                                size: 'sm',
+                                backdropClass: 'backdropZ',
+                                backdrop: 'static',
+                                windowClass: 'windowZ',
+                            };
                         default:
                             return null;
                     } //end switch          
@@ -139,6 +148,7 @@ var StreamStats;
             SSModalType[SSModalType["e_exploration"] = 6] = "e_exploration";
             SSModalType[SSModalType["e_stormrunnoff"] = 7] = "e_stormrunnoff";
             SSModalType[SSModalType["e_prosper"] = 8] = "e_prosper";
+            SSModalType[SSModalType["e_extensionsupport"] = 9] = "e_extensionsupport";
         })(SSModalType = Services.SSModalType || (Services.SSModalType = {}));
         factory.$inject = ['$modal'];
         function factory($modal) {

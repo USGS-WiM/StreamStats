@@ -31,6 +31,19 @@ npm install
 typings install 
 ```
 Note: [upgrade from tsd to typings] (https://github.com/DefinitelyTyped/tsd/issues/269)
+
+## Building and testing
+
+Serve files with hot module replacement (live reload)
+```
+npm run live
+```
+
+To build a production version of the app:
+```
+gulp
+```
+
 ## Contributing
 
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on the process for submitting pull requests to us. Please read [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for details on adhering by the [USGS Code of Scientific Conduct](https://www2.usgs.gov/fsp/fsp_code_of_scientific_conduct.asp).

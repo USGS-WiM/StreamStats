@@ -84,6 +84,7 @@ module StreamStats.Controllers {
         public center: ICenter = null;
         public bounds: any;
         public layers: IMapLayers = null;
+        public extensions;
 
         public geojson: Object = null;
 
@@ -110,7 +111,18 @@ module StreamStats.Controllers {
             if (this.regionService.selectedRegion.Applications.indexOf("RegulationFlows") > -1) return true;
             else return false;                
         }
-
+        public get ActiveExtensions(): Array<any> {
+            if (this.studyAreaService.selectedStudyArea.NSS_Extensions && this.studyAreaService.selectedStudyArea.NSS_Extensions.length > 0)
+                return this.studyAreaService.selectedStudyArea.NSS_Extensions
+            else return null;
+        }
+        private _graphData: any = {
+            data: {},
+            options: {}
+        };
+        public get GraphData():any {
+            return this._graphData;
+        }
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService'];
@@ -124,6 +136,7 @@ module StreamStats.Controllers {
             this.reportTitle = 'StreamStats Report';
             this.reportComments = 'Some comments here';
             this.AppVersion = configuration.version;
+            this.extensions = this.ActiveExtensions;
             this.initMap();
             
 
@@ -159,18 +172,18 @@ module StreamStats.Controllers {
             var processScenarioParamTable = (statGroup) => {
                 var finalVal = '';
      
-                statGroup.RegressionRegions.forEach((regressionRegion) => {
+                statGroup.regressionRegions.forEach((regressionRegion) => {
 
                     //bail if in Area-Averaged section
-                    if (regressionRegion.Name == 'Area-Averaged') return;
+                    if (regressionRegion.name == 'Area-Averaged') return;
   
                     //table header
                     var regionPercent = '';
-                    if (regressionRegion.PercentWeight) regionPercent = regressionRegion.PercentWeight.toFixed(0) + ' Percent ';
-                    finalVal += '\r\n' + statGroup.Name + ' Parameters,' + regionPercent + regressionRegion.Name.split("_").join(" ") + '\r\n';
+                    if (regressionRegion.percentWeight) regionPercent = regressionRegion.percentWeight.toFixed(0) + ' Percent ';
+                    finalVal += '\r\n' + statGroup.name + ' Parameters,' + regionPercent + regressionRegion.name.split("_").join(" ") + '\r\n';
 
                     //get this table by ID --need to use this type of selected because jquery doesn't like the possibility of colons in div id
-                    finalVal += this.tableToCSV($(document.getElementById(this.camelize(statGroup.Name + regressionRegion.Name + 'ScenarioParamTable')))) + '\r\n';
+                    finalVal += this.tableToCSV($(document.getElementById(this.camelize(statGroup.name + regressionRegion.name + 'ScenarioParamTable')))) + '\r\n';
                     
                 });
                 return finalVal + '\r\n';
@@ -178,9 +191,9 @@ module StreamStats.Controllers {
 
             var processDisclaimers = (statGroup) => {
                 //console.log('Process disclaimers statGroup: ', statGroup);
-                var finalVal = '*** ' + statGroup.Name + ' Disclaimers ***\r\n';
+                var finalVal = '*** ' + statGroup.name + ' Disclaimers ***\r\n';
 
-                angular.forEach(statGroup.Disclaimers, (i, v) => {
+                angular.forEach(statGroup.disclaimer, (i, v) => {
                     finalVal += v + ',' + i + '\r\n';
                 });
 
@@ -191,22 +204,22 @@ module StreamStats.Controllers {
                 //console.log('ScenarioFlowTable statGroup: ', statGroup);
                 var finalVal = '';
 
-                statGroup.RegressionRegions.forEach((regressionRegion) => {
+                statGroup.regressionRegions.forEach((regressionRegion) => {
                     //console.log('ScenarioFlowTable regressionRegion: ', regressionRegion);
 
-                    if (regressionRegion.Results) {
+                    if (regressionRegion.results) {
 
                         //table header
                         var regionPercent = '';
-                        if (regressionRegion.PercentWeight) regionPercent = regressionRegion.PercentWeight.toFixed(0) + ' Percent ';
-                        finalVal += statGroup.Name + ' Flow Report,' + regionPercent + regressionRegion.Name.split("_").join(" ") + '\r\n';
+                        if (regressionRegion.percentWeight) regionPercent = regressionRegion.percentWeight.toFixed(0) + ' Percent ';
+                        finalVal += statGroup.name + ' Flow Report,' + regionPercent + regressionRegion.name.split("_").join(" ") + '\r\n';
 
                         //add explanatory row if needed
-                        if (regressionRegion.Results[0].IntervalBounds && regressionRegion.Results[0].Errors && regressionRegion.Results[0].Errors.length > 0) finalVal +=
+                        if (regressionRegion.results[0].intervalBounds && regressionRegion.results[0].errors && regressionRegion.results[0].errors.length > 0) finalVal +=
                          '"PIl: Prediction Interval- Lower, PIu: Prediction Interval- Upper, SEp: Standard Error of Prediction, SE: Standard Error (other-- see report)"\r\n'
 
                         //get this table by ID --need to use this type of selected because jquery doesn't like the possibility of colons in div id
-                        finalVal += this.tableToCSV($(document.getElementById(this.camelize(statGroup.Name + regressionRegion.Name + 'ScenarioFlowTable')))) + '\r\n\r\n';
+                        finalVal += this.tableToCSV($(document.getElementById(this.camelize(statGroup.name + regressionRegion.name + 'ScenarioFlowTable')))) + '\r\n\r\n';
                     }
                 });
                 return finalVal + '\r\n';
@@ -221,7 +234,7 @@ module StreamStats.Controllers {
             //next loop over stat groups
             this.nssService.selectedStatisticsGroupList.forEach((statGroup) => {
                 csvFile += processScenarioParamTable(statGroup);
-                if (statGroup.Disclaimers && (statGroup.Disclaimers.Warnings || statGroup.Disclaimers.Errors)) csvFile += processDisclaimers(statGroup);
+                if (statGroup.disclaimers && (statGroup.disclaimers.Warnings || statGroup.disclaimers.Errors)) csvFile += processDisclaimers(statGroup);
                 csvFile += processScenarioFlowTable(statGroup);
             });
 
@@ -250,6 +263,7 @@ module StreamStats.Controllers {
             }
 
         }
+
         public downloadGeoJSON() {
 
             var fc: GeoJSON.FeatureCollection = this.studyAreaService.selectedStudyArea.FeatureCollection
@@ -306,7 +320,7 @@ module StreamStats.Controllers {
             }
         }
 
-        private downloadPDF() {
+        public downloadPDF() {
             var pdf = new jsPDF('p', 'pt', 'letter');
             // source can be HTML-formatted string, or a reference
             // to an actual DOM element from which the text will be scraped.
@@ -350,6 +364,104 @@ module StreamStats.Controllers {
                 }, margins);
         }
 
+        public ActivateGraphs(result: any) {
+            result.graphdata = {
+                exceedance: {
+                    data: [{ values: [], area: true, color: '#7777ff' }],
+                    options: {
+                        chart: {
+                            type: 'lineChart',
+                            height: 450,
+                            margin: {
+                                top: 20,
+                                right: 30,
+                                bottom: 60,
+                                left: 65
+                            },
+                            x: function (d) { return d.label; },
+                            y: function (d) { return d.value; },
+                            showLegend: false,
+                            valueFormat: function (d) {
+                                return d3.format(',.3f')(d);
+                            },
+                            xAxis: {
+                                showMaxMin: false
+
+                            },
+                            yAxis: {
+                                axisLabel: 'Discharge (cfs)',
+                                tickFormat: function (d) {
+                                    return d3.format(',.0f')(d);
+                                },
+                                tickValues: [1, 10, 100, 1000, 10000, 1000000]
+                            },
+                            yScale: d3.scale.log(),
+                            title: {
+                                enable: true,
+                                text: "Flow Duration Curve Transfer Method (QPPQ) Model Estimated Exceedance Probabilities"
+                            }
+                        }
+                    }
+                },
+                flow: {
+                    data: [
+                        { key: result.referanceGage.name, values: result.referanceGage.discharge.observations.map(obs => { return { x: new Date(obs.date).getTime(), y: obs.value.toUSGSvalue()} })},
+                        { key: "Estimated", values: result.estimatedFlow.observations.map(obs => { return { x: new Date(obs.date).getTime(), y: obs.value.toUSGSvalue() } }) }
+                    ],
+                    options: {
+                        chart: {
+                            type: 'lineChart',
+                            height: 450,
+                            margin: {
+                                top: 20,
+                                right: 20,
+                                bottom: 50,
+                                left: 75
+                            },
+                            x: function (d) {
+                                return new Date(d.x).getTime();
+                            },
+                            y: function (d) {
+                                return d.y;
+                            },
+                            useInteractiveGuideline: false,
+                            interactive: false,
+                            tooltips: true,
+                            xAxis: {
+                                tickFormat: function (d) {
+                                    return d3.time.format('%x')(new Date(d));
+                                },
+                                rotateLabels: 30,
+                                showMaxMin: false
+
+
+                            },
+                            yAxis: {
+                                axisLabel: 'Estimated Discharge (cfs)',
+                                tickFormat: function (d) {
+                                    return d3.format('.02f')(d);
+                                },
+                                showMaxMin: false
+
+                            },
+                            zoom: {
+                                enabled: true,
+                                scaleExtent: [1, 10],
+                                useFixedDomain: false,
+                                useNiceScale: false,
+                                horizontalOff: false,
+                                verticalOff: false,
+                                unzoomEventType: 'dblclick.zoom'
+                            }
+                        }
+                    }
+                }
+            };
+
+            for (var key in result.exceedanceProbabilities) {
+                result.graphdata.exceedance.data[0].values.push({ label: key, value: result.exceedanceProbabilities[key] })
+            }//next key
+        }
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         private initMap(): void {
@@ -370,12 +482,12 @@ module StreamStats.Controllers {
         }
         public GetRegressionRegionHeader(regressionregion: any): any {
 
-            let header = regressionregion.Name.split('_').join(' ');
-            if (regressionregion.PercentWeight && regressionregion.PercentWeight < 100) {
+            let header = regressionregion.name.split('_').join(' ');
+            if (regressionregion.percentWeight && regressionregion.percentWeight < 100) {
                 for (var i = 0; i < this.studyAreaService.selectedStudyArea.RegressionRegions.length; i++) {
                     let rr = this.studyAreaService.selectedStudyArea.RegressionRegions[i]
-                    if (regressionregion.Code != null && rr.code.indexOf(regressionregion.Code.toUpperCase())>-1) {
-                        header = '{0} Percent ({1} square miles) {2}'.format( regressionregion.PercentWeight.toFixed(0), rr.area.toUSGSvalue(),header);
+                    if (regressionregion.code != null && rr.code.indexOf(regressionregion.code.toUpperCase())>-1) {
+                        header = '{0} Percent ({1} square miles) {2}'.format( regressionregion.percentWeight.toFixed(0), rr.area.toUSGSvalue(),header);
                         break;
                     }//endif
                 }//next i
@@ -522,9 +634,6 @@ module StreamStats.Controllers {
                 return index == 0 ? letter.toLowerCase() : letter.toUpperCase();
             }).replace(/\s+/g, '');
         }
-        
-
-
     }//end class
     angular.module('StreamStats.Controllers')
         .controller('StreamStats.Controllers.ReportController', ReportController)
