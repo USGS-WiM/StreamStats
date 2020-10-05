@@ -54,9 +54,8 @@
                 </div>
 
                 <div ng-show="vm.showReport">
-
                     <!--Parameter Table if just basin chars-->
-                    <div class="well well-sm" ng-show="vm.nssService.showBasinCharacteristicsTable && (vm.nssService.selectedStatisticsGroupList.length > 1 || (vm.extensions && vm.extensions[0].code != 'QPPQ'))">
+                    <div class="well well-sm" ng-show="vm.nssService.showBasinCharacteristicsTable">
                         <h3>Basin Characteristics</h3>
                         <table id="mainParamTable" class="mainParamTable table table-condensed">
                             <thead class="param-table">
