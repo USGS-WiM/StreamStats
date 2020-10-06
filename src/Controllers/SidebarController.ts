@@ -403,7 +403,7 @@ module StreamStats.Controllers {
                 }
 
                 //add it back in.
-                if(sg != null) {
+                if(sg != null && sg.code.toUpperCase() === "PFS") {
                     this.nssService.selectedStatisticsGroupList.push(sg);
                     if (this.nssService.selectedStatisticsGroupList.length == 1) {
                         this.toaster.clear();

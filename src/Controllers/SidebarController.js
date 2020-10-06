@@ -249,7 +249,7 @@ var StreamStats;
                             _this.nssService.estimateFlows(_this.studyAreaService.studyAreaParameterList, "unRegulatedValue", _this.regionService.selectedRegion.RegionID, true);
                         }, 500);
                     }
-                    if (sg != null) {
+                    if (sg != null && sg.code.toUpperCase() === "PFS") {
                         this.nssService.selectedStatisticsGroupList.push(sg);
                         if (this.nssService.selectedStatisticsGroupList.length == 1) {
                             this.toaster.clear();
