@@ -201,6 +201,9 @@ var StreamStats;
                 this.studyAreaService.loadParameters();
                 if (this.scenarioHasExtenstions) {
                     this.modalService.openModal(StreamStats.Services.SSModalType.e_extensionsupport);
+                    if (this.nssService.selectedStatisticsGroupList.length == 1) {
+                        this.nssService.showBasinCharacteristicsTable = false;
+                    }
                 }
             };
             SidebarController.prototype.submitBasinEdits = function () {
@@ -230,7 +233,7 @@ var StreamStats;
                         for (var i = 0; i < this.nssService.selectedStatisticsGroupList.length; i++) {
                             var sg = this.nssService.selectedStatisticsGroupList[i];
                             if (sg.code.toUpperCase() === "PFS") {
-                                sg.citations = [{ Author: "Indiana DNR,", Title: "Coordinated Discharges of Selected Streams in Indiana.", CitationURL: "http://www.in.gov/dnr/water/4898.htm" }];
+                                sg.citations = [{ author: "Indiana DNR,", title: "Coordinated Discharges of Selected Streams in Indiana.", citationURL: "http://www.in.gov/dnr/water/4898.htm" }];
                                 sg.regressionRegions = [];
                                 var result = this.studyAreaService.selectedStudyArea.CoordinatedReach.Execute(this.studyAreaService.studyAreaParameterList.filter(function (p) { return p.code === "DRNAREA"; }));
                                 sg.regressionRegions.push(result);
@@ -246,8 +249,14 @@ var StreamStats;
                             _this.nssService.estimateFlows(_this.studyAreaService.studyAreaParameterList, "unRegulatedValue", _this.regionService.selectedRegion.RegionID, true);
                         }, 500);
                     }
-                    if (sg != null)
+                    if (sg != null && sg.code.toUpperCase() === "PFS") {
                         this.nssService.selectedStatisticsGroupList.push(sg);
+                        if (this.nssService.selectedStatisticsGroupList.length == 1) {
+                            this.toaster.clear();
+                            this.modalService.openModal(StreamStats.Services.SSModalType.e_report);
+                            this.nssService.reportGenerated = true;
+                        }
+                    }
                 }
                 else {
                     this.toaster.clear();
@@ -308,7 +317,7 @@ var StreamStats;
                                     }
                                 }
                                 if (!found) {
-                                    _this.toaster.pop('warning', "Missing Parameter: " + param.Code, "The selected scenario requires a parameter not available in this State/Region.  The value for this parameter will need to be entered manually.", 0);
+                                    _this.toaster.pop('warning', "Missing Parameter: " + param.code, "The selected scenario requires a parameter not available in this State/Region.  The value for this parameter will need to be entered manually.", 0);
                                     var newParam = {
                                         name: param.name,
                                         description: param.description,

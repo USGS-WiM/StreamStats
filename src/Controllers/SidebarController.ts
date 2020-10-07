@@ -331,6 +331,9 @@ module StreamStats.Controllers {
             //open modal for extensions
             if (this.scenarioHasExtenstions) {
                 this.modalService.openModal(Services.SSModalType.e_extensionsupport);
+                if (this.nssService.selectedStatisticsGroupList.length == 1) {
+                    this.nssService.showBasinCharacteristicsTable = false;
+                }
             }
         }
 
@@ -380,7 +383,7 @@ module StreamStats.Controllers {
                     for (var i = 0; i < this.nssService.selectedStatisticsGroupList.length; i++) {
                         var sg = this.nssService.selectedStatisticsGroupList[i];
                         if (sg.code.toUpperCase() === "PFS") {
-                            sg.citations = [{ Author: "Indiana DNR,", Title: "Coordinated Discharges of Selected Streams in Indiana.", CitationURL: "http://www.in.gov/dnr/water/4898.htm" }];
+                            sg.citations = [{ author: "Indiana DNR,", title: "Coordinated Discharges of Selected Streams in Indiana.", citationURL: "http://www.in.gov/dnr/water/4898.htm" }];
                             sg.regressionRegions = [];
                             var result = this.studyAreaService.selectedStudyArea.CoordinatedReach.Execute(this.studyAreaService.studyAreaParameterList.filter(p => { return p.code === "DRNAREA" }))
                             sg.regressionRegions.push(result); 
@@ -400,8 +403,14 @@ module StreamStats.Controllers {
                 }
 
                 //add it back in.
-                if(sg != null)
+                if(sg != null && sg.code.toUpperCase() === "PFS") {
                     this.nssService.selectedStatisticsGroupList.push(sg);
+                    if (this.nssService.selectedStatisticsGroupList.length == 1) {
+                        this.toaster.clear();
+                        this.modalService.openModal(Services.SSModalType.e_report);
+                        this.nssService.reportGenerated = true;
+                    }
+                }
             } else {
                 this.toaster.clear();
                 this.modalService.openModal(Services.SSModalType.e_report);
@@ -493,7 +502,7 @@ module StreamStats.Controllers {
                             
                             if (!found) {
                                 //console.log('PARAM NOT FOUND', param.Code)
-                                this.toaster.pop('warning', "Missing Parameter: " + param.Code, "The selected scenario requires a parameter not available in this State/Region.  The value for this parameter will need to be entered manually.", 0);
+                                this.toaster.pop('warning', "Missing Parameter: " + param.code, "The selected scenario requires a parameter not available in this State/Region.  The value for this parameter will need to be entered manually.", 0);
 
                                 //add to region parameterList
                                 var newParam = {
