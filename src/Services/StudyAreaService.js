@@ -47,6 +47,7 @@ var StreamStats;
                 _this._onStudyAreaServiceFinishedChanged = new WiM.Event.Delegate();
                 _this.surfacecontributionsonly = false;
                 _this.doQueryNWIS = false;
+                _this.NSSServicesVersion = '';
                 _this.modalservices = modal;
                 eventManager.AddEvent(Services.onSelectedStudyParametersLoaded);
                 eventManager.AddEvent(Services.onSelectedStudyAreaChanged);
@@ -438,6 +439,7 @@ var StreamStats;
                 var studyAreaGeom = studyArea.geometry;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(studyAreaGeom));
                 this.Execute(request).then(function (response) {
+                    _this.NSSServicesVersion = response.headers()['x-version'];
                     _this.toaster.clear();
                     if (response.data.error) {
                         _this.toaster.pop('error', "There was an error querying regression regions", response.data.error.message, 0);
