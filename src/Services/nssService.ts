@@ -327,8 +327,8 @@ module StreamStats.Services {
                         if(!append) this.getSelectedCitations(citationUrl, statGroup);
 
                         //get header values
-                        if (response.headers()['usgswim-messages']) {
-                            var headerMsgs = response.headers()['usgswim-messages'].split(';');
+                        if (response.headers()['x-usgswim-messages']) {
+                            var headerMsgs = response.headers()['x-usgswim-messages'].split(';');
                             statGroup.disclaimers = {};
 
                             headerMsgs.forEach((item) => {

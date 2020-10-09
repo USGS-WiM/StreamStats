@@ -98,6 +98,9 @@ module StreamStats.Controllers {
         public isExceedanceTableOpen = false;
         public isFlowTableOpen = false;
         private environment: string;
+        public NSSServicesVersion: string;
+        public SSServicesVersion = '1.2.22'; // TODO: This needs to pull from the services when ready
+
         public get showReport(): boolean {
             if (!this.studyAreaService.studyAreaParameterList) return false;
             for (var i = 0; i < this.studyAreaService.studyAreaParameterList.length; i++) {
@@ -157,6 +160,8 @@ module StreamStats.Controllers {
             this.print = function () {
                 window.print();
             };
+
+            this.NSSServicesVersion = this.studyAreaService.NSSServicesVersion;
         }
 
         //Methods
@@ -284,6 +289,9 @@ module StreamStats.Controllers {
                 //disclaimer
                 csvFile += self.disclaimer + 'Application Version: ' + self.AppVersion;
 
+                if (self.SSServicesVersion) csvFile += '\nStreamStats Services Version: ' + self.SSServicesVersion;
+                if (self.NSSServicesVersion) csvFile += '\nNSS Services Version: ' + self.NSSServicesVersion;
+
                 //download
                 var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
                 if (navigator.msSaveBlob) { // IE 10+
@@ -356,9 +364,12 @@ module StreamStats.Controllers {
                     flowTable = this.nssService.getflattenNSSTable(this.studyAreaService.selectedStudyArea.WorkspaceID);
 
                 var fc: GeoJSON.FeatureCollection = this.studyAreaService.getflattenStudyArea();
-
+                
+                var versionText = 'Application Version: ' + this.AppVersion;
+                if (this.SSServicesVersion) versionText += '\nStreamStats Services Version: ' + this.SSServicesVersion;
+                if (this.NSSServicesVersion) versionText += '\nNSS Services Version: ' + this.NSSServicesVersion;
                 //this will output a zip file
-                shpwrite.download(fc, flowTable, this.disclaimer + 'Application Version: ' + this.AppVersion);    
+                shpwrite.download(fc, flowTable, this.disclaimer + versionText);    
 
             } catch (e) {
                 console.log(e)

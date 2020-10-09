@@ -196,8 +196,8 @@ var StreamStats;
                         var citationUrl = response.data[0].links[0].href;
                         if (!append)
                             _this.getSelectedCitations(citationUrl, statGroup);
-                        if (response.headers()['usgswim-messages']) {
-                            var headerMsgs = response.headers()['usgswim-messages'].split(';');
+                        if (response.headers()['x-usgswim-messages']) {
+                            var headerMsgs = response.headers()['x-usgswim-messages'].split(';');
                             statGroup.disclaimers = {};
                             headerMsgs.forEach(function (item) {
                                 var headerMsg = item.split(':');
