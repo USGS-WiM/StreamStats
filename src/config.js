@@ -47,7 +47,8 @@ var StreamStats;
         'leaflet-directive',
         'StreamStats.Services',
         'StreamStats.Controllers',
-        'WiM.Services', 'WiM.Event', 'wim_angular', 'rzModule', 'nvd3', 'daterangepicker'
+        'WiM.Services', 'WiM.Event', 'wim_angular', 'rzModule', 'nvd3', 'daterangepicker',
+        'angularjs-dropdown-multiselect'
     ])
         .config(config);
 })(StreamStats || (StreamStats = {}));

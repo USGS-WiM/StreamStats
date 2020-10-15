@@ -642,12 +642,13 @@ module StreamStats.Services {
             this.regressionRegionQueryComplete = false;
             
             var headers = {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "X-Is-StreamStats": true
             };
             var url = configuration.baseurls['nssservicesv2'] + configuration.queryparams['RegressionRegionQueryService'];
             var studyArea = this.simplify(angular.fromJson(angular.toJson(this.selectedStudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).toLowerCase() == "globalwatershed" })[0])));
             var studyAreaGeom = studyArea.geometry; //this.selectedStudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).toLowerCase() == "globalwatershed" })[0].geometry;
-            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(studyAreaGeom));     
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(studyAreaGeom), headers);     
 
             this.Execute(request).then(
                 (response: any) => {

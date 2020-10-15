@@ -431,12 +431,13 @@ var StreamStats;
                 this.regressionRegionQueryLoading = true;
                 this.regressionRegionQueryComplete = false;
                 var headers = {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "X-Is-StreamStats": true
                 };
                 var url = configuration.baseurls['nssservicesv2'] + configuration.queryparams['RegressionRegionQueryService'];
                 var studyArea = this.simplify(angular.fromJson(angular.toJson(this.selectedStudyArea.FeatureCollection.features.filter(function (f) { return (f.id).toLowerCase() == "globalwatershed"; })[0])));
                 var studyAreaGeom = studyArea.geometry;
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(studyAreaGeom));
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(studyAreaGeom), headers);
                 this.Execute(request).then(function (response) {
                     _this.toaster.clear();
                     if (response.data.error) {
