@@ -96,6 +96,11 @@ module StreamStats.Controllers {
         private modalService: Services.IModalService;
         public AppVersion: string;
         public gage: GageInfo;
+        public selectedStatisticGroups;
+        public showPreferred = false;
+        public multiselectOptions = {
+            displayProp: 'name'
+        }
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -106,6 +111,8 @@ module StreamStats.Controllers {
             this.modalInstance = modal;
             this.modalService = modalService;
             this.init();  
+            this.selectedStatisticGroups = [];
+            this.showPreferred = false;
         }  
         
         //Methods  
@@ -151,6 +158,10 @@ module StreamStats.Controllers {
 
                 });
 
+        }
+
+        public setPreferred(pref: boolean) {
+            this.showPreferred = pref;
         }
 
         public getStationType(id: number) {
@@ -209,6 +220,9 @@ module StreamStats.Controllers {
 
                     characteristic.citationID = char.citation.id;
 
+                    //remove hashes in url (in case db update misses this)
+                    if (char.ciation && char.citation.citationURL) char.citation.citationURL = char.citation.citationURL.replace('#', '');
+
                     //check if we already have the citation
                     if (!this.checkForCitation(char.citation.id)) {
                         this.gage.citations.push(char.citation);
@@ -265,7 +279,11 @@ module StreamStats.Controllers {
                         citation.id = response.data.id;
                         citation.title = response.data.title;
                         citation.author = response.data.author;
-                        citation.url = response.data.citationURL;
+
+                        //remove hashes in url (in case db update misses this)
+                        citation.url = response.data.citationURL.replace('#', '');
+
+                        if (citation.url) citation.url = citation.url.replace('#', '');
 
                         //dont need to push duplicate or blank citations
                         var found = this.gage.citations.some(el => el.id === citation.id);
@@ -284,13 +302,17 @@ module StreamStats.Controllers {
                 var statistic = new GageStatistic;
 
                 statistic.comments = stat.comments;
-                statistic.isPreferred = stat.isPreffered;
+                statistic.isPreferred = stat.isPreferred;
+                if (!stat.isPreferred) console.log('false')
                 statistic.value = stat.value;
                 statistic.yearsofRecord = stat.yearsofRecord;
                 
                 if (stat.hasOwnProperty('citation') && stat.citation.id) {
 
                     statistic.citationID = stat.citation.id;
+
+                    ///remove hashes in url (in case db update misses this)
+                    if (stat.citation && stat.citation.citationURL) stat.citation.citationURL = stat.citation.citationURL.replace('#', '');
 
                     //check if we already have the citation
                     if (!this.checkForCitation(stat.citation.id)) {

@@ -46,10 +46,16 @@ var StreamStats;
             __extends(GagePageController, _super);
             function GagePageController($scope, $http, modalService, modal) {
                 var _this = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
+                _this.showPreferred = false;
+                _this.multiselectOptions = {
+                    displayProp: 'name'
+                };
                 $scope.vm = _this;
                 _this.modalInstance = modal;
                 _this.modalService = modalService;
                 _this.init();
+                _this.selectedStatisticGroups = [];
+                _this.showPreferred = false;
                 return _this;
             }
             GagePageController.prototype.Close = function () {
@@ -76,6 +82,9 @@ var StreamStats;
                 }, function (error) {
                 }).finally(function () {
                 });
+            };
+            GagePageController.prototype.setPreferred = function (pref) {
+                this.showPreferred = pref;
             };
             GagePageController.prototype.getStationType = function (id) {
                 var _this = this;
@@ -108,6 +117,8 @@ var StreamStats;
                     characteristic.value = char.value;
                     if (char.hasOwnProperty('citation') && char.citation.id) {
                         characteristic.citationID = char.citation.id;
+                        if (char.ciation && char.citation.citationURL)
+                            char.citation.citationURL = char.citation.citationURL.replace('#', '');
                         if (!_this.checkForCitation(char.citation.id)) {
                             _this.gage.citations.push(char.citation);
                         }
@@ -141,7 +152,9 @@ var StreamStats;
                         citation.id = response.data.id;
                         citation.title = response.data.title;
                         citation.author = response.data.author;
-                        citation.url = response.data.citationURL;
+                        citation.url = response.data.citationURL.replace('#', '');
+                        if (citation.url)
+                            citation.url = citation.url.replace('#', '');
                         var found = _this.gage.citations.some(function (el) { return el.id === citation.id; });
                         if (!found)
                             _this.gage.citations.push(citation);
@@ -153,11 +166,15 @@ var StreamStats;
                 statistics.forEach(function (stat, index) {
                     var statistic = new GageStatistic;
                     statistic.comments = stat.comments;
-                    statistic.isPreferred = stat.isPreffered;
+                    statistic.isPreferred = stat.isPreferred;
+                    if (!stat.isPreferred)
+                        console.log('false');
                     statistic.value = stat.value;
                     statistic.yearsofRecord = stat.yearsofRecord;
                     if (stat.hasOwnProperty('citation') && stat.citation.id) {
                         statistic.citationID = stat.citation.id;
+                        if (stat.citation && stat.citation.citationURL)
+                            stat.citation.citationURL = stat.citation.citationURL.replace('#', '');
                         if (!_this.checkForCitation(stat.citation.id)) {
                             _this.gage.citations.push(stat.citation);
                         }

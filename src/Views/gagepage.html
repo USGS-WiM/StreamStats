@@ -85,10 +85,14 @@
         </div>
 
         <div class="panel panel-default" ng-show="vm.gage.statisticsgroups.length > 0">
-            <div class="panel-heading">Streamflow Statistics</div>
+            <div class="table-title stat-table-title">Streamflow Statistics
+                <div id="statGroupSelect" ng-dropdown-multiselect="" options="vm.gage.statisticsgroups" selected-model="vm.selectedStatisticGroups" extra-settings="vm.multiselectOptions">{{</div>
+                <button  ng-if="!vm.showPreferred" ng-click="vm.showPreferred = true">Show Preferred Stats  <i class="fa fa-toggle-off" ></i></button>
+                <button  ng-if="vm.showPreferred" ng-click="vm.showPreferred = false">Show Preferred Stats  <i class="fa fa-toggle-on" ></i></button>                 
+            </div>
             <div class="panel-body">
                 
-                <div class="panel panel-default" ng-repeat="statisticGroup in vm.gage.statisticsgroups" ng-form="statisticGroupForm">
+                <div class="panel panel-default" ng-repeat="statisticGroup in vm.gage.statisticsgroups" ng-if="vm.selectedStatisticGroups.length == 0 || vm.selectedStatisticGroups.indexOf(statisticGroup) > -1" ng-form="statisticGroupForm">
                     <div class="panel-heading">{{statisticGroup.name}}</div>
                     <div class="panel-body">
 
@@ -98,16 +102,20 @@
                                     <th >Statistic Name</th>
                                     <th >Value</th>
                                     <th >Units</th>
+                                    <th>Preferred?</th>
+                                    <th>Years of Record</th>
                                     <th >Citation</th>
-                                    <!-- <th>Preffered?</th>
-                                    <th>Years of Record</th> -->
                                 </tr>
                             </thead>
                             <tbody >
-                                <tr ng-repeat="statistic in statisticGroup.statistics" ng-form="statisticsForm">
+                                <tr ng-repeat="statistic in statisticGroup.statistics" ng-if="vm.showPreferred == false || statistic.isPreferred" ng-form="statisticsForm">
                                     <td ng-bind="statistic.name"></td>
                                     <td ng-bind="statistic.value"></td>
                                     <td ng-bind="statistic.units"></td>
+                                    <td>
+										<i ng-if="statistic.isPreferred" class="fa fa-check"></i>
+                                    </td>
+                                    <td ng-bind="statistic.yearsofRecord"></td>
                                     <td ><a href="#{{statistic.citationID}}">{{statistic.citationID}}</a></td>
                                 </tr>
                 
@@ -135,7 +143,7 @@
                     <tbody >
                         <tr ng-repeat="citation in vm.gage.citations" ng-form="citationsForm">
                             <td ng-bind="citation.id" id="{{citation.id}}"></td>
-                            <td><a href="{{citation.url}}">{{citation.author}}&nbsp;{{citation.title}}</a></td>
+                            <td><a href="{{citation.citationURL}}">{{citation.author}}&nbsp;{{citation.title}}</a></td>
                         </tr>
                     </tbody>
                 </table>
