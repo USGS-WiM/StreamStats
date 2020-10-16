@@ -70,6 +70,7 @@ configuration.queryparams =
         'GageStatsServicesCitations': '/citations/',
         'GageStatsServicesStatistics': '/statistics/',
         'GageStatsServicesAgencies': '/agencies/',
+        'GageStatsServicesStatGroups': '/statisticgroups/',
 
     };
 
