@@ -41,9 +41,10 @@ var StreamStats;
             return MapDefault;
         }());
         var MapController = (function () {
-            function MapController($scope, toaster, $analytics, $location, $stateParams, leafletBoundsHelper, leafletData, search, region, studyArea, StatisticsGroup, exploration, _prosperServices, eventManager, modal, modalStack) {
+            function MapController($scope, $compile, toaster, $analytics, $location, $stateParams, leafletBoundsHelper, leafletData, search, region, studyArea, StatisticsGroup, exploration, _prosperServices, eventManager, modal, modalStack) {
                 var _this = this;
                 this.$scope = $scope;
+                this.$compile = $compile;
                 this._prosperServices = _prosperServices;
                 this.modal = modal;
                 this.modalStack = modalStack;
@@ -249,6 +250,10 @@ var StreamStats;
             MapController.prototype.ConfigureProsper = function () {
                 this.modal.openModal(StreamStats.Services.SSModalType.e_prosper);
             };
+            MapController.prototype.openGagePage = function (siteid) {
+                console.log('gage page id:', siteid);
+                this.modal.openModal(StreamStats.Services.SSModalType.e_gagepage, { 'siteid': siteid });
+            };
             MapController.prototype.init = function () {
                 this.setupMap();
                 this.explorationService.getNavigationEndPoints();
@@ -368,7 +373,9 @@ var StreamStats;
                                 if (item.layerName == "Streamgages" && k == "FeatureURL") {
                                     var siteNo = queryResult.properties[k].split('site_no=')[1];
                                     var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm';
-                                    querylayers.append('<strong>NWIS page: </strong><a href="' + queryResult.properties[k] + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br>');
+                                    var SSgagepageNew = "vm.openGagePage('" + siteNo + "')";
+                                    var html = '<strong>NWIS page: </strong><a href="' + queryResult.properties[k] + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br><strong>New StreamStats Gage Modal: </strong><a ng-click="' + SSgagepageNew + '">link</a></br>';
+                                    querylayers.append(html);
                                     _this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'streamgageQuery' });
                                 }
                                 else {
@@ -387,7 +394,9 @@ var StreamStats;
                     this.toaster.clear();
                     this.cursorStyle = 'pointer';
                     if (this.queryContent.responseCount > 0) {
-                        map.openPopup(this.queryContent.Content.html(), [latlng.lat, latlng.lng], { maxHeight: 200 });
+                        var html = this.queryContent.Content.html();
+                        var compiledHtml = this.$compile(html)(this.$scope);
+                        map.openPopup(compiledHtml[0], [latlng.lat, latlng.lng], { maxHeight: 200 });
                     }
                     else {
                         this.toaster.pop("warning", "Information", "No points were found at this location", 5000);
@@ -1072,7 +1081,7 @@ var StreamStats;
                 if (isInExclusionArea)
                     this.studyArea.selectedStudyArea.Disclaimers['isInExclusionArea'] = 'The delineation point is in an exclusion area. ' + excludeReason;
             };
-            MapController.$inject = ['$scope', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack'];
+            MapController.$inject = ['$scope', '$compile', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack'];
             return MapController;
         }());
         angular.module('StreamStats.Controllers')

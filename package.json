@@ -22,6 +22,7 @@
     "angular-nvd3": "^1.0.5",
     "angular-sanitize": "^1.7.5",
     "angular-ui-router": "^0.3.2",
+    "angularjs-dropdown-multiselect": "^2.0.0-beta.10",
     "angularjs-slider": "^2.9.0",
     "angularjs-toaster": "github:jirikavi/AngularJS-Toaster",
     "angulartics": "~1.0.3",

@@ -98,6 +98,15 @@ var StreamStats;
                                 backdrop: 'static',
                                 windowClass: 'windowZ',
                             };
+                        case SSModalType.e_gagepage:
+                            return {
+                                templateUrl: 'Views/gagepage.html',
+                                controller: 'StreamStats.Controllers.GagePageController',
+                                size: 'lg',
+                                backdropClass: 'backdropZ',
+                                backdrop: 'static',
+                                windowClass: 'windowZ modal-xl',
+                            };
                         default:
                             return null;
                     }
@@ -119,6 +128,7 @@ var StreamStats;
             SSModalType[SSModalType["e_stormrunnoff"] = 7] = "e_stormrunnoff";
             SSModalType[SSModalType["e_prosper"] = 8] = "e_prosper";
             SSModalType[SSModalType["e_extensionsupport"] = 9] = "e_extensionsupport";
+            SSModalType[SSModalType["e_gagepage"] = 10] = "e_gagepage";
         })(SSModalType = Services.SSModalType || (Services.SSModalType = {}));
         factory.$inject = ['$modal'];
         function factory($modal) {

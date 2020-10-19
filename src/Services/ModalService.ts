@@ -31,6 +31,7 @@ module StreamStats.Services {
     }
 
     export interface IModalOptions {
+        siteid?: string;
         tabName?: string;
         regionID?: string;
         placeholder?:any
@@ -58,7 +59,6 @@ module StreamStats.Services {
             
             if (options) {
                 this.modalOptions = options
-                //console.log('in modal open function', this.modalOptions);
             }
             this.modal.open(this.getModalSettings(mType));
         }  
@@ -155,6 +155,15 @@ module StreamStats.Services {
                             backdrop: 'static',
                             windowClass: 'windowZ',
                         };
+                    case SSModalType.e_gagepage:
+                        return {
+                            templateUrl: 'Views/gagepage.html',
+                            controller: 'StreamStats.Controllers.GagePageController',
+                            size: 'lg',
+                            backdropClass: 'backdropZ',
+                            backdrop: 'static',
+                            windowClass: 'windowZ modal-xl',
+                        };
      
                     default:
                         return null;
@@ -176,7 +185,8 @@ module StreamStats.Services {
         e_exploration = 6,
         e_stormrunnoff = 7,
         e_prosper = 8,
-        e_extensionsupport =9
+        e_extensionsupport = 9,
+        e_gagepage = 10
         
     }
 
