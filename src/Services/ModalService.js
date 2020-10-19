@@ -105,7 +105,7 @@ var StreamStats;
                                 size: 'lg',
                                 backdropClass: 'backdropZ',
                                 backdrop: 'static',
-                                windowClass: 'windowZ',
+                                windowClass: 'windowZ modal-xl',
                             };
                         default:
                             return null;

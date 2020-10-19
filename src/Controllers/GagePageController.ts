@@ -55,7 +55,7 @@ module StreamStats.Controllers {
     class GageCharacteristic {
         id: number;
         value: string;
-        unit: UnitType;
+        unitType: UnitType;
         comments: string;
         citationID: number;
         citation: Citation;
