@@ -54,9 +54,8 @@
                 </div>
 
                 <div ng-show="vm.showReport">
-
                     <!--Parameter Table if just basin chars-->
-                    <div class="well well-sm" ng-show="vm.nssService.showBasinCharacteristicsTable && (vm.nssService.selectedStatisticsGroupList.length > 1 || (vm.extensions && vm.extensions[0].code != 'QPPQ'))">
+                    <div class="well well-sm" ng-show="vm.nssService.showBasinCharacteristicsTable">
                         <h3>Basin Characteristics</h3>
                         <table id="mainParamTable" class="mainParamTable table table-condensed">
                             <thead class="param-table">
@@ -94,7 +93,7 @@
                     </div>
 
                     <!--Parameter Table for Flow Report-->
-                    <div class="well well-sm" ng-show="vm.nssService.showFlowsTable" ng-repeat="statisticsGroup in vm.nssService.selectedStatisticsGroupList">
+                    <div class="well well-sm" ng-show="vm.nssService.showFlowsTable" ng-repeat="statisticsGroup in vm.nssService.selectedStatisticsGroupList track by $index">
 
                         <div ng-repeat="regressionRegion in statisticsGroup.regressionRegions" ng-if="regressionRegion.parameters.length > 0">
                             <h3>{{statisticsGroup.name}} Parameters&nbsp;&nbsp;<span ng-bind="vm.GetRegressionRegionHeader(regressionRegion)"></span></h3>
@@ -295,6 +294,10 @@
                     </p>
                     <p>
                         <span>Application Version: {{vm.AppVersion}}</span>
+                        <span ng-show="vm.environment == 'development'">[Development Version: Not for public consumption]</span><br>
+                        <span>StreamStats Services Version: {{vm.SSServicesVersion}}</span>
+                        <span ng-show="vm.environment == 'development'">[Development Version: Not for public consumption]</span><br>
+                        <span>NSS Services Version: {{vm.NSSServicesVersion}}</span>
                         <span ng-show="vm.environment == 'development'">[Development Version: Not for public consumption]</span>
                     </p>
 

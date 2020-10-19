@@ -279,6 +279,12 @@ module StreamStats.Controllers {
             var found = this.gage.statisticsgroups.some(el => el.id === id);
             return found;
         }
+
+        public checkForPredInt(statGroupID: number) {
+            // check if any items in this stat group have prediction intervals
+            var found = this.gage.statistics.some(el => el.statisticGroupTypeID == statGroupID && el.hasOwnProperty('predictionInterval'))
+            return found;
+        }
         
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-

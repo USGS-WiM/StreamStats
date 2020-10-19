@@ -212,14 +212,14 @@ var StreamStats;
                 set: function (val) {
                     this.explorationService.setMethod(val, {});
                 },
-                enumerable: true,
+                enumerable: false,
                 configurable: true
             });
             Object.defineProperty(MapController.prototype, "ProsperIsActive", {
                 get: function () {
                     return this._prosperIsActive;
                 },
-                enumerable: true,
+                enumerable: false,
                 configurable: true
             });
             MapController.prototype.setExplorationMethodType = function (val) {
