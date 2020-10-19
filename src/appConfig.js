@@ -11,8 +11,8 @@ configuration.baseurls =
         'NSS': 'https://test.streamstats.usgs.gov/nssservices',
         'WaterUseServices': 'https://test.streamstats.usgs.gov/wateruseservices',
         'StormRunoffServices': 'https://test.streamstats.usgs.gov/runoffmodelingservices',
-        'ScienceBase': 'https://gis.usgs.gov/sciencebase2'
-
+        'ScienceBase': 'https://gis.usgs.gov/sciencebase2',
+        'GageStatsServices': 'https://test.streamstats.usgs.gov/gagestatsservices'
     };
 
 //override streamstats arguments if on production, these get overriden again in MapController after load balancer assigns a server
@@ -62,7 +62,17 @@ configuration.queryparams =
         'ProsperSPPPredictions2': '/rest/services/Catalog/5c538c71e4b0708288fd078e/MapServer',
         'ProsperIdentify': '/identify?layers=all:{0}&tolerance=5&returnGeometry=false&imageDisplay={1}&mapExtent={2}&geometry={3}&sr={4}&geometryType=esriGeometryPoint&f=json',
         'SSURGOexCOMS': '/rest/services/Catalog/5b96f40ce4b0702d0e8272bf/MapServer',
-        'SSURGOexCO': '/0/query?geometry={0}&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelContains&returnGeometry=false&returnIdsOnly=false&returnCountOnly=true&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson'
+        'SSURGOexCO': '/0/query?geometry={0}&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelContains&returnGeometry=false&returnIdsOnly=false&returnCountOnly=true&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
+        'GageStatsServicesStations': '/stations/',
+        'GageStatsServicesStationTypes': '/stationtypes/',
+        'GageStatsServicesCharacteristics': '/characteristics/',
+        'GageStatsServicesVariables': '/variables/',
+        'GageStatsServicesUnits': '/units/',
+        'GageStatsServicesCitations': '/citations/',
+        'GageStatsServicesStatistics': '/statistics/',
+        'GageStatsServicesAgencies': '/agencies/',
+        'GageStatsServicesStatGroups': '/statisticgroups/',
+
     };
 
 configuration.SupportTicketService = {

@@ -9,10 +9,10 @@ StreamStats client application
 ##### required software
 [node.js](http://nodejs.org)  
 [git](https://git-scm.com/)  
-[typescript 1.7] (https://github.com/Microsoft/TypeScript)
 
 Install global dependencies
 ```bash
+npm install -g typescript
 npm install -g gulp
 npm install -g typings
 ```

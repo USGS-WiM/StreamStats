@@ -79,6 +79,11 @@ module StreamStats.Controllers {
         vm: MapController;
     }
 
+    interface IMapControllerCompile extends ng.ICompileService {
+        vm: MapController;
+    }
+
+
     class MapPoint implements IMapPoint {
         lat: number;
         lng: number;
@@ -185,8 +190,8 @@ module StreamStats.Controllers {
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack'];
-        constructor(public $scope: IMapControllerScope, toaster, $analytics, $location: ng.ILocationService, $stateParams, leafletBoundsHelper: any, leafletData: ILeafletData, search: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, exploration: Services.IExplorationService, private _prosperServices: Services.IProsperService, eventManager: WiM.Event.IEventManager, private modal: Services.IModalService, private modalStack: ng.ui.bootstrap.IModalStackService) {
+        static $inject = ['$scope', '$compile', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack'];
+        constructor(public $scope: IMapControllerScope, public $compile: IMapControllerCompile, toaster, $analytics, $location: ng.ILocationService, $stateParams, leafletBoundsHelper: any, leafletData: ILeafletData, search: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, exploration: Services.IExplorationService, private _prosperServices: Services.IProsperService, eventManager: WiM.Event.IEventManager, private modal: Services.IModalService, private modalStack: ng.ui.bootstrap.IModalStackService) {
             $scope.vm = this;
             
             this.toaster = toaster;
@@ -419,6 +424,12 @@ module StreamStats.Controllers {
             //check if this bounds is outside of project bound, if so set proj extent
             //this.bounds = this.leafletBoundsHelperService.createBoundsFromArray(this._prosperServices.projectExtent);
         }
+        public openGagePage(siteid: string): void {
+            console.log('gage page id:', siteid)
+            this.modal.openModal(Services.SSModalType.e_gagepage, { 'siteid':siteid });
+        }
+
+
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         private init(): void { 
@@ -553,9 +564,13 @@ module StreamStats.Controllers {
                         let queryProperties = this.layers.overlays[lyr].queryProperties[item.layerName];
                         Object.keys(queryProperties).map(k => {
                             if (item.layerName == "Streamgages" && k == "FeatureURL") {
+
                                 var siteNo = queryResult.properties[k].split('site_no=')[1];
-                                var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm'
-                                querylayers.append('<strong>NWIS page: </strong><a href="' + queryResult.properties[k] + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br>');
+                                var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm'  
+                                var SSgagepageNew = "vm.openGagePage('" + siteNo + "')";
+                                var html = '<strong>NWIS page: </strong><a href="' + queryResult.properties[k] + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br><strong>New StreamStats Gage Modal: </strong><a ng-click="' + SSgagepageNew + '">link</a></br>';
+
+                                querylayers.append(html);
                                 this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'streamgageQuery' });
                             }
                             else {
@@ -575,7 +590,11 @@ module StreamStats.Controllers {
                 this.toaster.clear();
                 this.cursorStyle = 'pointer';
                 if (this.queryContent.responseCount > 0) {
-                    map.openPopup(this.queryContent.Content.html(), [latlng.lat, latlng.lng], { maxHeight: 200 });
+
+                    var html = this.queryContent.Content.html();
+                    var compiledHtml = this.$compile(html)(this.$scope);
+
+                    map.openPopup(compiledHtml[0], [latlng.lat, latlng.lng], { maxHeight: 200 });
                 }
                 else {
                     this.toaster.pop("warning", "Information", "No points were found at this location", 5000);
