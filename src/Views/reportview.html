@@ -294,6 +294,10 @@
                     </p>
                     <p>
                         <span>Application Version: {{vm.AppVersion}}</span>
+                        <span ng-show="vm.environment == 'development'">[Development Version: Not for public consumption]</span><br>
+                        <span>StreamStats Services Version: {{vm.SSServicesVersion}}</span>
+                        <span ng-show="vm.environment == 'development'">[Development Version: Not for public consumption]</span><br>
+                        <span>NSS Services Version: {{vm.NSSServicesVersion}}</span>
                         <span ng-show="vm.environment == 'development'">[Development Version: Not for public consumption]</span>
                     </p>
 
