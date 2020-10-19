@@ -363,7 +363,7 @@ module StreamStats.Services {
                                         for (var i = 0; i < responseRegions.length; i++){
                                             if (responseRegions[i].id === rr.id) {
                                                 for (var j = 0; j < responseRegions[i].parameters.length; j++) {
-                                                    if (responseRegions[i].Parameters[j].code == p.Code) {
+                                                    if (responseRegions[i].Parameters[j].code == p.code) {
                                                         p[paramValueField] = responseRegions[i].parameters[j].value;
                                                     }
                                                 }//next j
