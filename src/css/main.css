@@ -1772,9 +1772,15 @@ input[name=distanceValue] {
     padding-left: 5px;
 }
 
-.table-title button, .table-title #statGroupSelect {
+.stat-filters{
     float: right;
     margin-left: 5px;
+    border-radius: 4px;
+}
+
+.stat-filters label {
+    margin-top: 7px;
+    font-size: 14px;
 }
 
 .stat-table-title {
