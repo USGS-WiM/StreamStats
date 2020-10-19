@@ -162,7 +162,7 @@ module StreamStats.Services {
                             size: 'lg',
                             backdropClass: 'backdropZ',
                             backdrop: 'static',
-                            windowClass: 'windowZ',
+                            windowClass: 'windowZ modal-xl',
                         };
      
                     default:
