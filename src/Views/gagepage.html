@@ -86,9 +86,12 @@
 
         <div class="panel panel-default" ng-show="vm.gage.statisticsgroups.length > 0">
             <div class="table-title stat-table-title">Streamflow Statistics
-                <div id="statGroupSelect" ng-dropdown-multiselect="" options="vm.gage.statisticsgroups" selected-model="vm.selectedStatisticGroups" extra-settings="vm.multiselectOptions"></div>
-                <button  ng-if="!vm.showPreferred" ng-click="vm.showPreferred = true">Show Preferred Stats  <i class="fa fa-toggle-off" ></i></button>
-                <button  ng-if="vm.showPreferred" ng-click="vm.showPreferred = false">Show Preferred Stats  <i class="fa fa-toggle-on" ></i></button>                 
+                <div class="stat-filters">
+                    <label>Filter By Statistic Group: </label>
+                    <div id="statGroupSelect" ng-dropdown-multiselect="" options="vm.gage.statisticsgroups" selected-model="vm.selectedStatisticGroups" extra-settings="vm.multiselectOptions"></div>        
+                    <button  ng-if="!vm.showPreferred" ng-click="vm.showPreferred = true">Show Only Preferred  <i class="fa fa-toggle-off" ></i></button>
+                    <button  ng-if="vm.showPreferred" ng-click="vm.showPreferred = false">Show Only Preferred  <i class="fa fa-toggle-on" ></i></button> 
+                </div>
             </div>
             <div class="panel-body">
                 
