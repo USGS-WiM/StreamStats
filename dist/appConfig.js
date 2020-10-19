@@ -11,8 +11,8 @@ configuration.baseurls =
         'NSS': 'https://test.streamstats.usgs.gov/nssservices',
         'WaterUseServices': 'https://test.streamstats.usgs.gov/wateruseservices',
         'StormRunoffServices': 'https://test.streamstats.usgs.gov/runoffmodelingservices',
-        'ScienceBase': 'https://gis.usgs.gov/sciencebase2'
-
+        'ScienceBase': 'https://gis.usgs.gov/sciencebase2',
+        'GageStatsServices': 'https://test.streamstats.usgs.gov/gagestatsservices'
     };
 
 //override streamstats arguments if on production, these get overriden again in MapController after load balancer assigns a server
@@ -44,7 +44,7 @@ configuration.queryparams =
         'SSavailableFeatures': '/streamstatsservices/features.json?workspaceID={0}',
         'SSfeatures': '/streamstatsservices/features.geojson?workspaceID={0}&crs={1}&includefeatures={2}&simplify=true',
         'SSStateLayers': '/arcgis/rest/services/StreamStats/stateServices/MapServer',
-        'SSNationalLayers': '/arcgis/rest/services/StreamStats/nationalLayers/MapServer',
+        'SSNationalLayers': '/arcgis/rest/services/StreamStats/nationalLayers_test/MapServer',
         'FARefGage': '/2/query?geometry={0}&geometryType=esriGeometryPoint&inSR={1}&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
         'regionService': '/arcgis/rest/services/ss_studyAreas_prod/MapServer/identify',
         'NLCDQueryService': '/LandCover/USGS_EROS_LandCover_NLCD/MapServer/4',
@@ -62,7 +62,17 @@ configuration.queryparams =
         'ProsperSPPPredictions2': '/rest/services/Catalog/5c538c71e4b0708288fd078e/MapServer',
         'ProsperIdentify': '/identify?layers=all:{0}&tolerance=5&returnGeometry=false&imageDisplay={1}&mapExtent={2}&geometry={3}&sr={4}&geometryType=esriGeometryPoint&f=json',
         'SSURGOexCOMS': '/rest/services/Catalog/5b96f40ce4b0702d0e8272bf/MapServer',
-        'SSURGOexCO': '/0/query?geometry={0}&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelContains&returnGeometry=false&returnIdsOnly=false&returnCountOnly=true&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson'
+        'SSURGOexCO': '/0/query?geometry={0}&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelContains&returnGeometry=false&returnIdsOnly=false&returnCountOnly=true&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
+        'GageStatsServicesStations': '/stations/',
+        'GageStatsServicesStationTypes': '/stationtypes/',
+        'GageStatsServicesCharacteristics': '/characteristics/',
+        'GageStatsServicesVariables': '/variables/',
+        'GageStatsServicesUnits': '/units/',
+        'GageStatsServicesCitations': '/citations/',
+        'GageStatsServicesStatistics': '/statistics/',
+        'GageStatsServicesAgencies': '/agencies/',
+        'GageStatsServicesStatGroups': '/statisticgroups/',
+
     };
 
 configuration.SupportTicketService = {
