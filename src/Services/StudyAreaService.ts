@@ -62,6 +62,7 @@ module StreamStats.Services {
         doQueryNWIS: boolean;
         queryNWIS(point: any): void;
         GetKriggedReferenceGages(): void;
+        NSSServicesVersion: string;
     }
 
     export var onSelectedStudyAreaChanged: string = "onSelectedStudyAreaChanged";
@@ -135,6 +136,7 @@ module StreamStats.Services {
         public doQueryNWIS: boolean = false;
         //public requestParameterList: Array<any>; jkn
         private modalservices: IModalService;
+        public NSSServicesVersion = '';
         
 
         //Constructor
@@ -651,6 +653,7 @@ module StreamStats.Services {
 
             this.Execute(request).then(
                 (response: any) => {
+                    this.NSSServicesVersion = response.headers()['x-version'];
                     //console.log(response.data);
                     this.toaster.clear();
                     

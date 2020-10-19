@@ -25,6 +25,7 @@ var StreamStats;
                 this.geojson = null;
                 this.isExceedanceTableOpen = false;
                 this.isFlowTableOpen = false;
+                this.SSServicesVersion = '1.2.22';
                 this._graphData = {
                     data: {},
                     options: {}
@@ -49,6 +50,7 @@ var StreamStats;
                 this.print = function () {
                     window.print();
                 };
+                this.NSSServicesVersion = this.studyAreaService.NSSServicesVersion;
             }
             Object.defineProperty(ReportController.prototype, "showReport", {
                 get: function () {
@@ -184,6 +186,10 @@ var StreamStats;
                         csvFile += extVal + '\n\n';
                     }
                     csvFile += self.disclaimer + 'Application Version: ' + self.AppVersion;
+                    if (self.SSServicesVersion)
+                        csvFile += '\nStreamStats Services Version: ' + self.SSServicesVersion;
+                    if (self.NSSServicesVersion)
+                        csvFile += '\nNSS Services Version: ' + self.NSSServicesVersion;
                     var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
                     if (navigator.msSaveBlob) {
                         navigator.msSaveBlob(blob, filename);
@@ -248,7 +254,12 @@ var StreamStats;
                     if (this.nssService.showFlowsTable)
                         flowTable = this.nssService.getflattenNSSTable(this.studyAreaService.selectedStudyArea.WorkspaceID);
                     var fc = this.studyAreaService.getflattenStudyArea();
-                    shpwrite.download(fc, flowTable, this.disclaimer + 'Application Version: ' + this.AppVersion);
+                    var versionText = 'Application Version: ' + this.AppVersion;
+                    if (this.SSServicesVersion)
+                        versionText += '\nStreamStats Services Version: ' + this.SSServicesVersion;
+                    if (this.NSSServicesVersion)
+                        versionText += '\nNSS Services Version: ' + this.NSSServicesVersion;
+                    shpwrite.download(fc, flowTable, this.disclaimer + versionText);
                 }
                 catch (e) {
                     console.log(e);
