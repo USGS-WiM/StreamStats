@@ -1,16 +1,11 @@
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
+//------------------------------------------------------------------------------
+//----- Storm runnoff controller------------------------------------------------
+//------------------------------------------------------------------------------
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var StreamStats;
 (function (StreamStats) {
     var Controllers;
@@ -22,40 +17,40 @@ var StreamStats;
                 this.RationalMethod = { Graph: {}, Table: {}, PeakQ: {}, Infiltration: {}, ExcessPrecip: {} };
             }
             return StormRunoffReportable;
-        }());
+        })();
         var StormRunoffController = (function (_super) {
             __extends(StormRunoffController, _super);
             function StormRunoffController($scope, $analytics, $http, studyAreaService, StatisticsGroup, region, modal, $timeout, EventManager) {
-                var _this = _super.call(this, $http, configuration.baseurls.StormRunoffServices) || this;
-                _this.$timeout = $timeout;
-                _this.EventManager = EventManager;
-                _this.regionParameters = [];
-                _this.PrecipOptions = [];
-                _this.SelectedParameterList = [];
-                _this.GraphLabels = [];
-                _this.GraphXValues = [];
-                _this.padY = 0;
-                _this.padY2 = 0;
-                _this.domainY = [];
-                _this.domainY2 = [];
-                $scope.vm = _this;
-                _this.angulartics = $analytics;
-                _this.modalInstance = modal;
-                _this.StudyArea = studyAreaService.selectedStudyArea;
-                _this.nssService = StatisticsGroup;
-                _this.studyAreaService = studyAreaService;
-                _this.regionParameters = region.parameterList;
-                _this.BrowserIE = _this.detectIE();
-                _this.AppVersion = configuration.version;
-                _this.parameterloadedEventHandler = new WiM.Event.EventHandler(function (sender, e) {
+                var _this = this;
+                _super.call(this, $http, configuration.baseurls.StormRunoffServices);
+                this.$timeout = $timeout;
+                this.EventManager = EventManager;
+                this.regionParameters = [];
+                this.PrecipOptions = [];
+                this.SelectedParameterList = [];
+                this.GraphLabels = [];
+                this.GraphXValues = [];
+                this.padY = 0;
+                this.padY2 = 0;
+                this.domainY = [];
+                this.domainY2 = [];
+                $scope.vm = this;
+                this.angulartics = $analytics;
+                this.modalInstance = modal;
+                this.StudyArea = studyAreaService.selectedStudyArea;
+                this.nssService = StatisticsGroup;
+                this.studyAreaService = studyAreaService;
+                this.regionParameters = region.parameterList;
+                this.BrowserIE = this.detectIE();
+                this.AppVersion = configuration.version;
+                this.parameterloadedEventHandler = new WiM.Event.EventHandler(function (sender, e) {
                     if (e.parameterLoaded)
                         _this.loadParameters();
                 });
-                _this.init();
-                _this.print = function () {
+                this.init();
+                this.print = function () {
                     window.print();
                 };
-                return _this;
             }
             Object.defineProperty(StormRunoffController.prototype, "SelectedPrecip", {
                 get: function () {
@@ -65,7 +60,7 @@ var StreamStats;
                     this._selectedPrecip = val;
                     this.PIntensity = null;
                 },
-                enumerable: false,
+                enumerable: true,
                 configurable: true
             });
             Object.defineProperty(StormRunoffController.prototype, "SelectedTab", {
@@ -78,7 +73,7 @@ var StreamStats;
                         this.selectRunoffType();
                     }
                 },
-                enumerable: false,
+                enumerable: true,
                 configurable: true
             });
             Object.defineProperty(StormRunoffController.prototype, "SelectedParametersAreValid", {
@@ -91,7 +86,7 @@ var StreamStats;
                     }
                     return true;
                 },
-                enumerable: false,
+                enumerable: true,
                 configurable: true
             });
             StormRunoffController.prototype.GetStormRunoffResults = function () {
@@ -814,7 +809,7 @@ var StreamStats;
             };
             StormRunoffController.$inject = ['$scope', '$analytics', '$http', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.RegionService', '$modalInstance', '$timeout', 'WiM.Event.EventManager'];
             return StormRunoffController;
-        }(WiM.Services.HTTPServiceBase));
+        })(WiM.Services.HTTPServiceBase);
         var StormRunoffType;
         (function (StormRunoffType) {
             StormRunoffType[StormRunoffType["TR55"] = 1] = "TR55";

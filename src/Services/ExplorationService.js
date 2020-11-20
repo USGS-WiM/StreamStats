@@ -1,16 +1,11 @@
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
+//------------------------------------------------------------------------------
+//----- StudyAreaService -------------------------------------------------------
+//------------------------------------------------------------------------------
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var StreamStats;
 (function (StreamStats) {
     var Services;
@@ -21,35 +16,34 @@ var StreamStats;
         var ExplorationServiceEventArgs = (function (_super) {
             __extends(ExplorationServiceEventArgs, _super);
             function ExplorationServiceEventArgs() {
-                return _super.call(this) || this;
+                _super.call(this);
             }
             return ExplorationServiceEventArgs;
-        }(WiM.Event.EventArgs));
+        })(WiM.Event.EventArgs);
         Services.ExplorationServiceEventArgs = ExplorationServiceEventArgs;
         var ExplorationService = (function (_super) {
             __extends(ExplorationService, _super);
             function ExplorationService($http, $q, toaster, eventManager, regionservice) {
-                var _this = _super.call(this, $http, configuration.baseurls['StreamStatsServices']) || this;
-                _this.$q = $q;
-                _this.eventManager = eventManager;
-                _this.regionservice = regionservice;
-                _this.toaster = toaster;
-                _this.drawElevationProfile = false;
-                _this.drawMeasurement = false;
-                _this.showElevationChart = false;
-                _this.measurementData = '';
-                _this._selectedMethod = null;
-                _this.networkNavResults = [];
+                _super.call(this, $http, configuration.baseurls['StreamStatsServices']);
+                this.$q = $q;
+                this.eventManager = eventManager;
+                this.regionservice = regionservice;
+                this.toaster = toaster;
+                this.drawElevationProfile = false;
+                this.drawMeasurement = false;
+                this.showElevationChart = false;
+                this.measurementData = '';
+                this._selectedMethod = null;
+                this.networkNavResults = [];
                 eventManager.AddEvent(Services.onSelectedStudyAreaChanged);
-                _this.selectElevationPoints = false;
-                _this.DEMresolution = '30m';
-                return _this;
+                this.selectElevationPoints = false;
+                this.DEMresolution = '30m';
             }
             Object.defineProperty(ExplorationService.prototype, "selectedMethod", {
                 get: function () {
                     return this._selectedMethod;
                 },
-                enumerable: false,
+                enumerable: true,
                 configurable: true
             });
             ExplorationService.prototype.elevationProfile = function (esriJSON) {
@@ -191,14 +185,14 @@ var StreamStats;
                 });
             };
             return ExplorationService;
-        }(WiM.Services.HTTPServiceBase));
-        var ExplorationMethodType;
+        })(WiM.Services.HTTPServiceBase);
         (function (ExplorationMethodType) {
             ExplorationMethodType[ExplorationMethodType["undefined"] = 0] = "undefined";
             ExplorationMethodType[ExplorationMethodType["FLOWPATH"] = 1] = "FLOWPATH";
             ExplorationMethodType[ExplorationMethodType["NETWORKPATH"] = 2] = "NETWORKPATH";
             ExplorationMethodType[ExplorationMethodType["NETWORKTRACE"] = 3] = "NETWORKTRACE";
-        })(ExplorationMethodType = Services.ExplorationMethodType || (Services.ExplorationMethodType = {}));
+        })(Services.ExplorationMethodType || (Services.ExplorationMethodType = {}));
+        var ExplorationMethodType = Services.ExplorationMethodType;
         factory.$inject = ['$http', '$q', 'toaster', 'WiM.Event.EventManager', 'StreamStats.Services.RegionService'];
         function factory($http, $q, toaster, eventmngr, regionservice) {
             return new ExplorationService($http, $q, toaster, eventmngr, regionservice);

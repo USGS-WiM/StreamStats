@@ -1,3 +1,6 @@
+//------------------------------------------------------------------------------
+//----- MapController ----------------------------------------------------------
+//------------------------------------------------------------------------------
 var StreamStats;
 (function (StreamStats) {
     var Controllers;
@@ -9,7 +12,7 @@ var StreamStats;
                 this.lng = 0;
             }
             return MapPoint;
-        }());
+        })();
         var Center = (function () {
             function Center(lt, lg, zm) {
                 this.lat = lt;
@@ -17,7 +20,7 @@ var StreamStats;
                 this.zoom = zm;
             }
             return Center;
-        }());
+        })();
         var Layer = (function () {
             function Layer(nm, ul, ty, vis, op) {
                 if (op === void 0) { op = undefined; }
@@ -28,7 +31,7 @@ var StreamStats;
                 this.layerOptions = op;
             }
             return Layer;
-        }());
+        })();
         var MapDefault = (function () {
             function MapDefault(mxZm, mnZm, zmCtrl) {
                 if (mxZm === void 0) { mxZm = null; }
@@ -39,7 +42,7 @@ var StreamStats;
                 this.zoomControl = zmCtrl;
             }
             return MapDefault;
-        }());
+        })();
         var MapController = (function () {
             function MapController($scope, $compile, toaster, $analytics, $location, $stateParams, leafletBoundsHelper, leafletData, search, region, studyArea, StatisticsGroup, exploration, _prosperServices, eventManager, modal, modalStack) {
                 var _this = this;
@@ -118,6 +121,7 @@ var StreamStats;
                     _this.cursorStyle = 'pointer';
                 });
                 $scope.$on('leafletDirectiveMap.mainMap.click', function (event, args) {
+                    //console.log('test',this.explorationService.drawElevationProfile)
                     if (_this._prosperServices.CanQuery) {
                         _this._prosperServices.GetPredictionValues(args.leafletEvent, _this.bounds);
                         return;
@@ -212,14 +216,14 @@ var StreamStats;
                 set: function (val) {
                     this.explorationService.setMethod(val, {});
                 },
-                enumerable: false,
+                enumerable: true,
                 configurable: true
             });
             Object.defineProperty(MapController.prototype, "ProsperIsActive", {
                 get: function () {
                     return this._prosperIsActive;
                 },
-                enumerable: false,
+                enumerable: true,
                 configurable: true
             });
             MapController.prototype.setExplorationMethodType = function (val) {
@@ -332,24 +336,22 @@ var StreamStats;
                             return;
                         }
                         _this.queryContent = { requestCount: 0, Content: $("<div>").attr("id", 'popupContent'), responseCount: 0 };
-                        var _loop_1 = function (lyr) {
+                        for (var lyr in maplayers.overlays) {
                             if (!maplayers.overlays.hasOwnProperty(lyr))
-                                return "continue";
+                                continue;
                             if (["MaskLayer", "draw"].indexOf(lyr) > -1)
-                                return "continue";
+                                continue;
                             if (!map.hasLayer(maplayers.overlays[lyr]))
-                                return "continue";
+                                continue;
                             switch (_this.layers.overlays[lyr].type) {
                                 case "agsFeature":
                                     maplayers.overlays[lyr].query().nearby(evt.latlng, 4).returnGeometry(false).run(function (error, results) { return _this.handleQueryResult(lyr, error, results, map, evt.latlng); });
                                     break;
                                 default:
-                                    maplayers.overlays[lyr].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).run(function (error, results) { return _this.handleQueryResult(lyr, error, results, map, evt.latlng); });
+                                    var saveLayerName = lyr;
+                                    maplayers.overlays[lyr].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).run(function (error, results) { return _this.handleQueryResult(saveLayerName, error, results, map, evt.latlng); });
                             }
                             _this.queryContent.requestCount++;
-                        };
-                        for (var lyr in maplayers.overlays) {
-                            _loop_1(lyr);
                         }
                     });
                 });
@@ -359,36 +361,38 @@ var StreamStats;
                 var querylayers = $("<div>").attr("id", lyr).appendTo(this.queryContent.Content);
                 this.queryContent.requestCount--;
                 results.features.forEach(function (queryResult) {
-                    _this.layers.overlays[lyr].layerArray.forEach(function (item) {
-                        if (item.layerId !== queryResult.layerId)
-                            return;
-                        if (["StreamGrid", "ExcludePolys", "Region", "Subregion", "Basin", "Subbasin", "Watershed", "Subwatershed"].indexOf(item.layerName) > -1)
-                            return;
-                        querylayers.append('<h5>' + item.layerName + '</h5>');
-                        _this.queryContent.responseCount++;
-                        _this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'queryPoints' });
-                        if (_this.layers.overlays[lyr].hasOwnProperty("queryProperties") && _this.layers.overlays[lyr].queryProperties.hasOwnProperty(item.layerName)) {
-                            var queryProperties_1 = _this.layers.overlays[lyr].queryProperties[item.layerName];
-                            Object.keys(queryProperties_1).map(function (k) {
-                                if (item.layerName == "Streamgages" && k == "FeatureURL") {
-                                    var siteNo = queryResult.properties[k].split('site_no=')[1];
-                                    var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm';
-                                    var SSgagepageNew = "vm.openGagePage('" + siteNo + "')";
-                                    var html = '<strong>NWIS page: </strong><a href="' + queryResult.properties[k] + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br><strong>New StreamStats Gage Modal: </strong><a ng-click="' + SSgagepageNew + '">link</a></br>';
-                                    querylayers.append(html);
-                                    _this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'streamgageQuery' });
-                                }
-                                else {
-                                    querylayers.append('<strong>' + queryProperties_1[k] + ': </strong>' + queryResult.properties[k] + '</br>');
-                                }
-                            });
-                        }
-                        else {
-                            angular.forEach(queryResult.properties, function (value, key) {
-                                querylayers.append('<strong>' + key + ': </strong>' + value + '</br>');
-                            });
-                        }
-                    });
+                    if (_this.layers.overlays[lyr].hasOwnProperty('layerArray')) {
+                        _this.layers.overlays[lyr].layerArray.forEach(function (item) {
+                            if (item.layerId !== queryResult.layerId)
+                                return;
+                            if (["StreamGrid", "ExcludePolys", "Region", "Subregion", "Basin", "Subbasin", "Watershed", "Subwatershed"].indexOf(item.layerName) > -1)
+                                return;
+                            querylayers.append('<h5>' + item.layerName + '</h5>');
+                            _this.queryContent.responseCount++;
+                            _this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'queryPoints' });
+                            if (_this.layers.overlays[lyr].hasOwnProperty("queryProperties") && _this.layers.overlays[lyr].queryProperties.hasOwnProperty(item.layerName)) {
+                                var queryProperties = _this.layers.overlays[lyr].queryProperties[item.layerName];
+                                Object.keys(queryProperties).map(function (k) {
+                                    if (item.layerName == "Streamgages" && k == "FeatureURL") {
+                                        var siteNo = queryResult.properties[k].split('site_no=')[1];
+                                        var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm';
+                                        var SSgagepageNew = "vm.openGagePage('" + siteNo + "')";
+                                        var html = '<strong>NWIS page: </strong><a href="' + queryResult.properties[k] + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br><strong>New StreamStats Gage Modal: </strong><a ng-click="' + SSgagepageNew + '">link</a></br>';
+                                        querylayers.append(html);
+                                        _this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'streamgageQuery' });
+                                    }
+                                    else {
+                                        querylayers.append('<strong>' + queryProperties[k] + ': </strong>' + queryResult.properties[k] + '</br>');
+                                    }
+                                });
+                            }
+                            else {
+                                angular.forEach(queryResult.properties, function (value, key) {
+                                    querylayers.append('<strong>' + key + ': </strong>' + value + '</br>');
+                                });
+                            }
+                        });
+                    }
                 });
                 if (this.queryContent.requestCount < 1) {
                     this.toaster.clear();
@@ -436,6 +440,7 @@ var StreamStats;
                 });
             };
             MapController.prototype.drawController = function (options, enable) {
+                //console.log('in drawcontroller: ', options, enable);
                 var _this = this;
                 if (!enable) {
                     this.drawControl.disable();
@@ -1006,6 +1011,7 @@ var StreamStats;
                 }
             };
             MapController.prototype.addRegionOverlayLayers = function (regionId) {
+                //console.log('in addRegionOverlayLayers');
                 if (this.regionServices.regionMapLayerList.length < 1)
                     return;
                 var layerList = [];
@@ -1075,6 +1081,7 @@ var StreamStats;
                 return layeridList;
             };
             MapController.prototype.startDelineate = function (latlng, isInExclusionArea, excludeReason) {
+                //console.log('in startDelineate', latlng);
                 var studyArea = new StreamStats.Models.StudyArea(this.regionServices.selectedRegion.RegionID, new WiM.Models.Point(latlng.lat, latlng.lng, '4326'));
                 this.studyArea.AddStudyArea(studyArea);
                 this.studyArea.loadStudyBoundary();
@@ -1083,7 +1090,7 @@ var StreamStats;
             };
             MapController.$inject = ['$scope', '$compile', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack'];
             return MapController;
-        }());
+        })();
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.MapController', MapController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));

@@ -1,16 +1,11 @@
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
+//------------------------------------------------------------------------------
+//----- GagePage ---------------------------------------------------------------
+//------------------------------------------------------------------------------
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var StreamStats;
 (function (StreamStats) {
     var Controllers;
@@ -21,72 +16,71 @@ var StreamStats;
                 this.code = sid;
             }
             return GageInfo;
-        }());
+        })();
         var GageCharacteristic = (function () {
             function GageCharacteristic() {
             }
             return GageCharacteristic;
-        }());
+        })();
         var UnitType = (function () {
             function UnitType() {
             }
             return UnitType;
-        }());
+        })();
         var VariableType = (function () {
             function VariableType() {
             }
             return VariableType;
-        }());
+        })();
         var Citation = (function () {
             function Citation() {
             }
             return Citation;
-        }());
+        })();
         var GageStatisticGroup = (function () {
             function GageStatisticGroup() {
             }
             return GageStatisticGroup;
-        }());
+        })();
         var GageStatistic = (function () {
             function GageStatistic() {
             }
             return GageStatistic;
-        }());
+        })();
         var PredictionInterval = (function () {
             function PredictionInterval() {
             }
             return PredictionInterval;
-        }());
+        })();
         var StationType = (function () {
             function StationType() {
             }
             return StationType;
-        }());
+        })();
         var Agency = (function () {
             function Agency() {
             }
             return Agency;
-        }());
+        })();
         var RegressionType = (function () {
             function RegressionType() {
             }
             return RegressionType;
-        }());
+        })();
         var GagePageController = (function (_super) {
             __extends(GagePageController, _super);
             function GagePageController($scope, $http, modalService, modal) {
-                var _this = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
-                _this.showPreferred = false;
-                _this.multiselectOptions = {
+                _super.call(this, $http, configuration.baseurls.StreamStats);
+                this.showPreferred = false;
+                this.multiselectOptions = {
                     displayProp: 'name'
                 };
-                $scope.vm = _this;
-                _this.modalInstance = modal;
-                _this.modalService = modalService;
-                _this.init();
-                _this.selectedStatisticGroups = [];
-                _this.showPreferred = false;
-                return _this;
+                $scope.vm = this;
+                this.modalInstance = modal;
+                this.modalService = modalService;
+                this.init();
+                this.selectedStatisticGroups = [];
+                this.showPreferred = false;
             }
             GagePageController.prototype.Close = function () {
                 this.modalInstance.dismiss('cancel');
@@ -166,13 +160,25 @@ var StreamStats;
                 var found = this.gage.statistics.some(function (el) { return el.statisticGroupTypeID == statGroupID && el.hasOwnProperty('predictionInterval'); });
                 return found;
             };
+            GagePageController.prototype.getNWISInfo = function () {
+                var _this = this;
+                var url = configuration.baseurls.NWISurl + configuration.queryparams.NWISsiteinfo + this.gage.code;
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+                this.Execute(request).then(function (response) {
+                    var regex = /[+-]?((\d+(\.\d*)?)|(\.\d+))/g;
+                    var latLong = response.data.split(_this.gage.name)[1].match(regex);
+                    _this.NWISlat = latLong[0];
+                    _this.NWISlng = latLong[1];
+                });
+            };
             GagePageController.prototype.init = function () {
                 this.AppVersion = configuration.version;
                 this.getGagePage();
+                this.getNWISInfo();
             };
             GagePageController.$inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance'];
             return GagePageController;
-        }(WiM.Services.HTTPServiceBase));
+        })(WiM.Services.HTTPServiceBase);
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.GagePageController', GagePageController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));

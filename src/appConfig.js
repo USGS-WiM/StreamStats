@@ -12,7 +12,8 @@ configuration.baseurls =
         'WaterUseServices': 'https://test.streamstats.usgs.gov/wateruseservices',
         'StormRunoffServices': 'https://test.streamstats.usgs.gov/runoffmodelingservices',
         'ScienceBase': 'https://gis.usgs.gov/sciencebase2',
-        'GageStatsServices': 'https://test.streamstats.usgs.gov/gagestatsservices'
+        'GageStatsServices': 'https://test.streamstats.usgs.gov/gagestatsservices',
+        'NLDIurl': 'https://labs.waterdata.usgs.gov/api'
     };
 
 //override streamstats arguments if on production, these get overriden again in MapController after load balancer assigns a server
@@ -30,6 +31,8 @@ if (window.location.host === 'streamstats.usgs.gov') {
 configuration.queryparams =
     {
         'NWISsite':'/site/?format=rdb,1.0&bBox={0},{1},{2},{3}&seriesCatalogOutput=true&outputDataTypeCd=dv&parameterCd=00060&siteStatus=all&hasDataTypeCd=dv',
+        'NWISinfo': '/nldi/linked-data/nwissite/USGS-{0}/?f=json',
+        'NWISsiteinfo': '/site/?site=',
         'KrigService': '/krigservices/sites/{0}/krig?&x={1}&y={2}&crs={3}',
         'RegressionScenarios': '/{0}/estimate?state={1}',
         'statisticsGroupLookup': '/statisticgroups?regions={0}&regressionregions={1}',

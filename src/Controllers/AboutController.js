@@ -1,16 +1,11 @@
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
+//------------------------------------------------------------------------------
+//----- About ---------------------------------------------------------------
+//------------------------------------------------------------------------------
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var StreamStats;
 (function (StreamStats) {
     var Controllers;
@@ -19,17 +14,16 @@ var StreamStats;
         var AboutController = (function (_super) {
             __extends(AboutController, _super);
             function AboutController($scope, $http, $sce, modalService, region, studyAreaService, modal) {
-                var _this = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
-                $scope.vm = _this;
-                _this.sce = $sce;
-                _this.modalInstance = modal;
-                _this.modalService = modalService;
-                _this.StudyArea = studyAreaService.selectedStudyArea;
-                _this.regionService = region;
-                _this.selectedAboutTabName = "about";
-                _this.regionArticle = '<h3>No State or Region Selected</h3>';
-                _this.init();
-                return _this;
+                _super.call(this, $http, configuration.baseurls.StreamStats);
+                $scope.vm = this;
+                this.sce = $sce;
+                this.modalInstance = modal;
+                this.modalService = modalService;
+                this.StudyArea = studyAreaService.selectedStudyArea;
+                this.regionService = region;
+                this.selectedAboutTabName = "about";
+                this.regionArticle = '<h3>No State or Region Selected</h3>';
+                this.init();
             }
             AboutController.prototype.Close = function () {
                 this.modalInstance.dismiss('cancel');
@@ -40,6 +34,7 @@ var StreamStats;
                 this.selectedAboutTabName = tabname;
             };
             AboutController.prototype.getActiveNews = function () {
+                //console.log("Trying to open active news articles folder");
                 var _this = this;
                 var headers = {
                     "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
@@ -65,6 +60,7 @@ var StreamStats;
                 });
             };
             AboutController.prototype.getPastNews = function () {
+                //console.log("Trying to open past news articles folder");
                 var _this = this;
                 var headers = {
                     "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
@@ -90,6 +86,7 @@ var StreamStats;
                 });
             };
             AboutController.prototype.getAboutArticle = function () {
+                //console.log("Trying to open about article");
                 var _this = this;
                 var headers = {
                     "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
@@ -97,6 +94,7 @@ var StreamStats;
                 var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.AboutArticle;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
                 this.Execute(request).then(function (response) {
+                    //console.log('Successfully retrieved about article');
                     _this.aboutArticle = response.data.article.description;
                 }, function (error) {
                 }).finally(function () {
@@ -212,7 +210,7 @@ var StreamStats;
             };
             AboutController.$inject = ['$scope', '$http', '$sce', 'StreamStats.Services.ModalService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', '$modalInstance'];
             return AboutController;
-        }(WiM.Services.HTTPServiceBase));
+        })(WiM.Services.HTTPServiceBase);
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.AboutController', AboutController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));
