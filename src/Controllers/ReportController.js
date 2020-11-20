@@ -1,3 +1,6 @@
+//------------------------------------------------------------------------------
+//----- ReportrController ------------------------------------------------------
+//------------------------------------------------------------------------------
 var StreamStats;
 (function (StreamStats) {
     var Controllers;
@@ -10,7 +13,7 @@ var StreamStats;
                 this.zoom = zm;
             }
             return Center;
-        }());
+        })();
         var ReportController = (function () {
             function ReportController($scope, $analytics, $modalInstance, studyArea, StatisticsGroup, leafletData, regionService) {
                 var _this = this;
@@ -63,7 +66,7 @@ var StreamStats;
                     }
                     return false;
                 },
-                enumerable: false,
+                enumerable: true,
                 configurable: true
             });
             Object.defineProperty(ReportController.prototype, "canShowDisclaimers", {
@@ -73,7 +76,7 @@ var StreamStats;
                     var canshow = Object.keys(this.studyAreaService.selectedStudyArea.Disclaimers).length > 0;
                     return canshow;
                 },
-                enumerable: false,
+                enumerable: true,
                 configurable: true
             });
             Object.defineProperty(ReportController.prototype, "showRegulation", {
@@ -83,7 +86,7 @@ var StreamStats;
                     else
                         return false;
                 },
-                enumerable: false,
+                enumerable: true,
                 configurable: true
             });
             Object.defineProperty(ReportController.prototype, "ActiveExtensions", {
@@ -93,14 +96,14 @@ var StreamStats;
                     else
                         return null;
                 },
-                enumerable: false,
+                enumerable: true,
                 configurable: true
             });
             Object.defineProperty(ReportController.prototype, "GraphData", {
                 get: function () {
                     return this._graphData;
                 },
-                enumerable: false,
+                enumerable: true,
                 configurable: true
             });
             ReportController.prototype.downloadCSV = function () {
@@ -135,6 +138,7 @@ var StreamStats;
                 var processScenarioFlowTable = function (statGroup) {
                     var finalVal = '';
                     statGroup.regressionRegions.forEach(function (regressionRegion) {
+                        //console.log('ScenarioFlowTable regressionRegion: ', regressionRegion);
                         if (regressionRegion.results) {
                             var regionPercent = '';
                             if (regressionRegion.percentWeight)
@@ -523,7 +527,7 @@ var StreamStats;
             };
             ReportController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService'];
             return ReportController;
-        }());
+        })();
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.ReportController', ReportController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));

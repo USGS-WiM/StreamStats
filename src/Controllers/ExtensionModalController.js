@@ -1,3 +1,6 @@
+//------------------------------------------------------------------------------
+//----- ExplorationToolsModalController ----------------------------------------
+//------------------------------------------------------------------------------
 var StreamStats;
 (function (StreamStats) {
     var Controllers;
@@ -52,6 +55,7 @@ var StreamStats;
                 });
             };
             ExtensionModalController.prototype.init = function () {
+                //default
                 this.selectedReferenceGage = null;
                 if (this.studyAreaService.selectedStudyAreaExtensions == null)
                     return;
@@ -136,7 +140,7 @@ var StreamStats;
             };
             ExtensionModalController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.ModalService', 'StreamStats.Services.StudyAreaService'];
             return ExtensionModalController;
-        }());
+        })();
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.ExtensionModalController', ExtensionModalController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));

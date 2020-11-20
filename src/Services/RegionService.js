@@ -1,16 +1,11 @@
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
+//------------------------------------------------------------------------------
+//----- RegionService -----------------------------------------------------
+//------------------------------------------------------------------------------
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var StreamStats;
 (function (StreamStats) {
     var Services;
@@ -20,28 +15,27 @@ var StreamStats;
             function Region() {
             }
             return Region;
-        }());
+        })();
         Services.Region = Region;
         var Parameter = (function () {
             function Parameter() {
             }
             return Parameter;
-        }());
+        })();
         Services.Parameter = Parameter;
         Services.onSelectedRegionChanged = "onSelectedRegionChanged";
         var RegionService = (function (_super) {
             __extends(RegionService, _super);
             function RegionService($http, $q, toaster, eventManager) {
-                var _this = _super.call(this, $http, configuration.baseurls['StreamStatsServices']) || this;
-                _this.$q = $q;
-                _this.eventManager = eventManager;
-                _this.toaster = toaster;
-                _this.regionList = [];
-                _this.parameterList = [];
-                _this.masterRegionList = configuration.regions;
-                _this.streamStatsAvailable = false;
-                _this.eventManager.AddEvent(Services.onSelectedRegionChanged);
-                return _this;
+                _super.call(this, $http, configuration.baseurls['StreamStatsServices']);
+                this.$q = $q;
+                this.eventManager = eventManager;
+                this.toaster = toaster;
+                this.regionList = [];
+                this.parameterList = [];
+                this.masterRegionList = configuration.regions;
+                this.streamStatsAvailable = false;
+                this.eventManager.AddEvent(Services.onSelectedRegionChanged);
             }
             Object.defineProperty(RegionService.prototype, "selectedRegion", {
                 get: function () {
@@ -53,7 +47,7 @@ var StreamStats;
                         this.eventManager.RaiseEvent(Services.onSelectedRegionChanged, this, WiM.Event.EventArgs.Empty);
                     }
                 },
-                enumerable: false,
+                enumerable: true,
                 configurable: true
             });
             RegionService.prototype.clearRegion = function () {
@@ -126,6 +120,7 @@ var StreamStats;
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSAvailableParams'].format(this.selectedRegion.RegionID);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
+                    //console.log(response);
                     if (response.data.parameters && response.data.parameters.length > 0) {
                         _this.streamStatsAvailable = true;
                         response.data.parameters.forEach(function (parameter) {
@@ -165,7 +160,7 @@ var StreamStats;
                 }
             };
             return RegionService;
-        }(WiM.Services.HTTPServiceBase));
+        })(WiM.Services.HTTPServiceBase);
         factory.$inject = ['$http', '$q', 'toaster', 'WiM.Event.EventManager'];
         function factory($http, $q, toaster, eventManager) {
             return new RegionService($http, $q, toaster, eventManager);

@@ -539,7 +539,8 @@ module StreamStats.Controllers {
                                 maplayers.overlays[lyr].query().nearby(evt.latlng, 4).returnGeometry(false).run((error: any, results: any) => this.handleQueryResult(lyr, error, results, map, evt.latlng))
                                 break;
                             default://agsDynamic
-                                maplayers.overlays[lyr].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).run((error: any, results: any) => this.handleQueryResult(lyr, error, results, map, evt.latlng))
+                                var saveLayerName = lyr; // need to save layer name, or it sometimes doesn't send the correct layer in the handleQueryResult function
+                                maplayers.overlays[lyr].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).run((error: any, results: any) => this.handleQueryResult(saveLayerName, error, results, map, evt.latlng))
                                 
                         }
                         this.queryContent.requestCount++;        
@@ -551,39 +552,41 @@ module StreamStats.Controllers {
             var querylayers = $("<div>").attr("id", lyr).appendTo(this.queryContent.Content);
             this.queryContent.requestCount--;
             results.features.forEach((queryResult) => {
-                this.layers.overlays[lyr].layerArray.forEach((item) => {
-                    if (item.layerId !== queryResult.layerId) return;
-                    if (["StreamGrid", "ExcludePolys", "Region", "Subregion", "Basin", "Subbasin", "Watershed", "Subwatershed"].indexOf(item.layerName) > -1) return;                    
-                    querylayers.append('<h5>' + item.layerName + '</h5>');
-                    this.queryContent.responseCount++;
-                    //report ga event
-                    this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'queryPoints' });
-
-                    //show only specified fields (if applicable)
-                    if (this.layers.overlays[lyr].hasOwnProperty("queryProperties") && this.layers.overlays[lyr].queryProperties.hasOwnProperty(item.layerName)) {          
-                        let queryProperties = this.layers.overlays[lyr].queryProperties[item.layerName];
-                        Object.keys(queryProperties).map(k => {
-                            if (item.layerName == "Streamgages" && k == "FeatureURL") {
-
-                                var siteNo = queryResult.properties[k].split('site_no=')[1];
-                                var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm'  
-                                var SSgagepageNew = "vm.openGagePage('" + siteNo + "')";
-                                var html = '<strong>NWIS page: </strong><a href="' + queryResult.properties[k] + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br><strong>New StreamStats Gage Modal: </strong><a ng-click="' + SSgagepageNew + '">link</a></br>';
-
-                                querylayers.append(html);
-                                this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'streamgageQuery' });
-                            }
-                            else {
-                                querylayers.append('<strong>' + queryProperties[k] + ': </strong>' + queryResult.properties[k] + '</br>');
-                            }
-                        });
-                    }
-                    else {//show all fields
-                        angular.forEach(queryResult.properties, function (value, key) {
-                            querylayers.append('<strong>' + key + ': </strong>' + value + '</br>');
-                        });
-                    }
-                });
+                if (this.layers.overlays[lyr].hasOwnProperty('layerArray')) {
+                    this.layers.overlays[lyr].layerArray.forEach((item) => {
+                        if (item.layerId !== queryResult.layerId) return;
+                        if (["StreamGrid", "ExcludePolys", "Region", "Subregion", "Basin", "Subbasin", "Watershed", "Subwatershed"].indexOf(item.layerName) > -1) return;                
+                        querylayers.append('<h5>' + item.layerName + '</h5>');
+                        this.queryContent.responseCount++;
+                        //report ga event
+                        this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'queryPoints' });
+    
+                        //show only specified fields (if applicable)
+                        if (this.layers.overlays[lyr].hasOwnProperty("queryProperties") && this.layers.overlays[lyr].queryProperties.hasOwnProperty(item.layerName)) {      
+                            let queryProperties = this.layers.overlays[lyr].queryProperties[item.layerName];
+                            Object.keys(queryProperties).map(k => {
+                                if (item.layerName == "Streamgages" && k == "FeatureURL") {
+    
+                                    var siteNo = queryResult.properties[k].split('site_no=')[1];
+                                    var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm'
+                                    var SSgagepageNew = "vm.openGagePage('" + siteNo + "')";
+                                    var html = '<strong>NWIS page: </strong><a href="' + queryResult.properties[k] + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br><strong>New StreamStats Gage Modal: </strong><a ng-click="' + SSgagepageNew + '">link</a></br>';
+    
+                                    querylayers.append(html);
+                                    this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'streamgageQuery' });
+                                }
+                                else {
+                                    querylayers.append('<strong>' + queryProperties[k] + ': </strong>' + queryResult.properties[k] + '</br>');
+                                }
+                            });
+                        }
+                        else {//show all fields
+                            angular.forEach(queryResult.properties, function (value, key) {
+                                querylayers.append('<strong>' + key + ': </strong>' + value + '</br>');
+                            });
+                        }
+                    });
+                }
             });
 
             if (this.queryContent.requestCount < 1) {
