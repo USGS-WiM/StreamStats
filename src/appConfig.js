@@ -30,11 +30,13 @@ if (window.location.host === 'streamstats.usgs.gov') {
 configuration.queryparams =
     {
         'NWISsite':'/site/?format=rdb,1.0&bBox={0},{1},{2},{3}&seriesCatalogOutput=true&outputDataTypeCd=dv&parameterCd=00060&siteStatus=all&hasDataTypeCd=dv',
+        'NWISinfo': '/nldi/linked-data/nwissite/USGS-{0}/?f=json',
+        'NWISsiteinfo': '/site?site=',
         'KrigService': '/krigservices/sites/{0}/krig?&x={1}&y={2}&crs={3}',
         'RegressionScenarios': '/{0}/estimate?state={1}',
         'statisticsGroupLookup': '/statisticgroups?regions={0}&regressionregions={1}',
-        'statisticsGroupParameterLookup': '/scenarios?regions={0}&statisticgroups={1}&regressionregions={2}&configs=2',
-        'estimateFlows': '/scenarios/estimate?regions={0}&configs=2',
+        'statisticsGroupParameterLookup': '/scenarios?regions={0}&statisticgroups={1}&regressionregions={2}&unitsystem=2',
+        'estimateFlows': '/scenarios/estimate?regions={0}&unitsystem=2',
         'SSdelineation': '/streamstatsservices/watershed.{0}?rcode={1}&xlocation={2}&ylocation={3}&crs={4}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
         'SSstormwaterDelineation': '/stormwaterservices/watershed?rcode={0}&xlocation={1}&ylocation={2}&surfacecontributiononly={3}',
         'SSwatershedByWorkspace': '/streamstatsservices/watershed.{0}?rcode={1}&workspaceID={2}&crs={3}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',

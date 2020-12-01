@@ -166,9 +166,21 @@ var StreamStats;
                 var found = this.gage.statistics.some(function (el) { return el.statisticGroupTypeID == statGroupID && el.hasOwnProperty('predictionInterval'); });
                 return found;
             };
+            GagePageController.prototype.getNWISInfo = function () {
+                var _this = this;
+                var url = configuration.baseurls.NWISurl + configuration.queryparams.NWISsiteinfo + this.gage.code;
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+                this.Execute(request).then(function (response) {
+                    var regex = /[+-]?((\d+(\.\d*)?)|(\.\d+))/g;
+                    var latLong = response.data.split(_this.gage.name)[1].match(regex);
+                    _this.NWISlat = latLong[0];
+                    _this.NWISlng = latLong[1];
+                });
+            };
             GagePageController.prototype.init = function () {
                 this.AppVersion = configuration.version;
                 this.getGagePage();
+                this.getNWISInfo();
             };
             GagePageController.$inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance'];
             return GagePageController;
