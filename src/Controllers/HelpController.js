@@ -1,11 +1,16 @@
-//------------------------------------------------------------------------------
-//----- Help ---------------------------------------------------------------
-//------------------------------------------------------------------------------
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var StreamStats;
 (function (StreamStats) {
     var Controllers;
@@ -15,23 +20,24 @@ var StreamStats;
             function FreshdeskTicketData() {
             }
             return FreshdeskTicketData;
-        })();
+        }());
         var HelpController = (function (_super) {
             __extends(HelpController, _super);
             function HelpController($scope, $http, $sce, studyAreaService, modal, Upload) {
-                _super.call(this, $http, '');
-                $scope.vm = this;
-                this.StudyArea = studyAreaService.selectedStudyArea;
-                this.Upload = Upload;
-                this.http = $http;
-                this.sce = $sce;
-                this.modalInstance = modal;
-                this.StudyArea = studyAreaService.selectedStudyArea;
-                this.freshdeskTicketData = new FreshdeskTicketData();
-                this.selectedHelpTabName = "help";
-                this.showSuccessAlert = false;
-                this.submittingSupportTicket = false;
-                this.init();
+                var _this = _super.call(this, $http, '') || this;
+                $scope.vm = _this;
+                _this.StudyArea = studyAreaService.selectedStudyArea;
+                _this.Upload = Upload;
+                _this.http = $http;
+                _this.sce = $sce;
+                _this.modalInstance = modal;
+                _this.StudyArea = studyAreaService.selectedStudyArea;
+                _this.freshdeskTicketData = new FreshdeskTicketData();
+                _this.selectedHelpTabName = "help";
+                _this.showSuccessAlert = false;
+                _this.submittingSupportTicket = false;
+                _this.init();
+                return _this;
             }
             HelpController.prototype.Close = function () {
                 this.showSuccessAlert = false;
@@ -60,7 +66,6 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', formdata, headers, angular.identity);
                 this.submittingSupportTicket = true;
                 this.Execute(request).then(function (response) {
-                    //console.log('Successfully submitted help ticket: ', response);
                     _this.freshdeskTicketData = new FreshdeskTicketData();
                     _this.showSuccessAlert = true;
                 }, function (error) {
@@ -119,7 +124,6 @@ var StreamStats;
                     this.Server = '';
             };
             HelpController.prototype.getBrowser = function () {
-                //modified from https://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browser
                 if ((!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0)
                     this.Browser = "Opera";
                 if (typeof InstallTrigger !== 'undefined')
@@ -135,7 +139,7 @@ var StreamStats;
             };
             HelpController.$inject = ['$scope', '$http', '$sce', 'StreamStats.Services.StudyAreaService', '$modalInstance', 'Upload'];
             return HelpController;
-        })(WiM.Services.HTTPServiceBase);
+        }(WiM.Services.HTTPServiceBase));
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.HelpController', HelpController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));

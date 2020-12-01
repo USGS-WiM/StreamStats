@@ -1,11 +1,16 @@
-//------------------------------------------------------------------------------
-//----- Network Navigation ---------------------------------------------------------------
-//------------------------------------------------------------------------------
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var StreamStats;
 (function (StreamStats) {
     var Models;
@@ -24,7 +29,7 @@ var StreamStats;
                 get: function () {
                     return this._locations;
                 },
-                enumerable: true,
+                enumerable: false,
                 configurable: true
             });
             NetworkNav.prototype.addLocation = function (name, pnt) {
@@ -55,21 +60,22 @@ var StreamStats;
                 return object.filter(function (item) { return (item.valueType.toLowerCase().indexOf(text) >= 0); }).length;
             };
             return NetworkNav;
-        })();
+        }());
         Models.NetworkNav = NetworkNav;
         var NetworkPath = (function (_super) {
             __extends(NetworkPath, _super);
             function NetworkPath() {
-                _super.call(this, 2, 2);
+                return _super.call(this, 2, 2) || this;
             }
             return NetworkPath;
-        })(NetworkNav);
+        }(NetworkNav));
         Models.NetworkPath = NetworkPath;
         var FlowPath = (function (_super) {
             __extends(FlowPath, _super);
             function FlowPath() {
-                _super.call(this, 1, 1);
-                this._workspaceID = '';
+                var _this = _super.call(this, 1, 1) || this;
+                _this._workspaceID = '';
+                return _this;
             }
             Object.defineProperty(FlowPath.prototype, "workspaceID", {
                 get: function () {
@@ -78,22 +84,23 @@ var StreamStats;
                 set: function (val) {
                     this._workspaceID = val;
                 },
-                enumerable: true,
+                enumerable: false,
                 configurable: true
             });
             return FlowPath;
-        })(NetworkNav);
+        }(NetworkNav));
         Models.FlowPath = FlowPath;
         var NetworkTrace = (function (_super) {
             __extends(NetworkTrace, _super);
             function NetworkTrace() {
-                _super.call(this, 3, 1);
-                this.layerOptions = [{ name: "NHDFlowline", selected: true }, { name: "Gage", selected: false }, { name: "Dam", selected: false }];
-                this.DirectionOptions = ["Upstream", "Downstream"];
-                this.selectedDirectionType = this.DirectionOptions[1];
+                var _this = _super.call(this, 3, 1) || this;
+                _this.layerOptions = [{ name: "NHDFlowline", selected: true }, { name: "Gage", selected: false }, { name: "Dam", selected: false }];
+                _this.DirectionOptions = ["Upstream", "Downstream"];
+                _this.selectedDirectionType = _this.DirectionOptions[1];
+                return _this;
             }
             return NetworkTrace;
-        })(NetworkNav);
+        }(NetworkNav));
         Models.NetworkTrace = NetworkTrace;
     })(Models = StreamStats.Models || (StreamStats.Models = {}));
 })(StreamStats || (StreamStats = {}));
