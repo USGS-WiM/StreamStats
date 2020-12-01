@@ -12,8 +12,7 @@ configuration.baseurls =
         'WaterUseServices': 'https://test.streamstats.usgs.gov/wateruseservices',
         'StormRunoffServices': 'https://test.streamstats.usgs.gov/runoffmodelingservices',
         'ScienceBase': 'https://gis.usgs.gov/sciencebase2',
-        'GageStatsServices': 'https://test.streamstats.usgs.gov/gagestatsservices',
-        'NLDIurl': 'https://labs.waterdata.usgs.gov/api'
+        'GageStatsServices': 'https://test.streamstats.usgs.gov/gagestatsservices'
     };
 
 //override streamstats arguments if on production, these get overriden again in MapController after load balancer assigns a server
