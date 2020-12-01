@@ -344,10 +344,12 @@ var StreamStats;
                                     maplayers.overlays[lyr].query().nearby(evt.latlng, 4).returnGeometry(false).run(function (error, results) { return _this.handleQueryResult(lyr, error, results, map, evt.latlng); });
                                     break;
                                 default:
-                                    maplayers.overlays[lyr].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).run(function (error, results) { return _this.handleQueryResult(lyr, error, results, map, evt.latlng); });
+                                    saveLayerName = lyr;
+                                    maplayers.overlays[lyr].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).run(function (error, results) { return _this.handleQueryResult(saveLayerName, error, results, map, evt.latlng); });
                             }
                             _this.queryContent.requestCount++;
                         };
+                        var saveLayerName;
                         for (var lyr in maplayers.overlays) {
                             _loop_1(lyr);
                         }
@@ -359,36 +361,38 @@ var StreamStats;
                 var querylayers = $("<div>").attr("id", lyr).appendTo(this.queryContent.Content);
                 this.queryContent.requestCount--;
                 results.features.forEach(function (queryResult) {
-                    _this.layers.overlays[lyr].layerArray.forEach(function (item) {
-                        if (item.layerId !== queryResult.layerId)
-                            return;
-                        if (["StreamGrid", "ExcludePolys", "Region", "Subregion", "Basin", "Subbasin", "Watershed", "Subwatershed"].indexOf(item.layerName) > -1)
-                            return;
-                        querylayers.append('<h5>' + item.layerName + '</h5>');
-                        _this.queryContent.responseCount++;
-                        _this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'queryPoints' });
-                        if (_this.layers.overlays[lyr].hasOwnProperty("queryProperties") && _this.layers.overlays[lyr].queryProperties.hasOwnProperty(item.layerName)) {
-                            var queryProperties_1 = _this.layers.overlays[lyr].queryProperties[item.layerName];
-                            Object.keys(queryProperties_1).map(function (k) {
-                                if (item.layerName == "Streamgages" && k == "FeatureURL") {
-                                    var siteNo = queryResult.properties[k].split('site_no=')[1];
-                                    var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm';
-                                    var SSgagepageNew = "vm.openGagePage('" + siteNo + "')";
-                                    var html = '<strong>NWIS page: </strong><a href="' + queryResult.properties[k] + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br><strong>New StreamStats Gage Modal: </strong><a ng-click="' + SSgagepageNew + '">link</a></br>';
-                                    querylayers.append(html);
-                                    _this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'streamgageQuery' });
-                                }
-                                else {
-                                    querylayers.append('<strong>' + queryProperties_1[k] + ': </strong>' + queryResult.properties[k] + '</br>');
-                                }
-                            });
-                        }
-                        else {
-                            angular.forEach(queryResult.properties, function (value, key) {
-                                querylayers.append('<strong>' + key + ': </strong>' + value + '</br>');
-                            });
-                        }
-                    });
+                    if (_this.layers.overlays[lyr].hasOwnProperty('layerArray')) {
+                        _this.layers.overlays[lyr].layerArray.forEach(function (item) {
+                            if (item.layerId !== queryResult.layerId)
+                                return;
+                            if (["StreamGrid", "ExcludePolys", "Region", "Subregion", "Basin", "Subbasin", "Watershed", "Subwatershed"].indexOf(item.layerName) > -1)
+                                return;
+                            querylayers.append('<h5>' + item.layerName + '</h5>');
+                            _this.queryContent.responseCount++;
+                            _this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'queryPoints' });
+                            if (_this.layers.overlays[lyr].hasOwnProperty("queryProperties") && _this.layers.overlays[lyr].queryProperties.hasOwnProperty(item.layerName)) {
+                                var queryProperties_1 = _this.layers.overlays[lyr].queryProperties[item.layerName];
+                                Object.keys(queryProperties_1).map(function (k) {
+                                    if (item.layerName == "Streamgages" && k == "FeatureURL") {
+                                        var siteNo = queryResult.properties[k].split('site_no=')[1];
+                                        var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm';
+                                        var SSgagepageNew = "vm.openGagePage('" + siteNo + "')";
+                                        var html = '<strong>NWIS page: </strong><a href="' + queryResult.properties[k] + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br><strong>New StreamStats Gage Modal: </strong><a ng-click="' + SSgagepageNew + '">link</a></br>';
+                                        querylayers.append(html);
+                                        _this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'streamgageQuery' });
+                                    }
+                                    else {
+                                        querylayers.append('<strong>' + queryProperties_1[k] + ': </strong>' + queryResult.properties[k] + '</br>');
+                                    }
+                                });
+                            }
+                            else {
+                                angular.forEach(queryResult.properties, function (value, key) {
+                                    querylayers.append('<strong>' + key + ': </strong>' + value + '</br>');
+                                });
+                            }
+                        });
+                    }
                 });
                 if (this.queryContent.requestCount < 1) {
                     this.toaster.clear();

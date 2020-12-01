@@ -149,6 +149,8 @@ module StreamStats.Controllers {
         public multiselectOptions = {
             displayProp: 'name'
         }
+        public NWISlat: string;
+        public NWISlng: string;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -285,6 +287,20 @@ module StreamStats.Controllers {
             var found = this.gage.statistics.some(el => el.statisticGroupTypeID == statGroupID && el.hasOwnProperty('predictionInterval'))
             return found;
         }
+
+        public getNWISInfo() {
+
+            var url = configuration.baseurls.NWISurl + configuration.queryparams.NWISsiteinfo + this.gage.code;
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+
+            this.Execute(request).then(
+                (response: any) => {
+                    var regex = /[+-]?((\d+(\.\d*)?)|(\.\d+))/g;
+                    var latLong = response.data.split(this.gage.name)[1].match(regex);
+                    this.NWISlat = latLong[0];
+                    this.NWISlng = latLong[1];
+                });
+        }
         
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -293,7 +309,7 @@ module StreamStats.Controllers {
             this.AppVersion = configuration.version;
 
             this.getGagePage()
-
+            this.getNWISInfo()
         }
 
 
