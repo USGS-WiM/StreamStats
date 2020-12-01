@@ -1,6 +1,3 @@
-//------------------------------------------------------------------------------
-//----- Point ------------------------------------------------------------------
-//------------------------------------------------------------------------------
 var StreamStats;
 (function (StreamStats) {
     var Models;
@@ -11,7 +8,7 @@ var StreamStats;
                 this.remove = [];
             }
             return WatershedEditDecisionList;
-        })();
+        }());
         Models.WatershedEditDecisionList = WatershedEditDecisionList;
     })(Models = StreamStats.Models || (StreamStats.Models = {}));
 })(StreamStats || (StreamStats = {}));

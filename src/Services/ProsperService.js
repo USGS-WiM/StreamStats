@@ -1,11 +1,16 @@
-//------------------------------------------------------------------------------
-//----- ProsperService -------------------------------------------------------
-//------------------------------------------------------------------------------
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var StreamStats;
 (function (StreamStats) {
     var Services;
@@ -14,25 +19,26 @@ var StreamStats;
         var ProsperService = (function (_super) {
             __extends(ProsperService, _super);
             function ProsperService($http, $q, toaster, modal) {
-                _super.call(this, $http, configuration.baseurls['ScienceBase']);
-                this.$q = $q;
-                this.projectExtent = [[41.96765920367816, -125.48583984375], [49.603590524348704, -110.54443359375]];
-                this.toaster = toaster;
-                this.modalservices = modal;
-                this.init();
+                var _this = _super.call(this, $http, configuration.baseurls['ScienceBase']) || this;
+                _this.$q = $q;
+                _this.projectExtent = [[41.96765920367816, -125.48583984375], [49.603590524348704, -110.54443359375]];
+                _this.toaster = toaster;
+                _this.modalservices = modal;
+                _this.init();
+                return _this;
             }
             Object.defineProperty(ProsperService.prototype, "SelectedPredictions", {
                 get: function () {
                     return this.AvailablePredictions.filter(function (f) { return f.selected; });
                 },
-                enumerable: true,
+                enumerable: false,
                 configurable: true
             });
             Object.defineProperty(ProsperService.prototype, "Result", {
                 get: function () {
                     return this._result;
                 },
-                enumerable: true,
+                enumerable: false,
                 configurable: true
             });
             ProsperService.prototype.ResetSelectedPredictions = function () {
@@ -173,7 +179,7 @@ var StreamStats;
                 });
             };
             return ProsperService;
-        })(WiM.Services.HTTPServiceBase);
+        }(WiM.Services.HTTPServiceBase));
         factory.$inject = ['$http', '$q', 'toaster', 'StreamStats.Services.ModalService'];
         function factory($http, $q, toaster, modalService) {
             return new ProsperService($http, $q, toaster, modalService);
