@@ -2,9 +2,9 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
         return extendStatics(d, b);
-    };
+    }
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -44,7 +44,7 @@ var StreamStats;
                     if (val <= this.EndYear && val >= this.YearRange.floor)
                         this._startYear = val;
                 },
-                enumerable: false,
+                enumerable: true,
                 configurable: true
             });
             Object.defineProperty(WateruseController.prototype, "EndYear", {
@@ -55,14 +55,14 @@ var StreamStats;
                     if (val >= this.StartYear && val <= this.YearRange.ceil)
                         this._endYear = val;
                 },
-                enumerable: false,
+                enumerable: true,
                 configurable: true
             });
             Object.defineProperty(WateruseController.prototype, "YearRange", {
                 get: function () {
                     return this._yearRange;
                 },
-                enumerable: false,
+                enumerable: true,
                 configurable: true
             });
             WateruseController.prototype.GetWaterUse = function () {
@@ -215,6 +215,10 @@ var StreamStats;
                             tableFields = ["", "Average Return", "Average Withdrawal"];
                             var sw = { name: "Surface Water", aveReturn: "---", aveWithdrawal: "---", unit: "MGD" };
                             var gw = { name: "Groundwater", aveReturn: "---", aveWithdrawal: "---", unit: "MGD" };
+                            var permits_sw = { name: "Temporary water-use registrations (surface water)", aveReturn: "", aveWithdrawal: "---" };
+                            var permits_gw = { name: "Temporary water-use registrations (ground water)", aveReturn: "", aveWithdrawal: "---" };
+                            var index_wo_reg = { name: "Water-use index (dimensionless) without temporary registrations", aveWithdrawal: "---" };
+                            var index_reg = { name: "Water-use index (dimensionless) with temporary registrations", aveWithdrawal: "---" };
                             if (this.result.hasOwnProperty("withdrawal") && this.result.withdrawal.hasOwnProperty("annual")) {
                                 var annWith = this.result.withdrawal.annual;
                                 if (annWith.hasOwnProperty("SW"))
@@ -229,6 +233,13 @@ var StreamStats;
                                 if (annreturn.hasOwnProperty("GW"))
                                     gw.aveReturn = annreturn.GW.value.toFixed(3);
                             }
+                            if (this.result.hasOwnProperty("withdrawal") && this.result.withdrawal.hasOwnProperty("permitted")) {
+                                var permitted = this.result.withdrawal.permitted;
+                                if (permitted.hasOwnProperty("Intake"))
+                                    permits_sw.aveWithdrawal = permitted.Intake.value;
+                                if (permitted.hasOwnProperty("Well"))
+                                    permits_gw.aveWithdrawal = permitted.Well.value;
+                            }
                             tableValues.push(sw);
                             tableValues.push(gw);
                             tableValues.push({
@@ -237,14 +248,14 @@ var StreamStats;
                                 aveWithdrawal: (isNaN(+sw.aveWithdrawal) && isNaN(+gw.aveWithdrawal)) ? "---" : ((isNaN(+sw.aveWithdrawal) ? 0 : +sw.aveWithdrawal) + (isNaN(+gw.aveWithdrawal) ? 0 : +gw.aveWithdrawal)).toFixed(3)
                             });
                             tableValues.push({ name: "", aveReturn: "", aveWithdrawal: "" });
-                            if (this.result.hasOwnProperty("TotalTempStats")) {
-                                tableValues.push({ name: "Temporary water use registrations (surface water)[permit]", aveReturn: "", aveWithdrawal: this.result.TotalTempStats[2].value.toFixed(3), unit: "MGD" });
-                                tableValues.push({ name: "Temporary water use registrations (groundwater[permit])", aveReturn: "", aveWithdrawal: this.result.TotalTempStats[1].value.toFixed(3), unit: "MGD" });
-                                tableValues.push({ name: "Temporary water use registrations (total)[permit]", aveReturn: "", aveWithdrawal: this.result.TotalTempStats[0].value.toFixed(3), unit: "MGD" });
-                                tableValues.push({ name: "", aveReturn: "", aveWithdrawal: "" });
-                                tableValues.push({ name: "Water use index (dimensionless) without temporary registrations:[totalnet/lowflowstat]", aveReturn: "", aveWithdrawal: this.result.TotalTempStats[4].value.toFixed(3), unit: "Dimensionless" });
-                                tableValues.push({ name: "Water use index (dimensionless) with temporary registrations:[permit w/ totalnet/lowflow stat]", aveReturn: "", aveWithdrawal: this.result.TotalTempStats[3].value.toFixed(3), unit: "Dimensionless" });
-                            }
+                            tableValues.push(permits_sw);
+                            tableValues.push(permits_gw);
+                            tableValues.push({
+                                name: "Temporary water-use registrations (total)",
+                                aveReturn: "",
+                                aveWithdrawal: (isNaN(+permits_sw.aveWithdrawal) && isNaN(+permits_gw.aveWithdrawal)) ? "---" : ((isNaN(+permits_sw.aveWithdrawal) ? 0 : +permits_sw.aveWithdrawal) + (isNaN(+permits_gw.aveWithdrawal) ? 0 : +permits_gw.aveWithdrawal))
+                            });
+                            tableValues.push({ name: "", aveReturn: "", aveWithdrawal: "" });
                             break;
                     }
                     return {

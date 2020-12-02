@@ -2,9 +2,9 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
         return extendStatics(d, b);
-    };
+    }
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -73,14 +73,14 @@ var StreamStats;
                 get: function () {
                     return this._onStudyAreaServiceFinishedChanged;
                 },
-                enumerable: false,
+                enumerable: true,
                 configurable: true
             });
             Object.defineProperty(StudyAreaService.prototype, "StudyAreaList", {
                 get: function () {
                     return this._studyAreaList;
                 },
-                enumerable: false,
+                enumerable: true,
                 configurable: true
             });
             Object.defineProperty(StudyAreaService.prototype, "selectedStudyArea", {
@@ -95,7 +95,7 @@ var StreamStats;
                         this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);
                     }
                 },
-                enumerable: false,
+                enumerable: true,
                 configurable: true
             });
             Object.defineProperty(StudyAreaService.prototype, "selectedStudyAreaExtensions", {
@@ -105,7 +105,7 @@ var StreamStats;
                     else
                         return this.selectedStudyArea.NSS_Extensions;
                 },
-                enumerable: false,
+                enumerable: true,
                 configurable: true
             });
             StudyAreaService.prototype.editBasin = function (selection) {
