@@ -28,6 +28,8 @@ var StreamStats;
             function WateruseController($scope, $http, studyAreaService, modal, $timeout) {
                 var _this = _super.call(this, $http, configuration.baseurls.WaterUseServices) || this;
                 _this.$timeout = $timeout;
+                _this.AnnualTotalWithdrawals = 0;
+                _this.AnnualTotalReturns = 0;
                 $scope.vm = _this;
                 _this.modalInstance = modal;
                 _this.StudyArea = studyAreaService.selectedStudyArea;
@@ -107,12 +109,12 @@ var StreamStats;
                             var testx = new Array(12);
                             if (this.result.hasOwnProperty("withdrawal") && this.result.withdrawal.hasOwnProperty("monthly")) {
                                 for (var month in this.result.withdrawal.monthly) {
-                                    var montlyCodes = this.result.withdrawal.monthly[month]["code"];
-                                    for (var code in montlyCodes) {
+                                    var monthlyCodes = this.result.withdrawal.monthly[month]["code"];
+                                    for (var code in monthlyCodes) {
                                         var itemindex = -1;
                                         for (var i = 0; i < results.withdrawals.length; i++) {
                                             var elem = results.withdrawals[i];
-                                            if (elem.key == montlyCodes[code].name) {
+                                            if (elem.key == monthlyCodes[code].name) {
                                                 itemindex = i;
                                                 break;
                                             }
@@ -123,12 +125,12 @@ var StreamStats;
                                                 initArray.push({ "label": this.getMonth(i), "stack": "withdrawal", value: 0 });
                                             }
                                             itemindex = results.withdrawals.push({
-                                                "key": montlyCodes[code].name,
+                                                "key": monthlyCodes[code].name,
                                                 "values": initArray,
                                                 "color": this.generateColorShade(190, 350)
                                             }) - 1;
                                         }
-                                        results.withdrawals[itemindex].values[+month - 1].value = montlyCodes[code].value;
+                                        results.withdrawals[itemindex].values[+month - 1].value = monthlyCodes[code].value;
                                     }
                                 }
                             }
@@ -184,12 +186,14 @@ var StreamStats;
                                 for (var item in this.result.return.monthly) {
                                     tableValues[+item - 1].returns.GW = this.result.return.monthly[item].month.hasOwnProperty("GW") ? this.result.return.monthly[item].month.GW.value.toFixed(3) : "---";
                                     tableValues[+item - 1].returns.SW = this.result.return.monthly[item].month.hasOwnProperty("SW") ? this.result.return.monthly[item].month.SW.value.toFixed(3) : "---";
+                                    this.AnnualTotalReturns += (tableValues[+item - 1].returns.GW == "---" ? 0 : +tableValues[+item - 1].returns.GW) + (tableValues[+item - 1].returns.SW == "---" ? 0 : +tableValues[+item - 1].returns.SW);
                                 }
                             }
                             if (this.result.hasOwnProperty("withdrawal") && this.result.withdrawal.hasOwnProperty("monthly")) {
                                 for (var mkey in this.result.withdrawal.monthly) {
                                     tableValues[+mkey - 1].withdrawals.GW = this.result.withdrawal.monthly[mkey].month.hasOwnProperty("GW") ? this.result.withdrawal.monthly[mkey].month.GW.value.toFixed(3) : "---";
                                     tableValues[+mkey - 1].withdrawals.SW = this.result.withdrawal.monthly[mkey].month.hasOwnProperty("SW") ? this.result.withdrawal.monthly[mkey].month.SW.value.toFixed(3) : "---";
+                                    this.AnnualTotalWithdrawals += (tableValues[+mkey - 1].withdrawals.GW == "---" ? 0 : +tableValues[+mkey - 1].withdrawals.GW) + (tableValues[+mkey - 1].withdrawals.SW == "---" ? 0 : +tableValues[+mkey - 1].withdrawals.SW);
                                     if (this.result.withdrawal.monthly[mkey].hasOwnProperty("code")) {
                                         var monthlycode = this.result.withdrawal.monthly[mkey].code;
                                         for (var cKey in monthlycode) {
@@ -256,6 +260,17 @@ var StreamStats;
                                 aveWithdrawal: (isNaN(+permits_sw.aveWithdrawal) && isNaN(+permits_gw.aveWithdrawal)) ? "---" : ((isNaN(+permits_sw.aveWithdrawal) ? 0 : +permits_sw.aveWithdrawal) + (isNaN(+permits_gw.aveWithdrawal) ? 0 : +permits_gw.aveWithdrawal))
                             });
                             tableValues.push({ name: "", aveReturn: "", aveWithdrawal: "" });
+                            tableValues.push({
+                                name: "Water-use index (dimensionless) without temporary registrations:",
+                                aveReturn: "",
+                                aveWithdrawal: ((isNaN(this.AnnualTotalWithdrawals) && isNaN(this.AnnualTotalReturns)) ? "---" : (((isNaN(this.AnnualTotalWithdrawals) ? 0 : this.AnnualTotalWithdrawals) - (isNaN(this.AnnualTotalReturns) ? 0 : this.AnnualTotalReturns)) / 25.52952).toFixed(3))
+                            });
+                            console.log("total withdrawals: " + this.AnnualTotalWithdrawals + ", total returns: " + this.AnnualTotalReturns);
+                            tableValues.push({
+                                name: "Water-use index (dimensionless) with temporary registrations:",
+                                aveReturn: "",
+                                aveWithdrawal: ((isNaN(this.AnnualTotalWithdrawals) && isNaN(this.AnnualTotalReturns) && isNaN(+permits_sw.aveWithdrawal) && isNaN(+permits_gw.aveWithdrawal)) ? "---" : (((isNaN(+permits_gw.aveWithdrawal) ? 0 : +permits_gw.aveWithdrawal) + (isNaN(+permits_sw.aveWithdrawal) ? 0 : +permits_sw.aveWithdrawal) + ((isNaN(this.AnnualTotalWithdrawals) ? 0 : this.AnnualTotalWithdrawals) - (isNaN(this.AnnualTotalReturns) ? 0 : this.AnnualTotalReturns))) / 25.52952).toFixed(3))
+                            });
                             break;
                     }
                     return {

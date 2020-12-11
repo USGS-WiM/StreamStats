@@ -340,6 +340,7 @@ var StreamStats;
                 });
             };
             SidebarController.prototype.OpenWateruse = function () {
+                this.GetQ10();
                 this.modalService.openModal(StreamStats.Services.SSModalType.e_wateruse);
             };
             SidebarController.prototype.OpenStormRunoff = function () {
@@ -436,6 +437,9 @@ var StreamStats;
                 catch (e) {
                     return false;
                 }
+            };
+            SidebarController.prototype.GetQ10 = function () {
+                this.queryRegressionRegions();
             };
             SidebarController.prototype.sm = function (msg) {
                 try {

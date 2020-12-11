@@ -532,6 +532,7 @@ module StreamStats.Controllers {
         }
 
         public OpenWateruse() {
+            this.GetQ10();
             this.modalService.openModal(Services.SSModalType.e_wateruse);
         }
         public OpenStormRunoff() {
@@ -647,6 +648,10 @@ module StreamStats.Controllers {
                 //this.sm(new MSG.NotificationArgs(e.message, MSG.NotificationType.INFORMATION, 1.5));
                 return false;
             }
+        }
+        private GetQ10() {
+            this.queryRegressionRegions();
+            this.queryStatisticsGroupTypes();
         }
         private sm(msg: string) {
             try {
