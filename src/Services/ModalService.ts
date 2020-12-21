@@ -164,6 +164,16 @@ module StreamStats.Services {
                             backdrop: 'static',
                             windowClass: 'windowZ modal-xl',
                         };
+
+                    case SSModalType.e_nearestgages:
+                        return {
+                            templateUrl: 'Views/nearestgages.html',
+                            controller: 'StreamStats.Controllers.NearestGagesController',
+                            size: 'lg',
+                            backdropClass: 'backdropZ',
+                            backdrop: 'static',
+                            windowClass: 'windowZ modal-xl',
+                        };
      
                     default:
                         return null;
@@ -186,7 +196,8 @@ module StreamStats.Services {
         e_stormrunnoff = 7,
         e_prosper = 8,
         e_extensionsupport = 9,
-        e_gagepage = 10
+        e_gagepage = 10,
+        e_nearestgages = 11
         
     }
 

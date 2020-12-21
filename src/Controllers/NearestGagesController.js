@@ -72,28 +72,33 @@ var StreamStats;
             }
             return RegressionType;
         }());
-        var GagePageController = (function (_super) {
-            __extends(GagePageController, _super);
-            function GagePageController($scope, $http, modalService, modal) {
+        var NearestGagesController = (function (_super) {
+            __extends(NearestGagesController, _super);
+            function NearestGagesController($scope, toaster, $http, modalService, modal, studyArea) {
                 var _this = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
                 _this.showPreferred = false;
                 _this.multiselectOptions = {
                     displayProp: 'name'
                 };
+                _this.queryBy = 'Nearest';
+                _this.distance = 10;
+                _this.nearbyGages = [];
                 $scope.vm = _this;
                 _this.modalInstance = modal;
                 _this.modalService = modalService;
                 _this.init();
                 _this.selectedStatisticGroups = [];
                 _this.showPreferred = false;
+                _this.studyAreaService = studyArea;
+                _this.toaster = toaster;
                 return _this;
             }
-            GagePageController.prototype.Close = function () {
+            NearestGagesController.prototype.Close = function () {
                 this.modalInstance.dismiss('cancel');
             };
-            GagePageController.prototype.getGagePage = function () {
+            NearestGagesController.prototype.getGagePage = function () {
                 var _this = this;
-                this.gage = new GageInfo(this.modalService.modalOptions.siteid);
+                this.gage = new GageInfo('07022000');
                 var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + this.gage.code;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
@@ -104,15 +109,14 @@ var StreamStats;
                     _this.gage.citations = [];
                     _this.getStationCharacteristics(response.data.characteristics);
                     _this.getStationStatistics(response.data.statistics);
-                    _this.getNWISInfo();
                 }, function (error) {
                 }).finally(function () {
                 });
             };
-            GagePageController.prototype.setPreferred = function (pref) {
+            NearestGagesController.prototype.setPreferred = function (pref) {
                 this.showPreferred = pref;
             };
-            GagePageController.prototype.getStationCharacteristics = function (characteristics) {
+            NearestGagesController.prototype.getStationCharacteristics = function (characteristics) {
                 var _this = this;
                 characteristics.forEach(function (char, index) {
                     var characteristic = char;
@@ -125,11 +129,11 @@ var StreamStats;
                     }
                 });
             };
-            GagePageController.prototype.checkForCitation = function (id) {
+            NearestGagesController.prototype.checkForCitation = function (id) {
                 var found = this.gage.citations.some(function (el) { return el.id === id; });
                 return found;
             };
-            GagePageController.prototype.getStationStatistics = function (statistics) {
+            NearestGagesController.prototype.getStationStatistics = function (statistics) {
                 var _this = this;
                 statistics.forEach(function (stat, index) {
                     if (stat.hasOwnProperty('citation') && stat.citation.id) {
@@ -150,7 +154,7 @@ var StreamStats;
                     }
                 });
             };
-            GagePageController.prototype.getStatGroup = function (id) {
+            NearestGagesController.prototype.getStatGroup = function (id) {
                 var _this = this;
                 var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStatGroups + id;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
@@ -159,33 +163,94 @@ var StreamStats;
                         _this.gage.statisticsgroups.push(response.data);
                 });
             };
-            GagePageController.prototype.checkForStatisticGroup = function (id) {
+            NearestGagesController.prototype.checkForStatisticGroup = function (id) {
                 var found = this.gage.statisticsgroups.some(function (el) { return el.id === id; });
                 return found;
             };
-            GagePageController.prototype.checkForPredInt = function (statGroupID) {
+            NearestGagesController.prototype.checkForPredInt = function (statGroupID) {
                 var found = this.gage.statistics.some(function (el) { return el.statisticGroupTypeID == statGroupID && el.hasOwnProperty('predictionInterval'); });
                 return found;
             };
-            GagePageController.prototype.getNWISInfo = function () {
+            NearestGagesController.prototype.getNWISInfo = function () {
+            };
+            NearestGagesController.prototype.getNearestGages = function () {
                 var _this = this;
-                var url = configuration.baseurls.NWISurl + configuration.queryparams.NWISsiteinfo + this.gage.code;
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+                this.toaster.pop("wait", "Searching for gages", "Please wait...", 0);
+                var headers = {
+                    "X-Is-Streamstats": true
+                };
+                var lat = this.studyAreaService.selectedStudyArea ? this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toString() : '41.50459213282905';
+                var long = this.studyAreaService.selectedStudyArea ? this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toString() : '-88.30548763275146';
+                var url = configuration.baseurls.GageStatsServices;
+                if (this.queryBy == 'Nearest')
+                    url += configuration.queryparams.GageStatsServicesNearest.format(lat, long, this.distance);
+                if (this.queryBy == 'Network')
+                    url += configuration.queryparams.GageStatsServicesNetwork.format(lat, long, this.distance);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
+                this.nearbyGages = [];
                 this.Execute(request).then(function (response) {
-                    var regex = /[+-]?((\d+(\.\d*)?)|(\.\d+))/g;
-                    var latLong = response.data.split(_this.gage.name)[1].match(regex);
-                    _this.NWISlat = latLong[0];
-                    _this.NWISlng = latLong[1];
+                    console.log(response.data);
+                    _this.toaster.clear();
+                    if (typeof response.data == 'string') {
+                        _this.toaster.pop("warning", "Warning", response.data, 0);
+                    }
+                    else if (response.data.hasOwnProperty('features') && response.data.features.length == 0) {
+                        _this.toaster.pop("warning", "Warning", "No stations located within search distance");
+                    }
+                    else if (response.data.hasOwnProperty('features') && response.data.features.length > 0) {
+                        response.data.features.forEach(function (feat) {
+                            if (feat.properties.hasOwnProperty('Statistics')) {
+                                var hasFlowDurationStats = false;
+                                feat.properties.Statistics.forEach(function (stat) {
+                                    if (stat['statisticGroupType'].code == 'FDS')
+                                        hasFlowDurationStats = true;
+                                });
+                                feat.properties['HasFlowDurationStats'] = hasFlowDurationStats;
+                            }
+                            if (feat.properties.hasOwnProperty('Characteristics')) {
+                                feat.properties.Characteristics.forEach(function (char) {
+                                    if (char['variableType'].code == 'DRNAREA')
+                                        feat.properties['DrainageArea'] = char['value'];
+                                });
+                            }
+                        });
+                        _this.nearbyGages = response.data.features;
+                    }
+                    if (response.headers()['x-usgswim-messages']) {
+                        var headerMsgs = JSON.parse(response.headers()['x-usgswim-messages']);
+                        Object.keys(headerMsgs).forEach(function (key) {
+                            headerMsgs[key].forEach(function (element) {
+                                _this.toaster.pop(key, key, element);
+                            });
+                        });
+                    }
+                }, function (error) {
+                    _this.toaster.clear();
+                    console.log(error);
+                    if (error.headers()['x-usgswim-messages']) {
+                        var headerMsgs = JSON.parse(error.headers()['x-usgswim-messages']);
+                        Object.keys(headerMsgs).forEach(function (key) {
+                            headerMsgs[key].forEach(function (element) {
+                                _this.toaster.pop(key, key, element);
+                            });
+                        });
+                    }
+                    else {
+                        _this.toaster.pop('error', "There was an error finding nearby gages.", "Please retry", 0);
+                    }
                 });
             };
-            GagePageController.prototype.init = function () {
-                this.AppVersion = configuration.version;
-                this.getGagePage();
+            NearestGagesController.prototype.openGagePage = function (siteid) {
+                console.log('gage page id:', siteid);
+                this.modalService.openModal(StreamStats.Services.SSModalType.e_gagepage, { 'siteid': siteid });
             };
-            GagePageController.$inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance'];
-            return GagePageController;
+            NearestGagesController.prototype.init = function () {
+                this.AppVersion = configuration.version;
+            };
+            NearestGagesController.$inject = ['$scope', 'toaster', '$http', 'StreamStats.Services.ModalService', '$modalInstance', 'StreamStats.Services.StudyAreaService'];
+            return NearestGagesController;
         }(WiM.Services.HTTPServiceBase));
         angular.module('StreamStats.Controllers')
-            .controller('StreamStats.Controllers.GagePageController', GagePageController);
+            .controller('StreamStats.Controllers.NearestGagesController', NearestGagesController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));
 })(StreamStats || (StreamStats = {}));

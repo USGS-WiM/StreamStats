@@ -27,6 +27,7 @@ module StreamStats.Controllers {
 
     declare var search_api;
     declare var shpwrite;
+    declare var tokml;
 
     'use strinct';
     interface ISidebarControllerScope extends ng.IScope {
@@ -538,6 +539,10 @@ module StreamStats.Controllers {
             this.modalService.openModal(Services.SSModalType.e_stormrunnoff);
         }
 
+        public OpenNearestGages() {
+            this.modalService.openModal(Services.SSModalType.e_nearestgages);
+        }
+
         public downloadGeoJSON() {
 
             var GeoJSON = angular.toJson(this.studyAreaService.selectedStudyArea.FeatureCollection);
@@ -564,6 +569,33 @@ module StreamStats.Controllers {
                 }
             }
 
+        }
+
+        public downloadKML() {
+            //https://github.com/mapbox/tokml
+            //https://gis.stackexchange.com/questions/159344/export-to-kml-option-using-leaflet
+            var geojson = JSON.parse(angular.toJson(this.studyAreaService.selectedStudyArea.FeatureCollection));
+            var kml = tokml(geojson);
+            var blob = new Blob([kml], { type: 'text/csv;charset=utf-8;' });
+            var filename = 'data.kml';
+            if (navigator.msSaveBlob) { // IE 10+
+                navigator.msSaveBlob(blob, filename);
+            } else {
+                var link = <any>document.createElement("a");
+                var url = URL.createObjectURL(blob);
+                if (link.download !== undefined) { // feature detection
+                    // Browsers that support HTML5 download attribute
+                    link.setAttribute("href", url);
+                    link.setAttribute("download", filename);
+                    link.style.visibility = 'hidden';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+                else {
+                    window.open(url);
+                }
+            }
         }
         public downloadShapeFile() {
             try {

@@ -248,6 +248,43 @@ var StreamStats;
                     }
                 }
             };
+            ReportController.prototype.downloadKML = function () {
+                var _this = this;
+                var fc = this.studyAreaService.selectedStudyArea.FeatureCollection;
+                fc.features.forEach(function (f) {
+                    f.properties["Name"] = _this.studyAreaService.selectedStudyArea.WorkspaceID;
+                    if (f.id && f.id == "globalwatershed") {
+                        f.properties = [f.properties, _this.studyAreaService.studyAreaParameterList.reduce(function (dict, param) { dict[param.code] = param.value; return dict; }, {})].reduce(function (r, o) {
+                            Object.keys(o).forEach(function (k) { r[k] = o[k]; });
+                            return r;
+                        }, {});
+                        f.properties["FlowStatistics"] = _this.nssService.selectedStatisticsGroupList;
+                    }
+                });
+                var GeoJSON = JSON.parse(angular.toJson(fc));
+                var filename = 'data.geojson';
+                var kml = tokml(GeoJSON);
+                var blob = new Blob([kml], { type: 'text/csv;charset=utf-8;' });
+                var filename = 'data.kml';
+                if (navigator.msSaveBlob) {
+                    navigator.msSaveBlob(blob, filename);
+                }
+                else {
+                    var link = document.createElement("a");
+                    var url = URL.createObjectURL(blob);
+                    if (link.download !== undefined) {
+                        link.setAttribute("href", url);
+                        link.setAttribute("download", filename);
+                        link.style.visibility = 'hidden';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }
+                    else {
+                        window.open(url);
+                    }
+                }
+            };
             ReportController.prototype.downloadShapeFile = function () {
                 try {
                     var flowTable = null;

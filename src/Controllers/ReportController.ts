@@ -28,6 +28,7 @@ module StreamStats.Controllers {
     declare var jsPDF;
     declare var shpwrite;
     declare var saveSvgAsPng;
+    declare var tokml;
     'use strinct';
     interface IReportControllerScope extends ng.IScope {
         vm: ReportController;
@@ -336,6 +337,47 @@ module StreamStats.Controllers {
             var filename = 'data.geojson';
 
             var blob = new Blob([GeoJSON], { type: 'text/csv;charset=utf-8;' });
+            if (navigator.msSaveBlob) { // IE 10+
+                navigator.msSaveBlob(blob, filename);
+            } else {
+                var link = <any>document.createElement("a");
+                var url = URL.createObjectURL(blob);
+                if (link.download !== undefined) { // feature detection
+                    // Browsers that support HTML5 download attribute
+                    link.setAttribute("href", url);
+                    link.setAttribute("download", filename);
+                    link.style.visibility = 'hidden';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+                else {
+                    window.open(url);
+                }
+            }
+        }
+
+        public downloadKML() {
+
+            var fc: GeoJSON.FeatureCollection = this.studyAreaService.selectedStudyArea.FeatureCollection
+            fc.features.forEach(f => {
+                f.properties["Name"] = this.studyAreaService.selectedStudyArea.WorkspaceID;
+                if (f.id && f.id == "globalwatershed") {
+                    f.properties = [f.properties, this.studyAreaService.studyAreaParameterList.reduce((dict, param) => { dict[param.code] = param.value; return dict; }, {})].reduce(function (r, o) {
+                        Object.keys(o).forEach(function (k) { r[k] = o[k]; });
+                        return r;
+                    }, {});
+                    f.properties["FlowStatistics"] = this.nssService.selectedStatisticsGroupList;  
+                }//endif
+            });
+
+            var GeoJSON = JSON.parse(angular.toJson(fc));
+            
+            var filename = 'data.geojson';
+
+            var kml = tokml(GeoJSON);
+            var blob = new Blob([kml], { type: 'text/csv;charset=utf-8;' });
+            var filename = 'data.kml';
             if (navigator.msSaveBlob) { // IE 10+
                 navigator.msSaveBlob(blob, filename);
             } else {

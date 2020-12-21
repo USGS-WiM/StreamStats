@@ -74,6 +74,8 @@ configuration.queryparams =
         'GageStatsServicesStatistics': '/statistics/',
         'GageStatsServicesAgencies': '/agencies/',
         'GageStatsServicesStatGroups': '/statisticgroups/',
+        'GageStatsServicesNearest': '/stations/Nearest?lat={0}&lon={1}&radius={2}&geojson=true&includeStats=true',
+        'GageStatsServicesNetwork': '/stations/Network?lat={0}&lon={1}&distance={2}&page={3}&pageCount={4}&includeStats=true&geojson=true'
 
     };
 
@@ -268,8 +270,8 @@ configuration.regions = [
         "ScenariosAvailable": true
     },
     { "RegionID": "ID", "Name": "Idaho", "Bounds": [[41.994599, -117.236921], [48.99995, -111.046771]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
-    { "RegionID": "IL", "Name": "Illinois", "Bounds": [[36.986822, -91.516284], [42.509363, -87.507909]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
-    { "RegionID": "IN", "Name": "Indiana", "Bounds": [[37.776224, -88.10149], [41.76554, -84.787446]], "Layers": {}, "Applications": ["CoordinatedReach"], "regionEnabled": true, "ScenariosAvailable": true },
+    { "RegionID": "IL", "Name": "Illinois", "Bounds": [[36.986822, -91.516284], [42.509363, -87.507909]], "Layers": {}, "Applications": ["FDCTM"], "regionEnabled": true, "ScenariosAvailable": true },
+    { "RegionID": "IN", "Name": "Indiana", "Bounds": [[37.776224, -88.10149], [41.76554, -84.787446]], "Layers": {}, "Applications": ["CoordinatedReach", "FDCTM"], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "KS", "Name": "Kansas", "Bounds": [[36.988875, -102.051535], [40.002987, -94.601224]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     {
         "RegionID": "KY", "Name": "Kentucky", "Bounds": [[36.49657, -89.568231], [39.142063, -81.959575]], "Layers":
