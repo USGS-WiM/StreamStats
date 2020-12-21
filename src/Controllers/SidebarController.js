@@ -345,10 +345,37 @@ var StreamStats;
             SidebarController.prototype.OpenStormRunoff = function () {
                 this.modalService.openModal(StreamStats.Services.SSModalType.e_stormrunnoff);
             };
+            SidebarController.prototype.OpenNearestGages = function () {
+                this.modalService.openModal(StreamStats.Services.SSModalType.e_nearestgages);
+            };
             SidebarController.prototype.downloadGeoJSON = function () {
                 var GeoJSON = angular.toJson(this.studyAreaService.selectedStudyArea.FeatureCollection);
                 var filename = 'data.geojson';
                 var blob = new Blob([GeoJSON], { type: 'text/csv;charset=utf-8;' });
+                if (navigator.msSaveBlob) {
+                    navigator.msSaveBlob(blob, filename);
+                }
+                else {
+                    var link = document.createElement("a");
+                    var url = URL.createObjectURL(blob);
+                    if (link.download !== undefined) {
+                        link.setAttribute("href", url);
+                        link.setAttribute("download", filename);
+                        link.style.visibility = 'hidden';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }
+                    else {
+                        window.open(url);
+                    }
+                }
+            };
+            SidebarController.prototype.downloadKML = function () {
+                var geojson = JSON.parse(angular.toJson(this.studyAreaService.selectedStudyArea.FeatureCollection));
+                var kml = tokml(geojson);
+                var blob = new Blob([kml], { type: 'text/csv;charset=utf-8;' });
+                var filename = 'data.kml';
                 if (navigator.msSaveBlob) {
                     navigator.msSaveBlob(blob, filename);
                 }
