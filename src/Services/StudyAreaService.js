@@ -47,6 +47,7 @@ var StreamStats;
                 _this._onStudyAreaServiceFinishedChanged = new WiM.Event.Delegate();
                 _this.surfacecontributionsonly = false;
                 _this.doQueryNWIS = false;
+                _this.doSelectNearestGage = false;
                 _this.NSSServicesVersion = '';
                 _this.modalservices = modal;
                 eventManager.AddEvent(Services.onSelectedStudyParametersLoaded);
@@ -566,6 +567,30 @@ var StreamStats;
                     }
                 }, function (error) {
                     _this.toaster.pop('warning', "No USGS NWIS reference gage found at this location.", "Try zooming in closer or a different location", 5000);
+                });
+            };
+            StudyAreaService.prototype.selectGage = function (gage) {
+                var sid = this.selectedStudyAreaExtensions.reduce(function (acc, val) { return acc.concat(val.parameters); }, []).filter(function (f) { return (f.code).toLowerCase() == "sid"; });
+                var siteList = [];
+                var rg = new StreamStats.Models.ReferenceGage(gage.properties.Code, gage.properties.Name);
+                rg.Latitude_DD = gage.geometry.coordinates[0];
+                rg.Longitude_DD = gage.geometry.coordinates[1];
+                siteList.push(rg);
+                if (siteList.length > 0) {
+                    sid[0].options = siteList;
+                    sid[0].value = siteList[0];
+                    this.modalservices.openModal(Services.SSModalType.e_extensionsupport);
+                    this.doSelectNearestGage = false;
+                }
+            };
+            StudyAreaService.prototype.getStreamgages = function (xmin, xmax, ymin, ymax) {
+                var _this = this;
+                var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesBounds.format(xmin, xmax, ymin, ymax);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+                this.Execute(request).then(function (response) {
+                    _this.streamgageLayer = response.data;
+                }, function (error) {
+                }).finally(function () {
                 });
             };
             StudyAreaService.prototype.GetKriggedReferenceGages = function () {

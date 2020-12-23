@@ -45,6 +45,7 @@ module StreamStats.Controllers {
         private modalInstance: ng.ui.bootstrap.IModalServiceInstance;
         private explorationService: Services.IExplorationService;
         private studyAreaService: Services.IStudyAreaService;
+        private modalService: Services.IModalService;
 
         public angulartics: any;
         public title: string;
@@ -64,10 +65,13 @@ module StreamStats.Controllers {
             this.angulartics = $analytics;
             this.modalInstance = modal;
             this.studyAreaService = studyArea; 
-            this.dateRangeOptions = {
-                locale: { format: 'MMMM D, YYYY' },
-                eventHandlers: { 'hide.daterangepicker': (e) => this.SetExtensionDate(e) }
-            };
+            this.modalService = modalservice;
+            if (this.dateRangeOptions == undefined) {
+                this.dateRangeOptions = {
+                    locale: { format: 'MMMM D, YYYY' },
+                    eventHandlers: { 'hide.daterangepicker': (e) => this.SetExtensionDate(e) }
+                };
+            }
 
             this.init();
             this.load();            
@@ -104,6 +108,12 @@ module StreamStats.Controllers {
                 if (dt.code === "sdate") dt.value = this.dateRange.dates.startDate;
                 if (dt.code === "edate") dt.value = this.dateRange.dates.endDate;
             });
+        }
+
+        public openNearestGages() {
+            this.modalInstance.dismiss('cancel');
+            this.studyAreaService.doSelectNearestGage = true;
+            this.modalService.openModal(Services.SSModalType.e_nearestgages);
         }
         
         //Helper Methods

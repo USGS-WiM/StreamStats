@@ -13,10 +13,13 @@ var StreamStats;
                 this.angulartics = $analytics;
                 this.modalInstance = modal;
                 this.studyAreaService = studyArea;
-                this.dateRangeOptions = {
-                    locale: { format: 'MMMM D, YYYY' },
-                    eventHandlers: { 'hide.daterangepicker': function (e) { return _this.SetExtensionDate(e); } }
-                };
+                this.modalService = modalservice;
+                if (this.dateRangeOptions == undefined) {
+                    this.dateRangeOptions = {
+                        locale: { format: 'MMMM D, YYYY' },
+                        eventHandlers: { 'hide.daterangepicker': function (e) { return _this.SetExtensionDate(e); } }
+                    };
+                }
                 this.init();
                 this.load();
             }
@@ -50,6 +53,11 @@ var StreamStats;
                     if (dt.code === "edate")
                         dt.value = _this.dateRange.dates.endDate;
                 });
+            };
+            ExtensionModalController.prototype.openNearestGages = function () {
+                this.modalInstance.dismiss('cancel');
+                this.studyAreaService.doSelectNearestGage = true;
+                this.modalService.openModal(StreamStats.Services.SSModalType.e_nearestgages);
             };
             ExtensionModalController.prototype.init = function () {
                 this.selectedReferenceGage = null;

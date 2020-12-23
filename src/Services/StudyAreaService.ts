@@ -63,6 +63,10 @@ module StreamStats.Services {
         queryNWIS(point: any): void;
         GetKriggedReferenceGages(): void;
         NSSServicesVersion: string;
+        doSelectNearestGage: boolean;
+        selectGage(gage: any): void;
+        getStreamgages(xmin: number, xmax: number, ymin: number, ymax: number);
+        streamgageLayer: any;
     }
 
     export var onSelectedStudyAreaChanged: string = "onSelectedStudyAreaChanged";
@@ -134,9 +138,11 @@ module StreamStats.Services {
         public showModifyBasinCharacterstics: boolean;
         public surfacecontributionsonly: boolean = false;
         public doQueryNWIS: boolean = false;
+        public doSelectNearestGage: boolean = false;
         //public requestParameterList: Array<any>; jkn
         private modalservices: IModalService;
         public NSSServicesVersion = '';
+        public streamgageLayer: any;
         
 
         //Constructor
@@ -836,6 +842,41 @@ module StreamStats.Services {
                     //console.log('Regression query failed, HTTP Error');
                     this.toaster.pop('warning', "No USGS NWIS reference gage found at this location.",
                                         "Try zooming in closer or a different location", 5000);
+                });
+        }
+
+        public selectGage(gage) {
+            var sid: Array<any> = this.selectedStudyAreaExtensions.reduce((acc, val) => acc.concat(val.parameters), []).filter(f => { return (<string>(f.code)).toLowerCase() == "sid" });
+            var siteList:Array<Models.IReferenceGage> = [];
+            //remove extra random line
+            let rg = new Models.ReferenceGage(gage.properties.Code, gage.properties.Name);
+            rg.Latitude_DD = gage.geometry.coordinates[0];
+            rg.Longitude_DD = gage.geometry.coordinates[1];                          
+            //add to list of reference gages
+            siteList.push(rg);
+
+            if (siteList.length > 0) {                           
+                sid[0].options = siteList;
+                sid[0].value = siteList[0];
+                    //reopen modal
+                this.modalservices.openModal(SSModalType.e_extensionsupport);
+                this.doSelectNearestGage = false;
+            }
+        }
+
+        public getStreamgages(xmin: number, xmax: number, ymin: number, ymax: number) {
+            var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesBounds.format(xmin, xmax, ymin, ymax);
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+
+            this.Execute(request).then(
+                (response: any) => {
+                    this.streamgageLayer = response.data;
+
+                }, (error) => {
+                    //sm when error
+                    // TODO: catch error
+                }).finally(() => {
+
                 });
         }
 

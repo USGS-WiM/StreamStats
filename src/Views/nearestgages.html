@@ -78,14 +78,20 @@
                             <!--view on map option?-->
                             <th>Drainage Area</th>
                             <th>Has Flow Duration Stats?</th><!-- won't be applicable to all...-->
+                            <th></th>
+                            <th></th>
                         </thead>
                         <tbody>
                             <tr ng-repeat="gage in vm.nearbyGages">
-                                <td><a title="Show Gage Page" ng-click="vm.openGagePage(gage.properties.Code)">{{gage.properties.Code}}</a></td>
-                                <td>{{gage.properties.Name}}</td>
-                                <td>{{gage.properties.StationType.name}}</td>
-                                <td>{{gage.properties.DrainageArea}}</td>
-                                <td>{{gage.properties.HasFlowDurationStats}}</td>
+                                <div >
+                                    <td><a title="Show Gage Page" ng-click="vm.openGagePage(gage.properties.Code)">{{gage.properties.Code}}</a></td>
+                                    <td ng-click="vm.selectGage(gage)">{{gage.properties.Name}}</td>
+                                    <td>{{gage.properties.StationType.name}}</td>
+                                    <td>{{gage.properties.DrainageArea}}</td>
+                                    <td>{{gage.properties.HasFlowDurationStats}}</td>
+                                    <td><a ng-click="vm.showOnMap(gage)">Show on Map</a></td>
+                                    <td ng-show="vm.studyAreaService.doSelectNearestGage"><a ng-click="vm.selectGage(gage)">Select Gage</a></td>
+                                </div>
                             </tr>
                         </tbody>
                     </table>
