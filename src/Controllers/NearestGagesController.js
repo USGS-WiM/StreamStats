@@ -96,83 +96,6 @@ var StreamStats;
             NearestGagesController.prototype.Close = function () {
                 this.modalInstance.dismiss('cancel');
             };
-            NearestGagesController.prototype.getGagePage = function () {
-                var _this = this;
-                this.gage = new GageInfo('07022000');
-                var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + this.gage.code;
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
-                this.Execute(request).then(function (response) {
-                    _this.gage = response.data;
-                    _this.gage.lat = response.data.location.coordinates[1];
-                    _this.gage.lng = response.data.location.coordinates[0];
-                    _this.gage.statisticsgroups = [];
-                    _this.gage.citations = [];
-                    _this.getStationCharacteristics(response.data.characteristics);
-                    _this.getStationStatistics(response.data.statistics);
-                }, function (error) {
-                }).finally(function () {
-                });
-            };
-            NearestGagesController.prototype.setPreferred = function (pref) {
-                this.showPreferred = pref;
-            };
-            NearestGagesController.prototype.getStationCharacteristics = function (characteristics) {
-                var _this = this;
-                characteristics.forEach(function (char, index) {
-                    var characteristic = char;
-                    if (char.hasOwnProperty('citation') && char.citation.id) {
-                        if (char.citation && char.citation.citationURL)
-                            char.citation.citationURL = char.citation.citationURL.replace('#', '');
-                        if (!_this.checkForCitation(char.citation.id)) {
-                            _this.gage.citations.push(char.citation);
-                        }
-                    }
-                });
-            };
-            NearestGagesController.prototype.checkForCitation = function (id) {
-                var found = this.gage.citations.some(function (el) { return el.id === id; });
-                return found;
-            };
-            NearestGagesController.prototype.getStationStatistics = function (statistics) {
-                var _this = this;
-                statistics.forEach(function (stat, index) {
-                    if (stat.hasOwnProperty('citation') && stat.citation.id) {
-                        if (stat.citation && stat.citation.citationURL)
-                            stat.citation.citationURL = stat.citation.citationURL.replace('#', '');
-                        if (!_this.checkForCitation(stat.citation.id)) {
-                            _this.gage.citations.push(stat.citation);
-                        }
-                    }
-                    if (!_this.checkForStatisticGroup(stat.statisticGroupTypeID)) {
-                        if (stat.hasOwnProperty('statisticGroupType')) {
-                            var statgroup = stat.statisticGroupType;
-                            _this.gage.statisticsgroups.push(statgroup);
-                        }
-                        else {
-                            _this.getStatGroup(stat.statisticGroupTypeID);
-                        }
-                    }
-                });
-            };
-            NearestGagesController.prototype.getStatGroup = function (id) {
-                var _this = this;
-                var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStatGroups + id;
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
-                this.Execute(request).then(function (response) {
-                    if (!_this.checkForStatisticGroup(response.data.id))
-                        _this.gage.statisticsgroups.push(response.data);
-                });
-            };
-            NearestGagesController.prototype.checkForStatisticGroup = function (id) {
-                var found = this.gage.statisticsgroups.some(function (el) { return el.id === id; });
-                return found;
-            };
-            NearestGagesController.prototype.checkForPredInt = function (statGroupID) {
-                var found = this.gage.statistics.some(function (el) { return el.statisticGroupTypeID == statGroupID && el.hasOwnProperty('predictionInterval'); });
-                return found;
-            };
-            NearestGagesController.prototype.getNWISInfo = function () {
-            };
             NearestGagesController.prototype.getNearestGages = function () {
                 var _this = this;
                 this.toaster.pop("wait", "Searching for gages", "Please wait...", 0);
@@ -239,6 +162,15 @@ var StreamStats;
                         _this.toaster.pop('error', "There was an error finding nearby gages.", "Please retry", 0);
                     }
                 });
+            };
+            NearestGagesController.prototype.selectGage = function (gage) {
+                if (this.studyAreaService.doSelectNearestGage) {
+                    this.Close();
+                    this.studyAreaService.selectGage(gage);
+                }
+            };
+            NearestGagesController.prototype.showOnMap = function (gage) {
+                console.log('TODO: show on map');
             };
             NearestGagesController.prototype.openGagePage = function (siteid) {
                 console.log('gage page id:', siteid);

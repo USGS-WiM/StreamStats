@@ -26,6 +26,7 @@
                 </div>
                 <button class="btn-exploration-tools btn-green" ng-click="vm.setReferenceGageFromMap()" ng-disabled="vm.isBusy"><span><i ng-class=" vm.isBusy? 'fa fa-refresh fa-spin':'fa fa-map-marker'"></i>&nbsp;&nbsp;Select from Map</span></button>
                 <button class="btn-exploration-tools btn-green" ng-click="vm.setBestCorrelatedReferenceGage()" ng-disabled="vm.isBusy"><span><i ng-class="vm.isBusy? 'fa fa-crosshairs fa-spin':'fa fa-crosshairs'"></i>&nbsp;&nbsp;Best Correlated</span></button>
+                <button class="btn-exploration-tools btn-green" ng-click="vm.openNearestGages()" ng-disabled="vm.isBusy"><span><i ng-class="vm.isBusy? 'fa fa-crosshairs fa-spin':'fa fa-map-marker'"></i>&nbsp;&nbsp;Query Nearest Gages</span></button>
             </span>
 
             <!--<div ng-repeat="modified_configuration in vm.explorationService.selectedMethod.navigationConfiguration">
