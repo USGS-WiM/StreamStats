@@ -49,6 +49,7 @@ var StreamStats;
                 _this.doQueryNWIS = false;
                 _this.doSelectNearestGage = false;
                 _this.NSSServicesVersion = '';
+                _this.extensionDateRange = null;
                 _this.modalservices = modal;
                 eventManager.AddEvent(Services.onSelectedStudyParametersLoaded);
                 eventManager.AddEvent(Services.onSelectedStudyAreaChanged);

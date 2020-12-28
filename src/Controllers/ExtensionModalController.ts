@@ -52,10 +52,10 @@ module StreamStats.Controllers {
         public isBusy: boolean = false;
         
         //QPPQ
-        public dateRange: IDateRange = null;
+        public dateRange: IDateRange;
         public dateRangeOptions;
         public selectedReferenceGage: StreamStats.Models.IReferenceGage = null;
-        public referenceGageList: Array<StreamStats.Models.IReferenceGage>
+        public referenceGageList: Array<StreamStats.Models.IReferenceGage>;
         
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -66,15 +66,13 @@ module StreamStats.Controllers {
             this.modalInstance = modal;
             this.studyAreaService = studyArea; 
             this.modalService = modalservice;
-            if (this.dateRangeOptions == undefined) {
-                this.dateRangeOptions = {
-                    locale: { format: 'MMMM D, YYYY' },
-                    eventHandlers: { 'hide.daterangepicker': (e) => this.SetExtensionDate(e) }
-                };
-            }
+            this.dateRangeOptions = {
+                locale: { format: 'MMMM D, YYYY' },
+                eventHandlers: { 'hide.daterangepicker': (e) => this.SetExtensionDate(e) }
+            };
 
             this.init();
-            this.load();            
+            this.load();
         }
         //Methods  
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -108,6 +106,7 @@ module StreamStats.Controllers {
                 if (dt.code === "sdate") dt.value = this.dateRange.dates.startDate;
                 if (dt.code === "edate") dt.value = this.dateRange.dates.endDate;
             });
+            this.studyAreaService.extensionDateRange = this.dateRange;
         }
 
         public openNearestGages() {
@@ -134,7 +133,11 @@ module StreamStats.Controllers {
             }//endif
             if (['sdate', 'edate'].every(elem => pcodes.indexOf(elem) > -1))
             {
-                this.dateRange = { dates: { startDate: this.addDay(new Date(), -30), endDate: this.addDay(new Date(), -1) }, minDate: new Date(1900, 1, 1), maxDate: this.addDay(new Date(), -1) };
+                if (this.studyAreaService.extensionDateRange != undefined) {
+                    this.dateRange = this.studyAreaService.extensionDateRange;
+                } else {
+                    this.dateRange = { dates: { startDate: this.addDay(new Date(), -30), endDate: this.addDay(new Date(), -1) }, minDate: new Date(1900, 1, 1), maxDate: this.addDay(new Date(), -1) };
+                }
                 //set start date
                 parameters[pcodes.indexOf('sdate')].value = this.dateRange.dates.startDate;
                 parameters[pcodes.indexOf('edate')].value = this.dateRange.dates.endDate;

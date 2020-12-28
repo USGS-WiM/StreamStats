@@ -67,6 +67,16 @@ module StreamStats.Services {
         selectGage(gage: any): void;
         getStreamgages(xmin: number, xmax: number, ymin: number, ymax: number);
         streamgageLayer: any;
+        extensionDateRange: IDateRange;
+    }
+
+    interface IDateRange {
+        dates: {
+            startDate: Date;
+            endDate: Date;
+        }
+        minDate?: Date;
+        maxDate?: Date;
     }
 
     export var onSelectedStudyAreaChanged: string = "onSelectedStudyAreaChanged";
@@ -144,6 +154,8 @@ module StreamStats.Services {
         public NSSServicesVersion = '';
         public streamgageLayer: any;
         
+        //QPPQ
+        public extensionDateRange: IDateRange = null;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
