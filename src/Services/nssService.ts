@@ -2,6 +2,8 @@
 //----- nssService -----------------------------------------------------
 //------------------------------------------------------------------------------
 
+import { nodeModuleNameResolver } from "typescript";
+
 //-------1---------2---------3---------4---------5---------6---------7---------8
 //       01234567890123456789012345678901234567890123456789012345678901234567890
 //-------+---------+---------+---------+---------+---------+---------+---------+
@@ -29,8 +31,9 @@ module StreamStats.Services {
         onSelectedStatisticsGroupChanged: WiM.Event.Delegate<WiM.Event.EventArgs>;
         statisticsGroupList: Array<IStatisticsGroup>;
         selectedStatisticsGroupList: Array<IStatisticsGroup>;
+        wateruseScenarioObject: Array<IStatisticsGroup>;
         loadStatisticsGroupTypes(rcode: string, regressionregion: string):Array<any>;
-        loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregion: string, percentWeights: any);
+        loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregion: string, percentWeights: any, regressionTypes?: string);
         estimateFlows(studyAreaParameterList: Array<IParameter>, paramValueField: string, rcode: string, append?: boolean)
         showBasinCharacteristicsTable: boolean;
         showFlowsTable: boolean;
@@ -38,6 +41,7 @@ module StreamStats.Services {
         queriedRegions: boolean;
         getflattenNSSTable(name: string): Array<INSSResultTable>
         reportGenerated: boolean;  
+        isPaused: boolean;
     }
     export interface IStatisticsGroup {
         id: string;
@@ -113,6 +117,7 @@ module StreamStats.Services {
         public statisticsGroupList: Array<IStatisticsGroup>;
         public loadingStatisticsGroup: boolean;
         public selectedStatisticsGroupList: Array<IStatisticsGroup>;
+        public wateruseScenarioObject: Array<IStatisticsGroup>;
         public canUpdate: boolean;
         public toaster: any;
         public showBasinCharacteristicsTable: boolean;
@@ -122,6 +127,7 @@ module StreamStats.Services {
         public estimateFlowsCounter: number;
         public isDone: boolean;
         public reportGenerated: boolean;
+        public isPaused: boolean;
         private modalService: Services.IModalService;   
 
         //Constructor
@@ -142,6 +148,7 @@ module StreamStats.Services {
             this.loadingParametersByStatisticsGroupCounter = 0;
             this.estimateFlowsCounter = 0;
             this.selectedStatisticsGroupList = [];
+            this.wateruseScenarioObject = [];
             this.statisticsGroupList = [];
             this.canUpdate = true;
             this.queriedRegions = false;
@@ -202,8 +209,7 @@ module StreamStats.Services {
             return -1;
         }
 
-        public loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregions: string, percentWeights: any) {
-
+        public loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregions: string, percentWeights: any, regressiontypes?: string) {
             if (this.loadingParametersByStatisticsGroupCounter == 0) {
                 this.toaster.pop('wait', "Loading Parameters by Statistics Group", "Please wait...", 0); 
             }
@@ -218,12 +224,15 @@ module StreamStats.Services {
                 url = url + "&extensions=QPPQ";
             } 
             url = url.format(rcode, statisticsGroupID, regressionregions);
+            if (regressiontypes != "") {
+                url += "&regressiontypes=" + regressiontypes;
+            }
 
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
-
+            
             this.Execute(request).then(
                 (response: any) => {
-
+                    this.wateruseScenarioObject = response.data;
                     if (response.data[0].regressionRegions[0].extensions && response.data[0].regressionRegions[0].extensions.length > 0) {
                         let ext = response.data[0].regressionRegions[0].extensions
                         this.eventManager.RaiseEvent(Services.onScenarioExtensionChanged, this, new NSSEventArgs(ext) );
@@ -233,6 +242,10 @@ module StreamStats.Services {
                     if (response.data[0].regressionRegions[0].parameters && response.data[0].regressionRegions[0].parameters.length > 0) {
 
                         //add Regression Regions to StatisticsGroupList and add percent weights
+                        if(!this.selectedStatisticsGroupList) {
+                            this.selectedStatisticsGroupList = [];
+                            this.selectedStatisticsGroupList.push({'name': "", 'id': null, 'code': "", 'regressionRegions': [], 'citations': null, 'disclaimers': ""})
+                        }
                         this.selectedStatisticsGroupList.forEach((statGroup) => {
                             if ((response.data[0].statisticGroupID == statGroup.id) ||
                                 (this.regionservice.selectedRegion.Applications.indexOf("FDCTM") > -1 && typeof(statGroup.id) == 'string' && statGroup.id.indexOf(response.data[0].statisticGroupID, 0) > -1)) {
@@ -241,11 +254,13 @@ module StreamStats.Services {
                                 statGroup['statisticGroupID'] = statGroup.id.toString().replace("_fdctm", "");
                                 
                                 response.data[0].regressionRegions.forEach((regressionRegion) => {
-                                    percentWeights.forEach((regressionRegionPercentWeight) => {
-                                        if (regressionRegionPercentWeight.code.indexOf(regressionRegion.code.toUpperCase()) > -1) {
-                                            regressionRegion["percentWeight"] = regressionRegionPercentWeight.percentWeight;                                            
-                                        }
-                                    })
+                                    if(percentWeights.length > 0) {
+                                        percentWeights.forEach((regressionRegionPercentWeight) => {
+                                            if (regressionRegionPercentWeight.code.indexOf(regressionRegion.code.toUpperCase()) > -1) {
+                                                regressionRegion["percentWeight"] = regressionRegionPercentWeight.percentWeight;                                            
+                                            }
+                                        })
+                                    }
                                 });
 
                                 statGroup.regressionRegions = response.data[0].regressionRegions;
@@ -280,7 +295,7 @@ module StreamStats.Services {
                 this.estimateFlowsCounter++;
                 this.cleanRegressionRegions(statGroup.regressionRegions);
 
-                //console.log('in estimate flows method for ', statGroup.name, statGroup);
+                console.log('in estimate flows method for ', statGroup.name, statGroup);
                 statGroup.regressionRegions.forEach((regressionRegion) => {                    
                     regressionRegion.parameters.forEach((regressionParam) => {                        
                         studyAreaParameterList.forEach((param) => {
@@ -320,7 +335,7 @@ module StreamStats.Services {
                 this.Execute(request).then(
                     (response: any) => {
 
-                        //console.log('estimate flows: ', response);
+                        console.log('estimate flows: ', response);
 
                         //nested requests for citations
                         var citationUrl = response.data[0].links[0].href;

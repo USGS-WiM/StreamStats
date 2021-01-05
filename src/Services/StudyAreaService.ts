@@ -63,12 +63,14 @@ module StreamStats.Services {
         queryNWIS(point: any): void;
         GetKriggedReferenceGages(): void;
         NSSServicesVersion: string;
+        computeRegressionEquation(regtype: string);
     }
 
     export var onSelectedStudyAreaChanged: string = "onSelectedStudyAreaChanged";
     export var onSelectedStudyParametersLoaded: string = "onSelectedStudyParametersLoaded";
     export var onStudyAreaReset: string = "onStudyAreaReset";
     export var onEditClick: string = "onEditClick";
+    export var onRegressionLoaded: string = "onRegressionLoaded";
     export class StudyAreaEventArgs extends WiM.Event.EventArgs {
         //properties
         public studyArea: StreamStats.Models.IStudyArea;
@@ -87,7 +89,7 @@ module StreamStats.Services {
 
     class StudyAreaService extends WiM.Services.HTTPServiceBase implements IStudyAreaService {
         //Events
-        private _onStudyAreaServiceFinishedChanged: WiM.Event.Delegate<WiM.Event.EventArgs> = new WiM.Event.Delegate<WiM.Event.EventArgs>(); ;
+        private _onStudyAreaServiceFinishedChanged: WiM.Event.Delegate<WiM.Event.EventArgs> = new WiM.Event.Delegate<WiM.Event.EventArgs>(); 
         public get onStudyAreaServiceBusyChanged(): WiM.Event.Delegate<WiM.Event.EventArgs> {
             return this._onStudyAreaServiceFinishedChanged;
         }
@@ -137,11 +139,20 @@ module StreamStats.Services {
         //public requestParameterList: Array<any>; jkn
         private modalservices: IModalService;
         public NSSServicesVersion = '';
+        // private _wateruseQ10 = 0;
+        // public set wateruseQ10(val: any) {
+        //     if (this._wateruseQ10 != val) {
+        //         this._wateruseQ10 = val;
+        //     }
+        // }
+        // public get wateruseQ10(): any {
+        //     return this._wateruseQ10        
+        // }
         
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        constructor(public $http: ng.IHttpService, private $q: ng.IQService, private eventManager: WiM.Event.IEventManager, toaster, modal: Services.IModalService) {
+        constructor(public $http: ng.IHttpService, private $q: ng.IQService, private eventManager: WiM.Event.IEventManager, toaster, modal: Services.IModalService, private nssService: Services.InssService) {
             super($http, configuration.baseurls['StreamStatsServices'])
             this.modalservices = modal;
             eventManager.AddEvent<StudyAreaEventArgs>(onSelectedStudyParametersLoaded);
@@ -982,6 +993,18 @@ module StreamStats.Services {
 
             }
         }
+
+        public computeRegressionEquation(regtype: string) {
+            this.nssService.onSelectedStatisticsGroupChanged.subscribe(new WiM.Event.EventHandler<NSSEventArgs>((sender: any, e: NSSEventArgs) => {
+                this.eventManager.SubscribeToEvent(onSelectedStudyParametersLoaded, new WiM.Event.EventHandler<NSSEventArgs>((sender: any, e: NSSEventArgs) => {
+                    this.nssService.estimateFlows(this.studyAreaParameterList,"value", this.selectedStudyArea.RegionID);
+                    console.log(this.nssService.selectedStatisticsGroupList);
+                    this.selectedStudyArea.wateruseQ10 = this.nssService.selectedStatisticsGroupList[0].regressionRegions[0].results[9].value;
+                }));
+                this.loadParameters();
+            }));
+            this.nssService.loadParametersByStatisticsGroup(this.selectedStudyArea.RegionID, "", "GC1449, GC1450", [], regtype);            
+        }
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+- 
         private reconfigureWatershedResponse(watershedResponse: Array<any>): Array<GeoJSON.Feature>
@@ -1104,9 +1127,9 @@ module StreamStats.Services {
 
     }//end class
 
-    factory.$inject = ['$http', '$q', 'WiM.Event.EventManager', 'toaster', 'StreamStats.Services.ModalService'];
-    function factory($http: ng.IHttpService, $q: ng.IQService, eventManager: WiM.Event.IEventManager, toaster: any, modalService: Services.IModalService) {
-        return new StudyAreaService($http,$q, eventManager, toaster,modalService)
+    factory.$inject = ['$http', '$q', 'WiM.Event.EventManager', 'toaster', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService'];
+    function factory($http: ng.IHttpService, $q: ng.IQService, eventManager: WiM.Event.IEventManager, toaster: any, modalService: Services.IModalService, nssService: Services.InssService) {
+        return new StudyAreaService($http,$q, eventManager, toaster, modalService, nssService)
     }
     angular.module('StreamStats.Services')
         .factory('StreamStats.Services.StudyAreaService', factory)

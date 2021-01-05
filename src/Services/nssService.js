@@ -1,3 +1,4 @@
+"use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -11,6 +12,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+Object.defineProperty(exports, "__esModule", { value: true });
 var StreamStats;
 (function (StreamStats) {
     var Services;
@@ -61,6 +63,7 @@ var StreamStats;
                 this.loadingParametersByStatisticsGroupCounter = 0;
                 this.estimateFlowsCounter = 0;
                 this.selectedStatisticsGroupList = [];
+                this.wateruseScenarioObject = [];
                 this.statisticsGroupList = [];
                 this.canUpdate = true;
                 this.queriedRegions = false;
@@ -106,7 +109,7 @@ var StreamStats;
                 ;
                 return -1;
             };
-            nssService.prototype.loadParametersByStatisticsGroup = function (rcode, statisticsGroupID, regressionregions, percentWeights) {
+            nssService.prototype.loadParametersByStatisticsGroup = function (rcode, statisticsGroupID, regressionregions, percentWeights, regressiontypes) {
                 var _this = this;
                 if (this.loadingParametersByStatisticsGroupCounter == 0) {
                     this.toaster.pop('wait', "Loading Parameters by Statistics Group", "Please wait...", 0);
@@ -120,24 +123,34 @@ var StreamStats;
                     url = url + "&extensions=QPPQ";
                 }
                 url = url.format(rcode, statisticsGroupID, regressionregions);
+                if (regressiontypes != "") {
+                    url += "&regressiontypes=" + regressiontypes;
+                }
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
+                    _this.wateruseScenarioObject = response.data;
                     if (response.data[0].regressionRegions[0].extensions && response.data[0].regressionRegions[0].extensions.length > 0) {
                         var ext = response.data[0].regressionRegions[0].extensions;
                         _this.eventManager.RaiseEvent(Services.onScenarioExtensionChanged, _this, new NSSEventArgs(ext));
                     }
                     if (response.data[0].regressionRegions[0].parameters && response.data[0].regressionRegions[0].parameters.length > 0) {
+                        if (!_this.selectedStatisticsGroupList) {
+                            _this.selectedStatisticsGroupList = [];
+                            _this.selectedStatisticsGroupList.push({ 'name': "", 'id': null, 'code': "", 'regressionRegions': [], 'citations': null, 'disclaimers': "" });
+                        }
                         _this.selectedStatisticsGroupList.forEach(function (statGroup) {
                             if ((response.data[0].statisticGroupID == statGroup.id) ||
                                 (_this.regionservice.selectedRegion.Applications.indexOf("FDCTM") > -1 && typeof (statGroup.id) == 'string' && statGroup.id.indexOf(response.data[0].statisticGroupID, 0) > -1)) {
                                 statGroup['statisticGroupName'] = statGroup.name;
                                 statGroup['statisticGroupID'] = statGroup.id.toString().replace("_fdctm", "");
                                 response.data[0].regressionRegions.forEach(function (regressionRegion) {
-                                    percentWeights.forEach(function (regressionRegionPercentWeight) {
-                                        if (regressionRegionPercentWeight.code.indexOf(regressionRegion.code.toUpperCase()) > -1) {
-                                            regressionRegion["percentWeight"] = regressionRegionPercentWeight.percentWeight;
-                                        }
-                                    });
+                                    if (percentWeights.length > 0) {
+                                        percentWeights.forEach(function (regressionRegionPercentWeight) {
+                                            if (regressionRegionPercentWeight.code.indexOf(regressionRegion.code.toUpperCase()) > -1) {
+                                                regressionRegion["percentWeight"] = regressionRegionPercentWeight.percentWeight;
+                                            }
+                                        });
+                                    }
                                 });
                                 statGroup.regressionRegions = response.data[0].regressionRegions;
                                 _this._onSelectedStatisticsGroupChanged.raise(null, WiM.Event.EventArgs.Empty);
@@ -166,6 +179,7 @@ var StreamStats;
                     }
                     _this.estimateFlowsCounter++;
                     _this.cleanRegressionRegions(statGroup.regressionRegions);
+                    console.log('in estimate flows method for ', statGroup.name, statGroup);
                     statGroup.regressionRegions.forEach(function (regressionRegion) {
                         regressionRegion.parameters.forEach(function (regressionParam) {
                             studyAreaParameterList.forEach(function (param) {
@@ -193,6 +207,7 @@ var StreamStats;
                     var request = new WiM.Services.Helpers.RequestInfo(url, true, 1, 'json', updatedScenarioObject);
                     statGroup.citations = [];
                     _this.Execute(request).then(function (response) {
+                        console.log('estimate flows: ', response);
                         var citationUrl = response.data[0].links[0].href;
                         if (!append)
                             _this.getSelectedCitations(citationUrl, statGroup);

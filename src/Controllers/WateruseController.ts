@@ -57,6 +57,8 @@ module StreamStats.Controllers {
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
         private StudyArea: StreamStats.Models.IStudyArea;
+        private nssServices: StreamStats.Services.InssService;
+        private StudyAreaService: StreamStats.Services.IStudyAreaService;
         private modalInstance: ng.ui.bootstrap.IModalServiceInstance;
         public showResults: boolean;
         public spanYear: boolean;
@@ -96,14 +98,18 @@ module StreamStats.Controllers {
         public SelectedTab: WaterUseTabType;
         public SelectedWaterUseType: WaterUseType; 
         public ReportData: IWaterUseReportable;
+        public Q10: any;
       //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance', '$timeout'];
-        constructor($scope: IWateruseControllerScope, $http: ng.IHttpService, studyAreaService: StreamStats.Services.IStudyAreaService, modal:ng.ui.bootstrap.IModalServiceInstance, public $timeout:ng.ITimeoutService) {
+        static $inject = ['$scope', '$http', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', '$modalInstance', '$timeout', 'WiM.Event.EventManager'];
+        constructor($scope: IWateruseControllerScope, $http: ng.IHttpService, studyAreaService: StreamStats.Services.IStudyAreaService, nssService: StreamStats.Services.InssService, modal:ng.ui.bootstrap.IModalServiceInstance, public $timeout:ng.ITimeoutService, private eventManager: WiM.Event.IEventManager) {
             super($http, configuration.baseurls.WaterUseServices);
             $scope.vm = this;
             this.modalInstance = modal;
             this.StudyArea = studyAreaService.selectedStudyArea;
+            this.StudyAreaService = studyAreaService;
+            this.nssServices = nssService;
+
             this.init();              
         }  
         
@@ -335,14 +341,14 @@ module StreamStats.Controllers {
                             {
                                 name: "Water-use index (dimensionless) without temporary registrations:",
                                 aveReturn: "",
-                                aveWithdrawal: ((isNaN(this.AnnualTotalWithdrawals) && isNaN(this.AnnualTotalReturns)) ? "---" : (((isNaN(this.AnnualTotalWithdrawals) ? 0 : this.AnnualTotalWithdrawals) - (isNaN(this.AnnualTotalReturns) ? 0 : this.AnnualTotalReturns)) / 25.52952).toFixed(3))
+                                aveWithdrawal: ((isNaN(this.AnnualTotalWithdrawals) && isNaN(this.AnnualTotalReturns)) ? "---" : (((isNaN(this.AnnualTotalWithdrawals) ? 0 : this.AnnualTotalWithdrawals) - (isNaN(this.AnnualTotalReturns) ? 0 : this.AnnualTotalReturns)) / this.Q10).toFixed(3))
                             });
                         console.log("total withdrawals: " + this.AnnualTotalWithdrawals + ", total returns: " + this.AnnualTotalReturns);
                         tableValues.push(
                             {
                                 name: "Water-use index (dimensionless) with temporary registrations:",
                                 aveReturn: "",
-                                aveWithdrawal: ((isNaN(this.AnnualTotalWithdrawals) && isNaN(this.AnnualTotalReturns) && isNaN(+permits_sw.aveWithdrawal) && isNaN(+permits_gw.aveWithdrawal)) ? "---" : (((isNaN(+permits_gw.aveWithdrawal) ? 0 : +permits_gw.aveWithdrawal) + (isNaN(+permits_sw.aveWithdrawal) ? 0 : +permits_sw.aveWithdrawal) + ((isNaN(this.AnnualTotalWithdrawals) ? 0 : this.AnnualTotalWithdrawals) - (isNaN(this.AnnualTotalReturns) ? 0 : this.AnnualTotalReturns))) / 25.52952).toFixed(3)) 
+                                aveWithdrawal: ((isNaN(this.AnnualTotalWithdrawals) && isNaN(this.AnnualTotalReturns) && isNaN(+permits_sw.aveWithdrawal) && isNaN(+permits_gw.aveWithdrawal)) ? "---" : (((isNaN(+permits_gw.aveWithdrawal) ? 0 : +permits_gw.aveWithdrawal) + (isNaN(+permits_sw.aveWithdrawal) ? 0 : +permits_sw.aveWithdrawal) + ((isNaN(this.AnnualTotalWithdrawals) ? 0 : this.AnnualTotalWithdrawals) - (isNaN(this.AnnualTotalReturns) ? 0 : this.AnnualTotalReturns))) / this.Q10).toFixed(3)) 
                             });
                         break;
                 }//end switch
@@ -473,6 +479,12 @@ module StreamStats.Controllers {
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {
+            if (this.StudyArea.RegionID == "OH" ) {
+                this.eventManager.SubscribeToEvent(Services.onSelectedStudyAreaChanged, new WiM.Event.EventHandler<Services.StudyAreaEventArgs>(() => {
+                    this.Q10 = this.StudyArea.wateruseQ10;
+                }));
+                this.StudyAreaService.computeRegressionEquation("Q10");
+            }
             var url = configuration.queryparams['WateruseConfig'].format(this.StudyArea.RegionID);
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url);
             this.Execute(request).then(
@@ -493,6 +505,7 @@ module StreamStats.Controllers {
                     }).finally(() => {
                         this.CanContiue = true;
                 this.showResults = false;
+
                 this.SelectedTab = WaterUseTabType.Graph;
                 this.SelectedWaterUseType = WaterUseType.Annual;
                 this.ReportData = new WaterUseReportable();
@@ -628,6 +641,13 @@ module StreamStats.Controllers {
                 }, 500); 
             });
         }
+
+        // private loadParameters(): void{
+        //     //unsubscribe first
+        //     this.EventManager.UnSubscribeToEvent(Services.onSelectedStudyParametersLoaded, this.parameterloadedEventHandler);
+
+        // }
+
         private getMonth(index: number): string {
             switch (index) {
                 case 1: return "Jan";

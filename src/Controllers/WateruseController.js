@@ -25,14 +25,17 @@ var StreamStats;
         }());
         var WateruseController = (function (_super) {
             __extends(WateruseController, _super);
-            function WateruseController($scope, $http, studyAreaService, modal, $timeout) {
+            function WateruseController($scope, $http, studyAreaService, nssService, modal, $timeout, eventManager) {
                 var _this = _super.call(this, $http, configuration.baseurls.WaterUseServices) || this;
                 _this.$timeout = $timeout;
+                _this.eventManager = eventManager;
                 _this.AnnualTotalWithdrawals = 0;
                 _this.AnnualTotalReturns = 0;
                 $scope.vm = _this;
                 _this.modalInstance = modal;
                 _this.StudyArea = studyAreaService.selectedStudyArea;
+                _this.StudyAreaService = studyAreaService;
+                _this.nssServices = nssService;
                 _this.init();
                 return _this;
             }
@@ -263,13 +266,13 @@ var StreamStats;
                             tableValues.push({
                                 name: "Water-use index (dimensionless) without temporary registrations:",
                                 aveReturn: "",
-                                aveWithdrawal: ((isNaN(this.AnnualTotalWithdrawals) && isNaN(this.AnnualTotalReturns)) ? "---" : (((isNaN(this.AnnualTotalWithdrawals) ? 0 : this.AnnualTotalWithdrawals) - (isNaN(this.AnnualTotalReturns) ? 0 : this.AnnualTotalReturns)) / 25.52952).toFixed(3))
+                                aveWithdrawal: ((isNaN(this.AnnualTotalWithdrawals) && isNaN(this.AnnualTotalReturns)) ? "---" : (((isNaN(this.AnnualTotalWithdrawals) ? 0 : this.AnnualTotalWithdrawals) - (isNaN(this.AnnualTotalReturns) ? 0 : this.AnnualTotalReturns)) / this.Q10).toFixed(3))
                             });
                             console.log("total withdrawals: " + this.AnnualTotalWithdrawals + ", total returns: " + this.AnnualTotalReturns);
                             tableValues.push({
                                 name: "Water-use index (dimensionless) with temporary registrations:",
                                 aveReturn: "",
-                                aveWithdrawal: ((isNaN(this.AnnualTotalWithdrawals) && isNaN(this.AnnualTotalReturns) && isNaN(+permits_sw.aveWithdrawal) && isNaN(+permits_gw.aveWithdrawal)) ? "---" : (((isNaN(+permits_gw.aveWithdrawal) ? 0 : +permits_gw.aveWithdrawal) + (isNaN(+permits_sw.aveWithdrawal) ? 0 : +permits_sw.aveWithdrawal) + ((isNaN(this.AnnualTotalWithdrawals) ? 0 : this.AnnualTotalWithdrawals) - (isNaN(this.AnnualTotalReturns) ? 0 : this.AnnualTotalReturns))) / 25.52952).toFixed(3))
+                                aveWithdrawal: ((isNaN(this.AnnualTotalWithdrawals) && isNaN(this.AnnualTotalReturns) && isNaN(+permits_sw.aveWithdrawal) && isNaN(+permits_gw.aveWithdrawal)) ? "---" : (((isNaN(+permits_gw.aveWithdrawal) ? 0 : +permits_gw.aveWithdrawal) + (isNaN(+permits_sw.aveWithdrawal) ? 0 : +permits_sw.aveWithdrawal) + ((isNaN(this.AnnualTotalWithdrawals) ? 0 : this.AnnualTotalWithdrawals) - (isNaN(this.AnnualTotalReturns) ? 0 : this.AnnualTotalReturns))) / this.Q10).toFixed(3))
                             });
                             break;
                     }
@@ -382,6 +385,12 @@ var StreamStats;
             };
             WateruseController.prototype.init = function () {
                 var _this = this;
+                if (this.StudyArea.RegionID == "OH") {
+                    this.eventManager.SubscribeToEvent(StreamStats.Services.onSelectedStudyAreaChanged, new WiM.Event.EventHandler(function () {
+                        _this.Q10 = _this.StudyArea.wateruseQ10;
+                    }));
+                    this.StudyAreaService.computeRegressionEquation("Q10");
+                }
                 var url = configuration.queryparams['WateruseConfig'].format(this.StudyArea.RegionID);
                 var request = new WiM.Services.Helpers.RequestInfo(url);
                 this.Execute(request).then(function (response) {
@@ -678,7 +687,7 @@ var StreamStats;
             WateruseController.prototype.rand = function (min, max) {
                 return parseInt((Math.random() * (max - min + 1)), 10) + min;
             };
-            WateruseController.$inject = ['$scope', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance', '$timeout'];
+            WateruseController.$inject = ['$scope', '$http', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', '$modalInstance', '$timeout', 'WiM.Event.EventManager'];
             return WateruseController;
         }(WiM.Services.HTTPServiceBase));
         var WaterUseType;

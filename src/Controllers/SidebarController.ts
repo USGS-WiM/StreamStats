@@ -250,6 +250,47 @@ module StreamStats.Controllers {
 
         }
 
+        public WUsetStatisticsGroup(statisticsGroup: Services.IStatisticsGroup) {
+
+            var checkStatisticsGroup = this.checkArrayForObj(this.nssService.selectedStatisticsGroupList, statisticsGroup);
+
+            //console.log('set stat group: ', statisticsGroup, checkStatisticsGroup);
+
+            //if toggled remove selected parameter set
+            if (checkStatisticsGroup != -1) {
+
+                //remove this statisticsGroup from the list
+                this.nssService.selectedStatisticsGroupList.splice(checkStatisticsGroup, 1);
+
+                //if no selected scenarios, clear studyareaparameter list
+                if (this.nssService.selectedStatisticsGroupList.length == 0) {
+                    this.studyAreaService.studyAreaParameterList = [];
+
+                    this.regionService.parameterList.forEach((parameter) => {
+                        parameter.checked = false;
+                        parameter.toggleable = true;
+                    });
+                }
+            }
+
+            //add it to the list and get its required parameters
+            else {
+                this.nssService.selectedStatisticsGroupList.push(statisticsGroup);
+
+                if (this.studyAreaService.selectedStudyArea.CoordinatedReach != null && statisticsGroup.code.toUpperCase() == "PFS") {
+                    this.addParameterToStudyAreaList("DRNAREA");
+                    this.nssService.showFlowsTable = true
+                    return;
+                }//end if
+                
+                //get list of params for selected StatisticsGroup
+                this.nssService.loadParametersByStatisticsGroup(this.regionService.selectedRegion.RegionID, statisticsGroup.id, this.studyAreaService.selectedStudyArea.RegressionRegions.map(function (elem) {
+                    return elem.code;
+                }).join(","), this.studyAreaService.selectedStudyArea.RegressionRegions);
+            }
+
+        }
+
         public multipleParameterSelector() {
 
             this.regionService.parameterList.forEach((parameter) => {
@@ -532,7 +573,6 @@ module StreamStats.Controllers {
         }
 
         public OpenWateruse() {
-            this.GetQ10();
             this.modalService.openModal(Services.SSModalType.e_wateruse);
         }
         public OpenStormRunoff() {
@@ -649,10 +689,7 @@ module StreamStats.Controllers {
                 return false;
             }
         }
-        private GetQ10() {
-            this.queryRegressionRegions();
-            this.queryStatisticsGroupTypes();
-        }
+        
         private sm(msg: string) {
             try {
                 //toastr.options = {
