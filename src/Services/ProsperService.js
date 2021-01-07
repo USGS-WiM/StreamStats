@@ -125,6 +125,8 @@ var StreamStats;
                         }
                         _this.toaster.clear();
                     }, function (error) {
+                        _this.CanQuery = false;
+                        _this.toaster.clear();
                         _this.toaster.pop('error', "There was an HTTP error querying coordinated reach", "Please retry", 0);
                     });
                 }
