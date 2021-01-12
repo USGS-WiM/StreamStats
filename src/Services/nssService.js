@@ -2,9 +2,9 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
         return extendStatics(d, b);
-    };
+    }
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -54,7 +54,7 @@ var StreamStats;
                 get: function () {
                     return this._onSelectedStatisticsGroupChanged;
                 },
-                enumerable: false,
+                enumerable: true,
                 configurable: true
             });
             nssService.prototype.clearNSSdata = function () {
@@ -106,7 +106,7 @@ var StreamStats;
                 ;
                 return -1;
             };
-            nssService.prototype.loadParametersByStatisticsGroup = function (rcode, statisticsGroupID, regressionregions, percentWeights) {
+            nssService.prototype.loadParametersByStatisticsGroup = function (rcode, statisticsGroupID, regressionregions, percentWeights, regressionTypes) {
                 var _this = this;
                 if (this.loadingParametersByStatisticsGroupCounter == 0) {
                     this.toaster.pop('wait', "Loading Parameters by Statistics Group", "Please wait...", 0);
@@ -120,6 +120,9 @@ var StreamStats;
                     url = url + "&extensions=QPPQ";
                 }
                 url = url.format(rcode, statisticsGroupID, regressionregions);
+                if (regressionTypes != "") {
+                    url += "&regressiontypes=" + regressionTypes;
+                }
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     if (response.data[0].regressionRegions[0].extensions && response.data[0].regressionRegions[0].extensions.length > 0) {
@@ -127,17 +130,22 @@ var StreamStats;
                         _this.eventManager.RaiseEvent(Services.onScenarioExtensionChanged, _this, new NSSEventArgs(ext));
                     }
                     if (response.data[0].regressionRegions[0].parameters && response.data[0].regressionRegions[0].parameters.length > 0) {
+                        if (_this.selectedStatisticsGroupList.length == 0) {
+                            _this.selectedStatisticsGroupList.push({ 'name': "", 'id': "7", 'code': "", 'regressionRegions': [], 'citations': null, 'disclaimers': "" });
+                        }
                         _this.selectedStatisticsGroupList.forEach(function (statGroup) {
                             if ((response.data[0].statisticGroupID == statGroup.id) ||
                                 (_this.regionservice.selectedRegion.Applications.indexOf("FDCTM") > -1 && typeof (statGroup.id) == 'string' && statGroup.id.indexOf(response.data[0].statisticGroupID, 0) > -1)) {
                                 statGroup['statisticGroupName'] = statGroup.name;
                                 statGroup['statisticGroupID'] = statGroup.id.toString().replace("_fdctm", "");
                                 response.data[0].regressionRegions.forEach(function (regressionRegion) {
-                                    percentWeights.forEach(function (regressionRegionPercentWeight) {
-                                        if (regressionRegionPercentWeight.code.indexOf(regressionRegion.code.toUpperCase()) > -1) {
-                                            regressionRegion["percentWeight"] = regressionRegionPercentWeight.percentWeight;
-                                        }
-                                    });
+                                    if (percentWeights.length > 0) {
+                                        percentWeights.forEach(function (regressionRegionPercentWeight) {
+                                            if (regressionRegionPercentWeight.code.indexOf(regressionRegion.code.toUpperCase()) > -1) {
+                                                regressionRegion["percentWeight"] = regressionRegionPercentWeight.percentWeight;
+                                            }
+                                        });
+                                    }
                                 });
                                 statGroup.regressionRegions = response.data[0].regressionRegions;
                                 _this._onSelectedStatisticsGroupChanged.raise(null, WiM.Event.EventArgs.Empty);
@@ -154,9 +162,10 @@ var StreamStats;
                     }
                 });
             };
-            nssService.prototype.estimateFlows = function (studyAreaParameterList, paramValueField, rcode, append) {
+            nssService.prototype.estimateFlows = function (studyAreaParameterList, paramValueField, rcode, append, regressionTypes, showReport) {
                 var _this = this;
                 if (append === void 0) { append = false; }
+                if (showReport === void 0) { showReport = true; }
                 if (!this.canUpdate && !append)
                     return;
                 this.selectedStatisticsGroupList.forEach(function (statGroup) {
@@ -189,6 +198,9 @@ var StreamStats;
                     var url = configuration.baseurls['NSS'] + configuration.queryparams['estimateFlows'].format(rcode);
                     if (_this.regionservice.selectedRegion.Applications.indexOf("FDCTM") > -1 && typeof statGroup.id == "string" && statGroup.id.indexOf("_fdctm") > -1) {
                         url = url + "&extensions=QPPQ";
+                    }
+                    if (regressionTypes != "") {
+                        url += "&regressiontypes=" + regressionTypes;
                     }
                     var request = new WiM.Services.Helpers.RequestInfo(url, true, 1, 'json', updatedScenarioObject);
                     statGroup.citations = [];
@@ -261,8 +273,10 @@ var StreamStats;
                             _this.toaster.clear();
                             _this.estimateFlowsCounter = 0;
                             _this.canUpdate = true;
-                            _this.modalService.openModal(Services.SSModalType.e_report);
-                            _this.reportGenerated = true;
+                            if (showReport) {
+                                _this.modalService.openModal(Services.SSModalType.e_report);
+                                _this.reportGenerated = true;
+                            }
                         }
                     });
                 });

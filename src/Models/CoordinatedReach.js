@@ -12,21 +12,21 @@ var StreamStats;
                 get: function () {
                     return this._flowCoefficients;
                 },
-                enumerable: false,
+                enumerable: true,
                 configurable: true
             });
             Object.defineProperty(CoordinatedReach.prototype, "Name", {
                 get: function () {
                     return this._name;
                 },
-                enumerable: false,
+                enumerable: true,
                 configurable: true
             });
             Object.defineProperty(CoordinatedReach.prototype, "ID", {
                 get: function () {
                     return this._id;
                 },
-                enumerable: false,
+                enumerable: true,
                 configurable: true
             });
             CoordinatedReach.prototype.AddFlowCoefficient = function (code, aCoeff, bCoeff) {

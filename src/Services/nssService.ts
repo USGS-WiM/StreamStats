@@ -30,8 +30,8 @@ module StreamStats.Services {
         statisticsGroupList: Array<IStatisticsGroup>;
         selectedStatisticsGroupList: Array<IStatisticsGroup>;
         loadStatisticsGroupTypes(rcode: string, regressionregion: string):Array<any>;
-        loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregion: string, percentWeights: any);
-        estimateFlows(studyAreaParameterList: Array<IParameter>, paramValueField: string, rcode: string, append?: boolean)
+        loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregion: string, percentWeights: any, regressionTypes?: string);
+        estimateFlows(studyAreaParameterList: Array<IParameter>, paramValueField: string, rcode: string, append?: boolean, regressionTypes?:string, showReport?:boolean)
         showBasinCharacteristicsTable: boolean;
         showFlowsTable: boolean;
         clearNSSdata();
@@ -202,7 +202,7 @@ module StreamStats.Services {
             return -1;
         }
 
-        public loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregions: string, percentWeights: any) {
+        public loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregions: string, percentWeights: any, regressionTypes?: string) {
 
             if (this.loadingParametersByStatisticsGroupCounter == 0) {
                 this.toaster.pop('wait', "Loading Parameters by Statistics Group", "Please wait...", 0); 
@@ -218,6 +218,9 @@ module StreamStats.Services {
                 url = url + "&extensions=QPPQ";
             } 
             url = url.format(rcode, statisticsGroupID, regressionregions);
+            if (regressionTypes != "") {
+                url += "&regressiontypes=" + regressionTypes;
+            }
 
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
 
@@ -232,6 +235,10 @@ module StreamStats.Services {
                     //check to make sure there is a valid response
                     if (response.data[0].regressionRegions[0].parameters && response.data[0].regressionRegions[0].parameters.length > 0) {
 
+                        if(this.selectedStatisticsGroupList.length == 0) {
+                            this.selectedStatisticsGroupList.push({'name': "", 'id': "7", 'code': "", 'regressionRegions': [], 'citations': null, 'disclaimers': ""})
+                        }
+
                         //add Regression Regions to StatisticsGroupList and add percent weights
                         this.selectedStatisticsGroupList.forEach((statGroup) => {
                             if ((response.data[0].statisticGroupID == statGroup.id) ||
@@ -241,11 +248,13 @@ module StreamStats.Services {
                                 statGroup['statisticGroupID'] = statGroup.id.toString().replace("_fdctm", "");
                                 
                                 response.data[0].regressionRegions.forEach((regressionRegion) => {
-                                    percentWeights.forEach((regressionRegionPercentWeight) => {
-                                        if (regressionRegionPercentWeight.code.indexOf(regressionRegion.code.toUpperCase()) > -1) {
-                                            regressionRegion["percentWeight"] = regressionRegionPercentWeight.percentWeight;                                            
-                                        }
-                                    })
+                                    if(percentWeights.length > 0) {
+                                        percentWeights.forEach((regressionRegionPercentWeight) => {
+                                            if (regressionRegionPercentWeight.code.indexOf(regressionRegion.code.toUpperCase()) > -1) {
+                                                regressionRegion["percentWeight"] = regressionRegionPercentWeight.percentWeight;                                            
+                                            }
+                                        })
+                                    }
                                 });
 
                                 statGroup.regressionRegions = response.data[0].regressionRegions;
@@ -268,7 +277,7 @@ module StreamStats.Services {
                 });
         }
 
-        public estimateFlows(studyAreaParameterList: Array<IParameter>, paramValueField:string, rcode: string, append:boolean = false) {
+        public estimateFlows(studyAreaParameterList: Array<IParameter>, paramValueField:string, rcode: string, append:boolean = false, regressionTypes?:string, showReport:boolean = true) {
 
             if (!this.canUpdate && !append) return;           
             //loop over all selected StatisticsGroups
@@ -314,6 +323,11 @@ module StreamStats.Services {
                     
                     url = url + "&extensions=QPPQ";
                 }
+
+                if (regressionTypes != "") {
+                    url += "&regressiontypes=" + regressionTypes;
+                }
+
                 var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, 1, 'json', updatedScenarioObject);
 
                 statGroup.citations = [];
@@ -407,8 +421,10 @@ module StreamStats.Services {
                             this.estimateFlowsCounter = 0;
                             this.canUpdate = true;
                             //move to nssService
-                            this.modalService.openModal(Services.SSModalType.e_report);
-                            this.reportGenerated = true;
+                            if(showReport) {
+                                this.modalService.openModal(Services.SSModalType.e_report);
+                                this.reportGenerated = true;
+                            }
                         }//end if                       
                         
                     });
