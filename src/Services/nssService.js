@@ -283,7 +283,6 @@ var StreamStats;
             };
             nssService.prototype.getSelectedCitations = function (citationUrl, statGroup) {
                 var _this = this;
-                console.log('citations: ', citationUrl, statGroup);
                 var url;
                 if (citationUrl.indexOf('https://') == -1)
                     url = 'https://' + citationUrl;

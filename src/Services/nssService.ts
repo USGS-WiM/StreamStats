@@ -434,7 +434,7 @@ module StreamStats.Services {
         public getSelectedCitations(citationUrl: string, statGroup: any): any {
 
             ////nested requests for citations
-            console.log('citations: ', citationUrl, statGroup);
+            //console.log('citations: ', citationUrl, statGroup);
 
             var url;
             if (citationUrl.indexOf('https://') == -1) url = 'https://' + citationUrl;

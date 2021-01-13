@@ -58,6 +58,7 @@ module StreamStats.Controllers {
         //-+-+-+-+-+-+-+-+-+-+-+-
         private StudyArea: StreamStats.Models.IStudyArea;
         private StudyAreaService: StreamStats.Services.IStudyAreaService;
+        public NSSService: StreamStats.Services.InssService;
         private modalInstance: ng.ui.bootstrap.IModalServiceInstance;
         public showResults: boolean;
         public spanYear: boolean;
@@ -97,16 +98,17 @@ module StreamStats.Controllers {
         public SelectedTab: WaterUseTabType;
         public SelectedWaterUseType: WaterUseType; 
         public ReportData: IWaterUseReportable;
-        public Q10: any;
+        public Q10 = 39.5 * 0.646316889697;
       //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance', '$timeout', 'WiM.Event.EventManager'];
-        constructor($scope: IWateruseControllerScope, $http: ng.IHttpService, studyAreaService: StreamStats.Services.IStudyAreaService, modal:ng.ui.bootstrap.IModalServiceInstance, public $timeout:ng.ITimeoutService, private eventManager: WiM.Event.IEventManager) {
+        static $inject = ['$scope', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance', '$timeout', 'WiM.Event.EventManager', 'StreamStats.Services.StudyAreaService'];
+        constructor($scope: IWateruseControllerScope, $http: ng.IHttpService, studyAreaService: StreamStats.Services.IStudyAreaService, modal:ng.ui.bootstrap.IModalServiceInstance, public $timeout:ng.ITimeoutService, private eventManager: WiM.Event.IEventManager, public nssService: Services.InssService) {
             super($http, configuration.baseurls.WaterUseServices);
             $scope.vm = this;
             this.modalInstance = modal;
             this.StudyArea = studyAreaService.selectedStudyArea;
             this.StudyAreaService = studyAreaService;
+            this.NSSService = nssService;
 
             this.init();              
         }  
@@ -331,14 +333,14 @@ module StreamStats.Controllers {
                             {
                                 name: "Water-use index (dimensionless) without temporary registrations:",
                                 aveReturn: "",
-                                aveWithdrawal: ((isNaN(this.AnnualTotalWithdrawals) && isNaN(this.AnnualTotalReturns)) ? "---" : (((isNaN(this.AnnualTotalWithdrawals) ? 0 : this.AnnualTotalWithdrawals) - (isNaN(this.AnnualTotalReturns) ? 0 : this.AnnualTotalReturns)) / this.Q10).toFixed(3))
+                                aveWithdrawal: ((isNaN(this.AnnualTotalWithdrawals) && isNaN(this.AnnualTotalReturns)) ? "---" : (((isNaN(this.AnnualTotalWithdrawals) ? 0 : this.AnnualTotalWithdrawals) - (isNaN(this.AnnualTotalReturns) ? 0 : this.AnnualTotalReturns)) / +this.Q10).toFixed(3))
                             });
-                        console.log("total withdrawals: " + this.AnnualTotalWithdrawals + ", total returns: " + this.AnnualTotalReturns);
+                        console.log("total withdrawals: " + this.AnnualTotalWithdrawals + ", total returns: " + this.AnnualTotalReturns + ", q10: " + this.Q10 + ", gw withdr: " + permits_gw.aveWithdrawal + ", sw withdr: " + permits_sw.aveWithdrawal);
                         tableValues.push(
                             {
                                 name: "Water-use index (dimensionless) with temporary registrations:",
                                 aveReturn: "",
-                                aveWithdrawal: ((isNaN(this.AnnualTotalWithdrawals) && isNaN(this.AnnualTotalReturns) && isNaN(+permits_sw.aveWithdrawal) && isNaN(+permits_gw.aveWithdrawal)) ? "---" : (((isNaN(+permits_gw.aveWithdrawal) ? 0 : +permits_gw.aveWithdrawal) + (isNaN(+permits_sw.aveWithdrawal) ? 0 : +permits_sw.aveWithdrawal) + ((isNaN(this.AnnualTotalWithdrawals) ? 0 : this.AnnualTotalWithdrawals) - (isNaN(this.AnnualTotalReturns) ? 0 : this.AnnualTotalReturns))) / this.Q10).toFixed(3)) 
+                                aveWithdrawal: ((isNaN(this.AnnualTotalWithdrawals) && isNaN(this.AnnualTotalReturns) && isNaN(+permits_sw.aveWithdrawal) && isNaN(+permits_gw.aveWithdrawal)) ? "---" : (((isNaN(+permits_gw.aveWithdrawal) ? 0 : +permits_gw.aveWithdrawal) + (isNaN(+permits_sw.aveWithdrawal) ? 0 : +permits_sw.aveWithdrawal) + ((isNaN(this.AnnualTotalWithdrawals) ? 0 : this.AnnualTotalWithdrawals) - (isNaN(this.AnnualTotalReturns) ? 0 : this.AnnualTotalReturns))) / +this.Q10).toFixed(3)) 
                             });
                         break;
                 }//end switch
