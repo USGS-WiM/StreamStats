@@ -133,8 +133,8 @@ module StreamStats.Controllers {
         }
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService'];
-        constructor($scope: IReportControllerScope, $analytics, $modalInstance: ng.ui.bootstrap.IModalServiceInstance, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, leafletData: ILeafletData, private regionService:Services.IRegionService) {
+        static $inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService', 'StreamStats.Services.ModalService'];
+        constructor($scope: IReportControllerScope, $analytics, $modalInstance: ng.ui.bootstrap.IModalServiceInstance, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, leafletData: ILeafletData, private regionService:Services.IRegionService, private modal: Services.IModalService) {
             $scope.vm = this;
 
             this.angulartics = $analytics;
@@ -615,6 +615,33 @@ module StreamStats.Controllers {
                 this.addGeoJSON(item.id, item);
             });
 
+            var gagePoint;
+            if (this.studyAreaService.selectedGage) {
+                gagePoint = {
+                    type: "Feature",
+                    geometry: {
+                        coordinates: [
+                            this.studyAreaService.selectedGage["Latitude_DD"],
+                            this.studyAreaService.selectedGage["Longitude_DD"]
+                        ],
+                        type: "Point"
+                    }
+                }
+                this.addGeoJSON('referenceGage', gagePoint)
+            } else {
+                gagePoint = {
+                    type: "Feature",
+                    geometry: {
+                        coordinates: [
+                            40.18505,
+                            -89.36904
+                        ],
+                        type: "Point"
+                    }
+                }
+                this.addGeoJSON('referenceGage', gagePoint)
+            }
+
             var bbox = this.studyAreaService.selectedStudyArea.FeatureCollection.bbox;
             this.leafletData.getMap("reportMap").then((map: any) => {
                 //method to reset the map for modal weirdness
@@ -650,6 +677,34 @@ module StreamStats.Controllers {
                     type: 'geoJSONShape',
                     data: feature,
                     visible: true,
+                }
+            }
+            else if (LayerName == 'referenceGage') {
+
+                this.geojson[LayerName] = {
+                    data: feature,
+                    style: {
+                        displayName: 'Reference Gage'
+                    },
+                    onEachFeature: function (feat, layer) {
+                        var icon = L.icon({
+                            iconUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAaJJREFUOI3dzz1IW1EYxvF/TMqpFQsJCF4QOuhUpTpEVCw6RSsdQhFB6hfiF0IDFqkoOCqKEhxEqm0H20YUgpQoqOBWOkgjpQgXowREEC5SuVBE6QtFHXQwYjSJmXzgDO85hx/PayPJsd0TcD6sqM6ZBFqAk7uD4dCyqu3dkLnhRmD6bqB/ q5DwZrl4hv6rb2MWEfEDR4mD + q9ZSl + mAC75 + HOGxvwuYDAx8MNaK / +Os3mUfj5nP + tSSlsUMbKAvfhA / dSKb3qEqvrLtwUS0CeVW + sWkbfxgcsr4zx12rFe + ZJu75PMPK / jcKfQNM1gbKBPz2Az2EzJi + ten / B1LdUse9AGxAhu//ZTXPkwanurrRd3RyeBqRrAfzM48b2IvwfPcWRG9QC76nnvlMDUY2ABkOjgbshHxWvrTRqAYPGo/s9uGWh6A3ivBR3epTZTpeWQmnabB6CkqqFOjbbvi0gG8CcSXF1NMZdCw7zqjAW7iKWOT+sVqtX5TkR6IkGXqx4IMub5EYeIQAlQrmlarmEY+uWVv1ycRDJgGAaRDZOUpINnJ5KDtx5X6hkAAAAASUVORK5CYII=',
+                            iconSize: [15, 16],
+                            iconAnchor: [7.5, 8],
+                            popupAnchor: [0, -11],
+                        })
+                        layer.setIcon(icon);
+
+                    },
+                    layerArray: [{
+                        "layerName": "Reference Gage",
+                        "legend": [{                        
+                            "contentType": "image/png",
+                            "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAaJJREFUOI3dzz1IW1EYxvF/TMqpFQsJCF4QOuhUpTpEVCw6RSsdQhFB6hfiF0IDFqkoOCqKEhxEqm0H20YUgpQoqOBWOkgjpQgXowREEC5SuVBE6QtFHXQwYjSJmXzgDO85hx/PayPJsd0TcD6sqM6ZBFqAk7uD4dCyqu3dkLnhRmD6bqB/ q5DwZrl4hv6rb2MWEfEDR4mD + q9ZSl + mAC75 + HOGxvwuYDAx8MNaK / +Os3mUfj5nP + tSSlsUMbKAvfhA / dSKb3qEqvrLtwUS0CeVW + sWkbfxgcsr4zx12rFe + ZJu75PMPK / jcKfQNM1gbKBPz2Az2EzJi + ten / B1LdUse9AGxAhu//ZTXPkwanurrRd3RyeBqRrAfzM48b2IvwfPcWRG9QC76nnvlMDUY2ABkOjgbshHxWvrTRqAYPGo/s9uGWh6A3ivBR3epTZTpeWQmnabB6CkqqFOjbbvi0gG8CcSXF1NMZdCw7zqjAW7iKWOT+sVqtX5TkR6IkGXqx4IMub5EYeIQAlQrmlarmEY+uWVv1ycRDJgGAaRDZOUpINnJ5KDtx5X6hkAAAAASUVORK5CYII=",
+                            "label": "Reference Gage"
+                        }]
+                    }]
+                    // TODO: can't figure out how to get this in the legend!
                 }
             }
 
@@ -744,6 +799,11 @@ module StreamStats.Controllers {
             return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function (letter, index) {
                 return index == 0 ? letter.toLowerCase() : letter.toUpperCase();
             }).replace(/\s+/g, '');
+        }
+
+        public openGagePage(siteid: string): void {
+            console.log('gage page id:', siteid)
+            this.modal.openModal(Services.SSModalType.e_gagepage, { 'siteid':siteid });
         }
     }//end class
     angular.module('StreamStats.Controllers')

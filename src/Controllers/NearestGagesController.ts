@@ -254,10 +254,6 @@ module StreamStats.Controllers {
             }
         }
 
-        public showOnMap(gage) {
-            console.log('TODO: show on map')
-        }
-
         public openGagePage(siteid: string): void {
             console.log('gage page id:', siteid)
             this.modalService.openModal(Services.SSModalType.e_gagepage, { 'siteid':siteid });

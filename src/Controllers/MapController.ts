@@ -282,7 +282,7 @@ module StreamStats.Controllers {
 
                 //check if in elevation profile mode
                 if (this.explorationService.drawElevationProfile) return; 
-                if (this.studyArea.doQueryNWIS) {
+                if (this.studyArea.doSelectMapGage) {
                     this.studyArea.queryNWIS(args.leafletEvent.latlng);
                     return;
                 }
@@ -1366,11 +1366,15 @@ module StreamStats.Controllers {
                 } 
             }
             else if (LayerName == 'streamgages') {
+                // TODO: this clears when map point is placed, also could use the "application layers" legend item
                 console.log(feature);
                 var self = this;
 
                 this.geojson[LayerName] = {
                     data: feature,
+                    style: {
+                        displayName: 'Streamgages'
+                    },
                     onEachFeature: function (feature, layer) {
                         var siteNo = feature.properties['Code'];
                         var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm';
@@ -1394,7 +1398,7 @@ module StreamStats.Controllers {
                             iconUrl: 'data:image/png;base64,' + styling.imageData,
                             iconSize: [15, 16],
                             iconAnchor: [7.5, 8],
-                            popupAnchor: [0, -11]
+                            popupAnchor: [0, -11],
                         })
                         layer.setIcon(icon);
 
@@ -1403,6 +1407,19 @@ module StreamStats.Controllers {
                             if (id === 'gagePageLink') {
                                 self.openGagePage(siteNo);
                             }
+                        })
+
+                        layer.on('mouseover', function(e) {
+                            if (self.studyArea.doSelectMapGage) this.openPopup();
+                        });
+
+                        layer.on('click', function(e) {
+                            // need to select gage if that's the question
+                            if (self.studyArea.doSelectMapGage) {
+                                self.studyArea.selectGage(feature);
+                                self.studyArea.doSelectMapGage = false;
+                            }
+                            else this.openPopup();
                         })
 
                     }

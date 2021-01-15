@@ -56,6 +56,7 @@ module StreamStats.Controllers {
         public dateRangeOptions;
         public selectedReferenceGage: StreamStats.Models.IReferenceGage = null;
         public referenceGageList: Array<StreamStats.Models.IReferenceGage>;
+        public usePublishedFDC: boolean;
         
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -73,6 +74,14 @@ module StreamStats.Controllers {
 
             this.init();
             this.load();
+
+            $scope.$watch(() => this.usePublishedFDC,(newval, oldval) => {
+                this.studyAreaService.selectedStudyAreaExtensions.forEach(ext => {
+                    ext.parameters.forEach(p => {
+                        if (p.code == "usePublishedFDC") {p.value = this.usePublishedFDC; }
+                    })
+                });
+            });
         }
         //Methods  
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -88,7 +97,7 @@ module StreamStats.Controllers {
         }
         public setReferenceGageFromMap(name) {
             this.isBusy = true;
-            this.studyAreaService.doQueryNWIS = true;
+            this.studyAreaService.doSelectMapGage = true;
             this.modalInstance.dismiss('cancel');
         }
         public setBestCorrelatedReferenceGage() {
@@ -143,6 +152,9 @@ module StreamStats.Controllers {
                 parameters[pcodes.indexOf('edate')].value = this.dateRange.dates.endDate;
 
             }//endif
+            if (['usePublishedFDC'].some(r => pcodes.indexOf(r) > -1)) {
+                this.usePublishedFDC = false;
+            }//endif
 
         }
         private load(): void {
@@ -160,8 +172,12 @@ module StreamStats.Controllers {
                     if (f.code == "sdate") this.dateRange.dates.startDate = f.value;
                     if (f.code == "edate") this.dateRange.dates.endDate = f.value;
                 }
+                if (this.usePublishedFDC != undefined && ['usePublishedFDC'].indexOf(f.code) > -1) {
+                    this.usePublishedFDC = f.value;
+                }
             } while (parameters.length > 0);
            
+            this.studyAreaService.selectedGage = this.selectedReferenceGage;
         }
         private verifyExtensionCanContinue(): boolean {
 
@@ -185,6 +201,7 @@ module StreamStats.Controllers {
             this.studyAreaService.selectedStudyAreaExtensions.forEach(ext => {
                 ext.parameters.forEach(p => {
                     if (p.code == "sid") { p.value = this.selectedReferenceGage.StationID };
+                    if (p.code == "usePublishedFDC") {p.value = this.usePublishedFDC; }
                 })
             });
 
@@ -215,6 +232,10 @@ module StreamStats.Controllers {
 
             this.load();
             this.isBusy = false;
+        }
+        public updateReferenceGage(item) {
+            this.selectedReferenceGage = item;
+            this.studyAreaService.selectedGage = item;
         }
     }//end  class
 

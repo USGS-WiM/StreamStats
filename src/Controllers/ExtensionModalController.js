@@ -19,6 +19,15 @@ var StreamStats;
                 };
                 this.init();
                 this.load();
+                $scope.$watch(function () { return _this.usePublishedFDC; }, function (newval, oldval) {
+                    _this.studyAreaService.selectedStudyAreaExtensions.forEach(function (ext) {
+                        ext.parameters.forEach(function (p) {
+                            if (p.code == "usePublishedFDC") {
+                                p.value = _this.usePublishedFDC;
+                            }
+                        });
+                    });
+                });
             }
             ExtensionModalController.prototype.close = function () {
                 this.modalInstance.dismiss('cancel');
@@ -30,7 +39,7 @@ var StreamStats;
             };
             ExtensionModalController.prototype.setReferenceGageFromMap = function (name) {
                 this.isBusy = true;
-                this.studyAreaService.doQueryNWIS = true;
+                this.studyAreaService.doSelectMapGage = true;
                 this.modalInstance.dismiss('cancel');
             };
             ExtensionModalController.prototype.setBestCorrelatedReferenceGage = function () {
@@ -77,6 +86,9 @@ var StreamStats;
                     parameters[pcodes.indexOf('sdate')].value = this.dateRange.dates.startDate;
                     parameters[pcodes.indexOf('edate')].value = this.dateRange.dates.endDate;
                 }
+                if (['usePublishedFDC'].some(function (r) { return pcodes.indexOf(r) > -1; })) {
+                    this.usePublishedFDC = false;
+                }
             };
             ExtensionModalController.prototype.load = function () {
                 var parameters = this.getExtensionParameters();
@@ -94,7 +106,11 @@ var StreamStats;
                         if (f.code == "edate")
                             this.dateRange.dates.endDate = f.value;
                     }
+                    if (this.usePublishedFDC != undefined && ['usePublishedFDC'].indexOf(f.code) > -1) {
+                        this.usePublishedFDC = f.value;
+                    }
                 } while (parameters.length > 0);
+                this.studyAreaService.selectedGage = this.selectedReferenceGage;
             };
             ExtensionModalController.prototype.verifyExtensionCanContinue = function () {
                 var _this = this;
@@ -116,6 +132,9 @@ var StreamStats;
                             p.value = _this.selectedReferenceGage.StationID;
                         }
                         ;
+                        if (p.code == "usePublishedFDC") {
+                            p.value = _this.usePublishedFDC;
+                        }
                     });
                 });
                 return true;
@@ -144,6 +163,10 @@ var StreamStats;
                 }));
                 this.load();
                 this.isBusy = false;
+            };
+            ExtensionModalController.prototype.updateReferenceGage = function (item) {
+                this.selectedReferenceGage = item;
+                this.studyAreaService.selectedGage = item;
             };
             ExtensionModalController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.ModalService', 'StreamStats.Services.StudyAreaService'];
             return ExtensionModalController;

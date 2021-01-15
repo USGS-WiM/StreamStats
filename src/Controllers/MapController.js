@@ -132,7 +132,7 @@ var StreamStats;
                         return;
                     if (_this.explorationService.drawElevationProfile)
                         return;
-                    if (_this.studyArea.doQueryNWIS) {
+                    if (_this.studyArea.doSelectMapGage) {
                         _this.studyArea.queryNWIS(args.leafletEvent.latlng);
                         return;
                     }
@@ -952,6 +952,9 @@ var StreamStats;
                     var self = this;
                     this.geojson[LayerName] = {
                         data: feature,
+                        style: {
+                            displayName: 'Streamgages'
+                        },
                         onEachFeature: function (feature, layer) {
                             var siteNo = feature.properties['Code'];
                             var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm';
@@ -972,7 +975,7 @@ var StreamStats;
                                 iconUrl: 'data:image/png;base64,' + styling.imageData,
                                 iconSize: [15, 16],
                                 iconAnchor: [7.5, 8],
-                                popupAnchor: [0, -11]
+                                popupAnchor: [0, -11],
                             });
                             layer.setIcon(icon);
                             L.DomEvent.on(gageButtonDiv, 'click', function (event) {
@@ -980,6 +983,18 @@ var StreamStats;
                                 if (id === 'gagePageLink') {
                                     self.openGagePage(siteNo);
                                 }
+                            });
+                            layer.on('mouseover', function (e) {
+                                if (self.studyArea.doSelectMapGage)
+                                    this.openPopup();
+                            });
+                            layer.on('click', function (e) {
+                                if (self.studyArea.doSelectMapGage) {
+                                    self.studyArea.selectGage(feature);
+                                    self.studyArea.doSelectMapGage = false;
+                                }
+                                else
+                                    this.openPopup();
                             });
                         }
                     };
