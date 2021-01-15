@@ -44,7 +44,7 @@
             <dt>Time:</dt><dd>{{vm.studyAreaService.selectedStudyArea.Date | date:'yyyy-MM-dd HH:mm:ss Z'}}</dd>
         </dl>-->
 
-                    <leaflet id="reportMap" width="100%" height="400px" layers="vm.layers" center="vm.center" defaults="vm.defaults"></leaflet><br />
+                    <leaflet id="reportMap" width="100%" height="400px" layers="vm.layers" geojson="vm.geojson" geojson-nested="true" center="vm.center" defaults="vm.defaults"></leaflet><br />
 
                 </div>
 
@@ -188,7 +188,9 @@
                                         <tbody>
                                             <tr>
                                                 <td>Station ID:</td>
-                                                <td><a ng-attr-title={{sc.result.referanceGage.name}} ng-href={{sc.result.referanceGage.url}} target="_blank">{{sc.result.referanceGage.stationID}}</a></td>
+                                                <td><a ng-attr-title={{sc.result.referanceGage.name}} ng-href={{sc.result.referanceGage.url}} target="_blank">{{sc.result.referanceGage.stationID}}</a>&nbsp;
+                                                    <a ng-click="vm.openGagePage(sc.result.referanceGage.stationID)">Open Gage Page</a>
+                                                </td>
                                             </tr>
                                             <tr>
                                                 <td>Name:</td>

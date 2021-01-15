@@ -59,7 +59,7 @@ module StreamStats.Services {
         getflattenStudyArea(): any
         simplify(Feature: any);
         selectedStudyAreaExtensions: Array<any>;
-        doQueryNWIS: boolean;
+        doSelectMapGage: boolean;
         queryNWIS(point: any): void;
         GetKriggedReferenceGages(): void;
         NSSServicesVersion: string;
@@ -68,6 +68,7 @@ module StreamStats.Services {
         getStreamgages(xmin: number, xmax: number, ymin: number, ymax: number);
         streamgageLayer: any;
         extensionDateRange: IDateRange;
+        selectedGage: any;
     }
 
     interface IDateRange {
@@ -147,7 +148,7 @@ module StreamStats.Services {
         public baseMap: Object;
         public showModifyBasinCharacterstics: boolean;
         public surfacecontributionsonly: boolean = false;
-        public doQueryNWIS: boolean = false;
+        public doSelectMapGage: boolean = false;
         public doSelectNearestGage: boolean = false;
         //public requestParameterList: Array<any>; jkn
         private modalservices: IModalService;
@@ -156,6 +157,7 @@ module StreamStats.Services {
         
         //QPPQ
         public extensionDateRange: IDateRange = null;
+        public selectedGage: any;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -837,7 +839,6 @@ module StreamStats.Services {
                                 siteList.push(rg);
                             }
                         } while (data.length > 0);
-
                         if (siteList.length > 0) {                           
                             sid[0].options = siteList;
                             sid[0].value = siteList[0];
@@ -845,7 +846,7 @@ module StreamStats.Services {
                             this.toaster.pop('success', "Found USGS NWIS reference gage", "Please continue", 5000);
                              //reopen modal
                             this.modalservices.openModal(SSModalType.e_extensionsupport);
-                            this.doQueryNWIS = false;
+                            this.doSelectMapGage = false;
                         }
                     }
 

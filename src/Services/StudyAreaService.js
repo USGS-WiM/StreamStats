@@ -46,7 +46,7 @@ var StreamStats;
                 _this.eventManager = eventManager;
                 _this._onStudyAreaServiceFinishedChanged = new WiM.Event.Delegate();
                 _this.surfacecontributionsonly = false;
-                _this.doQueryNWIS = false;
+                _this.doSelectMapGage = false;
                 _this.doSelectNearestGage = false;
                 _this.NSSServicesVersion = '';
                 _this.extensionDateRange = null;
@@ -563,7 +563,7 @@ var StreamStats;
                             sid[0].value = siteList[0];
                             _this.toaster.pop('success', "Found USGS NWIS reference gage", "Please continue", 5000);
                             _this.modalservices.openModal(Services.SSModalType.e_extensionsupport);
-                            _this.doQueryNWIS = false;
+                            _this.doSelectMapGage = false;
                         }
                     }
                 }, function (error) {

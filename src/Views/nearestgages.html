@@ -79,7 +79,6 @@
                             <th>Drainage Area</th>
                             <th>Has Flow Duration Stats?</th><!-- won't be applicable to all...-->
                             <th></th>
-                            <th></th>
                         </thead>
                         <tbody>
                             <tr ng-repeat="gage in vm.nearbyGages">
@@ -89,7 +88,6 @@
                                     <td>{{gage.properties.StationType.name}}</td>
                                     <td>{{gage.properties.DrainageArea}}</td>
                                     <td>{{gage.properties.HasFlowDurationStats}}</td>
-                                    <td><a ng-click="vm.showOnMap(gage)">Show on Map</a></td>
                                     <td ng-show="vm.studyAreaService.doSelectNearestGage"><a ng-click="vm.selectGage(gage)">Select Gage</a></td>
                                 </div>
                             </tr>

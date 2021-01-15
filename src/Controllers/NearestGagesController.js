@@ -169,9 +169,6 @@ var StreamStats;
                     this.studyAreaService.selectGage(gage);
                 }
             };
-            NearestGagesController.prototype.showOnMap = function (gage) {
-                console.log('TODO: show on map');
-            };
             NearestGagesController.prototype.openGagePage = function (siteid) {
                 console.log('gage page id:', siteid);
                 this.modalService.openModal(StreamStats.Services.SSModalType.e_gagepage, { 'siteid': siteid });
