@@ -32,7 +32,8 @@ var StreamStats;
                 _this.nssService = nssService;
                 _this.AnnualTotalWithdrawals = 0;
                 _this.AnnualTotalReturns = 0;
-                _this.Q10 = 39.5 * 0.646316889697;
+                _this.permits_sw = { name: "Temporary water-use registrations (surface water)", aveReturn: "", aveWithdrawal: "---" };
+                _this.permits_gw = { name: "Temporary water-use registrations (ground water)", aveReturn: "", aveWithdrawal: "---" };
                 $scope.vm = _this;
                 _this.modalInstance = modal;
                 _this.StudyArea = studyAreaService.selectedStudyArea;
@@ -68,6 +69,24 @@ var StreamStats;
             Object.defineProperty(WateruseController.prototype, "YearRange", {
                 get: function () {
                     return this._yearRange;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(WateruseController.prototype, "Q10", {
+                get: function () {
+                    if (this.NSSService.selectedStatisticsGroupList) {
+                        if (this.NSSService.selectedStatisticsGroupList[0]) {
+                            if (this.NSSService.selectedStatisticsGroupList[0].regressionRegions[0]) {
+                                if (this.NSSService.selectedStatisticsGroupList[0].regressionRegions[0].results[0] && this.AnnualTotalReturns && this.AnnualTotalWithdrawals && this.permits_gw.aveWithdrawal && this.permits_sw.aveWithdrawal) {
+                                    return +this.NSSService.selectedStatisticsGroupList[0].regressionRegions[0].results[0].value * 0.646316889697;
+                                }
+                            }
+                        }
+                    }
+                    else {
+                        return "---";
+                    }
                 },
                 enumerable: true,
                 configurable: true
@@ -224,8 +243,6 @@ var StreamStats;
                             tableFields = ["", "Average Return", "Average Withdrawal"];
                             var sw = { name: "Surface Water", aveReturn: "---", aveWithdrawal: "---", unit: "MGD" };
                             var gw = { name: "Groundwater", aveReturn: "---", aveWithdrawal: "---", unit: "MGD" };
-                            var permits_sw = { name: "Temporary water-use registrations (surface water)", aveReturn: "", aveWithdrawal: "---" };
-                            var permits_gw = { name: "Temporary water-use registrations (ground water)", aveReturn: "", aveWithdrawal: "---" };
                             var index_wo_reg = { name: "Water-use index (dimensionless) without temporary registrations", aveWithdrawal: "---" };
                             var index_reg = { name: "Water-use index (dimensionless) with temporary registrations", aveWithdrawal: "---" };
                             if (this.result.hasOwnProperty("withdrawal") && this.result.withdrawal.hasOwnProperty("annual")) {
@@ -245,9 +262,9 @@ var StreamStats;
                             if (this.result.hasOwnProperty("withdrawal") && this.result.withdrawal.hasOwnProperty("permitted")) {
                                 var permitted = this.result.withdrawal.permitted;
                                 if (permitted.hasOwnProperty("Intake"))
-                                    permits_sw.aveWithdrawal = permitted.Intake.value;
+                                    this.permits_sw.aveWithdrawal = permitted.Intake.value;
                                 if (permitted.hasOwnProperty("Well"))
-                                    permits_gw.aveWithdrawal = permitted.Well.value;
+                                    this.permits_gw.aveWithdrawal = permitted.Well.value;
                             }
                             tableValues.push(sw);
                             tableValues.push(gw);
@@ -257,25 +274,14 @@ var StreamStats;
                                 aveWithdrawal: (isNaN(+sw.aveWithdrawal) && isNaN(+gw.aveWithdrawal)) ? "---" : ((isNaN(+sw.aveWithdrawal) ? 0 : +sw.aveWithdrawal) + (isNaN(+gw.aveWithdrawal) ? 0 : +gw.aveWithdrawal)).toFixed(3)
                             });
                             tableValues.push({ name: "", aveReturn: "", aveWithdrawal: "" });
-                            tableValues.push(permits_sw);
-                            tableValues.push(permits_gw);
+                            tableValues.push(this.permits_sw);
+                            tableValues.push(this.permits_gw);
                             tableValues.push({
                                 name: "Temporary water-use registrations (total)",
                                 aveReturn: "",
-                                aveWithdrawal: (isNaN(+permits_sw.aveWithdrawal) && isNaN(+permits_gw.aveWithdrawal)) ? "---" : ((isNaN(+permits_sw.aveWithdrawal) ? 0 : +permits_sw.aveWithdrawal) + (isNaN(+permits_gw.aveWithdrawal) ? 0 : +permits_gw.aveWithdrawal))
+                                aveWithdrawal: (isNaN(+this.permits_sw.aveWithdrawal) && isNaN(+this.permits_gw.aveWithdrawal)) ? "---" : ((isNaN(+this.permits_sw.aveWithdrawal) ? 0 : +this.permits_sw.aveWithdrawal) + (isNaN(+this.permits_gw.aveWithdrawal) ? 0 : +this.permits_gw.aveWithdrawal))
                             });
                             tableValues.push({ name: "", aveReturn: "", aveWithdrawal: "" });
-                            tableValues.push({
-                                name: "Water-use index (dimensionless) without temporary registrations:",
-                                aveReturn: "",
-                                aveWithdrawal: ((isNaN(this.AnnualTotalWithdrawals) && isNaN(this.AnnualTotalReturns)) ? "---" : (((isNaN(this.AnnualTotalWithdrawals) ? 0 : this.AnnualTotalWithdrawals) - (isNaN(this.AnnualTotalReturns) ? 0 : this.AnnualTotalReturns)) / +this.Q10).toFixed(3))
-                            });
-                            console.log("total withdrawals: " + this.AnnualTotalWithdrawals + ", total returns: " + this.AnnualTotalReturns + ", q10: " + this.Q10 + ", gw withdr: " + permits_gw.aveWithdrawal + ", sw withdr: " + permits_sw.aveWithdrawal);
-                            tableValues.push({
-                                name: "Water-use index (dimensionless) with temporary registrations:",
-                                aveReturn: "",
-                                aveWithdrawal: ((isNaN(this.AnnualTotalWithdrawals) && isNaN(this.AnnualTotalReturns) && isNaN(+permits_sw.aveWithdrawal) && isNaN(+permits_gw.aveWithdrawal)) ? "---" : (((isNaN(+permits_gw.aveWithdrawal) ? 0 : +permits_gw.aveWithdrawal) + (isNaN(+permits_sw.aveWithdrawal) ? 0 : +permits_sw.aveWithdrawal) + ((isNaN(this.AnnualTotalWithdrawals) ? 0 : this.AnnualTotalWithdrawals) - (isNaN(this.AnnualTotalReturns) ? 0 : this.AnnualTotalReturns))) / +this.Q10).toFixed(3))
-                            });
                             break;
                     }
                     return {

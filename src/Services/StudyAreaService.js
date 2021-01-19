@@ -681,7 +681,6 @@ var StreamStats;
                     _this.eventManager.SubscribeToEvent(Services.onSelectedStudyParametersLoaded, new WiM.Event.EventHandler(function (sender, e) {
                         if (e != null && e.parameterLoaded) {
                             _this.nssService.estimateFlows(_this.studyAreaParameterList, "value", _this.selectedStudyArea.RegionID, false, regtype, false);
-                            console.log(_this.nssService.selectedStatisticsGroupList);
                         }
                     }));
                     _this.loadParameters();
