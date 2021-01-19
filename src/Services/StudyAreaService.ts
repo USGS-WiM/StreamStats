@@ -989,7 +989,7 @@ module StreamStats.Services {
                 this.eventManager.SubscribeToEvent(onSelectedStudyParametersLoaded, new WiM.Event.EventHandler<StudyAreaEventArgs>((sender: any, e: StudyAreaEventArgs) => {
                     if(e != null && e.parameterLoaded) {                    
                         this.nssService.estimateFlows(this.studyAreaParameterList,"value", this.selectedStudyArea.RegionID, false, regtype, false);
-                        console.log(this.nssService.selectedStatisticsGroupList);
+                        //console.log(this.nssService.selectedStatisticsGroupList);
                     }
                 }));
                 this.loadParameters();

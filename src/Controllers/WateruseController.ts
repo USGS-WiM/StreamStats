@@ -89,8 +89,8 @@ module StreamStats.Controllers {
         public computeDomesticWU: boolean;
 
         public CanContinue: boolean;
-        public AnnualTotalWithdrawals = 0;
-        public AnnualTotalReturns = 0;
+        private AnnualTotalWithdrawals = 0;
+        private AnnualTotalReturns = 0;
         public MonthlyReportOptions: any;
         public MonthlyReturnReportOptions: any;
         public AnnualReportOptions: any;
@@ -98,7 +98,20 @@ module StreamStats.Controllers {
         public SelectedTab: WaterUseTabType;
         public SelectedWaterUseType: WaterUseType; 
         public ReportData: IWaterUseReportable;
-        public Q10 = 39.5 * 0.646316889697;
+        public get Q10(): any {
+            if(this.NSSService.selectedStatisticsGroupList) {
+                if(this.NSSService.selectedStatisticsGroupList[0]) {
+                    if(this.NSSService.selectedStatisticsGroupList[0].regressionRegions[0]) {
+                        if(this.NSSService.selectedStatisticsGroupList[0].regressionRegions[0].results[0] && this.AnnualTotalReturns && this.AnnualTotalWithdrawals && this.permits_gw.aveWithdrawal && this.permits_sw.aveWithdrawal) {
+                            return +this.NSSService.selectedStatisticsGroupList[0].regressionRegions[0].results[0].value * 0.646316889697;
+                        }
+                    }
+                } 
+            } else { return "---" }            
+        }
+
+        private permits_sw = { name: "Temporary water-use registrations (surface water)", aveReturn: "", aveWithdrawal: "---"};
+        private permits_gw = { name: "Temporary water-use registrations (ground water)", aveReturn: "", aveWithdrawal: "---"};
       //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance', '$timeout', 'WiM.Event.EventManager', 'StreamStats.Services.StudyAreaService'];
@@ -291,8 +304,8 @@ module StreamStats.Controllers {
                         tableFields = ["", "Average Return", "Average Withdrawal"];
                         var sw = { name: "Surface Water", aveReturn: "---", aveWithdrawal: "---", unit: "MGD" };
                         var gw = { name: "Groundwater", aveReturn: "---", aveWithdrawal: "---", unit: "MGD" };
-                        var permits_sw = { name: "Temporary water-use registrations (surface water)", aveReturn: "", aveWithdrawal: "---"};
-                        var permits_gw = { name: "Temporary water-use registrations (ground water)", aveReturn: "", aveWithdrawal: "---"};
+                        //var permits_sw = { name: "Temporary water-use registrations (surface water)", aveReturn: "", aveWithdrawal: "---"};
+                        //var permits_gw = { name: "Temporary water-use registrations (ground water)", aveReturn: "", aveWithdrawal: "---"};
                         var index_wo_reg = { name: "Water-use index (dimensionless) without temporary registrations", aveWithdrawal: "---"};
                         var index_reg = { name: "Water-use index (dimensionless) with temporary registrations", aveWithdrawal: "---"};
                     
@@ -308,8 +321,8 @@ module StreamStats.Controllers {
                         }
                         if (this.result.hasOwnProperty("withdrawal") && this.result.withdrawal.hasOwnProperty("permitted")) {
                             var permitted = this.result.withdrawal.permitted;
-                            if (permitted.hasOwnProperty("Intake")) permits_sw.aveWithdrawal = permitted.Intake.value;
-                            if (permitted.hasOwnProperty("Well")) permits_gw.aveWithdrawal = permitted.Well.value;
+                            if (permitted.hasOwnProperty("Intake")) this.permits_sw.aveWithdrawal = permitted.Intake.value;
+                            if (permitted.hasOwnProperty("Well")) this.permits_gw.aveWithdrawal = permitted.Well.value;
                         }
                         tableValues.push(sw);
                         tableValues.push(gw);
@@ -320,28 +333,28 @@ module StreamStats.Controllers {
                                 aveWithdrawal: (isNaN(+sw.aveWithdrawal) && isNaN(+gw.aveWithdrawal)) ? "---" : ((isNaN(+sw.aveWithdrawal) ? 0 : +sw.aveWithdrawal) + (isNaN(+gw.aveWithdrawal) ? 0 : +gw.aveWithdrawal)).toFixed(3) 
                             });
                         tableValues.push({ name: "", aveReturn: "", aveWithdrawal: "" });
-                        tableValues.push(permits_sw);
-                        tableValues.push(permits_gw);
+                        tableValues.push(this.permits_sw);
+                        tableValues.push(this.permits_gw);
                         tableValues.push(
                             {
                                 name: "Temporary water-use registrations (total)",
                                 aveReturn: "",
-                                aveWithdrawal: (isNaN(+permits_sw.aveWithdrawal) && isNaN(+permits_gw.aveWithdrawal)) ? "---" : ((isNaN(+permits_sw.aveWithdrawal) ? 0 : +permits_sw.aveWithdrawal) + (isNaN(+permits_gw.aveWithdrawal) ? 0 : +permits_gw.aveWithdrawal))//.toFixed(3) 
+                                aveWithdrawal: (isNaN(+this.permits_sw.aveWithdrawal) && isNaN(+this.permits_gw.aveWithdrawal)) ? "---" : ((isNaN(+this.permits_sw.aveWithdrawal) ? 0 : +this.permits_sw.aveWithdrawal) + (isNaN(+this.permits_gw.aveWithdrawal) ? 0 : +this.permits_gw.aveWithdrawal))//.toFixed(3) 
                             });
                         tableValues.push({ name: "", aveReturn: "", aveWithdrawal: "" });
-                        tableValues.push(
-                            {
-                                name: "Water-use index (dimensionless) without temporary registrations:",
-                                aveReturn: "",
-                                aveWithdrawal: ((isNaN(this.AnnualTotalWithdrawals) && isNaN(this.AnnualTotalReturns)) ? "---" : (((isNaN(this.AnnualTotalWithdrawals) ? 0 : this.AnnualTotalWithdrawals) - (isNaN(this.AnnualTotalReturns) ? 0 : this.AnnualTotalReturns)) / +this.Q10).toFixed(3))
-                            });
-                        console.log("total withdrawals: " + this.AnnualTotalWithdrawals + ", total returns: " + this.AnnualTotalReturns + ", q10: " + this.Q10 + ", gw withdr: " + permits_gw.aveWithdrawal + ", sw withdr: " + permits_sw.aveWithdrawal);
-                        tableValues.push(
-                            {
-                                name: "Water-use index (dimensionless) with temporary registrations:",
-                                aveReturn: "",
-                                aveWithdrawal: ((isNaN(this.AnnualTotalWithdrawals) && isNaN(this.AnnualTotalReturns) && isNaN(+permits_sw.aveWithdrawal) && isNaN(+permits_gw.aveWithdrawal)) ? "---" : (((isNaN(+permits_gw.aveWithdrawal) ? 0 : +permits_gw.aveWithdrawal) + (isNaN(+permits_sw.aveWithdrawal) ? 0 : +permits_sw.aveWithdrawal) + ((isNaN(this.AnnualTotalWithdrawals) ? 0 : this.AnnualTotalWithdrawals) - (isNaN(this.AnnualTotalReturns) ? 0 : this.AnnualTotalReturns))) / +this.Q10).toFixed(3)) 
-                            });
+                        // tableValues.push(
+                        //     {
+                        //         name: "Water-use index (dimensionless) without temporary registrations:",
+                        //         aveReturn: "",
+                        //         aveWithdrawal: ((isNaN(this.AnnualTotalWithdrawals) && isNaN(this.AnnualTotalReturns)) ? "---" : (((isNaN(this.AnnualTotalWithdrawals) ? 0 : this.AnnualTotalWithdrawals) - (isNaN(this.AnnualTotalReturns) ? 0 : this.AnnualTotalReturns)) / +this.Q10).toFixed(3))
+                        //     });
+                        // console.log("total withdrawals: " + this.AnnualTotalWithdrawals + ", total returns: " + this.AnnualTotalReturns + ", q10: " + this.Q10 + ", gw withdr: " + permits_gw.aveWithdrawal + ", sw withdr: " + permits_sw.aveWithdrawal);
+                        // tableValues.push(
+                        //     {
+                        //         name: "Water-use index (dimensionless) with temporary registrations:",
+                        //         aveReturn: "",
+                        //         aveWithdrawal: ((isNaN(this.AnnualTotalWithdrawals) && isNaN(this.AnnualTotalReturns) && isNaN(+permits_sw.aveWithdrawal) && isNaN(+permits_gw.aveWithdrawal)) ? "---" : (((isNaN(+permits_gw.aveWithdrawal) ? 0 : +permits_gw.aveWithdrawal) + (isNaN(+permits_sw.aveWithdrawal) ? 0 : +permits_sw.aveWithdrawal) + ((isNaN(this.AnnualTotalWithdrawals) ? 0 : this.AnnualTotalWithdrawals) - (isNaN(this.AnnualTotalReturns) ? 0 : this.AnnualTotalReturns))) / +this.Q10).toFixed(3)) 
+                        //     });
                         break;
                 }//end switch
 
