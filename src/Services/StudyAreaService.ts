@@ -27,6 +27,7 @@ module StreamStats.Services {
     'use strict'
     export interface IStudyAreaService {
         onStudyAreaServiceBusyChanged: WiM.Event.Delegate<WiM.Event.EventArgs>;
+        onQ10Loaded: WiM.Event.Delegate<WiM.Event.EventArgs>;
         selectedStudyArea: Models.IStudyArea;
         undoEdit();
         loadParameters();
@@ -70,6 +71,7 @@ module StreamStats.Services {
     export var onSelectedStudyParametersLoaded: string = "onSelectedStudyParametersLoaded";
     export var onStudyAreaReset: string = "onStudyAreaReset";
     export var onEditClick: string = "onEditClick";
+    //export var onQ10Loaded: string = "onQ10Loaded";
     export var onRegressionLoaded: string = "onRegressionLoaded";
     export class StudyAreaEventArgs extends WiM.Event.EventArgs {
         //properties
@@ -92,6 +94,11 @@ module StreamStats.Services {
         private _onStudyAreaServiceFinishedChanged: WiM.Event.Delegate<WiM.Event.EventArgs> = new WiM.Event.Delegate<WiM.Event.EventArgs>();
         public get onStudyAreaServiceBusyChanged(): WiM.Event.Delegate<WiM.Event.EventArgs> {
             return this._onStudyAreaServiceFinishedChanged;
+        }
+
+        private _onQ10Loaded: WiM.Event.Delegate<WiM.Event.EventArgs>;
+        public get onQ10Loaded(): WiM.Event.Delegate<WiM.Event.EventArgs> {
+            return this._onQ10Loaded;
         }
 
         //Properties
@@ -145,6 +152,7 @@ module StreamStats.Services {
         constructor(public $http: ng.IHttpService, private $q: ng.IQService, private eventManager: WiM.Event.IEventManager, toaster, modal: Services.IModalService, private nssService: Services.InssService) {
             super($http, configuration.baseurls['StreamStatsServices'])
             this.modalservices = modal;
+            this._onQ10Loaded = new WiM.Event.Delegate<WiM.Event.EventArgs>(); 
             eventManager.AddEvent<StudyAreaEventArgs>(onSelectedStudyParametersLoaded);
             eventManager.AddEvent<StudyAreaEventArgs>(onSelectedStudyAreaChanged);
             eventManager.AddEvent<StudyAreaEventArgs>(onStudyAreaReset);
@@ -989,6 +997,7 @@ module StreamStats.Services {
                 this.eventManager.SubscribeToEvent(onSelectedStudyParametersLoaded, new WiM.Event.EventHandler<StudyAreaEventArgs>((sender: any, e: StudyAreaEventArgs) => {
                     if(e != null && e.parameterLoaded) {                    
                         this.nssService.estimateFlows(this.studyAreaParameterList,"value", this.selectedStudyArea.RegionID, false, regtype, false);
+                        this._onQ10Loaded.raise(null, WiM.Event.EventArgs.Empty);
                         //console.log(this.nssService.selectedStatisticsGroupList);
                     }
                 }));

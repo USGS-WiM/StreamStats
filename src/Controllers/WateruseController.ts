@@ -58,8 +58,8 @@ module StreamStats.Controllers {
         //-+-+-+-+-+-+-+-+-+-+-+-
         private StudyArea: StreamStats.Models.IStudyArea;
         private StudyAreaService: StreamStats.Services.IStudyAreaService;
-        public NSSService: StreamStats.Services.InssService;
         private modalInstance: ng.ui.bootstrap.IModalServiceInstance;
+        private NSSService: StreamStats.Services.InssService;
         public showResults: boolean;
         public spanYear: boolean;
         private _startYear: number; 
@@ -84,13 +84,20 @@ module StreamStats.Controllers {
         public get YearRange():any {
             return this._yearRange;
         }
+        private _indexWOReg: any;
+        public get IndexWOReg(): any {
+            return this._indexWOReg;
+        }
+        private _indexWReg: any;
+        public get IndexWReg(): any {
+            return this._indexWReg;
+        }
+
         public includePermits: boolean;
         public computeReturns: boolean;
         public computeDomesticWU: boolean;
 
         public CanContinue: boolean;
-        private AnnualTotalWithdrawals = 0;
-        private AnnualTotalReturns = 0;
         public MonthlyReportOptions: any;
         public MonthlyReturnReportOptions: any;
         public AnnualReportOptions: any;
@@ -98,24 +105,15 @@ module StreamStats.Controllers {
         public SelectedTab: WaterUseTabType;
         public SelectedWaterUseType: WaterUseType; 
         public ReportData: IWaterUseReportable;
-        public get Q10(): any {
-            if(this.NSSService.selectedStatisticsGroupList) {
-                if(this.NSSService.selectedStatisticsGroupList[0]) {
-                    if(this.NSSService.selectedStatisticsGroupList[0].regressionRegions[0]) {
-                        if(this.NSSService.selectedStatisticsGroupList[0].regressionRegions[0].results[0] && this.AnnualTotalReturns && this.AnnualTotalWithdrawals && this.permits_gw.aveWithdrawal && this.permits_sw.aveWithdrawal) {
-                            return +this.NSSService.selectedStatisticsGroupList[0].regressionRegions[0].results[0].value * 0.646316889697;
-                        }
-                    }
-                } 
-            } else { return "---" }            
-        }
 
         private permits_sw = { name: "Temporary water-use registrations (surface water)", aveReturn: "", aveWithdrawal: "---"};
         private permits_gw = { name: "Temporary water-use registrations (ground water)", aveReturn: "", aveWithdrawal: "---"};
+        private AnnualTotalWithdrawals = 0;
+        private AnnualTotalReturns = 0;
       //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance', '$timeout', 'WiM.Event.EventManager', 'StreamStats.Services.StudyAreaService'];
-        constructor($scope: IWateruseControllerScope, $http: ng.IHttpService, studyAreaService: StreamStats.Services.IStudyAreaService, modal:ng.ui.bootstrap.IModalServiceInstance, public $timeout:ng.ITimeoutService, private eventManager: WiM.Event.IEventManager, public nssService: Services.InssService) {
+        static $inject = ['$scope', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance', '$timeout', 'WiM.Event.EventManager', 'StreamStats.Services.nssService'];
+        constructor($scope: IWateruseControllerScope, $http: ng.IHttpService, studyAreaService: StreamStats.Services.IStudyAreaService, modal:ng.ui.bootstrap.IModalServiceInstance, public $timeout:ng.ITimeoutService, private eventManager: WiM.Event.IEventManager, nssService: Services.InssService) {
             super($http, configuration.baseurls.WaterUseServices);
             $scope.vm = this;
             this.modalInstance = modal;
@@ -152,7 +150,8 @@ module StreamStats.Controllers {
                     var x = error;
                     //sm when error                    
                 }).finally(() => {  
-                   this.CanContinue = true;        
+                    this.setIndexes(); 
+                    this.CanContinue = true;       
                 });
         }
         public Close(): void {
@@ -163,6 +162,21 @@ module StreamStats.Controllers {
         }
         public Print(): void {
             window.print();
+        }
+
+        private setIndexes(): any {
+            var Q10 = 0;
+            if(this.NSSService.selectedStatisticsGroupList) {
+                if(this.NSSService.selectedStatisticsGroupList[0]) {
+                    if(this.NSSService.selectedStatisticsGroupList[0].regressionRegions[0]) {
+                        if(this.NSSService.selectedStatisticsGroupList[0].regressionRegions[0].results[0] && this.AnnualTotalReturns != null && this.AnnualTotalWithdrawals != null && this.permits_gw.aveWithdrawal != null && this.permits_sw.aveWithdrawal != null) {
+                            Q10 = +this.NSSService.selectedStatisticsGroupList[0].regressionRegions[0].results[0].value * 0.646316889697;
+                            this._indexWOReg = (+this.AnnualTotalWithdrawals - +this.AnnualTotalReturns) / Q10;
+                            this._indexWReg = (+this.permits_gw.aveWithdrawal + +this.permits_sw.aveWithdrawal + (+this.AnnualTotalWithdrawals - +this.AnnualTotalReturns)) / Q10;
+                        }
+                    }
+                } 
+            } else { this._indexWOReg = "---"; this._indexWReg = "---"; }            
         }
         
         private loadGraphData(useType: WaterUseType): { returns: any, withdrawals: any } {
@@ -304,10 +318,6 @@ module StreamStats.Controllers {
                         tableFields = ["", "Average Return", "Average Withdrawal"];
                         var sw = { name: "Surface Water", aveReturn: "---", aveWithdrawal: "---", unit: "MGD" };
                         var gw = { name: "Groundwater", aveReturn: "---", aveWithdrawal: "---", unit: "MGD" };
-                        //var permits_sw = { name: "Temporary water-use registrations (surface water)", aveReturn: "", aveWithdrawal: "---"};
-                        //var permits_gw = { name: "Temporary water-use registrations (ground water)", aveReturn: "", aveWithdrawal: "---"};
-                        var index_wo_reg = { name: "Water-use index (dimensionless) without temporary registrations", aveWithdrawal: "---"};
-                        var index_reg = { name: "Water-use index (dimensionless) with temporary registrations", aveWithdrawal: "---"};
                     
                         if (this.result.hasOwnProperty("withdrawal") && this.result.withdrawal.hasOwnProperty("annual")) {                       
                             var annWith = this.result.withdrawal.annual;
@@ -342,19 +352,6 @@ module StreamStats.Controllers {
                                 aveWithdrawal: (isNaN(+this.permits_sw.aveWithdrawal) && isNaN(+this.permits_gw.aveWithdrawal)) ? "---" : ((isNaN(+this.permits_sw.aveWithdrawal) ? 0 : +this.permits_sw.aveWithdrawal) + (isNaN(+this.permits_gw.aveWithdrawal) ? 0 : +this.permits_gw.aveWithdrawal))//.toFixed(3) 
                             });
                         tableValues.push({ name: "", aveReturn: "", aveWithdrawal: "" });
-                        // tableValues.push(
-                        //     {
-                        //         name: "Water-use index (dimensionless) without temporary registrations:",
-                        //         aveReturn: "",
-                        //         aveWithdrawal: ((isNaN(this.AnnualTotalWithdrawals) && isNaN(this.AnnualTotalReturns)) ? "---" : (((isNaN(this.AnnualTotalWithdrawals) ? 0 : this.AnnualTotalWithdrawals) - (isNaN(this.AnnualTotalReturns) ? 0 : this.AnnualTotalReturns)) / +this.Q10).toFixed(3))
-                        //     });
-                        // console.log("total withdrawals: " + this.AnnualTotalWithdrawals + ", total returns: " + this.AnnualTotalReturns + ", q10: " + this.Q10 + ", gw withdr: " + permits_gw.aveWithdrawal + ", sw withdr: " + permits_sw.aveWithdrawal);
-                        // tableValues.push(
-                        //     {
-                        //         name: "Water-use index (dimensionless) with temporary registrations:",
-                        //         aveReturn: "",
-                        //         aveWithdrawal: ((isNaN(this.AnnualTotalWithdrawals) && isNaN(this.AnnualTotalReturns) && isNaN(+permits_sw.aveWithdrawal) && isNaN(+permits_gw.aveWithdrawal)) ? "---" : (((isNaN(+permits_gw.aveWithdrawal) ? 0 : +permits_gw.aveWithdrawal) + (isNaN(+permits_sw.aveWithdrawal) ? 0 : +permits_sw.aveWithdrawal) + ((isNaN(this.AnnualTotalWithdrawals) ? 0 : this.AnnualTotalWithdrawals) - (isNaN(this.AnnualTotalReturns) ? 0 : this.AnnualTotalReturns))) / +this.Q10).toFixed(3)) 
-                        //     });
                         break;
                 }//end switch
 
@@ -505,7 +502,10 @@ module StreamStats.Controllers {
                         this._yearRange = { floor: 2005, draggableRange: true, noSwitching: true, showTicks: false, ceil: 2012 };
                         //sm when error                    
                     }).finally(() => {
-                        this.CanContinue = true;
+                        this.StudyAreaService.onQ10Loaded.subscribe(new WiM.Event.EventHandler<Services.StudyAreaEventArgs>((sender: any, e: Services.StudyAreaEventArgs) => {
+                            this.CanContinue = true;
+                        }));
+                        
                 this.showResults = false;
 
                 this.SelectedTab = WaterUseTabType.Graph;

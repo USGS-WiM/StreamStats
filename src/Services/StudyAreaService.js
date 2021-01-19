@@ -51,6 +51,7 @@ var StreamStats;
                 _this.doQueryNWIS = false;
                 _this.NSSServicesVersion = '';
                 _this.modalservices = modal;
+                _this._onQ10Loaded = new WiM.Event.Delegate();
                 eventManager.AddEvent(Services.onSelectedStudyParametersLoaded);
                 eventManager.AddEvent(Services.onSelectedStudyAreaChanged);
                 eventManager.AddEvent(Services.onStudyAreaReset);
@@ -73,6 +74,13 @@ var StreamStats;
             Object.defineProperty(StudyAreaService.prototype, "onStudyAreaServiceBusyChanged", {
                 get: function () {
                     return this._onStudyAreaServiceFinishedChanged;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(StudyAreaService.prototype, "onQ10Loaded", {
+                get: function () {
+                    return this._onQ10Loaded;
                 },
                 enumerable: true,
                 configurable: true
@@ -681,6 +689,7 @@ var StreamStats;
                     _this.eventManager.SubscribeToEvent(Services.onSelectedStudyParametersLoaded, new WiM.Event.EventHandler(function (sender, e) {
                         if (e != null && e.parameterLoaded) {
                             _this.nssService.estimateFlows(_this.studyAreaParameterList, "value", _this.selectedStudyArea.RegionID, false, regtype, false);
+                            _this._onQ10Loaded.raise(null, WiM.Event.EventArgs.Empty);
                         }
                     }));
                     _this.loadParameters();
