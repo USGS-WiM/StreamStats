@@ -27,6 +27,7 @@ module StreamStats.Services {
     'use strict'
     export interface InssService {
         onSelectedStatisticsGroupChanged: WiM.Event.Delegate<WiM.Event.EventArgs>;
+        onQ10Loaded: WiM.Event.Delegate<WiM.Event.EventArgs>;
         statisticsGroupList: Array<IStatisticsGroup>;
         selectedStatisticsGroupList: Array<IStatisticsGroup>;
         loadStatisticsGroupTypes(rcode: string, regressionregion: string):Array<any>;
@@ -107,6 +108,10 @@ module StreamStats.Services {
             return this._onSelectedStatisticsGroupChanged;
         }
 
+        private _onQ10Loaded: WiM.Event.Delegate<WiM.Event.EventArgs>;
+        public get onQ10Loaded(): WiM.Event.Delegate<WiM.Event.EventArgs> {
+            return this._onQ10Loaded;
+        }
 
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-loadingParametersByStatisticsGroupCounter
@@ -130,7 +135,8 @@ module StreamStats.Services {
             super($http, configuration.baseurls['NSS']);
             this.toaster = toaster;
             this.modalService = modal;
-            this._onSelectedStatisticsGroupChanged = new WiM.Event.Delegate<WiM.Event.EventArgs>();            
+            this._onSelectedStatisticsGroupChanged = new WiM.Event.Delegate<WiM.Event.EventArgs>();    
+            this._onQ10Loaded = new WiM.Event.Delegate<WiM.Event.EventArgs>();         
 
             this.clearNSSdata();
         }
@@ -218,7 +224,7 @@ module StreamStats.Services {
                 url = url + "&extensions=QPPQ";
             } 
             url = url.format(rcode, statisticsGroupID, regressionregions);
-            if (regressionTypes != "") {
+            if (regressionTypes) {
                 url += "&regressiontypes=" + regressionTypes;
             }
 
@@ -235,6 +241,7 @@ module StreamStats.Services {
                     //check to make sure there is a valid response
                     if (response.data[0].regressionRegions[0].parameters && response.data[0].regressionRegions[0].parameters.length > 0) {
 
+                        //only for OH Water Use when user doesn't select a scenario
                         if(this.selectedStatisticsGroupList.length == 0) {
                             this.selectedStatisticsGroupList.push({'name': "", 'id': "7", 'code': "", 'regressionRegions': [], 'citations': null, 'disclaimers': ""})
                         }
@@ -425,10 +432,13 @@ module StreamStats.Services {
                                 this.modalService.openModal(Services.SSModalType.e_report);
                                 this.reportGenerated = true;
                             }
-                        }//end if                       
-                        
+                        }//end if 
+                        //for OH WU only     
+                        //this.studyareaservice.selectedStudyArea.wateruseQ10 = this.selectedStatisticsGroupList[0].regressionRegions[0].results[0].value;
+                        this._onQ10Loaded.raise(null, WiM.Event.EventArgs.Empty);                 
                     });
             });
+
         }
 
         public getSelectedCitations(citationUrl: string, statGroup: any): any {

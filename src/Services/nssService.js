@@ -47,12 +47,20 @@ var StreamStats;
                 _this.toaster = toaster;
                 _this.modalService = modal;
                 _this._onSelectedStatisticsGroupChanged = new WiM.Event.Delegate();
+                _this._onQ10Loaded = new WiM.Event.Delegate();
                 _this.clearNSSdata();
                 return _this;
             }
             Object.defineProperty(nssService.prototype, "onSelectedStatisticsGroupChanged", {
                 get: function () {
                     return this._onSelectedStatisticsGroupChanged;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(nssService.prototype, "onQ10Loaded", {
+                get: function () {
+                    return this._onQ10Loaded;
                 },
                 enumerable: true,
                 configurable: true
@@ -120,7 +128,7 @@ var StreamStats;
                     url = url + "&extensions=QPPQ";
                 }
                 url = url.format(rcode, statisticsGroupID, regressionregions);
-                if (regressionTypes != "") {
+                if (regressionTypes) {
                     url += "&regressiontypes=" + regressionTypes;
                 }
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
@@ -278,6 +286,7 @@ var StreamStats;
                                 _this.reportGenerated = true;
                             }
                         }
+                        _this._onQ10Loaded.raise(null, WiM.Event.EventArgs.Empty);
                     });
                 });
             };
