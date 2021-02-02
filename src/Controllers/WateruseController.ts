@@ -110,6 +110,7 @@ module StreamStats.Controllers {
         private permits_gw = { name: "Temporary water-use registrations (ground water)", aveReturn: "", aveWithdrawal: "---"};
         private AnnualTotalWithdrawals = 0;
         private AnnualTotalReturns = 0;
+        private Q10: any;
       //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance', '$timeout', 'WiM.Event.EventManager', 'StreamStats.Services.nssService'];
@@ -165,17 +166,9 @@ module StreamStats.Controllers {
         }
 
         private setIndexes(): any {
-            var Q10 = 0;
-            if(this.NSSService.selectedStatisticsGroupList) {
-                if(this.NSSService.selectedStatisticsGroupList[0]) {
-                    if(this.NSSService.selectedStatisticsGroupList[0].regressionRegions[0]) {
-                        if(this.NSSService.selectedStatisticsGroupList[0].regressionRegions[0].results[0] && this.AnnualTotalReturns != null && this.AnnualTotalWithdrawals != null && this.permits_gw.aveWithdrawal != null && this.permits_sw.aveWithdrawal != null) {
-                            Q10 = +this.NSSService.selectedStatisticsGroupList[0].regressionRegions[0].results[0].value * 0.646316889697;
-                            this._indexWOReg = (+this.AnnualTotalWithdrawals - +this.AnnualTotalReturns) / Q10;
-                            this._indexWReg = (+this.permits_gw.aveWithdrawal + +this.permits_sw.aveWithdrawal + (+this.AnnualTotalWithdrawals - +this.AnnualTotalReturns)) / Q10;
-                        }
-                    }
-                } 
+            if(this.Q10 != null && this.AnnualTotalReturns != null && this.AnnualTotalWithdrawals != null && this.permits_gw.aveWithdrawal != null && this.permits_sw.aveWithdrawal != null) {
+                this._indexWOReg = (+this.AnnualTotalWithdrawals - +this.AnnualTotalReturns) / +this.Q10;
+                this._indexWReg = (+this.permits_gw.aveWithdrawal + +this.permits_sw.aveWithdrawal + (+this.AnnualTotalWithdrawals - +this.AnnualTotalReturns)) / +this.Q10;
             } else { this._indexWOReg = "---"; this._indexWReg = "---"; }            
         }
         
@@ -503,7 +496,11 @@ module StreamStats.Controllers {
                         //sm when error                    
                     }).finally(() => {
                         this.StudyAreaService.onQ10Loaded.subscribe(new WiM.Event.EventHandler<Services.StudyAreaEventArgs>((sender: any, e: Services.StudyAreaEventArgs) => {
+                            this.Q10 = +this.StudyAreaService.selectedStudyArea.wateruseQ10 * 0.646316889697; //unit conversion cfs to mgd
                             this.CanContinue = true;
+                            this.StudyAreaService.onQ10Loaded.unsubscribe(new WiM.Event.EventHandler<Services.StudyAreaEventArgs>((sender: any, e: Services.StudyAreaEventArgs) => {
+                                return;
+                            }))
                         }));
                         
                 this.showResults = false;
