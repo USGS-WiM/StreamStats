@@ -2,9 +2,9 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
-    }
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -65,7 +65,7 @@ var StreamStats;
                     this._selectedPrecip = val;
                     this.PIntensity = null;
                 },
-                enumerable: true,
+                enumerable: false,
                 configurable: true
             });
             Object.defineProperty(StormRunoffController.prototype, "SelectedTab", {
@@ -78,7 +78,7 @@ var StreamStats;
                         this.selectRunoffType();
                     }
                 },
-                enumerable: true,
+                enumerable: false,
                 configurable: true
             });
             Object.defineProperty(StormRunoffController.prototype, "SelectedParametersAreValid", {
@@ -91,7 +91,7 @@ var StreamStats;
                     }
                     return true;
                 },
-                enumerable: true,
+                enumerable: false,
                 configurable: true
             });
             StormRunoffController.prototype.GetStormRunoffResults = function () {

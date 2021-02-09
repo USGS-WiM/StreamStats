@@ -224,7 +224,7 @@ module StreamStats.Services {
                 url = url + "&extensions=QPPQ";
             } 
             url = url.format(rcode, statisticsGroupID, regressionregions);
-            if (regressionTypes) {
+            if (regressionTypes != undefined) {
                 url += "&regressiontypes=" + regressionTypes;
             }
 
@@ -331,7 +331,7 @@ module StreamStats.Services {
                     url = url + "&extensions=QPPQ";
                 }
 
-                if (regressionTypes != "") {
+                if (regressionTypes != "" && regressionTypes != undefined) {
                     url += "&regressiontypes=" + regressionTypes;
                 }
 
