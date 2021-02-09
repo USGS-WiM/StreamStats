@@ -576,6 +576,7 @@ var StreamStats;
                 var rg = new StreamStats.Models.ReferenceGage(gage.properties.Code, gage.properties.Name);
                 rg.Latitude_DD = gage.geometry.coordinates[0];
                 rg.Longitude_DD = gage.geometry.coordinates[1];
+                rg.properties = gage.properties;
                 siteList.push(rg);
                 if (siteList.length > 0) {
                     sid[0].options = siteList;

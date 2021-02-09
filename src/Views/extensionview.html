@@ -19,18 +19,56 @@
             <h5>Select/Enter a reference gage.<small style="color:red">&nbsp;&nbsp;(Required)</small></h5>
 
             <span>
+                
+                <button class="btn-exploration-tools btn-green" ng-click="vm.setReferenceGageFromMap()" ng-disabled="vm.isBusy"><span><i ng-class=" vm.isBusy? 'fa fa-refresh fa-spin':'fa fa-map-marker'"></i>&nbsp;&nbsp;Select from Map</span></button>
+                <button class="btn-exploration-tools btn-green" ng-click="vm.setBestCorrelatedReferenceGage()" ng-disabled="vm.isBusy"><span><i ng-class="vm.isBusy? 'fa fa-crosshairs fa-spin':'fa fa-crosshairs'"></i>&nbsp;&nbsp;Best Correlated</span></button>
+                <button class="btn-exploration-tools btn-green" ng-click="vm.openNearestGages()" ng-disabled="vm.isBusy"><span><i ng-class="vm.isBusy? 'fa fa-crosshairs fa-spin':'fa fa-map-marker'"></i>&nbsp;&nbsp;Query Nearest Gages</span></button>
                 <!-- TODO: add option to enter gage number -->
-                <div ng-if="vm.selectedReferenceGage.StationID !=='' " class="btn-group btn-wim-group-1 wim-dropdown reference-gage" dropdown is-open="status.isopen">
+                <!-- <div ng-if="vm.selectedReferenceGage.StationID !=='' " class="btn-group btn-wim-group-1 wim-dropdown reference-gage" dropdown is-open="status.isopen">
                     <button type="button" class="btn-wim-default" dropdown-toggle ng-disabled="disabled">
                         {{vm.selectedReferenceGage.StationID}} {{vm.selectedReferenceGage.Name}}<span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" role="menu">
                         <li ng-repeat="item in vm.referenceGageList"><a ng-click="vm.updateReferenceGage(item)" title="{{item.hasOwnProperty('correlation')? 'Correlation: ' + item.correlation.toUSGSvalue():''}}">({{item.StationID}}) {{item.Name}}</a></li>
                     </ul>
+                </div> -->
+
+                <div ng-show="vm.referenceGageList.length > 0 || vm.selectedReferenceGage.StationID !== ''">
+                    <!-- <h5>Gage Option(s)</h5> -->
+                    <table class="table table-striped">
+                        <thead>
+                            <th>Station Number</th>
+                            <th>Station Name</th>
+                            <th>Station Type</th>
+                            <th>Drainage Area</th>
+                            <th>Has Flow Duration Stats?</th>
+                            <th></th>
+                        </thead>
+                        <tbody>
+                            <tr ng-if="vm.referenceGageList.length > 0" ng-repeat="gage in vm.referenceGageList">
+                                <!-- TODO: need correlation (if applicable), hover on select, highlight selected-->
+                                <div >
+                                    <td><a title="Show Gage Page" ng-click="gage.properties.Code ? vm.openGagePage(gage.properties.Code) : vm.openGagePage(gage.StationID)">{{gage.properties.Code ? gage.properties.Code : gage.StationID}}</a></td>
+                                    <td ng-click="vm.selectGage(gage)">{{gage.properties.Name ? gage.properties.Name : gage.Name}}</td>
+                                    <td>{{gage.properties.StationType.name ? gage.properties.StationType.name : 'NA'}}</td>
+                                    <td>{{gage.properties.DrainageArea ? gage.properties.DrainageArea : 'NA'}}</td>
+                                    <td>{{gage.properties.HasFlowDurationStats ? gage.properties.HasFlowDurationStats : 'NA'}}</td>
+                                    <td ng-show="vm.studyAreaService.doSelectNearestGage"><a ng-click="vm.selectGage(gage)">Select Gage</a></td>
+                                </div>
+                            </tr>
+                            <!-- <tr ng-if="vm.selectedReferenceGage.StationID !== ''">
+                                <div >
+                                    <td><a title="Show Gage Page" ng-click="vm.openGagePage(selectedReferenceGage.StationID)">{{vm.selectedReferenceGage.StationID}}</a></td>
+                                    <td ng-click="vm.selectGage(gage)">{{vm.selectedReferenceGage.Name}}</td>
+                                    <td>{{vm.selectedReferenceGage.StationType.name}}</td>
+                                    <td>{{vm.selectedReferenceGage.DrainageArea}}</td>
+                                    <td>{{vm.selectedReferenceGage.HasFlowDurationStats}}</td>
+                                    <td ng-show="vm.studyAreaService.doSelectNearestGage"><a ng-click="vm.selectGage(vm.selectedReferenceGage)">Select Gage</a></td>
+                                </div>
+                            </tr> -->
+                        </tbody>
+                    </table>
                 </div>
-                <button class="btn-exploration-tools btn-green" ng-click="vm.setReferenceGageFromMap()" ng-disabled="vm.isBusy"><span><i ng-class=" vm.isBusy? 'fa fa-refresh fa-spin':'fa fa-map-marker'"></i>&nbsp;&nbsp;Select from Map</span></button>
-                <button class="btn-exploration-tools btn-green" ng-click="vm.setBestCorrelatedReferenceGage()" ng-disabled="vm.isBusy"><span><i ng-class="vm.isBusy? 'fa fa-crosshairs fa-spin':'fa fa-crosshairs'"></i>&nbsp;&nbsp;Best Correlated</span></button>
-                <button class="btn-exploration-tools btn-green" ng-click="vm.openNearestGages()" ng-disabled="vm.isBusy"><span><i ng-class="vm.isBusy? 'fa fa-crosshairs fa-spin':'fa fa-map-marker'"></i>&nbsp;&nbsp;Query Nearest Gages</span></button>
             </span>
 
             <!--<div ng-repeat="modified_configuration in vm.explorationService.selectedMethod.navigationConfiguration">

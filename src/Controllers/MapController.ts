@@ -1488,7 +1488,7 @@ module StreamStats.Controllers {
                     this.toaster.pop("info", "Information", "User input is needed to continue", 5000);
                 }
 
-                this.studyArea.getStreamgages(this.bounds.southWest.lng, this.bounds.northEast.lng, this.bounds.southWest.lat, this.bounds.northEast.lat);
+                if (this.center.zoom >= 9) this.studyArea.getStreamgages(this.bounds.southWest.lng, this.bounds.northEast.lng, this.bounds.southWest.lat, this.bounds.northEast.lat);
             }
 
             if (this.center.zoom < 8 && oldValue !== newValue) {

@@ -99,6 +99,7 @@ var StreamStats;
                     if (this.selectedReferenceGage && ['sid'].indexOf(f.code) > -1) {
                         this.selectedReferenceGage = f.value;
                         this.referenceGageList = f.options;
+                        console.log(this.selectedReferenceGage);
                     }
                     if (this.dateRange && ['sdate', 'edate'].indexOf(f.code) > -1) {
                         if (f.code == "sdate")
@@ -167,6 +168,10 @@ var StreamStats;
             ExtensionModalController.prototype.updateReferenceGage = function (item) {
                 this.selectedReferenceGage = item;
                 this.studyAreaService.selectedGage = item;
+            };
+            ExtensionModalController.prototype.openGagePage = function (siteid) {
+                console.log('gage page id:', siteid);
+                this.modalService.openModal(StreamStats.Services.SSModalType.e_gagepage, { 'siteid': siteid });
             };
             ExtensionModalController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.ModalService', 'StreamStats.Services.StudyAreaService'];
             return ExtensionModalController;

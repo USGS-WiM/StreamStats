@@ -864,7 +864,8 @@ module StreamStats.Services {
             //remove extra random line
             let rg = new Models.ReferenceGage(gage.properties.Code, gage.properties.Name);
             rg.Latitude_DD = gage.geometry.coordinates[0];
-            rg.Longitude_DD = gage.geometry.coordinates[1];                          
+            rg.Longitude_DD = gage.geometry.coordinates[1];    
+            rg.properties = gage.properties; // TODO: get stats/chars for ref gage?
             //add to list of reference gages
             siteList.push(rg);
 
