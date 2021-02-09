@@ -47,12 +47,20 @@ var StreamStats;
                 _this.toaster = toaster;
                 _this.modalService = modal;
                 _this._onSelectedStatisticsGroupChanged = new WiM.Event.Delegate();
+                _this._onQ10Loaded = new WiM.Event.Delegate();
                 _this.clearNSSdata();
                 return _this;
             }
             Object.defineProperty(nssService.prototype, "onSelectedStatisticsGroupChanged", {
                 get: function () {
                     return this._onSelectedStatisticsGroupChanged;
+                },
+                enumerable: false,
+                configurable: true
+            });
+            Object.defineProperty(nssService.prototype, "onQ10Loaded", {
+                get: function () {
+                    return this._onQ10Loaded;
                 },
                 enumerable: false,
                 configurable: true
@@ -106,7 +114,7 @@ var StreamStats;
                 ;
                 return -1;
             };
-            nssService.prototype.loadParametersByStatisticsGroup = function (rcode, statisticsGroupID, regressionregions, percentWeights) {
+            nssService.prototype.loadParametersByStatisticsGroup = function (rcode, statisticsGroupID, regressionregions, percentWeights, regressionTypes) {
                 var _this = this;
                 if (this.loadingParametersByStatisticsGroupCounter == 0) {
                     this.toaster.pop('wait', "Loading Parameters by Statistics Group", "Please wait...", 0);
@@ -120,6 +128,9 @@ var StreamStats;
                     url = url + "&extensions=QPPQ";
                 }
                 url = url.format(rcode, statisticsGroupID, regressionregions);
+                if (regressionTypes != undefined) {
+                    url += "&regressiontypes=" + regressionTypes;
+                }
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     if (response.data[0].regressionRegions[0].extensions && response.data[0].regressionRegions[0].extensions.length > 0) {
@@ -127,17 +138,22 @@ var StreamStats;
                         _this.eventManager.RaiseEvent(Services.onScenarioExtensionChanged, _this, new NSSEventArgs(ext));
                     }
                     if (response.data[0].regressionRegions[0].parameters && response.data[0].regressionRegions[0].parameters.length > 0) {
+                        if (_this.selectedStatisticsGroupList.length == 0) {
+                            _this.selectedStatisticsGroupList.push({ 'name': "", 'id': "7", 'code': "", 'regressionRegions': [], 'citations': null, 'disclaimers': "" });
+                        }
                         _this.selectedStatisticsGroupList.forEach(function (statGroup) {
                             if ((response.data[0].statisticGroupID == statGroup.id) ||
                                 (_this.regionservice.selectedRegion.Applications.indexOf("FDCTM") > -1 && typeof (statGroup.id) == 'string' && statGroup.id.indexOf(response.data[0].statisticGroupID, 0) > -1)) {
                                 statGroup['statisticGroupName'] = statGroup.name;
                                 statGroup['statisticGroupID'] = statGroup.id.toString().replace("_fdctm", "");
                                 response.data[0].regressionRegions.forEach(function (regressionRegion) {
-                                    percentWeights.forEach(function (regressionRegionPercentWeight) {
-                                        if (regressionRegionPercentWeight.code.indexOf(regressionRegion.code.toUpperCase()) > -1) {
-                                            regressionRegion["percentWeight"] = regressionRegionPercentWeight.percentWeight;
-                                        }
-                                    });
+                                    if (percentWeights.length > 0) {
+                                        percentWeights.forEach(function (regressionRegionPercentWeight) {
+                                            if (regressionRegionPercentWeight.code.indexOf(regressionRegion.code.toUpperCase()) > -1) {
+                                                regressionRegion["percentWeight"] = regressionRegionPercentWeight.percentWeight;
+                                            }
+                                        });
+                                    }
                                 });
                                 statGroup.regressionRegions = response.data[0].regressionRegions;
                                 _this._onSelectedStatisticsGroupChanged.raise(null, WiM.Event.EventArgs.Empty);
@@ -154,9 +170,10 @@ var StreamStats;
                     }
                 });
             };
-            nssService.prototype.estimateFlows = function (studyAreaParameterList, paramValueField, rcode, append) {
+            nssService.prototype.estimateFlows = function (studyAreaParameterList, paramValueField, rcode, append, regressionTypes, showReport) {
                 var _this = this;
                 if (append === void 0) { append = false; }
+                if (showReport === void 0) { showReport = true; }
                 if (!this.canUpdate && !append)
                     return;
                 this.selectedStatisticsGroupList.forEach(function (statGroup) {
@@ -189,6 +206,9 @@ var StreamStats;
                     var url = configuration.baseurls['NSS'] + configuration.queryparams['estimateFlows'].format(rcode);
                     if (_this.regionservice.selectedRegion.Applications.indexOf("FDCTM") > -1 && typeof statGroup.id == "string" && statGroup.id.indexOf("_fdctm") > -1) {
                         url = url + "&extensions=QPPQ";
+                    }
+                    if (regressionTypes != "" && regressionTypes != undefined) {
+                        url += "&regressiontypes=" + regressionTypes;
                     }
                     var request = new WiM.Services.Helpers.RequestInfo(url, true, 1, 'json', updatedScenarioObject);
                     statGroup.citations = [];
@@ -261,15 +281,17 @@ var StreamStats;
                             _this.toaster.clear();
                             _this.estimateFlowsCounter = 0;
                             _this.canUpdate = true;
-                            _this.modalService.openModal(Services.SSModalType.e_report);
-                            _this.reportGenerated = true;
+                            if (showReport) {
+                                _this.modalService.openModal(Services.SSModalType.e_report);
+                                _this.reportGenerated = true;
+                            }
                         }
+                        _this._onQ10Loaded.raise(null, WiM.Event.EventArgs.Empty);
                     });
                 });
             };
             nssService.prototype.getSelectedCitations = function (citationUrl, statGroup) {
                 var _this = this;
-                console.log('citations: ', citationUrl, statGroup);
                 var url;
                 if (citationUrl.indexOf('https://') == -1)
                     url = 'https://' + citationUrl;

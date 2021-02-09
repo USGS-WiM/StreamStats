@@ -25,12 +25,19 @@ var StreamStats;
         }());
         var WateruseController = (function (_super) {
             __extends(WateruseController, _super);
-            function WateruseController($scope, $http, studyAreaService, modal, $timeout) {
+            function WateruseController($scope, $http, studyAreaService, modal, $timeout, eventManager, nssService) {
                 var _this = _super.call(this, $http, configuration.baseurls.WaterUseServices) || this;
                 _this.$timeout = $timeout;
+                _this.eventManager = eventManager;
+                _this.permits_sw = { name: "Temporary water-use registrations (surface water)", aveReturn: "", aveWithdrawal: "---" };
+                _this.permits_gw = { name: "Temporary water-use registrations (ground water)", aveReturn: "", aveWithdrawal: "---" };
+                _this.AnnualTotalWithdrawals = 0;
+                _this.AnnualTotalReturns = 0;
                 $scope.vm = _this;
                 _this.modalInstance = modal;
                 _this.StudyArea = studyAreaService.selectedStudyArea;
+                _this.StudyAreaService = studyAreaService;
+                _this.NSSService = nssService;
                 _this.init();
                 return _this;
             }
@@ -65,9 +72,23 @@ var StreamStats;
                 enumerable: false,
                 configurable: true
             });
+            Object.defineProperty(WateruseController.prototype, "IndexWOReg", {
+                get: function () {
+                    return this._indexWOReg;
+                },
+                enumerable: false,
+                configurable: true
+            });
+            Object.defineProperty(WateruseController.prototype, "IndexWReg", {
+                get: function () {
+                    return this._indexWReg;
+                },
+                enumerable: false,
+                configurable: true
+            });
             WateruseController.prototype.GetWaterUse = function () {
                 var _this = this;
-                this.CanContiue = false;
+                this.CanContinue = false;
                 var headers = {
                     "Content-Type": "application/json"
                 };
@@ -86,7 +107,8 @@ var StreamStats;
                 }, function (error) {
                     var x = error;
                 }).finally(function () {
-                    _this.CanContiue = true;
+                    _this.setIndexes();
+                    _this.CanContinue = true;
                 });
             };
             WateruseController.prototype.Close = function () {
@@ -98,6 +120,16 @@ var StreamStats;
             WateruseController.prototype.Print = function () {
                 window.print();
             };
+            WateruseController.prototype.setIndexes = function () {
+                if (this.Q10 != null && this.AnnualTotalReturns != null && this.AnnualTotalWithdrawals != null && this.permits_gw.aveWithdrawal != null && this.permits_sw.aveWithdrawal != null) {
+                    this._indexWOReg = (+this.AnnualTotalWithdrawals - +this.AnnualTotalReturns) / +this.Q10;
+                    this._indexWReg = (+this.permits_gw.aveWithdrawal + +this.permits_sw.aveWithdrawal + (+this.AnnualTotalWithdrawals - +this.AnnualTotalReturns)) / +this.Q10;
+                }
+                else {
+                    this._indexWOReg = "---";
+                    this._indexWReg = "---";
+                }
+            };
             WateruseController.prototype.loadGraphData = function (useType) {
                 try {
                     var results = { returns: [], withdrawals: [] };
@@ -107,12 +139,12 @@ var StreamStats;
                             var testx = new Array(12);
                             if (this.result.hasOwnProperty("withdrawal") && this.result.withdrawal.hasOwnProperty("monthly")) {
                                 for (var month in this.result.withdrawal.monthly) {
-                                    var montlyCodes = this.result.withdrawal.monthly[month]["code"];
-                                    for (var code in montlyCodes) {
+                                    var monthlyCodes = this.result.withdrawal.monthly[month]["code"];
+                                    for (var code in monthlyCodes) {
                                         var itemindex = -1;
                                         for (var i = 0; i < results.withdrawals.length; i++) {
                                             var elem = results.withdrawals[i];
-                                            if (elem.key == montlyCodes[code].name) {
+                                            if (elem.key == monthlyCodes[code].name) {
                                                 itemindex = i;
                                                 break;
                                             }
@@ -123,12 +155,12 @@ var StreamStats;
                                                 initArray.push({ "label": this.getMonth(i), "stack": "withdrawal", value: 0 });
                                             }
                                             itemindex = results.withdrawals.push({
-                                                "key": montlyCodes[code].name,
+                                                "key": monthlyCodes[code].name,
                                                 "values": initArray,
                                                 "color": this.generateColorShade(190, 350)
                                             }) - 1;
                                         }
-                                        results.withdrawals[itemindex].values[+month - 1].value = montlyCodes[code].value;
+                                        results.withdrawals[itemindex].values[+month - 1].value = monthlyCodes[code].value;
                                     }
                                 }
                             }
@@ -184,12 +216,14 @@ var StreamStats;
                                 for (var item in this.result.return.monthly) {
                                     tableValues[+item - 1].returns.GW = this.result.return.monthly[item].month.hasOwnProperty("GW") ? this.result.return.monthly[item].month.GW.value.toFixed(3) : "---";
                                     tableValues[+item - 1].returns.SW = this.result.return.monthly[item].month.hasOwnProperty("SW") ? this.result.return.monthly[item].month.SW.value.toFixed(3) : "---";
+                                    this.AnnualTotalReturns += (tableValues[+item - 1].returns.GW == "---" ? 0 : +tableValues[+item - 1].returns.GW) + (tableValues[+item - 1].returns.SW == "---" ? 0 : +tableValues[+item - 1].returns.SW);
                                 }
                             }
                             if (this.result.hasOwnProperty("withdrawal") && this.result.withdrawal.hasOwnProperty("monthly")) {
                                 for (var mkey in this.result.withdrawal.monthly) {
                                     tableValues[+mkey - 1].withdrawals.GW = this.result.withdrawal.monthly[mkey].month.hasOwnProperty("GW") ? this.result.withdrawal.monthly[mkey].month.GW.value.toFixed(3) : "---";
                                     tableValues[+mkey - 1].withdrawals.SW = this.result.withdrawal.monthly[mkey].month.hasOwnProperty("SW") ? this.result.withdrawal.monthly[mkey].month.SW.value.toFixed(3) : "---";
+                                    this.AnnualTotalWithdrawals += (tableValues[+mkey - 1].withdrawals.GW == "---" ? 0 : +tableValues[+mkey - 1].withdrawals.GW) + (tableValues[+mkey - 1].withdrawals.SW == "---" ? 0 : +tableValues[+mkey - 1].withdrawals.SW);
                                     if (this.result.withdrawal.monthly[mkey].hasOwnProperty("code")) {
                                         var monthlycode = this.result.withdrawal.monthly[mkey].code;
                                         for (var cKey in monthlycode) {
@@ -229,6 +263,13 @@ var StreamStats;
                                 if (annreturn.hasOwnProperty("GW"))
                                     gw.aveReturn = annreturn.GW.value.toFixed(3);
                             }
+                            if (this.result.hasOwnProperty("withdrawal") && this.result.withdrawal.hasOwnProperty("permitted")) {
+                                var permitted = this.result.withdrawal.permitted;
+                                if (permitted.hasOwnProperty("Intake"))
+                                    this.permits_sw.aveWithdrawal = permitted.Intake.value;
+                                if (permitted.hasOwnProperty("Well"))
+                                    this.permits_gw.aveWithdrawal = permitted.Well.value;
+                            }
                             tableValues.push(sw);
                             tableValues.push(gw);
                             tableValues.push({
@@ -237,14 +278,14 @@ var StreamStats;
                                 aveWithdrawal: (isNaN(+sw.aveWithdrawal) && isNaN(+gw.aveWithdrawal)) ? "---" : ((isNaN(+sw.aveWithdrawal) ? 0 : +sw.aveWithdrawal) + (isNaN(+gw.aveWithdrawal) ? 0 : +gw.aveWithdrawal)).toFixed(3)
                             });
                             tableValues.push({ name: "", aveReturn: "", aveWithdrawal: "" });
-                            if (this.result.hasOwnProperty("TotalTempStats")) {
-                                tableValues.push({ name: "Temporary water use registrations (surface water)[permit]", aveReturn: "", aveWithdrawal: this.result.TotalTempStats[2].value.toFixed(3), unit: "MGD" });
-                                tableValues.push({ name: "Temporary water use registrations (groundwater[permit])", aveReturn: "", aveWithdrawal: this.result.TotalTempStats[1].value.toFixed(3), unit: "MGD" });
-                                tableValues.push({ name: "Temporary water use registrations (total)[permit]", aveReturn: "", aveWithdrawal: this.result.TotalTempStats[0].value.toFixed(3), unit: "MGD" });
-                                tableValues.push({ name: "", aveReturn: "", aveWithdrawal: "" });
-                                tableValues.push({ name: "Water use index (dimensionless) without temporary registrations:[totalnet/lowflowstat]", aveReturn: "", aveWithdrawal: this.result.TotalTempStats[4].value.toFixed(3), unit: "Dimensionless" });
-                                tableValues.push({ name: "Water use index (dimensionless) with temporary registrations:[permit w/ totalnet/lowflow stat]", aveReturn: "", aveWithdrawal: this.result.TotalTempStats[3].value.toFixed(3), unit: "Dimensionless" });
-                            }
+                            tableValues.push(this.permits_sw);
+                            tableValues.push(this.permits_gw);
+                            tableValues.push({
+                                name: "Temporary water-use registrations (total)",
+                                aveReturn: "",
+                                aveWithdrawal: (isNaN(+this.permits_sw.aveWithdrawal) && isNaN(+this.permits_gw.aveWithdrawal)) ? "---" : ((isNaN(+this.permits_sw.aveWithdrawal) ? 0 : +this.permits_sw.aveWithdrawal) + (isNaN(+this.permits_gw.aveWithdrawal) ? 0 : +this.permits_gw.aveWithdrawal))
+                            });
+                            tableValues.push({ name: "", aveReturn: "", aveWithdrawal: "" });
                             break;
                     }
                     return {
@@ -351,11 +392,14 @@ var StreamStats;
                 }, function (error) {
                     var x = error;
                 }).finally(function () {
-                    _this.CanContiue = true;
+                    _this.CanContinue = true;
                 });
             };
             WateruseController.prototype.init = function () {
                 var _this = this;
+                if (this.StudyArea.RegionID == "OH") {
+                    this.StudyAreaService.computeRegressionEquation("Q10");
+                }
                 var url = configuration.queryparams['WateruseConfig'].format(this.StudyArea.RegionID);
                 var request = new WiM.Services.Helpers.RequestInfo(url);
                 this.Execute(request).then(function (response) {
@@ -373,7 +417,13 @@ var StreamStats;
                     _this._endYear = 2012;
                     _this._yearRange = { floor: 2005, draggableRange: true, noSwitching: true, showTicks: false, ceil: 2012 };
                 }).finally(function () {
-                    _this.CanContiue = true;
+                    _this.StudyAreaService.onQ10Loaded.subscribe(new WiM.Event.EventHandler(function (sender, e) {
+                        _this.Q10 = +_this.StudyAreaService.selectedStudyArea.wateruseQ10 * 0.646316889697;
+                        _this.CanContinue = true;
+                        _this.StudyAreaService.onQ10Loaded.unsubscribe(new WiM.Event.EventHandler(function (sender, e) {
+                            return;
+                        }));
+                    }));
                     _this.showResults = false;
                     _this.SelectedTab = WaterUseTabType.Graph;
                     _this.SelectedWaterUseType = WaterUseType.Annual;
@@ -652,7 +702,7 @@ var StreamStats;
             WateruseController.prototype.rand = function (min, max) {
                 return parseInt((Math.random() * (max - min + 1)), 10) + min;
             };
-            WateruseController.$inject = ['$scope', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance', '$timeout'];
+            WateruseController.$inject = ['$scope', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance', '$timeout', 'WiM.Event.EventManager', 'StreamStats.Services.nssService'];
             return WateruseController;
         }(WiM.Services.HTTPServiceBase));
         var WaterUseType;
