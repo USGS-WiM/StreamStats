@@ -27,6 +27,7 @@ module StreamStats.Services {
     'use strict'
     export interface IStudyAreaService {
         onStudyAreaServiceBusyChanged: WiM.Event.Delegate<WiM.Event.EventArgs>;
+        onQ10Loaded: WiM.Event.Delegate<WiM.Event.EventArgs>;
         selectedStudyArea: Models.IStudyArea;
         undoEdit();
         loadParameters();
@@ -69,6 +70,7 @@ module StreamStats.Services {
         streamgageLayer: any;
         extensionDateRange: IDateRange;
         selectedGage: any;
+        computeRegressionEquation(regtype: string);
     }
 
     interface IDateRange {
@@ -84,6 +86,8 @@ module StreamStats.Services {
     export var onSelectedStudyParametersLoaded: string = "onSelectedStudyParametersLoaded";
     export var onStudyAreaReset: string = "onStudyAreaReset";
     export var onEditClick: string = "onEditClick";
+    //export var onQ10Loaded: string = "onQ10Loaded";
+    export var onRegressionLoaded: string = "onRegressionLoaded";
     export class StudyAreaEventArgs extends WiM.Event.EventArgs {
         //properties
         public studyArea: StreamStats.Models.IStudyArea;
@@ -102,9 +106,14 @@ module StreamStats.Services {
 
     class StudyAreaService extends WiM.Services.HTTPServiceBase implements IStudyAreaService {
         //Events
-        private _onStudyAreaServiceFinishedChanged: WiM.Event.Delegate<WiM.Event.EventArgs> = new WiM.Event.Delegate<WiM.Event.EventArgs>(); ;
+        private _onStudyAreaServiceFinishedChanged: WiM.Event.Delegate<WiM.Event.EventArgs> = new WiM.Event.Delegate<WiM.Event.EventArgs>();
         public get onStudyAreaServiceBusyChanged(): WiM.Event.Delegate<WiM.Event.EventArgs> {
             return this._onStudyAreaServiceFinishedChanged;
+        }
+
+        private _onQ10Loaded: WiM.Event.Delegate<WiM.Event.EventArgs>;
+        public get onQ10Loaded(): WiM.Event.Delegate<WiM.Event.EventArgs> {
+            return this._onQ10Loaded;
         }
 
         //Properties
@@ -154,6 +163,10 @@ module StreamStats.Services {
         private modalservices: IModalService;
         public NSSServicesVersion = '';
         public streamgageLayer: any;
+        private parameterloadedEventHandler: WiM.Event.EventHandler<Services.StudyAreaEventArgs>;
+        private statisticgroupEventHandler: WiM.Event.EventHandler<Services.NSSEventArgs>;
+        private q10EventHandler: WiM.Event.EventHandler<Services.NSSEventArgs>;
+        private regtype: string;
         
         //QPPQ
         public extensionDateRange: IDateRange = null;
@@ -161,9 +174,10 @@ module StreamStats.Services {
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        constructor(public $http: ng.IHttpService, private $q: ng.IQService, private eventManager: WiM.Event.IEventManager, toaster, modal: Services.IModalService) {
+        constructor(public $http: ng.IHttpService, private $q: ng.IQService, private eventManager: WiM.Event.IEventManager, toaster, modal: Services.IModalService, private nssService: Services.InssService) {
             super($http, configuration.baseurls['StreamStatsServices'])
             this.modalservices = modal;
+
             eventManager.AddEvent<StudyAreaEventArgs>(onSelectedStudyParametersLoaded);
             eventManager.AddEvent<StudyAreaEventArgs>(onSelectedStudyAreaChanged);
             eventManager.AddEvent<StudyAreaEventArgs>(onStudyAreaReset);
@@ -186,7 +200,21 @@ module StreamStats.Services {
             this.toaster = toaster;
             this.clearStudyArea();
             this.servicesURL = configuration.baseurls['StreamStatsServices'];
-           
+            this._onQ10Loaded = new WiM.Event.Delegate<WiM.Event.EventArgs>(); 
+            this.parameterloadedEventHandler = new WiM.Event.EventHandler<Services.StudyAreaEventArgs>((sender: any, e: Services.StudyAreaEventArgs) => {
+                if(e != null && e.parameterLoaded) {                    
+                    this.nssService.estimateFlows(this.studyAreaParameterList,"value", this.selectedStudyArea.RegionID, false, this.regtype, false);
+                    this.onQ10Available();
+                }
+            })
+            this.statisticgroupEventHandler = new WiM.Event.EventHandler<WiM.Event.EventArgs>(() => {
+                this.eventManager.SubscribeToEvent(onSelectedStudyParametersLoaded, this.parameterloadedEventHandler)
+                this.loadParameters();
+                this.afterSelectedStatisticsGroupChanged();
+            })
+            this.q10EventHandler = new WiM.Event.EventHandler<Services.NSSEventArgs>((sender: any, e: Services.NSSEventArgs) => {
+                this.afterQ10Loaded();
+            })
         }
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -1037,6 +1065,12 @@ module StreamStats.Services {
 
             }
         }
+
+        public computeRegressionEquation(regtype: string) {
+            this.regtype = regtype;
+            this.onSelectedStatisticsGroupChanged();
+            this.nssService.loadParametersByStatisticsGroup(this.selectedStudyArea.RegionID, "", "GC1449, GC1450", [], regtype);            
+        }
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+- 
         private reconfigureWatershedResponse(watershedResponse: Array<any>): Array<GeoJSON.Feature>
@@ -1157,11 +1191,31 @@ module StreamStats.Services {
             });
         }
 
+        private afterSelectedStatisticsGroupChanged() {
+            this.nssService.onSelectedStatisticsGroupChanged.unsubscribe(this.statisticgroupEventHandler)
+        }
+        private onSelectedStatisticsGroupChanged() {
+            this.nssService.onSelectedStatisticsGroupChanged.subscribe(this.statisticgroupEventHandler)
+            
+        }
+
+        private onQ10Available(): void {
+            this.nssService.onQ10Loaded.subscribe(this.q10EventHandler)
+        }
+
+        private afterQ10Loaded() {
+            this.selectedStudyArea.wateruseQ10 = this.nssService.selectedStatisticsGroupList[0].regressionRegions[0].results[0].value;
+            this._onQ10Loaded.raise(null, WiM.Event.EventArgs.Empty);
+            this.eventManager.UnSubscribeToEvent(onSelectedStudyParametersLoaded, this.parameterloadedEventHandler);
+            this.nssService.selectedStatisticsGroupList = [];
+            this.nssService.onQ10Loaded.unsubscribe(this.q10EventHandler);
+        }
+
     }//end class
 
-    factory.$inject = ['$http', '$q', 'WiM.Event.EventManager', 'toaster', 'StreamStats.Services.ModalService'];
-    function factory($http: ng.IHttpService, $q: ng.IQService, eventManager: WiM.Event.IEventManager, toaster: any, modalService: Services.IModalService) {
-        return new StudyAreaService($http,$q, eventManager, toaster,modalService)
+    factory.$inject = ['$http', '$q', 'WiM.Event.EventManager', 'toaster', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService'];
+    function factory($http: ng.IHttpService, $q: ng.IQService, eventManager: WiM.Event.IEventManager, toaster: any, modalService: Services.IModalService, nssService: Services.InssService) {
+        return new StudyAreaService($http,$q, eventManager, toaster, modalService, nssService)
     }
     angular.module('StreamStats.Services')
         .factory('StreamStats.Services.StudyAreaService', factory)
