@@ -680,6 +680,7 @@ module StreamStats.Controllers {
                 return false;
             }
         }
+        
         private sm(msg: string) {
             try {
                 //toastr.options = {
