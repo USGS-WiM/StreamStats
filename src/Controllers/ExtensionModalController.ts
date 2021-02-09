@@ -167,6 +167,7 @@ module StreamStats.Controllers {
                 if (this.selectedReferenceGage && ['sid'].indexOf(f.code) > -1) {
                     this.selectedReferenceGage = f.value;
                     this.referenceGageList = f.options;
+                    console.log(this.selectedReferenceGage);
                 }
                 if (this.dateRange && ['sdate', 'edate'].indexOf(f.code) > -1) {
                     if (f.code == "sdate") this.dateRange.dates.startDate = f.value;
@@ -208,6 +209,8 @@ module StreamStats.Controllers {
             return true;
         }
         private addDay(d: Date, days: number): Date {
+            // TODO: check if this is being used or not
+            // TODO: instead of doing this, set time portion to 12am??
             try {
                 var dayAsTime: number = 1000 * 60 * 60 * 24;
                 return new Date(d.getTime() + days * dayAsTime);
@@ -236,6 +239,11 @@ module StreamStats.Controllers {
         public updateReferenceGage(item) {
             this.selectedReferenceGage = item;
             this.studyAreaService.selectedGage = item;
+        }
+
+        public openGagePage(siteid: string): void {
+            console.log('gage page id:', siteid)
+            this.modalService.openModal(Services.SSModalType.e_gagepage, { 'siteid':siteid });
         }
     }//end  class
 
