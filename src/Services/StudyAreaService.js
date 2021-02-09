@@ -20,6 +20,7 @@ var StreamStats;
         Services.onSelectedStudyParametersLoaded = "onSelectedStudyParametersLoaded";
         Services.onStudyAreaReset = "onStudyAreaReset";
         Services.onEditClick = "onEditClick";
+        Services.onRegressionLoaded = "onRegressionLoaded";
         var StudyAreaEventArgs = (function (_super) {
             __extends(StudyAreaEventArgs, _super);
             function StudyAreaEventArgs(studyArea, saVisible, paramState, additionalFeatures) {
@@ -39,11 +40,12 @@ var StreamStats;
         Services.StudyAreaEventArgs = StudyAreaEventArgs;
         var StudyAreaService = (function (_super) {
             __extends(StudyAreaService, _super);
-            function StudyAreaService($http, $q, eventManager, toaster, modal) {
+            function StudyAreaService($http, $q, eventManager, toaster, modal, nssService) {
                 var _this = _super.call(this, $http, configuration.baseurls['StreamStatsServices']) || this;
                 _this.$http = $http;
                 _this.$q = $q;
                 _this.eventManager = eventManager;
+                _this.nssService = nssService;
                 _this._onStudyAreaServiceFinishedChanged = new WiM.Event.Delegate();
                 _this.surfacecontributionsonly = false;
                 _this.doQueryNWIS = false;
@@ -66,12 +68,33 @@ var StreamStats;
                 _this.toaster = toaster;
                 _this.clearStudyArea();
                 _this.servicesURL = configuration.baseurls['StreamStatsServices'];
+                _this._onQ10Loaded = new WiM.Event.Delegate();
+                _this.parameterloadedEventHandler = new WiM.Event.EventHandler(function (sender, e) {
+                    if (e != null && e.parameterLoaded) {
+                        _this.nssService.estimateFlows(_this.studyAreaParameterList, "value", _this.selectedStudyArea.RegionID, false, _this.regtype, false);
+                        _this.onQ10Available();
+                    }
+                });
+                _this.statisticgroupEventHandler = new WiM.Event.EventHandler(function () {
+                    _this.eventManager.SubscribeToEvent(Services.onSelectedStudyParametersLoaded, _this.parameterloadedEventHandler);
+                    _this.loadParameters();
+                    _this.afterSelectedStatisticsGroupChanged();
+                });
+                _this.q10EventHandler = new WiM.Event.EventHandler(function (sender, e) {
+                    _this.afterQ10Loaded();
+                });
                 return _this;
             }
-            ;
             Object.defineProperty(StudyAreaService.prototype, "onStudyAreaServiceBusyChanged", {
                 get: function () {
                     return this._onStudyAreaServiceFinishedChanged;
+                },
+                enumerable: false,
+                configurable: true
+            });
+            Object.defineProperty(StudyAreaService.prototype, "onQ10Loaded", {
+                get: function () {
+                    return this._onQ10Loaded;
                 },
                 enumerable: false,
                 configurable: true
@@ -674,6 +697,11 @@ var StreamStats;
                 catch (e) {
                 }
             };
+            StudyAreaService.prototype.computeRegressionEquation = function (regtype) {
+                this.regtype = regtype;
+                this.onSelectedStatisticsGroupChanged();
+                this.nssService.loadParametersByStatisticsGroup(this.selectedStudyArea.RegionID, "", "GC1449, GC1450", [], regtype);
+            };
             StudyAreaService.prototype.reconfigureWatershedResponse = function (watershedResponse) {
                 var featureArray = [];
                 watershedResponse.forEach(function (fc) {
@@ -761,11 +789,27 @@ var StreamStats;
                     item[0].result = angular.copy(ex.result);
                 });
             };
+            StudyAreaService.prototype.afterSelectedStatisticsGroupChanged = function () {
+                this.nssService.onSelectedStatisticsGroupChanged.unsubscribe(this.statisticgroupEventHandler);
+            };
+            StudyAreaService.prototype.onSelectedStatisticsGroupChanged = function () {
+                this.nssService.onSelectedStatisticsGroupChanged.subscribe(this.statisticgroupEventHandler);
+            };
+            StudyAreaService.prototype.onQ10Available = function () {
+                this.nssService.onQ10Loaded.subscribe(this.q10EventHandler);
+            };
+            StudyAreaService.prototype.afterQ10Loaded = function () {
+                this.selectedStudyArea.wateruseQ10 = this.nssService.selectedStatisticsGroupList[0].regressionRegions[0].results[0].value;
+                this._onQ10Loaded.raise(null, WiM.Event.EventArgs.Empty);
+                this.eventManager.UnSubscribeToEvent(Services.onSelectedStudyParametersLoaded, this.parameterloadedEventHandler);
+                this.nssService.selectedStatisticsGroupList = [];
+                this.nssService.onQ10Loaded.unsubscribe(this.q10EventHandler);
+            };
             return StudyAreaService;
         }(WiM.Services.HTTPServiceBase));
-        factory.$inject = ['$http', '$q', 'WiM.Event.EventManager', 'toaster', 'StreamStats.Services.ModalService'];
-        function factory($http, $q, eventManager, toaster, modalService) {
-            return new StudyAreaService($http, $q, eventManager, toaster, modalService);
+        factory.$inject = ['$http', '$q', 'WiM.Event.EventManager', 'toaster', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService'];
+        function factory($http, $q, eventManager, toaster, modalService, nssService) {
+            return new StudyAreaService($http, $q, eventManager, toaster, modalService, nssService);
         }
         angular.module('StreamStats.Services')
             .factory('StreamStats.Services.StudyAreaService', factory);
