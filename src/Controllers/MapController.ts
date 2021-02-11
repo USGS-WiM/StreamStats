@@ -1202,7 +1202,7 @@ module StreamStats.Controllers {
         
         private removeGeoJson(layerName: string = "") {
             for (var k in this.geojson) {
-                if (typeof this.geojson[k] !== 'function') {
+                if (typeof this.geojson[k] !== 'function' && k != 'streamgages') {
                     delete this.geojson[k];
                     this.eventManager.RaiseEvent(WiM.Directives.onLayerRemoved, this, new WiM.Directives.LegendLayerRemovedEventArgs(k, "geojson")); 
                 }

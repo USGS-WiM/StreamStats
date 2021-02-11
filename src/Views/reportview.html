@@ -173,7 +173,7 @@
                         <div ng-repeat="sc in vm.extensions">                            
                             <div ng-if="sc.code == 'QPPQ'" ng-init=vm.ActivateGraphs(sc.result)>
                                 <h3>{{sc.name}} ({{sc.code}})</h3>
-                                <div ng-repeat="p in sc.parameters" ng-if="['sdate','edate'].indexOf(p.code) >-1">
+                                <div ng-repeat="p in sc.parameters" ng-if="['sdate','edate', 'usePublishedFDC'].indexOf(p.code) >-1">
                                     {{p.name}}: {{p.value | date:'yyyy/MM/dd'}}<br />
                                 </div>
 

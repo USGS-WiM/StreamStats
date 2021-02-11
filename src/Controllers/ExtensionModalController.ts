@@ -76,9 +76,19 @@ module StreamStats.Controllers {
             this.load();
 
             $scope.$watch(() => this.usePublishedFDC,(newval, oldval) => {
+                if (newval == oldval) return;
                 this.studyAreaService.selectedStudyAreaExtensions.forEach(ext => {
                     ext.parameters.forEach(p => {
                         if (p.code == "usePublishedFDC") {p.value = this.usePublishedFDC; }
+                    })
+                });
+            });
+            $scope.$watch(() => this.dateRange.dates,(newval, oldval) => {
+                if (newval == oldval) return;
+                this.studyAreaService.selectedStudyAreaExtensions.forEach(ext => {
+                    ext.parameters.forEach(p => {
+                        if (p.code == "sdate") {p.value = this.dateRange.dates.startDate; }
+                        if (p.code == "edate") {p.value = this.dateRange.dates.endDate; }
                     })
                 });
             });
@@ -162,12 +172,13 @@ module StreamStats.Controllers {
 
             do {
                 let f = parameters.pop();
-                if (typeof f.value === 'string') continue;
+                // if (typeof f.value === 'string') continue;
+                // TODO: double check the dates
 
                 if (this.selectedReferenceGage && ['sid'].indexOf(f.code) > -1) {
-                    this.selectedReferenceGage = f.value;
+                    if (typeof f.value != 'string') this.selectedReferenceGage = f.value;
+                    else if (typeof f.options == 'object') this.selectedReferenceGage = f.options[0];
                     this.referenceGageList = f.options;
-                    console.log(this.selectedReferenceGage);
                 }
                 if (this.dateRange && ['sdate', 'edate'].indexOf(f.code) > -1) {
                     if (f.code == "sdate") this.dateRange.dates.startDate = f.value;
@@ -201,7 +212,7 @@ module StreamStats.Controllers {
             //load service
             this.studyAreaService.selectedStudyAreaExtensions.forEach(ext => {
                 ext.parameters.forEach(p => {
-                    if (p.code == "sid") { p.value = this.selectedReferenceGage.StationID };
+                    if (p.code == "sid" && typeof p.value != 'string') { p.value = this.selectedReferenceGage.StationID };
                     if (p.code == "usePublishedFDC") {p.value = this.usePublishedFDC; }
                 })
             });
