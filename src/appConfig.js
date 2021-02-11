@@ -7,8 +7,7 @@ configuration.baseurls =
         'NWISurl': 'https://waterservices.usgs.gov/nwis',
         'StreamStatsServices': 'https://test.streamstats.usgs.gov',
         'StreamStatsMapServices': 'https://gis.streamstats.usgs.gov',
-        'nssservicesv2':'https://test.streamstats.usgs.gov/nssservices',
-        'NSS': 'https://test.streamstats.usgs.gov/nssservices',
+        'NSS': 'http://localhost:53813',
         'WaterUseServices': 'https://test.streamstats.usgs.gov/wateruseservices',
         'StormRunoffServices': 'https://test.streamstats.usgs.gov/runoffmodelingservices',
         'ScienceBase': 'https://gis.usgs.gov/sciencebase2',
@@ -20,10 +19,8 @@ if (window.location.host === 'streamstats.usgs.gov') {
     configuration.baseurls.StreamStatsServices = 'https://streamstats.usgs.gov',
         configuration.baseurls.StreamStatsMapServices = 'https://gis.streamstats.usgs.gov',
         configuration.baseurls.NSS = 'https://streamstats.usgs.gov/nssservicesv2',
-        configuration.baseurls.nssservicesv2 = 'https://streamstats.usgs.gov/nssservicesv2',
         configuration.baseurls.WaterUseServices = 'https://streamstats.usgs.gov/wateruseservices',
         configuration.baseurls.StormRunoffServices = 'https://streamstats.usgs.gov/runoffmodelingservices',
-        configuration.baseurls.nssservicesv2 = 'https://streamstats.usgs.gov/nssservicesv2',
         configuration.environment = 'production';
 }
 
@@ -464,7 +461,8 @@ configuration.overlayedLayers = {
         "layerOptions": {
             "opacity": 1,
             "format": "png8",
-            "f": "image"
+            "f": "image",
+            "layers": [1,2,3,4,5,6,7]
         },
         "layerArray": [{
             note: "This overrides the ESRI legend",

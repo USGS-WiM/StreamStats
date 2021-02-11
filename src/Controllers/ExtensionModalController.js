@@ -20,10 +20,26 @@ var StreamStats;
                 this.init();
                 this.load();
                 $scope.$watch(function () { return _this.usePublishedFDC; }, function (newval, oldval) {
+                    if (newval == oldval)
+                        return;
                     _this.studyAreaService.selectedStudyAreaExtensions.forEach(function (ext) {
                         ext.parameters.forEach(function (p) {
                             if (p.code == "usePublishedFDC") {
                                 p.value = _this.usePublishedFDC;
+                            }
+                        });
+                    });
+                });
+                $scope.$watch(function () { return _this.dateRange.dates; }, function (newval, oldval) {
+                    if (newval == oldval)
+                        return;
+                    _this.studyAreaService.selectedStudyAreaExtensions.forEach(function (ext) {
+                        ext.parameters.forEach(function (p) {
+                            if (p.code == "sdate") {
+                                p.value = _this.dateRange.dates.startDate;
+                            }
+                            if (p.code == "edate") {
+                                p.value = _this.dateRange.dates.endDate;
                             }
                         });
                     });
@@ -94,12 +110,12 @@ var StreamStats;
                 var parameters = this.getExtensionParameters();
                 do {
                     var f = parameters.pop();
-                    if (typeof f.value === 'string')
-                        continue;
                     if (this.selectedReferenceGage && ['sid'].indexOf(f.code) > -1) {
-                        this.selectedReferenceGage = f.value;
+                        if (typeof f.value != 'string')
+                            this.selectedReferenceGage = f.value;
+                        else if (typeof f.options == 'object')
+                            this.selectedReferenceGage = f.options[0];
                         this.referenceGageList = f.options;
-                        console.log(this.selectedReferenceGage);
                     }
                     if (this.dateRange && ['sdate', 'edate'].indexOf(f.code) > -1) {
                         if (f.code == "sdate")
@@ -129,7 +145,7 @@ var StreamStats;
                 }
                 this.studyAreaService.selectedStudyAreaExtensions.forEach(function (ext) {
                     ext.parameters.forEach(function (p) {
-                        if (p.code == "sid") {
+                        if (p.code == "sid" && typeof p.value != 'string') {
                             p.value = _this.selectedReferenceGage.StationID;
                         }
                         ;
