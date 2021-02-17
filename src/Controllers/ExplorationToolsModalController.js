@@ -1,3 +1,6 @@
+//------------------------------------------------------------------------------
+//----- ExplorationToolsModalController ----------------------------------------
+//------------------------------------------------------------------------------
 var StreamStats;
 (function (StreamStats) {
     var Controllers;
@@ -139,7 +142,7 @@ var StreamStats;
             };
             ExplorationToolsModalController.$inject = ['$scope', '$analytics', '$sce', '$modalInstance', 'StreamStats.Services.ModalService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.StudyAreaService'];
             return ExplorationToolsModalController;
-        }());
+        })();
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.ExplorationToolsModalController', ExplorationToolsModalController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));

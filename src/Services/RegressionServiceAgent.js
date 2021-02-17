@@ -1,3 +1,6 @@
+//------------------------------------------------------------------------------
+//----- AuthenticationAgent ---------------------------------------------------------------
+//------------------------------------------------------------------------------
 var StreamStats;
 (function (StreamStats) {
     var ServiceAgent;
@@ -28,7 +31,7 @@ var StreamStats;
                 }
             };
             return FDCTMAgent;
-        }());
+        })();
         factory.$inject = ['$http'];
         function factory($http) {
             return new FDCTMAgent($http);

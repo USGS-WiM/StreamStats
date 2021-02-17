@@ -1,3 +1,6 @@
+//------------------------------------------------------------------------------
+//----- modalService -----------------------------------------------------
+//------------------------------------------------------------------------------
 var StreamStats;
 (function (StreamStats) {
     var Services;
@@ -125,8 +128,7 @@ var StreamStats;
                 }
             };
             return ModalService;
-        }());
-        var SSModalType;
+        })();
         (function (SSModalType) {
             SSModalType[SSModalType["e_report"] = 1] = "e_report";
             SSModalType[SSModalType["e_wateruse"] = 2] = "e_wateruse";
@@ -139,7 +141,8 @@ var StreamStats;
             SSModalType[SSModalType["e_extensionsupport"] = 9] = "e_extensionsupport";
             SSModalType[SSModalType["e_gagepage"] = 10] = "e_gagepage";
             SSModalType[SSModalType["e_nearestgages"] = 11] = "e_nearestgages";
-        })(SSModalType = Services.SSModalType || (Services.SSModalType = {}));
+        })(Services.SSModalType || (Services.SSModalType = {}));
+        var SSModalType = Services.SSModalType;
         factory.$inject = ['$modal'];
         function factory($modal) {
             return new ModalService($modal);

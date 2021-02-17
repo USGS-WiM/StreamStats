@@ -1,16 +1,11 @@
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
+//------------------------------------------------------------------------------
+//----- WaterUse ---------------------------------------------------------------
+//------------------------------------------------------------------------------
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var StreamStats;
 (function (StreamStats) {
     var Controllers;
@@ -22,24 +17,23 @@ var StreamStats;
                 this.Monthly = { Graph: { withdrawals: null, returns: null }, Table: {} };
             }
             return WaterUseReportable;
-        }());
+        })();
         var WateruseController = (function (_super) {
             __extends(WateruseController, _super);
             function WateruseController($scope, $http, studyAreaService, modal, $timeout, eventManager, nssService) {
-                var _this = _super.call(this, $http, configuration.baseurls.WaterUseServices) || this;
-                _this.$timeout = $timeout;
-                _this.eventManager = eventManager;
-                _this.permits_sw = { name: "Temporary water-use registrations (surface water)", aveReturn: "", aveWithdrawal: "---" };
-                _this.permits_gw = { name: "Temporary water-use registrations (ground water)", aveReturn: "", aveWithdrawal: "---" };
-                _this.AnnualTotalWithdrawals = 0;
-                _this.AnnualTotalReturns = 0;
-                $scope.vm = _this;
-                _this.modalInstance = modal;
-                _this.StudyArea = studyAreaService.selectedStudyArea;
-                _this.StudyAreaService = studyAreaService;
-                _this.NSSService = nssService;
-                _this.init();
-                return _this;
+                _super.call(this, $http, configuration.baseurls.WaterUseServices);
+                this.$timeout = $timeout;
+                this.eventManager = eventManager;
+                this.permits_sw = { name: "Temporary water-use registrations (surface water)", aveReturn: "", aveWithdrawal: "---" };
+                this.permits_gw = { name: "Temporary water-use registrations (ground water)", aveReturn: "", aveWithdrawal: "---" };
+                this.AnnualTotalWithdrawals = 0;
+                this.AnnualTotalReturns = 0;
+                $scope.vm = this;
+                this.modalInstance = modal;
+                this.StudyArea = studyAreaService.selectedStudyArea;
+                this.StudyAreaService = studyAreaService;
+                this.NSSService = nssService;
+                this.init();
             }
             Object.defineProperty(WateruseController.prototype, "StartYear", {
                 get: function () {
@@ -51,7 +45,7 @@ var StreamStats;
                     if (val <= this.EndYear && val >= this.YearRange.floor)
                         this._startYear = val;
                 },
-                enumerable: false,
+                enumerable: true,
                 configurable: true
             });
             Object.defineProperty(WateruseController.prototype, "EndYear", {
@@ -62,28 +56,28 @@ var StreamStats;
                     if (val >= this.StartYear && val <= this.YearRange.ceil)
                         this._endYear = val;
                 },
-                enumerable: false,
+                enumerable: true,
                 configurable: true
             });
             Object.defineProperty(WateruseController.prototype, "YearRange", {
                 get: function () {
                     return this._yearRange;
                 },
-                enumerable: false,
+                enumerable: true,
                 configurable: true
             });
             Object.defineProperty(WateruseController.prototype, "IndexWOReg", {
                 get: function () {
                     return this._indexWOReg;
                 },
-                enumerable: false,
+                enumerable: true,
                 configurable: true
             });
             Object.defineProperty(WateruseController.prototype, "IndexWReg", {
                 get: function () {
                     return this._indexWReg;
                 },
-                enumerable: false,
+                enumerable: true,
                 configurable: true
             });
             WateruseController.prototype.GetWaterUse = function () {
@@ -186,8 +180,7 @@ var StreamStats;
                                     var annItem = this.result.withdrawal.annual[annkey];
                                     results.withdrawals.push({
                                         name: annItem.name, value: annItem.value,
-                                        color: this.generateColorShade(190, 350)
-                                    });
+                                        color: this.generateColorShade(190, 350) });
                                 }
                             }
                             if (this.result.hasOwnProperty("return") && this.result.withdrawal.hasOwnProperty("annual")) {
@@ -704,7 +697,7 @@ var StreamStats;
             };
             WateruseController.$inject = ['$scope', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance', '$timeout', 'WiM.Event.EventManager', 'StreamStats.Services.nssService'];
             return WateruseController;
-        }(WiM.Services.HTTPServiceBase));
+        })(WiM.Services.HTTPServiceBase);
         var WaterUseType;
         (function (WaterUseType) {
             WaterUseType[WaterUseType["Annual"] = 1] = "Annual";

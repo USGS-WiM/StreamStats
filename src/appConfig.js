@@ -262,7 +262,7 @@ configuration.regions = [
     { "RegionID": "HI", "Name": "Hawaii", "Bounds": [[18.921786, -160.242406], [22.22912, -154.791096]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     {
         "RegionID": "IA", "Name": "Iowa", "Bounds": [[40.371946, -96.640709], [43.501457, -90.142796]], "Layers":{},
-        "Applications": [],
+        "Applications": ["FDCTM"],
         "regionEnabled": true,
         "ScenariosAvailable": true
     },

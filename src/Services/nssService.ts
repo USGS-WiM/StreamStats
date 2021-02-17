@@ -127,7 +127,7 @@ module StreamStats.Services {
         public estimateFlowsCounter: number;
         public isDone: boolean;
         public reportGenerated: boolean;
-        private modalService: Services.IModalService;   
+        private modalService: Services.IModalService;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -368,13 +368,21 @@ module StreamStats.Services {
                         //make sure there are some results
                         if (response.data[0].regressionRegions.length > 0 && response.data[0].regressionRegions[0].results && response.data[0].regressionRegions[0].results.length > 0) {
                             if (!append) {
-                                statGroup.regressionRegions = [];
-                                statGroup.regressionRegions = response.data[0].regressionRegions;
                                 response.data[0].regressionRegions.forEach((rr) => {
                                     if (rr.extensions) {
+                                        rr.extensions.forEach(e => {
+                                            var extension = statGroup.regressionRegions.filter(r => r.name == rr.name)[0].extensions.filter(ext => ext.code == e.code)[0];
+                                            e.parameters.forEach(p => {
+                                                p.options = extension.parameters.filter(param => param.code == p.code)[0].options;
+                                            })
+                                        })
+                                
                                         this.eventManager.RaiseEvent(Services.onScenarioExtensionResultsChanged, this, new NSSEventArgs(null, rr.extensions));
                                     }//end if
                                 });
+                                statGroup.regressionRegions = [];
+                                statGroup.regressionRegions = response.data[0].regressionRegions;
+                                
                             }
                             else {
                                 //loop over and append params
