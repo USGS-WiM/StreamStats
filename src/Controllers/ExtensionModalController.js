@@ -1,18 +1,33 @@
+//------------------------------------------------------------------------------
+//----- ExplorationToolsModalController ----------------------------------------
+//------------------------------------------------------------------------------
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var StreamStats;
 (function (StreamStats) {
     var Controllers;
     (function (Controllers) {
         'use string';
-        var ExtensionModalController = (function () {
-            function ExtensionModalController($scope, $analytics, modal, modalservice, studyArea) {
+        var ExtensionModalController = (function (_super) {
+            __extends(ExtensionModalController, _super);
+            function ExtensionModalController($scope, $analytics, modal, modalservice, studyArea, events, $http, toaster) {
                 var _this = this;
+                _super.call(this, $http, configuration.baseurls.StreamStats);
+                this.events = events;
                 this.isBusy = false;
                 this.selectedReferenceGage = null;
+                this.queryBy = 'Nearest';
+                this.getNearest = false;
                 $scope.vm = this;
                 this.angulartics = $analytics;
                 this.modalInstance = modal;
                 this.studyAreaService = studyArea;
                 this.modalService = modalservice;
+                this.eventManager = events;
+                this.toaster = toaster;
                 this.dateRangeOptions = {
                     locale: { format: 'MMMM D, YYYY' },
                     eventHandlers: { 'hide.daterangepicker': function (e) { return _this.SetExtensionDate(e); } }
@@ -31,8 +46,6 @@ var StreamStats;
                     });
                 });
                 $scope.$watch(function () { return _this.dateRange.dates; }, function (newval, oldval) {
-                    if (newval == oldval)
-                        return;
                     _this.studyAreaService.selectedStudyAreaExtensions.forEach(function (ext) {
                         ext.parameters.forEach(function (p) {
                             if (p.code == "sdate") {
@@ -83,6 +96,7 @@ var StreamStats;
                 this.modalService.openModal(StreamStats.Services.SSModalType.e_nearestgages);
             };
             ExtensionModalController.prototype.init = function () {
+                //default
                 this.selectedReferenceGage = null;
                 if (this.studyAreaService.selectedStudyAreaExtensions == null)
                     return;
@@ -128,6 +142,7 @@ var StreamStats;
                     }
                 } while (parameters.length > 0);
                 this.studyAreaService.selectedGage = this.selectedReferenceGage;
+                this.getGageInfo();
             };
             ExtensionModalController.prototype.verifyExtensionCanContinue = function () {
                 var _this = this;
@@ -146,14 +161,23 @@ var StreamStats;
                 this.studyAreaService.selectedStudyAreaExtensions.forEach(function (ext) {
                     ext.parameters.forEach(function (p) {
                         if (p.code == "sid" && typeof p.value != 'string') {
+                            if (p.options == undefined || p.options.length == 0)
+                                p.options = [_this.selectedReferenceGage];
                             p.value = _this.selectedReferenceGage.StationID;
                         }
                         ;
                         if (p.code == "usePublishedFDC") {
                             p.value = _this.usePublishedFDC;
                         }
+                        if (p.code == "sdate") {
+                            p.value = _this.dateRange.dates.startDate;
+                        }
+                        if (p.code == "edate") {
+                            p.value = _this.dateRange.dates.endDate;
+                        }
                     });
                 });
+                this.studyAreaService.updateExtensions();
                 return true;
             };
             ExtensionModalController.prototype.addDay = function (d, days) {
@@ -189,9 +213,135 @@ var StreamStats;
                 console.log('gage page id:', siteid);
                 this.modalService.openModal(StreamStats.Services.SSModalType.e_gagepage, { 'siteid': siteid });
             };
-            ExtensionModalController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.ModalService', 'StreamStats.Services.StudyAreaService'];
+            ExtensionModalController.prototype.getGageInfo = function () {
+                var _this = this;
+                var selectedGageDone = false;
+                if (this.referenceGageList)
+                    this.referenceGageList.forEach(function (gage) {
+                        console.log(gage);
+                        if (gage.StationID == _this.selectedReferenceGage.StationID)
+                            selectedGageDone = true;
+                        var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + gage.StationID;
+                        var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+                        _this.Execute(request).then(function (response) {
+                            console.log(response.data);
+                            var gageInfo = response.data;
+                            if (gageInfo.hasOwnProperty('statistics')) {
+                                var hasFlowDurationStats = false;
+                                gageInfo.statistics.forEach(function (stat) {
+                                    if (stat['statisticGroupType'].code == 'FDS')
+                                        hasFlowDurationStats = true;
+                                });
+                                gage['properties']['HasFlowDurationStats'] = hasFlowDurationStats;
+                            }
+                            if (gageInfo.hasOwnProperty('characteristics')) {
+                                gageInfo.characteristics.forEach(function (char) {
+                                    if (char['variableType'].code == 'DRNAREA')
+                                        gage['properties']['DrainageArea'] = char['value'];
+                                });
+                            }
+                        }, function (error) {
+                        }).finally(function () {
+                        });
+                    });
+                if (this.selectedReferenceGage && !selectedGageDone) {
+                    var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + this.selectedReferenceGage.StationID;
+                    var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+                    this.Execute(request).then(function (response) {
+                        console.log(response.data);
+                        var gageInfo = response.data;
+                        if (gageInfo.hasOwnProperty('statistics')) {
+                            var hasFlowDurationStats = false;
+                            gageInfo.statistics.forEach(function (stat) {
+                                if (stat['statisticGroupType'].code == 'FDS')
+                                    hasFlowDurationStats = true;
+                            });
+                            _this.selectedReferenceGage['properties']['HasFlowDurationStats'] = hasFlowDurationStats;
+                        }
+                        if (gageInfo.hasOwnProperty('characteristics')) {
+                            gageInfo.characteristics.forEach(function (char) {
+                                if (char['variableType'].code == 'DRNAREA')
+                                    _this.selectedReferenceGage['properties']['DrainageArea'] = char['value'];
+                            });
+                        }
+                    }, function (error) {
+                    }).finally(function () {
+                    });
+                }
+            };
+            ExtensionModalController.prototype.getNearestGages = function () {
+                var _this = this;
+                this.toaster.pop("wait", "Searching for gages", "Please wait...", 0);
+                var headers = {
+                    "X-Is-Streamstats": true
+                };
+                var lat = this.studyAreaService.selectedStudyArea ? this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toString() : '41.50459213282905';
+                var long = this.studyAreaService.selectedStudyArea ? this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toString() : '-88.30548763275146';
+                var url = configuration.baseurls.GageStatsServices;
+                if (this.queryBy == 'Nearest')
+                    url += configuration.queryparams.GageStatsServicesNearest.format(lat, long, this.distance);
+                if (this.queryBy == 'Network')
+                    url += configuration.queryparams.GageStatsServicesNetwork.format(lat, long, this.distance);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
+                this.referenceGageList = [];
+                this.Execute(request).then(function (response) {
+                    console.log(response.data);
+                    _this.toaster.clear();
+                    if (typeof response.data == 'string') {
+                        _this.toaster.pop("warning", "Warning", response.data, 0);
+                    }
+                    else if (response.data.hasOwnProperty('features') && response.data.features.length == 0) {
+                        _this.toaster.pop("warning", "Warning", "No stations located within search distance");
+                    }
+                    else if (response.data.hasOwnProperty('features') && response.data.features.length > 0) {
+                        response.data.features.forEach(function (feat) {
+                            if (feat.properties.hasOwnProperty('Statistics')) {
+                                var hasFlowDurationStats = false;
+                                feat.properties.Statistics.forEach(function (stat) {
+                                    if (stat['statisticGroupType'].code == 'FDS')
+                                        hasFlowDurationStats = true;
+                                });
+                                feat.properties['HasFlowDurationStats'] = hasFlowDurationStats;
+                            }
+                            if (feat.properties.hasOwnProperty('Characteristics')) {
+                                feat.properties.Characteristics.forEach(function (char) {
+                                    if (char['variableType'].code == 'DRNAREA')
+                                        feat.properties['DrainageArea'] = char['value'];
+                                });
+                            }
+                        });
+                        _this.referenceGageList = response.data.features;
+                    }
+                    if (response.headers()['x-usgswim-messages']) {
+                        var headerMsgs = JSON.parse(response.headers()['x-usgswim-messages']);
+                        Object.keys(headerMsgs).forEach(function (key) {
+                            headerMsgs[key].forEach(function (element) {
+                                _this.toaster.pop(key, key, element);
+                            });
+                        });
+                    }
+                }, function (error) {
+                    _this.toaster.clear();
+                    console.log(error);
+                    if (error.headers()['x-usgswim-messages']) {
+                        var headerMsgs = JSON.parse(error.headers()['x-usgswim-messages']);
+                        Object.keys(headerMsgs).forEach(function (key) {
+                            headerMsgs[key].forEach(function (element) {
+                                _this.toaster.pop(key, key, element);
+                            });
+                        });
+                    }
+                    else {
+                        _this.toaster.pop('error', "There was an error finding nearby gages.", "Please retry", 0);
+                    }
+                });
+            };
+            ExtensionModalController.prototype.selectGage = function (gage) {
+                this.selectedReferenceGage = gage;
+            };
+            ExtensionModalController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.ModalService', 'StreamStats.Services.StudyAreaService', 'WiM.Event.EventManager', '$http', 'toaster'];
             return ExtensionModalController;
-        }());
+        })(WiM.Services.HTTPServiceBase);
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.ExtensionModalController', ExtensionModalController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));

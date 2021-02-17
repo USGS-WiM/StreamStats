@@ -1,3 +1,6 @@
+//------------------------------------------------------------------------------
+//----- SidebarController ------------------------------------------------------
+//------------------------------------------------------------------------------
 var StreamStats;
 (function (StreamStats) {
     var Controllers;
@@ -63,10 +66,11 @@ var StreamStats;
                     }
                     return false;
                 },
-                enumerable: false,
+                enumerable: true,
                 configurable: true
             });
             SidebarController.prototype.setProcedureType = function (pType) {
+                //console.log('in setProcedureType', this.selectedProcedure, pType, this.canUpdateProcedure(pType));     
                 if (this.selectedProcedure == pType || !this.canUpdateProcedure(pType)) {
                     if (this.selectedProcedure == 2 && (pType == 3 || pType == 4))
                         this.toaster.pop("warning", "Warning", "Make sure you have delineated a basin and clicked continue", 5000);
@@ -150,6 +154,7 @@ var StreamStats;
             SidebarController.prototype.multipleParameterSelector = function () {
                 var _this = this;
                 this.regionService.parameterList.forEach(function (parameter) {
+                    //console.log('length of configuration.alwaysSelectedParameters: ', configuration.alwaysSelectedParameters.length);
                     var paramCheck = _this.checkArrayForObj(_this.studyAreaService.studyAreaParameterList, parameter);
                     if (_this.multipleParameterSelectorAdd) {
                         if (paramCheck == -1)
@@ -166,6 +171,7 @@ var StreamStats;
                 this.multipleParameterSelectorAdd = !this.multipleParameterSelectorAdd;
             };
             SidebarController.prototype.updateStudyAreaParameterList = function (parameter) {
+                //console.log('in updatestudyarea parameter', parameter);
                 if (parameter.toggleable == false) {
                     this.toaster.pop('warning', parameter.code + " is required by one of the selected scenarios", "It cannot be unselected");
                     parameter.checked = true;
@@ -197,8 +203,7 @@ var StreamStats;
             };
             SidebarController.prototype.calculateParameters = function () {
                 this.angulartics.eventTrack('CalculateParameters', {
-                    category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.studyAreaService.studyAreaParameterList.map(function (elem) { return elem.code; }).join(",")
-                });
+                    category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.studyAreaService.studyAreaParameterList.map(function (elem) { return elem.code; }).join(",") });
                 this.studyAreaService.loadParameters();
                 if (this.scenarioHasExtenstions) {
                     this.modalService.openModal(StreamStats.Services.SSModalType.e_extensionsupport);
@@ -226,8 +231,7 @@ var StreamStats;
                 var _this = this;
                 this.toaster.pop('wait', "Opening Report", "Please wait...", 5000);
                 this.angulartics.eventTrack('CalculateFlows', {
-                    category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.nssService.selectedStatisticsGroupList.map(function (elem) { return elem.name; }).join(",")
-                });
+                    category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.nssService.selectedStatisticsGroupList.map(function (elem) { return elem.name; }).join(",") });
                 if (this.nssService.selectedStatisticsGroupList.length > 0 && this.nssService.showFlowsTable) {
                     var strippedoutStatisticGroups = [];
                     if (this.studyAreaService.selectedStudyArea.CoordinatedReach != null) {
@@ -472,7 +476,7 @@ var StreamStats;
             };
             SidebarController.$inject = ['$scope', 'toaster', '$analytics', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ModalService', 'leafletData', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager'];
             return SidebarController;
-        }());
+        })();
         var ProcedureType;
         (function (ProcedureType) {
             ProcedureType[ProcedureType["INIT"] = 1] = "INIT";

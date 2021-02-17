@@ -71,6 +71,7 @@ module StreamStats.Services {
         extensionDateRange: IDateRange;
         selectedGage: any;
         computeRegressionEquation(regtype: string);
+        updateExtensions();
     }
 
     interface IDateRange {
@@ -1209,6 +1210,21 @@ module StreamStats.Services {
             this.eventManager.UnSubscribeToEvent(onSelectedStudyParametersLoaded, this.parameterloadedEventHandler);
             this.nssService.selectedStatisticsGroupList = [];
             this.nssService.onQ10Loaded.unsubscribe(this.q10EventHandler);
+        }
+
+        public updateExtensions() {
+            // update extensions in nss service after regression calculation
+            this.nssService.statisticsGroupList.forEach(sg => {
+                if (sg.regressionRegions)
+                    sg.regressionRegions.forEach(rr => {
+                        if (rr.extensions) {
+                            rr.extensions = this.selectedStudyAreaExtensions;
+                            /* rr.extensions.forEach(e => {
+                                e = this.selectedStudyAreaExtensions.filter(ext => ext.code == e.code)[0];
+                            }) */
+                        }
+                    });
+            })
         }
 
     }//end class

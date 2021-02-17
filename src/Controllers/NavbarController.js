@@ -1,16 +1,11 @@
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
+//------------------------------------------------------------------------------
+//----- NavbarController ------------------------------------------------------
+//------------------------------------------------------------------------------
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var StreamStats;
 (function (StreamStats) {
     var Controllers;
@@ -19,15 +14,14 @@ var StreamStats;
         var NavbarController = (function (_super) {
             __extends(NavbarController, _super);
             function NavbarController($scope, $http, modal, studyArea) {
-                var _this = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
-                $scope.vm = _this;
-                _this.modalService = modal;
-                _this.checkActiveNews();
-                _this.newArticleCount = 0;
-                _this.environment = configuration.environment;
-                _this.AppVersion = configuration.version;
-                _this.cloud = configuration.cloud;
-                return _this;
+                _super.call(this, $http, configuration.baseurls.StreamStats);
+                $scope.vm = this;
+                this.modalService = modal;
+                this.checkActiveNews();
+                this.newArticleCount = 0;
+                this.environment = configuration.environment;
+                this.AppVersion = configuration.version;
+                this.cloud = configuration.cloud;
             }
             NavbarController.prototype.checkActiveNews = function () {
                 var _this = this;
@@ -87,7 +81,7 @@ var StreamStats;
             };
             NavbarController.$inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.StudyAreaService'];
             return NavbarController;
-        }(WiM.Services.HTTPServiceBase));
+        })(WiM.Services.HTTPServiceBase);
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.NavbarController', NavbarController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));
