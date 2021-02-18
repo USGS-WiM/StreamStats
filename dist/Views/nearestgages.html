@@ -1,0 +1,96 @@
+<!-- Modal -->
+
+<div class="modal-header">
+    <button class="close"
+            ng-click="vm.Close()">
+        &times;
+    </button>
+    <h4 class="modal-title">Query Nearest Gages</h4>
+</div>
+<div class="modal-body" id="nearestGageModal">
+
+    <div style="padding-top: 10px;">
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Query Nearest Gages<small>Query StreamStats Gages near the pourpoint (a) within a radius or (b) within a distance on the network</small></h3>
+            </div>
+            <div class="panel-body">
+                <div class="panel-confitem-wrapper">
+                    <div class="panel-confitem">
+
+                        <h5>Point Location<small ng-show="configuration.required" style="color:red">&nbsp;&nbsp;(Required)</small><small ng-hide="configuration.required">&nbsp;&nbsp;(Optional)</small></h5>
+
+                        <div>
+                            <div >
+                                <h6>Latitude: {{vm.studyAreaService.selectedStudyArea.Pourpoint.Latitude}} Longitude: {{vm.studyAreaService.selectedStudyArea.Pourpoint.Longitude}} </h6>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="panel-confitem">
+                        <h5>Query By:</h5>
+                        <div> 
+                            <div>
+                                <label class="rdo">
+                                    <input type="radio" value="Nearest" ng-model="vm.queryBy"/>
+                                    <span>Radius</span>
+                                </label>
+                                <label class="rdo">
+                                    <input type="radio" value="Network" ng-model="vm.queryBy"/>
+                                    <span>Distance on Network</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-confitem">
+                        <h5>Distance (km):</h5>
+                        <div>
+                            <div class="input-group">
+                                <input type="number" class="form-control" name="distanceValue" ng-model="vm.distance">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-confitem-action">
+                    <button ng-click="vm.getNearestGages()" type="button" class="btn-wim-sm btn-wim-success btn-wim-group-1"><i class="fa fa-check-circle-o"></i>&nbsp;&nbsp;Go</button>
+                </div>
+                
+                <div ng-show="vm.nearbyGages.length > 0">
+                    <h5>Nearby Gages</h5>
+                    <table class="table table-striped">
+                        <thead>
+                            <th>Station Number</th>
+                            <th>Station Name</th>
+                            <th>Station Type</th>
+                            <th>Drainage Area</th>
+                            <!-- <th>Has Flow Duration Stats?</th> -->
+                            <th></th>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="gage in vm.nearbyGages">
+                                <div >
+                                    <td><a title="Show Gage Page" ng-click="vm.openGagePage(gage.properties.Code)">{{gage.properties.Code}}</a></td>
+                                    <td ng-click="vm.selectGage(gage)">{{gage.properties.Name}}</td>
+                                    <td>{{gage.properties.StationType.name}}</td>
+                                    <td>{{gage.properties.DrainageArea}}</td>
+                                    <!-- <td>{{gage.properties.HasFlowDurationStats}}</td> -->
+                                    <td ng-show="vm.studyAreaService.doSelectNearestGage"><a ng-click="vm.selectGage(gage)">Select Gage</a></td>
+                                </div>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal-footer">
+    <button ng-click="vm.Close()" class="btn-black"><i class="fa fa-close"></i><span>&nbsp;&nbsp;Close</span></button>
+</div>

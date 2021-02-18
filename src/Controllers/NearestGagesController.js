@@ -1,11 +1,16 @@
-//------------------------------------------------------------------------------
-//----- NearestGages ---------------------------------------------------------------
-//------------------------------------------------------------------------------
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var StreamStats;
 (function (StreamStats) {
     var Controllers;
@@ -16,76 +21,77 @@ var StreamStats;
                 this.code = sid;
             }
             return GageInfo;
-        })();
+        }());
         var GageCharacteristic = (function () {
             function GageCharacteristic() {
             }
             return GageCharacteristic;
-        })();
+        }());
         var UnitType = (function () {
             function UnitType() {
             }
             return UnitType;
-        })();
+        }());
         var VariableType = (function () {
             function VariableType() {
             }
             return VariableType;
-        })();
+        }());
         var Citation = (function () {
             function Citation() {
             }
             return Citation;
-        })();
+        }());
         var GageStatisticGroup = (function () {
             function GageStatisticGroup() {
             }
             return GageStatisticGroup;
-        })();
+        }());
         var GageStatistic = (function () {
             function GageStatistic() {
             }
             return GageStatistic;
-        })();
+        }());
         var PredictionInterval = (function () {
             function PredictionInterval() {
             }
             return PredictionInterval;
-        })();
+        }());
         var StationType = (function () {
             function StationType() {
             }
             return StationType;
-        })();
+        }());
         var Agency = (function () {
             function Agency() {
             }
             return Agency;
-        })();
+        }());
         var RegressionType = (function () {
             function RegressionType() {
             }
             return RegressionType;
-        })();
+        }());
         var NearestGagesController = (function (_super) {
             __extends(NearestGagesController, _super);
             function NearestGagesController($scope, toaster, $http, modalService, modal, studyArea) {
-                _super.call(this, $http, configuration.baseurls.StreamStats);
-                this.showPreferred = false;
-                this.multiselectOptions = {
+                var _this = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
+                _this.showPreferred = false;
+                _this.multiselectOptions = {
                     displayProp: 'name'
                 };
-                this.queryBy = 'Nearest';
-                this.distance = 10;
-                this.nearbyGages = [];
-                $scope.vm = this;
-                this.modalInstance = modal;
-                this.modalService = modalService;
-                this.init();
-                this.selectedStatisticGroups = [];
-                this.showPreferred = false;
-                this.studyAreaService = studyArea;
-                this.toaster = toaster;
+                _this.queryBy = 'Nearest';
+                _this.distance = 10;
+                _this.nearbyGages = [];
+                $scope.vm = _this;
+                _this.modalInstance = modal;
+                _this.modalService = modalService;
+                _this.init();
+                _this.selectedStatisticGroups = [];
+                _this.showPreferred = false;
+                _this.studyAreaService = studyArea;
+                _this.toaster = toaster;
+                return _this;
             }
             NearestGagesController.prototype.Close = function () {
                 this.modalInstance.dismiss('cancel');
@@ -171,7 +177,7 @@ var StreamStats;
             };
             NearestGagesController.$inject = ['$scope', 'toaster', '$http', 'StreamStats.Services.ModalService', '$modalInstance', 'StreamStats.Services.StudyAreaService'];
             return NearestGagesController;
-        })(WiM.Services.HTTPServiceBase);
+        }(WiM.Services.HTTPServiceBase));
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.NearestGagesController', NearestGagesController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));

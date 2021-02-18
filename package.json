@@ -42,7 +42,6 @@
     "ng-file-upload": "~12.0.1",
     "save-svg-as-png": "^1.4.6",
     "tokml": "^0.4.0",
-    "tsc": "^1.20150623.0",
     "usgs-search-api": "github:usgs/search_api",
     "wim-styles": "github:usgs-wim/wim-styles#master",
     "wim_angular": "github:usgs-wim/wim_angular#master"
@@ -60,7 +59,8 @@
     "gulp-jshint": "^2.1.0",
     "gulp-size": "^0.3.0",
     "gulp-string-replace": "^0.4.0",
-    "gulp-uglify": "^2.0.1",
+    "gulp-uglify": "^0.2.1",
+    "gulp-uglify-es": "^0.1.3",
     "gulp-useref": "^3.1.6",
     "jshint": "^2.9.6",
     "jshint-stylish": "^2.2.1",

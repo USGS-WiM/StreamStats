@@ -1,11 +1,16 @@
-//------------------------------------------------------------------------------
-//----- ExplorationToolsModalController ----------------------------------------
-//------------------------------------------------------------------------------
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var StreamStats;
 (function (StreamStats) {
     var Controllers;
@@ -14,27 +19,26 @@ var StreamStats;
         var ExtensionModalController = (function (_super) {
             __extends(ExtensionModalController, _super);
             function ExtensionModalController($scope, $analytics, modal, modalservice, studyArea, events, $http, toaster) {
-                var _this = this;
-                _super.call(this, $http, configuration.baseurls.StreamStats);
-                this.events = events;
-                this.isBusy = false;
-                this.selectedReferenceGage = null;
-                this.queryBy = 'Nearest';
-                this.getNearest = false;
-                this.distance = 10;
-                $scope.vm = this;
-                this.angulartics = $analytics;
-                this.modalInstance = modal;
-                this.studyAreaService = studyArea;
-                this.modalService = modalservice;
-                this.eventManager = events;
-                this.toaster = toaster;
-                this.dateRangeOptions = {
+                var _this = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
+                _this.events = events;
+                _this.isBusy = false;
+                _this.selectedReferenceGage = null;
+                _this.queryBy = 'Nearest';
+                _this.getNearest = false;
+                _this.distance = 10;
+                $scope.vm = _this;
+                _this.angulartics = $analytics;
+                _this.modalInstance = modal;
+                _this.studyAreaService = studyArea;
+                _this.modalService = modalservice;
+                _this.eventManager = events;
+                _this.toaster = toaster;
+                _this.dateRangeOptions = {
                     locale: { format: 'MMMM D, YYYY' },
                     eventHandlers: { 'hide.daterangepicker': function (e) { return _this.SetExtensionDate(e); } }
                 };
-                this.init();
-                this.load();
+                _this.init();
+                _this.load();
                 $scope.$watch(function () { return _this.usePublishedFDC; }, function (newval, oldval) {
                     if (newval == oldval)
                         return;
@@ -58,6 +62,7 @@ var StreamStats;
                         });
                     });
                 });
+                return _this;
             }
             ExtensionModalController.prototype.close = function () {
                 this.modalInstance.dismiss('cancel');
@@ -92,7 +97,6 @@ var StreamStats;
                 this.studyAreaService.extensionDateRange = this.dateRange;
             };
             ExtensionModalController.prototype.init = function () {
-                //default
                 this.selectedReferenceGage = null;
                 if (this.studyAreaService.selectedStudyAreaExtensions == null)
                     return;
@@ -118,24 +122,28 @@ var StreamStats;
             };
             ExtensionModalController.prototype.load = function () {
                 var parameters = this.getExtensionParameters();
-                do {
+                var _loop_1 = function () {
                     var f = parameters.pop();
-                    if (this.selectedReferenceGage && ['sid'].indexOf(f.code) > -1) {
+                    if (this_1.selectedReferenceGage && ['sid'].indexOf(f.code) > -1) {
                         if (typeof f.value != 'string')
-                            this.selectedReferenceGage = f.value;
+                            this_1.selectedReferenceGage = f.value;
                         else if (typeof f.options == 'object')
-                            this.selectedReferenceGage = f.options.filter(function (g) { return g.StationID == f.value; })[0];
-                        this.referenceGageList = f.options;
+                            this_1.selectedReferenceGage = f.options.filter(function (g) { return g.StationID == f.value; })[0];
+                        this_1.referenceGageList = f.options;
                     }
-                    if (this.dateRange && ['sdate', 'edate'].indexOf(f.code) > -1) {
+                    if (this_1.dateRange && ['sdate', 'edate'].indexOf(f.code) > -1) {
                         if (f.code == "sdate")
-                            this.dateRange.dates.startDate = f.value;
+                            this_1.dateRange.dates.startDate = f.value;
                         if (f.code == "edate")
-                            this.dateRange.dates.endDate = f.value;
+                            this_1.dateRange.dates.endDate = f.value;
                     }
-                    if (this.usePublishedFDC != undefined && ['usePublishedFDC'].indexOf(f.code) > -1) {
-                        this.usePublishedFDC = f.value;
+                    if (this_1.usePublishedFDC != undefined && ['usePublishedFDC'].indexOf(f.code) > -1) {
+                        this_1.usePublishedFDC = f.value;
                     }
+                };
+                var this_1 = this;
+                do {
+                    _loop_1();
                 } while (parameters.length > 0);
                 this.studyAreaService.selectedGage = this.selectedReferenceGage;
                 this.getGageInfo();
@@ -353,7 +361,7 @@ var StreamStats;
             };
             ExtensionModalController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.ModalService', 'StreamStats.Services.StudyAreaService', 'WiM.Event.EventManager', '$http', 'toaster'];
             return ExtensionModalController;
-        })(WiM.Services.HTTPServiceBase);
+        }(WiM.Services.HTTPServiceBase));
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.ExtensionModalController', ExtensionModalController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));

@@ -1,6 +1,3 @@
-//------------------------------------------------------------------------------
-//----- Point ------------------------------------------------------------------
-//------------------------------------------------------------------------------
 var StreamStats;
 (function (StreamStats) {
     var Models;
@@ -14,7 +11,7 @@ var StreamStats;
                 this.NSS_Extensions = [];
             }
             return StudyArea;
-        })();
+        }());
         Models.StudyArea = StudyArea;
     })(Models = StreamStats.Models || (StreamStats.Models = {}));
 })(StreamStats || (StreamStats = {}));

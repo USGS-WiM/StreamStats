@@ -1,6 +1,3 @@
-//------------------------------------------------------------------------------
-//----- ReferenceGage ----------------------------------------------------------
-//------------------------------------------------------------------------------
 var StreamStats;
 (function (StreamStats) {
     var Models;
@@ -11,7 +8,7 @@ var StreamStats;
                 this.Name = name;
             }
             return ReferenceGage;
-        })();
+        }());
         Models.ReferenceGage = ReferenceGage;
     })(Models = StreamStats.Models || (StreamStats.Models = {}));
 })(StreamStats || (StreamStats = {}));

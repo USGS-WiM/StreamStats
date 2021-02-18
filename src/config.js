@@ -1,5 +1,3 @@
-//https://lgorithms.blogspot.com/2013/07/angularui-router-as-infrastructure-of.html
-//https://www.funnyant.com/angularjs-ui-router/
 var StreamStats;
 (function (StreamStats) {
     var config = (function () {
@@ -40,7 +38,7 @@ var StreamStats;
         }
         config.$inject = ['$stateProvider', '$urlRouterProvider', '$locationProvider', '$logProvider', '$compileProvider'];
         return config;
-    })();
+    }());
     angular.module('StreamStats', [
         'ui.router', 'ui.bootstrap', 'ui.checkbox',
         'mobile-angular-ui',
