@@ -949,7 +949,6 @@ var StreamStats;
                     }
                 }
                 else if (LayerName == 'streamgages') {
-                    console.log(feature);
                     var self = this;
                     this.geojson[LayerName] = {
                         data: feature,

@@ -7,7 +7,7 @@
     </button>
     <h4 class="modal-title">Query Nearest Gages</h4>
 </div>
-<div class="modal-body" id="nearestGages">
+<div class="modal-body" id="nearestGageModal">
 
     <div style="padding-top: 10px;">
 
@@ -16,25 +16,15 @@
                 <h3 class="panel-title">Query Nearest Gages<small>Query StreamStats Gages near the pourpoint (a) within a radius or (b) within a distance on the network</small></h3>
             </div>
             <div class="panel-body">
-                <!-- NEED TO: choose "nearest" or "network", select distance downstream/radius , then read page number from response, send through x-is-streamstats for status!-->
                 <div class="panel-confitem-wrapper">
                     <div class="panel-confitem">
 
                         <h5>Point Location<small ng-show="configuration.required" style="color:red">&nbsp;&nbsp;(Required)</small><small ng-hide="configuration.required">&nbsp;&nbsp;(Optional)</small></h5>
 
                         <div>
-                            <!-- Need to show modified click points here -->
                             <div >
                                 <h6>Latitude: {{vm.studyAreaService.selectedStudyArea.Pourpoint.Latitude}} Longitude: {{vm.studyAreaService.selectedStudyArea.Pourpoint.Longitude}} </h6>
                             </div>
-
-                            <!-- <div ng-show="vm.studyAreaService.selectedStudyArea.Pourpoint">
-                                <button class="btn-exploration-tools btn-green" ng-click="vm.test()"><i class="fa fa-map-marker"></i>&nbsp;&nbsp;Use pourpoint</span></button>
-                            </div>
-
-                            <button class="btn-exploration-tools btn-green" ng-click="vm.addExplorationPointFromMapt(configuration.name)"><span><i class="fa fa-map-marker"></i>&nbsp;&nbsp;Select point on Map</span></button> -->
-
-                            <!--<button ng-hide="(vm.explorationService.selectedMethod.navigationPointCount >= 1 && configuration.name == 'Start point location') || (vm.explorationService.selectedMethod.navigationPointCount == 2 && configuration.name == 'End point location')" class="btn-exploration-tools btn-green" ng-click="vm.modalInstance.dismiss('cancel')"><span><i class="fa fa-map-marker"></i>&nbsp;&nbsp;Select {{configuration.name}}</span></button>-->
                         </div>
 
                     </div>
@@ -75,9 +65,8 @@
                             <th>Station Number</th>
                             <th>Station Name</th>
                             <th>Station Type</th>
-                            <!--view on map option?-->
                             <th>Drainage Area</th>
-                            <th>Has Flow Duration Stats?</th><!-- won't be applicable to all...-->
+                            <!-- <th>Has Flow Duration Stats?</th> -->
                             <th></th>
                         </thead>
                         <tbody>
@@ -87,7 +76,7 @@
                                     <td ng-click="vm.selectGage(gage)">{{gage.properties.Name}}</td>
                                     <td>{{gage.properties.StationType.name}}</td>
                                     <td>{{gage.properties.DrainageArea}}</td>
-                                    <td>{{gage.properties.HasFlowDurationStats}}</td>
+                                    <!-- <td>{{gage.properties.HasFlowDurationStats}}</td> -->
                                     <td ng-show="vm.studyAreaService.doSelectNearestGage"><a ng-click="vm.selectGage(gage)">Select Gage</a></td>
                                 </div>
                             </tr>

@@ -613,7 +613,6 @@ var StreamStats;
                 this.Execute(request).then(function (response) {
                     _this.streamgageLayer = response.data;
                 }, function (error) {
-                }).finally(function () {
                 });
             };
             StudyAreaService.prototype.GetKriggedReferenceGages = function () {

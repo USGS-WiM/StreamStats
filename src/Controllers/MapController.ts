@@ -1366,8 +1366,6 @@ module StreamStats.Controllers {
                 } 
             }
             else if (LayerName == 'streamgages') {
-                // TODO: this clears when map point is placed, also could use the "application layers" legend item
-                console.log(feature);
                 var self = this;
 
                 this.geojson[LayerName] = {
