@@ -22,7 +22,7 @@
                 
                 <button class="btn-exploration-tools btn-green" ng-click="vm.setReferenceGageFromMap()" ng-disabled="vm.isBusy"><span><i ng-class=" vm.isBusy? 'fa fa-refresh fa-spin':'fa fa-map-marker'"></i>&nbsp;&nbsp;Select from Map</span></button>
                 <button class="btn-exploration-tools btn-green" ng-click="vm.setBestCorrelatedReferenceGage()" ng-disabled="vm.isBusy"><span><i ng-class="vm.isBusy? 'fa fa-crosshairs fa-spin':'fa fa-crosshairs'"></i>&nbsp;&nbsp;Best Correlated</span></button>
-                <button class="btn-exploration-tools btn-green" ng-click="vm.getNearest = true" ng-disabled="vm.isBusy"><span><i ng-class="vm.isBusy? 'fa fa-crosshairs fa-spin':'fa fa-map-marker'"></i>&nbsp;&nbsp;Query Nearest Gages</span></button>
+                <button class="btn-exploration-tools btn-green" ng-click="vm.getNearest = !vm.getNearest" ng-disabled="vm.isBusy"><span><i ng-class="vm.isBusy? 'fa fa-crosshairs fa-spin':'fa fa-map-marker'"></i>&nbsp;&nbsp;Query Nearest Gages</span></button>
                 <!-- TODO: add option to enter gage number -->
                 <!-- <div ng-if="vm.selectedReferenceGage.StationID !=='' " class="btn-group btn-wim-group-1 wim-dropdown reference-gage" dropdown is-open="status.isopen">
                     <button type="button" class="btn-wim-default" dropdown-toggle ng-disabled="disabled">
@@ -32,36 +32,40 @@
                         <li ng-repeat="item in vm.referenceGageList"><a ng-click="vm.updateReferenceGage(item)" title="{{item.hasOwnProperty('correlation')? 'Correlation: ' + item.correlation.toUSGSvalue():''}}">({{item.StationID}}) {{item.Name}}</a></li>
                     </ul>
                 </div> -->
-                <div ng-if="vm.getNearest">
-                    <!-- nearest gage functionality-->
-                    <div class="panel-confitem">
-                        <h5>Query By:</h5>
-                        <div> 
+                <div ng-if="vm.getNearest" id="nearestGages">
+                    <h3 class="panel-title">Query Nearest Gages<small>Query StreamStats Gages near the pourpoint (a) within a radius or (b) within a distance on the network</small></h3>
+                    <div class="panel-confitem-wrapper">
+                        <!-- nearest gage functionality-->
+                        <div class="panel-confitem">
+                            <h5>Query By:</h5>
+                            <div> 
+                                <div>
+                                    <label class="rdo">
+                                        <input type="radio" value="Nearest" ng-model="vm.queryBy"/>
+                                        <span>Radius</span>
+                                    </label>
+                                    <label class="rdo">
+                                        <input type="radio" value="Network" ng-model="vm.queryBy"/>
+                                        <span>Distance on Network</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-confitem">
+                            <h5>Distance (km):</h5>
                             <div>
-                                <label class="rdo">
-                                    <input type="radio" value="Nearest" ng-model="vm.queryBy"/>
-                                    <span>Radius</span>
-                                </label>
-                                <label class="rdo">
-                                    <input type="radio" value="Network" ng-model="vm.queryBy"/>
-                                    <span>Distance on Network</span>
-                                </label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" name="distanceValue" ng-model="vm.distance">
+
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="panel-confitem">
-                        <h5>Distance (km):</h5>
+
                         <div>
-                            <div class="input-group">
-                                <input type="number" class="form-control" name="distanceValue" ng-model="vm.distance">
-
-                            </div>
+                            <button id="nearestGageButton" ng-click="vm.getNearestGages()" type="button" class="btn-green"><i class="fa fa-check-circle-o"></i>&nbsp;&nbsp;Go</button>
                         </div>
                     </div>
-
-                    <div class="panel-confitem-action">
-                        <button ng-click="vm.getNearestGages()" type="button" class="btn-exploration-tools btn-green btn-wim-success"><i class="fa fa-check-circle-o"></i>&nbsp;&nbsp;Go</button>
-                    </div>
+                    
                 </div>
 
                 <div ng-show="vm.referenceGageList.length > 0 || vm.selectedReferenceGage.StationID !== ''">
@@ -76,15 +80,15 @@
                             <th></th>
                         </thead>
                         <tbody>
-                            <tr ng-if="vm.referenceGageList.length > 0" ng-repeat="gage in vm.referenceGageList">
+                            <tr ng-if="vm.referenceGageList.length > 0" ng-repeat="gage in vm.referenceGageList" ng-style="vm.getStyling(gage)">
                                 <!-- TODO: need correlation (if applicable), hover on select, highlight selected-->
-                                <div >
+                                <div ng-class="{'selectedGage': gage.StationID == vm.selectedReferenceGage.StationID}">
                                     <td><a title="Show Gage Page" ng-click="gage.properties.Code ? vm.openGagePage(gage.properties.Code) : vm.openGagePage(gage.StationID)">{{gage.properties.Code ? gage.properties.Code : gage.StationID}}</a></td>
                                     <td ng-click="vm.selectGage(gage)">{{gage.properties.Name ? gage.properties.Name : gage.Name}}</td>
                                     <td>{{gage.properties.StationType.name ? gage.properties.StationType.name : 'NA'}}</td>
                                     <td>{{gage.properties.DrainageArea ? gage.properties.DrainageArea : 'NA'}}</td>
                                     <td>{{gage.properties.HasFlowDurationStats ? gage.properties.HasFlowDurationStats : 'NA'}}</td>
-                                    <td ng-show="vm.getNearest"><a ng-click="vm.selectGage(gage)">Select Gage</a></td>
+                                    <td><a ng-click="vm.selectGage(gage)">Select Gage</a></td>
                                 </div>
                             </tr>
                             <!-- <tr ng-if="vm.selectedReferenceGage.StationID !== ''">
