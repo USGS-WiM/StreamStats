@@ -890,18 +890,17 @@ module StreamStats.Services {
         public selectGage(gage) {
             var sid: Array<any> = this.selectedStudyAreaExtensions.reduce((acc, val) => acc.concat(val.parameters), []).filter(f => { return (<string>(f.code)).toLowerCase() == "sid" });
             var siteList:Array<Models.IReferenceGage> = [];
-            //remove extra random line
             let rg = new Models.ReferenceGage(gage.properties.Code, gage.properties.Name);
             rg.Latitude_DD = gage.geometry.coordinates[0];
             rg.Longitude_DD = gage.geometry.coordinates[1];    
-            rg.properties = gage.properties; // TODO: get stats/chars for ref gage?
+            rg.properties = gage.properties;
             //add to list of reference gages
             siteList.push(rg);
 
             if (siteList.length > 0) {                           
                 sid[0].options = siteList;
                 sid[0].value = siteList[0];
-                    //reopen modal
+                //reopen modal
                 this.modalservices.openModal(SSModalType.e_extensionsupport);
                 this.doSelectNearestGage = false;
             }
@@ -918,8 +917,6 @@ module StreamStats.Services {
                 }, (error) => {
                     //sm when error
                     // TODO: catch error
-                }).finally(() => {
-
                 });
         }
 
@@ -1213,15 +1210,12 @@ module StreamStats.Services {
         }
 
         public updateExtensions() {
-            // update extensions in nss service after regression calculation
+            // update extensions in nss service when updated after regression calculation
             this.nssService.statisticsGroupList.forEach(sg => {
                 if (sg.regressionRegions)
                     sg.regressionRegions.forEach(rr => {
                         if (rr.extensions) {
                             rr.extensions = this.selectedStudyAreaExtensions;
-                            /* rr.extensions.forEach(e => {
-                                e = this.selectedStudyAreaExtensions.filter(ext => ext.code == e.code)[0];
-                            }) */
                         }
                     });
             })

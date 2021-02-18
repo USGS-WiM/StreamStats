@@ -91,11 +91,6 @@ var StreamStats;
                 });
                 this.studyAreaService.extensionDateRange = this.dateRange;
             };
-            ExtensionModalController.prototype.openNearestGages = function () {
-                this.modalInstance.dismiss('cancel');
-                this.studyAreaService.doSelectNearestGage = true;
-                this.modalService.openModal(StreamStats.Services.SSModalType.e_nearestgages);
-            };
             ExtensionModalController.prototype.init = function () {
                 //default
                 this.selectedReferenceGage = null;
@@ -249,7 +244,6 @@ var StreamStats;
                     var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + this.selectedReferenceGage.StationID;
                     var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                     this.Execute(request).then(function (response) {
-                        console.log(response.data);
                         var gageInfo = response.data;
                         if (gageInfo.hasOwnProperty('statistics')) {
                             var hasFlowDurationStats = false;
@@ -276,8 +270,8 @@ var StreamStats;
                 var headers = {
                     "X-Is-Streamstats": true
                 };
-                var lat = this.studyAreaService.selectedStudyArea ? this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toString() : '41.50459213282905';
-                var long = this.studyAreaService.selectedStudyArea ? this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toString() : '-88.30548763275146';
+                var lat = this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toString();
+                var long = this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toString();
                 var url = configuration.baseurls.GageStatsServices;
                 if (this.queryBy == 'Nearest')
                     url += configuration.queryparams.GageStatsServicesNearest.format(lat, long, this.distance);
@@ -286,7 +280,6 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
                 this.referenceGageList = [];
                 this.Execute(request).then(function (response) {
-                    console.log(response.data);
                     _this.toaster.clear();
                     if (typeof response.data == 'string') {
                         _this.toaster.pop("warning", "Warning", response.data, 0);

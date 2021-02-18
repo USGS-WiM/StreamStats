@@ -185,19 +185,16 @@ module StreamStats.Controllers {
             var headers = {
                 "X-Is-Streamstats": true
             };
-            var lat = this.studyAreaService.selectedStudyArea ? this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toString() : '41.50459213282905';
-            var long = this.studyAreaService.selectedStudyArea ? this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toString() : '-88.30548763275146';
-            //var lat = '41.50459213282905';
-            //var long = '-88.30548763275146';
+            var lat = this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toString();
+            var long = this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toString();
             var url = configuration.baseurls.GageStatsServices;
             if (this.queryBy == 'Nearest') url += configuration.queryparams.GageStatsServicesNearest.format(lat, long, this.distance);
             if (this.queryBy == 'Network') url += configuration.queryparams.GageStatsServicesNetwork.format(lat, long, this.distance);
-            //url = url.format(lat, long, this.distance);
+
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
             this.nearbyGages = []; // reset nearby gages
             this.Execute(request).then(
                 (response: any) => {
-                    console.log(response.data);
                     this.toaster.clear();
                     if (typeof response.data == 'string') {
                         this.toaster.pop("warning", "Warning", response.data, 0);
@@ -261,8 +258,7 @@ module StreamStats.Controllers {
         
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
-        private init(): void {   
-            //console.log("in NearestGages controller");
+        private init(): void {
             this.AppVersion = configuration.version;
 
         }

@@ -296,9 +296,6 @@ module StreamStats.Services {
                 this.estimateFlowsCounter++;
                 this.cleanRegressionRegions(statGroup.regressionRegions);
 
-                // TODO: is it storing the extension parameters here and not updating it??
-
-                //console.log('in estimate flows method for ', statGroup.name, statGroup);
                 statGroup.regressionRegions.forEach((regressionRegion) => {                    
                     regressionRegion.parameters.forEach((regressionParam) => {                        
                         studyAreaParameterList.forEach((param) => {
@@ -370,6 +367,7 @@ module StreamStats.Services {
                             if (!append) {
                                 response.data[0].regressionRegions.forEach((rr) => {
                                     if (rr.extensions) {
+                                        // update parameter options (gets removed during computation)
                                         rr.extensions.forEach(e => {
                                             var extension = statGroup.regressionRegions.filter(r => r.name == rr.name)[0].extensions.filter(ext => ext.code == e.code)[0];
                                             e.parameters.forEach(p => {

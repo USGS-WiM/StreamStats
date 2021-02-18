@@ -134,12 +134,6 @@ module StreamStats.Controllers {
             });
             this.studyAreaService.extensionDateRange = this.dateRange;
         }
-
-        public openNearestGages() {
-            this.modalInstance.dismiss('cancel');
-            this.studyAreaService.doSelectNearestGage = true;
-            this.modalService.openModal(Services.SSModalType.e_nearestgages);
-        }
         
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -227,9 +221,7 @@ module StreamStats.Controllers {
                     if (p.code == "edate") {p.value = this.dateRange.dates.endDate; }
                 })
             });
-            this.studyAreaService.updateExtensions();
-            //this.eventManager.RaiseEvent(Services.onScenarioExtensionChanged, this, {extensions: this.studyAreaService.selectedStudyAreaExtensions});
-            // needs to be of type NSSEventArgs
+            this.studyAreaService.updateExtensions(); // make sure extension params are updated in sidebar/nss service
 
             return true;
         }
@@ -311,22 +303,19 @@ module StreamStats.Controllers {
 
                 this.Execute(request).then(
                     (response: any) => {
-
-                        //console.log('response', response.data)
-                        console.log(response.data);
-                            var gageInfo = response.data;
-                            if (gageInfo.hasOwnProperty('statistics')) {
-                                var hasFlowDurationStats = false;
-                                gageInfo.statistics.forEach(stat => {
-                                    if (stat['statisticGroupType'].code == 'FDS') hasFlowDurationStats = true;
-                                })
-                                this.selectedReferenceGage['properties']['HasFlowDurationStats'] = hasFlowDurationStats;
-                            }
-                            if (gageInfo.hasOwnProperty('characteristics')) {
-                                gageInfo.characteristics.forEach(char => {
-                                    if (char['variableType'].code == 'DRNAREA') this.selectedReferenceGage['properties']['DrainageArea'] = char['value'];
-                                })
-                            }
+                        var gageInfo = response.data;
+                        if (gageInfo.hasOwnProperty('statistics')) {
+                            var hasFlowDurationStats = false;
+                            gageInfo.statistics.forEach(stat => {
+                                if (stat['statisticGroupType'].code == 'FDS') hasFlowDurationStats = true;
+                            })
+                            this.selectedReferenceGage['properties']['HasFlowDurationStats'] = hasFlowDurationStats;
+                        }
+                        if (gageInfo.hasOwnProperty('characteristics')) {
+                            gageInfo.characteristics.forEach(char => {
+                                if (char['variableType'].code == 'DRNAREA') this.selectedReferenceGage['properties']['DrainageArea'] = char['value'];
+                            })
+                        }
 
                     }, (error) => {
                         //sm when error
@@ -338,24 +327,20 @@ module StreamStats.Controllers {
         }
 
         public getNearestGages() {
-            // TODO: cleanup, check if report is opening without delineated basin
             this.toaster.pop("wait", "Searching for gages", "Please wait...", 0);
             var headers = {
                 "X-Is-Streamstats": true
             };
-            var lat = this.studyAreaService.selectedStudyArea ? this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toString() : '41.50459213282905';
-            var long = this.studyAreaService.selectedStudyArea ? this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toString() : '-88.30548763275146';
-            //var lat = '41.50459213282905';
-            //var long = '-88.30548763275146';
+            var lat = this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toString();
+            var long = this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toString();
             var url = configuration.baseurls.GageStatsServices;
             if (this.queryBy == 'Nearest') url += configuration.queryparams.GageStatsServicesNearest.format(lat, long, this.distance);
             if (this.queryBy == 'Network') url += configuration.queryparams.GageStatsServicesNetwork.format(lat, long, this.distance);
-            //url = url.format(lat, long, this.distance);
+
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
             this.referenceGageList = []; // reset nearby gages
             this.Execute(request).then(
                 (response: any) => {
-                    console.log(response.data);
                     this.toaster.clear();
                     if (typeof response.data == 'string') {
                         this.toaster.pop("warning", "Warning", response.data, 0);
@@ -413,7 +398,7 @@ module StreamStats.Controllers {
             let rg = new Models.ReferenceGage(gage.properties.Code, gage.properties.Name);
             rg.Latitude_DD = gage.geometry.coordinates[0];
             rg.Longitude_DD = gage.geometry.coordinates[1];    
-            rg.properties = gage.properties; // TODO: get stats/chars for ref gage?
+            rg.properties = gage.properties;
             //add to list of reference gages
             sid[0].options = this.referenceGageList;
             sid[0].value = rg;

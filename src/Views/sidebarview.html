@@ -7,10 +7,6 @@
                    <div class="group-wrapper" ng-show="vm.regionService.selectedRegion">
                         <button class="btn-red fullwidth" ng-click="vm.refreshWindow()"><span><i class="fa fa-undo"></i>&nbsp;&nbsp;Start Over</span></button>
                     </div>  
-                    
-                    <form style="padding: 5px 0;">
-                        <button ng-click="vm.OpenNearestGages()" type="button" class="btn-black fullwidth"><i class="fa fa-map-marker"></i>&nbsp;&nbsp;Query Nearest Gages</button><!--TODO: add analytics (see above)-->
-                    </form>
 
                     <div id="step1info" class="banner banner-no-icon">
                         <div class="banner-body">
@@ -138,7 +134,9 @@
                                             </ul>
                                         </div>
                                     </form>
-                                    <!-- TODO: move nearest gage click thing here?-->
+                                    <form style="padding: 5px 0;">
+                                        <button ng-click="vm.OpenNearestGages()" type="button" class="btn-black fullwidth"><i class="fa fa-map-marker"></i>&nbsp;&nbsp;Query Nearest Gages</button><!--TODO: add analytics (see above)-->
+                                    </form>
                                     <div class="col-md-12 text-center" style="padding: 10px 0; font-size:16px;">or</div>
                                     <form style="padding: 5px 0;">
                                         <button type="button" class="btn-blue fullwidth" ng-click="vm.queryRegressionRegions();" ng-disabled="vm.studyAreaService.regressionRegionQueryLoading || !vm.studyAreaService.canUpdate"><i ng-class="vm.studyAreaService.regressionRegionQueryLoading ? 'fa fa-refresh fa-spin' : 'fa fa-check-circle'"></i>&nbsp;&nbsp;Continue</button>

@@ -96,8 +96,8 @@ var StreamStats;
                 var headers = {
                     "X-Is-Streamstats": true
                 };
-                var lat = this.studyAreaService.selectedStudyArea ? this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toString() : '41.50459213282905';
-                var long = this.studyAreaService.selectedStudyArea ? this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toString() : '-88.30548763275146';
+                var lat = this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toString();
+                var long = this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toString();
                 var url = configuration.baseurls.GageStatsServices;
                 if (this.queryBy == 'Nearest')
                     url += configuration.queryparams.GageStatsServicesNearest.format(lat, long, this.distance);
@@ -106,7 +106,6 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
                 this.nearbyGages = [];
                 this.Execute(request).then(function (response) {
-                    console.log(response.data);
                     _this.toaster.clear();
                     if (typeof response.data == 'string') {
                         _this.toaster.pop("warning", "Warning", response.data, 0);
