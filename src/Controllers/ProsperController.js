@@ -1,6 +1,3 @@
-//------------------------------------------------------------------------------
-//----- Prosper ----------------------------------------------------------------
-//------------------------------------------------------------------------------
 var StreamStats;
 (function (StreamStats) {
     var Controllers;
@@ -18,28 +15,28 @@ var StreamStats;
                 get: function () {
                     return this._results.point;
                 },
-                enumerable: true,
+                enumerable: false,
                 configurable: true
             });
             Object.defineProperty(ProsperController.prototype, "Date", {
                 get: function () {
                     return this._results.date;
                 },
-                enumerable: true,
+                enumerable: false,
                 configurable: true
             });
             Object.defineProperty(ProsperController.prototype, "Table", {
                 get: function () {
                     return this._table;
                 },
-                enumerable: true,
+                enumerable: false,
                 configurable: true
             });
             Object.defineProperty(ProsperController.prototype, "ResultsAvailable", {
                 get: function () {
                     return this._resultsAvailable;
                 },
-                enumerable: true,
+                enumerable: false,
                 configurable: true
             });
             ProsperController.prototype.convertUnsafe = function (x) {
@@ -61,35 +58,35 @@ var StreamStats;
                         "information:</b><br>Roy Sando<br>U.S. Geological Survey, Wyoming-Montana Water Science Center<br>Email: <a href='mailto:tsando@usgs.gov' target='_blank'>tsando@usgs.gov</a> <br>Phone: 406-457-5953";
                     return this.sce.trustAsHtml(desc);
                 },
-                enumerable: true,
+                enumerable: false,
                 configurable: true
             });
             Object.defineProperty(ProsperController.prototype, "AvailablePredictions", {
                 get: function () {
                     return this._prosperServices.AvailablePredictions;
                 },
-                enumerable: true,
+                enumerable: false,
                 configurable: true
             });
             Object.defineProperty(ProsperController.prototype, "DisplayedPredictionLayer", {
                 get: function () {
                     return this._prosperServices.DisplayedPrediction;
                 },
-                enumerable: true,
+                enumerable: false,
                 configurable: true
             });
             Object.defineProperty(ProsperController.prototype, "SelectedPredictions", {
                 get: function () {
                     return this._prosperServices.SelectedPredictions;
                 },
-                enumerable: true,
+                enumerable: false,
                 configurable: true
             });
             Object.defineProperty(ProsperController.prototype, "Graph", {
                 get: function () {
                     return this._graph;
                 },
-                enumerable: true,
+                enumerable: false,
                 configurable: true
             });
             ProsperController.prototype.Close = function () {
@@ -254,7 +251,7 @@ var StreamStats;
             };
             ProsperController.$inject = ['$scope', '$modalInstance', '$sce', 'StreamStats.Services.ProsperService'];
             return ProsperController;
-        })();
+        }());
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.ProsperController', ProsperController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));

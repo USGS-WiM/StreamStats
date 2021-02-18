@@ -7,12 +7,12 @@ configuration.baseurls =
         'NWISurl': 'https://waterservices.usgs.gov/nwis',
         'StreamStatsServices': 'https://test.streamstats.usgs.gov',
         'StreamStatsMapServices': 'https://gis.streamstats.usgs.gov',
-        'NSS': 'http://localhost:53813',
+        'NSS': 'https://test.streamstats.usgs.gov/nss-test',
         'WaterUseServices': 'https://test.streamstats.usgs.gov/wateruseservices',
         'StormRunoffServices': 'https://test.streamstats.usgs.gov/runoffmodelingservices',
         'ScienceBase': 'https://gis.usgs.gov/sciencebase2',
-        'GageStatsServices': 'http://localhost:53812'
-    };
+        'GageStatsServices': 'https://test.streamstats.usgs.gov/gagestats-test'
+    }; // TODO: reset these urls when merging
 
 //override streamstats arguments if on production, these get overriden again in MapController after load balancer assigns a server
 if (window.location.host === 'streamstats.usgs.gov') {

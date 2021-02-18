@@ -1,6 +1,3 @@
-//------------------------------------------------------------------------------
-//----- NavigationReportModalController ----------------------------------------
-//------------------------------------------------------------------------------
 var StreamStats;
 (function (StreamStats) {
     var Controllers;
@@ -28,7 +25,7 @@ var StreamStats;
             };
             NavigationReportModalController.$inject = ['$scope', '$sce', '$modalInstance', 'StreamStats.Services.ModalService'];
             return NavigationReportModalController;
-        })();
+        }());
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.NavigationReportModalController', NavigationReportModalController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));

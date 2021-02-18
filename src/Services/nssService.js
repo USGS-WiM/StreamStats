@@ -1,11 +1,16 @@
-//------------------------------------------------------------------------------
-//----- nssService -----------------------------------------------------
-//------------------------------------------------------------------------------
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var StreamStats;
 (function (StreamStats) {
     var Services;
@@ -15,7 +20,7 @@ var StreamStats;
             function StatisticsGroup() {
             }
             return StatisticsGroup;
-        })();
+        }());
         Services.StatisticsGroup = StatisticsGroup;
         Services.onScenarioExtensionChanged = "onScenarioExtensionChanged";
         Services.onScenarioExtensionResultsChanged = "onScenarioExtensionResultsChanged";
@@ -24,38 +29,40 @@ var StreamStats;
             function NSSEventArgs(extensions, results) {
                 if (extensions === void 0) { extensions = null; }
                 if (results === void 0) { results = null; }
-                _super.call(this);
-                this.extensions = extensions;
-                this.results = results;
+                var _this = _super.call(this) || this;
+                _this.extensions = extensions;
+                _this.results = results;
+                return _this;
             }
             return NSSEventArgs;
-        })(WiM.Event.EventArgs);
+        }(WiM.Event.EventArgs));
         Services.NSSEventArgs = NSSEventArgs;
         var nssService = (function (_super) {
             __extends(nssService, _super);
             function nssService($http, $q, toaster, modal, regionservice, eventManager) {
-                _super.call(this, $http, configuration.baseurls['NSS']);
-                this.$q = $q;
-                this.regionservice = regionservice;
-                this.eventManager = eventManager;
-                this.toaster = toaster;
-                this.modalService = modal;
-                this._onSelectedStatisticsGroupChanged = new WiM.Event.Delegate();
-                this._onQ10Loaded = new WiM.Event.Delegate();
-                this.clearNSSdata();
+                var _this = _super.call(this, $http, configuration.baseurls['NSS']) || this;
+                _this.$q = $q;
+                _this.regionservice = regionservice;
+                _this.eventManager = eventManager;
+                _this.toaster = toaster;
+                _this.modalService = modal;
+                _this._onSelectedStatisticsGroupChanged = new WiM.Event.Delegate();
+                _this._onQ10Loaded = new WiM.Event.Delegate();
+                _this.clearNSSdata();
+                return _this;
             }
             Object.defineProperty(nssService.prototype, "onSelectedStatisticsGroupChanged", {
                 get: function () {
                     return this._onSelectedStatisticsGroupChanged;
                 },
-                enumerable: true,
+                enumerable: false,
                 configurable: true
             });
             Object.defineProperty(nssService.prototype, "onQ10Loaded", {
                 get: function () {
                     return this._onQ10Loaded;
                 },
-                enumerable: true,
+                enumerable: false,
                 configurable: true
             });
             nssService.prototype.clearNSSdata = function () {
@@ -78,7 +85,6 @@ var StreamStats;
                 this.loadingStatisticsGroup = true;
                 this.statisticsGroupList = [];
                 this.Execute(request).then(function (response) {
-                    //console.log(response.data);
                     if (response.data.length > 0) {
                         _this.loadingStatisticsGroup = false;
                         angular.forEach(response.data, function (value, key) {
@@ -207,7 +213,6 @@ var StreamStats;
                     var request = new WiM.Services.Helpers.RequestInfo(url, true, 1, 'json', updatedScenarioObject);
                     statGroup.citations = [];
                     _this.Execute(request).then(function (response) {
-                        //console.log('estimate flows: ', response);
                         var citationUrl = response.data[0].links[0].href;
                         if (!append)
                             _this.getSelectedCitations(citationUrl, statGroup);
@@ -292,8 +297,6 @@ var StreamStats;
                 });
             };
             nssService.prototype.getSelectedCitations = function (citationUrl, statGroup) {
-                ////nested requests for citations
-                //console.log('citations: ', citationUrl, statGroup);
                 var _this = this;
                 var url;
                 if (citationUrl.indexOf('https://') == -1)
@@ -302,7 +305,6 @@ var StreamStats;
                     url = citationUrl;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, 0, 'json');
                 this.Execute(request).then(function (response) {
-                    //console.log('get citations: ', response);
                     if (response.data[0] && response.data[0].id) {
                         angular.forEach(response.data, function (value, key) {
                             statGroup.citations.push(value);
@@ -355,7 +357,7 @@ var StreamStats;
                 }
             };
             return nssService;
-        })(WiM.Services.HTTPServiceBase);
+        }(WiM.Services.HTTPServiceBase));
         factory.$inject = ['$http', '$q', 'toaster', 'StreamStats.Services.ModalService', 'StreamStats.Services.RegionService', 'WiM.Event.EventManager'];
         function factory($http, $q, toaster, modal, regionservice, eventManager) {
             return new nssService($http, $q, toaster, modal, regionservice, eventManager);
