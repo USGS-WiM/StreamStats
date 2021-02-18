@@ -61,6 +61,7 @@ module StreamStats.Controllers {
         public usePublishedFDC: boolean;
         public queryBy = 'Nearest';
         public getNearest = false;
+        public distance = 10;
         
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -178,12 +179,10 @@ module StreamStats.Controllers {
 
             do {
                 let f = parameters.pop();
-                // if (typeof f.value === 'string') continue;
-                // TODO: double check the dates
 
                 if (this.selectedReferenceGage && ['sid'].indexOf(f.code) > -1) {
                     if (typeof f.value != 'string') this.selectedReferenceGage = f.value;
-                    else if (typeof f.options == 'object') this.selectedReferenceGage = f.options[0];
+                    else if (typeof f.options == 'object') this.selectedReferenceGage = f.options.filter(g => g.StationID == f.value)[0];
                     this.referenceGageList = f.options;
                 }
                 if (this.dateRange && ['sdate', 'edate'].indexOf(f.code) > -1) {
@@ -376,6 +375,8 @@ module StreamStats.Controllers {
                                     if (char['variableType'].code == 'DRNAREA') feat.properties['DrainageArea'] = char['value'];
                                 })
                             }
+                            if (feat.properties.code) feat.StationID = feat.properties.code;
+                            else if (feat.properties.Code) feat.StationID = feat.properties.Code;
                         });
                         this.referenceGageList = response.data.features;
 
@@ -407,9 +408,23 @@ module StreamStats.Controllers {
         }
 
         public selectGage(gage) {
-            // TODO: need to signify which is selected
-            // also need to assign necessary properties (see nearest gages controller)
             this.selectedReferenceGage = gage;
+            var sid: Array<any> = this.studyAreaService.selectedStudyAreaExtensions.reduce((acc, val) => acc.concat(val.parameters), []).filter(f => { return (<string>(f.code)).toLowerCase() == "sid" });
+            let rg = new Models.ReferenceGage(gage.properties.Code, gage.properties.Name);
+            rg.Latitude_DD = gage.geometry.coordinates[0];
+            rg.Longitude_DD = gage.geometry.coordinates[1];    
+            rg.properties = gage.properties; // TODO: get stats/chars for ref gage?
+            //add to list of reference gages
+            sid[0].options = this.referenceGageList;
+            sid[0].value = rg;
+            this.selectedReferenceGage = rg;
+        }
+
+        public getStyling(gage) {
+            if (gage.StationID == this.selectedReferenceGage.StationID) 
+                return {'background-color': '#ebf0f5' }
+            else
+                return {'background-color': 'unset'}
         }
     }//end  class
 

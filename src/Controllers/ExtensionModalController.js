@@ -21,6 +21,7 @@ var StreamStats;
                 this.selectedReferenceGage = null;
                 this.queryBy = 'Nearest';
                 this.getNearest = false;
+                this.distance = 10;
                 $scope.vm = this;
                 this.angulartics = $analytics;
                 this.modalInstance = modal;
@@ -128,7 +129,7 @@ var StreamStats;
                         if (typeof f.value != 'string')
                             this.selectedReferenceGage = f.value;
                         else if (typeof f.options == 'object')
-                            this.selectedReferenceGage = f.options[0];
+                            this.selectedReferenceGage = f.options.filter(function (g) { return g.StationID == f.value; })[0];
                         this.referenceGageList = f.options;
                     }
                     if (this.dateRange && ['sdate', 'edate'].indexOf(f.code) > -1) {
@@ -309,6 +310,10 @@ var StreamStats;
                                         feat.properties['DrainageArea'] = char['value'];
                                 });
                             }
+                            if (feat.properties.code)
+                                feat.StationID = feat.properties.code;
+                            else if (feat.properties.Code)
+                                feat.StationID = feat.properties.Code;
                         });
                         _this.referenceGageList = response.data.features;
                     }
@@ -338,6 +343,20 @@ var StreamStats;
             };
             ExtensionModalController.prototype.selectGage = function (gage) {
                 this.selectedReferenceGage = gage;
+                var sid = this.studyAreaService.selectedStudyAreaExtensions.reduce(function (acc, val) { return acc.concat(val.parameters); }, []).filter(function (f) { return (f.code).toLowerCase() == "sid"; });
+                var rg = new StreamStats.Models.ReferenceGage(gage.properties.Code, gage.properties.Name);
+                rg.Latitude_DD = gage.geometry.coordinates[0];
+                rg.Longitude_DD = gage.geometry.coordinates[1];
+                rg.properties = gage.properties;
+                sid[0].options = this.referenceGageList;
+                sid[0].value = rg;
+                this.selectedReferenceGage = rg;
+            };
+            ExtensionModalController.prototype.getStyling = function (gage) {
+                if (gage.StationID == this.selectedReferenceGage.StationID)
+                    return { 'background-color': '#ebf0f5' };
+                else
+                    return { 'background-color': 'unset' };
             };
             ExtensionModalController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.ModalService', 'StreamStats.Services.StudyAreaService', 'WiM.Event.EventManager', '$http', 'toaster'];
             return ExtensionModalController;
