@@ -70,6 +70,8 @@
                             <th>Is Regulated?</th>
                             <th>Drainage Area</th>
                             <th>Has Flow Duration Stats?</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
                             <th></th>
                         </thead>
                         <tbody>
@@ -81,6 +83,8 @@
                                     <td>{{gage.properties.IsRegulated != undefined ? gage.properties.IsRegulated : 'NA'}}</td>
                                     <td>{{gage.properties.DrainageArea ? gage.properties.DrainageArea : 'NA'}}</td>
                                     <td>{{gage.properties.HasFlowDurationStats ? gage.properties.HasFlowDurationStats : 'NA'}}</td>
+                                    <td>{{gage.StartDate}}</td>
+                                    <td>{{gage.EndDate}}</td>
                                     <td ng-if="gage.StationID != this.selectedReferenceGage.StationID"><a  ng-click="vm.selectGage(gage)">Select Gage</a></td>
                                 </div>
                             </tr>

@@ -249,6 +249,7 @@ var StreamStats;
                         }, function (error) {
                         }).finally(function () {
                         });
+                        _this.getNWISPeriodOfRecord(gage);
                     });
                 if (this.selectedReferenceGage && !selectedGageDone) {
                     var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + this.selectedReferenceGage.StationID;
@@ -272,6 +273,7 @@ var StreamStats;
                     }, function (error) {
                     }).finally(function () {
                     });
+                    this.getNWISPeriodOfRecord(this.selectedReferenceGage);
                 }
             };
             ExtensionModalController.prototype.getNearestGages = function () {
@@ -317,6 +319,7 @@ var StreamStats;
                                 feat.StationID = feat.properties.code;
                             else if (feat.properties.Code)
                                 feat.StationID = feat.properties.Code;
+                            _this.getNWISPeriodOfRecord(feat);
                         });
                         _this.referenceGageList = response.data.features;
                     }
@@ -368,6 +371,22 @@ var StreamStats;
                     return { 'background-color': '#ebf0f5' };
                 else
                     return { 'background-color': 'unset' };
+            };
+            ExtensionModalController.prototype.getNWISPeriodOfRecord = function (gage) {
+                var nwis_url = configuration.baseurls.NWISurl + configuration.queryparams.NWISperiodOfRecord + gage.StationID;
+                var nwis_request = new WiM.Services.Helpers.RequestInfo(nwis_url, true, WiM.Services.Helpers.methodType.GET, 'TEXT');
+                this.Execute(nwis_request).then(function (response) {
+                    var data = response.data.split('\n').filter(function (r) { return (!r.startsWith("#") && r != ""); });
+                    var headers = data.shift().split('\t');
+                    data.shift();
+                    var station = data.shift().split('\t');
+                    if (station[headers.indexOf("parm_cd")] == "00060") {
+                        gage['StartDate'] = station[headers.indexOf("begin_date")];
+                        gage['EndDate'] = station[headers.indexOf("end_date")];
+                    }
+                }, function (error) {
+                }).finally(function () {
+                });
             };
             ExtensionModalController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.ModalService', 'StreamStats.Services.StudyAreaService', 'WiM.Event.EventManager', '$http', 'toaster'];
             return ExtensionModalController;
