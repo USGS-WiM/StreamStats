@@ -2,9 +2,9 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
         return extendStatics(d, b);
-    };
+    }
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -33,6 +33,8 @@ var StreamStats;
                 _this.permits_gw = { name: "Temporary water-use registrations (ground water)", aveReturn: "", aveWithdrawal: "---" };
                 _this.AnnualTotalWithdrawals = 0;
                 _this.AnnualTotalReturns = 0;
+                _this.AnnualAveWithdrawals = 0;
+                _this.AnnualAveReturns = 0;
                 $scope.vm = _this;
                 _this.modalInstance = modal;
                 _this.StudyArea = studyAreaService.selectedStudyArea;
@@ -51,7 +53,7 @@ var StreamStats;
                     if (val <= this.EndYear && val >= this.YearRange.floor)
                         this._startYear = val;
                 },
-                enumerable: false,
+                enumerable: true,
                 configurable: true
             });
             Object.defineProperty(WateruseController.prototype, "EndYear", {
@@ -62,28 +64,28 @@ var StreamStats;
                     if (val >= this.StartYear && val <= this.YearRange.ceil)
                         this._endYear = val;
                 },
-                enumerable: false,
+                enumerable: true,
                 configurable: true
             });
             Object.defineProperty(WateruseController.prototype, "YearRange", {
                 get: function () {
                     return this._yearRange;
                 },
-                enumerable: false,
+                enumerable: true,
                 configurable: true
             });
             Object.defineProperty(WateruseController.prototype, "IndexWOReg", {
                 get: function () {
                     return this._indexWOReg;
                 },
-                enumerable: false,
+                enumerable: true,
                 configurable: true
             });
             Object.defineProperty(WateruseController.prototype, "IndexWReg", {
                 get: function () {
                     return this._indexWReg;
                 },
-                enumerable: false,
+                enumerable: true,
                 configurable: true
             });
             WateruseController.prototype.GetWaterUse = function () {
@@ -122,8 +124,8 @@ var StreamStats;
             };
             WateruseController.prototype.setIndexes = function () {
                 if (this.Q10 != null && this.AnnualTotalReturns != null && this.AnnualTotalWithdrawals != null && this.permits_gw.aveWithdrawal != null && this.permits_sw.aveWithdrawal != null) {
-                    this._indexWOReg = (+this.AnnualTotalWithdrawals - +this.AnnualTotalReturns) / +this.Q10;
-                    this._indexWReg = (+this.permits_gw.aveWithdrawal + +this.permits_sw.aveWithdrawal + (+this.AnnualTotalWithdrawals - +this.AnnualTotalReturns)) / +this.Q10;
+                    this._indexWOReg = ((+this.AnnualAveWithdrawals - +this.AnnualAveReturns) / +this.Q10).toFixed(3);
+                    this._indexWReg = ((+this.permits_gw.aveWithdrawal + +this.permits_sw.aveWithdrawal + (+this.AnnualAveWithdrawals - +this.AnnualAveReturns)) / +this.Q10).toFixed(3);
                 }
                 else {
                     this._indexWOReg = "---";
@@ -270,6 +272,8 @@ var StreamStats;
                                 if (permitted.hasOwnProperty("Well"))
                                     this.permits_gw.aveWithdrawal = permitted.Well.value;
                             }
+                            this.AnnualAveReturns = +gw.aveReturn + +sw.aveReturn;
+                            this.AnnualAveWithdrawals = +gw.aveWithdrawal + +sw.aveWithdrawal;
                             tableValues.push(sw);
                             tableValues.push(gw);
                             tableValues.push({
