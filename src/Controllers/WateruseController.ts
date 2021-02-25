@@ -110,6 +110,8 @@ module StreamStats.Controllers {
         private permits_gw = { name: "Temporary water-use registrations (ground water)", aveReturn: "", aveWithdrawal: "---"};
         private AnnualTotalWithdrawals = 0;
         private AnnualTotalReturns = 0;
+        private AnnualAveWithdrawals = 0;
+        private AnnualAveReturns =0;
         private Q10: any;
       //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -167,8 +169,8 @@ module StreamStats.Controllers {
 
         private setIndexes(): any {
             if(this.Q10 != null && this.AnnualTotalReturns != null && this.AnnualTotalWithdrawals != null && this.permits_gw.aveWithdrawal != null && this.permits_sw.aveWithdrawal != null) {
-                this._indexWOReg = (+this.AnnualTotalWithdrawals - +this.AnnualTotalReturns) / +this.Q10;
-                this._indexWReg = (+this.permits_gw.aveWithdrawal + +this.permits_sw.aveWithdrawal + (+this.AnnualTotalWithdrawals - +this.AnnualTotalReturns)) / +this.Q10;
+                this._indexWOReg = ((+this.AnnualAveWithdrawals - +this.AnnualAveReturns) / +this.Q10).toFixed(3);
+                this._indexWReg = ((+this.permits_gw.aveWithdrawal + +this.permits_sw.aveWithdrawal + (+this.AnnualAveWithdrawals - +this.AnnualAveReturns)) / +this.Q10).toFixed(3);
             } else { this._indexWOReg = "---"; this._indexWReg = "---"; }            
         }
         
@@ -327,6 +329,8 @@ module StreamStats.Controllers {
                             if (permitted.hasOwnProperty("Intake")) this.permits_sw.aveWithdrawal = permitted.Intake.value;
                             if (permitted.hasOwnProperty("Well")) this.permits_gw.aveWithdrawal = permitted.Well.value;
                         }
+                        this.AnnualAveReturns = +gw.aveReturn + +sw.aveReturn;
+                        this.AnnualAveWithdrawals = +gw.aveWithdrawal + +sw.aveWithdrawal;
                         tableValues.push(sw);
                         tableValues.push(gw);
                         tableValues.push(

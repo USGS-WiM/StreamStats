@@ -33,6 +33,8 @@ var StreamStats;
                 _this.permits_gw = { name: "Temporary water-use registrations (ground water)", aveReturn: "", aveWithdrawal: "---" };
                 _this.AnnualTotalWithdrawals = 0;
                 _this.AnnualTotalReturns = 0;
+                _this.AnnualAveWithdrawals = 0;
+                _this.AnnualAveReturns = 0;
                 $scope.vm = _this;
                 _this.modalInstance = modal;
                 _this.StudyArea = studyAreaService.selectedStudyArea;
@@ -122,8 +124,8 @@ var StreamStats;
             };
             WateruseController.prototype.setIndexes = function () {
                 if (this.Q10 != null && this.AnnualTotalReturns != null && this.AnnualTotalWithdrawals != null && this.permits_gw.aveWithdrawal != null && this.permits_sw.aveWithdrawal != null) {
-                    this._indexWOReg = (+this.AnnualTotalWithdrawals - +this.AnnualTotalReturns) / +this.Q10;
-                    this._indexWReg = (+this.permits_gw.aveWithdrawal + +this.permits_sw.aveWithdrawal + (+this.AnnualTotalWithdrawals - +this.AnnualTotalReturns)) / +this.Q10;
+                    this._indexWOReg = ((+this.AnnualAveWithdrawals - +this.AnnualAveReturns) / +this.Q10).toFixed(3);
+                    this._indexWReg = ((+this.permits_gw.aveWithdrawal + +this.permits_sw.aveWithdrawal + (+this.AnnualAveWithdrawals - +this.AnnualAveReturns)) / +this.Q10).toFixed(3);
                 }
                 else {
                     this._indexWOReg = "---";
@@ -270,6 +272,8 @@ var StreamStats;
                                 if (permitted.hasOwnProperty("Well"))
                                     this.permits_gw.aveWithdrawal = permitted.Well.value;
                             }
+                            this.AnnualAveReturns = +gw.aveReturn + +sw.aveReturn;
+                            this.AnnualAveWithdrawals = +gw.aveWithdrawal + +sw.aveWithdrawal;
                             tableValues.push(sw);
                             tableValues.push(gw);
                             tableValues.push({
