@@ -294,6 +294,8 @@ module StreamStats.Controllers {
                         }).finally(() => {
 
                     });
+                    
+                    this.getNWISPeriodOfRecord(gage);
                 })
             if (this.selectedReferenceGage && !selectedGageDone) {
                 var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + this.selectedReferenceGage.StationID;
@@ -320,6 +322,8 @@ module StreamStats.Controllers {
                     }).finally(() => {
 
                 });
+
+                this.getNWISPeriodOfRecord(this.selectedReferenceGage);
             }
                 
         }
@@ -360,6 +364,7 @@ module StreamStats.Controllers {
                             }
                             if (feat.properties.code) feat.StationID = feat.properties.code;
                             else if (feat.properties.Code) feat.StationID = feat.properties.Code;
+                            this.getNWISPeriodOfRecord(feat);
                         });
                         this.referenceGageList = response.data.features;
 
@@ -415,6 +420,30 @@ module StreamStats.Controllers {
                 return {'background-color': '#ebf0f5' }
             else
                 return {'background-color': 'unset'}
+        }
+
+        public getNWISPeriodOfRecord(gage) {
+            // TODO: add comments
+            var nwis_url = configuration.baseurls.NWISurl + configuration.queryparams.NWISperiodOfRecord + gage.StationID;
+            var nwis_request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(nwis_url, true, WiM.Services.Helpers.methodType.GET, 'TEXT');
+
+            this.Execute(nwis_request).then(
+                (response: any) => {
+                    var data = response.data.split('\n').filter(r => { return (!r.startsWith("#") && r != "") });
+                    var headers:Array<string> = data.shift().split('\t');
+                    //remove extra random line
+                    data.shift();
+                    var station = data.shift().split('\t');
+                    if (station[headers.indexOf("parm_cd")] == "00060") {
+                        gage['StartDate'] = station[headers.indexOf("begin_date")];
+                        gage['EndDate'] = station[headers.indexOf("end_date")];
+                    }
+
+                }, (error) => {
+                    //sm when error
+                }).finally(() => {
+
+            });
         }
     }//end  class
 
