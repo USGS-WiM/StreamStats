@@ -63,7 +63,7 @@ var StreamStats;
                     }
                     return false;
                 },
-                enumerable: true,
+                enumerable: false,
                 configurable: true
             });
             Object.defineProperty(ReportController.prototype, "canShowDisclaimers", {
@@ -73,7 +73,7 @@ var StreamStats;
                     var canshow = Object.keys(this.studyAreaService.selectedStudyArea.Disclaimers).length > 0;
                     return canshow;
                 },
-                enumerable: true,
+                enumerable: false,
                 configurable: true
             });
             Object.defineProperty(ReportController.prototype, "showRegulation", {
@@ -83,7 +83,7 @@ var StreamStats;
                     else
                         return false;
                 },
-                enumerable: true,
+                enumerable: false,
                 configurable: true
             });
             Object.defineProperty(ReportController.prototype, "ActiveExtensions", {
@@ -93,14 +93,14 @@ var StreamStats;
                     else
                         return null;
                 },
-                enumerable: true,
+                enumerable: false,
                 configurable: true
             });
             Object.defineProperty(ReportController.prototype, "GraphData", {
                 get: function () {
                     return this._graphData;
                 },
-                enumerable: true,
+                enumerable: false,
                 configurable: true
             });
             ReportController.prototype.downloadCSV = function () {

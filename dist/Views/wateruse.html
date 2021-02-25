@@ -19,7 +19,7 @@
 
                     <rzslider ng-if="vm.spanYear" rz-slider-model="vm.StartYear" rz-slider-high="vm.EndYear" rz-slider-options="vm.YearRange"></rzslider>
 
-                    <button type="button" class="btn-wim-sm btn-wim-success btn-wim-group-1" ng-click="vm.GetWaterUse()" ng-disabled="!vm.CanContiue"><span ng-class="vm.CanContiue ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></span>&nbsp;&nbsp;Get water use</button>
+                    <button type="button" class="btn-wim-sm btn-wim-success btn-wim-group-1" ng-click="vm.GetWaterUse()" ng-disabled="!vm.CanContinue"><span ng-class="vm.CanContinue ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></span>&nbsp;&nbsp;Get water use</button>
                 </div>
             </div>
             <div ng-if="vm.showResults">
@@ -64,6 +64,16 @@
                                         <td>{{item.name}}</td>
                                         <td>{{item.aveReturn}}</td>
                                         <td>{{item.aveWithdrawal}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Water-use index (dimensionless) without temporary registrations:</td>
+                                        <td></td>
+                                        <td>{{vm.IndexWOReg.toUSGSvalue()}}</td> 
+                                    </tr>
+                                    <tr>
+                                        <td>Water-use index (dimensionless) with temporary registrations:</td>
+                                        <td></td>
+                                        <td>{{vm.IndexWReg.toUSGSvalue()}}</td> 
                                     </tr>
                                 </tbody>
                             </table>
