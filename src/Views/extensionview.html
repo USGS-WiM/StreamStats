@@ -67,6 +67,7 @@
                             <th>Station Number</th>
                             <th>Station Name</th>
                             <th>Station Type</th>
+                            <th>Is Regulated?</th>
                             <th>Drainage Area</th>
                             <th>Has Flow Duration Stats?</th>
                             <th></th>
@@ -74,12 +75,13 @@
                         <tbody>
                             <tr ng-if="vm.referenceGageList.length > 0" ng-repeat="gage in vm.referenceGageList" ng-style="vm.getStyling(gage)" title="{{gage.hasOwnProperty('correlation')? 'Correlation: ' + gage.correlation.toUSGSvalue():''}}">
                                 <div>
-                                    <td><a title="Show Gage Page" ng-click="gage.properties.Code ? vm.openGagePage(gage.properties.Code) : vm.openGagePage(gage.StationID)">{{gage.properties.Code ? gage.properties.Code : gage.StationID}}</a></td>
+                                    <td><a title="Show Gage Page" ng-click="vm.openGagePage(gage.StationID)">{{gage.StationID}}</a></td>
                                     <td ng-click="vm.selectGage(gage)">{{gage.properties.Name ? gage.properties.Name : gage.Name}}</td>
                                     <td>{{gage.properties.StationType.name ? gage.properties.StationType.name : 'NA'}}</td>
+                                    <td>{{gage.properties.IsRegulated != undefined ? gage.properties.IsRegulated : 'NA'}}</td>
                                     <td>{{gage.properties.DrainageArea ? gage.properties.DrainageArea : 'NA'}}</td>
                                     <td>{{gage.properties.HasFlowDurationStats ? gage.properties.HasFlowDurationStats : 'NA'}}</td>
-                                    <td><a ng-click="vm.selectGage(gage)">Select Gage</a></td>
+                                    <td ng-if="gage.StationID != this.selectedReferenceGage.StationID"><a  ng-click="vm.selectGage(gage)">Select Gage</a></td>
                                 </div>
                             </tr>
                         </tbody>
