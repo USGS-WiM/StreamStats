@@ -464,27 +464,13 @@ var StreamStats;
                 this.studyAreaService.selectedStudyArea.FeatureCollection.features.forEach(function (item) {
                     _this.addGeoJSON(item.id, item);
                 });
-                var gagePoint;
                 if (this.studyAreaService.selectedGage) {
-                    gagePoint = {
+                    var gagePoint = {
                         type: "Feature",
                         geometry: {
                             coordinates: [
                                 this.studyAreaService.selectedGage["Latitude_DD"],
                                 this.studyAreaService.selectedGage["Longitude_DD"]
-                            ],
-                            type: "Point"
-                        }
-                    };
-                    this.addGeoJSON('referenceGage', gagePoint);
-                }
-                else {
-                    gagePoint = {
-                        type: "Feature",
-                        geometry: {
-                            coordinates: [
-                                40.18505,
-                                -89.36904
                             ],
                             type: "Point"
                         }

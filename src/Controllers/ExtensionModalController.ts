@@ -267,17 +267,14 @@ module StreamStats.Controllers {
             var selectedGageDone = false;
             if (this.referenceGageList)
                 this.referenceGageList.forEach(gage => {
-                    console.log(gage);
                     if (gage.StationID == this.selectedReferenceGage.StationID) selectedGageDone = true;
                     var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + gage.StationID;
                     var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
 
                     this.Execute(request).then(
                         (response: any) => {
-
-                            //console.log('response', response.data)
-                            console.log(response.data);
                             var gageInfo = response.data;
+                            if (!gage.hasOwnProperty('properties')) gage['properties'] = {};
                             if (gageInfo.hasOwnProperty('statistics')) {
                                 var hasFlowDurationStats = false;
                                 gageInfo.statistics.forEach(stat => {
@@ -285,6 +282,7 @@ module StreamStats.Controllers {
                                 })
                                 gage['properties']['HasFlowDurationStats'] = hasFlowDurationStats;
                             }
+                            if (gageInfo.hasOwnProperty('isRegulated')) gage['properties'].IsRegulated = gageInfo.isRegulated;
                             if (gageInfo.hasOwnProperty('characteristics')) {
                                 gageInfo.characteristics.forEach(char => {
                                     if (char['variableType'].code == 'DRNAREA') gage['properties']['DrainageArea'] = char['value'];
@@ -393,16 +391,23 @@ module StreamStats.Controllers {
         }
 
         public selectGage(gage) {
-            this.selectedReferenceGage = gage;
             var sid: Array<any> = this.studyAreaService.selectedStudyAreaExtensions.reduce((acc, val) => acc.concat(val.parameters), []).filter(f => { return (<string>(f.code)).toLowerCase() == "sid" });
-            let rg = new Models.ReferenceGage(gage.properties.Code, gage.properties.Name);
-            rg.Latitude_DD = gage.geometry.coordinates[0];
-            rg.Longitude_DD = gage.geometry.coordinates[1];    
-            rg.properties = gage.properties;
+            let rg;
+            if (gage.properties && gage.properties.Code) {
+                rg = new Models.ReferenceGage(gage.properties.Code, gage.properties.Name);
+                rg.properties = gage.properties;
+            } else {
+                rg = new Models.ReferenceGage(gage.StationID, gage.Name);
+            }
+            if (gage.geometry) {
+                rg.Latitude_DD = gage.geometry.coordinates[0];
+                rg.Longitude_DD = gage.geometry.coordinates[1];
+            }
             //add to list of reference gages
             sid[0].options = this.referenceGageList;
             sid[0].value = rg;
             this.selectedReferenceGage = rg;
+            this.studyAreaService.selectedGage = rg;
         }
 
         public getStyling(gage) {
