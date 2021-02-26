@@ -266,7 +266,15 @@
                                             <tr>
                                                 <td>{{obs.date| date:'yyyy/MM/dd'}}</td>
                                                 <td>{{obs.value.toUSGSvalue()}}</td>
-                                                <td>{{sc.result.referanceGage.discharge.observations[$index].value.toUSGSvalue()}}</td>
+                                                <td>{{vm.getValue(sc.result.referanceGage.discharge.observations[$index])}}</td>
+                                            </tr>
+                                        </tbody>
+
+                                        <tbody ng-repeat="obs in sc.result.referanceGage.discharge.observations track by $index">
+                                            <tr>
+                                                <td>{{obs.date| date:'yyyy/MM/dd'}}</td>
+                                                <td>{{sc.result.estimatedFlow.observations[$index].value ? sc.result.estimatedFlow.observations[$index].value.toUSGSvalue() : 'N/A'}}</td>
+                                                <td>{{obs.value ? obs.value : obs.dataCode ? obs.dataCode : 'N/A'}}</td>
                                             </tr>
                                         </tbody>
                                     </table>

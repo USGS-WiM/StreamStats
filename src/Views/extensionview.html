@@ -66,6 +66,7 @@
                         <thead>
                             <th>Station Number</th>
                             <th>Station Name</th>
+                            <th ng-if="vm.checkCorrelation()">Correlation</th>
                             <th>Station Type</th>
                             <th>Is Regulated?</th>
                             <th>Drainage Area</th>
@@ -75,22 +76,30 @@
                             <th></th>
                         </thead>
                         <tbody>
-                            <tr ng-if="vm.referenceGageList.length > 0" ng-repeat="gage in vm.referenceGageList" ng-style="vm.getStyling(gage)" title="{{gage.hasOwnProperty('correlation')? 'Correlation: ' + gage.correlation.toUSGSvalue():''}}">
+                            <tr ng-if="vm.referenceGageList.length > 0" ng-repeat="gage in vm.referenceGageList" ng-style="vm.getStyling(gage)">
                                 <div>
                                     <td><a title="Show Gage Page" ng-click="vm.openGagePage(gage.StationID)">{{gage.StationID}}</a></td>
-                                    <td ng-click="vm.selectGage(gage)">{{gage.properties.Name ? gage.properties.Name : gage.Name}}</td>
+                                    <td>{{gage.properties.Name ? gage.properties.Name : gage.Name}}</td>
+                                    <td ng-if="gage.hasOwnProperty('correlation')">{{gage.correlation.toUSGSvalue()}}</td>
                                     <td>{{gage.properties.StationType.name ? gage.properties.StationType.name : 'NA'}}</td>
                                     <td>{{gage.properties.IsRegulated != undefined ? gage.properties.IsRegulated : 'NA'}}</td>
                                     <td>{{gage.properties.DrainageArea ? gage.properties.DrainageArea : 'NA'}}</td>
                                     <td>{{gage.properties.HasFlowDurationStats ? gage.properties.HasFlowDurationStats : 'NA'}}</td>
-                                    <td>{{gage.StartDate}}</td>
-                                    <td>{{gage.EndDate}}</td>
-                                    <td ng-if="gage.StationID != this.selectedReferenceGage.StationID"><a  ng-click="vm.selectGage(gage)">Select Gage</a></td>
+                                    <td>{{gage.StartDate | date:'yyyy-MM-dd'}}</td>
+                                    <td>{{gage.EndDate | date:'yyyy-MM-dd'}}</td>
+                                    <td>
+                                        <a ng-class="{linkDisabled: gage.StationID == vm.selectedReferenceGage.StationID || !vm.checkPoR(gage)}" ng-click="vm.selectGage(gage)">
+                                            Select Gage
+                                        </a>
+                                        &nbsp;
+                                    </td>
                                 </div>
                             </tr>
                         </tbody>
                     </table>
                 </div>
+                <div class="wim-alert-warning">Conditions at the reference gage may affect computation.</div>
+
             </span>
 
         </div>
