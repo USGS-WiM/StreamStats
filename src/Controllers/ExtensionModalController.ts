@@ -226,8 +226,6 @@ module StreamStats.Controllers {
             return true;
         }
         private addDay(d: Date, days: number): Date {
-            // TODO: check if this is being used or not
-            // TODO: instead of doing this, set time portion to 12am??
             try {
                 var dayAsTime: number = 1000 * 60 * 60 * 24;
                 return new Date(d.getTime() + days * dayAsTime);
@@ -264,6 +262,7 @@ module StreamStats.Controllers {
         }
 
         public getGageInfo() {
+            // TODO: we can remove all this "properties" nonsense if we remove the geojson option from the nearest gages call?
             var selectedGageDone = false;
             if (this.referenceGageList)
                 this.referenceGageList.forEach(gage => {
@@ -288,6 +287,7 @@ module StreamStats.Controllers {
                                     if (char['variableType'].code == 'DRNAREA') gage['properties']['DrainageArea'] = char['value'];
                                 })
                             }
+                            if (gageInfo.stationType) gage['properties'].StationType = gageInfo.stationType;
 
                         }, (error) => {
                             //sm when error
@@ -424,6 +424,7 @@ module StreamStats.Controllers {
 
         public getNWISPeriodOfRecord(gage) {
             // TODO: add comments
+            if (!gage.StationID) return;
             var nwis_url = configuration.baseurls.NWISurl + configuration.queryparams.NWISperiodOfRecord + gage.StationID;
             var nwis_request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(nwis_url, true, WiM.Services.Helpers.methodType.GET, 'TEXT');
 
@@ -433,11 +434,22 @@ module StreamStats.Controllers {
                     var headers:Array<string> = data.shift().split('\t');
                     //remove extra random line
                     data.shift();
-                    var station = data.shift().split('\t');
-                    if (station[headers.indexOf("parm_cd")] == "00060") {
-                        gage['StartDate'] = station[headers.indexOf("begin_date")];
-                        gage['EndDate'] = station[headers.indexOf("end_date")];
-                    }
+                    do {
+                        var station = data.shift().split('\t');
+                        if (station[headers.indexOf("parm_cd")] == "00060") {
+                            if (gage['StartDate'] == undefined) gage['StartDate'] = new Date(station[headers.indexOf("begin_date")]);
+                            else {
+                                var nextStartDate = new Date(station[headers.indexOf("begin_date")]);
+                                if (nextStartDate < gage['StartDate']) gage['StartDate'] = nextStartDate;
+                            }
+
+                            if (gage['EndDate'] == undefined) gage['EndDate'] = new Date(station[headers.indexOf("end_date")]);
+                            else {
+                                var nextEndDate = new Date(station[headers.indexOf("end_date")]);
+                                if (nextEndDate > gage['EndDate']) gage['EndDate'] = nextEndDate;
+                            }
+                        }
+                    } while (data.length > 0);
 
                 }, (error) => {
                     //sm when error
@@ -445,6 +457,22 @@ module StreamStats.Controllers {
 
             });
         }
+
+        public checkPoR(gage) {
+            if (!this.dateRange.dates && gage.hasOwnProperty('SelectEnabled')) return gage['SelectEnabled']; // keep last set enabled/disabled setting if user is changing dates
+
+            if (this.dateRange.dates.startDate >= this.addDay(gage['StartDate'], 1) && this.addDay(gage['EndDate'], 1) >= this.dateRange.dates.endDate) gage['SelectEnabled'] = true;
+            else {
+                gage['SelectEnabled'] = false;
+            }
+            return gage['SelectEnabled'];
+        }
+
+        public checkCorrelation() {
+            if (this.referenceGageList) return this.referenceGageList.some(g => g.hasOwnProperty('correlation'));
+            else return false;
+        }
+
     }//end  class
 
     angular.module('StreamStats.Controllers')

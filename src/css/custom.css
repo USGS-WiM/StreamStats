@@ -118,3 +118,9 @@
 .selectedGage {
     background-color: #ebf0f5;
 }
+
+.linkDisabled {
+    cursor: not-allowed;
+    pointer-events: none;
+    color: grey;
+}
