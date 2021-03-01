@@ -374,8 +374,8 @@ var StreamStats;
                     },
                     flow: {
                         data: [
-                            { key: result.referanceGage.name, values: result.referanceGage.discharge.observations.map(function (obs) { return { x: new Date(obs.date).getTime(), y: obs.value ? typeof obs.value == 'number' ? obs.value.toUSGSvalue() : obs.value : null }; }) },
-                            { key: "Estimated", values: result.estimatedFlow.observations.map(function (obs) { return { x: new Date(obs.date).getTime(), y: obs.value ? typeof obs.value == 'number' ? obs.value.toUSGSvalue() : obs.value : null }; }) }
+                            { key: result.referanceGage.name, values: result.referanceGage.discharge.observations.map(function (obs) { return { x: new Date(obs.date).getTime(), y: obs.hasOwnProperty('value') ? typeof obs.value == 'number' ? obs.value.toUSGSvalue() : obs.value : null }; }) },
+                            { key: "Estimated", values: result.estimatedFlow.observations.map(function (obs) { return { x: new Date(obs.date).getTime(), y: obs.hasOwnProperty('value') ? typeof obs.value == 'number' ? obs.value.toUSGSvalue() : obs.value : null }; }) }
                         ],
                         options: {
                             chart: {
