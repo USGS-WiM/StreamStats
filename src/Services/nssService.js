@@ -214,7 +214,8 @@ var StreamStats;
                     statGroup.citations = [];
                     _this.Execute(request).then(function (response) {
                         var citationUrl = response.data[0].links[0].href;
-                        if (!append)
+                        var regregionCheck = citationUrl.split("regressionregions=")[1];
+                        if (!append && regregionCheck && regregionCheck.length > 0)
                             _this.getSelectedCitations(citationUrl, statGroup);
                         if (response.headers()['x-usgswim-messages']) {
                             var headerMsgs = response.headers()['x-usgswim-messages'].split(';');

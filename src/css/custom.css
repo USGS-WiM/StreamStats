@@ -124,3 +124,7 @@
     pointer-events: none;
     color: grey;
 }
+
+text.nv-axislabel {
+    transform: 'rotate(-90deg) translateY(-10px)' !important;
+} 
