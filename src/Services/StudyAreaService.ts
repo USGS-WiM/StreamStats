@@ -175,7 +175,7 @@ module StreamStats.Services {
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        constructor(public $http: ng.IHttpService, private $q: ng.IQService, private eventManager: WiM.Event.IEventManager, toaster, modal: Services.IModalService, private nssService: Services.InssService) {
+        constructor(public $http: ng.IHttpService, private $q: ng.IQService, private eventManager: WiM.Event.IEventManager, toaster, modal: Services.IModalService, private nssService: Services.InssService, private regionService: Services.IRegionService) {
             super($http, configuration.baseurls['StreamStatsServices'])
             this.modalservices = modal;
 
@@ -272,7 +272,7 @@ module StreamStats.Services {
             var regionID = this.selectedStudyArea.RegionID;
             
             var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', regionID, this.selectedStudyArea.Pourpoint.Longitude.toString(),
-                this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString(), false);
+                this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString());
 
             //hack for st louis stormdrain
             if (this.selectedStudyArea.RegionID == 'MO_STL') {
@@ -443,6 +443,7 @@ module StreamStats.Services {
 
             //only compute missing characteristics
             requestParameterList = this.studyAreaParameterList.filter((param) => { return (!param.value || param.value < 0) }).map(param => { return param.code; });
+            if (requestParameterList.length == 0 && this.regionService.selectedRegion.Applications.indexOf('FDCTM') > -1) requestParameterList.push('drnarea');
             if (requestParameterList.length < 1) {  
                 let saEvent = new StudyAreaEventArgs();
                 saEvent.parameterLoaded = true;             
@@ -888,6 +889,8 @@ module StreamStats.Services {
         }
 
         public selectGage(gage) {
+            // selects gage and adds it to gage options for qppq
+            // TODO: shoul we change this now that selecting a gage on the map only displays it in QPPQ, not selects it?
             var sid: Array<any> = this.selectedStudyAreaExtensions.reduce((acc, val) => acc.concat(val.parameters), []).filter(f => { return (<string>(f.code)).toLowerCase() == "sid" });
             var siteList:Array<Models.IReferenceGage> = [];
             let rg = new Models.ReferenceGage(gage.properties.Code, gage.properties.Name);
@@ -899,7 +902,7 @@ module StreamStats.Services {
 
             if (siteList.length > 0) {                           
                 sid[0].options = siteList;
-                sid[0].value = siteList[0];
+                sid[0].value = new Models.ReferenceGage('', ''); // doesn't set as selected reference gage in case missing necessary properties
                 //reopen modal
                 this.modalservices.openModal(SSModalType.e_extensionsupport);
                 this.doSelectNearestGage = false;
@@ -1080,7 +1083,7 @@ module StreamStats.Services {
                     var feature: GeoJSON.Feature = {
                         type: "Feature",
                         geometry: fc.feature.features[i].geometry,
-                        id: fc.feature.features.length > 1 && fc.feature.features[i].properties["Name"] ? fc.name + "_" + fc.feature.features[i].properties["Name"].toLowerCase() : fc.name.toLowerCase(),
+                        id: fc.feature.features.length > 1 && fc.feature.features[i].properties && fc.feature.features[i].properties["Name"] ? fc.name + "_" + fc.feature.features[i].properties["Name"].toLowerCase() : fc.name.toLowerCase(),
                         properties: fc.feature.features[i].properties
                     }; 
                     featureArray.push(feature);
@@ -1223,9 +1226,9 @@ module StreamStats.Services {
 
     }//end class
 
-    factory.$inject = ['$http', '$q', 'WiM.Event.EventManager', 'toaster', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService'];
-    function factory($http: ng.IHttpService, $q: ng.IQService, eventManager: WiM.Event.IEventManager, toaster: any, modalService: Services.IModalService, nssService: Services.InssService) {
-        return new StudyAreaService($http,$q, eventManager, toaster, modalService, nssService)
+    factory.$inject = ['$http', '$q', 'WiM.Event.EventManager', 'toaster', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService', 'StreamStats.Services.RegionService'];
+    function factory($http: ng.IHttpService, $q: ng.IQService, eventManager: WiM.Event.IEventManager, toaster: any, modalService: Services.IModalService, nssService: Services.InssService, regionService: Services.IRegionService) {
+        return new StudyAreaService($http,$q, eventManager, toaster, modalService, nssService, regionService)
     }
     angular.module('StreamStats.Services')
         .factory('StreamStats.Services.StudyAreaService', factory)

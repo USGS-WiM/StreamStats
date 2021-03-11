@@ -58,7 +58,6 @@ module StreamStats.Controllers {
         public dateRangeOptions;
         public selectedReferenceGage: StreamStats.Models.IReferenceGage = null;
         public referenceGageList: Array<StreamStats.Models.IReferenceGage>;
-        public usePublishedFDC: boolean;
         public queryBy = 'Nearest';
         public getNearest = false;
         public distance = 10;
@@ -83,14 +82,6 @@ module StreamStats.Controllers {
             this.init();
             this.load();
 
-            $scope.$watch(() => this.usePublishedFDC,(newval, oldval) => {
-                if (newval == oldval) return;
-                this.studyAreaService.selectedStudyAreaExtensions.forEach(ext => {
-                    ext.parameters.forEach(p => {
-                        if (p.code == "usePublishedFDC") {p.value = this.usePublishedFDC; }
-                    })
-                });
-            });
             $scope.$watch(() => this.dateRange.dates,(newval, oldval) => {
                 this.studyAreaService.selectedStudyAreaExtensions.forEach(ext => {
                     ext.parameters.forEach(p => {
@@ -163,9 +154,6 @@ module StreamStats.Controllers {
                 parameters[pcodes.indexOf('edate')].value = this.dateRange.dates.endDate;
 
             }//endif
-            if (['usePublishedFDC'].some(r => pcodes.indexOf(r) > -1)) {
-                this.usePublishedFDC = false;
-            }//endif
 
         }
         private load(): void {
@@ -183,12 +171,9 @@ module StreamStats.Controllers {
                     if (f.code == "sdate") this.dateRange.dates.startDate = f.value;
                     if (f.code == "edate") this.dateRange.dates.endDate = f.value;
                 }
-                if (this.usePublishedFDC != undefined && ['usePublishedFDC'].indexOf(f.code) > -1) {
-                    this.usePublishedFDC = f.value;
-                }
             } while (parameters.length > 0);
            
-            this.studyAreaService.selectedGage = this.selectedReferenceGage;
+            if (this.studyAreaService.selectedGage) this.studyAreaService.selectedGage = this.selectedReferenceGage;
             this.getGageInfo();
         }
         private verifyExtensionCanContinue(): boolean {
@@ -204,10 +189,7 @@ module StreamStats.Controllers {
             }
 
             if (this.selectedReferenceGage) {
-                if (this.selectedReferenceGage.StationID == "")
-                {
-                    return false;
-                }
+                if (this.selectedReferenceGage.StationID == "") return false;
             }
             //load service
             this.studyAreaService.selectedStudyAreaExtensions.forEach(ext => {
@@ -216,7 +198,6 @@ module StreamStats.Controllers {
                         if (p.options == undefined || p.options.length == 0) p.options = [this.selectedReferenceGage];
                         p.value = this.selectedReferenceGage.StationID
                     };
-                    if (p.code == "usePublishedFDC") {p.value = this.usePublishedFDC; }
                     if (p.code == "sdate") {p.value = this.dateRange.dates.startDate; }
                     if (p.code == "edate") {p.value = this.dateRange.dates.endDate; }
                 })
@@ -266,7 +247,7 @@ module StreamStats.Controllers {
             var selectedGageDone = false;
             if (this.referenceGageList)
                 this.referenceGageList.forEach(gage => {
-                    if (gage.StationID == this.selectedReferenceGage.StationID) selectedGageDone = true;
+                    if (this.selectedReferenceGage && this.selectedReferenceGage.StationID && gage.StationID == this.selectedReferenceGage.StationID) selectedGageDone = true;
                     var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + gage.StationID;
                     var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
 
@@ -341,6 +322,7 @@ module StreamStats.Controllers {
 
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
             this.referenceGageList = []; // reset nearby gages
+            this.selectedReferenceGage.StationID = ''; // reset selected gage
             this.Execute(request).then(
                 (response: any) => {
                     this.toaster.clear();
@@ -471,6 +453,12 @@ module StreamStats.Controllers {
         public checkCorrelation() {
             if (this.referenceGageList) return this.referenceGageList.some(g => g.hasOwnProperty('correlation'));
             else return false;
+        }
+
+        public getDrainageArea() {
+            var drainageArea = this.studyAreaService.studyAreaParameterList.filter(p => p.code.toLowerCase() == 'drnarea')[0];
+            if (drainageArea && drainageArea.hasOwnProperty('value')) return drainageArea.value;
+            else return 'N/A';
         }
 
     }//end  class

@@ -11,10 +11,6 @@
                 <input id="dateSimple" date-range-picker class="form-control date-picker" type="text" ng-model="vm.dateRange.dates" min="vm.dateRange.minDate" max="vm.dateRange.maxDate" options="vm.dateRangeOptions" />
             </div>
         </form>
-        <form style="padding: 5px 0;" ng-if="vm.usePublishedFDC != undefined">
-            <checkbox id="fdcCheck" large ng-model="vm.usePublishedFDC"></checkbox><span>&nbsp;&nbsp;Use Published Flow Duration Curve</span>
-        </form>
-
         <div ng-if="vm.selectedReferenceGage" class="form-group">
             <h5>Select/Enter a reference gage.<small style="color:red">&nbsp;&nbsp;(Required)</small></h5>
 
@@ -61,6 +57,7 @@
                     
                 </div>
 
+                <h5>Drainage area of clicked point: {{ vm.getDrainageArea() }}</h5>
                 <div ng-show="vm.referenceGageList.length > 0 || vm.selectedReferenceGage.StationID !== ''">
                     <table class="table table-striped">
                         <thead>
@@ -88,7 +85,7 @@
                                     <td>{{gage.StartDate | date:'yyyy-MM-dd'}}</td>
                                     <td>{{gage.EndDate | date:'yyyy-MM-dd'}}</td>
                                     <td>
-                                        <a ng-class="{linkDisabled: gage.StationID == vm.selectedReferenceGage.StationID || !vm.checkPoR(gage)}" ng-click="vm.selectGage(gage)">
+                                        <a ng-class="{linkDisabled: gage.StationID == vm.selectedReferenceGage.StationID || !vm.checkPoR(gage) || !gage.properties.HasFlowDurationStats}" ng-click="vm.selectGage(gage)">
                                             Select Gage
                                         </a>
                                         &nbsp;

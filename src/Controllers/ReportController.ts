@@ -517,7 +517,7 @@ module StreamStats.Controllers {
                 flow: {
                     data: [
                         { key: result.referanceGage.name, values: result.referanceGage.discharge.observations.map(obs => { return { x: new Date(obs.date).getTime(), y: obs.hasOwnProperty('value') ? typeof obs.value == 'number' ? obs.value.toUSGSvalue() : obs.value : null } })}, // if (obs.value)
-                        { key: "Estimated", values: result.estimatedFlow.observations.map(obs => { return { x: new Date(obs.date).getTime(), y: obs.hasOwnProperty('value') ? typeof obs.value == 'number' ? obs.value.toUSGSvalue() : obs.value : null } }) }
+                        { key: "Estimated", values: result.estimatedFlow.observations.map(obs => { return { x: new Date(obs.date).getTime(), y: obs.hasOwnProperty('value') ? typeof obs.value == 'number' ? obs.value < 0.05 ? 0 : obs.value.toUSGSvalue() : obs.value : null } }) }
                     ],
                     options: {
                         chart: {
@@ -536,33 +536,25 @@ module StreamStats.Controllers {
                                 return d.y;
                             },
                             useInteractiveGuideline: false,
-                            interactive: false,
+                            interactive: true,
                             tooltips: true,
                             xAxis: {
                                 tickFormat: function (d) {
                                     return d3.time.format('%x')(new Date(d));
                                 },
-                                rotateLabels: 30,
-                                showMaxMin: false
-
-
+                                rotateLabels: -30,
+                                showMaxMin: true
                             },
                             yAxis: {
                                 axisLabel: 'Estimated Discharge (cfs)',
                                 tickFormat: function (d) {
                                     return d3.format('.02f')(d);
                                 },
-                                showMaxMin: false
+                                showMaxMin: true
 
                             },
                             zoom: {
-                                enabled: false,
-                                scaleExtent: [1, 10],
-                                useFixedDomain: false,
-                                useNiceScale: false,
-                                horizontalOff: false,
-                                verticalOff: false,
-                                unzoomEventType: 'dblclick.zoom'
+                                enabled: false
                             }
                         }
                     }
@@ -791,6 +783,12 @@ module StreamStats.Controllers {
         public openGagePage(siteid: string): void {
             console.log('gage page id:', siteid)
             this.modal.openModal(Services.SSModalType.e_gagepage, { 'siteid':siteid });
+        }
+
+        public getEstimatedFlow(discharge, estimatedFlows) {
+            var flow = estimatedFlows.filter(f => f.date == discharge.date)[0];
+            if (flow && flow.hasOwnProperty('value')) return flow.value.toUSGSvalue();
+            else return 'N/A';
         }
     }//end class
     angular.module('StreamStats.Controllers')

@@ -344,7 +344,8 @@ module StreamStats.Services {
 
                         //nested requests for citations
                         var citationUrl = response.data[0].links[0].href;
-                        if(!append) this.getSelectedCitations(citationUrl, statGroup);
+                        var regregionCheck = citationUrl.split("regressionregions=")[1];
+                        if(!append && regregionCheck && regregionCheck.length > 0) this.getSelectedCitations(citationUrl, statGroup);
 
                         //get header values
                         if (response.headers()['x-usgswim-messages']) {
