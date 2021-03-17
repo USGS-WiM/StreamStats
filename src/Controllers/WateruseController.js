@@ -4,7 +4,7 @@ var __extends = (this && this.__extends) || (function () {
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
             function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
         return extendStatics(d, b);
-    }
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -428,129 +428,132 @@ var StreamStats;
                             return;
                         }));
                     }));
-                    _this.showResults = false;
-                    _this.SelectedTab = WaterUseTabType.Graph;
-                    _this.SelectedWaterUseType = WaterUseType.Annual;
-                    _this.ReportData = new WaterUseReportable();
-                    _this.MonthlyReportOptions = {
-                        chart: {
-                            type: 'multiBarHorizontalChart',
-                            height: 450,
-                            visible: true,
-                            stacked: true,
-                            showControls: false,
-                            margin: {
-                                top: 60,
-                                right: 30,
-                                bottom: 60,
-                                left: 55
-                            },
-                            x: function (d) { return d.label; },
-                            y: function (d) { return d.value; },
-                            dispatch: {
-                                stateChange: function () {
-                                    _this.$timeout(function () {
-                                        _this.loadGraphLabels(0);
-                                    }, 500);
-                                },
-                                renderEnd: function () {
-                                    _this.$timeout(function () {
-                                        _this.loadGraphLabels(0);
-                                    }, 500);
-                                },
-                                resize: function () {
-                                    console.log("resize");
-                                    _this.$timeout(function () {
-                                        _this.loadGraphLabels(0);
-                                    }, 500);
-                                }
-                            },
-                            showValues: true,
-                            valueFormat: function (d) {
-                                return d3.format(',.4f')(d);
-                            },
-                            tooltip: {
-                                valueFormatter: function (d) { return d3.format(',.4f')(d) + " million gal/day"; }
-                            },
-                            xAxis: {
-                                showMaxMin: false
-                            },
-                            yAxis: {
-                                axisLabel: 'Values in million gallons/day',
-                                tickFormat: function (d) {
-                                    return d3.format(',.3f')(d);
-                                }
-                            },
-                            refreshDataOnly: true,
-                            legend: {
-                                margin: {
-                                    top: 5,
-                                    right: 40,
-                                    left: 40,
-                                    bottom: 50
-                                }
-                            }
-                        }
-                    };
-                    _this.MonthlyReturnReportOptions = {
-                        chart: {
-                            type: 'multiBarHorizontalChart',
-                            height: 450,
-                            visible: true,
-                            stacked: true,
-                            showControls: false,
-                            margin: {
-                                top: 20,
-                                right: 30,
-                                bottom: 60,
-                                left: 55
-                            },
-                            x: function (d) { return d.label; },
-                            y: function (d) { return d.value; },
-                            showValues: true,
-                            valueFormat: function (d) {
-                                return d3.format(',.3f')(d);
-                            },
-                            tooltip: {
-                                valueFormatter: function (d) {
-                                    return d3.format(',.4f')(d) + " million gal/day";
-                                }
-                            },
-                            xAxis: {
-                                showMaxMin: false
-                            },
-                            yAxis: {
-                                axisLabel: 'Values in million gallons/day',
-                                tickFormat: function (d) {
-                                    return d3.format(',.3f')(d);
-                                }
-                            }
-                        }
-                    };
-                    _this.AnnualReportOptions = {
-                        chart: {
-                            type: 'pieChart',
-                            height: 400,
-                            x: function (d) { return d.name; },
-                            y: function (d) { return d.value; },
-                            showLabels: true,
-                            tooltip: {
-                                valueFormatter: function (d) { return d3.format(',.4f')(d) + " million gal/day"; }
-                            },
-                            duration: 500,
-                            labelThreshold: 0.01,
-                            labelSunbeamLayout: false,
-                            legend: {
-                                margin: {
-                                    top: 5,
-                                    right: 35,
-                                    bottom: 5,
-                                    left: 0
-                                }
-                            }
-                        }
-                    };
+                    if (_this.StudyArea.RegionID != "OH") {
+                        _this.CanContinue = true;
+                    }
                 });
+                this.showResults = false;
+                this.SelectedTab = WaterUseTabType.Graph;
+                this.SelectedWaterUseType = WaterUseType.Annual;
+                this.ReportData = new WaterUseReportable();
+                this.MonthlyReportOptions = {
+                    chart: {
+                        type: 'multiBarHorizontalChart',
+                        height: 450,
+                        visible: true,
+                        stacked: true,
+                        showControls: false,
+                        margin: {
+                            top: 60,
+                            right: 30,
+                            bottom: 60,
+                            left: 55
+                        },
+                        x: function (d) { return d.label; },
+                        y: function (d) { return d.value; },
+                        dispatch: {
+                            stateChange: function () {
+                                _this.$timeout(function () {
+                                    _this.loadGraphLabels(0);
+                                }, 500);
+                            },
+                            renderEnd: function () {
+                                _this.$timeout(function () {
+                                    _this.loadGraphLabels(0);
+                                }, 500);
+                            },
+                            resize: function () {
+                                console.log("resize");
+                                _this.$timeout(function () {
+                                    _this.loadGraphLabels(0);
+                                }, 500);
+                            }
+                        },
+                        showValues: true,
+                        valueFormat: function (d) {
+                            return d3.format(',.4f')(d);
+                        },
+                        tooltip: {
+                            valueFormatter: function (d) { return d3.format(',.4f')(d) + " million gal/day"; }
+                        },
+                        xAxis: {
+                            showMaxMin: false
+                        },
+                        yAxis: {
+                            axisLabel: 'Values in million gallons/day',
+                            tickFormat: function (d) {
+                                return d3.format(',.3f')(d);
+                            }
+                        },
+                        refreshDataOnly: true,
+                        legend: {
+                            margin: {
+                                top: 5,
+                                right: 40,
+                                left: 40,
+                                bottom: 50
+                            }
+                        }
+                    }
+                };
+                this.MonthlyReturnReportOptions = {
+                    chart: {
+                        type: 'multiBarHorizontalChart',
+                        height: 450,
+                        visible: true,
+                        stacked: true,
+                        showControls: false,
+                        margin: {
+                            top: 20,
+                            right: 30,
+                            bottom: 60,
+                            left: 55
+                        },
+                        x: function (d) { return d.label; },
+                        y: function (d) { return d.value; },
+                        showValues: true,
+                        valueFormat: function (d) {
+                            return d3.format(',.3f')(d);
+                        },
+                        tooltip: {
+                            valueFormatter: function (d) {
+                                return d3.format(',.4f')(d) + " million gal/day";
+                            }
+                        },
+                        xAxis: {
+                            showMaxMin: false
+                        },
+                        yAxis: {
+                            axisLabel: 'Values in million gallons/day',
+                            tickFormat: function (d) {
+                                return d3.format(',.3f')(d);
+                            }
+                        }
+                    }
+                };
+                this.AnnualReportOptions = {
+                    chart: {
+                        type: 'pieChart',
+                        height: 400,
+                        x: function (d) { return d.name; },
+                        y: function (d) { return d.value; },
+                        showLabels: true,
+                        tooltip: {
+                            valueFormatter: function (d) { return d3.format(',.4f')(d) + " million gal/day"; }
+                        },
+                        duration: 500,
+                        labelThreshold: 0.01,
+                        labelSunbeamLayout: false,
+                        legend: {
+                            margin: {
+                                top: 5,
+                                right: 35,
+                                bottom: 5,
+                                left: 0
+                            }
+                        }
+                    }
+                };
                 $(window).resize(function () {
                     _this.$timeout(function () {
                         _this.loadGraphLabels(0);

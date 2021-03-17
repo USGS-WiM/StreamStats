@@ -31,8 +31,8 @@
                     <!-- Graph tab -->
                     <div ng-if="vm.SelectedTab == 1">
                         <center><h3>{{vm.StartYear}}-{{vm.EndYear}} Average Water Use By Source</h3></center>                      
-                        <nvd3 ng-if="vm.result.hasOwnProperty('withdrawal')" id="withdrawalPie" options='vm.AnnualReportOptions' data='vm.ReportData.Annual.Graph.withdrawals' ng-style="vm.result.hasOwnProperty('return')?{'display':'inline-block', 'width':'50%', 'float':'left'}:{}"></nvd3>
-                        <nvd3 ng-if="vm.result.hasOwnProperty('return')" id ="ReturnPie" options='vm.AnnualReportOptions' data='vm.ReportData.Annual.Graph.returns' ng-style="vm.result.hasOwnProperty('withdrawal')? {'display':'inline-block', 'width':'50%', 'float':'right'}:{}"></nvd3>
+                        <nvd3 ng-if="vm.result.hasOwnProperty('withdrawal')" id="withdrawalPie" options='vm.AnnualReportOptions' data='vm.ReportData.Annual.Graph.withdrawals' title="Withdrawals" ng-style="vm.result.hasOwnProperty('return')?{'display':'inline-block', 'width':'50%', 'float':'left'}:{}"></nvd3>
+                        <nvd3 ng-if="vm.result.hasOwnProperty('return')" id ="ReturnPie" options='vm.AnnualReportOptions' data='vm.ReportData.Annual.Graph.returns' title="Returns" ng-style="vm.result.hasOwnProperty('withdrawal')? {'display':'inline-block', 'width':'50%', 'float':'right'}:{}"></nvd3>
                         
                         <div ng-if="vm.result.hasOwnProperty('withdrawal')">
                             <center><h3>{{vm.StartYear}}-{{vm.EndYear}} Average Water Use Withdrawals By Month</h3></center>
