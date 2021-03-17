@@ -506,6 +506,10 @@ module StreamStats.Controllers {
                                 return;
                             }))
                         }));
+                        if(this.StudyArea.RegionID != "OH") {
+                            this.CanContinue = true;
+                        }
+                        })
                         
                 this.showResults = false;
 
@@ -636,8 +640,6 @@ module StreamStats.Controllers {
                         }
                     }
                 };
-               
-                });
             $(window).resize(() => {
                 this.$timeout(() => {
                     this.loadGraphLabels(0);
