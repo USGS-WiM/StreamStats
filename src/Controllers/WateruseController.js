@@ -91,6 +91,7 @@ var StreamStats;
             WateruseController.prototype.GetWaterUse = function () {
                 var _this = this;
                 this.CanContinue = false;
+                this.GetWaterUseLabel = true;
                 var headers = {
                     "Content-Type": "application/json"
                 };
@@ -535,6 +536,9 @@ var StreamStats;
                     chart: {
                         type: 'pieChart',
                         height: 400,
+                        margin: {
+                            top: 1
+                        },
                         x: function (d) { return d.name; },
                         y: function (d) { return d.value; },
                         showLabels: true,
@@ -544,14 +548,10 @@ var StreamStats;
                         duration: 500,
                         labelThreshold: 0.01,
                         labelSunbeamLayout: false,
-                        legend: {
-                            margin: {
-                                top: 5,
-                                right: 35,
-                                bottom: 5,
-                                left: 0
-                            }
-                        }
+                        showLegend: false
+                    },
+                    title: {
+                        text: 'Withdrawals'
                     }
                 };
                 $(window).resize(function () {
