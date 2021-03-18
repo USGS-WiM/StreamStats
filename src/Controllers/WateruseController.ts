@@ -98,6 +98,7 @@ module StreamStats.Controllers {
         public computeDomesticWU: boolean;
 
         public CanContinue: boolean;
+        public GetWaterUseLabel: boolean;
         public MonthlyReportOptions: any;
         public MonthlyReturnReportOptions: any;
         public AnnualReportOptions: any;
@@ -131,6 +132,7 @@ module StreamStats.Controllers {
         //-+-+-+-+-+-+-+-+-+-+-+-
         public GetWaterUse() {
             this.CanContinue = false;
+            this.GetWaterUseLabel = true;
             var headers = {
                 "Content-Type": "application/json"
             };
@@ -570,7 +572,7 @@ module StreamStats.Controllers {
                             tickFormat: function (d) {
                                 return d3.format(',.3f')(d);
                             }
-                    },
+                        },
                         refreshDataOnly: true,
                         legend: {
                             margin: {
@@ -621,6 +623,9 @@ module StreamStats.Controllers {
                     chart: {
                         type: 'pieChart',
                         height: 400,
+                        margin: {
+                            top: 1
+                        },
                         x: (d) => { return d.name; },
                         y: (d) => { return d.value; },
                         showLabels: true,
@@ -630,14 +635,18 @@ module StreamStats.Controllers {
                         duration: 500,
                         labelThreshold: 0.01,
                         labelSunbeamLayout: false,
-                        legend: {
-                            margin: {
-                                top: 5,
-                                right: 35,
-                                bottom: 5,
-                                left: 0
-                            }
-                        }
+                        showLegend: false
+                        // legend: {
+                        //     margin: {
+                        //         top: 5,
+                        //         right: 35,
+                        //         bottom: 5,
+                        //         left: 0
+                        //     }
+                        // }
+                    },
+                    title: {
+                        text: 'Withdrawals'
                     }
                 };
             $(window).resize(() => {
