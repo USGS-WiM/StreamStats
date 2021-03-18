@@ -787,7 +787,10 @@ module StreamStats.Controllers {
 
         public getEstimatedFlow(discharge, estimatedFlows) {
             var flow = estimatedFlows.filter(f => f.date == discharge.date)[0];
-            if (flow && flow.hasOwnProperty('value')) return flow.value.toUSGSvalue();
+            if (flow && flow.hasOwnProperty('value')) {
+                if (typeof(flow.value) == 'number') return flow.value.toUSGSvalue();
+                else return flow.value;
+            }
             else return 'N/A';
         }
     }//end class

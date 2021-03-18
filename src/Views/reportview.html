@@ -267,7 +267,7 @@
                                             <tr>
                                                 <td>{{obs.date| date:'yyyy/MM/dd'}}</td>
                                                 <td>{{vm.getEstimatedFlow(obs,sc.result.estimatedFlow.observations)}}</td>
-                                                <td>{{obs.hasOwnProperty('value') ? 0.05 > obs.value ? 0 : obs.value.toUSGSvalue() : obs.hasOwnProperty('dataCode') ? obs.dataCode : 'N/A'}}</td>
+                                                <td>{{obs.hasOwnProperty('value') ? obs.value.toUSGSvalue() : obs.hasOwnProperty('dataCode') ? obs.dataCode : 'N/A'}}</td>
                                             </tr>
                                         </tbody>
                                     </table>
