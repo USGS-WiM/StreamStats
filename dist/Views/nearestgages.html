@@ -65,6 +65,7 @@
                             <th>Station Number</th>
                             <th>Station Name</th>
                             <th>Station Type</th>
+                            <th>Is Regulated?</th>
                             <th>Drainage Area</th>
                             <!-- <th>Has Flow Duration Stats?</th> -->
                             <th></th>
@@ -75,6 +76,7 @@
                                     <td><a title="Show Gage Page" ng-click="vm.openGagePage(gage.properties.Code)">{{gage.properties.Code}}</a></td>
                                     <td ng-click="vm.selectGage(gage)">{{gage.properties.Name}}</td>
                                     <td>{{gage.properties.StationType.name}}</td>
+                                    <td>{{gage.properties.IsRegulated}}</td>
                                     <td>{{gage.properties.DrainageArea}}</td>
                                     <!-- <td>{{gage.properties.HasFlowDurationStats}}</td> -->
                                     <td ng-show="vm.studyAreaService.doSelectNearestGage"><a ng-click="vm.selectGage(gage)">Select Gage</a></td>

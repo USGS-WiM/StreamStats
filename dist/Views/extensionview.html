@@ -11,10 +11,6 @@
                 <input id="dateSimple" date-range-picker class="form-control date-picker" type="text" ng-model="vm.dateRange.dates" min="vm.dateRange.minDate" max="vm.dateRange.maxDate" options="vm.dateRangeOptions" />
             </div>
         </form>
-        <form style="padding: 5px 0;" ng-if="vm.usePublishedFDC != undefined">
-            <checkbox id="fdcCheck" large ng-model="vm.usePublishedFDC"></checkbox><span>&nbsp;&nbsp;Use Published Flow Duration Curve</span>
-        </form>
-
         <div ng-if="vm.selectedReferenceGage" class="form-group">
             <h5>Select/Enter a reference gage.<small style="color:red">&nbsp;&nbsp;(Required)</small></h5>
 
@@ -61,30 +57,46 @@
                     
                 </div>
 
+                <h5>Drainage area of clicked point: {{ vm.getDrainageArea() }}</h5>
                 <div ng-show="vm.referenceGageList.length > 0 || vm.selectedReferenceGage.StationID !== ''">
                     <table class="table table-striped">
                         <thead>
                             <th>Station Number</th>
                             <th>Station Name</th>
+                            <th ng-if="vm.checkCorrelation()">Correlation</th>
                             <th>Station Type</th>
+                            <th>Is Regulated?</th>
                             <th>Drainage Area</th>
                             <th>Has Flow Duration Stats?</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
                             <th></th>
                         </thead>
                         <tbody>
-                            <tr ng-if="vm.referenceGageList.length > 0" ng-repeat="gage in vm.referenceGageList" ng-style="vm.getStyling(gage)" title="{{gage.hasOwnProperty('correlation')? 'Correlation: ' + gage.correlation.toUSGSvalue():''}}">
+                            <tr ng-if="vm.referenceGageList.length > 0" ng-repeat="gage in vm.referenceGageList" ng-style="vm.getStyling(gage)">
                                 <div>
-                                    <td><a title="Show Gage Page" ng-click="gage.properties.Code ? vm.openGagePage(gage.properties.Code) : vm.openGagePage(gage.StationID)">{{gage.properties.Code ? gage.properties.Code : gage.StationID}}</a></td>
-                                    <td ng-click="vm.selectGage(gage)">{{gage.properties.Name ? gage.properties.Name : gage.Name}}</td>
+                                    <td><a title="Show Gage Page" ng-click="vm.openGagePage(gage.StationID)">{{gage.StationID}}</a></td>
+                                    <td>{{gage.properties.Name ? gage.properties.Name : gage.Name}}</td>
+                                    <td ng-if="gage.hasOwnProperty('correlation')">{{gage.correlation.toUSGSvalue()}}</td>
                                     <td>{{gage.properties.StationType.name ? gage.properties.StationType.name : 'NA'}}</td>
+                                    <td>{{gage.properties.IsRegulated != undefined ? gage.properties.IsRegulated : 'NA'}}</td>
                                     <td>{{gage.properties.DrainageArea ? gage.properties.DrainageArea : 'NA'}}</td>
                                     <td>{{gage.properties.HasFlowDurationStats ? gage.properties.HasFlowDurationStats : 'NA'}}</td>
-                                    <td><a ng-click="vm.selectGage(gage)">Select Gage</a></td>
+                                    <td>{{gage.StartDate | date:'yyyy-MM-dd'}}</td>
+                                    <td>{{gage.EndDate | date:'yyyy-MM-dd'}}</td>
+                                    <td>
+                                        <a ng-class="{linkDisabled: gage.StationID == vm.selectedReferenceGage.StationID || !vm.checkPoR(gage) || !gage.properties.HasFlowDurationStats}" ng-click="vm.selectGage(gage)">
+                                            Select Gage
+                                        </a>
+                                        &nbsp;
+                                    </td>
                                 </div>
                             </tr>
                         </tbody>
                     </table>
                 </div>
+                <div class="wim-alert-warning">Conditions at the reference gage may affect computation.</div>
+
             </span>
 
         </div>

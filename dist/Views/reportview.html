@@ -173,7 +173,7 @@
                         <div ng-repeat="sc in vm.extensions">                            
                             <div ng-if="sc.code == 'QPPQ'" ng-init=vm.ActivateGraphs(sc.result)>
                                 <h3>{{sc.name}} ({{sc.code}})</h3>
-                                <div ng-repeat="p in sc.parameters" ng-if="['sdate','edate', 'usePublishedFDC'].indexOf(p.code) >-1">
+                                <div ng-repeat="p in sc.parameters" ng-if="['sdate','edate'].indexOf(p.code) >-1">
                                     {{p.name}}: {{p.value | date:'yyyy/MM/dd'}}<br />
                                 </div>
 
@@ -213,7 +213,7 @@
                                 </div>
 
                                 <!--FDCTM Exceedance Probablities-->
-                                <h3 class="reportChartHeader">Exceedance Probabilities</h3>
+                                <h3 class="reportChartHeader">Exceedance Probabilities of Clicked Point</h3>
                                 <button class="chartExportButton" ng-click="vm.downloadPNG('exceedancegraph')">Download PNG</button>
                                 <nvd3 id="exceedancegraph" options=sc.result.graphdata.exceedance.options data=sc.result.graphdata.exceedance.data></nvd3>
                                 <a ng-click="vm.isExceedanceTableOpen = !vm.isExceedanceTableOpen">
@@ -262,11 +262,12 @@
                                                 <th>{{sc.result.referanceGage.name}}</th>
                                             </tr>
                                         </thead>
-                                        <tbody ng-repeat="obs in sc.result.estimatedFlow.observations track by $index">
+
+                                        <tbody ng-repeat="obs in sc.result.referanceGage.discharge.observations track by $index">
                                             <tr>
                                                 <td>{{obs.date| date:'yyyy/MM/dd'}}</td>
-                                                <td>{{obs.value.toUSGSvalue()}}</td>
-                                                <td>{{sc.result.referanceGage.discharge.observations[$index].value.toUSGSvalue()}}</td>
+                                                <td>{{vm.getEstimatedFlow(obs,sc.result.estimatedFlow.observations)}}</td>
+                                                <td>{{obs.hasOwnProperty('value') ? obs.value.toUSGSvalue() : obs.hasOwnProperty('dataCode') ? obs.dataCode : 'N/A'}}</td>
                                             </tr>
                                         </tbody>
                                     </table>
