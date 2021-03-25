@@ -93,10 +93,6 @@
     z-index: 30000 !important;
 }
 
-#fdcCheck {
-    border: 2px solid #e0e3e6 !important;
-}
-
 #nearestGageButton {
     background-color: green;
     color: white;

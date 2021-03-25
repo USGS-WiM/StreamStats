@@ -618,6 +618,8 @@ var StreamStats;
                 this.Execute(request).then(function (response) {
                     _this.streamgageLayer = response.data;
                 }, function (error) {
+                    _this.toaster.clear();
+                    _this.toaster.pop('error', "Error querying streamgage layer");
                 });
             };
             StudyAreaService.prototype.GetKriggedReferenceGages = function () {

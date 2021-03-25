@@ -405,7 +405,6 @@ module StreamStats.Controllers {
         }
 
         public getNWISPeriodOfRecord(gage) {
-            // TODO: add comments
             if (!gage.StationID) return;
             var nwis_url = configuration.baseurls.NWISurl + configuration.queryparams.NWISperiodOfRecord + gage.StationID;
             var nwis_request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(nwis_url, true, WiM.Services.Helpers.methodType.GET, 'TEXT');
@@ -440,7 +439,7 @@ module StreamStats.Controllers {
             });
         }
 
-        public checkPoR(gage) {
+        public checkPeriodOfRecord(gage) {
             if (!this.dateRange.dates && gage.hasOwnProperty('SelectEnabled')) return gage['SelectEnabled']; // keep last set enabled/disabled setting if user is changing dates
 
             if (this.dateRange.dates.startDate >= this.addDay(gage['StartDate'], 1) && this.addDay(gage['EndDate'], 1) >= this.dateRange.dates.endDate) gage['SelectEnabled'] = true;
