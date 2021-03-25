@@ -403,36 +403,6 @@ configuration.regions = [
                         }]
                     }],
                     "queryProperties": { "SCDOT Bridges": { "COUNTY_ID": "County Identifier", "RTE_Type": "Route Type", "RTE_NBR": "Route Number", "RTE_DIR": "Route Direction", "RTE_LRS": "Route LRS", "Structure_": "Type", "Crossing": "Crossing", "Location": "Location", "Structure1": "Structure" } }
-                },
-                "SCDOT_Roads": {
-                    "name": "Road Network",
-                    "url": "https://services1.arcgis.com/VaY7cY9pvUYUP1Lf/ArcGIS/rest/services/HIGHWAYS/FeatureServer/0",
-                    "type": 'agsFeature',
-                    "visible": true,
-                    "layerOptions": {
-                        style: function (feature) {
-                            var c, o = 0.75;
-                            switch (feature.properties.ROUTE_TYPE) {
-                                case '':
-                                    c = '#007D7D';
-                                    break;
-                                default:
-                                    c = '#C0C0C0';
-                            }
-                            return { color: c, opacity: o, weight: 5 };
-                        },
-                        "minZoom": 15
-                    },
-                    "layerArray": [{
-                        note: "This overrides the ESRI legend",
-                        "layerName": "Road Network Routes",
-                        "legend": [{
-                            "contentType": "image/png",
-                            "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAC9JREFUOI1jYaAyYBk1cNTAYWtgenr6f2oYNnPmTEYWGIMaBjIwDJkwHDVwmBsIADDsBh2b0c5hAAAAAElFTkSuQmCC",
-                            "label": ""
-                        }]
-                    }],
-                    "queryProperties": { "Road Network Routes": { "COUNTY_ID": "County Identifier", "ROUTE_TYPE": "Route Type", "ROUTE_NUMB": "Route Number", "ROUTE_DIR": "Route Direction", "ROUTE_ID": "Route Identifier", "FEATURE_TY": "Type", "STREET_NAM": "Street Name", "NAME": "Name" } }
                 }
             },
         "Applications": [], "regionEnabled": true, "ScenariosAvailable": true
