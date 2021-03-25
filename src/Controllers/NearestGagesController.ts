@@ -6,7 +6,7 @@
 //       01234567890123456789012345678901234567890123456789012345678901234567890
 //-------+---------+---------+---------+---------+---------+---------+---------+
 
-// copyright:   2016 WiM - USGS
+// copyright:   2021 WiM - USGS
 
 //    authors:  Katrin E. Jacobsen USGS Wisconsin Internet Mapping
 //             
@@ -14,10 +14,6 @@
 //   purpose:  
 //          
 //discussion:
-
-
-//Comments
-//12.16.2020 mjs - Created
 
 //Import
 
@@ -180,7 +176,6 @@ module StreamStats.Controllers {
         }
 
         public getNearestGages() {
-            // TODO: cleanup, check if report is opening without delineated basin
             this.toaster.pop("wait", "Searching for gages", "Please wait...", 0);
             var headers = {
                 "X-Is-Streamstats": true

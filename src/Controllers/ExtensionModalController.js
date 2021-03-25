@@ -387,7 +387,7 @@ var StreamStats;
                 }).finally(function () {
                 });
             };
-            ExtensionModalController.prototype.checkPoR = function (gage) {
+            ExtensionModalController.prototype.checkPeriodOfRecord = function (gage) {
                 if (!this.dateRange.dates && gage.hasOwnProperty('SelectEnabled'))
                     return gage['SelectEnabled'];
                 if (this.dateRange.dates.startDate >= this.addDay(gage['StartDate'], 1) && this.addDay(gage['EndDate'], 1) >= this.dateRange.dates.endDate)

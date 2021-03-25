@@ -861,7 +861,7 @@ module StreamStats.Services {
                             var station = data.shift().split('\t');
                             if (station[headers.indexOf("parm_cd")] == "00060") {
                                 console.log(station[headers.indexOf("site_no")]);
-                                //this.selectedStudyAreaExtensions
+                                
                                 let rg = new Models.ReferenceGage(station[headers.indexOf("site_no")], station[headers.indexOf("station_nm")]);
                                 rg.Latitude_DD = station[headers.indexOf("dec_lat_va")];
                                 rg.Longitude_DD = station[headers.indexOf("dec_long_va")];                               
@@ -890,7 +890,7 @@ module StreamStats.Services {
 
         public selectGage(gage) {
             // selects gage and adds it to gage options for qppq
-            // TODO: shoul we change this now that selecting a gage on the map only displays it in QPPQ, not selects it?
+            // TODO: should we change this now that selecting a gage on the map only displays it in QPPQ, not selects it?
             var sid: Array<any> = this.selectedStudyAreaExtensions.reduce((acc, val) => acc.concat(val.parameters), []).filter(f => { return (<string>(f.code)).toLowerCase() == "sid" });
             var siteList:Array<Models.IReferenceGage> = [];
             let rg = new Models.ReferenceGage(gage.properties.Code, gage.properties.Name);
@@ -919,7 +919,8 @@ module StreamStats.Services {
 
                 }, (error) => {
                     //sm when error
-                    // TODO: catch error
+                    this.toaster.clear();
+                    this.toaster.pop('error', "Error querying streamgage layer");
                 });
         }
 

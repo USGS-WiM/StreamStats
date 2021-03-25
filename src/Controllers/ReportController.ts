@@ -516,7 +516,7 @@ module StreamStats.Controllers {
                 },
                 flow: {
                     data: [
-                        { key: result.referanceGage.name, values: result.referanceGage.discharge.observations.map(obs => { return { x: new Date(obs.date).getTime(), y: obs.hasOwnProperty('value') ? typeof obs.value == 'number' ? obs.value.toUSGSvalue() : obs.value : null } })}, // if (obs.value)
+                        { key: result.referanceGage.name, values: result.referanceGage.discharge.observations.map(obs => { return { x: new Date(obs.date).getTime(), y: obs.hasOwnProperty('value') ? typeof obs.value == 'number' ? obs.value.toUSGSvalue() : obs.value : null } })},
                         { key: "Estimated", values: result.estimatedFlow.observations.map(obs => { return { x: new Date(obs.date).getTime(), y: obs.hasOwnProperty('value') ? typeof obs.value == 'number' ? obs.value < 0.05 ? 0 : obs.value.toUSGSvalue() : obs.value : null } }) }
                     ],
                     options: {
@@ -603,10 +603,10 @@ module StreamStats.Controllers {
             this.overlays = {};
             this.studyAreaService.selectedStudyArea.FeatureCollection.features.forEach((item) => {
 
-                //console.log('in each loop', JSON.stringify(item));
                 this.addGeoJSON(item.id, item);
             });
 
+            // add reference gage to report map
             if (this.studyAreaService.selectedGage && this.studyAreaService.selectedGage.hasOwnProperty('Latitude_DD') && this.studyAreaService.selectedGage.hasOwnProperty('Longitude_DD')) {
                 var gagePoint = {
                     type: "Feature",
