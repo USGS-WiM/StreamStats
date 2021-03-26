@@ -6,7 +6,7 @@ var gulp = require('gulp'),
     bump = require('gulp-bump'),
     jshint = require('gulp-jshint'),
     size = require('gulp-size'),
-    uglify = require('gulp-uglify'),
+    uglify = require('gulp-uglify-es').default,
     useref = require('gulp-useref'),
     cleanCSS = require('gulp-clean-css'),
     connect = require('gulp-connect'),
@@ -111,10 +111,17 @@ gulp.task('html', ['styles', 'scripts', 'icons', 'views', 'data'], function () {
     var jsFilter = filter('**/*.js', { restore: true });
     var cssFilter = filter('**/*.css', { restore: true });
 
+    function createErrorHandler(name) {
+        return function (err) {
+          console.error('Error from ' + name + ' in compress task', err.toString());
+        };
+      }
+
     return gulp.src('src/*.html')
         .pipe(useref())
         .pipe(jsFilter)
         .pipe(uglify())
+        .on('error', createErrorHandler('uglify'))
         .pipe(jsFilter.restore)
         .pipe(cssFilter)
         .pipe(cleanCSS({ processImport: false }))

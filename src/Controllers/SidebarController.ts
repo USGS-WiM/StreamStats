@@ -27,6 +27,7 @@ module StreamStats.Controllers {
 
     declare var search_api;
     declare var shpwrite;
+    declare var tokml;
 
     'use strinct';
     interface ISidebarControllerScope extends ng.IScope {
@@ -74,6 +75,7 @@ module StreamStats.Controllers {
         private multipleParameterSelectorAdd: boolean;
         private explorationService: Services.IExplorationService;
         private parametersLoaded: boolean;
+        private SSServicesVersion = '1.2.22'; //TODO: get actual version when ready
         public get ParameterValuesMissing(): boolean {
             if (!this.studyAreaService.studyAreaParameterList || this.studyAreaService.studyAreaParameterList.length < 1) return true;
             for (var i = 0; i < this.studyAreaService.studyAreaParameterList.length; i++) {
@@ -331,6 +333,9 @@ module StreamStats.Controllers {
             //open modal for extensions
             if (this.scenarioHasExtenstions) {
                 this.modalService.openModal(Services.SSModalType.e_extensionsupport);
+                if (this.nssService.selectedStatisticsGroupList.length == 1) {
+                    this.nssService.showBasinCharacteristicsTable = false;
+                }
             }
         }
 
@@ -339,6 +344,8 @@ module StreamStats.Controllers {
             this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'sumbitEdits' });
 
             this.studyAreaService.showEditToolbar = false;
+
+            this.toaster.pop('wait', "Submitting edited basin", "Please wait...", 0);
 
             //check if basin has been edited, if so we need to re-query regression regions
             if (this.studyAreaService.selectedStudyArea.Disclaimers['isEdited']) {
@@ -378,7 +385,7 @@ module StreamStats.Controllers {
                     for (var i = 0; i < this.nssService.selectedStatisticsGroupList.length; i++) {
                         var sg = this.nssService.selectedStatisticsGroupList[i];
                         if (sg.code.toUpperCase() === "PFS") {
-                            sg.citations = [{ Author: "Indiana DNR,", Title: "Coordinated Discharges of Selected Streams in Indiana.", CitationURL: "http://www.in.gov/dnr/water/4898.htm" }];
+                            sg.citations = [{ author: "Indiana DNR,", title: "Coordinated Discharges of Selected Streams in Indiana.", citationURL: "http://www.in.gov/dnr/water/4898.htm" }];
                             sg.regressionRegions = [];
                             var result = this.studyAreaService.selectedStudyArea.CoordinatedReach.Execute(this.studyAreaService.studyAreaParameterList.filter(p => { return p.code === "DRNAREA" }))
                             sg.regressionRegions.push(result); 
@@ -398,8 +405,14 @@ module StreamStats.Controllers {
                 }
 
                 //add it back in.
-                if(sg != null)
+                if(sg != null && sg.code.toUpperCase() === "PFS") {
                     this.nssService.selectedStatisticsGroupList.push(sg);
+                    if (this.nssService.selectedStatisticsGroupList.length == 1) {
+                        this.toaster.clear();
+                        this.modalService.openModal(Services.SSModalType.e_report);
+                        this.nssService.reportGenerated = true;
+                    }
+                }
             } else {
                 this.toaster.clear();
                 this.modalService.openModal(Services.SSModalType.e_report);
@@ -491,7 +504,7 @@ module StreamStats.Controllers {
                             
                             if (!found) {
                                 //console.log('PARAM NOT FOUND', param.Code)
-                                this.toaster.pop('warning', "Missing Parameter: " + param.Code, "The selected scenario requires a parameter not available in this State/Region.  The value for this parameter will need to be entered manually.", 0);
+                                this.toaster.pop('warning', "Missing Parameter: " + param.code, "The selected scenario requires a parameter not available in this State/Region.  The value for this parameter will need to be entered manually.", 0);
 
                                 //add to region parameterList
                                 var newParam = {
@@ -526,6 +539,10 @@ module StreamStats.Controllers {
             this.modalService.openModal(Services.SSModalType.e_stormrunnoff);
         }
 
+        public OpenNearestGages() {
+            this.modalService.openModal(Services.SSModalType.e_nearestgages);
+        }
+
         public downloadGeoJSON() {
 
             var GeoJSON = angular.toJson(this.studyAreaService.selectedStudyArea.FeatureCollection);
@@ -553,6 +570,33 @@ module StreamStats.Controllers {
             }
 
         }
+
+        public downloadKML() {
+            //https://github.com/mapbox/tokml
+            //https://gis.stackexchange.com/questions/159344/export-to-kml-option-using-leaflet
+            var geojson = JSON.parse(angular.toJson(this.studyAreaService.selectedStudyArea.FeatureCollection));
+            var kml = tokml(geojson);
+            var blob = new Blob([kml], { type: 'text/csv;charset=utf-8;' });
+            var filename = 'data.kml';
+            if (navigator.msSaveBlob) { // IE 10+
+                navigator.msSaveBlob(blob, filename);
+            } else {
+                var link = <any>document.createElement("a");
+                var url = URL.createObjectURL(blob);
+                if (link.download !== undefined) { // feature detection
+                    // Browsers that support HTML5 download attribute
+                    link.setAttribute("href", url);
+                    link.setAttribute("download", filename);
+                    link.style.visibility = 'hidden';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+                else {
+                    window.open(url);
+                }
+            }
+        }
         public downloadShapeFile() {
             try {
                 var flowTable: Array<Services.INSSResultTable> = null;
@@ -564,11 +608,11 @@ module StreamStats.Controllers {
                 
                 //this will output a zip file
                 var disclaimer = "USGS Data Disclaimer: Unless otherwise stated, all data, metadata and related materials are considered to satisfy the quality standards relative to the purpose for which the data were collected. Although these data and associated metadata have been reviewed for accuracy and completeness and approved for release by the U.S. Geological Survey (USGS), no warranty expressed or implied is made regarding the display or utility of the data for other purposes, nor on all computer systems, nor shall the act of distribution constitute any such warranty." + '\n' +
-        "USGS Software Disclaimer: This software has been approved for release by the U.S. Geological Survey (USGS). Although the software has been subjected to rigorous review, the USGS reserves the right to update the software as needed pursuant to further analysis and review. No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty. Furthermore, the software is released on condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from its authorized or unauthorized use." + '\n' +
-        "USGS Product Names Disclaimer: Any use of trade, firm, or product names is for descriptive purposes only and does not imply endorsement by the U.S. Government." + '\n\n';
-
-                shpwrite.download(fc, flowTable, disclaimer + 'Application Version: ' + configuration.version);
-
+                    "USGS Software Disclaimer: This software has been approved for release by the U.S. Geological Survey (USGS). Although the software has been subjected to rigorous review, the USGS reserves the right to update the software as needed pursuant to further analysis and review. No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty. Furthermore, the software is released on condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from its authorized or unauthorized use." + '\n' +
+                    "USGS Product Names Disclaimer: Any use of trade, firm, or product names is for descriptive purposes only and does not imply endorsement by the U.S. Government." + '\n\n';
+                var versionText = 'Application Version: ' + configuration.version;
+                if (this.SSServicesVersion) versionText += '\nStreamStats Services Version: ' + this.SSServicesVersion;
+                shpwrite.download(fc, flowTable, disclaimer + versionText);
             } catch (e) {
                 console.log(e)
             }
@@ -636,6 +680,7 @@ module StreamStats.Controllers {
                 return false;
             }
         }
+        
         private sm(msg: string) {
             try {
                 //toastr.options = {

@@ -130,9 +130,13 @@
                                             <ul class="dropdown-menu" role="menu">
                                                 <li><a href="#" ng-click="vm.downloadGeoJSON()" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="GeoJSON"><span class="fa fa-download"></span>&nbsp;&nbsp;GeoJSON</a></li>
                                                 <li><a href="#" ng-click="vm.downloadShapeFile()" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="ShapeFile"><span class="fa fa-download"></span>&nbsp;&nbsp;ShapeFile</a></li>
+                                                <li><a href="#" ng-click="vm.downloadKML()" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="KML"><span class="fa fa-download"></span>&nbsp;&nbsp;KML</a></li>
                                             </ul>
                                         </div>
                                     </form>
+                                    <!-- <form style="padding: 5px 0;">
+                                        <button ng-click="vm.OpenNearestGages()" type="button" class="btn-black fullwidth"><i class="fa fa-map-marker"></i>&nbsp;&nbsp;Query Nearest Gages</button>
+                                    </form> --><!--TODO: add back in and add analytics (see above)-->
                                     <div class="col-md-12 text-center" style="padding: 10px 0; font-size:16px;">or</div>
                                     <form style="padding: 5px 0;">
                                         <button type="button" class="btn-blue fullwidth" ng-click="vm.queryRegressionRegions();" ng-disabled="vm.studyAreaService.regressionRegionQueryLoading || !vm.studyAreaService.canUpdate"><i ng-class="vm.studyAreaService.regressionRegionQueryLoading ? 'fa fa-refresh fa-spin' : 'fa fa-check-circle'"></i>&nbsp;&nbsp;Continue</button>
@@ -269,7 +273,7 @@
 
 
                         <form style="padding: 5px 0;" ng-show="vm.nssService.showBasinCharacteristicsTable || vm.nssService.showFlowsTable">
-                            <button  ng-disabled="vm.studyAreaService.requestParameterList.length > 0" ng-click="vm.generateReport()" type="button" class="btn-blue fullwidth"><i ng-class="vm.nssService.canUpdate ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Continue</button>
+                            <button  ng-disabled="vm.studyAreaService.requestParameterList.length > 0 || vm.studyAreaService.doSelectMapGage" ng-click="vm.generateReport()" type="button" class="btn-blue fullwidth"><i ng-class="vm.nssService.canUpdate ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Continue</button>
                         </form>
                     </div>
                 </div>

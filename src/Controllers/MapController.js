@@ -1,35 +1,16 @@
-//------------------------------------------------------------------------------
-//----- MapController ----------------------------------------------------------
-//------------------------------------------------------------------------------
-//-------1---------2---------3---------4---------5---------6---------7---------8
-//       01234567890123456789012345678901234567890123456789012345678901234567890
-//-------+---------+---------+---------+---------+---------+---------+---------+
-// copyright:   2015 WiM - USGS
-//    authors:  Jeremy K. Newson USGS Wisconsin Internet Mapping
-//   purpose:  
-//discussion:   Controllers are typically built to reflect a View. 
-//              and should only contailn business logic needed for a single view. For example, if a View 
-//              contains a ListBox of objects, a Selected object, and a Save button, the Controller 
-//              will have an ObservableCollection ObectList, 
-//              Model SelectedObject, and SaveCommand.
-//Comments
-//04.15.2015 jkn - Created
-//Imports"
 var StreamStats;
 (function (StreamStats) {
     var Controllers;
     (function (Controllers) {
         'use strict';
-        var MapPoint = /** @class */ (function () {
+        var MapPoint = (function () {
             function MapPoint() {
                 this.lat = 0;
                 this.lng = 0;
             }
             return MapPoint;
         }());
-        var Center = /** @class */ (function () {
-            //Constructor
-            //-+-+-+-+-+-+-+-+-+-+-+-
+        var Center = (function () {
             function Center(lt, lg, zm) {
                 this.lat = lt;
                 this.lng = lg;
@@ -37,7 +18,7 @@ var StreamStats;
             }
             return Center;
         }());
-        var Layer = /** @class */ (function () {
+        var Layer = (function () {
             function Layer(nm, ul, ty, vis, op) {
                 if (op === void 0) { op = undefined; }
                 this.name = nm;
@@ -48,7 +29,7 @@ var StreamStats;
             }
             return Layer;
         }());
-        var MapDefault = /** @class */ (function () {
+        var MapDefault = (function () {
             function MapDefault(mxZm, mnZm, zmCtrl) {
                 if (mxZm === void 0) { mxZm = null; }
                 if (mnZm === void 0) { mnZm = null; }
@@ -59,10 +40,11 @@ var StreamStats;
             }
             return MapDefault;
         }());
-        var MapController = /** @class */ (function () {
-            function MapController($scope, toaster, $analytics, $location, $stateParams, leafletBoundsHelper, leafletData, search, region, studyArea, StatisticsGroup, exploration, _prosperServices, eventManager, modal, modalStack) {
+        var MapController = (function () {
+            function MapController($scope, $compile, toaster, $analytics, $location, $stateParams, leafletBoundsHelper, leafletData, search, region, studyArea, StatisticsGroup, exploration, _prosperServices, eventManager, modal, modalStack) {
                 var _this = this;
                 this.$scope = $scope;
+                this.$compile = $compile;
                 this._prosperServices = _prosperServices;
                 this.modal = modal;
                 this.modalStack = modalStack;
@@ -95,7 +77,6 @@ var StreamStats;
                 this.environment = configuration.environment;
                 this.selectedExplorationTool = null;
                 this.init();
-                //subscribe to Events
                 this.eventManager.SubscribeToEvent(StreamStats.Services.onSelectedStudyAreaChanged, new WiM.Event.EventHandler(function () {
                     _this.onSelectedStudyAreaChanged();
                 }));
@@ -127,7 +108,6 @@ var StreamStats;
                     var latlng = args.leafletEvent.latlng;
                     _this.mapPoint.lat = latlng.lat;
                     _this.mapPoint.lng = latlng.lng;
-                    //change cursor after delienate button click
                     if (_this.studyArea.doDelineateFlag)
                         _this.cursorStyle = 'crosshair';
                 });
@@ -138,8 +118,6 @@ var StreamStats;
                     _this.cursorStyle = 'pointer';
                 });
                 $scope.$on('leafletDirectiveMap.mainMap.click', function (event, args) {
-                    //console.log('test',this.explorationService.drawElevationProfile)
-                    //listen for click
                     if (_this._prosperServices.CanQuery) {
                         _this._prosperServices.GetPredictionValues(args.leafletEvent, _this.bounds);
                         return;
@@ -148,28 +126,22 @@ var StreamStats;
                         _this.checkDelineatePoint(args.leafletEvent.latlng);
                         return;
                     }
-                    //check if in edit mode
                     if (_this.studyArea.showEditToolbar)
                         return;
-                    //check if in measurement mode
                     if (_this.explorationService.drawMeasurement)
                         return;
-                    //check if in elevation profile mode
                     if (_this.explorationService.drawElevationProfile)
                         return;
-                    if (_this.studyArea.doQueryNWIS) {
+                    if (_this.studyArea.doSelectMapGage) {
                         _this.studyArea.queryNWIS(args.leafletEvent.latlng);
                         return;
                     }
-                    //network navigation
                     if (exploration.selectedMethod != null && exploration.selectedMethod.locations.length <= exploration.selectedMethod.minLocations) {
                         console.log('in mapcontroller add point', exploration.selectedMethod.navigationPointCount, exploration.selectedMethod.locations.length);
-                        //add point
                         if (exploration.explorationPointType == 'Start point location')
                             exploration.selectedMethod.addLocation('Start point location', new WiM.Models.Point(args.leafletEvent.latlng.lat, args.leafletEvent.latlng.lng, '4326'));
                         if (exploration.explorationPointType == 'End point location')
                             exploration.selectedMethod.addLocation('End point location', new WiM.Models.Point(args.leafletEvent.latlng.lat, args.leafletEvent.latlng.lng, '4326'));
-                        //add temporary marker to map
                         for (var i = 0; i < exploration.selectedMethod.locations.length; i++) {
                             var item = exploration.selectedMethod.locations[i];
                             _this.markers['netnav_' + i] = {
@@ -179,10 +151,9 @@ var StreamStats;
                                 focus: true,
                                 draggable: false
                             };
-                        } //next i
+                        }
                         _this.modal.openModal(StreamStats.Services.SSModalType.e_exploration);
                     }
-                    //query streamgage is default map click action
                     else {
                         _this.queryPoints(args.leafletEvent);
                     }
@@ -202,13 +173,11 @@ var StreamStats;
                         _this.elevationProfile();
                 });
                 $scope.$watch(function () { return _this.explorationService.drawMeasurement; }, function (newval, oldval) {
-                    //console.log('measurementListener ', newval, oldval);
                     if (newval)
                         _this.measurement();
                 });
                 $scope.$watch(function () { return _this.regionServices.regionMapLayerListLoaded; }, function (newval, oldval) {
                     if (newval) {
-                        //console.log('in regionMapLayerListLoaded watch: ', this.regionServices.selectedRegion);
                         _this.addRegionOverlayLayers(_this.regionServices.selectedRegion.RegionID);
                     }
                 });
@@ -218,14 +187,7 @@ var StreamStats;
                         _this.AddProsperLayer(newval.id);
                     }
                 });
-                //$scope.$watch(() => this.explorationService.selectedMethod, (newval, oldval) => {
-                //    if (newval) {
-                //        console.log('watch selectedMethod', newval);
-                //        if (newval.navigationID == 0) this.resetExplorationTools();
-                //    }
-                //});
                 $scope.$on('$locationChangeStart', function () { return _this.updateRegion(); });
-                // check if region was explicitly set.
                 if ($stateParams.rcode) {
                     this.regionServices.loadParametersByRegion();
                     this.setBoundsByRegion($stateParams.rcode);
@@ -234,13 +196,16 @@ var StreamStats;
                     this.regionServices.loadParametersByRegion();
                     this.studyArea.loadWatershed($stateParams.rcode, $stateParams.workspaceID);
                 }
-                //watch for result of regressionregion query
                 $scope.$watch(function () { return _this.studyArea.regressionRegionQueryComplete; }, function (newval, oldval) {
-                    //join codes from regression region object list and run query
                     if (newval && _this.studyArea.selectedStudyArea.RegressionRegions)
                         _this.nssService.loadStatisticsGroupTypes(_this.regionServices.selectedRegion.RegionID, _this.studyArea.selectedStudyArea.RegressionRegions.map(function (elem) {
                             return elem.code;
                         }).join(","));
+                });
+                $scope.$watch(function () { return _this.studyArea.streamgageLayer; }, function (newval, oldval) {
+                    if (newval != oldval) {
+                        _this.addGeoJSON('streamgages', newval);
+                    }
                 });
             }
             Object.defineProperty(MapController.prototype, "selectedExplorationMethodType", {
@@ -262,16 +227,11 @@ var StreamStats;
                 enumerable: true,
                 configurable: true
             });
-            //Methods
-            //-+-+-+-+-+-+-+-+-+-+-+-
             MapController.prototype.setExplorationMethodType = function (val) {
-                //check if can select
                 this.removeGeoJsonLayers("netnav_", true);
-                //get this configuration
                 this.explorationService.getNavigationConfiguration(val);
             };
             MapController.prototype.ExecuteNav = function () {
-                //validate request
                 if (this.explorationService.selectedMethod.locations.length != this.explorationService.selectedMethod.minLocations) {
                     this.toaster.pop("warning", "Warning", "You must select at least " + this.explorationService.selectedMethod.minLocations + " points.", 10000);
                     return;
@@ -288,21 +248,19 @@ var StreamStats;
                 }
                 else {
                     this._prosperIsActive = true;
-                    //add prosper maplayers
                     this.AddProsperLayer(this._prosperServices.DisplayedPrediction.id);
                     this.ConfigureProsper();
-                } //end if
+                }
             };
             MapController.prototype.ConfigureProsper = function () {
                 this.modal.openModal(StreamStats.Services.SSModalType.e_prosper);
-                //check if this bounds is outside of project bound, if so set proj extent
-                //this.bounds = this.leafletBoundsHelperService.createBoundsFromArray(this._prosperServices.projectExtent);
             };
-            //Helper Methods
-            //-+-+-+-+-+-+-+-+-+-+-+-
+            MapController.prototype.openGagePage = function (siteid) {
+                console.log('gage page id:', siteid);
+                this.modal.openModal(StreamStats.Services.SSModalType.e_gagepage, { 'siteid': siteid });
+            };
             MapController.prototype.init = function () {
                 this.setupMap();
-                //console.log('in map init')
                 this.explorationService.getNavigationEndPoints();
             };
             MapController.prototype.setupMap = function () {
@@ -316,7 +274,6 @@ var StreamStats;
                 this.paths = {};
                 this.geojson = {};
                 this.regionLayer = {};
-                //for elevation div
                 var width = 600;
                 if ($(window).width() < 768)
                     width = $(window).width() * 0.7;
@@ -368,13 +325,11 @@ var StreamStats;
             };
             MapController.prototype.queryPoints = function (evt) {
                 var _this = this;
-                //console.log('in query regional layers');
                 this.toaster.pop("wait", "Information", "Querying Points...", 0);
                 this.cursorStyle = 'wait';
                 this.markers = {};
                 this.leafletData.getMap("mainMap").then(function (map) {
                     _this.leafletData.getLayers("mainMap").then(function (maplayers) {
-                        //check to make sure layer is visible
                         if (map.getZoom() <= 8) {
                             _this.cursorStyle = 'pointer';
                             _this.toaster.clear();
@@ -385,25 +340,24 @@ var StreamStats;
                         var _loop_1 = function (lyr) {
                             if (!maplayers.overlays.hasOwnProperty(lyr))
                                 return "continue";
-                            //skip these layers
                             if (["MaskLayer", "draw"].indexOf(lyr) > -1)
                                 return "continue";
-                            //visible Layers only
                             if (!map.hasLayer(maplayers.overlays[lyr]))
                                 return "continue";
                             switch (_this.layers.overlays[lyr].type) {
                                 case "agsFeature":
-                                    //query
                                     maplayers.overlays[lyr].query().nearby(evt.latlng, 4).returnGeometry(false).run(function (error, results) { return _this.handleQueryResult(lyr, error, results, map, evt.latlng); });
                                     break;
-                                default: //agsDynamic
-                                    maplayers.overlays[lyr].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).run(function (error, results) { return _this.handleQueryResult(lyr, error, results, map, evt.latlng); });
+                                default:
+                                    saveLayerName = lyr;
+                                    maplayers.overlays[lyr].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).run(function (error, results) { return _this.handleQueryResult(saveLayerName, error, results, map, evt.latlng); });
                             }
                             _this.queryContent.requestCount++;
                         };
+                        var saveLayerName;
                         for (var lyr in maplayers.overlays) {
                             _loop_1(lyr);
-                        } //next lyr
+                        }
                     });
                 });
             };
@@ -412,42 +366,46 @@ var StreamStats;
                 var querylayers = $("<div>").attr("id", lyr).appendTo(this.queryContent.Content);
                 this.queryContent.requestCount--;
                 results.features.forEach(function (queryResult) {
-                    _this.layers.overlays[lyr].layerArray.forEach(function (item) {
-                        if (item.layerId !== queryResult.layerId)
-                            return;
-                        if (["StreamGrid", "ExcludePolys", "Region", "Subregion", "Basin", "Subbasin", "Watershed", "Subwatershed"].indexOf(item.layerName) > -1)
-                            return;
-                        querylayers.append('<h5>' + item.layerName + '</h5>');
-                        _this.queryContent.responseCount++;
-                        //report ga event
-                        _this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'queryPoints' });
-                        //show only specified fields (if applicable)
-                        if (_this.layers.overlays[lyr].hasOwnProperty("queryProperties") && _this.layers.overlays[lyr].queryProperties.hasOwnProperty(item.layerName)) {
-                            var queryProperties_1 = _this.layers.overlays[lyr].queryProperties[item.layerName];
-                            Object.keys(queryProperties_1).map(function (k) {
-                                if (item.layerName == "Streamgages" && k == "FeatureURL") {
-                                    var siteNo = queryResult.properties[k].split('site_no=')[1];
-                                    var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm';
-                                    querylayers.append('<strong>NWIS page: </strong><a href="' + queryResult.properties[k] + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br>');
-                                    _this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'streamgageQuery' });
-                                }
-                                else {
-                                    querylayers.append('<strong>' + queryProperties_1[k] + ': </strong>' + queryResult.properties[k] + '</br>');
-                                }
-                            });
-                        }
-                        else { //show all fields
-                            angular.forEach(queryResult.properties, function (value, key) {
-                                querylayers.append('<strong>' + key + ': </strong>' + value + '</br>');
-                            });
-                        }
-                    });
+                    if (_this.layers.overlays[lyr].hasOwnProperty('layerArray')) {
+                        _this.layers.overlays[lyr].layerArray.forEach(function (item) {
+                            if (item.layerId !== queryResult.layerId)
+                                return;
+                            if (["StreamGrid", "ExcludePolys", "Region", "Subregion", "Basin", "Subbasin", "Watershed", "Subwatershed"].indexOf(item.layerName) > -1)
+                                return;
+                            querylayers.append('<h5>' + item.layerName + '</h5>');
+                            _this.queryContent.responseCount++;
+                            _this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'queryPoints' });
+                            if (_this.layers.overlays[lyr].hasOwnProperty("queryProperties") && _this.layers.overlays[lyr].queryProperties.hasOwnProperty(item.layerName)) {
+                                var queryProperties_1 = _this.layers.overlays[lyr].queryProperties[item.layerName];
+                                Object.keys(queryProperties_1).map(function (k) {
+                                    if (item.layerName == "Streamgages" && k == "FeatureURL") {
+                                        var siteNo = queryResult.properties[k].split('site_no=')[1];
+                                        var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm';
+                                        var SSgagepageNew = "vm.openGagePage('" + siteNo + "')";
+                                        var html = '<strong>NWIS page: </strong><a href="' + queryResult.properties[k] + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br><strong>New StreamStats Gage Modal: </strong><a ng-click="' + SSgagepageNew + '">link</a></br>';
+                                        querylayers.append(html);
+                                        _this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'streamgageQuery' });
+                                    }
+                                    else {
+                                        querylayers.append('<strong>' + queryProperties_1[k] + ': </strong>' + queryResult.properties[k] + '</br>');
+                                    }
+                                });
+                            }
+                            else {
+                                angular.forEach(queryResult.properties, function (value, key) {
+                                    querylayers.append('<strong>' + key + ': </strong>' + value + '</br>');
+                                });
+                            }
+                        });
+                    }
                 });
                 if (this.queryContent.requestCount < 1) {
                     this.toaster.clear();
                     this.cursorStyle = 'pointer';
                     if (this.queryContent.responseCount > 0) {
-                        map.openPopup(this.queryContent.Content.html(), [latlng.lat, latlng.lng], { maxHeight: 200 });
+                        var html = this.queryContent.Content.html();
+                        var compiledHtml = this.$compile(html)(this.$scope);
+                        map.openPopup(compiledHtml[0], [latlng.lat, latlng.lng], { maxHeight: 200 });
                     }
                     else {
                         this.toaster.pop("warning", "Information", "No points were found at this location", 5000);
@@ -460,65 +418,51 @@ var StreamStats;
                 this.explorationService.measurementData = '';
                 this.explorationService.showElevationChart = true;
                 var el;
-                //get reference to elevation control
                 this.controls.custom.forEach(function (control) {
                     if (control._container.className.indexOf("elevation") > -1)
                         el = control;
                 });
-                //report ga event
                 this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'elevationProfile' });
                 this.leafletData.getMap("mainMap").then(function (map) {
                     _this.leafletData.getLayers("mainMap").then(function (maplayers) {
-                        //create draw control
                         var drawnItems = maplayers.overlays.draw;
                         drawnItems.clearLayers();
                         _this.drawController({ metric: false }, true);
                         delete _this.geojson['elevationProfileLine3D'];
                         map.on('draw:drawstart', function (e) {
-                            //console.log('in draw start');
                             el.clear();
                         });
-                        //listen for end of draw
                         map.on('draw:created', function (e) {
                             map.removeEventListener('draw:created');
                             var feature = e.layer.toGeoJSON();
-                            //convert to esriJSON
                             var esriJSON = '{"geometryType":"esriGeometryPolyline","spatialReference":{"wkid":"4326"},"fields": [],"features":[{"geometry": {"type":"polyline", "paths":[' + JSON.stringify(feature.geometry.coordinates) + ']}}]}';
-                            //make the request
                             _this.toaster.pop("wait", "Information", "Querying the elevation service...", 0);
                             _this.explorationService.elevationProfile(esriJSON);
-                            //disable button 
                             _this.explorationService.drawElevationProfile = false;
-                            //force map refresh
                             map.panBy([0, 1]);
                         });
                     });
                 });
             };
             MapController.prototype.drawController = function (options, enable) {
-                //console.log('in drawcontroller: ', options, enable);
                 var _this = this;
                 if (!enable) {
                     this.drawControl.disable();
                     this.drawControl = undefined;
-                    //console.log('removing drawControl', this.drawControl);
                     return;
                 }
                 this.leafletData.getMap("mainMap").then(function (map) {
-                    //console.log('enable drawControl');
                     _this.drawControl = new L.Draw.Polyline(map, options);
                     _this.drawControl.enable();
                 });
             };
             MapController.prototype.displayElevationProfile = function () {
                 var _this = this;
-                //get reference to elevation control
                 var el;
                 this.controls.custom.forEach(function (control) {
                     if (control._container && control._container.className.indexOf("elevation") > -1)
                         el = control;
                 });
-                //parse it
                 this.geojson["elevationProfileLine3D"] = {
                     data: this.explorationService.elevationProfileGeoJSON,
                     style: {
@@ -532,7 +476,6 @@ var StreamStats;
                     var container = el.onAdd(map);
                     _this.explorationService.elevationProfileHTML = container.innerHTML;
                     _this.modal.openModal(StreamStats.Services.SSModalType.e_exploration);
-                    //delete line
                     delete _this.geojson['elevationProfileLine3D'];
                 });
                 this.toaster.clear();
@@ -542,7 +485,6 @@ var StreamStats;
             MapController.prototype.showLocation = function () {
                 var _this = this;
                 this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'showLocation' });
-                //get reference to location control
                 var lc;
                 this.controls.custom.forEach(function (control) {
                     if (control._container.className.indexOf("leaflet-control-locate") > -1)
@@ -568,7 +510,6 @@ var StreamStats;
                     _this.leafletData.getLayers("mainMap").then(function (maplayers) {
                         var drawnItems = maplayers.overlays.draw;
                         drawnItems.clearLayers();
-                        //remove listeners
                         if (_this.measurestart)
                             map.off("click", _this.measurestart);
                         if (_this.measuremove)
@@ -587,19 +528,14 @@ var StreamStats;
             };
             MapController.prototype.measurement = function () {
                 var _this = this;
-                //user affordance
                 this.explorationService.measurementData = 'Click the map to begin\nDouble click to end the Drawing';
-                //report ga event
                 this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'measurement' });
                 this.leafletData.getMap("mainMap").then(function (map) {
-                    //console.log('got map: ', map);
                     _this.leafletData.getLayers("mainMap").then(function (maplayers) {
-                        //console.log('got maplayers: ', maplayers);
-                        var stopclick = false; //to prevent more than one click listener
+                        var stopclick = false;
                         _this.drawController({ shapeOptions: { color: 'blue' }, metric: false }, true);
                         var drawnItems = maplayers.overlays.draw;
                         drawnItems.clearLayers();
-                        //listeners active during drawing
                         _this.measuremove = function () {
                             _this.explorationService.measurementData = "Total length: " + _this.drawControl._getMeasurementString();
                         };
@@ -615,7 +551,6 @@ var StreamStats;
                             var layer = e.layer;
                             drawnItems.addLayer(layer);
                             drawnItems.addTo(map);
-                            // Calculating the distance of the polyline, internal funciton '_getMeasurementString' doesn't work on mobile
                             var tempLatLng = null;
                             var totalDistance = 0.00000;
                             $.each(e.layer._latlngs, function (i, latlng) {
@@ -626,9 +561,7 @@ var StreamStats;
                                 totalDistance += tempLatLng.distanceTo(latlng);
                                 tempLatLng = latlng;
                             });
-                            //reset button
                             _this.explorationService.measurementData = "Total length: " + (totalDistance * 3.28084).toFixed(0) + " ft";
-                            //remove listeners
                             map.off("click", _this.measurestart);
                             map.off("mousemove", _this.measuremove);
                             map.off("draw:created", _this.measurestop);
@@ -643,20 +576,17 @@ var StreamStats;
             };
             MapController.prototype.checkDelineatePoint = function (latlng) {
                 var _this = this;
-                //make sure were still at level 15 or greater
                 this.leafletData.getMap("mainMap").then(function (map) {
                     _this.leafletData.getLayers("mainMap").then(function (maplayers) {
                         if (map.getZoom() < 15) {
                             _this.toaster.pop("error", "Delineation not allowed at this zoom level", 'Please zoom in to level 15 or greater', 5000);
                         }
-                        //good to go
                         else {
                             _this.toaster.clear();
                             _this.studyArea.checkingDelineatedPoint = true;
                             _this.toaster.pop("info", "Information", "Validating your clicked point...", true, 0);
                             _this.cursorStyle = 'wait';
                             _this.markers = {};
-                            //put pourpoint on the map
                             _this.markers['pourpoint'] = {
                                 lat: latlng.lat,
                                 lng: latlng.lng,
@@ -664,19 +594,15 @@ var StreamStats;
                                 focus: true,
                                 draggable: true
                             };
-                            //turn off delineate flag
                             _this.studyArea.doDelineateFlag = false;
-                            //build list of layers to query before delineate
                             var queryString = 'visible:';
                             _this.regionServices.regionMapLayerList.forEach(function (item) {
                                 if (item[0] == 'ExcludePolys')
                                     queryString += item[1];
                             });
                             _this.angulartics.eventTrack('delineationClick', { category: 'Map', label: _this.regionServices.selectedRegion.Name });
-                            //force map refresh
                             map.invalidateSize();
                             var selectedRegionLayerName = _this.regionServices.selectedRegion.RegionID + "_region";
-                            //if there are no map layers to query, skip with warning
                             if (queryString === 'visible:') {
                                 _this.toaster.clear();
                                 _this.toaster.pop("warning", "Selected State/Region does not have exlusion areas defined", "Delineating with no exclude polygon layer...", true, 0);
@@ -685,26 +611,20 @@ var StreamStats;
                                 _this.cursorStyle = 'pointer';
                                 return;
                             }
-                            //do point validation query
                             maplayers.overlays[selectedRegionLayerName].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run(function (error, results) {
-                                //console.log('exclusion area check: ', queryString, results); 
                                 _this.toaster.clear();
-                                //if there are no exclusion area hits
                                 if (results.features.length == 0) {
-                                    //ga event
                                     _this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'valid' });
                                     _this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000);
                                     _this.studyArea.checkingDelineatedPoint = false;
                                     _this.startDelineate(latlng, false);
                                 }
-                                //otherwise parse exclude Codes
                                 else {
                                     _this.studyArea.checkingDelineatedPoint = false;
                                     var excludeCode = results.features[0].properties.ExcludeCod;
                                     var popupMsg = results.features[0].properties.ExcludeRea;
                                     if (excludeCode == 1) {
                                         _this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", popupMsg, 0);
-                                        //ga event
                                         _this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'not allowed' });
                                     }
                                     else {
@@ -721,106 +641,77 @@ var StreamStats;
             };
             MapController.prototype.basinEditor = function () {
                 var _this = this;
-                var basinCopyGeoJSON = angular.fromJson(angular.toJson(this.geojson['globalwatershed'].data));
-                //attempt to remove single cell pinched polygon ends
-                basinCopyGeoJSON.geometry.coordinates = basinCopyGeoJSON.geometry.coordinates.filter(function (item) {
-                    return item.length > 5;
-                });
                 this.leafletData.getMap("mainMap").then(function (map) {
                     _this.leafletData.getLayers("mainMap").then(function (maplayers) {
-                        //create draw control
                         var drawnItems = maplayers.overlays.draw;
                         drawnItems.clearLayers();
                         var drawControl = new L.Draw.Polygon(map, drawnItems);
                         drawControl.enable();
-                        //listen for end of draw
                         map.on('draw:created', function (e) {
                             map.removeEventListener('draw:created');
                             var editLayer = e.layer;
                             drawnItems.addLayer(editLayer);
-                            var sourcePolygon = basinCopyGeoJSON;
                             var clipPolygon = editLayer.toGeoJSON();
                             if (_this.studyArea.drawControlOption == 'add') {
-                                _this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'addArea' });
-                                //console.log('sourcePolygon:', sourcePolygon);
-                                var editPolygon = turf.union(sourcePolygon, clipPolygon);
-                                _this.studyArea.WatershedEditDecisionList.append.push(clipPolygon);
-                                //this.studyArea.Disclaimers['isEdited'] = true;
+                                if (_this.checkEditIntersects('adds', clipPolygon)) {
+                                    _this.toaster.pop("warning", "Warning", "Overlapping add and remove edit areas are not allowed", 5000);
+                                }
+                                else {
+                                    _this.addGeoJSON('adds', clipPolygon);
+                                    _this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'addArea' });
+                                    _this.studyArea.WatershedEditDecisionList.append.push(clipPolygon);
+                                }
                             }
                             if (_this.studyArea.drawControlOption == 'remove') {
-                                _this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'removeArea' });
-                                //console.log('remove layer', layer.toGeoJSON());
-                                var editPolygon = turf.difference(sourcePolygon, clipPolygon);
-                                //check for split polygon
-                                //console.log('editPoly', editPolygon.length);
-                                if (editPolygon.geometry.coordinates.length == 2) {
-                                    alert('Splitting polygons is not permitted');
-                                    drawnItems.clearLayers();
-                                    return;
+                                if (_this.checkEditIntersects('removes', clipPolygon)) {
+                                    _this.toaster.pop("warning", "Warning", "Overlapping add and remove edit areas are not allowed", 5000);
                                 }
-                                _this.studyArea.WatershedEditDecisionList.remove.push(clipPolygon);
-                                //this.studyArea.Disclaimers['isEdited'] = true;
+                                else {
+                                    _this.addGeoJSON('removes', clipPolygon);
+                                    _this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'removeArea' });
+                                    _this.studyArea.WatershedEditDecisionList.remove.push(clipPolygon);
+                                }
                             }
-                            //set studyArea basin to new edited polygon
-                            basinCopyGeoJSON.geometry.coordinates = editPolygon.geometry.coordinates;
-                            //editPolygon.geometry.coordinates.forEach((item) => { basin.geometry.coordinates[0].push([item[1], item[0]]) });
-                            //console.log('edited basin', basinCopyGeoJSON);
-                            //show new polygon
-                            _this.geojson['globalwatershed'].data = editPolygon;
                             drawnItems.clearLayers();
-                            //console.log('editedAreas', angular.toJson(this.studyArea.WatershedEditDecisionList));
                         });
                     });
                 });
             };
+            MapController.prototype.checkEditIntersects = function (editType, editPolygon) {
+                var found = false;
+                var oppositeEditType;
+                (editType === 'adds') ? oppositeEditType = 'removes' : oppositeEditType = 'adds';
+                if (this.geojson.hasOwnProperty(oppositeEditType)) {
+                    this.geojson[oppositeEditType].data.features.forEach(function (layer) {
+                        var intersection = turf.intersect(editPolygon, layer);
+                        if (intersection != undefined) {
+                            found = true;
+                        }
+                    });
+                }
+                return found;
+            };
             MapController.prototype.canSelectExplorationTool = function (methodval) {
                 switch (methodval) {
                     case StreamStats.Services.ExplorationMethodType.NETWORKPATH:
-                        //if (this.regionServices.selectedRegion == null) {
-                        //    this.toaster.pop("warning", "Warning", "you must first select a state or region to use this tool", 5000);
-                        //    return false;
-                        //}
-                        //if (this.center.zoom < 10) {
-                        //    this.toaster.pop("warning", "Warning", "you must be zoomed into at least a zoomlevel of 10 to use this tool", 5000);
-                        //    return false;
-                        //}
                         break;
                     case StreamStats.Services.ExplorationMethodType.FLOWPATH:
-                        //if (this.regionServices.selectedRegion == null) {
-                        //    this.toaster.pop("warning", "Warning", "you must first select a state or region to use this tool", 5000);
-                        //    return false;
-                        //}
-                        //if (this.center.zoom < 10) {
-                        //    this.toaster.pop("warning", "Warning", "you must be zoomed into at least a zoomlevel of 10 to use this tool", 5000);
-                        //    return false;
-                        //}
                         break;
                     case StreamStats.Services.ExplorationMethodType.NETWORKTRACE:
-                        //if (this.regionServices.selectedRegion == null) {
-                        //    this.toaster.pop("warning", "Warning", "you must first select a state or region to use this tool", 5000);
-                        //    return false;
-                        //}
-                        //if (this.center.zoom < 10) {
-                        //    this.toaster.pop("warning", "Warning", "you must be zoomed into at least a zoomlevel of 10 to use this tool", 5000);
-                        //    return false;
-                        //}
                         break;
                     default:
                         return false;
-                } //end switch
+                }
                 return true;
             };
             MapController.prototype.onExplorationMethodComplete = function (sender, e) {
                 var _this = this;
                 this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'networknav-' + this.explorationService.selectedMethod.navigationInfo.code });
-                //console.log('in onexplorationmethodCOmplete:', this.explorationService.selectedMethod.navigationInfo.code)
                 this.explorationService.explorationMethodBusy = false;
                 if (e.features != null && e.features['features'].length > 0) {
-                    //console.log('exploration method complete', e)
                     this.removeMarkerLayers("netnav_", true);
                     this.explorationService.networkNavResults.forEach(function (layer, key) {
                         _this.addGeoJSON(layer.name, layer.feature);
-                        //zoomTo logic
                         if (layer.name == "netnavroute") {
                             _this.leafletData.getMap("mainMap").then(function (map) {
                                 var tempExtent = L.geoJson(layer.feature);
@@ -829,20 +720,18 @@ var StreamStats;
                         }
                         _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(layer.name, "geojson", _this.geojson[layer.name].style));
                     });
-                    //disable tool
                     this.selectedExplorationMethodType = 0;
                     this.selectedExplorationTool = null;
                     this.modalStack.dismissAll();
-                } //end if
+                }
                 if (e.report != null && e.report != '') {
                     this.modal.openModal(StreamStats.Services.SSModalType.e_navreport, { placeholder: e.report });
-                } //end if
+                }
             };
             MapController.prototype.onSelectExplorationMethod = function (sender, e) {
                 this.modal.openModal(StreamStats.Services.SSModalType.e_exploration);
             };
             MapController.prototype.onSelectedAreaOfInterestChanged = function (sender, e) {
-                //ga event
                 this.angulartics.eventTrack('Search', { category: 'Sidebar' });
                 this.paths = {};
                 var AOI = e.selectedAreaOfInterest;
@@ -862,20 +751,17 @@ var StreamStats;
                         [AOI.properties['LatMin'], AOI.properties['LonMin']],
                         [AOI.properties['LatMax'], AOI.properties['LonMax']]
                     ]);
-                    //force level 8
                     setTimeout(function () {
                         if (map.getZoom() < 8)
                             map.setZoom(8);
                     }, 500);
-                    map.openPopup(// open popup at location listing all properties
-                    $.map(Object.keys(AOI.properties), function (property) {
+                    map.openPopup($.map(Object.keys(AOI.properties), function (property) {
                         if (["Label", "ElevFt", "Lat", "Lon", "Source"].indexOf(property) != 0 - 1)
                             return "<b>" + property + ": </b>" + AOI.properties[property];
                     }).join("<br/>"), [AOI.properties['Lat'], AOI.properties['Lon']]);
                 });
             };
             MapController.prototype.onSelectedRegionChanged = function () {
-                //console.log('in onselected region changed', this.regionServices.regionList, this.regionServices.selectedRegion);
                 if (!this.regionServices.selectedRegion)
                     return;
                 this.removeOverlayLayers("_region", true);
@@ -884,10 +770,8 @@ var StreamStats;
             MapController.prototype.onSelectedStudyAreaChanged = function () {
                 var _this = this;
                 var bbox;
-                //console.log('in onselectedstudyareachange1', this.studyArea.selectedStudyArea.Features)
                 if (!this.studyArea.selectedStudyArea || !this.studyArea.selectedStudyArea.FeatureCollection)
                     return;
-                //clear out this.markers
                 this.markers = {};
                 this.removeOverlayLayers('globalwatershed', true);
                 this.studyArea.selectedStudyArea.FeatureCollection['features'].forEach(function (layer) {
@@ -896,26 +780,21 @@ var StreamStats;
                     _this.addGeoJSON(name, item);
                     _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(name, "geojson", _this.geojson[name].style));
                 });
-                //zoom to bounding box
                 if (this.studyArea.selectedStudyArea.FeatureCollection['bbox']) {
                     bbox = this.studyArea.selectedStudyArea.FeatureCollection['bbox'];
                     this.leafletData.getMap("mainMap").then(function (map) {
                         map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]], {});
                     });
                 }
-                //query basin against Karst
                 if (this.regionServices.selectedRegion.Applications.indexOf("KarstCheck") > -1) {
                     this.studyArea.queryKarst(this.regionServices.selectedRegion.RegionID, this.regionServices.regionMapLayerList);
                 }
-                //query basin against regression regions
                 if (!this.nssService.queriedRegions) {
-                    //return if this state is not enabled
                     if (!this.regionServices.selectedRegion.ScenariosAvailable) {
                         this.studyArea.regressionRegionQueryComplete = true;
                         return;
                     }
                     this.nssService.queriedRegions = true;
-                    //console.log('set queriedregions flag to true: ', this.nssService.queriedRegions);
                 }
             };
             MapController.prototype.AddProsperLayer = function (id) {
@@ -929,7 +808,7 @@ var StreamStats;
             MapController.prototype.removeGeoJson = function (layerName) {
                 if (layerName === void 0) { layerName = ""; }
                 for (var k in this.geojson) {
-                    if (typeof this.geojson[k] !== 'function') {
+                    if (typeof this.geojson[k] !== 'function' && k != 'streamgages') {
                         delete this.geojson[k];
                         this.eventManager.RaiseEvent(WiM.Directives.onLayerRemoved, this, new WiM.Directives.LegendLayerRemovedEventArgs(k, "geojson"));
                     }
@@ -942,7 +821,6 @@ var StreamStats;
                         {
                             data: data,
                             style: {
-                                //https://www.base64-image.de/
                                 displayName: "Basin Boundary",
                                 imagesrc: "data:image/png;base64,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",
                                 fillColor: "yellow",
@@ -979,7 +857,6 @@ var StreamStats;
                         {
                             data: feature,
                             style: {
-                                //https://www.base64-image.de/
                                 displayName: "Basin Boundary (Regulated Area)",
                                 imagesrc: "data:image/png;base64,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",
                                 fillColor: "red",
@@ -1001,7 +878,6 @@ var StreamStats;
                             layer.bindPopup(popupContent);
                         },
                         pointToLayer: function (feature, latlng) {
-                            //default class
                             var classname = "wmm-pin wmm-mutedblue wmm-icon-noicon wmm-icon-black wmm-size-25";
                             if (feature.properties.source == 'ss_gages')
                                 classname = "wmm-pin wmm-blue wmm-icon-triangle wmm-icon-black wmm-size-25";
@@ -1031,7 +907,97 @@ var StreamStats;
                             }
                         };
                 }
-                //additional features get generic styling for now
+                else if (LayerName == 'adds') {
+                    if (this.geojson.hasOwnProperty(LayerName)) {
+                        this.geojson[LayerName].data.features.push(feature);
+                    }
+                    else {
+                        this.geojson[LayerName] =
+                            {
+                                data: {
+                                    "type": "FeatureCollection",
+                                    "features": [feature]
+                                },
+                                visible: true,
+                                style: {
+                                    displayName: LayerName,
+                                    fillColor: "green",
+                                    color: 'green'
+                                }
+                            };
+                    }
+                }
+                else if (LayerName == 'removes') {
+                    if (this.geojson.hasOwnProperty(LayerName)) {
+                        this.geojson[LayerName].data.features.push(feature);
+                    }
+                    else {
+                        this.geojson[LayerName] =
+                            {
+                                data: {
+                                    "type": "FeatureCollection",
+                                    "features": [feature]
+                                },
+                                visible: true,
+                                style: {
+                                    displayName: LayerName,
+                                    fillColor: "red",
+                                    color: 'red'
+                                }
+                            };
+                    }
+                }
+                else if (LayerName == 'streamgages') {
+                    var self = this;
+                    this.geojson[LayerName] = {
+                        data: feature,
+                        style: {
+                            displayName: 'Streamgages'
+                        },
+                        onEachFeature: function (feature, layer) {
+                            var siteNo = feature.properties['Code'];
+                            var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm';
+                            var NWISpage = 'http://nwis.waterdata.usgs.gov/nwis/inventory/?site_no=' + siteNo;
+                            var gageButtonDiv = L.DomUtil.create('div', 'testDiv');
+                            gageButtonDiv.innerHTML = '<strong>Station ID: </strong>' + siteNo + '</br><strong>Station Name: </strong>' + feature.properties['Name'] + '</br><strong>Latitude: </strong>' + feature.geometry.coordinates[1] + '</br><strong>Longitude: </strong>' + feature.geometry.coordinates[0] + '</br><strong>Station Type</strong>: ' + feature.properties.StationType.name +
+                                '</br><strong>NWIS page: </strong><a href="' + NWISpage + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br><strong>New StreamStats Gage Modal: </strong><a id="gagePageLink" class="' + siteNo + '">link</a><br>';
+                            layer.bindPopup(gageButtonDiv);
+                            var styling = configuration.overlayedLayers['SSLayer'].layerArray[0].legend.filter(function (item) {
+                                return item.label.toLowerCase() == feature.properties.StationType.name.toLowerCase();
+                            })[0];
+                            if (styling == undefined) {
+                                styling = configuration.overlayedLayers['SSLayer'].layerArray[0].legend.filter(function (item) {
+                                    return item.label == 'Unknown';
+                                })[0];
+                            }
+                            var icon = L.icon({
+                                iconUrl: 'data:image/png;base64,' + styling.imageData,
+                                iconSize: [15, 16],
+                                iconAnchor: [7.5, 8],
+                                popupAnchor: [0, -11],
+                            });
+                            layer.setIcon(icon);
+                            L.DomEvent.on(gageButtonDiv, 'click', function (event) {
+                                var id = event.target['id'];
+                                if (id === 'gagePageLink') {
+                                    self.openGagePage(siteNo);
+                                }
+                            });
+                            layer.on('mouseover', function (e) {
+                                if (self.studyArea.doSelectMapGage)
+                                    this.openPopup();
+                            });
+                            layer.on('click', function (e) {
+                                if (self.studyArea.doSelectMapGage) {
+                                    self.studyArea.selectGage(feature);
+                                    self.studyArea.doSelectMapGage = false;
+                                }
+                                else
+                                    this.openPopup();
+                            });
+                        }
+                    };
+                }
                 else {
                     this.geojson[LayerName] =
                         {
@@ -1039,8 +1005,8 @@ var StreamStats;
                             visible: true,
                             style: {
                                 displayName: LayerName,
-                                fillColor: "red",
-                                color: 'red'
+                                fillColor: "blue",
+                                color: 'blue'
                             }
                         };
                 }
@@ -1051,9 +1017,7 @@ var StreamStats;
                     if (!e.Value)
                         delete this.geojson[e.LayerName];
                     else {
-                        //get feature
                         var value = null;
-                        //need this in if now that we have network nav results 
                         if (this.studyArea.selectedStudyArea && this.studyArea.selectedStudyArea.FeatureCollection.features.length > 0) {
                             this.studyArea.selectedStudyArea.FeatureCollection['features'].forEach(function (layer) {
                                 if (layer.id == e.LayerName) {
@@ -1068,22 +1032,22 @@ var StreamStats;
                                 var item = angular.fromJson(angular.toJson(this.explorationService.networkNavResults[i]));
                                 if (item.name == e.LayerName)
                                     this.addGeoJSON(e.LayerName, item.feature);
-                            } //next
+                            }
                         }
-                    } //end if  
-                } //end if
+                    }
+                }
             };
             MapController.prototype.mapBoundsChange = function (oldValue, newValue) {
                 this.nomnimalZoomLevel = this.scaleLookup(this.center.zoom);
                 if (this.center.zoom >= 8 && oldValue !== newValue) {
-                    //console.log('requesting region list');
                     this.regionServices.loadRegionListByExtent(this.bounds.northEast.lng, this.bounds.southWest.lng, this.bounds.southWest.lat, this.bounds.northEast.lat);
                     if (!this.regionServices.selectedRegion) {
                         this.toaster.pop("info", "Information", "User input is needed to continue", 5000);
                     }
+                    if (this.center.zoom >= 9)
+                        this.studyArea.getStreamgages(this.bounds.southWest.lng, this.bounds.northEast.lng, this.bounds.southWest.lat, this.bounds.northEast.lat);
                 }
                 if (this.center.zoom < 8 && oldValue !== newValue) {
-                    //clear region list
                     this.regionServices.regionList = [];
                 }
                 if (this.center.zoom >= 15) {
@@ -1094,20 +1058,16 @@ var StreamStats;
                 }
             };
             MapController.prototype.updateRegion = function () {
-                //get regionkey
                 var key = (this.$locationService.search()).region;
                 this.setBoundsByRegion(key);
             };
             MapController.prototype.setBoundsByRegion = function (key) {
                 if (key && this.regionServices.loadRegionListByRegion(key)) {
-                    //console.log('in setBoundsByRegion selectedRegion gets set here');
                     this.regionServices.selectedRegion = this.regionServices.regionList[0];
                     this.bounds = this.leafletBoundsHelperService.createBoundsFromArray(this.regionServices.selectedRegion.Bounds);
-                    //this.center = <ICenter>{};
                 }
             };
             MapController.prototype.addRegionOverlayLayers = function (regionId) {
-                //console.log('in addRegionOverlayLayers');
                 if (this.regionServices.regionMapLayerList.length < 1)
                     return;
                 var layerList = [];
@@ -1120,7 +1080,10 @@ var StreamStats;
                     "format": "png8",
                     "f": "image"
                 });
-                //get any other layers specified in config
+                this.leafletData.getLayers("mainMap").then(function (maplayers) {
+                    maplayers.overlays[regionId + "_region"].bringToBack();
+                    maplayers.overlays.SSLayer.bringToFront();
+                });
                 var layers = this.regionServices.selectedRegion.Layers;
                 if (layers == undefined)
                     return;
@@ -1134,7 +1097,6 @@ var StreamStats;
                 var layeridList;
                 layeridList = this.getLayerIdsByID(name, this.layers.overlays, isPartial);
                 layeridList.forEach(function (item) {
-                    //console.log('removing map overlay layer: ', item);
                     delete _this.layers.overlays[item];
                 });
             };
@@ -1144,7 +1106,6 @@ var StreamStats;
                 var layeridList;
                 layeridList = this.getLayerIdsByID(name, this.markers, isPartial);
                 layeridList.forEach(function (item) {
-                    //console.log('removing map overlay layer: ', item);
                     delete _this.markers[item];
                 });
             };
@@ -1154,7 +1115,6 @@ var StreamStats;
                 var layeridList;
                 layeridList = this.getLayerIdsByID(name, this.geojson, isPartial);
                 layeridList.forEach(function (item) {
-                    //console.log('removing map overlay layer: ', item);
                     delete _this.geojson[item];
                 });
             };
@@ -1164,7 +1124,7 @@ var StreamStats;
                     if (layerObj[variable].hasOwnProperty("name") && (isPartial ? (layerObj[variable].name.indexOf(name) > -1) : (layerObj[variable].name === name))) {
                         layeridList.push(variable);
                     }
-                } //next variable
+                }
                 return layeridList;
             };
             MapController.prototype.getLayerIdsByID = function (id, layerObj, isPartial) {
@@ -1173,25 +1133,20 @@ var StreamStats;
                     if (isPartial ? (variable.indexOf(id) > -1) : (variable === id)) {
                         layeridList.push(variable);
                     }
-                } //next variable
+                }
                 return layeridList;
             };
             MapController.prototype.startDelineate = function (latlng, isInExclusionArea, excludeReason) {
-                //console.log('in startDelineate', latlng);
                 var studyArea = new StreamStats.Models.StudyArea(this.regionServices.selectedRegion.RegionID, new WiM.Models.Point(latlng.lat, latlng.lng, '4326'));
                 this.studyArea.AddStudyArea(studyArea);
                 this.studyArea.loadStudyBoundary();
-                //add disclaimer here
                 if (isInExclusionArea)
                     this.studyArea.selectedStudyArea.Disclaimers['isInExclusionArea'] = 'The delineation point is in an exclusion area. ' + excludeReason;
             };
-            //Constructor
-            //-+-+-+-+-+-+-+-+-+-+-+-
-            MapController.$inject = ['$scope', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack'];
+            MapController.$inject = ['$scope', '$compile', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack'];
             return MapController;
-        }()); //end class
+        }());
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.MapController', MapController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));
-})(StreamStats || (StreamStats = {})); //end module
-//# sourceMappingURL=MapController.js.map
+})(StreamStats || (StreamStats = {}));

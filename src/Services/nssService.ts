@@ -27,11 +27,12 @@ module StreamStats.Services {
     'use strict'
     export interface InssService {
         onSelectedStatisticsGroupChanged: WiM.Event.Delegate<WiM.Event.EventArgs>;
+        onQ10Loaded: WiM.Event.Delegate<WiM.Event.EventArgs>;
         statisticsGroupList: Array<IStatisticsGroup>;
         selectedStatisticsGroupList: Array<IStatisticsGroup>;
         loadStatisticsGroupTypes(rcode: string, regressionregion: string):Array<any>;
-        loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregion: string, percentWeights: any);
-        estimateFlows(studyAreaParameterList: Array<IParameter>, paramValueField: string, rcode: string, append?: boolean)
+        loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregion: string, percentWeights: any, regressionTypes?: string);
+        estimateFlows(studyAreaParameterList: Array<IParameter>, paramValueField: string, rcode: string, append?: boolean, regressionTypes?:string, showReport?:boolean)
         showBasinCharacteristicsTable: boolean;
         showFlowsTable: boolean;
         clearNSSdata();
@@ -107,6 +108,10 @@ module StreamStats.Services {
             return this._onSelectedStatisticsGroupChanged;
         }
 
+        private _onQ10Loaded: WiM.Event.Delegate<WiM.Event.EventArgs>;
+        public get onQ10Loaded(): WiM.Event.Delegate<WiM.Event.EventArgs> {
+            return this._onQ10Loaded;
+        }
 
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-loadingParametersByStatisticsGroupCounter
@@ -122,7 +127,7 @@ module StreamStats.Services {
         public estimateFlowsCounter: number;
         public isDone: boolean;
         public reportGenerated: boolean;
-        private modalService: Services.IModalService;   
+        private modalService: Services.IModalService;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -130,7 +135,8 @@ module StreamStats.Services {
             super($http, configuration.baseurls['NSS']);
             this.toaster = toaster;
             this.modalService = modal;
-            this._onSelectedStatisticsGroupChanged = new WiM.Event.Delegate<WiM.Event.EventArgs>();            
+            this._onSelectedStatisticsGroupChanged = new WiM.Event.Delegate<WiM.Event.EventArgs>();    
+            this._onQ10Loaded = new WiM.Event.Delegate<WiM.Event.EventArgs>();         
 
             this.clearNSSdata();
         }
@@ -202,7 +208,7 @@ module StreamStats.Services {
             return -1;
         }
 
-        public loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregions: string, percentWeights: any) {
+        public loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregions: string, percentWeights: any, regressionTypes?: string) {
 
             if (this.loadingParametersByStatisticsGroupCounter == 0) {
                 this.toaster.pop('wait', "Loading Parameters by Statistics Group", "Please wait...", 0); 
@@ -218,6 +224,9 @@ module StreamStats.Services {
                 url = url + "&extensions=QPPQ";
             } 
             url = url.format(rcode, statisticsGroupID, regressionregions);
+            if (regressionTypes != undefined) {
+                url += "&regressiontypes=" + regressionTypes;
+            }
 
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
 
@@ -232,20 +241,27 @@ module StreamStats.Services {
                     //check to make sure there is a valid response
                     if (response.data[0].regressionRegions[0].parameters && response.data[0].regressionRegions[0].parameters.length > 0) {
 
+                        //only for OH Water Use when user doesn't select a scenario
+                        if(this.selectedStatisticsGroupList.length == 0) {
+                            this.selectedStatisticsGroupList.push({'name': "", 'id': "7", 'code': "", 'regressionRegions': [], 'citations': null, 'disclaimers': ""})
+                        }
+
                         //add Regression Regions to StatisticsGroupList and add percent weights
                         this.selectedStatisticsGroupList.forEach((statGroup) => {
                             if ((response.data[0].statisticGroupID == statGroup.id) ||
-                                (this.regionservice.selectedRegion.Applications.indexOf("FDCTM") > -1 && statGroup.id.indexOf(response.data[0].statisticGroupID, 0) > -1)) {
+                                (this.regionservice.selectedRegion.Applications.indexOf("FDCTM") > -1 && typeof(statGroup.id) == 'string' && statGroup.id.indexOf(response.data[0].statisticGroupID, 0) > -1)) {
 
                                 statGroup['statisticGroupName'] = statGroup.name;
                                 statGroup['statisticGroupID'] = statGroup.id.toString().replace("_fdctm", "");
                                 
                                 response.data[0].regressionRegions.forEach((regressionRegion) => {
-                                    percentWeights.forEach((regressionRegionPercentWeight) => {
-                                        if (regressionRegionPercentWeight.code.indexOf(regressionRegion.code.toUpperCase()) > -1) {
-                                            regressionRegion["percentWeight"] = regressionRegionPercentWeight.percentWeight;                                            
-                                        }
-                                    })
+                                    if(percentWeights.length > 0) {
+                                        percentWeights.forEach((regressionRegionPercentWeight) => {
+                                            if (regressionRegionPercentWeight.code.indexOf(regressionRegion.code.toUpperCase()) > -1) {
+                                                regressionRegion["percentWeight"] = regressionRegionPercentWeight.percentWeight;                                            
+                                            }
+                                        })
+                                    }
                                 });
 
                                 statGroup.regressionRegions = response.data[0].regressionRegions;
@@ -268,7 +284,7 @@ module StreamStats.Services {
                 });
         }
 
-        public estimateFlows(studyAreaParameterList: Array<IParameter>, paramValueField:string, rcode: string, append:boolean = false) {
+        public estimateFlows(studyAreaParameterList: Array<IParameter>, paramValueField:string, rcode: string, append:boolean = false, regressionTypes?:string, showReport:boolean = true) {
 
             if (!this.canUpdate && !append) return;           
             //loop over all selected StatisticsGroups
@@ -280,7 +296,6 @@ module StreamStats.Services {
                 this.estimateFlowsCounter++;
                 this.cleanRegressionRegions(statGroup.regressionRegions);
 
-                //console.log('in estimate flows method for ', statGroup.name, statGroup);
                 statGroup.regressionRegions.forEach((regressionRegion) => {                    
                     regressionRegion.parameters.forEach((regressionParam) => {                        
                         studyAreaParameterList.forEach((param) => {
@@ -314,6 +329,11 @@ module StreamStats.Services {
                     
                     url = url + "&extensions=QPPQ";
                 }
+
+                if (regressionTypes != "" && regressionTypes != undefined) {
+                    url += "&regressiontypes=" + regressionTypes;
+                }
+
                 var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, 1, 'json', updatedScenarioObject);
 
                 statGroup.citations = [];
@@ -324,11 +344,12 @@ module StreamStats.Services {
 
                         //nested requests for citations
                         var citationUrl = response.data[0].links[0].href;
-                        if(!append) this.getSelectedCitations(citationUrl, statGroup);
+                        var regregionCheck = citationUrl.split("regressionregions=")[1];
+                        if(!append && regregionCheck && regregionCheck.length > 0) this.getSelectedCitations(citationUrl, statGroup);
 
                         //get header values
-                        if (response.headers()['usgswim-messages']) {
-                            var headerMsgs = response.headers()['usgswim-messages'].split(';');
+                        if (response.headers()['x-usgswim-messages']) {
+                            var headerMsgs = response.headers()['x-usgswim-messages'].split(';');
                             statGroup.disclaimers = {};
 
                             headerMsgs.forEach((item) => {
@@ -345,13 +366,22 @@ module StreamStats.Services {
                         //make sure there are some results
                         if (response.data[0].regressionRegions.length > 0 && response.data[0].regressionRegions[0].results && response.data[0].regressionRegions[0].results.length > 0) {
                             if (!append) {
-                                statGroup.regressionRegions = [];
-                                statGroup.regressionRegions = response.data[0].regressionRegions;
                                 response.data[0].regressionRegions.forEach((rr) => {
                                     if (rr.extensions) {
+                                        // update parameter options (gets removed during computation)
+                                        rr.extensions.forEach(e => {
+                                            var extension = statGroup.regressionRegions.filter(r => r.name == rr.name)[0].extensions.filter(ext => ext.code == e.code)[0];
+                                            e.parameters.forEach(p => {
+                                                p.options = extension.parameters.filter(param => param.code == p.code)[0].options;
+                                            })
+                                        })
+                                
                                         this.eventManager.RaiseEvent(Services.onScenarioExtensionResultsChanged, this, new NSSEventArgs(null, rr.extensions));
                                     }//end if
                                 });
+                                statGroup.regressionRegions = [];
+                                statGroup.regressionRegions = response.data[0].regressionRegions;
+                                
                             }
                             else {
                                 //loop over and append params
@@ -363,7 +393,7 @@ module StreamStats.Services {
                                         for (var i = 0; i < responseRegions.length; i++){
                                             if (responseRegions[i].id === rr.id) {
                                                 for (var j = 0; j < responseRegions[i].parameters.length; j++) {
-                                                    if (responseRegions[i].Parameters[j].code == p.Code) {
+                                                    if (responseRegions[i].Parameters[j].code == p.code) {
                                                         p[paramValueField] = responseRegions[i].parameters[j].value;
                                                     }
                                                 }//next j
@@ -407,20 +437,24 @@ module StreamStats.Services {
                             this.estimateFlowsCounter = 0;
                             this.canUpdate = true;
                             //move to nssService
-                            this.modalService.openModal(Services.SSModalType.e_report);
-                            this.reportGenerated = true;
-                        }//end if                       
-                        
+                            if(showReport) {
+                                this.modalService.openModal(Services.SSModalType.e_report);
+                                this.reportGenerated = true;
+                            }
+                        }//end if 
+                        //for OH WU only     
+                        //this.studyareaservice.selectedStudyArea.wateruseQ10 = this.selectedStatisticsGroupList[0].regressionRegions[0].results[0].value;
+                        this._onQ10Loaded.raise(null, WiM.Event.EventArgs.Empty);                 
                     });
             });
+
         }
 
         public getSelectedCitations(citationUrl: string, statGroup: any): any {
 
             ////nested requests for citations
-            //console.log('citations: ', citationUrl, statGroup, this.getSelectedCitationsCounter);
+            //console.log('citations: ', citationUrl, statGroup);
 
-            //temporary fix until I fix nssservicesv2 hypermedia
             var url;
             if (citationUrl.indexOf('https://') == -1) url = 'https://' + citationUrl;
             else url = citationUrl;
@@ -454,7 +488,7 @@ module StreamStats.Services {
                             result.push(
                                 {
                                     Name: name,
-                                    Region: regRegion.percentWeight ? regRegion.percentWeight.toFixed(0) + "% " + regRegion.name : regRegion.name,
+                                    Region: regRegion.percentWeight ? regRegion.percentWeight.toFixed(1) + "% " + regRegion.name : regRegion.name,
                                     Statistic: regResult.name,
                                     Code: regResult.code,
                                     Value: regResult.value.toUSGSvalue(),
