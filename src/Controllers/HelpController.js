@@ -1,6 +1,3 @@
-//------------------------------------------------------------------------------
-//----- Help ---------------------------------------------------------------
-//------------------------------------------------------------------------------
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -19,12 +16,12 @@ var StreamStats;
     var Controllers;
     (function (Controllers) {
         'use string';
-        var FreshdeskTicketData = /** @class */ (function () {
+        var FreshdeskTicketData = (function () {
             function FreshdeskTicketData() {
             }
             return FreshdeskTicketData;
         }());
-        var HelpController = /** @class */ (function (_super) {
+        var HelpController = (function (_super) {
             __extends(HelpController, _super);
             function HelpController($scope, $http, $sce, studyAreaService, modal, Upload) {
                 var _this = _super.call(this, $http, '') || this;
@@ -42,8 +39,6 @@ var StreamStats;
                 _this.init();
                 return _this;
             }
-            //Methods  
-            //-+-+-+-+-+-+-+-+-+-+-+-
             HelpController.prototype.Close = function () {
                 this.showSuccessAlert = false;
                 this.modalInstance.dismiss('cancel');
@@ -54,13 +49,6 @@ var StreamStats;
                     return;
                 var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.CreateTicket;
                 var formdata = new FormData();
-                //for (var key in this.freshdeskTicketData) {
-                //    formdata.append(key, this.freshdeskTicketData[key]);
-                //}
-                /*  TESTING DATA  */
-                //formdata.append('helpdesk_ticket[description]', 'sample description');
-                //formdata.append('helpdesk_ticket[email]', 'demo@freshdesk.com');
-                //formdata.append('helpdesk_ticket[subject]', 'Test subject');
                 formdata.append('helpdesk_ticket[email]', this.freshdeskTicketData.email);
                 formdata.append('helpdesk_ticket[subject]', this.freshdeskTicketData.subject);
                 formdata.append('helpdesk_ticket[description]', this.freshdeskTicketData.description);
@@ -69,7 +57,6 @@ var StreamStats;
                 formdata.append('helpdesk_ticket[custom_field][server_' + configuration.SupportTicketService.AccountID + ']', this.Server);
                 formdata.append('helpdesk_ticket[custom_field][browser_' + configuration.SupportTicketService.AccountID + ']', this.Browser);
                 formdata.append('helpdesk_ticket[custom_field][softwareversion_' + configuration.SupportTicketService.AccountID + ']', this.AppVersion);
-                //can loop over an opject and keep appending attachments here
                 if (this.freshdeskTicketData.attachment)
                     formdata.append('helpdesk_ticket[attachments][][resource]', this.freshdeskTicketData.attachment, this.freshdeskTicketData.attachment.name);
                 var headers = {
@@ -79,13 +66,9 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', formdata, headers, angular.identity);
                 this.submittingSupportTicket = true;
                 this.Execute(request).then(function (response) {
-                    //console.log('Successfully submitted help ticket: ', response);
-                    //clear out fields
                     _this.freshdeskTicketData = new FreshdeskTicketData();
-                    //show user feedback
                     _this.showSuccessAlert = true;
                 }, function (error) {
-                    //sm when error
                 }).finally(function () {
                     _this.submittingSupportTicket = false;
                 });
@@ -121,8 +104,6 @@ var StreamStats;
                     return;
                 this.selectedHelpTabName = tabname;
             };
-            //Helper Methods
-            //-+-+-+-+-+-+-+-+-+-+-+-
             HelpController.prototype.init = function () {
                 var _this = this;
                 this.getBrowser();
@@ -143,33 +124,23 @@ var StreamStats;
                     this.Server = '';
             };
             HelpController.prototype.getBrowser = function () {
-                //modified from https://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browser
-                // Opera 8.0+
                 if ((!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0)
                     this.Browser = "Opera";
-                // Firefox 1.0+
                 if (typeof InstallTrigger !== 'undefined')
                     this.Browser = "Firefox";
-                // At least Safari 3+: "[object HTMLElementConstructor]"
                 if (Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0)
                     this.Browser = "Safari";
-                // Chrome 1+
                 if (!!window.chrome && !!window.chrome.webstore)
                     this.Browser = "Chrome";
-                // Edge 20+
-                if (!( /*@cc_on!@*/false || !!document.documentMode) && !!window.StyleMedia)
+                if (!(false || !!document.documentMode) && !!window.StyleMedia)
                     this.Browser = "Edge";
-                // Internet Explorer 6-11
-                if ( /*@cc_on!@*/false || !!document.documentMode)
+                if (false || !!document.documentMode)
                     this.Browser = "IE";
             };
-            //Constructor
-            //-+-+-+-+-+-+-+-+-+-+-+-
             HelpController.$inject = ['$scope', '$http', '$sce', 'StreamStats.Services.StudyAreaService', '$modalInstance', 'Upload'];
             return HelpController;
-        }(WiM.Services.HTTPServiceBase)); //end  class
+        }(WiM.Services.HTTPServiceBase));
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.HelpController', HelpController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));
-})(StreamStats || (StreamStats = {})); //end module 
-//# sourceMappingURL=HelpController.js.map
+})(StreamStats || (StreamStats = {}));

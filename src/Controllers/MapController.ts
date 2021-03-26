@@ -22,7 +22,7 @@
 //Comments
 //04.15.2015 jkn - Created
 
-//Imports"
+//Imports
 module StreamStats.Controllers {
 
     declare var turf;
@@ -78,6 +78,11 @@ module StreamStats.Controllers {
     interface IMapControllerScope extends ng.IScope {
         vm: MapController;
     }
+
+    interface IMapControllerCompile extends ng.ICompileService {
+        vm: MapController;
+    }
+
 
     class MapPoint implements IMapPoint {
         lat: number;
@@ -185,8 +190,8 @@ module StreamStats.Controllers {
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack'];
-        constructor(public $scope: IMapControllerScope, toaster, $analytics, $location: ng.ILocationService, $stateParams, leafletBoundsHelper: any, leafletData: ILeafletData, search: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, exploration: Services.IExplorationService, private _prosperServices: Services.IProsperService, eventManager: WiM.Event.IEventManager, private modal: Services.IModalService, private modalStack: ng.ui.bootstrap.IModalStackService) {
+        static $inject = ['$scope', '$compile', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack'];
+        constructor(public $scope: IMapControllerScope, public $compile: IMapControllerCompile, toaster, $analytics, $location: ng.ILocationService, $stateParams, leafletBoundsHelper: any, leafletData: ILeafletData, search: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, exploration: Services.IExplorationService, private _prosperServices: Services.IProsperService, eventManager: WiM.Event.IEventManager, private modal: Services.IModalService, private modalStack: ng.ui.bootstrap.IModalStackService) {
             $scope.vm = this;
             
             this.toaster = toaster;
@@ -277,7 +282,7 @@ module StreamStats.Controllers {
 
                 //check if in elevation profile mode
                 if (this.explorationService.drawElevationProfile) return; 
-                if (this.studyArea.doQueryNWIS) {
+                if (this.studyArea.doSelectMapGage) {
                     this.studyArea.queryNWIS(args.leafletEvent.latlng);
                     return;
                 }
@@ -372,6 +377,13 @@ module StreamStats.Controllers {
                     return elem.code;
                 }).join(","));
             });
+
+            //watch for streamgages layer
+            $scope.$watch(() => this.studyArea.streamgageLayer, (newval, oldval) => {
+                if (newval != oldval) {
+                    this.addGeoJSON('streamgages', newval)
+                }
+            })
         }
 
         //Methods
@@ -419,6 +431,12 @@ module StreamStats.Controllers {
             //check if this bounds is outside of project bound, if so set proj extent
             //this.bounds = this.leafletBoundsHelperService.createBoundsFromArray(this._prosperServices.projectExtent);
         }
+        public openGagePage(siteid: string): void {
+            console.log('gage page id:', siteid)
+            this.modal.openModal(Services.SSModalType.e_gagepage, { 'siteid':siteid });
+        }
+
+
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         private init(): void { 
@@ -528,7 +546,8 @@ module StreamStats.Controllers {
                                 maplayers.overlays[lyr].query().nearby(evt.latlng, 4).returnGeometry(false).run((error: any, results: any) => this.handleQueryResult(lyr, error, results, map, evt.latlng))
                                 break;
                             default://agsDynamic
-                                maplayers.overlays[lyr].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).run((error: any, results: any) => this.handleQueryResult(lyr, error, results, map, evt.latlng))
+                                var saveLayerName = lyr; // need to save layer name, or it sometimes doesn't send the correct layer in the handleQueryResult function
+                                maplayers.overlays[lyr].identify().on(map).at(evt.latlng).returnGeometry(false).tolerance(5).run((error: any, results: any) => this.handleQueryResult(saveLayerName, error, results, map, evt.latlng))
                                 
                         }
                         this.queryContent.requestCount++;        
@@ -540,42 +559,52 @@ module StreamStats.Controllers {
             var querylayers = $("<div>").attr("id", lyr).appendTo(this.queryContent.Content);
             this.queryContent.requestCount--;
             results.features.forEach((queryResult) => {
-                this.layers.overlays[lyr].layerArray.forEach((item) => {
-                    if (item.layerId !== queryResult.layerId) return;
-                    if (["StreamGrid", "ExcludePolys", "Region", "Subregion", "Basin", "Subbasin", "Watershed", "Subwatershed"].indexOf(item.layerName) > -1) return;                    
-                    querylayers.append('<h5>' + item.layerName + '</h5>');
-                    this.queryContent.responseCount++;
-                    //report ga event
-                    this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'queryPoints' });
-
-                    //show only specified fields (if applicable)
-                    if (this.layers.overlays[lyr].hasOwnProperty("queryProperties") && this.layers.overlays[lyr].queryProperties.hasOwnProperty(item.layerName)) {
-                        let queryProperties = this.layers.overlays[lyr].queryProperties[item.layerName];
-                        Object.keys(queryProperties).map(k => {
-                            if (item.layerName == "Streamgages" && k == "FeatureURL") {
-                                var siteNo = queryResult.properties[k].split('site_no=')[1];
-                                var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm'
-                                querylayers.append('<strong>NWIS page: </strong><a href="' + queryResult.properties[k] + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br>');
-                                this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'streamgageQuery' });
-                            }
-                            else {
-                                querylayers.append('<strong>' + queryProperties[k] + ': </strong>' + queryResult.properties[k] + '</br>');
-                            }
-                        });
-                    }
-                    else {//show all fields
-                        angular.forEach(queryResult.properties, function (value, key) {
-                            querylayers.append('<strong>' + key + ': </strong>' + value + '</br>');
-                        });
-                    }
-                });
+                if (this.layers.overlays[lyr].hasOwnProperty('layerArray')) {
+                    this.layers.overlays[lyr].layerArray.forEach((item) => {
+                        if (item.layerId !== queryResult.layerId) return;
+                        if (["StreamGrid", "ExcludePolys", "Region", "Subregion", "Basin", "Subbasin", "Watershed", "Subwatershed"].indexOf(item.layerName) > -1) return;                
+                        querylayers.append('<h5>' + item.layerName + '</h5>');
+                        this.queryContent.responseCount++;
+                        //report ga event
+                        this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'queryPoints' });
+    
+                        //show only specified fields (if applicable)
+                        if (this.layers.overlays[lyr].hasOwnProperty("queryProperties") && this.layers.overlays[lyr].queryProperties.hasOwnProperty(item.layerName)) {      
+                            let queryProperties = this.layers.overlays[lyr].queryProperties[item.layerName];
+                            Object.keys(queryProperties).map(k => {
+                                if (item.layerName == "Streamgages" && k == "FeatureURL") {
+    
+                                    var siteNo = queryResult.properties[k].split('site_no=')[1];
+                                    var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm'
+                                    var SSgagepageNew = "vm.openGagePage('" + siteNo + "')";
+                                    var html = '<strong>NWIS page: </strong><a href="' + queryResult.properties[k] + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br><strong>New StreamStats Gage Modal: </strong><a ng-click="' + SSgagepageNew + '">link</a></br>';
+    
+                                    querylayers.append(html);
+                                    this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'streamgageQuery' });
+                                }
+                                else {
+                                    querylayers.append('<strong>' + queryProperties[k] + ': </strong>' + queryResult.properties[k] + '</br>');
+                                }
+                            });
+                        }
+                        else {//show all fields
+                            angular.forEach(queryResult.properties, function (value, key) {
+                                querylayers.append('<strong>' + key + ': </strong>' + value + '</br>');
+                            });
+                        }
+                    });
+                }
             });
 
             if (this.queryContent.requestCount < 1) {
                 this.toaster.clear();
                 this.cursorStyle = 'pointer';
                 if (this.queryContent.responseCount > 0) {
-                    map.openPopup(this.queryContent.Content.html(), [latlng.lat, latlng.lng], { maxHeight: 200 });
+
+                    var html = this.queryContent.Content.html();
+                    var compiledHtml = this.$compile(html)(this.$scope);
+
+                    map.openPopup(compiledHtml[0], [latlng.lat, latlng.lng], { maxHeight: 200 });
                 }
                 else {
                     this.toaster.pop("warning", "Information", "No points were found at this location", 5000);
@@ -907,13 +936,6 @@ module StreamStats.Controllers {
 
         private basinEditor() {
 
-            var basinCopyGeoJSON = angular.fromJson(angular.toJson(this.geojson['globalwatershed'].data));
-
-            //attempt to remove single cell pinched polygon ends
-            basinCopyGeoJSON.geometry.coordinates = basinCopyGeoJSON.geometry.coordinates.filter(function (item) {
-                return item.length > 5;
-            });
-
             this.leafletData.getMap("mainMap").then((map: any) => {
                 this.leafletData.getLayers("mainMap").then((maplayers: any) => {
 
@@ -926,56 +948,72 @@ module StreamStats.Controllers {
                     //listen for end of draw
                     map.on('draw:created', (e) => {
 
+                        //turn off the listener, we now have a shape
                         map.removeEventListener('draw:created');
 
+                        //convert edit item into geoJSON so we can temporarily store it
                         var editLayer = e.layer;
                         drawnItems.addLayer(editLayer);
-
-                        var sourcePolygon = basinCopyGeoJSON;
                         var clipPolygon = editLayer.toGeoJSON();
 
+                        //console.log('finish draw:', clipPolygon)
+                        
                         if (this.studyArea.drawControlOption == 'add') {
 
-                            this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'addArea' });
+                            if (this.checkEditIntersects('adds', clipPolygon)) {
+                                this.toaster.pop("warning", "Warning", "Overlapping add and remove edit areas are not allowed", 5000);
+                            }
 
-                            //console.log('sourcePolygon:', sourcePolygon);
-                            var editPolygon = turf.union(sourcePolygon, clipPolygon)
+                            else{
+                                this.addGeoJSON('adds', clipPolygon);
+                                this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'addArea' });
+                                this.studyArea.WatershedEditDecisionList.append.push(clipPolygon);
+                            }
 
-                            this.studyArea.WatershedEditDecisionList.append.push(clipPolygon);
-                            //this.studyArea.Disclaimers['isEdited'] = true;
                         }
 
                         if (this.studyArea.drawControlOption == 'remove') {
 
-                            this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'removeArea' });
-
-                            //console.log('remove layer', layer.toGeoJSON());
-                            var editPolygon = turf.difference(sourcePolygon, clipPolygon);
-
-                            //check for split polygon
-                            //console.log('editPoly', editPolygon.length);
-                            if (editPolygon.geometry.coordinates.length == 2) {
-                                alert('Splitting polygons is not permitted');
-                                drawnItems.clearLayers();
-                                return;
+                            if (this.checkEditIntersects('removes', clipPolygon)) {
+                                this.toaster.pop("warning", "Warning", "Overlapping add and remove edit areas are not allowed", 5000);
                             }
 
-                            this.studyArea.WatershedEditDecisionList.remove.push(clipPolygon);
-                            //this.studyArea.Disclaimers['isEdited'] = true;
+                            else{
+                                this.addGeoJSON('removes', clipPolygon);
+                                this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'removeArea' });
+                                this.studyArea.WatershedEditDecisionList.remove.push(clipPolygon);
+                            }
+
                         }
 
-                        //set studyArea basin to new edited polygon
-                        basinCopyGeoJSON.geometry.coordinates = editPolygon.geometry.coordinates;
-                        //editPolygon.geometry.coordinates.forEach((item) => { basin.geometry.coordinates[0].push([item[1], item[0]]) });
-                        //console.log('edited basin', basinCopyGeoJSON);
-                        
-                        //show new polygon
-                        this.geojson['globalwatershed'].data = editPolygon;
                         drawnItems.clearLayers();
-                        //console.log('editedAreas', angular.toJson(this.studyArea.WatershedEditDecisionList));
                     });
                 });
             });
+        }
+
+        private checkEditIntersects(editType, editPolygon){
+
+            var found = false;
+            var oppositeEditType;
+
+            (editType === 'adds') ? oppositeEditType = 'removes': oppositeEditType = 'adds';
+
+            //console.log('checking edit intersections:', editType, oppositeEditType)
+
+            //first check if we have both adds and removes we need to check for intersections
+            if (this.geojson.hasOwnProperty(oppositeEditType)) {
+
+                //check for intersections
+                this.geojson[oppositeEditType].data.features.forEach(function(layer){
+                    var intersection = turf.intersect(editPolygon, layer);
+                    if(intersection!=undefined){
+                        found = true;
+                    }
+                });
+            }
+
+            return found;
         }
         
         private canSelectExplorationTool(methodval: Services.ExplorationMethodType): boolean {            
@@ -1096,6 +1134,7 @@ module StreamStats.Controllers {
                     );
             });
         }
+
         private onSelectedRegionChanged() {
             //console.log('in onselected region changed', this.regionServices.regionList, this.regionServices.selectedRegion);
             if (!this.regionServices.selectedRegion) return;
@@ -1150,6 +1189,7 @@ module StreamStats.Controllers {
             }
             
         }
+
         private AddProsperLayer( id:number) {
             this.layers.overlays["prosper"+id] = new Layer("Prosper Layer", configuration.baseurls['ScienceBase'] + configuration.queryparams['ProsperPredictions'],
                 "agsDynamic", true, {
@@ -1159,14 +1199,16 @@ module StreamStats.Controllers {
                     "f": "image"
                 });
         }
+        
         private removeGeoJson(layerName: string = "") {
             for (var k in this.geojson) {
-                if (typeof this.geojson[k] !== 'function') {
+                if (typeof this.geojson[k] !== 'function' && k != 'streamgages') {
                     delete this.geojson[k];
                     this.eventManager.RaiseEvent(WiM.Directives.onLayerRemoved, this, new WiM.Directives.LegendLayerRemovedEventArgs(k, "geojson")); 
                 }
             }
         }
+
         private addGeoJSON(LayerName: string, feature: any) {
 
             if (LayerName == 'globalwatershed') {                
@@ -1274,6 +1316,113 @@ module StreamStats.Controllers {
                     }
             }
 
+            else if (LayerName == 'adds') {
+
+                //if it already exists just add the polygon
+                if (this.geojson.hasOwnProperty(LayerName)) {
+                    this.geojson[LayerName].data.features.push(feature);
+                }
+        
+                else {
+                    this.geojson[LayerName] =
+                    {
+                        data: {
+                            "type": "FeatureCollection",
+                            "features": [feature]
+                        },
+                        visible: true,
+                        style: {
+                            displayName: LayerName,
+                            fillColor: "green",
+                            color: 'green'
+                        }                 
+                    }
+                }
+
+            }
+
+
+            else if (LayerName == 'removes') {
+
+                //if it already exists just add the polygon
+                if (this.geojson.hasOwnProperty(LayerName)) {
+                    this.geojson[LayerName].data.features.push(feature);
+                }
+        
+                else {
+                    this.geojson[LayerName] =
+                    {
+                        data: {
+                            "type": "FeatureCollection",
+                            "features": [feature]
+                        },
+                        visible: true,
+                        style: {
+                            displayName: LayerName,
+                            fillColor: "red",
+                            color: 'red'
+                        }                 
+                    }
+                } 
+            }
+            else if (LayerName == 'streamgages') {
+                var self = this;
+
+                this.geojson[LayerName] = {
+                    data: feature,
+                    style: {
+                        displayName: 'Streamgages'
+                    },
+                    onEachFeature: function (feature, layer) {
+                        var siteNo = feature.properties['Code'];
+                        var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm';
+                        var NWISpage = 'http://nwis.waterdata.usgs.gov/nwis/inventory/?site_no=' + siteNo;
+                        var gageButtonDiv = L.DomUtil.create('div', 'testDiv');
+
+                        gageButtonDiv.innerHTML = '<strong>Station ID: </strong>' + siteNo + '</br><strong>Station Name: </strong>' + feature.properties['Name'] + '</br><strong>Latitude: </strong>' + feature.geometry.coordinates[1] + '</br><strong>Longitude: </strong>' + feature.geometry.coordinates[0] + '</br><strong>Station Type</strong>: ' + feature.properties.StationType.name +
+                            '</br><strong>NWIS page: </strong><a href="' + NWISpage + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br><strong>New StreamStats Gage Modal: </strong><a id="gagePageLink" class="' + siteNo + '">link</a><br>';
+
+                        layer.bindPopup(gageButtonDiv);
+                        var styling = configuration.overlayedLayers['SSLayer'].layerArray[0].legend.filter(function (item) {
+                            return item.label.toLowerCase() == feature.properties.StationType.name.toLowerCase();
+                        })[0];
+                        if (styling == undefined) {
+                            styling = configuration.overlayedLayers['SSLayer'].layerArray[0].legend.filter(function (item) {
+                                return item.label == 'Unknown'; // better way to do this?
+                            })[0]
+                        }
+
+                        var icon = L.icon({
+                            iconUrl: 'data:image/png;base64,' + styling.imageData,
+                            iconSize: [15, 16],
+                            iconAnchor: [7.5, 8],
+                            popupAnchor: [0, -11],
+                        })
+                        layer.setIcon(icon);
+
+                        L.DomEvent.on(gageButtonDiv, 'click', (event) => {
+                            const id = event.target['id'];
+                            if (id === 'gagePageLink') {
+                                self.openGagePage(siteNo);
+                            }
+                        })
+
+                        layer.on('mouseover', function(e) {
+                            if (self.studyArea.doSelectMapGage) this.openPopup();
+                        });
+
+                        layer.on('click', function(e) {
+                            // need to select gage if that's the question
+                            if (self.studyArea.doSelectMapGage) {
+                                self.studyArea.selectGage(feature);
+                                self.studyArea.doSelectMapGage = false;
+                            }
+                            else this.openPopup();
+                        })
+
+                    }
+                }
+            }
 
             //additional features get generic styling for now
             else {
@@ -1283,8 +1432,8 @@ module StreamStats.Controllers {
                         visible: true,
                         style: {
                             displayName: LayerName,
-                            fillColor: "red",
-                            color: 'red'
+                            fillColor: "blue",
+                            color: 'blue'
                         }                 
                     }
             }
@@ -1336,6 +1485,8 @@ module StreamStats.Controllers {
                 if (!this.regionServices.selectedRegion) {
                     this.toaster.pop("info", "Information", "User input is needed to continue", 5000);
                 }
+
+                if (this.center.zoom >= 9) this.studyArea.getStreamgages(this.bounds.southWest.lng, this.bounds.northEast.lng, this.bounds.southWest.lat, this.bounds.northEast.lat);
             }
 
             if (this.center.zoom < 8 && oldValue !== newValue) {
@@ -1386,6 +1537,12 @@ module StreamStats.Controllers {
                     "format": "png8",
                     "f": "image"
                 });
+
+            //bring streamgages (all national layers) to front
+            this.leafletData.getLayers("mainMap").then((maplayers: any) => { 
+                maplayers.overlays[regionId + "_region"].bringToBack();
+                maplayers.overlays.SSLayer.bringToFront();
+            });
             
             //get any other layers specified in config
             var layers = this.regionServices.selectedRegion.Layers;

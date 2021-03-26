@@ -1,6 +1,3 @@
-//------------------------------------------------------------------------------
-//----- NavbarController ------------------------------------------------------
-//------------------------------------------------------------------------------
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -14,26 +11,12 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-//-------1---------2---------3---------4---------5---------6---------7---------8
-//       01234567890123456789012345678901234567890123456789012345678901234567890
-//-------+---------+---------+---------+---------+---------+---------+---------+
-// copyright:   2014 WiM - USGS
-//    authors:  Jeremy K. Newson USGS Wisconsin Internet Mapping
-//   purpose:  
-//discussion:   Controllers are typically built to reflect a View. 
-//              and should only contailn business logic needed for a single view. For example, if a View 
-//              contains a ListBox of objects, a Selected object, and a Save button, the Controller 
-//              will have an ObservableCollection ObectList, 
-//              Model SelectedObject, and SaveCommand.
-//Comments
-//04.14.2015 jkn - Created
-//Imports"
 var StreamStats;
 (function (StreamStats) {
     var Controllers;
     (function (Controllers) {
         'use strict';
-        var NavbarController = /** @class */ (function (_super) {
+        var NavbarController = (function (_super) {
             __extends(NavbarController, _super);
             function NavbarController($scope, $http, modal, studyArea) {
                 var _this = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
@@ -46,8 +29,6 @@ var StreamStats;
                 _this.cloud = configuration.cloud;
                 return _this;
             }
-            //Methods
-            //-+-+-+-+-+-+-+-+-+-+-+-
             NavbarController.prototype.checkActiveNews = function () {
                 var _this = this;
                 console.log("Checking for active news articles");
@@ -60,7 +41,6 @@ var StreamStats;
                     console.log('Successfully retrieved active news articles page');
                     if (response.data.folder.articles.length > 0) {
                         response.data.folder.articles.forEach(function (article) {
-                            //check if a cookie exists for this article;
                             if (_this.readCookie(article.id) == null) {
                                 console.log('New news article found: ', article);
                                 _this.newArticleCount += 1;
@@ -71,7 +51,6 @@ var StreamStats;
                             _this.modalService.openModal(StreamStats.Services.SSModalType.e_about, { "tabName": "news", "regionID": '' });
                     }
                 }, function (error) {
-                    //sm when error
                 }).finally(function () {
                 });
             };
@@ -84,8 +63,6 @@ var StreamStats;
             NavbarController.prototype.openHelp = function () {
                 this.modalService.openModal(StreamStats.Services.SSModalType.e_help);
             };
-            //Helper Methods
-            //-+-+-+-+-+-+-+-+-+-+-+-
             NavbarController.prototype.readCookie = function (name) {
                 var nameEQ = name + "=";
                 var ca = document.cookie.split(';');
@@ -108,13 +85,10 @@ var StreamStats;
                     var expires = "";
                 document.cookie = name + "=" + value + expires + "; path=/";
             };
-            //Constructor
-            //-+-+-+-+-+-+-+-+-+-+-+-
             NavbarController.$inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.StudyAreaService'];
             return NavbarController;
-        }(WiM.Services.HTTPServiceBase)); //end class
+        }(WiM.Services.HTTPServiceBase));
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.NavbarController', NavbarController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));
-})(StreamStats || (StreamStats = {})); //end module
-//# sourceMappingURL=Navbarcontroller.js.map
+})(StreamStats || (StreamStats = {}));

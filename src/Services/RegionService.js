@@ -1,6 +1,3 @@
-//------------------------------------------------------------------------------
-//----- RegionService -----------------------------------------------------
-//------------------------------------------------------------------------------
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -14,45 +11,26 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-//-------1---------2---------3---------4---------5---------6---------7---------8
-//       01234567890123456789012345678901234567890123456789012345678901234567890
-//-------+---------+---------+---------+---------+---------+---------+---------+
-// copyright:   2015 WiM - USGS
-//    authors:  Jeremy K. Newson USGS Wisconsin Internet Mapping
-//             
-// 
-//   purpose:  The service agent is responsible for initiating service calls, 
-//             capturing the data that's returned and forwarding the data back to 
-//             the Controller.
-//          
-//discussion:
-//
-//https://docs.angularjs.org/api/ng/service/$http
-//Comments
-//03.26.2015 jkn - Created
-//Import
 var StreamStats;
 (function (StreamStats) {
     var Services;
     (function (Services) {
         'use strict';
-        var Region = /** @class */ (function () {
+        var Region = (function () {
             function Region() {
             }
             return Region;
-        }()); //end class
+        }());
         Services.Region = Region;
-        var Parameter = /** @class */ (function () {
+        var Parameter = (function () {
             function Parameter() {
             }
             return Parameter;
-        }()); //end class
+        }());
         Services.Parameter = Parameter;
         Services.onSelectedRegionChanged = "onSelectedRegionChanged";
-        var RegionService = /** @class */ (function (_super) {
+        var RegionService = (function (_super) {
             __extends(RegionService, _super);
-            //Constructor
-            //-+-+-+-+-+-+-+-+-+-+-+-
             function RegionService($http, $q, toaster, eventManager) {
                 var _this = _super.call(this, $http, configuration.baseurls['StreamStatsServices']) || this;
                 _this.$q = $q;
@@ -78,10 +56,7 @@ var StreamStats;
                 enumerable: true,
                 configurable: true
             });
-            //Methods
-            //-+-+-+-+-+-+-+-+-+-+-+-
             RegionService.prototype.clearRegion = function () {
-                //console.log('in clear region');
                 this.regionList = [];
                 this.parameterList = [];
                 this.regionMapLayerList = [];
@@ -95,8 +70,6 @@ var StreamStats;
                     delete parameter.value;
                 });
             };
-            //intersect method modified from
-            //https://stackoverflow.com/questions/2752349/fast-rectangle-to-rectangle-intersection
             RegionService.prototype.intersect = function (a, b) {
                 return Math.max(a.left, b.left) < Math.min(a.right, b.right) && Math.min(a.top, b.top) > Math.max(a.bottom, b.bottom);
             };
@@ -113,7 +86,7 @@ var StreamStats;
                 });
             };
             RegionService.prototype.loadRegionListByRegion = function (regionid) {
-                this.regionList.length = 0; //clear array;
+                this.regionList.length = 0;
                 var selectedRegion = this.getRegion(regionid);
                 if (selectedRegion == null)
                     return false;
@@ -122,7 +95,6 @@ var StreamStats;
             };
             RegionService.prototype.loadMapLayersByRegion = function (regionid) {
                 var _this = this;
-                //console.log('in loadMapLayersByRegion');
                 this.regionMapLayerListLoaded = false;
                 var url = configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['SSStateLayers'] + '?f=pjson';
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
@@ -132,21 +104,13 @@ var StreamStats;
                         _this.toaster.pop('warning', "No map layers available", "", 5000);
                         return;
                     }
-                    //console.log('layers:', response.data.layers);
-                    //set initial visibility array
                     response.data.layers.forEach(function (value, key) {
                         var visible = false;
                         if (value.name == regionid) {
-                            //console.log('MATCH FOUND:', value.subLayerIds)
                             value.subLayerIds.forEach(function (sublayer, sublayerkey) {
-                                //console.log('here',sublayer,sublayerkey)
                                 _this.regionMapLayerList.push([response.data.layers[sublayer].name, response.data.layers[sublayer].id, visible]);
                             });
                         }
-                        //if (value.name.toLowerCase() == 'stream grid' || value.name.toLowerCase() == 'area of limited functionality') {
-                        //    visible = true
-                        //};
-                        //this.regionMapLayerList.push([value.name, value.id, visible]);
                     });
                     _this.regionMapLayerListLoaded = true;
                 }, function (error) {
@@ -157,13 +121,11 @@ var StreamStats;
             };
             RegionService.prototype.loadParametersByRegion = function () {
                 var _this = this;
-                //console.log('in load parameters', this.selectedRegion);
                 if (!this.selectedRegion)
                     return;
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSAvailableParams'].format(this.selectedRegion.RegionID);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
-                    //console.log(response);
                     if (response.data.parameters && response.data.parameters.length > 0) {
                         _this.streamStatsAvailable = true;
                         response.data.parameters.forEach(function (parameter) {
@@ -176,32 +138,26 @@ var StreamStats;
                                 alert(e);
                             }
                         });
-                        //sort the list by code
                         _this.parameterList.sort(function (a, b) { return (a.code > b.code) ? 1 : ((b.code > a.code) ? -1 : 0); });
                     }
                     else {
                         _this.streamStatsAvailable = false;
                         _this.toaster.pop('warning', "StreamStats not available here at this time", "", 5000);
                     }
-                    //sm when complete
                 }, function (error) {
                     console.log('Bad response from the regression service');
                     _this.streamStatsAvailable = false;
                     _this.toaster.pop('warning', "StreamStats not available here at this time", "", 5000);
-                    //sm when complete
                 }).finally(function () { });
             };
-            //HelperMethods
-            //-+-+-+-+-+-+-+-+-+-+-+-
             RegionService.prototype.getRegion = function (lookupID) {
                 var regionArray = configuration.regions;
                 try {
-                    //search for item
                     for (var i = 0; i < regionArray.length; i++) {
                         if (regionArray[i].Name.toUpperCase().trim() === lookupID.toUpperCase().trim() ||
                             regionArray[i].RegionID.toUpperCase().trim() === lookupID.toUpperCase().trim())
                             return regionArray[i];
-                    } //next region
+                    }
                     return null;
                 }
                 catch (e) {
@@ -209,7 +165,7 @@ var StreamStats;
                 }
             };
             return RegionService;
-        }(WiM.Services.HTTPServiceBase)); //end class
+        }(WiM.Services.HTTPServiceBase));
         factory.$inject = ['$http', '$q', 'toaster', 'WiM.Event.EventManager'];
         function factory($http, $q, toaster, eventManager) {
             return new RegionService($http, $q, toaster, eventManager);
@@ -217,5 +173,4 @@ var StreamStats;
         angular.module('StreamStats.Services')
             .factory('StreamStats.Services.RegionService', factory);
     })(Services = StreamStats.Services || (StreamStats.Services = {}));
-})(StreamStats || (StreamStats = {})); //end module 
-//# sourceMappingURL=RegionService.js.map
+})(StreamStats || (StreamStats = {}));
