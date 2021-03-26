@@ -186,7 +186,9 @@ module StreamStats.Services {
 
                 }, (error) => {
                     //sm when complete
-                    this.toaster.pop('error', "There was an HTTP error querying coordinated reach", "Please retry", 0);
+                    this.CanQuery = false;
+                    this.toaster.clear();
+                    this.toaster.pop('error', "There was an error requesting available prosper predictions.", "Please retry", 0);
                 });
 
 

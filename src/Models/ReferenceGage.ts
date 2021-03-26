@@ -41,6 +41,7 @@ module StreamStats.Models {
         public Longitude_DD: number;
         public URL: string;
         public correlation: number;
+        public properties?: any;
 
 
         // Constructor

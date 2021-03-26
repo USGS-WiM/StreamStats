@@ -1,6 +1,3 @@
-//------------------------------------------------------------------------------
-//----- nssService -----------------------------------------------------
-//------------------------------------------------------------------------------
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -14,37 +11,20 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-//-------1---------2---------3---------4---------5---------6---------7---------8
-//       01234567890123456789012345678901234567890123456789012345678901234567890
-//-------+---------+---------+---------+---------+---------+---------+---------+
-// copyright:   2015 WiM - USGS
-//    authors:  Jeremy K. Newson USGS Wisconsin Internet Mapping
-//             
-// 
-//   purpose:  The service agent is responsible for initiating service calls, 
-//             capturing the data that's returned and forwarding the data back to 
-//             the Controller.
-//          
-//discussion:
-//
-//https://docs.angularjs.org/api/ng/service/$http
-//Comments
-//06.16.2015 mjs - Created
-//Import
 var StreamStats;
 (function (StreamStats) {
     var Services;
     (function (Services) {
         'use strict';
-        var StatisticsGroup = /** @class */ (function () {
+        var StatisticsGroup = (function () {
             function StatisticsGroup() {
             }
             return StatisticsGroup;
-        }()); //end class
+        }());
         Services.StatisticsGroup = StatisticsGroup;
         Services.onScenarioExtensionChanged = "onScenarioExtensionChanged";
         Services.onScenarioExtensionResultsChanged = "onScenarioExtensionResultsChanged";
-        var NSSEventArgs = /** @class */ (function (_super) {
+        var NSSEventArgs = (function (_super) {
             __extends(NSSEventArgs, _super);
             function NSSEventArgs(extensions, results) {
                 if (extensions === void 0) { extensions = null; }
@@ -57,10 +37,8 @@ var StreamStats;
             return NSSEventArgs;
         }(WiM.Event.EventArgs));
         Services.NSSEventArgs = NSSEventArgs;
-        var nssService = /** @class */ (function (_super) {
+        var nssService = (function (_super) {
             __extends(nssService, _super);
-            //Constructor
-            //-+-+-+-+-+-+-+-+-+-+-+-
             function nssService($http, $q, toaster, modal, regionservice, eventManager) {
                 var _this = _super.call(this, $http, configuration.baseurls['NSS']) || this;
                 _this.$q = $q;
@@ -69,6 +47,7 @@ var StreamStats;
                 _this.toaster = toaster;
                 _this.modalService = modal;
                 _this._onSelectedStatisticsGroupChanged = new WiM.Event.Delegate();
+                _this._onQ10Loaded = new WiM.Event.Delegate();
                 _this.clearNSSdata();
                 return _this;
             }
@@ -79,10 +58,14 @@ var StreamStats;
                 enumerable: true,
                 configurable: true
             });
-            //Methods
-            //-+-+-+-+-+-+-+-+-+-+-+-
+            Object.defineProperty(nssService.prototype, "onQ10Loaded", {
+                get: function () {
+                    return this._onQ10Loaded;
+                },
+                enumerable: true,
+                configurable: true
+            });
             nssService.prototype.clearNSSdata = function () {
-                //console.log('in clear nss data');
                 this.loadingParametersByStatisticsGroupCounter = 0;
                 this.estimateFlowsCounter = 0;
                 this.selectedStatisticsGroupList = [];
@@ -95,7 +78,6 @@ var StreamStats;
             nssService.prototype.loadStatisticsGroupTypes = function (rcode, regressionregions) {
                 var _this = this;
                 this.toaster.pop('wait', "Loading Available Scenarios", "Please wait...", 0);
-                //console.log('in load StatisticsGroups', rcode, regressionregions);
                 if (!rcode && !regressionregions)
                     return;
                 var url = configuration.baseurls['NSS'] + configuration.queryparams['statisticsGroupLookup'].format(rcode, regressionregions);
@@ -103,9 +85,6 @@ var StreamStats;
                 this.loadingStatisticsGroup = true;
                 this.statisticsGroupList = [];
                 this.Execute(request).then(function (response) {
-                    //console.log(response.data);
-                    //tests
-                    //response.data.length = 0;
                     if (response.data.length > 0) {
                         _this.loadingStatisticsGroup = false;
                         angular.forEach(response.data, function (value, key) {
@@ -120,7 +99,6 @@ var StreamStats;
                     }
                     _this.toaster.clear();
                 }, function (error) {
-                    //sm when complete
                     _this.toaster.clear();
                     _this.toaster.pop('error', "There was an error Loading Available Scenarios", "Please retry", 0);
                 }).finally(function () {
@@ -136,13 +114,12 @@ var StreamStats;
                 ;
                 return -1;
             };
-            nssService.prototype.loadParametersByStatisticsGroup = function (rcode, statisticsGroupID, regressionregions, percentWeights) {
+            nssService.prototype.loadParametersByStatisticsGroup = function (rcode, statisticsGroupID, regressionregions, percentWeights, regressionTypes) {
                 var _this = this;
                 if (this.loadingParametersByStatisticsGroupCounter == 0) {
                     this.toaster.pop('wait', "Loading Parameters by Statistics Group", "Please wait...", 0);
                 }
                 this.loadingParametersByStatisticsGroupCounter++;
-                //console.log('in load StatisticsGroup parameters', rcode, statisticsGroupID,regressionregions);
                 if (!rcode && !statisticsGroupID && !regressionregions)
                     return;
                 var url = configuration.baseurls['NSS'] + configuration.queryparams['statisticsGroupParameterLookup'];
@@ -151,36 +128,39 @@ var StreamStats;
                     url = url + "&extensions=QPPQ";
                 }
                 url = url.format(rcode, statisticsGroupID, regressionregions);
+                if (regressionTypes != undefined) {
+                    url += "&regressiontypes=" + regressionTypes;
+                }
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     if (response.data[0].regressionRegions[0].extensions && response.data[0].regressionRegions[0].extensions.length > 0) {
                         var ext = response.data[0].regressionRegions[0].extensions;
                         _this.eventManager.RaiseEvent(Services.onScenarioExtensionChanged, _this, new NSSEventArgs(ext));
                     }
-                    //check to make sure there is a valid response
                     if (response.data[0].regressionRegions[0].parameters && response.data[0].regressionRegions[0].parameters.length > 0) {
-                        //add Regression Regions to StatisticsGroupList and add percent weights
+                        if (_this.selectedStatisticsGroupList.length == 0) {
+                            _this.selectedStatisticsGroupList.push({ 'name': "", 'id': "7", 'code': "", 'regressionRegions': [], 'citations': null, 'disclaimers': "" });
+                        }
                         _this.selectedStatisticsGroupList.forEach(function (statGroup) {
                             if ((response.data[0].statisticGroupID == statGroup.id) ||
-                                (_this.regionservice.selectedRegion.Applications.indexOf("FDCTM") > -1 && statGroup.id.indexOf(response.data[0].statisticGroupID, 0) > -1)) {
+                                (_this.regionservice.selectedRegion.Applications.indexOf("FDCTM") > -1 && typeof (statGroup.id) == 'string' && statGroup.id.indexOf(response.data[0].statisticGroupID, 0) > -1)) {
                                 statGroup['statisticGroupName'] = statGroup.name;
                                 statGroup['statisticGroupID'] = statGroup.id.toString().replace("_fdctm", "");
                                 response.data[0].regressionRegions.forEach(function (regressionRegion) {
-                                    percentWeights.forEach(function (regressionRegionPercentWeight) {
-                                        if (regressionRegionPercentWeight.code.indexOf(regressionRegion.code.toUpperCase()) > -1) {
-                                            regressionRegion["percentWeight"] = regressionRegionPercentWeight.percentWeight;
-                                        }
-                                    });
+                                    if (percentWeights.length > 0) {
+                                        percentWeights.forEach(function (regressionRegionPercentWeight) {
+                                            if (regressionRegionPercentWeight.code.indexOf(regressionRegion.code.toUpperCase()) > -1) {
+                                                regressionRegion["percentWeight"] = regressionRegionPercentWeight.percentWeight;
+                                            }
+                                        });
+                                    }
                                 });
                                 statGroup.regressionRegions = response.data[0].regressionRegions;
                                 _this._onSelectedStatisticsGroupChanged.raise(null, WiM.Event.EventArgs.Empty);
                             }
                         });
                     }
-                    //this.toaster.clear();
-                    //sm when complete
                 }, function (error) {
-                    //sm when error
                     _this.toaster.clear();
                     _this.toaster.pop('error', "There was an error Loading Parameters by Statistics Group", "Please retry", 0);
                 }).finally(function () {
@@ -190,12 +170,12 @@ var StreamStats;
                     }
                 });
             };
-            nssService.prototype.estimateFlows = function (studyAreaParameterList, paramValueField, rcode, append) {
+            nssService.prototype.estimateFlows = function (studyAreaParameterList, paramValueField, rcode, append, regressionTypes, showReport) {
                 var _this = this;
                 if (append === void 0) { append = false; }
+                if (showReport === void 0) { showReport = true; }
                 if (!this.canUpdate && !append)
                     return;
-                //loop over all selected StatisticsGroups
                 this.selectedStatisticsGroupList.forEach(function (statGroup) {
                     _this.canUpdate = false;
                     if (_this.estimateFlowsCounter == 0) {
@@ -203,22 +183,17 @@ var StreamStats;
                     }
                     _this.estimateFlowsCounter++;
                     _this.cleanRegressionRegions(statGroup.regressionRegions);
-                    //console.log('in estimate flows method for ', statGroup.name, statGroup);
                     statGroup.regressionRegions.forEach(function (regressionRegion) {
                         regressionRegion.parameters.forEach(function (regressionParam) {
                             studyAreaParameterList.forEach(function (param) {
-                                //console.log('search for matching params ', regressionParam.Code.toLowerCase(), param.code.toLowerCase());
                                 if (regressionParam.code.toLowerCase() == param.code.toLowerCase()) {
-                                    //console.log('updating parameter in scenario object for: ', regressionParam.Code, ' from: ', regressionParam.Value, ' to: ', param.value);
                                     regressionParam.value = param[paramValueField];
                                 }
                             });
                         });
                     });
-                    //Make a copy of the object and delete any existing results
                     var updatedScenarioObject = angular.fromJson(angular.toJson(statGroup));
                     updatedScenarioObject.regressionRegions.forEach(function (regressionRegion) {
-                        //delete results object if it exists
                         if (regressionRegion.results)
                             delete regressionRegion.results;
                         if (regressionRegion.extensions)
@@ -228,22 +203,22 @@ var StreamStats;
                             });
                     });
                     updatedScenarioObject = angular.toJson([updatedScenarioObject], null);
-                    //do request
                     var url = configuration.baseurls['NSS'] + configuration.queryparams['estimateFlows'].format(rcode);
                     if (_this.regionservice.selectedRegion.Applications.indexOf("FDCTM") > -1 && typeof statGroup.id == "string" && statGroup.id.indexOf("_fdctm") > -1) {
                         url = url + "&extensions=QPPQ";
                     }
+                    if (regressionTypes != "" && regressionTypes != undefined) {
+                        url += "&regressiontypes=" + regressionTypes;
+                    }
                     var request = new WiM.Services.Helpers.RequestInfo(url, true, 1, 'json', updatedScenarioObject);
                     statGroup.citations = [];
                     _this.Execute(request).then(function (response) {
-                        //console.log('estimate flows: ', response);
-                        //nested requests for citations
                         var citationUrl = response.data[0].links[0].href;
-                        if (!append)
+                        var regregionCheck = citationUrl.split("regressionregions=")[1];
+                        if (!append && regregionCheck && regregionCheck.length > 0)
                             _this.getSelectedCitations(citationUrl, statGroup);
-                        //get header values
-                        if (response.headers()['usgswim-messages']) {
-                            var headerMsgs = response.headers()['usgswim-messages'].split(';');
+                        if (response.headers()['x-usgswim-messages']) {
+                            var headerMsgs = response.headers()['x-usgswim-messages'].split(';');
                             statGroup.disclaimers = {};
                             headerMsgs.forEach(function (item) {
                                 var headerMsg = item.split(':');
@@ -251,40 +226,39 @@ var StreamStats;
                                     statGroup.disclaimers['Warnings'] = headerMsg[1].trim();
                                 if (headerMsg[0] == 'error')
                                     statGroup.disclaimers['Error'] = headerMsg[1].trim();
-                                //comment out for not, not useful
-                                //if (headerMsg[0] == 'info') statGroup.Disclaimers['Info'] = headerMsg[1].trim();
                             });
-                            //console.log('headerMsgs: ', statGroup.name, statGroup.Disclaimers);
                         }
-                        //if (append) console.log('in estimate flows for regulated basins: ', response);
-                        //make sure there are some results
                         if (response.data[0].regressionRegions.length > 0 && response.data[0].regressionRegions[0].results && response.data[0].regressionRegions[0].results.length > 0) {
                             if (!append) {
-                                statGroup.regressionRegions = [];
-                                statGroup.regressionRegions = response.data[0].regressionRegions;
                                 response.data[0].regressionRegions.forEach(function (rr) {
                                     if (rr.extensions) {
+                                        rr.extensions.forEach(function (e) {
+                                            var extension = statGroup.regressionRegions.filter(function (r) { return r.name == rr.name; })[0].extensions.filter(function (ext) { return ext.code == e.code; })[0];
+                                            e.parameters.forEach(function (p) {
+                                                p.options = extension.parameters.filter(function (param) { return param.code == p.code; })[0].options;
+                                            });
+                                        });
                                         _this.eventManager.RaiseEvent(Services.onScenarioExtensionResultsChanged, _this, new NSSEventArgs(null, rr.extensions));
-                                    } //end if
+                                    }
                                 });
+                                statGroup.regressionRegions = [];
+                                statGroup.regressionRegions = response.data[0].regressionRegions;
                             }
                             else {
-                                //loop over and append params
                                 statGroup.regressionRegions.forEach(function (rr) {
-                                    //console.log('in estimate flows for regulated basins: ', rr);
                                     rr.parameters.forEach(function (p) {
                                         var responseRegions = response.data[0].regressionRegions;
                                         for (var i = 0; i < responseRegions.length; i++) {
                                             if (responseRegions[i].id === rr.id) {
                                                 for (var j = 0; j < responseRegions[i].parameters.length; j++) {
-                                                    if (responseRegions[i].Parameters[j].code == p.Code) {
+                                                    if (responseRegions[i].Parameters[j].code == p.code) {
                                                         p[paramValueField] = responseRegions[i].parameters[j].value;
                                                     }
-                                                } //next j
-                                            } //end if
+                                                }
+                                            }
                                         }
-                                        ; //next i                                        
-                                    }); //end p
+                                        ;
+                                    });
                                     rr.results.forEach(function (r) {
                                         var responseRegions = response.data[0].regressionRegions;
                                         for (var i = 0; i < responseRegions.length; i++) {
@@ -293,44 +267,38 @@ var StreamStats;
                                                     if (responseRegions[i].results[j].code == r.code) {
                                                         r[paramValueField] = responseRegions[i].results[j].value;
                                                     }
-                                                } //next j
-                                            } //end if
+                                                }
+                                            }
                                         }
-                                        ; //next i
-                                    }); //end r
-                                }); //end rr
+                                        ;
+                                    });
+                                });
                             }
                         }
                         else {
                             _this.toaster.clear();
                             _this.toaster.pop('error', "There was an error Estimating Flows for " + statGroup.name, "No results were returned", 0);
-                            //this.isDone = true;
-                            //console.log("Zero length flow response, check equations in NSS service");
                         }
-                        //sm when complete
                     }, function (error) {
-                        //sm when error
                         _this.toaster.clear();
                         _this.toaster.pop('error', "There was an error Estimating Flows", "HTTP request error", 0);
                     }).finally(function () {
-                        //if success and counter is zero, clear toast
                         _this.estimateFlowsCounter--;
                         if (_this.estimateFlowsCounter < 1) {
                             _this.toaster.clear();
                             _this.estimateFlowsCounter = 0;
                             _this.canUpdate = true;
-                            //move to nssService
-                            _this.modalService.openModal(Services.SSModalType.e_report);
-                            _this.reportGenerated = true;
-                        } //end if                       
+                            if (showReport) {
+                                _this.modalService.openModal(Services.SSModalType.e_report);
+                                _this.reportGenerated = true;
+                            }
+                        }
+                        _this._onQ10Loaded.raise(null, WiM.Event.EventArgs.Empty);
                     });
                 });
             };
             nssService.prototype.getSelectedCitations = function (citationUrl, statGroup) {
-                ////nested requests for citations
-                //console.log('citations: ', citationUrl, statGroup, this.getSelectedCitationsCounter);
                 var _this = this;
-                //temporary fix until I fix nssservicesv2 hypermedia
                 var url;
                 if (citationUrl.indexOf('https://') == -1)
                     url = 'https://' + citationUrl;
@@ -338,15 +306,12 @@ var StreamStats;
                     url = citationUrl;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, 0, 'json');
                 this.Execute(request).then(function (response) {
-                    //console.log('get citations: ', response);
                     if (response.data[0] && response.data[0].id) {
                         angular.forEach(response.data, function (value, key) {
                             statGroup.citations.push(value);
                         });
                     }
-                    //sm when complete
                 }, function (error) {
-                    //sm when error
                     _this.toaster.pop('error', "There was an error getting selected Citations for " + statGroup.name, "No results were returned", 0);
                 }).finally(function () {
                 });
@@ -359,7 +324,7 @@ var StreamStats;
                             regRegion.results.forEach(function (regResult) {
                                 result.push({
                                     Name: name,
-                                    Region: regRegion.percentWeight ? regRegion.percentWeight.toFixed(0) + "% " + regRegion.name : regRegion.name,
+                                    Region: regRegion.percentWeight ? regRegion.percentWeight.toFixed(1) + "% " + regRegion.name : regRegion.name,
                                     Statistic: regResult.name,
                                     Code: regResult.code,
                                     Value: regResult.value.toUSGSvalue(),
@@ -370,34 +335,30 @@ var StreamStats;
                                     MinLimit: regResult.intervalBounds && regResult.intervalBounds.lower > 0 ? regResult.intervalBounds.lower.toUSGSvalue() : undefined,
                                     EquivYears: regResult.equivalentYears ? regResult.equivalentYears : undefined
                                 });
-                            }); //next regResult
-                        }); //next regRegion
-                    }); //next sgroup
+                            });
+                        });
+                    });
                 }
                 catch (e) {
                     result.push({ Disclaimers: "Failed to output flowstats to table. " });
                 }
                 return result;
             };
-            //HelperMethods
-            //-+-+-+-+-+-+-+-+-+-+-+-
             nssService.prototype.cleanRegressionRegions = function (RegressionRegions) {
                 for (var i = 0; i < RegressionRegions.length; i++) {
                     var regRegion = RegressionRegions[i];
                     if (regRegion.name === 'Area-Averaged') {
                         RegressionRegions.splice(i, 1);
                         continue;
-                    } //end if
-                    //remove results
+                    }
                     RegressionRegions.forEach(function (regressionRegion) {
-                        //delete results object if it exists
                         if (regressionRegion.Results)
                             delete regressionRegion.Results;
                     });
-                } //next i
+                }
             };
             return nssService;
-        }(WiM.Services.HTTPServiceBase)); //end class
+        }(WiM.Services.HTTPServiceBase));
         factory.$inject = ['$http', '$q', 'toaster', 'StreamStats.Services.ModalService', 'StreamStats.Services.RegionService', 'WiM.Event.EventManager'];
         function factory($http, $q, toaster, modal, regionservice, eventManager) {
             return new nssService($http, $q, toaster, modal, regionservice, eventManager);
@@ -405,5 +366,4 @@ var StreamStats;
         angular.module('StreamStats.Services')
             .factory('StreamStats.Services.nssService', factory);
     })(Services = StreamStats.Services || (StreamStats.Services = {}));
-})(StreamStats || (StreamStats = {})); //end module  
-//# sourceMappingURL=nssService.js.map
+})(StreamStats || (StreamStats = {}));

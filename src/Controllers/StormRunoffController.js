@@ -1,6 +1,3 @@
-//------------------------------------------------------------------------------
-//----- Storm runnoff controller------------------------------------------------
-//------------------------------------------------------------------------------
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -19,14 +16,14 @@ var StreamStats;
     var Controllers;
     (function (Controllers) {
         'use strict';
-        var StormRunoffReportable = /** @class */ (function () {
+        var StormRunoffReportable = (function () {
             function StormRunoffReportable() {
                 this.TR55 = { Graph: {}, Table: {}, PeakQ: {}, Infiltration: {}, ExcessPrecip: {} };
                 this.RationalMethod = { Graph: {}, Table: {}, PeakQ: {}, Infiltration: {}, ExcessPrecip: {} };
             }
             return StormRunoffReportable;
         }());
-        var StormRunoffController = /** @class */ (function (_super) {
+        var StormRunoffController = (function (_super) {
             __extends(StormRunoffController, _super);
             function StormRunoffController($scope, $analytics, $http, studyAreaService, StatisticsGroup, region, modal, $timeout, EventManager) {
                 var _this = _super.call(this, $http, configuration.baseurls.StormRunoffServices) || this;
@@ -67,7 +64,6 @@ var StreamStats;
                 set: function (val) {
                     this._selectedPrecip = val;
                     this.PIntensity = null;
-                    //console.log(this._selectedPrecip.code);
                 },
                 enumerable: true,
                 configurable: true
@@ -80,7 +76,7 @@ var StreamStats;
                     if (this._selectedTab != val) {
                         this._selectedTab = val;
                         this.selectRunoffType();
-                    } //end if           
+                    }
                 },
                 enumerable: true,
                 configurable: true
@@ -98,8 +94,6 @@ var StreamStats;
                 enumerable: true,
                 configurable: true
             });
-            //Methods  
-            //-+-+-+-+-+-+-+-+-+-+-+-
             StormRunoffController.prototype.GetStormRunoffResults = function () {
                 var _this = this;
                 try {
@@ -119,7 +113,6 @@ var StreamStats;
                     var request = new WiM.Services.Helpers.RequestInfo(url);
                     this.Execute(request).then(function (response) {
                         _this.showResults = true;
-                        //sm when complete
                         _this.result = response.data;
                         if (_this.SelectedTab == 1) {
                             _this.ReportData.TR55.Graph = _this.loadGraphData();
@@ -131,7 +124,6 @@ var StreamStats;
                         }
                     }, function (error) {
                         var x = error;
-                        //sm when error                    
                     }).finally(function () {
                         _this.CanContinue = true;
                         _this.hideAlerts = true;
@@ -156,7 +148,6 @@ var StreamStats;
             StormRunoffController.prototype.ClearResults = function () {
                 for (var i in this.studyAreaService.studyAreaParameterList) {
                     this.studyAreaService.studyAreaParameterList[i].value = null;
-                    //this.SelectedParameterList[i].value = null;
                 }
                 this.SelectedPrecip = this.PrecipOptions[0];
                 this.SelectedPrecip.value = null;
@@ -173,25 +164,22 @@ var StreamStats;
                     var request = new WiM.Services.Helpers.RequestInfo(url, true);
                     this.Execute(request).then(function (response) {
                         _this.showResults = true;
-                        //sm when complete
                         _this.excludearea = response.data;
                         if (_this.excludearea.count > 0) {
                             alert("The selected basin may have inadequate SSURGO data to properly compute the runoff curve number.");
                         }
                     }, function (error) {
                         var x = error;
-                        //sm when error                    
                     }).finally(function () {
                         _this.CanContinue = true;
                         _this.hideAlerts = true;
                     });
-                    //add to studyareaservice if not already there
                     for (var i = 0; i < this.SelectedParameterList.length; i++) {
                         var param = this.SelectedParameterList[i];
                         if (this.checkArrayForObj(this.studyAreaService.studyAreaParameterList, param) == -1) {
                             this.studyAreaService.studyAreaParameterList.push(param);
-                        } //end if
-                    } //next i
+                        }
+                    }
                     if (this.SelectedPrecip != null && this.checkArrayForObj(this.studyAreaService.studyAreaParameterList, this.SelectedPrecip) == -1)
                         this.studyAreaService.studyAreaParameterList.push(this.SelectedPrecip);
                     this.studyAreaService.loadParameters();
@@ -210,7 +198,7 @@ var StreamStats;
                             this.DASizeAlert = null;
                         }
                         return;
-                    default: //case StormRunoffType.RationalMethod
+                    default:
                         if (this.DrnAreaAcres > 200) {
                             this.DASizeAlert = "Value is greater than recommended maximum threshold of 200 acres";
                         }
@@ -228,7 +216,6 @@ var StreamStats;
             };
             StormRunoffController.prototype.downloadCSV = function () {
                 var _this = this;
-                //ga event
                 this.angulartics.eventTrack('Download', { category: 'Report', label: 'CSV' });
                 var filename = 'data.csv';
                 var processTR55Table = function (data) {
@@ -276,25 +263,21 @@ var StreamStats;
                     }
                     return def + '\n' + finalVal + '\r\n';
                 };
-                //main file header with site information
                 var csvFile = 'StreamStats Output Report\n\n' + 'State/Region ID,' + this.studyAreaService.selectedStudyArea.RegionID.toUpperCase() + '\nWorkspace ID,' + this.studyAreaService.selectedStudyArea.WorkspaceID + '\nLatitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + '\nLongitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5) + '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n\n';
-                //first write main parameter table
                 if (this.SelectedTab == 1) {
                     csvFile += processTR55Table(this.studyAreaService.studyAreaParameterList);
                 }
                 else if (this.SelectedTab == 2) {
                     csvFile += processRMTable(this.studyAreaService.studyAreaParameterList);
                 }
-                //download
                 var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
-                if (navigator.msSaveBlob) { // IE 10+
+                if (navigator.msSaveBlob) {
                     navigator.msSaveBlob(blob, filename);
                 }
                 else {
                     var link = document.createElement("a");
                     var url = URL.createObjectURL(blob);
-                    if (link.download !== undefined) { // feature detection
-                        // Browsers that support HTML5 download attribute
+                    if (link.download !== undefined) {
                         link.setAttribute("href", url);
                         link.setAttribute("download", filename);
                         link.style.visibility = 'hidden';
@@ -467,7 +450,7 @@ var StreamStats;
                             return 'Cumulative precipitation excess (inches)';
                         case 'dPe':
                             return 'Incremental precipitation excess (inches)';
-                    } //end switch
+                    }
                 }
                 catch (e) {
                     var x = e;
@@ -500,7 +483,7 @@ var StreamStats;
                             return 'Pe';
                         case 'dPe':
                             return 'dPe';
-                    } //end switch
+                    }
                 }
                 catch (e) {
                     var x = e;
@@ -598,25 +581,6 @@ var StreamStats;
                                 var minutes = d * 60 % 60;
                                 var h;
                                 var m;
-                                //var count;
-                                //if (this.duration == 24) {
-                                //    count++;
-                                //    if (count % 3 != 0) {
-                                //        if (hours < 10) {
-                                //            h = "0" + hours;
-                                //        } else {
-                                //            h = hours;
-                                //        }
-                                //        if (minutes < 10) {
-                                //            m = "0" + minutes;
-                                //        } else {
-                                //            m = minutes;
-                                //        }
-                                //        return h + ":" + m
-                                //    } else {
-                                //        return "";
-                                //    }
-                                //} else {
                                 if (hours < 10) {
                                     h = "0" + hours;
                                 }
@@ -630,7 +594,6 @@ var StreamStats;
                                     m = minutes;
                                 }
                                 return h + ":" + m;
-                                //}
                             },
                             rotateLabels: '45'
                         },
@@ -638,7 +601,7 @@ var StreamStats;
                             axisLabel: 'Discharge (Q), in ft³/s',
                             axisLabelDistance: this.padY,
                             tickFormat: function (d) {
-                                return d3.format(',.0f')(d); //,.3f
+                                return d3.format(',.0f')(d);
                             },
                             showMaxMin: false
                         },
@@ -673,29 +636,20 @@ var StreamStats;
                 var msie = ua.indexOf('MSIE ');
                 var version;
                 if (msie > 0) {
-                    // IE 10 or older => return version number
                     version = parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
                     return true;
                 }
                 var trident = ua.indexOf('Trident/');
                 if (trident > 0) {
-                    // IE 11 => return version number
                     var rv = ua.indexOf('rv:');
                     version = parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
                     return true;
                 }
-                //var edge = ua.indexOf('Edge/');
-                //if (edge > 0) {
-                //    // Edge (IE 12+) => return version number
-                //    version = parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
-                //}
                 if (navigator.userAgent.indexOf("Chrome") != -1) {
                     this.BrowserChrome = true;
                 }
                 return false;
             };
-            //Helper Methods
-            //-+-+-+-+-+-+-+-+-+-+-+-        
             StormRunoffController.prototype.init = function () {
                 this.SelectedTab = StormRunoffType.TR55;
                 this.showResults = false;
@@ -705,13 +659,11 @@ var StreamStats;
                 this.ReportData = new StormRunoffReportable();
             };
             StormRunoffController.prototype.loadParameters = function () {
-                //unsubscribe first
                 this.EventManager.UnSubscribeToEvent(StreamStats.Services.onSelectedStudyParametersLoaded, this.parameterloadedEventHandler);
                 this.DrnAreaAcres = (this.SelectedParameterList[0].value * 640).toUSGSvalue();
                 var dur = parseInt(this.SelectedPrecip.name.substr(0, 2));
                 this.PIntensity = (this.SelectedPrecip.value / dur).toUSGSvalue();
                 this.CanContinue = true;
-                //alert("Parameters loaded");
             };
             StormRunoffController.prototype.selectRunoffType = function () {
                 switch (this._selectedTab) {
@@ -720,7 +672,7 @@ var StreamStats;
                         this.SelectedParameterList.forEach(function (p) { return p.value = (isNaN(p.value) ? null : p.value); });
                         this.showResults = false;
                         break;
-                    default: //case StormRunoffType.RationalMethod
+                    default:
                         this.SelectedParameterList = this.regionParameters.filter(function (f) { return ["DRNAREA", "RUNCO_CO"].indexOf(f.code) != -1; });
                         this.SelectedParameterList.forEach(function (p) { return p.value = (isNaN(p.value) ? null : p.value); });
                         this.showResults = false;
@@ -733,42 +685,28 @@ var StreamStats;
                 }
             };
             StormRunoffController.prototype.tableToCSV = function ($table) {
-                var $headers = $table.find('tr:has(th)'), $rows = $table.find('tr:has(td)')
-                // Temporary delimiter characters unlikely to be typed by keyboard
-                // This is to avoid accidentally splitting the actual contents
-                , tmpColDelim = String.fromCharCode(11) // vertical tab character
-                , tmpRowDelim = String.fromCharCode(0) // null character
-                // actual delimiter characters for CSV format
-                , colDelim = '","', rowDelim = '"\r\n"';
-                // Grab text from table into CSV formatted string
+                var $headers = $table.find('tr:has(th)'), $rows = $table.find('tr:has(td)'), tmpColDelim = String.fromCharCode(11), tmpRowDelim = String.fromCharCode(0), colDelim = '","', rowDelim = '"\r\n"';
                 var csv = '"';
                 csv += formatRows($headers.map(grabRow));
                 csv += rowDelim;
                 csv += formatRows($rows.map(grabRow)) + '"';
                 return csv;
-                //------------------------------------------------------------
-                // Helper Functions 
-                //------------------------------------------------------------
-                // Format the output so it has the appropriate delimiters
                 function formatRows(rows) {
                     return rows.get().join(tmpRowDelim)
                         .split(tmpRowDelim).join(rowDelim)
                         .split(tmpColDelim).join(colDelim);
                 }
-                // Grab and format a row from the table
                 function grabRow(i, row) {
                     var $row = $(row);
-                    //for some reason $cols = $row.find('td') || $row.find('th') won't work...
                     var $cols = $row.find('td');
                     if (!$cols.length)
                         $cols = $row.find('th');
                     return $cols.map(grabCol)
                         .get().join(tmpColDelim);
                 }
-                // Grab and format a column from the table 
                 function grabCol(j, col) {
                     var $col = $(col), $text = $col.text();
-                    return $text.replace('"', '""'); // escape double quotes
+                    return $text.replace('"', '""');
                 }
             };
             StormRunoffController.prototype.checkArrayForObj = function (arr, obj) {
@@ -785,9 +723,6 @@ var StreamStats;
             };
             StormRunoffController.prototype.computeTime = function (time, dur) {
                 var newtime = new Date('January 1, 2018 00:00:00');
-                //for SW region, time is a percentage
-                //var z = dur * 60 * (0.01 * time);
-                //for NW region, time is in hours
                 var z = time * 60;
                 newtime.setMinutes(z);
                 return newtime;
@@ -800,7 +735,7 @@ var StreamStats;
             StormRunoffController.prototype.getTimeSpan = function (firsttime, newtime) {
                 var millisec = newtime - firsttime;
                 var minutes = ((millisec / (1000 * 60)) % 60);
-                var hours = (Math).trunc(millisec / (1000 * 60 * 60)); //Math.trunc
+                var hours = (Math).trunc(millisec / (1000 * 60 * 60));
                 var h;
                 var m;
                 if (hours < 10) {
@@ -838,7 +773,6 @@ var StreamStats;
                     }
                 }
             };
-            //used for Y2 label distance
             StormRunoffController.prototype.loadPadY = function (data) {
                 var max = Math.max.apply(Math, data.map(function (o) { return o.y; }));
                 if (max < 1000) {
@@ -854,17 +788,14 @@ var StreamStats;
                     this.padY = 30;
                 }
             };
-            //used for Y domain
             StormRunoffController.prototype.loadDomainY = function (data) {
                 var max = Math.max.apply(Math, data.map(function (o) { return o.y; }));
                 this.domainY = [0, Math.round((max + max * 0.18) / 10) * 10];
             };
-            //used for Y2 domain
             StormRunoffController.prototype.loadDomainY2 = function (data) {
                 var max = Math.max.apply(Math, data.map(function (o) { return o.y; }));
                 this.domainY2 = [0, max + max * 0.18];
             };
-            //used for Y2 label distance
             StormRunoffController.prototype.loadPadY2 = function (data) {
                 var max = Math.max.apply(Math, data.map(function (o) { return o.y; }));
                 if (max < 1000) {
@@ -881,11 +812,9 @@ var StreamStats;
                     return ((x < y) ? -1 : ((x > y) ? 1 : 0));
                 });
             };
-            //Constructor
-            //-+-+-+-+-+-+-+-+-+-+-+-
             StormRunoffController.$inject = ['$scope', '$analytics', '$http', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.RegionService', '$modalInstance', '$timeout', 'WiM.Event.EventManager'];
             return StormRunoffController;
-        }(WiM.Services.HTTPServiceBase)); //end wimLayerControlController class   
+        }(WiM.Services.HTTPServiceBase));
         var StormRunoffType;
         (function (StormRunoffType) {
             StormRunoffType[StormRunoffType["TR55"] = 1] = "TR55";
@@ -894,5 +823,4 @@ var StreamStats;
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.StormRunoffController', StormRunoffController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));
-})(StreamStats || (StreamStats = {})); //end module 
-//# sourceMappingURL=StormRunoffController.js.map
+})(StreamStats || (StreamStats = {}));
