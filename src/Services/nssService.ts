@@ -127,7 +127,7 @@ module StreamStats.Services {
         public estimateFlowsCounter: number;
         public isDone: boolean;
         public reportGenerated: boolean;
-        private modalService: Services.IModalService;   
+        private modalService: Services.IModalService;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -296,7 +296,6 @@ module StreamStats.Services {
                 this.estimateFlowsCounter++;
                 this.cleanRegressionRegions(statGroup.regressionRegions);
 
-                //console.log('in estimate flows method for ', statGroup.name, statGroup);
                 statGroup.regressionRegions.forEach((regressionRegion) => {                    
                     regressionRegion.parameters.forEach((regressionParam) => {                        
                         studyAreaParameterList.forEach((param) => {
@@ -345,7 +344,8 @@ module StreamStats.Services {
 
                         //nested requests for citations
                         var citationUrl = response.data[0].links[0].href;
-                        if(!append) this.getSelectedCitations(citationUrl, statGroup);
+                        var regregionCheck = citationUrl.split("regressionregions=")[1];
+                        if(!append && regregionCheck && regregionCheck.length > 0) this.getSelectedCitations(citationUrl, statGroup);
 
                         //get header values
                         if (response.headers()['x-usgswim-messages']) {
@@ -366,13 +366,22 @@ module StreamStats.Services {
                         //make sure there are some results
                         if (response.data[0].regressionRegions.length > 0 && response.data[0].regressionRegions[0].results && response.data[0].regressionRegions[0].results.length > 0) {
                             if (!append) {
-                                statGroup.regressionRegions = [];
-                                statGroup.regressionRegions = response.data[0].regressionRegions;
                                 response.data[0].regressionRegions.forEach((rr) => {
                                     if (rr.extensions) {
+                                        // update parameter options (gets removed during computation)
+                                        rr.extensions.forEach(e => {
+                                            var extension = statGroup.regressionRegions.filter(r => r.name == rr.name)[0].extensions.filter(ext => ext.code == e.code)[0];
+                                            e.parameters.forEach(p => {
+                                                p.options = extension.parameters.filter(param => param.code == p.code)[0].options;
+                                            })
+                                        })
+                                
                                         this.eventManager.RaiseEvent(Services.onScenarioExtensionResultsChanged, this, new NSSEventArgs(null, rr.extensions));
                                     }//end if
                                 });
+                                statGroup.regressionRegions = [];
+                                statGroup.regressionRegions = response.data[0].regressionRegions;
+                                
                             }
                             else {
                                 //loop over and append params

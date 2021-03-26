@@ -89,8 +89,11 @@ To push tags to remote origin: `git push origin --tags`
 
 ## Authors
 
-* **[Jeremy Newson](https://www.usgs.gov/staff-profiles/jeremy-k-newson)**  - *Lead Developer* - [USGS Web Informatics & Mapping](https://wim.usgs.gov/)
-* **[Marty Smith](https://www.usgs.gov/staff-profiles/martyn-smith)**  - *Lead Developer* - [USGS Web Informatics & Mapping](https://wim.usgs.gov/)
+
+* **[Katrin Jacobsen](https://www.usgs.gov/staff-profiles/katrin-jacobsen)**  - *Lead Developer* - [USGS Web Informatics & Mapping](https://wim.usgs.gov/)
+* **[Jeremy Newson](https://www.usgs.gov/staff-profiles/jeremy-k-newson)**  - *Developer* - [USGS Web Informatics & Mapping](https://wim.usgs.gov/)
+* **[Marty Smith](https://www.usgs.gov/staff-profiles/martyn-smith)**  - *Developer* - [USGS Web Informatics & Mapping](https://wim.usgs.gov/)
+* **[Tara Gross](https://www.usgs.gov/staff-profiles/tara-a-gross)**  - *Developer* - [USGS Colorado Water Science Center](https://www.usgs.gov/centers/co-water)
 
 See also the list of [contributors](../../graphs/contributors) who participated in this project.
 

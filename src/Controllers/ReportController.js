@@ -12,9 +12,10 @@ var StreamStats;
             return Center;
         }());
         var ReportController = (function () {
-            function ReportController($scope, $analytics, $modalInstance, studyArea, StatisticsGroup, leafletData, regionService) {
+            function ReportController($scope, $analytics, $modalInstance, studyArea, StatisticsGroup, leafletData, regionService, modal) {
                 var _this = this;
                 this.regionService = regionService;
+                this.modal = modal;
                 this.disclaimer = "USGS Data Disclaimer: Unless otherwise stated, all data, metadata and related materials are considered to satisfy the quality standards relative to the purpose for which the data were collected. Although these data and associated metadata have been reviewed for accuracy and completeness and approved for release by the U.S. Geological Survey (USGS), no warranty expressed or implied is made regarding the display or utility of the data for other purposes, nor on all computer systems, nor shall the act of distribution constitute any such warranty." + '\n' +
                     "USGS Software Disclaimer: This software has been approved for release by the U.S. Geological Survey (USGS). Although the software has been subjected to rigorous review, the USGS reserves the right to update the software as needed pursuant to further analysis and review. No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty. Furthermore, the software is released on condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from its authorized or unauthorized use." + '\n' +
                     "USGS Product Names Disclaimer: Any use of trade, firm, or product names is for descriptive purposes only and does not imply endorsement by the U.S. Government." + '\n\n';
@@ -248,6 +249,43 @@ var StreamStats;
                     }
                 }
             };
+            ReportController.prototype.downloadKML = function () {
+                var _this = this;
+                var fc = this.studyAreaService.selectedStudyArea.FeatureCollection;
+                fc.features.forEach(function (f) {
+                    f.properties["Name"] = _this.studyAreaService.selectedStudyArea.WorkspaceID;
+                    if (f.id && f.id == "globalwatershed") {
+                        f.properties = [f.properties, _this.studyAreaService.studyAreaParameterList.reduce(function (dict, param) { dict[param.code] = param.value; return dict; }, {})].reduce(function (r, o) {
+                            Object.keys(o).forEach(function (k) { r[k] = o[k]; });
+                            return r;
+                        }, {});
+                        f.properties["FlowStatistics"] = _this.nssService.selectedStatisticsGroupList;
+                    }
+                });
+                var GeoJSON = JSON.parse(angular.toJson(fc));
+                var filename = 'data.geojson';
+                var kml = tokml(GeoJSON);
+                var blob = new Blob([kml], { type: 'text/csv;charset=utf-8;' });
+                var filename = 'data.kml';
+                if (navigator.msSaveBlob) {
+                    navigator.msSaveBlob(blob, filename);
+                }
+                else {
+                    var link = document.createElement("a");
+                    var url = URL.createObjectURL(blob);
+                    if (link.download !== undefined) {
+                        link.setAttribute("href", url);
+                        link.setAttribute("download", filename);
+                        link.style.visibility = 'hidden';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }
+                    else {
+                        window.open(url);
+                    }
+                }
+            };
             ReportController.prototype.downloadShapeFile = function () {
                 try {
                     var flowTable = null;
@@ -336,8 +374,8 @@ var StreamStats;
                     },
                     flow: {
                         data: [
-                            { key: result.referanceGage.name, values: result.referanceGage.discharge.observations.map(function (obs) { return { x: new Date(obs.date).getTime(), y: obs.value.toUSGSvalue() }; }) },
-                            { key: "Estimated", values: result.estimatedFlow.observations.map(function (obs) { return { x: new Date(obs.date).getTime(), y: obs.value.toUSGSvalue() }; }) }
+                            { key: result.referanceGage.name, values: result.referanceGage.discharge.observations.map(function (obs) { return { x: new Date(obs.date).getTime(), y: obs.hasOwnProperty('value') ? typeof obs.value == 'number' ? obs.value.toUSGSvalue() : obs.value : null }; }) },
+                            { key: "Estimated", values: result.estimatedFlow.observations.map(function (obs) { return { x: new Date(obs.date).getTime(), y: obs.hasOwnProperty('value') ? typeof obs.value == 'number' ? obs.value < 0.05 ? 0 : obs.value.toUSGSvalue() : obs.value : null }; }) }
                         ],
                         options: {
                             chart: {
@@ -356,30 +394,24 @@ var StreamStats;
                                     return d.y;
                                 },
                                 useInteractiveGuideline: false,
-                                interactive: false,
+                                interactive: true,
                                 tooltips: true,
                                 xAxis: {
                                     tickFormat: function (d) {
                                         return d3.time.format('%x')(new Date(d));
                                     },
-                                    rotateLabels: 30,
-                                    showMaxMin: false
+                                    rotateLabels: -30,
+                                    showMaxMin: true
                                 },
                                 yAxis: {
                                     axisLabel: 'Estimated Discharge (cfs)',
                                     tickFormat: function (d) {
                                         return d3.format('.02f')(d);
                                     },
-                                    showMaxMin: false
+                                    showMaxMin: true
                                 },
                                 zoom: {
-                                    enabled: false,
-                                    scaleExtent: [1, 10],
-                                    useFixedDomain: false,
-                                    useNiceScale: false,
-                                    horizontalOff: false,
-                                    verticalOff: false,
-                                    unzoomEventType: 'dblclick.zoom'
+                                    enabled: false
                                 }
                             }
                         }
@@ -426,6 +458,19 @@ var StreamStats;
                 this.studyAreaService.selectedStudyArea.FeatureCollection.features.forEach(function (item) {
                     _this.addGeoJSON(item.id, item);
                 });
+                if (this.studyAreaService.selectedGage && this.studyAreaService.selectedGage.hasOwnProperty('Latitude_DD') && this.studyAreaService.selectedGage.hasOwnProperty('Longitude_DD')) {
+                    var gagePoint = {
+                        type: "Feature",
+                        geometry: {
+                            coordinates: [
+                                this.studyAreaService.selectedGage["Latitude_DD"],
+                                this.studyAreaService.selectedGage["Longitude_DD"]
+                            ],
+                            type: "Point"
+                        }
+                    };
+                    this.addGeoJSON('referenceGage', gagePoint);
+                }
                 var bbox = this.studyAreaService.selectedStudyArea.FeatureCollection.bbox;
                 this.leafletData.getMap("reportMap").then(function (map) {
                     map.invalidateSize();
@@ -457,6 +502,31 @@ var StreamStats;
                         type: 'geoJSONShape',
                         data: feature,
                         visible: true,
+                    };
+                }
+                else if (LayerName == 'referenceGage') {
+                    this.geojson[LayerName] = {
+                        data: feature,
+                        style: {
+                            displayName: 'Reference Gage'
+                        },
+                        onEachFeature: function (feat, layer) {
+                            var icon = L.icon({
+                                iconUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAaJJREFUOI3dzz1IW1EYxvF/TMqpFQsJCF4QOuhUpTpEVCw6RSsdQhFB6hfiF0IDFqkoOCqKEhxEqm0H20YUgpQoqOBWOkgjpQgXowREEC5SuVBE6QtFHXQwYjSJmXzgDO85hx/PayPJsd0TcD6sqM6ZBFqAk7uD4dCyqu3dkLnhRmD6bqB/ q5DwZrl4hv6rb2MWEfEDR4mD + q9ZSl + mAC75 + HOGxvwuYDAx8MNaK / +Os3mUfj5nP + tSSlsUMbKAvfhA / dSKb3qEqvrLtwUS0CeVW + sWkbfxgcsr4zx12rFe + ZJu75PMPK / jcKfQNM1gbKBPz2Az2EzJi + ten / B1LdUse9AGxAhu//ZTXPkwanurrRd3RyeBqRrAfzM48b2IvwfPcWRG9QC76nnvlMDUY2ABkOjgbshHxWvrTRqAYPGo/s9uGWh6A3ivBR3epTZTpeWQmnabB6CkqqFOjbbvi0gG8CcSXF1NMZdCw7zqjAW7iKWOT+sVqtX5TkR6IkGXqx4IMub5EYeIQAlQrmlarmEY+uWVv1ycRDJgGAaRDZOUpINnJ5KDtx5X6hkAAAAASUVORK5CYII=',
+                                iconSize: [15, 16],
+                                iconAnchor: [7.5, 8],
+                                popupAnchor: [0, -11],
+                            });
+                            layer.setIcon(icon);
+                        },
+                        layerArray: [{
+                                "layerName": "Reference Gage",
+                                "legend": [{
+                                        "contentType": "image/png",
+                                        "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAaJJREFUOI3dzz1IW1EYxvF/TMqpFQsJCF4QOuhUpTpEVCw6RSsdQhFB6hfiF0IDFqkoOCqKEhxEqm0H20YUgpQoqOBWOkgjpQgXowREEC5SuVBE6QtFHXQwYjSJmXzgDO85hx/PayPJsd0TcD6sqM6ZBFqAk7uD4dCyqu3dkLnhRmD6bqB/ q5DwZrl4hv6rb2MWEfEDR4mD + q9ZSl + mAC75 + HOGxvwuYDAx8MNaK / +Os3mUfj5nP + tSSlsUMbKAvfhA / dSKb3qEqvrLtwUS0CeVW + sWkbfxgcsr4zx12rFe + ZJu75PMPK / jcKfQNM1gbKBPz2Az2EzJi + ten / B1LdUse9AGxAhu//ZTXPkwanurrRd3RyeBqRrAfzM48b2IvwfPcWRG9QC76nnvlMDUY2ABkOjgbshHxWvrTRqAYPGo/s9uGWh6A3ivBR3epTZTpeWQmnabB6CkqqFOjbbvi0gG8CcSXF1NMZdCw7zqjAW7iKWOT+sVqtX5TkR6IkGXqx4IMub5EYeIQAlQrmlarmEY+uWVv1ycRDJgGAaRDZOUpINnJ5KDtx5X6hkAAAAASUVORK5CYII=",
+                                        "label": "Reference Gage"
+                                    }]
+                            }]
                     };
                 }
                 else if (LayerName == 'regulatedWatershed') {
@@ -521,7 +591,22 @@ var StreamStats;
                     return index == 0 ? letter.toLowerCase() : letter.toUpperCase();
                 }).replace(/\s+/g, '');
             };
-            ReportController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService'];
+            ReportController.prototype.openGagePage = function (siteid) {
+                console.log('gage page id:', siteid);
+                this.modal.openModal(StreamStats.Services.SSModalType.e_gagepage, { 'siteid': siteid });
+            };
+            ReportController.prototype.getEstimatedFlow = function (discharge, estimatedFlows) {
+                var flow = estimatedFlows.filter(function (f) { return f.date == discharge.date; })[0];
+                if (flow && flow.hasOwnProperty('value')) {
+                    if (typeof (flow.value) == 'number')
+                        return flow.value.toUSGSvalue();
+                    else
+                        return flow.value;
+                }
+                else
+                    return 'N/A';
+            };
+            ReportController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService', 'StreamStats.Services.ModalService'];
             return ReportController;
         }());
         angular.module('StreamStats.Controllers')
