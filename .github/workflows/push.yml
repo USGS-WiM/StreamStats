@@ -22,7 +22,7 @@ jobs:
         aws-region: us-east-2
     - run: aws s3 cp /home/runner/work/StreamStats/StreamStats/dist/ s3://test.streamstats.usgs.gov/ss/ --recursive
     - name: GitHub Action for Slack
-      uses: Ilshidur/action-slack@9273a03
+      uses: Ilshidur/action-slack@689ad44a9c9092315abd286d0e3a9a74d31ab78a
       env:
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
       with:

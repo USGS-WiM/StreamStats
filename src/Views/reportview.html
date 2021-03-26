@@ -44,7 +44,7 @@
             <dt>Time:</dt><dd>{{vm.studyAreaService.selectedStudyArea.Date | date:'yyyy-MM-dd HH:mm:ss Z'}}</dd>
         </dl>-->
 
-                    <leaflet id="reportMap" width="100%" height="400px" layers="vm.layers" center="vm.center" defaults="vm.defaults"></leaflet><br />
+                    <leaflet id="reportMap" width="100%" height="400px" layers="vm.layers" geojson="vm.geojson" geojson-nested="true" center="vm.center" defaults="vm.defaults"></leaflet><br />
 
                 </div>
 
@@ -54,7 +54,6 @@
                 </div>
 
                 <div ng-show="vm.showReport">
-
                     <!--Parameter Table if just basin chars-->
                     <div class="well well-sm" ng-show="vm.nssService.showBasinCharacteristicsTable">
                         <h3>Basin Characteristics</h3>
@@ -86,7 +85,7 @@
                         <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.parametersEdited">Parameter values have been edited, computed flows may not apply.</div>
                         <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.regulationChecked">Upstream regulation was checked for this watershed.</div>
                         <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated">This watershed is {{vm.studyAreaService.regulationCheckResults.percentarearegulated.toFixed(2)}} percent regulated, computed flows may not apply.</div>
-                        <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isEdited">This watershed has been edited, computed flows may not apply.</div>
+                        <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isEdited">This watershed has been edited, computed flows and basin characteristics may not apply.  For more information, submit a support request from the 'Help' button in the upper-right of the screen, attach a pdf of this report and request assistance from your local streamstats regional representative.</div>
                         <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isInExclusionArea">{{vm.studyAreaService.selectedStudyArea.Disclaimers.isInExclusionArea}}</div>
                         <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.hasKarst">{{vm.studyAreaService.selectedStudyArea.Disclaimers.hasKarst}}</div>
                         <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isSTL_MO">The resulting delineations are derived from digital elevation data and storm drain vectors that have been processed to enforce drainage through storm drains.</div>
@@ -94,10 +93,10 @@
                     </div>
 
                     <!--Parameter Table for Flow Report-->
-                    <div class="well well-sm" ng-show="vm.nssService.showFlowsTable" ng-repeat="statisticsGroup in vm.nssService.selectedStatisticsGroupList">
+                    <div class="well well-sm" ng-show="vm.nssService.showFlowsTable" ng-repeat="statisticsGroup in vm.nssService.selectedStatisticsGroupList track by $index">
 
                         <div ng-repeat="regressionRegion in statisticsGroup.regressionRegions" ng-if="regressionRegion.parameters.length > 0">
-                            <h3>{{statisticsGroup.name}} Parameters<small ng-bind="vm.GetRegressionRegionHeader(regressionRegion)"></small></h3>
+                            <h3>{{statisticsGroup.name}} Parameters&nbsp;&nbsp;<span ng-bind="vm.GetRegressionRegionHeader(regressionRegion)"></span></h3>
                             <table id="{{vm.camelize(statisticsGroup.name + regressionRegion.name + 'ScenarioParamTable')}}" class="scenarioParamTable table table-condensed">
                                 <thead class="param-table">
                                     <tr>
@@ -114,7 +113,7 @@
                                     <tr ng-repeat="parameter in regressionRegion.parameters">
                                         <td ng-bind="parameter.code"></td>
                                         <td ng-bind="parameter.name"></td>
-                                        <td ng-class="(parameter.value < parameter.limits.min) || (parameter.Value > parameter.limits.Max) ? 'wim-warning' : ''">{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
+                                        <td ng-class="(parameter.value < parameter.limits.min) || (parameter.value > parameter.limits.max) ? 'wim-warning' : ''">{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
                                         <td ng-if="vm.studyAreaService.selectedStudyArea.disclaimers.isRegulated && vm.showRegulation" ng-class="(parameter.value < parameter.limits.min) || (parameter.value > parameter.limits.max) ? 'wim-warning' : ''">{{parameter.unRegulatedValue == -99999 ? 'undefined' : parameter.unRegulatedValue}}</td>
                                         <td ng-bind="parameter.unitType.unit"></td>
                                         <td ng-bind="parameter.limits.min"></td>
@@ -128,12 +127,12 @@
                         <div ng-repeat="regressionRegion in statisticsGroup.regressionRegions">
                             <!--Scenario Disclaimers-->
                             <div ng-show="regressionRegion.disclaimer">
-                                <h3>{{statisticsGroup.name}} Disclaimers<small ng-bind="vm.GetRegressionRegionHeader(regressionRegion)"></small></h3>
+                                <h3>{{statisticsGroup.name}} Disclaimers&nbsp;&nbsp;<span ng-bind="vm.GetRegressionRegionHeader(regressionRegion)"></span></h3>
                                 <div class="wim-alert-warning">{{regressionRegion.disclaimer}}</div>
                             </div>
 
-                            <h3>{{statisticsGroup.name}} Flow Report<small ng-bind="vm.GetRegressionRegionHeader(regressionRegion)"></small></h3>
-                            <small ng-show="regressionRegion.results[0].intervalBounds || regressionRegion.results[0].errors && regressionRegion.results[0].errors.length > 0">PIl: Prediction Interval-Lower, PIu: Prediction Interval-Upper, SEp: Standard Error of Prediction, SE: Standard Error (other -- see report)</small>
+                            <h3>{{statisticsGroup.name}} Flow Report&nbsp;&nbsp;<span ng-bind="vm.GetRegressionRegionHeader(regressionRegion)"></span></h3>
+                            <span ng-show="regressionRegion.results[0].intervalBounds || regressionRegion.results[0].errors && regressionRegion.results[0].errors.length > 0">PIl: Prediction Interval-Lower, PIu: Prediction Interval-Upper, SEp: Standard Error of Prediction, SE: Standard Error (other -- see report)</span>
                             <table id="{{vm.camelize(statisticsGroup.name + regressionRegion.name + 'ScenarioFlowTable')}}" class="scenarioFlowTable table table-condensed">
                                 <thead class="flow-table">
                                     <tr>
@@ -141,8 +140,8 @@
                                         <th>Value</th>
                                         <th ng-if="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated && vm.showRegulation">Unregulated Value</th>
                                         <th>Unit</th>
-                                        <th ng-if="regressionRegion.results[0].intervalBounds.lower">PIl</th>
-                                        <th ng-if="regressionRegion.results[0].intervalBounds.upper">PIu</th>
+                                        <th ng-if="regressionRegion.results[0].intervalBounds && regressionRegion.results[0].intervalBounds.lower">PIl</th>
+                                        <th ng-if="regressionRegion.results[0].intervalBounds && regressionRegion.results[0].intervalBounds.upper">PIu</th>
                                         <th ng-if="regressionRegion.results[0].errors && regressionRegion.results[0].errors.length > 0" ng-repeat="error in regressionRegion.results[0].errors" ng-bind="error.code"></th>
                                         <th ng-if="regressionRegion.results[0].equivalentYears > 0">Equiv. Yrs.</th>
                                     </tr>
@@ -179,13 +178,19 @@
                                 </div>
 
                                 <!--Reference gage-->
-                                <div id="ReferenceGage" class="well well-sm">
-                                    <h3>Reference gage</h3>
-                                    <table class="table table-condensed">
+                                <div class="well well-sm">
+                                    <table id="ReferanceGage" class="table table-condensed">
+                                        <thead>
+                                            <tr>
+                                                <th>Reference Gage</th>
+                                            </tr>
+                                        </thead>
                                         <tbody>
                                             <tr>
                                                 <td>Station ID:</td>
-                                                <td><a ng-attr-title={{sc.result.referanceGage.name}} ng-href={{sc.result.referanceGage.url}} target="_blank">{{sc.result.referanceGage.stationID}}</a></td>
+                                                <td><a ng-attr-title={{sc.result.referanceGage.name}} ng-href={{sc.result.referanceGage.url}} target="_blank">{{sc.result.referanceGage.stationID}}</a>&nbsp;
+                                                    <a ng-click="vm.openGagePage(sc.result.referanceGage.stationID)">Open Gage Page</a>
+                                                </td>
                                             </tr>
                                             <tr>
                                                 <td>Name:</td>
@@ -208,16 +213,17 @@
                                 </div>
 
                                 <!--FDCTM Exceedance Probablities-->
-                                <h3>Exceedance Probablities</h3>
+                                <h3 class="reportChartHeader">Exceedance Probabilities of Clicked Point</h3>
+                                <button class="chartExportButton" ng-click="vm.downloadPNG('exceedancegraph')">Download PNG</button>
                                 <nvd3 id="exceedancegraph" options=sc.result.graphdata.exceedance.options data=sc.result.graphdata.exceedance.data></nvd3>
-                                <a ng-click="isExceedanceTableOpen = !isExceedanceTableOpen">
-                                    <span ng-show="isExceedanceTableOpen">Hide</span>
-                                    <span ng-hide="isExceedanceTableOpen">Show</span> table
+                                <a ng-click="vm.isExceedanceTableOpen = !vm.isExceedanceTableOpen">
+                                    <span ng-show="vm.isExceedanceTableOpen">Hide</span>
+                                    <span ng-hide="vm.isExceedanceTableOpen">Show</span> table<br>
                                 </a>
-                                <div ng-if="isExceedanceTableOpen" id="Exceedance Probablities">
-                                    <div id="exceedanceTable" class="well well-sm">
+                                <div ng-if="vm.isExceedanceTableOpen" id="Exceedance Probabilities">
+                                    <div class="well well-sm">
 
-                                        <table class="table table-condensed" title="Exceedance Probabilities">
+                                        <table id="exceedanceTable" class="table table-condensed" title="Exceedance Probabilities">
                                             <thead>
                                                 <tr>
                                                     <th>Exceedance</th>
@@ -235,15 +241,16 @@
                                 </div>
 
                                 <!--Estimated Flow -->
-                                <h3>Estimated Flows</h3>
+                                <h3 class="reportChartHeader">Estimated Flows</h3>
+                                <button class="chartExportButton" ng-click="vm.downloadPNG('flowgraph')">Download PNG</button>
                                 <nvd3 id="flowgraph" options=sc.result.graphdata.flow.options data=sc.result.graphdata.flow.data></nvd3>
-                                <a ng-click="isFlowTableOpen = !isFlowTableOpen">
-                                    <span ng-show="isFlowTableOpen">Hide</span>
-                                    <span ng-hide="isFlowTableOpen">Show</span> table
+                                <a ng-click="vm.isFlowTableOpen = !vm.isFlowTableOpen">
+                                    <span ng-show="vm.isFlowTableOpen">Hide</span>
+                                    <span ng-hide="vm.isFlowTableOpen">Show</span> table
                                 </a>
-                                <div ng-if="isFlowTableOpen" id="flowTable" class="well well-sm">
+                                <div ng-if="vm.isFlowTableOpen" class="well well-sm">
                                     <!--Table-->
-                                    <table class="table table-condensed" title="Estimated Flows">
+                                    <table id="flowTable" class="table table-condensed" title="Estimated Flows">
                                         <thead>
                                             <tr>
                                                 <th></th>
@@ -255,11 +262,12 @@
                                                 <th>{{sc.result.referanceGage.name}}</th>
                                             </tr>
                                         </thead>
-                                        <tbody ng-repeat="obs in sc.result.estimatedFlow.observations track by $index">
+
+                                        <tbody ng-repeat="obs in sc.result.referanceGage.discharge.observations track by $index">
                                             <tr>
                                                 <td>{{obs.date| date:'yyyy/MM/dd'}}</td>
-                                                <td>{{obs.value.toUSGSvalue()}}</td>
-                                                <td>{{sc.result.referanceGage.discharge.observations[$index].value.toUSGSvalue()}}</td>
+                                                <td>{{vm.getEstimatedFlow(obs,sc.result.estimatedFlow.observations)}}</td>
+                                                <td>{{obs.hasOwnProperty('value') ? obs.value.toUSGSvalue() : obs.hasOwnProperty('dataCode') ? obs.dataCode : 'N/A'}}</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -287,7 +295,16 @@
                         USGS Product Names Disclaimer:
                         Any use of trade, firm, or product names is for descriptive purposes only and does not imply endorsement by the U.S. Government.
                     </p>
-                    <p>Application Version: {{vm.AppVersion}}</p>
+                    <p>
+                        <span>Application Version: {{vm.AppVersion}}</span>
+                        <span ng-show="vm.environment == 'development'">[Development Version: Not for public consumption]</span><br>
+                        <span>StreamStats Services Version: {{vm.SSServicesVersion}}</span>
+                        <span ng-show="vm.environment == 'development'">[Development Version: Not for public consumption]</span><br>
+                        <span>NSS Services Version: {{vm.NSSServicesVersion}}</span>
+                        <span ng-show="vm.environment == 'development'">[Development Version: Not for public consumption]</span>
+                    </p>
+
+
                 </div>
             </div>
 
@@ -298,8 +315,9 @@
                   </button>
                   <ul class="dropdown-menu" role="menu">
                       <li><a href="#" ng-click="vm.downloadGeoJSON()" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="GeoJSON"><span class="fa fa-download"></span>&nbsp;&nbsp;GeoJSON</a></li>
-                      <li><a href="#" ng-click="vm.downloadCSV()" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="CSV"><span class="fa fa-download"></span>&nbsp;&nbsp;CSV</a></li>
+                      <li><a href="#" ng-click="vm.isFlowTableOpen = true; vm.isExceedanceTableOpen = true; vm.downloadCSV()" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="CSV"><span class="fa fa-download"></span>&nbsp;&nbsp;CSV</a></li>
                       <li><a href="#" ng-click="vm.downloadShapeFile()" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="ShapeFile"><span class="fa fa-download"></span>&nbsp;&nbsp;ShapeFile</a></li>
+                      <li><a href="#" ng-click="vm.downloadKML()" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="KML"><span class="fa fa-download"></span>&nbsp;&nbsp;KML</a></li>
                   </ul>
                 </div>
             </div>

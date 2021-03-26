@@ -83,25 +83,25 @@ module StreamStats.Models {
 
                 var params = []
                 params.push({
-                    Code: parameters[0].code,
-                    Value: parameters[0].value,
-                    Name: parameters[0].name,
-                    UnitType: { Abbr: parameters[0].unit, Unit: parameters[0].unit }
+                    code: parameters[0].code,
+                    value: parameters[0].value,
+                    name: parameters[0].name,
+                    unitType: { abbr: parameters[0].unit, unit: parameters[0].unit }
                 });
 
                 //http://www.in.gov/dnr/water/4898.htm
                 for (var key in this.FlowCoefficients) {
                     params.push({
-                        Code: key + "CoeffA",
-                        Value: this.FlowCoefficients[key].CoefficientA.toFixed(3),
-                        Name: key + " CoefficientA",
-                        UnitType: { Abbr: "dim", Unit: "dimensionless" }
+                        code: key + "CoeffA",
+                        value: this.FlowCoefficients[key].CoefficientA.toFixed(3),
+                        name: key + " CoefficientA",
+                        unitType: { abbr: "dim", unit: "dimensionless" }
                     })
                     params.push({
-                        Code: key + "CoeffB",
-                        Value: this.FlowCoefficients[key].CoefficientB.toFixed(3),
-                        Name: key + " CoefficientB",
-                        UnitType: { Abbr: "dim", Unit: "dimensionless" }
+                        code: key + "CoeffB",
+                        value: this.FlowCoefficients[key].CoefficientB.toFixed(3),
+                        name: key + " CoefficientB",
+                        unitType: { abbr: "dim", unit: "dimensionless" }
                     })
                 }//next key
               

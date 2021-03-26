@@ -92,3 +92,35 @@
 .daterangepicker {
     z-index: 30000 !important;
 }
+
+#nearestGageButton {
+    background-color: green;
+    color: white;
+    margin: 30px 20px;
+}
+
+#nearestGages {
+    background-color: #ebf0f5;
+    color: #10152C;
+    /* margin: 10px 0px 20px 0px; */
+    padding: 10px 5px 20px 5px;
+    margin: 10px 0px;
+}
+
+#nearestGages h3 {
+    padding-left: 10px;
+}
+
+.selectedGage {
+    background-color: #ebf0f5;
+}
+
+.linkDisabled {
+    cursor: not-allowed;
+    pointer-events: none;
+    color: grey;
+}
+
+text.nv-axislabel {
+    transform: 'rotate(-90deg) translateY(-10px)' !important;
+} 

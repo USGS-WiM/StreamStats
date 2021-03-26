@@ -494,9 +494,12 @@ div.leaflet-top > .elevation {
   }
 
     .dropdown-menu{
-    max-height: 150px;
+    max-height: 180px;
     width: 90%;
-    /*overflow-y:scroll;*/
+  }
+
+  .reference-gage .dropdown-menu {
+    overflow-y: auto;
   }
 
 /*Active sidebar item*/
@@ -1311,31 +1314,30 @@ div.leaflet-top > .elevation {
     font-weight: 400 !important;
     font-size: 14px !important;
 }
-    .toast .toast-title:after {
-        display: inline-block;
-        float: right;
-        content: '\f12a';
-        font-size: 12px;
-        font-family: "Ionicons";
-        color: #FFF;
-        position: relative;
-        top: -5px;
-        left: 5px;
-        opacity: 0.5;
-        transition: 0.1s;
-    }
+.toast .toast-title:after {
+    display: inline-block;
+    float: right;
+    content: '\f12a';
+    font-size: 12px;
+    font-family: "Ionicons";
+    color: #FFF;
+    position: relative;
+    top: -5px;
+    left: 5px;
+    opacity: 0.5;
+    transition: 0.1s;
+}
 .toast:after{
     display: none !important;
     box-shadow: none !important;
 }
-    .toast:hover {
-        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23) !important;
-    }
-        .toast:hover .toast-title:after {
-            opacity: 1;
-            transition: 0.1s;
-        }
-
+.toast:hover {
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23) !important;
+}
+.toast:hover .toast-title:after {
+    opacity: 1;
+    transition: 0.1s;
+}
 
 
 /*
@@ -1480,6 +1482,9 @@ div.leaflet-top > .elevation {
     text-decoration: none !important;
 }
 
+.reference-gage button {
+    margin-bottom: 10px;
+}
 
 .angular-leaflet-control-layers-expanded h6{
     font-size: 12.5px !important;
@@ -1624,7 +1629,7 @@ h3.panel-title {
     color: rgba(0,0,0,0.7);
 }
 
-#networkNav .btn-wim-success {
+#networkNav .btn-wim-success, #nearestGageModal .btn-wim-success{
     width: 200px;
     line-height: 0;
     margin: 15px auto;
@@ -1733,4 +1738,61 @@ input[name=distanceValue] {
 
 .projDesc {
     font-size: 12px;
+}
+
+.chartExportButton {
+    float: right;
+}
+
+.reportChartHeader {
+    display: inline-block;
+}
+
+#statGroupSelect {
+    margin: 0px;
+    padding: 0px;
+    display: inline-block;
+}
+
+#statGroupSelect button {
+    background-color:#e0e3e6;
+}
+
+#statGroupSelect ul, #statGroupSelect ul li {
+    padding: 0px;
+    padding-left: 0px !important;
+}
+
+#statGroupSelect dropdown-menu {
+    padding-left: 0px !important;
+}
+
+.panel .panel-default {
+    padding-top: 5px;
+    padding-left: 5px;
+}
+
+.stat-filters{
+    float: right;
+    margin-left: 5px;
+    border-radius: 4px;
+}
+
+.stat-filters label {
+    margin-top: 7px;
+    font-size: 14px;
+}
+
+.stat-table-title {
+    padding: 10px;
+}
+
+.modal-xl .modal-dialog{
+    width: 94%;
+    max-width: 1200px !important;
+    margin: 30px auto !important;
+}
+
+.stat-names {
+    word-break: break-all; /* needed becuase of _s in reg type names */
 }

@@ -1,49 +1,20 @@
-//------------------------------------------------------------------------------
-//----- modalService -----------------------------------------------------
-//------------------------------------------------------------------------------
-//-------1---------2---------3---------4---------5---------6---------7---------8
-//       01234567890123456789012345678901234567890123456789012345678901234567890
-//-------+---------+---------+---------+---------+---------+---------+---------+
-// copyright:   2015 WiM - USGS
-//    authors:  Jeremy K. Newson USGS Wisconsin Internet Mapping
-//             
-// 
-//   purpose:  The service agent is responsible for initiating service calls, 
-//             capturing the data that's returned and forwarding the data back to 
-//             the Controller.
-//          
-//discussion:
-//
-//https://docs.angularjs.org/api/ng/service/$http
-//Comments
-//06.16.2015 mjs - Created
-//Import
 var StreamStats;
 (function (StreamStats) {
     var Services;
     (function (Services) {
         'use strict';
-        var ModalService = /** @class */ (function () {
-            //Constructor
-            //-+-+-+-+-+-+-+-+-+-+-+-
+        var ModalService = (function () {
             function ModalService($modal) {
                 this.modal = $modal;
             }
-            //Methods
-            //-+-+-+-+-+-+-+-+-+-+-+-
             ModalService.prototype.openModal = function (mType, options) {
                 if (options === void 0) { options = null; }
                 if (options) {
                     this.modalOptions = options;
-                    //console.log('in modal open function', this.modalOptions);
                 }
                 this.modal.open(this.getModalSettings(mType));
             };
-            //HelperMethods
-            //-+-+-+-+-+-+-+-+-+-+-+-
             ModalService.prototype.getModalSettings = function (mType) {
-                //console.log('in canUpdateProcedure');
-                //Project flow:
                 var msg;
                 try {
                     switch (mType) {
@@ -127,17 +98,34 @@ var StreamStats;
                                 backdrop: 'static',
                                 windowClass: 'windowZ',
                             };
+                        case SSModalType.e_gagepage:
+                            return {
+                                templateUrl: 'Views/gagepage.html',
+                                controller: 'StreamStats.Controllers.GagePageController',
+                                size: 'lg',
+                                backdropClass: 'backdropZ',
+                                backdrop: 'static',
+                                windowClass: 'windowZ modal-xl',
+                            };
+                        case SSModalType.e_nearestgages:
+                            return {
+                                templateUrl: 'Views/nearestgages.html',
+                                controller: 'StreamStats.Controllers.NearestGagesController',
+                                size: 'lg',
+                                backdropClass: 'backdropZ',
+                                backdrop: 'static',
+                                windowClass: 'windowZ modal-xl',
+                            };
                         default:
                             return null;
-                    } //end switch          
+                    }
                 }
                 catch (e) {
-                    //this.sm(new MSG.NotificationArgs(e.message, MSG.NotificationType.INFORMATION, 1.5));
                     return null;
                 }
             };
             return ModalService;
-        }()); //end class
+        }());
         var SSModalType;
         (function (SSModalType) {
             SSModalType[SSModalType["e_report"] = 1] = "e_report";
@@ -149,6 +137,8 @@ var StreamStats;
             SSModalType[SSModalType["e_stormrunnoff"] = 7] = "e_stormrunnoff";
             SSModalType[SSModalType["e_prosper"] = 8] = "e_prosper";
             SSModalType[SSModalType["e_extensionsupport"] = 9] = "e_extensionsupport";
+            SSModalType[SSModalType["e_gagepage"] = 10] = "e_gagepage";
+            SSModalType[SSModalType["e_nearestgages"] = 11] = "e_nearestgages";
         })(SSModalType = Services.SSModalType || (Services.SSModalType = {}));
         factory.$inject = ['$modal'];
         function factory($modal) {
@@ -157,5 +147,4 @@ var StreamStats;
         angular.module('StreamStats.Services')
             .factory('StreamStats.Services.ModalService', factory);
     })(Services = StreamStats.Services || (StreamStats.Services = {}));
-})(StreamStats || (StreamStats = {})); //end module  
-//# sourceMappingURL=ModalService.js.map
+})(StreamStats || (StreamStats = {}));

@@ -41,6 +41,7 @@ module StreamStats.Models {
         NSS_StatisticGroups: Array<Services.IStatisticsGroup>;
         ActiveExtension: Array<any>;
         NSS_Extensions:Array<any>;
+        wateruseQ10: any;
     }
 
     export class StudyArea implements IStudyArea {
@@ -61,6 +62,7 @@ module StreamStats.Models {
         public NSS_StatisticGroups: Array<Services.IStatisticsGroup>;
         public ActiveExtension: Array<any>;
         public NSS_Extensions: Array<any>;
+        public wateruseQ10: any;
 
         constructor(region: string, point: WiM.Models.IPoint) {
             this.RegionID = region;
