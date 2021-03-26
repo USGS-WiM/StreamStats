@@ -104,6 +104,7 @@ var StreamStats;
                     _this.gage.citations = [];
                     _this.getStationCharacteristics(response.data.characteristics);
                     _this.getStationStatistics(response.data.statistics);
+                    _this.getNWISInfo();
                 }, function (error) {
                 }).finally(function () {
                 });
@@ -180,7 +181,6 @@ var StreamStats;
             GagePageController.prototype.init = function () {
                 this.AppVersion = configuration.version;
                 this.getGagePage();
-                this.getNWISInfo();
             };
             GagePageController.$inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance'];
             return GagePageController;

@@ -214,7 +214,8 @@ var StreamStats;
                     statGroup.citations = [];
                     _this.Execute(request).then(function (response) {
                         var citationUrl = response.data[0].links[0].href;
-                        if (!append)
+                        var regregionCheck = citationUrl.split("regressionregions=")[1];
+                        if (!append && regregionCheck && regregionCheck.length > 0)
                             _this.getSelectedCitations(citationUrl, statGroup);
                         if (response.headers()['x-usgswim-messages']) {
                             var headerMsgs = response.headers()['x-usgswim-messages'].split(';');
@@ -229,13 +230,19 @@ var StreamStats;
                         }
                         if (response.data[0].regressionRegions.length > 0 && response.data[0].regressionRegions[0].results && response.data[0].regressionRegions[0].results.length > 0) {
                             if (!append) {
-                                statGroup.regressionRegions = [];
-                                statGroup.regressionRegions = response.data[0].regressionRegions;
                                 response.data[0].regressionRegions.forEach(function (rr) {
                                     if (rr.extensions) {
+                                        rr.extensions.forEach(function (e) {
+                                            var extension = statGroup.regressionRegions.filter(function (r) { return r.name == rr.name; })[0].extensions.filter(function (ext) { return ext.code == e.code; })[0];
+                                            e.parameters.forEach(function (p) {
+                                                p.options = extension.parameters.filter(function (param) { return param.code == p.code; })[0].options;
+                                            });
+                                        });
                                         _this.eventManager.RaiseEvent(Services.onScenarioExtensionResultsChanged, _this, new NSSEventArgs(null, rr.extensions));
                                     }
                                 });
+                                statGroup.regressionRegions = [];
+                                statGroup.regressionRegions = response.data[0].regressionRegions;
                             }
                             else {
                                 statGroup.regressionRegions.forEach(function (rr) {

@@ -40,16 +40,19 @@ var StreamStats;
         Services.StudyAreaEventArgs = StudyAreaEventArgs;
         var StudyAreaService = (function (_super) {
             __extends(StudyAreaService, _super);
-            function StudyAreaService($http, $q, eventManager, toaster, modal, nssService) {
+            function StudyAreaService($http, $q, eventManager, toaster, modal, nssService, regionService) {
                 var _this = _super.call(this, $http, configuration.baseurls['StreamStatsServices']) || this;
                 _this.$http = $http;
                 _this.$q = $q;
                 _this.eventManager = eventManager;
                 _this.nssService = nssService;
+                _this.regionService = regionService;
                 _this._onStudyAreaServiceFinishedChanged = new WiM.Event.Delegate();
                 _this.surfacecontributionsonly = false;
-                _this.doQueryNWIS = false;
+                _this.doSelectMapGage = false;
+                _this.doSelectNearestGage = false;
                 _this.NSSServicesVersion = '';
+                _this.extensionDateRange = null;
                 _this.modalservices = modal;
                 eventManager.AddEvent(Services.onSelectedStudyParametersLoaded);
                 eventManager.AddEvent(Services.onSelectedStudyAreaChanged);
@@ -172,7 +175,7 @@ var StreamStats;
                 this.toaster.pop("wait", "Delineating Basin", "Please wait...", 0);
                 this.canUpdate = false;
                 var regionID = this.selectedStudyArea.RegionID;
-                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', regionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString(), false);
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', regionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString());
                 if (this.selectedStudyArea.RegionID == 'MO_STL') {
                     var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSstormwaterDelineation'].format(regionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString(), this.surfacecontributionsonly);
                 }
@@ -297,6 +300,8 @@ var StreamStats;
                     return;
                 }
                 requestParameterList = this.studyAreaParameterList.filter(function (param) { return (!param.value || param.value < 0); }).map(function (param) { return param.code; });
+                if (requestParameterList.length == 0 && this.regionService.selectedRegion.Applications.indexOf('FDCTM') > -1)
+                    requestParameterList.push('drnarea');
                 if (requestParameterList.length < 1) {
                     var saEvent = new StudyAreaEventArgs();
                     saEvent.parameterLoaded = true;
@@ -458,7 +463,7 @@ var StreamStats;
                     "Content-Type": "application/json",
                     "X-Is-StreamStats": true
                 };
-                var url = configuration.baseurls['nssservicesv2'] + configuration.queryparams['RegressionRegionQueryService'];
+                var url = configuration.baseurls['NSS'] + configuration.queryparams['RegressionRegionQueryService'];
                 var studyArea = this.simplify(angular.fromJson(angular.toJson(this.selectedStudyArea.FeatureCollection.features.filter(function (f) { return (f.id).toLowerCase() == "globalwatershed"; })[0])));
                 var studyAreaGeom = studyArea.geometry;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(studyAreaGeom), headers);
@@ -584,11 +589,37 @@ var StreamStats;
                             sid[0].value = siteList[0];
                             _this.toaster.pop('success', "Found USGS NWIS reference gage", "Please continue", 5000);
                             _this.modalservices.openModal(Services.SSModalType.e_extensionsupport);
-                            _this.doQueryNWIS = false;
+                            _this.doSelectMapGage = false;
                         }
                     }
                 }, function (error) {
                     _this.toaster.pop('warning', "No USGS NWIS reference gage found at this location.", "Try zooming in closer or a different location", 5000);
+                });
+            };
+            StudyAreaService.prototype.selectGage = function (gage) {
+                var sid = this.selectedStudyAreaExtensions.reduce(function (acc, val) { return acc.concat(val.parameters); }, []).filter(function (f) { return (f.code).toLowerCase() == "sid"; });
+                var siteList = [];
+                var rg = new StreamStats.Models.ReferenceGage(gage.properties.Code, gage.properties.Name);
+                rg.Latitude_DD = gage.geometry.coordinates[0];
+                rg.Longitude_DD = gage.geometry.coordinates[1];
+                rg.properties = gage.properties;
+                siteList.push(rg);
+                if (siteList.length > 0) {
+                    sid[0].options = siteList;
+                    sid[0].value = new StreamStats.Models.ReferenceGage('', '');
+                    this.modalservices.openModal(Services.SSModalType.e_extensionsupport);
+                    this.doSelectNearestGage = false;
+                }
+            };
+            StudyAreaService.prototype.getStreamgages = function (xmin, xmax, ymin, ymax) {
+                var _this = this;
+                var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesBounds.format(xmin, xmax, ymin, ymax);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+                this.Execute(request).then(function (response) {
+                    _this.streamgageLayer = response.data;
+                }, function (error) {
+                    _this.toaster.clear();
+                    _this.toaster.pop('error', "Error querying streamgage layer");
                 });
             };
             StudyAreaService.prototype.GetKriggedReferenceGages = function () {
@@ -709,7 +740,7 @@ var StreamStats;
                         var feature = {
                             type: "Feature",
                             geometry: fc.feature.features[i].geometry,
-                            id: fc.feature.features.length > 1 && fc.feature.features[i].properties["Name"] ? fc.name + "_" + fc.feature.features[i].properties["Name"].toLowerCase() : fc.name.toLowerCase(),
+                            id: fc.feature.features.length > 1 && fc.feature.features[i].properties && fc.feature.features[i].properties["Name"] ? fc.name + "_" + fc.feature.features[i].properties["Name"].toLowerCase() : fc.name.toLowerCase(),
                             properties: fc.feature.features[i].properties
                         };
                         featureArray.push(feature);
@@ -805,11 +836,22 @@ var StreamStats;
                 this.nssService.selectedStatisticsGroupList = [];
                 this.nssService.onQ10Loaded.unsubscribe(this.q10EventHandler);
             };
+            StudyAreaService.prototype.updateExtensions = function () {
+                var _this = this;
+                this.nssService.statisticsGroupList.forEach(function (sg) {
+                    if (sg.regressionRegions)
+                        sg.regressionRegions.forEach(function (rr) {
+                            if (rr.extensions) {
+                                rr.extensions = _this.selectedStudyAreaExtensions;
+                            }
+                        });
+                });
+            };
             return StudyAreaService;
         }(WiM.Services.HTTPServiceBase));
-        factory.$inject = ['$http', '$q', 'WiM.Event.EventManager', 'toaster', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService'];
-        function factory($http, $q, eventManager, toaster, modalService, nssService) {
-            return new StudyAreaService($http, $q, eventManager, toaster, modalService, nssService);
+        factory.$inject = ['$http', '$q', 'WiM.Event.EventManager', 'toaster', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService', 'StreamStats.Services.RegionService'];
+        function factory($http, $q, eventManager, toaster, modalService, nssService, regionService) {
+            return new StudyAreaService($http, $q, eventManager, toaster, modalService, nssService, regionService);
         }
         angular.module('StreamStats.Services')
             .factory('StreamStats.Services.StudyAreaService', factory);

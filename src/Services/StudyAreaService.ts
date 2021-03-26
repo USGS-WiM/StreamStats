@@ -60,11 +60,27 @@ module StreamStats.Services {
         getflattenStudyArea(): any
         simplify(Feature: any);
         selectedStudyAreaExtensions: Array<any>;
-        doQueryNWIS: boolean;
+        doSelectMapGage: boolean;
         queryNWIS(point: any): void;
         GetKriggedReferenceGages(): void;
         NSSServicesVersion: string;
+        doSelectNearestGage: boolean;
+        selectGage(gage: any): void;
+        getStreamgages(xmin: number, xmax: number, ymin: number, ymax: number);
+        streamgageLayer: any;
+        extensionDateRange: IDateRange;
+        selectedGage: any;
         computeRegressionEquation(regtype: string);
+        updateExtensions();
+    }
+
+    interface IDateRange {
+        dates: {
+            startDate: Date;
+            endDate: Date;
+        }
+        minDate?: Date;
+        maxDate?: Date;
     }
 
     export var onSelectedStudyAreaChanged: string = "onSelectedStudyAreaChanged";
@@ -142,19 +158,24 @@ module StreamStats.Services {
         public baseMap: Object;
         public showModifyBasinCharacterstics: boolean;
         public surfacecontributionsonly: boolean = false;
-        public doQueryNWIS: boolean = false;
-        public NSSServicesVersion = '';    
+        public doSelectMapGage: boolean = false;
+        public doSelectNearestGage: boolean = false;
         //public requestParameterList: Array<any>; jkn
         private modalservices: IModalService;
+        public NSSServicesVersion = '';
+        public streamgageLayer: any;
         private parameterloadedEventHandler: WiM.Event.EventHandler<Services.StudyAreaEventArgs>;
         private statisticgroupEventHandler: WiM.Event.EventHandler<Services.NSSEventArgs>;
         private q10EventHandler: WiM.Event.EventHandler<Services.NSSEventArgs>;
         private regtype: string;
-    
+        
+        //QPPQ
+        public extensionDateRange: IDateRange = null;
+        public selectedGage: any;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        constructor(public $http: ng.IHttpService, private $q: ng.IQService, private eventManager: WiM.Event.IEventManager, toaster, modal: Services.IModalService, private nssService: Services.InssService) {
+        constructor(public $http: ng.IHttpService, private $q: ng.IQService, private eventManager: WiM.Event.IEventManager, toaster, modal: Services.IModalService, private nssService: Services.InssService, private regionService: Services.IRegionService) {
             super($http, configuration.baseurls['StreamStatsServices'])
             this.modalservices = modal;
 
@@ -251,7 +272,7 @@ module StreamStats.Services {
             var regionID = this.selectedStudyArea.RegionID;
             
             var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', regionID, this.selectedStudyArea.Pourpoint.Longitude.toString(),
-                this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString(), false);
+                this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString());
 
             //hack for st louis stormdrain
             if (this.selectedStudyArea.RegionID == 'MO_STL') {
@@ -422,6 +443,7 @@ module StreamStats.Services {
 
             //only compute missing characteristics
             requestParameterList = this.studyAreaParameterList.filter((param) => { return (!param.value || param.value < 0) }).map(param => { return param.code; });
+            if (requestParameterList.length == 0 && this.regionService.selectedRegion.Applications.indexOf('FDCTM') > -1) requestParameterList.push('drnarea');
             if (requestParameterList.length < 1) {  
                 let saEvent = new StudyAreaEventArgs();
                 saEvent.parameterLoaded = true;             
@@ -675,7 +697,7 @@ module StreamStats.Services {
                 "Content-Type": "application/json",
                 "X-Is-StreamStats": true
             };
-            var url = configuration.baseurls['nssservicesv2'] + configuration.queryparams['RegressionRegionQueryService'];
+            var url = configuration.baseurls['NSS'] + configuration.queryparams['RegressionRegionQueryService'];
             var studyArea = this.simplify(angular.fromJson(angular.toJson(this.selectedStudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).toLowerCase() == "globalwatershed" })[0])));
             var studyAreaGeom = studyArea.geometry; //this.selectedStudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).toLowerCase() == "globalwatershed" })[0].geometry;
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(studyAreaGeom), headers);     
@@ -839,7 +861,7 @@ module StreamStats.Services {
                             var station = data.shift().split('\t');
                             if (station[headers.indexOf("parm_cd")] == "00060") {
                                 console.log(station[headers.indexOf("site_no")]);
-                                //this.selectedStudyAreaExtensions
+                                
                                 let rg = new Models.ReferenceGage(station[headers.indexOf("site_no")], station[headers.indexOf("station_nm")]);
                                 rg.Latitude_DD = station[headers.indexOf("dec_lat_va")];
                                 rg.Longitude_DD = station[headers.indexOf("dec_long_va")];                               
@@ -847,7 +869,6 @@ module StreamStats.Services {
                                 siteList.push(rg);
                             }
                         } while (data.length > 0);
-
                         if (siteList.length > 0) {                           
                             sid[0].options = siteList;
                             sid[0].value = siteList[0];
@@ -855,7 +876,7 @@ module StreamStats.Services {
                             this.toaster.pop('success', "Found USGS NWIS reference gage", "Please continue", 5000);
                              //reopen modal
                             this.modalservices.openModal(SSModalType.e_extensionsupport);
-                            this.doQueryNWIS = false;
+                            this.doSelectMapGage = false;
                         }
                     }
 
@@ -864,6 +885,42 @@ module StreamStats.Services {
                     //console.log('Regression query failed, HTTP Error');
                     this.toaster.pop('warning', "No USGS NWIS reference gage found at this location.",
                                         "Try zooming in closer or a different location", 5000);
+                });
+        }
+
+        public selectGage(gage) {
+            // selects gage and adds it to gage options for qppq
+            // TODO: should we change this now that selecting a gage on the map only displays it in QPPQ, not selects it?
+            var sid: Array<any> = this.selectedStudyAreaExtensions.reduce((acc, val) => acc.concat(val.parameters), []).filter(f => { return (<string>(f.code)).toLowerCase() == "sid" });
+            var siteList:Array<Models.IReferenceGage> = [];
+            let rg = new Models.ReferenceGage(gage.properties.Code, gage.properties.Name);
+            rg.Latitude_DD = gage.geometry.coordinates[0];
+            rg.Longitude_DD = gage.geometry.coordinates[1];    
+            rg.properties = gage.properties;
+            //add to list of reference gages
+            siteList.push(rg);
+
+            if (siteList.length > 0) {                           
+                sid[0].options = siteList;
+                sid[0].value = new Models.ReferenceGage('', ''); // doesn't set as selected reference gage in case missing necessary properties
+                //reopen modal
+                this.modalservices.openModal(SSModalType.e_extensionsupport);
+                this.doSelectNearestGage = false;
+            }
+        }
+
+        public getStreamgages(xmin: number, xmax: number, ymin: number, ymax: number) {
+            var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesBounds.format(xmin, xmax, ymin, ymax);
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+
+            this.Execute(request).then(
+                (response: any) => {
+                    this.streamgageLayer = response.data;
+
+                }, (error) => {
+                    //sm when error
+                    this.toaster.clear();
+                    this.toaster.pop('error', "Error querying streamgage layer");
                 });
         }
 
@@ -1027,7 +1084,7 @@ module StreamStats.Services {
                     var feature: GeoJSON.Feature = {
                         type: "Feature",
                         geometry: fc.feature.features[i].geometry,
-                        id: fc.feature.features.length > 1 && fc.feature.features[i].properties["Name"] ? fc.name + "_" + fc.feature.features[i].properties["Name"].toLowerCase() : fc.name.toLowerCase(),
+                        id: fc.feature.features.length > 1 && fc.feature.features[i].properties && fc.feature.features[i].properties["Name"] ? fc.name + "_" + fc.feature.features[i].properties["Name"].toLowerCase() : fc.name.toLowerCase(),
                         properties: fc.feature.features[i].properties
                     }; 
                     featureArray.push(feature);
@@ -1156,11 +1213,23 @@ module StreamStats.Services {
             this.nssService.onQ10Loaded.unsubscribe(this.q10EventHandler);
         }
 
+        public updateExtensions() {
+            // update extensions in nss service when updated after regression calculation
+            this.nssService.statisticsGroupList.forEach(sg => {
+                if (sg.regressionRegions)
+                    sg.regressionRegions.forEach(rr => {
+                        if (rr.extensions) {
+                            rr.extensions = this.selectedStudyAreaExtensions;
+                        }
+                    });
+            })
+        }
+
     }//end class
 
-    factory.$inject = ['$http', '$q', 'WiM.Event.EventManager', 'toaster', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService'];
-    function factory($http: ng.IHttpService, $q: ng.IQService, eventManager: WiM.Event.IEventManager, toaster: any, modalService: Services.IModalService, nssService: Services.InssService) {
-        return new StudyAreaService($http,$q, eventManager, toaster, modalService, nssService)
+    factory.$inject = ['$http', '$q', 'WiM.Event.EventManager', 'toaster', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService', 'StreamStats.Services.RegionService'];
+    function factory($http: ng.IHttpService, $q: ng.IQService, eventManager: WiM.Event.IEventManager, toaster: any, modalService: Services.IModalService, nssService: Services.InssService, regionService: Services.IRegionService) {
+        return new StudyAreaService($http,$q, eventManager, toaster, modalService, nssService, regionService)
     }
     angular.module('StreamStats.Services')
         .factory('StreamStats.Services.StudyAreaService', factory)

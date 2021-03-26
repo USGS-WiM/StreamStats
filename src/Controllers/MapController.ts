@@ -282,7 +282,7 @@ module StreamStats.Controllers {
 
                 //check if in elevation profile mode
                 if (this.explorationService.drawElevationProfile) return; 
-                if (this.studyArea.doQueryNWIS) {
+                if (this.studyArea.doSelectMapGage) {
                     this.studyArea.queryNWIS(args.leafletEvent.latlng);
                     return;
                 }
@@ -377,6 +377,13 @@ module StreamStats.Controllers {
                     return elem.code;
                 }).join(","));
             });
+
+            //watch for streamgages layer
+            $scope.$watch(() => this.studyArea.streamgageLayer, (newval, oldval) => {
+                if (newval != oldval) {
+                    this.addGeoJSON('streamgages', newval)
+                }
+            })
         }
 
         //Methods
@@ -1195,7 +1202,7 @@ module StreamStats.Controllers {
         
         private removeGeoJson(layerName: string = "") {
             for (var k in this.geojson) {
-                if (typeof this.geojson[k] !== 'function') {
+                if (typeof this.geojson[k] !== 'function' && k != 'streamgages') {
                     delete this.geojson[k];
                     this.eventManager.RaiseEvent(WiM.Directives.onLayerRemoved, this, new WiM.Directives.LegendLayerRemovedEventArgs(k, "geojson")); 
                 }
@@ -1357,7 +1364,65 @@ module StreamStats.Controllers {
                         }                 
                     }
                 } 
-            }  
+            }
+            else if (LayerName == 'streamgages') {
+                var self = this;
+
+                this.geojson[LayerName] = {
+                    data: feature,
+                    style: {
+                        displayName: 'Streamgages'
+                    },
+                    onEachFeature: function (feature, layer) {
+                        var siteNo = feature.properties['Code'];
+                        var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm';
+                        var NWISpage = 'http://nwis.waterdata.usgs.gov/nwis/inventory/?site_no=' + siteNo;
+                        var gageButtonDiv = L.DomUtil.create('div', 'testDiv');
+
+                        gageButtonDiv.innerHTML = '<strong>Station ID: </strong>' + siteNo + '</br><strong>Station Name: </strong>' + feature.properties['Name'] + '</br><strong>Latitude: </strong>' + feature.geometry.coordinates[1] + '</br><strong>Longitude: </strong>' + feature.geometry.coordinates[0] + '</br><strong>Station Type</strong>: ' + feature.properties.StationType.name +
+                            '</br><strong>NWIS page: </strong><a href="' + NWISpage + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br><strong>New StreamStats Gage Modal: </strong><a id="gagePageLink" class="' + siteNo + '">link</a><br>';
+
+                        layer.bindPopup(gageButtonDiv);
+                        var styling = configuration.overlayedLayers['SSLayer'].layerArray[0].legend.filter(function (item) {
+                            return item.label.toLowerCase() == feature.properties.StationType.name.toLowerCase();
+                        })[0];
+                        if (styling == undefined) {
+                            styling = configuration.overlayedLayers['SSLayer'].layerArray[0].legend.filter(function (item) {
+                                return item.label == 'Unknown'; // better way to do this?
+                            })[0]
+                        }
+
+                        var icon = L.icon({
+                            iconUrl: 'data:image/png;base64,' + styling.imageData,
+                            iconSize: [15, 16],
+                            iconAnchor: [7.5, 8],
+                            popupAnchor: [0, -11],
+                        })
+                        layer.setIcon(icon);
+
+                        L.DomEvent.on(gageButtonDiv, 'click', (event) => {
+                            const id = event.target['id'];
+                            if (id === 'gagePageLink') {
+                                self.openGagePage(siteNo);
+                            }
+                        })
+
+                        layer.on('mouseover', function(e) {
+                            if (self.studyArea.doSelectMapGage) this.openPopup();
+                        });
+
+                        layer.on('click', function(e) {
+                            // need to select gage if that's the question
+                            if (self.studyArea.doSelectMapGage) {
+                                self.studyArea.selectGage(feature);
+                                self.studyArea.doSelectMapGage = false;
+                            }
+                            else this.openPopup();
+                        })
+
+                    }
+                }
+            }
 
             //additional features get generic styling for now
             else {
@@ -1420,6 +1485,8 @@ module StreamStats.Controllers {
                 if (!this.regionServices.selectedRegion) {
                     this.toaster.pop("info", "Information", "User input is needed to continue", 5000);
                 }
+
+                if (this.center.zoom >= 9) this.studyArea.getStreamgages(this.bounds.southWest.lng, this.bounds.northEast.lng, this.bounds.southWest.lat, this.bounds.northEast.lat);
             }
 
             if (this.center.zoom < 8 && oldValue !== newValue) {

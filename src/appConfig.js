@@ -1,5 +1,5 @@
 var configuration = {};
-configuration.version = "4.3.11";
+configuration.version = "4.4.0";
 configuration.environment = 'development';
 
 configuration.baseurls =
@@ -7,7 +7,6 @@ configuration.baseurls =
         'NWISurl': 'https://waterservices.usgs.gov/nwis',
         'StreamStatsServices': 'https://test.streamstats.usgs.gov',
         'StreamStatsMapServices': 'https://gis.streamstats.usgs.gov',
-        'nssservicesv2':'https://test.streamstats.usgs.gov/nssservices',
         'NSS': 'https://test.streamstats.usgs.gov/nssservices',
         'WaterUseServices': 'https://test.streamstats.usgs.gov/wateruseservices',
         'StormRunoffServices': 'https://test.streamstats.usgs.gov/runoffmodelingservices',
@@ -20,10 +19,9 @@ if (window.location.host === 'streamstats.usgs.gov') {
     configuration.baseurls.StreamStatsServices = 'https://streamstats.usgs.gov',
         configuration.baseurls.StreamStatsMapServices = 'https://gis.streamstats.usgs.gov',
         configuration.baseurls.NSS = 'https://streamstats.usgs.gov/nssservicesv2',
-        configuration.baseurls.nssservicesv2 = 'https://streamstats.usgs.gov/nssservicesv2',
         configuration.baseurls.WaterUseServices = 'https://streamstats.usgs.gov/wateruseservices',
         configuration.baseurls.StormRunoffServices = 'https://streamstats.usgs.gov/runoffmodelingservices',
-        configuration.baseurls.nssservicesv2 = 'https://streamstats.usgs.gov/nssservicesv2',
+        configuration.baseurls.GageStatsServices = 'https://streamstats.usgs.gov/gagestatsservices'
         configuration.environment = 'production';
 }
 
@@ -32,6 +30,7 @@ configuration.queryparams =
         'NWISsite':'/site/?format=rdb,1.0&bBox={0},{1},{2},{3}&seriesCatalogOutput=true&outputDataTypeCd=dv&parameterCd=00060&siteStatus=all&hasDataTypeCd=dv',
         'NWISinfo': '/nldi/linked-data/nwissite/USGS-{0}/?f=json',
         'NWISsiteinfo': '/site?site=',
+        'NWISperiodOfRecord': '/site?seriesCatalogOutput=true&outputDataTypeCd=dv&format=rdb&site=',
         'KrigService': '/krigservices/sites/{0}/krig?&x={1}&y={2}&crs={3}',
         'RegressionScenarios': '/{0}/estimate?state={1}',
         'statisticsGroupLookup': '/statisticgroups?regions={0},NA&regressionregions={1}',
@@ -74,7 +73,9 @@ configuration.queryparams =
         'GageStatsServicesStatistics': '/statistics/',
         'GageStatsServicesAgencies': '/agencies/',
         'GageStatsServicesStatGroups': '/statisticgroups/',
-
+        'GageStatsServicesNearest': '/stations/Nearest?lat={0}&lon={1}&radius={2}&geojson=true&includeStats=true',
+        'GageStatsServicesNetwork': '/stations/Network?lat={0}&lon={1}&distance={2}&includeStats=true&geojson=true',
+        'GageStatsServicesBounds': '/stations/Bounds?xmin={0}&xmax={1}&ymin={2}&ymax={3}&geojson=true'
     };
 
 configuration.SupportTicketService = {
@@ -361,7 +362,7 @@ configuration.regions = [
     { "RegionID": "OK", "Name": "Oklahoma", "Bounds": [[33.621136, -102.997709], [37.001478, -94.428552]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "OR", "Name": "Oregon", "Bounds": [[41.987672, -124.559617], [46.236091, -116.470418]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "PA", "Name": "Pennsylvania", "Bounds": [[39.719313, -80.526045], [42.267327, -74.700062]], "Layers": {}, "Applications": ["Wateruse"], "regionEnabled": true, "ScenariosAvailable": true },
-    { "RegionID": "PR", "Name": "Puerto Rico", "Bounds": [[17.922222, -67.938339], [18.519443, -65.241958]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
+    { "RegionID": "PR", "Name": "Puerto Rico", "Bounds": [[17.922222, -67.938339], [18.519443, -65.241958]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "RI", "Name": "Rhode Island", "Bounds": [[41.322769, -71.866678], [42.013713, -71.117132]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     {
         "RegionID": "SC", "Name": "South Carolina", "Bounds": [[32.068173, -83.350685], [35.208356, -78.579453]], "Layers":
@@ -402,36 +403,6 @@ configuration.regions = [
                         }]
                     }],
                     "queryProperties": { "SCDOT Bridges": { "COUNTY_ID": "County Identifier", "RTE_Type": "Route Type", "RTE_NBR": "Route Number", "RTE_DIR": "Route Direction", "RTE_LRS": "Route LRS", "Structure_": "Type", "Crossing": "Crossing", "Location": "Location", "Structure1": "Structure" } }
-                },
-                "SCDOT_Roads": {
-                    "name": "Road Network",
-                    "url": "https://services1.arcgis.com/VaY7cY9pvUYUP1Lf/ArcGIS/rest/services/HIGHWAYS/FeatureServer/0",
-                    "type": 'agsFeature',
-                    "visible": true,
-                    "layerOptions": {
-                        style: function (feature) {
-                            var c, o = 0.75;
-                            switch (feature.properties.ROUTE_TYPE) {
-                                case '':
-                                    c = '#007D7D';
-                                    break;
-                                default:
-                                    c = '#C0C0C0';
-                            }
-                            return { color: c, opacity: o, weight: 5 };
-                        },
-                        "minZoom": 15
-                    },
-                    "layerArray": [{
-                        note: "This overrides the ESRI legend",
-                        "layerName": "Road Network Routes",
-                        "legend": [{
-                            "contentType": "image/png",
-                            "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAC9JREFUOI1jYaAyYBk1cNTAYWtgenr6f2oYNnPmTEYWGIMaBjIwDJkwHDVwmBsIADDsBh2b0c5hAAAAAElFTkSuQmCC",
-                            "label": ""
-                        }]
-                    }],
-                    "queryProperties": { "Road Network Routes": { "COUNTY_ID": "County Identifier", "ROUTE_TYPE": "Route Type", "ROUTE_NUMB": "Route Number", "ROUTE_DIR": "Route Direction", "ROUTE_ID": "Route Identifier", "FEATURE_TY": "Type", "STREET_NAM": "Street Name", "NAME": "Name" } }
                 }
             },
         "Applications": [], "regionEnabled": true, "ScenariosAvailable": true
@@ -456,13 +427,14 @@ configuration.regions = [
 configuration.overlayedLayers = {
     "SSLayer": {
         "name": "National Layers",
-        "url": configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['SSNationalLayers'],
+        "url": configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['SSNationalLayers'], // note: we should remove the streamgages from the NationalLayer when ready
         "type": 'agsDynamic',
         "visible": true,
         "layerOptions": {
             "opacity": 1,
             "format": "png8",
-            "f": "image"
+            "f": "image",
+            "layers": [1,2,3,4,5,6,7]
         },
         "layerArray": [{
             note: "This overrides the ESRI legend",
@@ -471,7 +443,7 @@ configuration.overlayedLayers = {
             "legend": [{
                 "contentType": "image/png",
                 "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAaJJREFUOI3dzz1IW1EYxvF/TMqpFQsJCF4QOuhUpTpEVCw6RSsdQhFB6hfiF0IDFqkoOCqKEhxEqm0H20YUgpQoqOBWOkgjpQgXowREEC5SuVBE6QtFHXQwYjSJmXzgDO85hx/PayPJsd0TcD6sqM6ZBFqAk7uD4dCyqu3dkLnhRmD6bqB/ q5DwZrl4hv6rb2MWEfEDR4mD + q9ZSl + mAC75 + HOGxvwuYDAx8MNaK / +Os3mUfj5nP + tSSlsUMbKAvfhA / dSKb3qEqvrLtwUS0CeVW + sWkbfxgcsr4zx12rFe + ZJu75PMPK / jcKfQNM1gbKBPz2Az2EzJi + ten / B1LdUse9AGxAhu//ZTXPkwanurrRd3RyeBqRrAfzM48b2IvwfPcWRG9QC76nnvlMDUY2ABkOjgbshHxWvrTRqAYPGo/s9uGWh6A3ivBR3epTZTpeWQmnabB6CkqqFOjbbvi0gG8CcSXF1NMZdCw7zqjAW7iKWOT+sVqtX5TkR6IkGXqx4IMub5EYeIQAlQrmlarmEY+uWVv1ycRDJgGAaRDZOUpINnJ5KDtx5X6hkAAAAASUVORK5CYII=",
-                "label": "Gaging Station, Continous Record"
+                "label": "Gaging Station, Continuous Record"
             },{
                 "contentType": "image/png",
                 "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAZxJREFUOI1jYaAyYBk2BjIZGAgtunDhXRwDA8M/ig10cBDKrqiwt5848WDq9u3vZlJqoIC/v3a0u7uyzLVrbxK2bz+ 8hIGB4SvZBoaGyjcnJenpMTAwMCQm6ukdPHineuPG51XkGqgVEqJjzcfHycnAwMAgIMDJFRys57px4/NpDAwMT0g2MDZWvjUoSM0AWSwsTMNgx467zcuW3Ukk1UD/nBxrdRYWZkZkQXZ2VpaEBH39HTvemb579+ 40sQay5+cbFJiZSWlik3R2ljcMDBStnjv3XQBRBqqosBeVlJgp43I6ExMTQ36 + mercuTdDGRgYVhMyUDItzdhLRoZPFpeBDAwMDLq64lolJQYpPT0XNjEwMPzEaaCDg3xzZqaRHj7DYKCoyFJ19erreQ8f / uzGaqCQkJBZRoaOJg8PBx8xBkpKcitmZpq5VFQcXsDAwPAa3UBGW1v2upAQdTNiDIOB7Gx9 / dWrr1adPfuuEN3AWAMDKbODBx + SWgKJ6 + gIhT57xj7n + fPnV5E1L2psPLuIgeEsieahgsFfwAIAW21yjgzG0zwAAAAASUVORK5CYII=",
@@ -503,7 +475,7 @@ configuration.overlayedLayers = {
             }]
         }],
         "queryProperties": { "Streamgages":{ "STA_ID": "Station ID", "STA_NAME": "Station Name", "Latitude": "Latitude", "Longitude": "Longitude", "FeatureURL": "URL" }}
-    },//end ssLayer    
+    },//end ssLayer
     "MaskLayer": {
         "name": "Area of Interest",
         "url": "https://streamstats.usgs.gov/maptiles/MaskLayer/{z}/{y}/{x}.png",

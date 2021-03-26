@@ -132,7 +132,7 @@ var StreamStats;
                         return;
                     if (_this.explorationService.drawElevationProfile)
                         return;
-                    if (_this.studyArea.doQueryNWIS) {
+                    if (_this.studyArea.doSelectMapGage) {
                         _this.studyArea.queryNWIS(args.leafletEvent.latlng);
                         return;
                     }
@@ -201,6 +201,11 @@ var StreamStats;
                         _this.nssService.loadStatisticsGroupTypes(_this.regionServices.selectedRegion.RegionID, _this.studyArea.selectedStudyArea.RegressionRegions.map(function (elem) {
                             return elem.code;
                         }).join(","));
+                });
+                $scope.$watch(function () { return _this.studyArea.streamgageLayer; }, function (newval, oldval) {
+                    if (newval != oldval) {
+                        _this.addGeoJSON('streamgages', newval);
+                    }
                 });
             }
             Object.defineProperty(MapController.prototype, "selectedExplorationMethodType", {
@@ -803,7 +808,7 @@ var StreamStats;
             MapController.prototype.removeGeoJson = function (layerName) {
                 if (layerName === void 0) { layerName = ""; }
                 for (var k in this.geojson) {
-                    if (typeof this.geojson[k] !== 'function') {
+                    if (typeof this.geojson[k] !== 'function' && k != 'streamgages') {
                         delete this.geojson[k];
                         this.eventManager.RaiseEvent(WiM.Directives.onLayerRemoved, this, new WiM.Directives.LegendLayerRemovedEventArgs(k, "geojson"));
                     }
@@ -942,6 +947,57 @@ var StreamStats;
                             };
                     }
                 }
+                else if (LayerName == 'streamgages') {
+                    var self = this;
+                    this.geojson[LayerName] = {
+                        data: feature,
+                        style: {
+                            displayName: 'Streamgages'
+                        },
+                        onEachFeature: function (feature, layer) {
+                            var siteNo = feature.properties['Code'];
+                            var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm';
+                            var NWISpage = 'http://nwis.waterdata.usgs.gov/nwis/inventory/?site_no=' + siteNo;
+                            var gageButtonDiv = L.DomUtil.create('div', 'testDiv');
+                            gageButtonDiv.innerHTML = '<strong>Station ID: </strong>' + siteNo + '</br><strong>Station Name: </strong>' + feature.properties['Name'] + '</br><strong>Latitude: </strong>' + feature.geometry.coordinates[1] + '</br><strong>Longitude: </strong>' + feature.geometry.coordinates[0] + '</br><strong>Station Type</strong>: ' + feature.properties.StationType.name +
+                                '</br><strong>NWIS page: </strong><a href="' + NWISpage + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br><strong>New StreamStats Gage Modal: </strong><a id="gagePageLink" class="' + siteNo + '">link</a><br>';
+                            layer.bindPopup(gageButtonDiv);
+                            var styling = configuration.overlayedLayers['SSLayer'].layerArray[0].legend.filter(function (item) {
+                                return item.label.toLowerCase() == feature.properties.StationType.name.toLowerCase();
+                            })[0];
+                            if (styling == undefined) {
+                                styling = configuration.overlayedLayers['SSLayer'].layerArray[0].legend.filter(function (item) {
+                                    return item.label == 'Unknown';
+                                })[0];
+                            }
+                            var icon = L.icon({
+                                iconUrl: 'data:image/png;base64,' + styling.imageData,
+                                iconSize: [15, 16],
+                                iconAnchor: [7.5, 8],
+                                popupAnchor: [0, -11],
+                            });
+                            layer.setIcon(icon);
+                            L.DomEvent.on(gageButtonDiv, 'click', function (event) {
+                                var id = event.target['id'];
+                                if (id === 'gagePageLink') {
+                                    self.openGagePage(siteNo);
+                                }
+                            });
+                            layer.on('mouseover', function (e) {
+                                if (self.studyArea.doSelectMapGage)
+                                    this.openPopup();
+                            });
+                            layer.on('click', function (e) {
+                                if (self.studyArea.doSelectMapGage) {
+                                    self.studyArea.selectGage(feature);
+                                    self.studyArea.doSelectMapGage = false;
+                                }
+                                else
+                                    this.openPopup();
+                            });
+                        }
+                    };
+                }
                 else {
                     this.geojson[LayerName] =
                         {
@@ -988,6 +1044,8 @@ var StreamStats;
                     if (!this.regionServices.selectedRegion) {
                         this.toaster.pop("info", "Information", "User input is needed to continue", 5000);
                     }
+                    if (this.center.zoom >= 9)
+                        this.studyArea.getStreamgages(this.bounds.southWest.lng, this.bounds.northEast.lng, this.bounds.southWest.lat, this.bounds.northEast.lat);
                 }
                 if (this.center.zoom < 8 && oldValue !== newValue) {
                     this.regionServices.regionList = [];

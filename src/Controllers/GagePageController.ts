@@ -20,7 +20,7 @@
 //07.16.2020 mjs - Created
 
 //Import
-
+// TODO: remove extra queries that we can get from the gage return
 module StreamStats.Controllers {
     'use strict';
 
@@ -192,6 +192,7 @@ module StreamStats.Controllers {
 
                     this.getStationCharacteristics(response.data.characteristics);
                     this.getStationStatistics(response.data.statistics);
+                    this.getNWISInfo();
 
                 }, (error) => {
                     //sm when error
@@ -309,7 +310,6 @@ module StreamStats.Controllers {
             this.AppVersion = configuration.version;
 
             this.getGagePage()
-            this.getNWISInfo()
         }
 
 
