@@ -89,8 +89,8 @@ configuration.SupportTicketService = {
     'PastNewsFolder': '/solution/categories/9000028363/folders/9000163895.json',
     'DisclaimersArticle': '/solution/categories/9000106503/folders/9000163536/articles/9000127695.json',
     'CreditsArticle': '/solution/categories/9000106503/folders/9000163536/articles/9000127697.json',
-    'Token': 'yxAClTZwexFeIxpRR6g',
-    'AccountID': '303973'
+    'Token': null,
+    'AccountID': null
 };
 
 configuration.basemaps =
