@@ -1,5 +1,5 @@
 var configuration = {};
-configuration.version = "4.5.0";
+configuration.version = "4.5.1";
 configuration.environment = 'development';
 
 configuration.baseurls =
@@ -89,8 +89,8 @@ configuration.SupportTicketService = {
     'PastNewsFolder': '/solution/categories/9000028363/folders/9000163895.json',
     'DisclaimersArticle': '/solution/categories/9000106503/folders/9000163536/articles/9000127695.json',
     'CreditsArticle': '/solution/categories/9000106503/folders/9000163536/articles/9000127697.json',
-    'Token': '***REMOVED***',
-    'AccountID': '***REMOVED***'
+    'Token': null,
+    'AccountID': null
 };
 
 configuration.basemaps =
