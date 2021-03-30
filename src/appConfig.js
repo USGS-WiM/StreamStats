@@ -88,9 +88,7 @@ configuration.SupportTicketService = {
     'ActiveNewsFolder': '/solution/categories/9000028363/folders/9000163894.json',
     'PastNewsFolder': '/solution/categories/9000028363/folders/9000163895.json',
     'DisclaimersArticle': '/solution/categories/9000106503/folders/9000163536/articles/9000127695.json',
-    'CreditsArticle': '/solution/categories/9000106503/folders/9000163536/articles/9000127697.json',
-    'Token': null,
-    'AccountID': null
+    'CreditsArticle': '/solution/categories/9000106503/folders/9000163536/articles/9000127697.json'
 };
 
 configuration.basemaps =
