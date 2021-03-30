@@ -48,6 +48,7 @@ module StreamStats.Controllers {
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
         private StudyArea: StreamStats.Models.IStudyArea;
+        private StudyAreaService: Services.IStudyAreaService;
         public Upload: any;
         public http: any;
         public sce: any;
@@ -65,6 +66,7 @@ module StreamStats.Controllers {
         public Server: string;
         public faqArticles: Object;
         public helpArticles: Object;
+        private freshdeskCreds: Object;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -78,6 +80,7 @@ module StreamStats.Controllers {
             this.sce = $sce;
 
             this.modalInstance = modal;
+            this.StudyAreaService = studyAreaService;
             this.StudyArea = studyAreaService.selectedStudyArea;
             this.freshdeskTicketData = new FreshdeskTicketData();
             this.selectedHelpTabName = "help";
@@ -103,30 +106,21 @@ module StreamStats.Controllers {
 
             var formdata = new FormData();
 
-            //for (var key in this.freshdeskTicketData) {
-            //    formdata.append(key, this.freshdeskTicketData[key]);
-            //}
-
-            /*  TESTING DATA  */
-            //formdata.append('helpdesk_ticket[description]', 'sample description');
-            //formdata.append('helpdesk_ticket[email]', 'demo@freshdesk.com');
-            //formdata.append('helpdesk_ticket[subject]', 'Test subject');
-
             formdata.append('helpdesk_ticket[email]', this.freshdeskTicketData.email);
             formdata.append('helpdesk_ticket[subject]', this.freshdeskTicketData.subject);
-            formdata.append('helpdesk_ticket[description]', this.freshdeskTicketData.description);  
+            formdata.append('helpdesk_ticket[description]', this.freshdeskTicketData.description);
 
-            formdata.append('helpdesk_ticket[custom_field][regionid_' + configuration.SupportTicketService.AccountID + ']', this.RegionID);
-            formdata.append('helpdesk_ticket[custom_field][workspaceid_' + configuration.SupportTicketService.AccountID + ']', this.WorkspaceID);
-            formdata.append('helpdesk_ticket[custom_field][server_' + configuration.SupportTicketService.AccountID + ']', this.Server);
-            formdata.append('helpdesk_ticket[custom_field][browser_' + configuration.SupportTicketService.AccountID + ']', this.Browser);
-            formdata.append('helpdesk_ticket[custom_field][softwareversion_' + configuration.SupportTicketService.AccountID + ']', this.AppVersion);
+            formdata.append('helpdesk_ticket[custom_field][regionid_' + this.freshdeskCreds['AccountID'] + ']', this.RegionID);
+            formdata.append('helpdesk_ticket[custom_field][workspaceid_' + this.freshdeskCreds['AccountID'] + ']', this.WorkspaceID);
+            formdata.append('helpdesk_ticket[custom_field][server_' + this.freshdeskCreds['AccountID'] + ']', this.Server);
+            formdata.append('helpdesk_ticket[custom_field][browser_' + this.freshdeskCreds['AccountID'] + ']', this.Browser);
+            formdata.append('helpdesk_ticket[custom_field][softwareversion_' + this.freshdeskCreds['AccountID'] + ']', this.AppVersion);
 
             //can loop over an opject and keep appending attachments here
             if (this.freshdeskTicketData.attachment) formdata.append('helpdesk_ticket[attachments][][resource]', this.freshdeskTicketData.attachment, this.freshdeskTicketData.attachment.name);
 
             var headers = {
-                "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
+                "Authorization": "Basic " + btoa(this.freshdeskCreds['Token'] + ":" + 'X'),
                 "Content-Type": undefined
             };
 
@@ -154,7 +148,7 @@ module StreamStats.Controllers {
         public getFreshDeskArticles(folder: string): ng.IPromise<any> {
 
             var headers = {
-                "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
+                "Authorization": "Basic " + btoa(this.freshdeskCreds['Token'] + ":" + 'X'),
             };
 
             var url = configuration.SupportTicketService.BaseURL + folder;
@@ -192,8 +186,12 @@ module StreamStats.Controllers {
         private init(): void {
             this.getBrowser();
             this.AppVersion = configuration.version;
-            this.getFreshDeskArticles(configuration.SupportTicketService.FAQarticlesFolder).then(response => { this.faqArticles = response });
-            this.getFreshDeskArticles(configuration.SupportTicketService.UserManualArticlesFolder).then(response => { this.helpArticles = response });
+            this.freshdeskCreds = this.StudyAreaService.freshdeskCredentials;
+            if (this.freshdeskCreds) {
+                this.getFreshDeskArticles(configuration.SupportTicketService.FAQarticlesFolder).then(response => { this.faqArticles = response });
+                this.getFreshDeskArticles(configuration.SupportTicketService.UserManualArticlesFolder).then(response => { this.helpArticles = response });
+            }
+
             if (this.StudyArea && this.StudyArea.WorkspaceID) this.WorkspaceID = this.StudyArea.WorkspaceID;
             else this.WorkspaceID = '';
             if (this.StudyArea && this.StudyArea.RegionID) this.RegionID = this.StudyArea.RegionID;
