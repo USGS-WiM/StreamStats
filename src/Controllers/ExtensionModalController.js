@@ -24,6 +24,7 @@ var StreamStats;
                 var _this = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
                 _this.events = events;
                 _this.isBusy = false;
+                _this.CanContinue = true;
                 _this.selectedReferenceGage = null;
                 _this.queryBy = 'Nearest';
                 _this.getNearest = false;
@@ -52,6 +53,8 @@ var StreamStats;
                             }
                         });
                     });
+                    if (newval != oldval)
+                        _this.getNWISDailyValues();
                 });
                 return _this;
             }
@@ -133,6 +136,7 @@ var StreamStats;
                 if (this.studyAreaService.selectedGage)
                     this.studyAreaService.selectedGage = this.selectedReferenceGage;
                 this.getGageInfo();
+                this.getNWISDailyValues();
             };
             ExtensionModalController.prototype.verifyExtensionCanContinue = function () {
                 var _this = this;
@@ -262,6 +266,7 @@ var StreamStats;
             };
             ExtensionModalController.prototype.getNearestGages = function () {
                 var _this = this;
+                this.CanContinue = false;
                 this.toaster.pop("wait", "Searching for gages", "Please wait...", 0);
                 var headers = {
                     "X-Is-Streamstats": true
@@ -278,6 +283,7 @@ var StreamStats;
                 this.selectedReferenceGage.StationID = '';
                 this.Execute(request).then(function (response) {
                     _this.toaster.clear();
+                    _this.CanContinue = true;
                     if (typeof response.data == 'string') {
                         _this.toaster.pop("warning", "Warning", response.data, 0);
                     }
@@ -307,6 +313,7 @@ var StreamStats;
                             _this.getNWISPeriodOfRecord(feat);
                         });
                         _this.referenceGageList = response.data.features;
+                        _this.getNWISDailyValues();
                     }
                     if (response.headers()['x-usgswim-messages']) {
                         var headerMsgs = JSON.parse(response.headers()['x-usgswim-messages']);
@@ -318,6 +325,7 @@ var StreamStats;
                     }
                 }, function (error) {
                     _this.toaster.clear();
+                    _this.CanContinue = true;
                     console.log(error);
                     if (error.headers()['x-usgswim-messages']) {
                         var headerMsgs = JSON.parse(error.headers()['x-usgswim-messages']);
@@ -398,6 +406,35 @@ var StreamStats;
                     gage['SelectEnabled'] = false;
                 }
                 return gage['SelectEnabled'];
+            };
+            ExtensionModalController.prototype.getNWISDailyValues = function () {
+                var _this = this;
+                if (!this.referenceGageList)
+                    return;
+                var start = this.dateRange.dates.startDate.toISOString();
+                start = start.substr(0, start.indexOf('T'));
+                var end = this.dateRange.dates.endDate.toISOString();
+                end = end.substr(0, end.indexOf('T'));
+                this.referenceGageList.forEach(function (gage) {
+                    gage['HasZeroFlows'] = undefined;
+                    var nwis_url = configuration.baseurls.NWISurl + configuration.queryparams.NWISdailyValues.format(gage.StationID, start, end);
+                    var nwis_request = new WiM.Services.Helpers.RequestInfo(nwis_url, true, WiM.Services.Helpers.methodType.GET, 'TEXT');
+                    _this.Execute(nwis_request).then(function (response) {
+                        var data = response.data.split('\n').filter(function (r) { return (!r.startsWith("#") && r != ""); });
+                        data.shift();
+                        gage['HasZeroFlows'] = false;
+                        if (data.length <= 2)
+                            gage['HasZeroFlows'] = 'N/A';
+                        do {
+                            var row = data.shift().split('\t');
+                            var value = parseInt(row[3]);
+                            if (typeof (value) == 'number' && value == 0)
+                                gage['HasZeroFlows'] = 'true';
+                        } while (data.length > 0);
+                    }, function (error) {
+                        gage['HasZeroFlows'] = 'N/A';
+                    });
+                });
             };
             ExtensionModalController.prototype.checkCorrelation = function () {
                 if (this.referenceGageList)

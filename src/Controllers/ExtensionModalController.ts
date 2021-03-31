@@ -52,7 +52,7 @@ module StreamStats.Controllers {
         public title: string;
         public isBusy: boolean = false;
         public toaster: any;
-        
+        public CanContinue: boolean = true;
         //QPPQ
         public dateRange: IDateRange;
         public dateRangeOptions;
@@ -89,6 +89,7 @@ module StreamStats.Controllers {
                         if (p.code == "edate") {p.value = this.dateRange.dates.endDate; }
                     })
                 });
+                if (newval != oldval) this.getNWISDailyValues();
             });
         }
         //Methods  
@@ -175,6 +176,7 @@ module StreamStats.Controllers {
            
             if (this.studyAreaService.selectedGage) this.studyAreaService.selectedGage = this.selectedReferenceGage;
             this.getGageInfo();
+            this.getNWISDailyValues();
         }
         private verifyExtensionCanContinue(): boolean {
 
@@ -310,6 +312,7 @@ module StreamStats.Controllers {
         }
 
         public getNearestGages() {
+            this.CanContinue = false;
             this.toaster.pop("wait", "Searching for gages", "Please wait...", 0);
             var headers = {
                 "X-Is-Streamstats": true
@@ -326,6 +329,7 @@ module StreamStats.Controllers {
             this.Execute(request).then(
                 (response: any) => {
                     this.toaster.clear();
+                    this.CanContinue = true;
                     if (typeof response.data == 'string') {
                         this.toaster.pop("warning", "Warning", response.data, 0);
                     } else if (response.data.hasOwnProperty('features') && response.data.features.length == 0) {
@@ -349,6 +353,7 @@ module StreamStats.Controllers {
                             this.getNWISPeriodOfRecord(feat);
                         });
                         this.referenceGageList = response.data.features;
+                        this.getNWISDailyValues();
 
                     }
 
@@ -363,6 +368,7 @@ module StreamStats.Controllers {
                 }, (error) => {
                     //sm when complete
                     this.toaster.clear();
+                    this.CanContinue = true;
                     console.log(error);
                     if (error.headers()['x-usgswim-messages']) {
                         var headerMsgs = JSON.parse(error.headers()['x-usgswim-messages']);
@@ -447,6 +453,39 @@ module StreamStats.Controllers {
                 gage['SelectEnabled'] = false;
             }
             return gage['SelectEnabled'];
+        }
+
+        public getNWISDailyValues() {
+            if (!this.referenceGageList) return;
+            var start = this.dateRange.dates.startDate.toISOString();
+            start = start.substr(0, start.indexOf('T'));
+            var end = this.dateRange.dates.endDate.toISOString();
+            end = end.substr(0, end.indexOf('T'));
+            this.referenceGageList.forEach((gage) => {
+                gage['HasZeroFlows'] = undefined;
+
+                var nwis_url = configuration.baseurls.NWISurl + configuration.queryparams.NWISdailyValues.format(gage.StationID, start, end);
+                var nwis_request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(nwis_url, true, WiM.Services.Helpers.methodType.GET, 'TEXT');
+
+                this.Execute(nwis_request).then((response: any) => {
+                    var data = response.data.split('\n').filter(r => { return (!r.startsWith("#") && r != "") });
+                    //remove extra random line
+                    data.shift();
+                    gage['HasZeroFlows'] = false;
+                    if (data.length <= 2) gage['HasZeroFlows'] = 'N/A'; // if no values returned, length here will be 2
+                    do {
+                        var row = data.shift().split('\t');
+                        var value = parseInt(row[3]);
+                        if (typeof(value) == 'number' && value == 0) gage['HasZeroFlows'] = 'true';
+                    } while (data.length > 0);
+                    
+                }, (error) => {
+                    //sm when error
+                    gage['HasZeroFlows'] = 'N/A';
+                });
+
+            });
+
         }
 
         public checkCorrelation() {

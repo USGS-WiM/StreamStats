@@ -51,7 +51,7 @@
                         </div>
 
                         <div>
-                            <button id="nearestGageButton" ng-click="vm.getNearestGages()" type="button" class="btn-green"><i class="fa fa-check-circle-o"></i>&nbsp;&nbsp;Go</button>
+                            <button id="nearestGageButton" ng-click="vm.getNearestGages()" ng-disabled="!vm.CanContinue" type="button" class="btn-green"><i ng-class="vm.CanContinue ? 'fa fa-check-circle-o' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Go</button>
                         </div>
                     </div>
                     
@@ -67,9 +67,10 @@
                             <th>Station Type</th>
                             <th>Is Regulated?</th>
                             <th>Drainage Area</th>
-                            <th>Has Flow Duration Stats?</th>
-                            <th>Start Date</th>
-                            <th>End Date</th>
+                            <th title="Indicates whether gage has any flow duration statistics.">Has Flow Duration Stats?</th>
+                            <th title="Indicates whether any flow values in the selected date range is zero.">Has Zero Flows?</th>
+                            <th title="Indicates the earliest date from the NWIS period of record.">Start Date</th>
+                            <th title="Indicates the latest date from the NWIS period of record.">End Date</th>
                             <th></th>
                         </thead>
                         <tbody>
@@ -78,10 +79,11 @@
                                     <td><a title="Show Gage Page" ng-click="vm.openGagePage(gage.StationID)">{{gage.StationID}}</a></td>
                                     <td>{{gage.properties.Name ? gage.properties.Name : gage.Name}}</td>
                                     <td ng-if="gage.hasOwnProperty('correlation')">{{gage.correlation.toUSGSvalue()}}</td>
-                                    <td>{{gage.properties.StationType.name ? gage.properties.StationType.name : 'NA'}}</td>
-                                    <td>{{gage.properties.IsRegulated != undefined ? gage.properties.IsRegulated : 'NA'}}</td>
-                                    <td>{{gage.properties.DrainageArea ? gage.properties.DrainageArea : 'NA'}}</td>
-                                    <td>{{gage.properties.HasFlowDurationStats ? gage.properties.HasFlowDurationStats : 'NA'}}</td>
+                                    <td>{{gage.properties.StationType.name ? gage.properties.StationType.name : 'N/A'}}</td>
+                                    <td>{{gage.properties.IsRegulated != undefined ? gage.properties.IsRegulated : 'N/A'}}</td>
+                                    <td>{{gage.properties.DrainageArea ? gage.properties.DrainageArea : 'N/A'}}</td>
+                                    <td>{{gage.properties.HasFlowDurationStats != undefined ? gage.properties.HasFlowDurationStats : 'N/A'}}</td>
+                                    <td>{{gage.HasZeroFlows}}</td>
                                     <td>{{gage.StartDate | date:'yyyy-MM-dd'}}</td>
                                     <td>{{gage.EndDate | date:'yyyy-MM-dd'}}</td>
                                     <td>
