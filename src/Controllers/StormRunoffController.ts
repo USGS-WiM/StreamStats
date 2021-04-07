@@ -64,6 +64,7 @@ module StreamStats.Controllers {
         private modalInstance: ng.ui.bootstrap.IModalServiceInstance;
         public showResults: boolean;
         public hideAlerts: boolean;
+        public toaster: any;
         private parameterloadedEventHandler: WiM.Event.EventHandler<Services.StudyAreaEventArgs>;
         private regionParameters: Array<Services.IParameter> = [];
 
@@ -135,11 +136,12 @@ module StreamStats.Controllers {
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$analytics', '$http', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.RegionService', '$modalInstance', '$timeout', 'WiM.Event.EventManager'];
-        constructor($scope: IStormRunoffControllerScope, $analytics, $http: ng.IHttpService, studyAreaService: StreamStats.Services.IStudyAreaService, StatisticsGroup: Services.InssService, region: StreamStats.Services.IRegionService, modal: ng.ui.bootstrap.IModalServiceInstance, public $timeout: ng.ITimeoutService, private EventManager: WiM.Event.IEventManager) {
+        static $inject = ['$scope', '$analytics', 'toaster', '$http', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.RegionService', '$modalInstance', '$timeout', 'WiM.Event.EventManager'];
+        constructor($scope: IStormRunoffControllerScope, $analytics, toaster, $http: ng.IHttpService, studyAreaService: StreamStats.Services.IStudyAreaService, StatisticsGroup: Services.InssService, region: StreamStats.Services.IRegionService, modal: ng.ui.bootstrap.IModalServiceInstance, public $timeout: ng.ITimeoutService, private EventManager: WiM.Event.IEventManager) {
             super($http, configuration.baseurls.StormRunoffServices);
             $scope.vm = this;
             this.angulartics = $analytics;
+            this.toaster = toaster;
             this.modalInstance = modal;
             this.StudyArea = studyAreaService.selectedStudyArea;
             this.nssService = StatisticsGroup;
@@ -194,9 +196,10 @@ module StreamStats.Controllers {
                         else if (this.SelectedTab == 2) {
                             this.setPeakQ(this.result.q);
                         }
-                    }, (error) => {
-                        var x = error;
-                        //sm when error                    
+                    },(error) => {
+                        //sm when error
+                        this.toaster.clear();
+                        this.toaster.pop('error', "There was an error retrieving temporal distribution data", "HTTP request error", 0);                 
                     }).finally(() => {
                         this.CanContinue = true;
                         this.hideAlerts = true;
