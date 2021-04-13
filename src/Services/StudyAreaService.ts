@@ -71,7 +71,8 @@ module StreamStats.Services {
         extensionDateRange: IDateRange;
         selectedGage: any;
         computeRegressionEquation(regtype: string);
-        updateExtensions();
+        updateExtensions(); 
+        freshdeskCredentials();
     }
 
     interface IDateRange {
@@ -172,6 +173,15 @@ module StreamStats.Services {
         //QPPQ
         public extensionDateRange: IDateRange = null;
         public selectedGage: any;
+
+        // freshdesk
+        private _freshdeskCreds: any;
+        public get freshdeskCredentials(): any {
+            return this._freshdeskCreds;
+        }
+        public set freshdeskCredentials(val: any) {
+            if (this._freshdeskCreds != val) this._freshdeskCreds = val;
+        }
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-

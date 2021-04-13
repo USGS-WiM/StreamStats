@@ -2,10 +2,12 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -25,6 +27,7 @@ var StreamStats;
                 _this.modalInstance = modal;
                 _this.modalService = modalService;
                 _this.StudyArea = studyAreaService.selectedStudyArea;
+                _this.StudyAreaService = studyAreaService;
                 _this.regionService = region;
                 _this.selectedAboutTabName = "about";
                 _this.regionArticle = '<h3>No State or Region Selected</h3>';
@@ -42,7 +45,7 @@ var StreamStats;
             AboutController.prototype.getActiveNews = function () {
                 var _this = this;
                 var headers = {
-                    "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
+                    "Authorization": "Basic " + btoa(this.freshdeskCreds['Token'] + ":" + 'X'),
                 };
                 var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.ActiveNewsFolder;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
@@ -67,7 +70,7 @@ var StreamStats;
             AboutController.prototype.getPastNews = function () {
                 var _this = this;
                 var headers = {
-                    "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
+                    "Authorization": "Basic " + btoa(this.freshdeskCreds['Token'] + ":" + 'X'),
                 };
                 var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.PastNewsFolder;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
@@ -92,7 +95,7 @@ var StreamStats;
             AboutController.prototype.getAboutArticle = function () {
                 var _this = this;
                 var headers = {
-                    "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
+                    "Authorization": "Basic " + btoa(this.freshdeskCreds['Token'] + ":" + 'X'),
                 };
                 var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.AboutArticle;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
@@ -115,7 +118,7 @@ var StreamStats;
                 if (!regionID)
                     return;
                 var headers = {
-                    "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
+                    "Authorization": "Basic " + btoa(this.freshdeskCreds['Token'] + ":" + 'X'),
                 };
                 var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.RegionInfoFolder;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
@@ -149,7 +152,7 @@ var StreamStats;
                 var _this = this;
                 console.log("Trying to open disclaimers article");
                 var headers = {
-                    "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
+                    "Authorization": "Basic " + btoa(this.freshdeskCreds['Token'] + ":" + 'X'),
                 };
                 var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.DisclaimersArticle;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
@@ -165,7 +168,7 @@ var StreamStats;
                 var _this = this;
                 console.log("Trying to open credits article");
                 var headers = {
-                    "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
+                    "Authorization": "Basic " + btoa(this.freshdeskCreds['Token'] + ":" + 'X'),
                 };
                 var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.CreditsArticle;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
@@ -182,11 +185,14 @@ var StreamStats;
             ;
             AboutController.prototype.init = function () {
                 this.AppVersion = configuration.version;
-                this.getAboutArticle();
-                this.getRegionHelpArticle();
-                this.getActiveNews();
-                this.getPastNews();
-                this.getDisclaimersArticle();
+                this.freshdeskCreds = this.StudyAreaService.freshdeskCredentials;
+                if (this.freshdeskCreds) {
+                    this.getAboutArticle();
+                    this.getRegionHelpArticle();
+                    this.getActiveNews();
+                    this.getPastNews();
+                    this.getDisclaimersArticle();
+                }
             };
             AboutController.prototype.readCookie = function (name) {
                 var nameEQ = name + "=";

@@ -2,10 +2,12 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -31,6 +33,7 @@ var StreamStats;
                 _this.http = $http;
                 _this.sce = $sce;
                 _this.modalInstance = modal;
+                _this.StudyAreaService = studyAreaService;
                 _this.StudyArea = studyAreaService.selectedStudyArea;
                 _this.freshdeskTicketData = new FreshdeskTicketData();
                 _this.selectedHelpTabName = "help";
@@ -52,15 +55,15 @@ var StreamStats;
                 formdata.append('helpdesk_ticket[email]', this.freshdeskTicketData.email);
                 formdata.append('helpdesk_ticket[subject]', this.freshdeskTicketData.subject);
                 formdata.append('helpdesk_ticket[description]', this.freshdeskTicketData.description);
-                formdata.append('helpdesk_ticket[custom_field][regionid_' + configuration.SupportTicketService.AccountID + ']', this.RegionID);
-                formdata.append('helpdesk_ticket[custom_field][workspaceid_' + configuration.SupportTicketService.AccountID + ']', this.WorkspaceID);
-                formdata.append('helpdesk_ticket[custom_field][server_' + configuration.SupportTicketService.AccountID + ']', this.Server);
-                formdata.append('helpdesk_ticket[custom_field][browser_' + configuration.SupportTicketService.AccountID + ']', this.Browser);
-                formdata.append('helpdesk_ticket[custom_field][softwareversion_' + configuration.SupportTicketService.AccountID + ']', this.AppVersion);
+                formdata.append('helpdesk_ticket[custom_field][regionid_' + this.freshdeskCreds['AccountID'] + ']', this.RegionID);
+                formdata.append('helpdesk_ticket[custom_field][workspaceid_' + this.freshdeskCreds['AccountID'] + ']', this.WorkspaceID);
+                formdata.append('helpdesk_ticket[custom_field][server_' + this.freshdeskCreds['AccountID'] + ']', this.Server);
+                formdata.append('helpdesk_ticket[custom_field][browser_' + this.freshdeskCreds['AccountID'] + ']', this.Browser);
+                formdata.append('helpdesk_ticket[custom_field][softwareversion_' + this.freshdeskCreds['AccountID'] + ']', this.AppVersion);
                 if (this.freshdeskTicketData.attachment)
                     formdata.append('helpdesk_ticket[attachments][][resource]', this.freshdeskTicketData.attachment, this.freshdeskTicketData.attachment.name);
                 var headers = {
-                    "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
+                    "Authorization": "Basic " + btoa(this.freshdeskCreds['Token'] + ":" + 'X'),
                     "Content-Type": undefined
                 };
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', formdata, headers, angular.identity);
@@ -75,7 +78,7 @@ var StreamStats;
             };
             HelpController.prototype.getFreshDeskArticles = function (folder) {
                 var headers = {
-                    "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
+                    "Authorization": "Basic " + btoa(this.freshdeskCreds['Token'] + ":" + 'X'),
                 };
                 var url = configuration.SupportTicketService.BaseURL + folder;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
@@ -108,8 +111,11 @@ var StreamStats;
                 var _this = this;
                 this.getBrowser();
                 this.AppVersion = configuration.version;
-                this.getFreshDeskArticles(configuration.SupportTicketService.FAQarticlesFolder).then(function (response) { _this.faqArticles = response; });
-                this.getFreshDeskArticles(configuration.SupportTicketService.UserManualArticlesFolder).then(function (response) { _this.helpArticles = response; });
+                this.freshdeskCreds = this.StudyAreaService.freshdeskCredentials;
+                if (this.freshdeskCreds) {
+                    this.getFreshDeskArticles(configuration.SupportTicketService.FAQarticlesFolder).then(function (response) { _this.faqArticles = response; });
+                    this.getFreshDeskArticles(configuration.SupportTicketService.UserManualArticlesFolder).then(function (response) { _this.helpArticles = response; });
+                }
                 if (this.StudyArea && this.StudyArea.WorkspaceID)
                     this.WorkspaceID = this.StudyArea.WorkspaceID;
                 else

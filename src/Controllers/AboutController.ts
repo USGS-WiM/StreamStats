@@ -38,8 +38,10 @@ module StreamStats.Controllers {
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
         public sce: any;
+        public http: any;
         private regionService: Services.IRegionService;
         private StudyArea: StreamStats.Models.IStudyArea;
+        private StudyAreaService: Services.IStudyAreaService;
         private modalInstance: ng.ui.bootstrap.IModalServiceInstance;
         private modalService: Services.IModalService;
         public selectedAboutTabName: string;
@@ -52,6 +54,7 @@ module StreamStats.Controllers {
         public pastNewsArticles: Object;
         public disclaimersArticle: string;
         public AppVersion: string;
+        private freshdeskCreds: Object;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -63,6 +66,7 @@ module StreamStats.Controllers {
             this.modalInstance = modal;
             this.modalService = modalService;
             this.StudyArea = studyAreaService.selectedStudyArea;
+            this.StudyAreaService = studyAreaService;
             this.regionService = region;
             this.selectedAboutTabName = "about";
             this.regionArticle = '<h3>No State or Region Selected</h3>';
@@ -87,7 +91,7 @@ module StreamStats.Controllers {
             //console.log("Trying to open active news articles folder");
 
             var headers = {
-                "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
+                "Authorization": "Basic " + btoa(this.freshdeskCreds['Token'] + ":" + 'X'),
             };
 
             var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.ActiveNewsFolder;
@@ -121,7 +125,7 @@ module StreamStats.Controllers {
             //console.log("Trying to open past news articles folder");
 
             var headers = {
-                "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
+                "Authorization": "Basic " + btoa(this.freshdeskCreds['Token'] + ":" + 'X'),
             };
 
             var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.PastNewsFolder;
@@ -156,7 +160,7 @@ module StreamStats.Controllers {
             //console.log("Trying to open about article");
 
             var headers = {
-                "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
+                "Authorization": "Basic " + btoa(this.freshdeskCreds['Token'] + ":" + 'X'),
             };
 
             var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.AboutArticle;
@@ -192,7 +196,7 @@ module StreamStats.Controllers {
             //console.log("Trying to open help article for: ", regionID);
 
             var headers = {
-                "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
+                "Authorization": "Basic " + btoa(this.freshdeskCreds['Token'] + ":" + 'X'),
             };
 
             var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.RegionInfoFolder;
@@ -245,7 +249,7 @@ module StreamStats.Controllers {
             //'CreditsArticle': '/solution/categories/9000106503/folders/9000163536/articles/9000127697.json',
 
             var headers = {
-                "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
+                "Authorization": "Basic " + btoa(this.freshdeskCreds['Token'] + ":" + 'X'),
             };
 
             var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.DisclaimersArticle;
@@ -270,7 +274,7 @@ module StreamStats.Controllers {
             console.log("Trying to open credits article");
 
             var headers = {
-                "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
+                "Authorization": "Basic " + btoa(this.freshdeskCreds['Token'] + ":" + 'X'),
             };
 
             var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.CreditsArticle;
@@ -299,11 +303,14 @@ module StreamStats.Controllers {
         private init(): void {   
             //console.log("in about controller");
             this.AppVersion = configuration.version;
-            this.getAboutArticle();
-            this.getRegionHelpArticle();
-            this.getActiveNews();
-            this.getPastNews();
-            this.getDisclaimersArticle();
+            this.freshdeskCreds = this.StudyAreaService.freshdeskCredentials;
+            if (this.freshdeskCreds) {
+                this.getAboutArticle();
+                this.getRegionHelpArticle();
+                this.getActiveNews();
+                this.getPastNews();
+                this.getDisclaimersArticle();
+            }
         }
 
         public readCookie(name) {
