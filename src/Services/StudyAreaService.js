@@ -2,10 +2,12 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -40,7 +42,7 @@ var StreamStats;
         Services.StudyAreaEventArgs = StudyAreaEventArgs;
         var StudyAreaService = (function (_super) {
             __extends(StudyAreaService, _super);
-            function StudyAreaService($http, $q, eventManager, toaster, modal, nssService, regionService) {
+            function StudyAreaService($http, $q, eventManager, toaster, modal, nssService, regionService, $analytics) {
                 var _this = _super.call(this, $http, configuration.baseurls['StreamStatsServices']) || this;
                 _this.$http = $http;
                 _this.$q = $q;
@@ -68,6 +70,7 @@ var StreamStats;
                 }));
                 eventManager.AddEvent(Services.onEditClick);
                 _this._studyAreaList = [];
+                _this.angulartics = $analytics;
                 _this.toaster = toaster;
                 _this.clearStudyArea();
                 _this.servicesURL = configuration.baseurls['StreamStatsServices'];
@@ -92,21 +95,21 @@ var StreamStats;
                 get: function () {
                     return this._onStudyAreaServiceFinishedChanged;
                 },
-                enumerable: true,
+                enumerable: false,
                 configurable: true
             });
             Object.defineProperty(StudyAreaService.prototype, "onQ10Loaded", {
                 get: function () {
                     return this._onQ10Loaded;
                 },
-                enumerable: true,
+                enumerable: false,
                 configurable: true
             });
             Object.defineProperty(StudyAreaService.prototype, "StudyAreaList", {
                 get: function () {
                     return this._studyAreaList;
                 },
-                enumerable: true,
+                enumerable: false,
                 configurable: true
             });
             Object.defineProperty(StudyAreaService.prototype, "selectedStudyArea", {
@@ -121,7 +124,7 @@ var StreamStats;
                         this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);
                     }
                 },
-                enumerable: true,
+                enumerable: false,
                 configurable: true
             });
             Object.defineProperty(StudyAreaService.prototype, "selectedStudyAreaExtensions", {
@@ -131,7 +134,18 @@ var StreamStats;
                     else
                         return this.selectedStudyArea.NSS_Extensions;
                 },
-                enumerable: true,
+                enumerable: false,
+                configurable: true
+            });
+            Object.defineProperty(StudyAreaService.prototype, "freshdeskCredentials", {
+                get: function () {
+                    return this._freshdeskCreds;
+                },
+                set: function (val) {
+                    if (this._freshdeskCreds != val)
+                        this._freshdeskCreds = val;
+                },
+                enumerable: false,
                 configurable: true
             });
             StudyAreaService.prototype.editBasin = function (selection) {
@@ -176,13 +190,13 @@ var StreamStats;
                 this.canUpdate = false;
                 var regionID = this.selectedStudyArea.RegionID;
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', regionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString());
-                if (this.selectedStudyArea.RegionID == 'MO_STL') {
+                if (['MO_STL', 'MRB'].indexOf(this.selectedStudyArea.RegionID) > -1) {
                     var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSstormwaterDelineation'].format(regionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString(), this.surfacecontributionsonly);
                 }
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 request.withCredentials = true;
                 this.Execute(request).then(function (response) {
-                    if (_this.selectedStudyArea.RegionID == 'MO_STL') {
+                    if (['MO_STL', 'MRB'].indexOf(_this.selectedStudyArea.RegionID) > -1) {
                         if (response.data.layers && response.data.layers.features && response.data.layers.features[1].geometry.coordinates.length > 0) {
                             _this.selectedStudyArea.Disclaimers['isSTL_MO'] = true;
                             var fc = response.data.hasOwnProperty("layers") ? response.data["layers"] : null;
@@ -750,9 +764,17 @@ var StreamStats;
             };
             StudyAreaService.prototype.loadParameterResults = function (results) {
                 var paramList = this.studyAreaParameterList;
+                var self = this;
                 results.map(function (val) {
                     angular.forEach(paramList, function (value, index) {
                         if (val.code.toUpperCase().trim() === value.code.toUpperCase().trim()) {
+                            if (val.value != undefined && val.code.toUpperCase().trim() == 'DRNAREA' && value.value != val.value) {
+                                var latLong = self.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + ',' + self.selectedStudyArea.Pourpoint.Longitude.toFixed(5);
+                                var daValue = val.value;
+                                if (val.unit.toLowerCase().trim() == 'square kilometers')
+                                    daValue = daValue / 2.59;
+                                self.angulartics.eventTrack('ComputedDrainageArea', { category: 'SideBar', label: latLong, value: daValue.toFixed(0) });
+                            }
                             value.value = val.value;
                             value.loaded = val.loaded;
                             return;
@@ -849,9 +871,9 @@ var StreamStats;
             };
             return StudyAreaService;
         }(WiM.Services.HTTPServiceBase));
-        factory.$inject = ['$http', '$q', 'WiM.Event.EventManager', 'toaster', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService', 'StreamStats.Services.RegionService'];
-        function factory($http, $q, eventManager, toaster, modalService, nssService, regionService) {
-            return new StudyAreaService($http, $q, eventManager, toaster, modalService, nssService, regionService);
+        factory.$inject = ['$http', '$q', 'WiM.Event.EventManager', 'toaster', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService', 'StreamStats.Services.RegionService', '$analytics'];
+        function factory($http, $q, eventManager, toaster, modalService, nssService, regionService, $analytics) {
+            return new StudyAreaService($http, $q, eventManager, toaster, modalService, nssService, regionService, $analytics);
         }
         angular.module('StreamStats.Services')
             .factory('StreamStats.Services.StudyAreaService', factory);

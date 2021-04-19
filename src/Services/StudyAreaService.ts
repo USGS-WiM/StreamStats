@@ -71,7 +71,8 @@ module StreamStats.Services {
         extensionDateRange: IDateRange;
         selectedGage: any;
         computeRegressionEquation(regtype: string);
-        updateExtensions();
+        updateExtensions(); 
+        freshdeskCredentials();
     }
 
     interface IDateRange {
@@ -168,14 +169,24 @@ module StreamStats.Services {
         private statisticgroupEventHandler: WiM.Event.EventHandler<Services.NSSEventArgs>;
         private q10EventHandler: WiM.Event.EventHandler<Services.NSSEventArgs>;
         private regtype: string;
+        public angulartics: any;
         
         //QPPQ
         public extensionDateRange: IDateRange = null;
         public selectedGage: any;
 
+        // freshdesk
+        private _freshdeskCreds: any;
+        public get freshdeskCredentials(): any {
+            return this._freshdeskCreds;
+        }
+        public set freshdeskCredentials(val: any) {
+            if (this._freshdeskCreds != val) this._freshdeskCreds = val;
+        }
+
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        constructor(public $http: ng.IHttpService, private $q: ng.IQService, private eventManager: WiM.Event.IEventManager, toaster, modal: Services.IModalService, private nssService: Services.InssService, private regionService: Services.IRegionService) {
+        constructor(public $http: ng.IHttpService, private $q: ng.IQService, private eventManager: WiM.Event.IEventManager, toaster, modal: Services.IModalService, private nssService: Services.InssService, private regionService: Services.IRegionService, $analytics) {
             super($http, configuration.baseurls['StreamStatsServices'])
             this.modalservices = modal;
 
@@ -198,6 +209,7 @@ module StreamStats.Services {
             eventManager.AddEvent<WiM.Event.EventArgs>(onEditClick);
             this._studyAreaList = [];
 
+            this.angulartics = $analytics;
             this.toaster = toaster;
             this.clearStudyArea();
             this.servicesURL = configuration.baseurls['StreamStatsServices'];
@@ -275,7 +287,7 @@ module StreamStats.Services {
                 this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString());
 
             //hack for st louis stormdrain
-            if (this.selectedStudyArea.RegionID == 'MO_STL') {
+            if (['MO_STL', 'MRB'].indexOf(this.selectedStudyArea.RegionID) > -1) {
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSstormwaterDelineation'].format(regionID, this.selectedStudyArea.Pourpoint.Longitude.toString(),
                     this.selectedStudyArea.Pourpoint.Latitude.toString(), this.surfacecontributionsonly);
             }
@@ -287,7 +299,7 @@ module StreamStats.Services {
                 (response: any) => {  
 
                     //hack for st louis stormdrain
-                    if (this.selectedStudyArea.RegionID == 'MO_STL') {
+                    if (['MO_STL', 'MRB'].indexOf(this.selectedStudyArea.RegionID) > -1) {
                         if (response.data.layers && response.data.layers.features && response.data.layers.features[1].geometry.coordinates.length > 0) {
                             this.selectedStudyArea.Disclaimers['isSTL_MO'] = true;
                             //this.selectedStudyArea.Server = response.headers()['x-usgswim-hostname'].toLowerCase();
@@ -1098,9 +1110,18 @@ module StreamStats.Services {
             //console.log('in load parameter results');
 
             var paramList = this.studyAreaParameterList;
+            var self = this;
             results.map(function (val) {
                 angular.forEach(paramList, function (value, index) {
                     if (val.code.toUpperCase().trim() === value.code.toUpperCase().trim()) {
+                        // add google analytics event if DA value is new
+                        if (val.value != undefined && val.code.toUpperCase().trim() == 'DRNAREA' && value.value != val.value) {
+                            var latLong = self.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + ',' + self.selectedStudyArea.Pourpoint.Longitude.toFixed(5);
+                            var daValue = val.value;
+                            if (val.unit.toLowerCase().trim() == 'square kilometers') daValue = daValue / 2.59;
+                            self.angulartics.eventTrack('ComputedDrainageArea', { category: 'SideBar', label: latLong, value: daValue.toFixed(0) });
+                        }
+
                         value.value = val.value;
                         value.loaded = val.loaded;
                         return;//exit loop
@@ -1227,9 +1248,9 @@ module StreamStats.Services {
 
     }//end class
 
-    factory.$inject = ['$http', '$q', 'WiM.Event.EventManager', 'toaster', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService', 'StreamStats.Services.RegionService'];
-    function factory($http: ng.IHttpService, $q: ng.IQService, eventManager: WiM.Event.IEventManager, toaster: any, modalService: Services.IModalService, nssService: Services.InssService, regionService: Services.IRegionService) {
-        return new StudyAreaService($http,$q, eventManager, toaster, modalService, nssService, regionService)
+    factory.$inject = ['$http', '$q', 'WiM.Event.EventManager', 'toaster', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService', 'StreamStats.Services.RegionService', '$analytics'];
+    function factory($http: ng.IHttpService, $q: ng.IQService, eventManager: WiM.Event.IEventManager, toaster: any, modalService: Services.IModalService, nssService: Services.InssService, regionService: Services.IRegionService, $analytics) {
+        return new StudyAreaService($http,$q, eventManager, toaster, modalService, nssService, regionService, $analytics)
     }
     angular.module('StreamStats.Services')
         .factory('StreamStats.Services.StudyAreaService', factory)

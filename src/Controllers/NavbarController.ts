@@ -40,6 +40,9 @@ module StreamStats.Controllers {
         private environment: string;
         private AppVersion: string;
         private cloud: boolean;
+        private freshdeskCreds: Object;
+        private http: any;
+        private studyAreaService: Services.IStudyAreaService;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -47,8 +50,11 @@ module StreamStats.Controllers {
         constructor($scope: INavbarControllerScope, $http: ng.IHttpService, modal: Services.IModalService, studyArea: Services.IStudyAreaService) {
             super($http, configuration.baseurls.StreamStats);
             $scope.vm = this;
+            this.http = $http;
+            
             this.modalService = modal;
-            this.checkActiveNews();
+            this.getFreshdeskCreds();
+            this.studyAreaService = studyArea;
             this.newArticleCount = 0;
             this.environment = configuration.environment;
             this.AppVersion = configuration.version;
@@ -61,7 +67,7 @@ module StreamStats.Controllers {
             console.log("Checking for active news articles");
 
             var headers = {
-                "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
+                "Authorization": "Basic " + btoa(this.freshdeskCreds['Token'] + ":" + 'X'),
             };
 
             var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.ActiveNewsFolder;
@@ -89,6 +95,14 @@ module StreamStats.Controllers {
                 }).finally(() => {
 
                 });
+        }
+        public getFreshdeskCreds() {
+            var self = this;
+            this.http.get('./data/secrets.json').then(function(response) {
+                self.studyAreaService.freshdeskCredentials = response.data;
+                self.freshdeskCreds = response.data;
+                self.checkActiveNews();
+            })
         }
 
         public openReport(): void {

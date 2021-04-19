@@ -2,10 +2,12 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -21,8 +23,10 @@ var StreamStats;
             function NavbarController($scope, $http, modal, studyArea) {
                 var _this = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
                 $scope.vm = _this;
+                _this.http = $http;
                 _this.modalService = modal;
-                _this.checkActiveNews();
+                _this.getFreshdeskCreds();
+                _this.studyAreaService = studyArea;
                 _this.newArticleCount = 0;
                 _this.environment = configuration.environment;
                 _this.AppVersion = configuration.version;
@@ -33,7 +37,7 @@ var StreamStats;
                 var _this = this;
                 console.log("Checking for active news articles");
                 var headers = {
-                    "Authorization": "Basic " + btoa(configuration.SupportTicketService.Token + ":" + 'X'),
+                    "Authorization": "Basic " + btoa(this.freshdeskCreds['Token'] + ":" + 'X'),
                 };
                 var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.ActiveNewsFolder;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
@@ -52,6 +56,14 @@ var StreamStats;
                     }
                 }, function (error) {
                 }).finally(function () {
+                });
+            };
+            NavbarController.prototype.getFreshdeskCreds = function () {
+                var self = this;
+                this.http.get('./data/secrets.json').then(function (response) {
+                    self.studyAreaService.freshdeskCredentials = response.data;
+                    self.freshdeskCreds = response.data;
+                    self.checkActiveNews();
                 });
             };
             NavbarController.prototype.openReport = function () {

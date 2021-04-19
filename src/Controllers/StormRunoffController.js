@@ -2,10 +2,12 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -25,7 +27,7 @@ var StreamStats;
         }());
         var StormRunoffController = (function (_super) {
             __extends(StormRunoffController, _super);
-            function StormRunoffController($scope, $analytics, $http, studyAreaService, StatisticsGroup, region, modal, $timeout, EventManager) {
+            function StormRunoffController($scope, $analytics, toaster, $http, studyAreaService, StatisticsGroup, region, modal, $timeout, EventManager) {
                 var _this = _super.call(this, $http, configuration.baseurls.StormRunoffServices) || this;
                 _this.$timeout = $timeout;
                 _this.EventManager = EventManager;
@@ -40,6 +42,7 @@ var StreamStats;
                 _this.domainY2 = [];
                 $scope.vm = _this;
                 _this.angulartics = $analytics;
+                _this.toaster = toaster;
                 _this.modalInstance = modal;
                 _this.StudyArea = studyAreaService.selectedStudyArea;
                 _this.nssService = StatisticsGroup;
@@ -65,7 +68,7 @@ var StreamStats;
                     this._selectedPrecip = val;
                     this.PIntensity = null;
                 },
-                enumerable: true,
+                enumerable: false,
                 configurable: true
             });
             Object.defineProperty(StormRunoffController.prototype, "SelectedTab", {
@@ -78,7 +81,7 @@ var StreamStats;
                         this.selectRunoffType();
                     }
                 },
-                enumerable: true,
+                enumerable: false,
                 configurable: true
             });
             Object.defineProperty(StormRunoffController.prototype, "SelectedParametersAreValid", {
@@ -91,7 +94,7 @@ var StreamStats;
                     }
                     return true;
                 },
-                enumerable: true,
+                enumerable: false,
                 configurable: true
             });
             StormRunoffController.prototype.GetStormRunoffResults = function () {
@@ -123,7 +126,8 @@ var StreamStats;
                             _this.setPeakQ(_this.result.q);
                         }
                     }, function (error) {
-                        var x = error;
+                        _this.toaster.clear();
+                        _this.toaster.pop('error', "There was an error retrieving temporal distribution data", "HTTP request error", 0);
                     }).finally(function () {
                         _this.CanContinue = true;
                         _this.hideAlerts = true;
@@ -812,7 +816,7 @@ var StreamStats;
                     return ((x < y) ? -1 : ((x > y) ? 1 : 0));
                 });
             };
-            StormRunoffController.$inject = ['$scope', '$analytics', '$http', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.RegionService', '$modalInstance', '$timeout', 'WiM.Event.EventManager'];
+            StormRunoffController.$inject = ['$scope', '$analytics', 'toaster', '$http', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.RegionService', '$modalInstance', '$timeout', 'WiM.Event.EventManager'];
             return StormRunoffController;
         }(WiM.Services.HTTPServiceBase));
         var StormRunoffType;
