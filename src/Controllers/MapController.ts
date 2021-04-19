@@ -187,6 +187,7 @@ module StreamStats.Controllers {
         public measurestart: any;
         public measurestop: any;
         public selectedExplorationTool: any;
+        public gageLegendFix = false;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -1136,9 +1137,29 @@ module StreamStats.Controllers {
         }
 
         private onSelectedRegionChanged() {
-            //console.log('in onselected region changed', this.regionServices.regionList, this.regionServices.selectedRegion);
             if (!this.regionServices.selectedRegion) return;
             this.removeOverlayLayers("_region", true);
+
+            // select the imagery layer when the Mystic River Basin or Missouri St. Louis is selected
+            // TODO: uncomment this for MRB changes
+            /* if (['MRB', 'MO_STL'].indexOf(this.regionServices.selectedRegion.RegionID) > -1) {
+                // get all legend basemap items
+                var legendItems = document.getElementsByClassName('wimLegend-basemap-item');
+                for (var item in legendItems) {
+                    var children = legendItems[item].childNodes;
+                    var radio;
+                    for (var child in children) {
+                        // get all basemap radios
+                        if (children[child]['className'] == 'rdo') {
+                            radio = children[child];
+                            // click the radio button for the "Imagery" layer
+                            for (var chd in radio.childNodes) {
+                                if (radio.childNodes[chd]['innerHTML'] == 'Imagery') radio.click();
+                            }
+                        }
+                    }
+                }
+            } */
 
             this.regionServices.loadMapLayersByRegion(this.regionServices.selectedRegion.RegionID)
         }
@@ -1202,7 +1223,7 @@ module StreamStats.Controllers {
         
         private removeGeoJson(layerName: string = "") {
             for (var k in this.geojson) {
-                if (typeof this.geojson[k] !== 'function' && k != 'streamgages') {
+                if (typeof this.geojson[k] !== 'function' && (k != 'streamgages' || k == layerName)) {
                     delete this.geojson[k];
                     this.eventManager.RaiseEvent(WiM.Directives.onLayerRemoved, this, new WiM.Directives.LegendLayerRemovedEventArgs(k, "geojson")); 
                 }
@@ -1367,61 +1388,63 @@ module StreamStats.Controllers {
             }
             else if (LayerName == 'streamgages') {
                 var self = this;
-
-                this.geojson[LayerName] = {
+                this.layers.overlays['streamgages'] = {
+                     name: 'Streamgages',
+                    type: 'geoJSONShape',
                     data: feature,
-                    style: {
-                        displayName: 'Streamgages'
-                    },
-                    onEachFeature: function (feature, layer) {
-                        var siteNo = feature.properties['Code'];
-                        var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm';
-                        var NWISpage = 'http://nwis.waterdata.usgs.gov/nwis/inventory/?site_no=' + siteNo;
-                        var gageButtonDiv = L.DomUtil.create('div', 'testDiv');
+                    visible: true,
+                    layerOptions: {
+                        onEachFeature: function (feature, layer) {
+                            var siteNo = feature.properties['Code'];
+                            var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm';
+                            var NWISpage = 'http://nwis.waterdata.usgs.gov/nwis/inventory/?site_no=' + siteNo;
+                            var gageButtonDiv = L.DomUtil.create('div', 'innerDiv');
+    
+                            gageButtonDiv.innerHTML = '<strong>Station ID: </strong>' + siteNo + '</br><strong>Station Name: </strong>' + feature.properties['Name'] + '</br><strong>Latitude: </strong>' + feature.geometry.coordinates[1] + '</br><strong>Longitude: </strong>' + feature.geometry.coordinates[0] + '</br><strong>Station Type</strong>: ' + feature.properties.StationType.name +
+                                '</br><strong>NWIS page: </strong><a href="' + NWISpage + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br><strong>New StreamStats Gage Modal: </strong><a id="gagePageLink" class="' + siteNo + '">link</a><br>';
+    
+                            layer.bindPopup(gageButtonDiv);
+                            var styling = configuration.streamgageSymbology.filter(function (item) {
+                                return item.label.toLowerCase() == feature.properties.StationType.name.toLowerCase();
+                            })[0];
+                            if (styling == undefined) {
+                                styling = configuration.streamgageSymbology.filter(function (item) {
+                                    return item.label == 'Unknown'; // better way to do this?
+                                })[0]
+                            }
 
-                        gageButtonDiv.innerHTML = '<strong>Station ID: </strong>' + siteNo + '</br><strong>Station Name: </strong>' + feature.properties['Name'] + '</br><strong>Latitude: </strong>' + feature.geometry.coordinates[1] + '</br><strong>Longitude: </strong>' + feature.geometry.coordinates[0] + '</br><strong>Station Type</strong>: ' + feature.properties.StationType.name +
-                            '</br><strong>NWIS page: </strong><a href="' + NWISpage + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br><strong>New StreamStats Gage Modal: </strong><a id="gagePageLink" class="' + siteNo + '">link</a><br>';
-
-                        layer.bindPopup(gageButtonDiv);
-                        var styling = configuration.overlayedLayers['SSLayer'].layerArray[0].legend.filter(function (item) {
-                            return item.label.toLowerCase() == feature.properties.StationType.name.toLowerCase();
-                        })[0];
-                        if (styling == undefined) {
-                            styling = configuration.overlayedLayers['SSLayer'].layerArray[0].legend.filter(function (item) {
-                                return item.label == 'Unknown'; // better way to do this?
-                            })[0]
+                            var icon = L.icon({
+                                iconUrl: 'data:image/png;base64,' + styling.imageData,
+                                iconSize: [15, 16],
+                                iconAnchor: [7.5, 8],
+                                popupAnchor: [0, -11],
+                            })
+                            layer.setIcon(icon);
+    
+                            L.DomEvent.on(gageButtonDiv, 'click', (event) => {
+                                const id = event.target['id'];
+                                if (id === 'gagePageLink') {
+                                    self.openGagePage(siteNo);
+                                }
+                            })
+    
+                            layer.on('mouseover', function(e) {
+                                if (self.studyArea.doSelectMapGage) this.openPopup();
+                            });
+    
+                            layer.on('click', function(e) {
+                                // need to select gage if that's the question
+                                if (self.studyArea.doSelectMapGage) {
+                                    self.studyArea.selectGage(feature);
+                                    self.studyArea.doSelectMapGage = false;
+                                }
+                                else this.openPopup();
+                            })
+    
                         }
-
-                        var icon = L.icon({
-                            iconUrl: 'data:image/png;base64,' + styling.imageData,
-                            iconSize: [15, 16],
-                            iconAnchor: [7.5, 8],
-                            popupAnchor: [0, -11],
-                        })
-                        layer.setIcon(icon);
-
-                        L.DomEvent.on(gageButtonDiv, 'click', (event) => {
-                            const id = event.target['id'];
-                            if (id === 'gagePageLink') {
-                                self.openGagePage(siteNo);
-                            }
-                        })
-
-                        layer.on('mouseover', function(e) {
-                            if (self.studyArea.doSelectMapGage) this.openPopup();
-                        });
-
-                        layer.on('click', function(e) {
-                            // need to select gage if that's the question
-                            if (self.studyArea.doSelectMapGage) {
-                                self.studyArea.selectGage(feature);
-                                self.studyArea.doSelectMapGage = false;
-                            }
-                            else this.openPopup();
-                        })
-
                     }
                 }
+                this.updateLegend();
             }
 
             //additional features get generic styling for now
@@ -1469,6 +1492,11 @@ module StreamStats.Controllers {
                         }//next
                     }
 
+                    if (e.LayerName == 'streamgages') {
+                        // re-query streamgages on toggle
+                        this.studyArea.getStreamgages(this.bounds.southWest.lng, this.bounds.northEast.lng, this.bounds.southWest.lat, this.bounds.northEast.lat);
+                    }
+
 
                 }//end if  
             }//end if
@@ -1487,6 +1515,10 @@ module StreamStats.Controllers {
                 }
 
                 if (this.center.zoom >= 9) this.studyArea.getStreamgages(this.bounds.southWest.lng, this.bounds.northEast.lng, this.bounds.southWest.lat, this.bounds.northEast.lat);
+                else {
+                    delete this.layers.overlays['streamgages'];
+                    this.gageLegendFix = false;
+                }
             }
 
             if (this.center.zoom < 8 && oldValue !== newValue) {
@@ -1502,6 +1534,19 @@ module StreamStats.Controllers {
                 this.studyArea.zoomLevel15 = false;
             }
 
+        }
+        private updateLegend() {
+            // patch fix for streamgages legend
+            if (!this.gageLegendFix) {
+                setTimeout(() => {
+                    var legendItems = document.getElementsByClassName('wimLegend-overlay-group')[3]['children'][1];
+                    if (legendItems != undefined) {
+                        legendItems['innerHTML'] = '<div class="legendGroup"><!----><div ng-repeat="lyr in layer.layerArray "><label>Streamgages</label><!----><div ng-repeat="leg in lyr.legend "><img class="legendSwatch" alt="Embedded Image" ng-src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAaJJREFUOI3dzz1IW1EYxvF/TMqpFQsJCF4QOuhUpTpEVCw6RSsdQhFB6hfiF0IDFqkoOCqKEhxEqm0H20YUgpQoqOBWOkgjpQgXowREEC5SuVBE6QtFHXQwYjSJmXzgDO85hx/PayPJsd0TcD6sqM6ZBFqAk7uD4dCyqu3dkLnhRmD6bqB/ q5DwZrl4hv6rb2MWEfEDR4mD + q9ZSl + mAC75 + HOGxvwuYDAx8MNaK / +Os3mUfj5nP + tSSlsUMbKAvfhA / dSKb3qEqvrLtwUS0CeVW + sWkbfxgcsr4zx12rFe + ZJu75PMPK / jcKfQNM1gbKBPz2Az2EzJi + ten / B1LdUse9AGxAhu//ZTXPkwanurrRd3RyeBqRrAfzM48b2IvwfPcWRG9QC76nnvlMDUY2ABkOjgbshHxWvrTRqAYPGo/s9uGWh6A3ivBR3epTZTpeWQmnabB6CkqqFOjbbvi0gG8CcSXF1NMZdCw7zqjAW7iKWOT+sVqtX5TkR6IkGXqx4IMub5EYeIQAlQrmlarmEY+uWVv1ycRDJgGAaRDZOUpINnJ5KDtx5X6hkAAAAASUVORK5CYII=" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAaJJREFUOI3dzz1IW1EYxvF/TMqpFQsJCF4QOuhUpTpEVCw6RSsdQhFB6hfiF0IDFqkoOCqKEhxEqm0H20YUgpQoqOBWOkgjpQgXowREEC5SuVBE6QtFHXQwYjSJmXzgDO85hx/PayPJsd0TcD6sqM6ZBFqAk7uD4dCyqu3dkLnhRmD6bqB/ q5DwZrl4hv6rb2MWEfEDR4mD + q9ZSl + mAC75 + HOGxvwuYDAx8MNaK / +Os3mUfj5nP + tSSlsUMbKAvfhA / dSKb3qEqvrLtwUS0CeVW + sWkbfxgcsr4zx12rFe + ZJu75PMPK / jcKfQNM1gbKBPz2Az2EzJi + ten / B1LdUse9AGxAhu//ZTXPkwanurrRd3RyeBqRrAfzM48b2IvwfPcWRG9QC76nnvlMDUY2ABkOjgbshHxWvrTRqAYPGo/s9uGWh6A3ivBR3epTZTpeWQmnabB6CkqqFOjbbvi0gG8CcSXF1NMZdCw7zqjAW7iKWOT+sVqtX5TkR6IkGXqx4IMub5EYeIQAlQrmlarmEY+uWVv1ycRDJgGAaRDZOUpINnJ5KDtx5X6hkAAAAASUVORK5CYII="><i>Gaging Station, Continuous Record</i></div><!----><div ng-repeat="leg in lyr.legend "><img class="legendSwatch" alt="Embedded Image" ng-src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAZxJREFUOI1jYaAyYBk2BjIZGAgtunDhXRwDA8M/ig10cBDKrqiwt5848WDq9u3vZlJqoIC/v3a0u7uyzLVrbxK2bz+ 8hIGB4SvZBoaGyjcnJenpMTAwMCQm6ukdPHineuPG51XkGqgVEqJjzcfHycnAwMAgIMDJFRys57px4/NpDAwMT0g2MDZWvjUoSM0AWSwsTMNgx467zcuW3Ukk1UD/nBxrdRYWZkZkQXZ2VpaEBH39HTvemb579+ 40sQay5+cbFJiZSWlik3R2ljcMDBStnjv3XQBRBqqosBeVlJgp43I6ExMTQ36 + mercuTdDGRgYVhMyUDItzdhLRoZPFpeBDAwMDLq64lolJQYpPT0XNjEwMPzEaaCDg3xzZqaRHj7DYKCoyFJ19erreQ8f / uzGaqCQkJBZRoaOJg8PBx8xBkpKcitmZpq5VFQcXsDAwPAa3UBGW1v2upAQdTNiDIOB7Gx9 / dWrr1adPfuuEN3AWAMDKbODBx + SWgKJ6 + gIhT57xj7n + fPnV5E1L2psPLuIgeEsieahgsFfwAIAW21yjgzG0zwAAAAASUVORK5CYII=" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAZxJREFUOI1jYaAyYBk2BjIZGAgtunDhXRwDA8M/ig10cBDKrqiwt5848WDq9u3vZlJqoIC/v3a0u7uyzLVrbxK2bz+ 8hIGB4SvZBoaGyjcnJenpMTAwMCQm6ukdPHineuPG51XkGqgVEqJjzcfHycnAwMAgIMDJFRys57px4/NpDAwMT0g2MDZWvjUoSM0AWSwsTMNgx467zcuW3Ukk1UD/nBxrdRYWZkZkQXZ2VpaEBH39HTvemb579+ 40sQay5+cbFJiZSWlik3R2ljcMDBStnjv3XQBRBqqosBeVlJgp43I6ExMTQ36 + mercuTdDGRgYVhMyUDItzdhLRoZPFpeBDAwMDLq64lolJQYpPT0XNjEwMPzEaaCDg3xzZqaRHj7DYKCoyFJ19erreQ8f / uzGaqCQkJBZRoaOJg8PBx8xBkpKcitmZpq5VFQcXsDAwPAa3UBGW1v2upAQdTNiDIOB7Gx9 / dWrr1adPfuuEN3AWAMDKbODBx + SWgKJ6 + gIhT57xj7n + fPnV5E1L2psPLuIgeEsieahgsFfwAIAW21yjgzG0zwAAAAASUVORK5CYII="><i>Low Flow, Partial Record</i></div><!----><div ng-repeat="leg in lyr.legend "><img class="legendSwatch" alt="Embedded Image" ng-src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAV5JREFUOI3d1DFIlGEYwPGfcvBRhMi3xIENURJKndfQLSEJFUGLpp6LGBoViZEpDqIQxNFUS0sQJMQhLTfZoqtzBC25B9I3BO/W8C7RJB2HV3d6U// xeXl + PNOb0 + Fy / w3YXaT6hbv4dWxwhIVVrr3mwTZvjwv2jibJ9K0Y + /aY3WYTP48Mlqnci7EAcxR2Wd9i7ajg4CRXezgBvZycSJKbWzG+wX7b4AwvxinWz6ZiLO5Q+cBcu+DoYy7k6KofJuRmGdpJ0yshhE+tgskiT0sMHPZ4nct3QljfYKwl8DzLK5xrdno3FunfoIzav8D8Q273caYZCJcYXOH+Kz4iNgVHqMxT+Bt20DL9NZ584+WhYJqmpUchDJyipxUwz9l5bqzyHj8awa7hEJ5NUmoFO2iBoVqSrH2OcakRnClS2m3/Bzp9Mcby93z + XZZlX + uXq8 + pton9Kcs0XtiROg7 + BnYMUkljozdEAAAAAElFTkSuQmCC" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAV5JREFUOI3d1DFIlGEYwPGfcvBRhMi3xIENURJKndfQLSEJFUGLpp6LGBoViZEpDqIQxNFUS0sQJMQhLTfZoqtzBC25B9I3BO/W8C7RJB2HV3d6U// xeXl + PNOb0 + Fy / w3YXaT6hbv4dWxwhIVVrr3mwTZvjwv2jibJ9K0Y + /aY3WYTP48Mlqnci7EAcxR2Wd9i7ajg4CRXezgBvZycSJKbWzG+wX7b4AwvxinWz6ZiLO5Q+cBcu+DoYy7k6KofJuRmGdpJ0yshhE+tgskiT0sMHPZ4nct3QljfYKwl8DzLK5xrdno3FunfoIzav8D8Q273caYZCJcYXOH+Kz4iNgVHqMxT+Bt20DL9NZ584+WhYJqmpUchDJyipxUwz9l5bqzyHj8awa7hEJ5NUmoFO2iBoVqSrH2OcakRnClS2m3/Bzp9Mcby93z + XZZlX + uXq8 + pton9Kcs0XtiROg7 + BnYMUkljozdEAAAAAElFTkSuQmCC"><i>Peak Flow, Partial Record</i></div><!----><div ng-repeat="leg in lyr.legend "><img class="legendSwatch" alt="Embedded Image" ng-src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAYlJREFUOI3d1E0og3EcwPHv1lMPEnouWmHJJOLZJCuWzFtjDsPMRYQQkbd20FZKy4mLi1KU5uWygyhxcODARWolcl3kOajn5vA4yInWMjZ28j3+/v0+/U5 / gRQn / BtQbzEQDCv0A29 / Bu1GJuZ7qV / dZeQ4wvpfwRyXXex1mLW8uwcGjrfZAV5 + DXqqCAw1aDLAYCPy + Q3 + gzC + 34Jl3TZsWemkA+RkkOGuFVsOwtoa8Jg02FfHUlcNluhZj02znIQJ7F0ymCzommylRNCjix6KAsKAHfPJvVStqupVoqA47WDGaqL0q8cmmcpOWfVvntGREGgSmfN2UBTvdL0Opp0Ub57hAUI / gYZRN848ifx4IECFkTJvO8MrRxwCWlzQbiIw7kD + DvtozkVx6JSpiMbyl6AkSdYxp1qamUZWIqAhm8JxN83ze2wBz7Ggrq5AXeiuwZoI9tFEG + bQhei7jmizsWCfpRDr + W3SP1BueYHmeXo1bCiKchu9HFzcJ8h + ktxnCrEXpqSUg + 93zWK9ULsBDQAAAABJRU5ErkJggg==" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAYlJREFUOI3d1E0og3EcwPHv1lMPEnouWmHJJOLZJCuWzFtjDsPMRYQQkbd20FZKy4mLi1KU5uWygyhxcODARWolcl3kOajn5vA4yInWMjZ28j3+/v0+/U5 / gRQn / BtQbzEQDCv0A29 / Bu1GJuZ7qV / dZeQ4wvpfwRyXXex1mLW8uwcGjrfZAV5 + DXqqCAw1aDLAYCPy + Q3 + gzC + 34Jl3TZsWemkA+RkkOGuFVsOwtoa8Jg02FfHUlcNluhZj02znIQJ7F0ymCzommylRNCjix6KAsKAHfPJvVStqupVoqA47WDGaqL0q8cmmcpOWfVvntGREGgSmfN2UBTvdL0Opp0Ub57hAUI / gYZRN848ifx4IECFkTJvO8MrRxwCWlzQbiIw7kD + DvtozkVx6JSpiMbyl6AkSdYxp1qamUZWIqAhm8JxN83ze2wBz7Ggrq5AXeiuwZoI9tFEG + bQhei7jmizsWCfpRDr + W3SP1BueYHmeXo1bCiKchu9HFzcJ8h + ktxnCrEXpqSUg + 93zWK9ULsBDQAAAABJRU5ErkJggg=="><i>Peak and Low Flow, Partial Record</i></div><!----><div ng-repeat="leg in lyr.legend "><img class="legendSwatch" alt="Embedded Image" ng-src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAXZJREFUOI3d1E8ow2EYwPHvmF5j/vRLbT/ZlmxpykayjJjkT0iUXIgoTko4buWynNyVctDIxUEpNwcXLi4rrRxclHqVvBc5vA5yoVjGxk6+ x + ft + fScXit5zvpvwAJMEkhmgJc / g4aHxbJJIo / 7LKgbtv4KVoouMeUM6prnW2bZZQ94+j3YQtzRowMARoSAuiSmk0R / CzaYYTqEDRuA3U6Jq130XSf1JnCbMyg6WXeHafo4qwjrJiNJXJ0zlys46h2gnkIsnxaKsJZ1E + TKaFVKXWQLCjHAst2L / 6tHZyPNdwEV45Sx7EDBqn+Uuoy3W8A7iC91ygRw8BNoesYZEgaujCBg99BgDjMvjzkCdGbQS7yqn8B32HuOEXzyhCU0G1 + ChmGExJDyW4spzwYUldSa4 / TKfXaA + 3TQ8uRWa742Qtlg71X3E1RnIqpv9Eo6OF1aS+ghlfMP5NBuPWE + m9tSytTH5YQ6JKEOc + TekkjSL8xLeQdfAVOiXI3dacB + AAAAAElFTkSuQmCC" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAXZJREFUOI3d1E8ow2EYwPHvmF5j/vRLbT/ZlmxpykayjJjkT0iUXIgoTko4buWynNyVctDIxUEpNwcXLi4rrRxclHqVvBc5vA5yoVjGxk6+ x + ft + fScXit5zvpvwAJMEkhmgJc / g4aHxbJJIo / 7LKgbtv4KVoouMeUM6prnW2bZZQ94+j3YQtzRowMARoSAuiSmk0R / CzaYYTqEDRuA3U6Jq130XSf1JnCbMyg6WXeHafo4qwjrJiNJXJ0zlys46h2gnkIsnxaKsJZ1E + TKaFVKXWQLCjHAst2L / 6tHZyPNdwEV45Sx7EDBqn+Uuoy3W8A7iC91ygRw8BNoesYZEgaujCBg99BgDjMvjzkCdGbQS7yqn8B32HuOEXzyhCU0G1 + ChmGExJDyW4spzwYUldSa4 / TKfXaA + 3TQ8uRWa742Qtlg71X3E1RnIqpv9Eo6OF1aS+ghlfMP5NBuPWE + m9tSytTH5YQ6JKEOc + TekkjSL8xLeQdfAVOiXI3dacB + AAAAAElFTkSuQmCC"><i>Stage Only</i></div><!----><div ng-repeat="leg in lyr.legend "><img class="legendSwatch" alt="Embedded Image" ng-src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAYVJREFUOI3d1E8og3Ecx/H3mB6Tfz0XTWwtln/t2YQnjz+ b / A2J0i5EFCclHCmX5eSulINGLg5KOXEQcdFqJeWAWqmnqN / N4ecgBxQyNhzkc / nW99v31ff0tfLLsf4bMEXFHhaYw8DDj0EV50Q3A4EDNsZjxJZ / CubWKP7BUuktuOF6JMbaOnD3bbCEqpAumzWAagLaJadzF0RnvwuWaxj16dhsABlkZniVurYLGV0CrpMGK2hc8GD4Xvc80vCdEw2dcTyaLNjbQEdJKqmW18000qzVNHlN9bxGCHGSKKhU0THloLjso6EbT6VLaHOC / b6EQAVlpoXeoninW7BQS6c7wn4Q2PwKtPvp78pBLYwHAuTjLK + je + yYnW1AxgWdFIcM2rXPsJcE6HFH2JuUyMUPQVVVdV10lSmkZycCZpLr8tPfusvGKnD7HrRkCce8h1o9EewlBu3eiHI0K2Rs + j045MClX3GW7AfKs0tHULHfr5im + WY5fMhW + JCtJL3nmE / l7z / YR0W7YFxuKhm3AAAAAElFTkSuQmCC" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAYVJREFUOI3d1E8og3Ecx/H3mB6Tfz0XTWwtln/t2YQnjz+ b / A2J0i5EFCclHCmX5eSulINGLg5KOXEQcdFqJeWAWqmnqN / N4ecgBxQyNhzkc / nW99v31ff0tfLLsf4bMEXFHhaYw8DDj0EV50Q3A4EDNsZjxJZ / CubWKP7BUuktuOF6JMbaOnD3bbCEqpAumzWAagLaJadzF0RnvwuWaxj16dhsABlkZniVurYLGV0CrpMGK2hc8GD4Xvc80vCdEw2dcTyaLNjbQEdJKqmW18000qzVNHlN9bxGCHGSKKhU0THloLjso6EbT6VLaHOC / b6EQAVlpoXeoninW7BQS6c7wn4Q2PwKtPvp78pBLYwHAuTjLK + je + yYnW1AxgWdFIcM2rXPsJcE6HFH2JuUyMUPQVVVdV10lSmkZycCZpLr8tPfusvGKnD7HrRkCce8h1o9EewlBu3eiHI0K2Rs + j045MClX3GW7AfKs0tHULHfr5im + WY5fMhW + JCtJL3nmE / l7z / YR0W7YFxuKhm3AAAAAElFTkSuQmCC"><i>Low Flow, Partial Record, Stage</i></div><!----><div ng-repeat="leg in lyr.legend ">' + 
+                        '<img class="legendSwatch" alt="Embedded Image" ng-src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAZtJREFUOI1jYaAyYBk2BjKpCBksuvPuQhwDA8M/ig00FnLIzrOvsJ9zcGLq4XfbZ1JqoICXtn+0vbK7zJ031xIOH96+hIGB4SvZBrrLhzaH6yXpMTAwMIToJeodvXOwet/zjVXkGqjlpxNizcPJx8nAwMDAzynA5aMX7Lrv+ cZpDAwMT0g20F8 + ttVdLcgAWcxHI8xg / 90dzZvvLEsk1UD/ROscdRZmFkZkQTZWdpZQ/QT9o+ 92mL579+40sQayJxjkFxhImWlik7SRdzZ0Ew2sXvFubgBRBkqyqxRlmJUo43I6ExMTQ4JZvuqKm3NDGRgYVhMyUDLBOM1Lgk9GFpeBDAwMDBriulopBiUpcy70bGJgYPiJ00BzeYfmGKNMPXyGwUCaZZHq4uur837+fNiN1UAhISGzWJ0MTW4OHj5iDBTjllQsMst0aT9csYCBgeE1uoGMBuy2dZ7qIWbEGAYDMfrZ + tuvrq668O5sIbqBsTpSBmYnHx4ktQQSVxbSCX3J / mzO8 + fPryJrXjTpbOOiSWdJNA4NDP4CFgA3c3Kc0o9KfgAAAABJRU5ErkJggg == " src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAZtJREFUOI1jYaAyYBk2BjKpCBksuvPuQhwDA8M/ig00FnLIzrOvsJ9zcGLq4XfbZ1JqoICXtn+0vbK7zJ031xIOH96+hIGB4SvZBrrLhzaH6yXpMTAwMIToJeodvXOwet/zjVXkGqjlpxNizcPJx8nAwMDAzynA5aMX7Lrv+ cZpDAwMT0g20F8 + ttVdLcgAWcxHI8xg / 90dzZvvLEsk1UD/ROscdRZmFkZkQTZWdpZQ/QT9o+ 92mL579+40sQayJxjkFxhImWlik7SRdzZ0Ew2sXvFubgBRBkqyqxRlmJUo43I6ExMTQ4JZvuqKm3NDGRgYVhMyUDLBOM1Lgk9GFpeBDAwMDBriulopBiUpcy70bGJgYPiJ00BzeYfmGKNMPXyGwUCaZZHq4uur837+fNiN1UAhISGzWJ0MTW4OHj5iDBTjllQsMst0aT9csYCBgeE1uoGMBuy2dZ7qIWbEGAYDMfrZ + tuvrq668O5sIbqBsTpSBmYnHx4ktQQSVxbSCX3J / mzO8 + fPryJrXjTpbOOiSWdJNA4NDP4CFgA3c3Kc0o9KfgAAAABJRU5ErkJggg == "><i>Miscellaneous Record</i></div><!----><div ng-repeat="leg in lyr.legend "><img class="legendSwatch" alt="Embedded Image" ng-src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAARVJREFUOI3d1L8rhVEYB/APqROD9C66xSBJDH4MLAYLi4XFJKKYlDBSlpvJrpRBstn8G2b/gXoHdTbDs8jgKt38eF138q1T55yn59MznE6XNqfr34CduMYGXtoB7mIeO7j4K9iXUlqLiAFs4gbPfwHrETHR2E/ gGEetguOYQ3fj3JNSWoyIczy2Ap5i6uNFREyhjq3fgssYRccnPZNFUczknO + rggn7GPuiPp1zPsZKVfAQw1 / U3jOCVdz + BNawhMEfwHFs4w7xHVj39jyqZAR7OPsULIpiNuc8ht6K4BAWcIWnZrAj53yC2YrYeyZTSkcRcdAMrjew3 / 5A/RGxWqvVLsuyfPjYfN1YLaUsS80TtiVtB18BHWxAwwk6imsAAAAASUVORK5CYII=" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAARVJREFUOI3d1L8rhVEYB/APqROD9C66xSBJDH4MLAYLi4XFJKKYlDBSlpvJrpRBstn8G2b/gXoHdTbDs8jgKt38eF138q1T55yn59MznE6XNqfr34CduMYGXtoB7mIeO7j4K9iXUlqLiAFs4gbPfwHrETHR2E/ gGEetguOYQ3fj3JNSWoyIczy2Ap5i6uNFREyhjq3fgssYRccnPZNFUczknO + rggn7GPuiPp1zPsZKVfAQw1 / U3jOCVdz + BNawhMEfwHFs4w7xHVj39jyqZAR7OPsULIpiNuc8ht6K4BAWcIWnZrAj53yC2YrYeyZTSkcRcdAMrjew3 / 5A/RGxWqvVLsuyfPjYfN1YLaUsS80TtiVtB18BHWxAwwk6imsAAAAASUVORK5CYII="><i>Unknown</i></div><!----></div><!----></div>';
+                    }
+                    this.gageLegendFix = true;
+                }, 500);
+            }
         }
         private updateRegion() {
             //get regionkey
