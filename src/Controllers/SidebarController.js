@@ -63,7 +63,7 @@ var StreamStats;
                     }
                     return false;
                 },
-                enumerable: true,
+                enumerable: false,
                 configurable: true
             });
             SidebarController.prototype.setProcedureType = function (pType) {

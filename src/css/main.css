@@ -1796,3 +1796,17 @@ input[name=distanceValue] {
 .stat-names {
     word-break: break-all; /* needed becuase of _s in reg type names */
 }
+
+/* survey link formatting */
+.footer-survey-link{
+    display: block;
+    box-sizing: border-box;
+    padding-bottom: 15px !important;
+    text-align: center;
+    border-bottom: 1px dashed rgba(0,0,0,0.25);
+    margin-bottom: 20px;
+    font-size: larger
+}
+.footer-survey-link a{
+    font-weight: 800;
+}
