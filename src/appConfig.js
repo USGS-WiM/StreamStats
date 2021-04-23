@@ -33,9 +33,9 @@ configuration.queryparams =
         'NWISperiodOfRecord': '/site?seriesCatalogOutput=true&outputDataTypeCd=dv&format=rdb&site=',
         'KrigService': '/krigservices/sites/{0}/krig?&x={1}&y={2}&crs={3}',
         'RegressionScenarios': '/{0}/estimate?state={1}',
-        'statisticsGroupLookup': '/statisticgroups?regions={0},NA&regressionregions={1}',
-        'statisticsGroupParameterLookup': '/scenarios?regions={0},NA&statisticgroups={1}&regressionregions={2}&unitsystem=2',
-        'estimateFlows': '/scenarios/estimate?regions={0},NA&unitsystem=2',
+        'statisticsGroupLookup': '/statisticgroups?regions={0}&regressionregions={1}',
+        'statisticsGroupParameterLookup': '/scenarios?regions={0}&statisticgroups={1}&regressionregions={2}&unitsystem=2',
+        'estimateFlows': '/scenarios/estimate?regions={0}&unitsystem=2',
         'SSdelineation': '/streamstatsservices/watershed.{0}?rcode={1}&xlocation={2}&ylocation={3}&crs={4}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
         'SSstormwaterDelineation': '/stormwaterservices/watershed?rcode={0}&xlocation={1}&ylocation={2}&surfacecontributiononly={3}',
         'SSwatershedByWorkspace': '/streamstatsservices/watershed.{0}?rcode={1}&workspaceID={2}&crs={3}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
@@ -323,7 +323,7 @@ configuration.regions = [
 
                 }
             },
-        "Applications": [], "regionEnabled": true, "ScenariosAvailable": true
+        "Applications": ["StormDrain"], "regionEnabled": true, "ScenariosAvailable": true
     },
     { "RegionID": "MP", "Name": "Northern Mariana Islands", "Bounds": [[14.105276, 144.89859], [20.556385, 145.870788]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { 
@@ -343,7 +343,7 @@ configuration.regions = [
 
                 }
             }, 
-		"Applications": [], "regionEnabled": false, "ScenariosAvailable": false
+		"Applications": ["StormDrain"], "regionEnabled": true, "ScenariosAvailable": false
     },
     { "RegionID": "MS", "Name": "Mississippi", "Bounds": [[30.194935, -91.643682], [35.005041, -88.090468]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     {
