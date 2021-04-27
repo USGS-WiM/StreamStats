@@ -199,6 +199,7 @@ module StreamStats.Controllers {
             color: 'red',
             fillOpacity: 0.5
         }
+        public imageryToggled = false;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -1151,25 +1152,8 @@ module StreamStats.Controllers {
             if (!this.regionServices.selectedRegion) return;
             this.removeOverlayLayers("_region", true);
 
-            // select the imagery layer when the Mystic River Basin or Missouri St. Louis is selected
-            if (this.regionServices.selectedRegion.Applications.indexOf("StormDrain") > -1) {
-                // get all legend basemap items
-                var legendItems = document.getElementsByClassName('wimLegend-basemap-item');
-                for (var item in legendItems) {
-                    var children = legendItems[item].childNodes;
-                    var radio;
-                    for (var child in children) {
-                        // get all basemap radios
-                        if (children[child]['className'] == 'rdo') {
-                            radio = children[child];
-                            // click the radio button for the "Imagery" layer
-                            for (var chd in radio.childNodes) {
-                                if (radio.childNodes[chd]['innerHTML'] == 'Imagery') radio.click();
-                            }
-                        }
-                    }
-                }
-            }
+            // toggle the imagery layer if a localres or stormdrain state is selected
+            if (this.studyArea.zoomLevel15 && !this.imageryToggled && this.regionServices.selectedRegion.Applications.some(a => ['StormDrain', 'Localres'].indexOf(a) > -1)) this.toggleImageryLayer();
 
             this.regionServices.loadMapLayersByRegion(this.regionServices.selectedRegion.RegionID)
         }
@@ -1563,6 +1547,8 @@ module StreamStats.Controllers {
             }
             
             if (this.center.zoom >= 15) {
+                // select the imagery layer if a localres or stormdrain state is selected
+                if (!this.imageryToggled && this.regionServices.selectedRegion && this.regionServices.selectedRegion.Applications.some(a => ['StormDrain', 'Localres'].indexOf(a) > -1)) this.toggleImageryLayer();
                 this.studyArea.zoomLevel15 = true;
             }
             else {
@@ -1609,6 +1595,26 @@ module StreamStats.Controllers {
                 //this.center = <ICenter>{};
             }
 
+        }
+
+        private toggleImageryLayer() {
+            // get all legend basemap items
+            var legendItems = document.getElementsByClassName('wimLegend-basemap-item');
+            for (var item in legendItems) {
+                var children = legendItems[item].childNodes;
+                var radio;
+                for (var child in children) {
+                    // get all basemap radios
+                    if (children[child]['className'] == 'rdo') {
+                        radio = children[child];
+                        // click the radio button for the "Imagery" layer
+                        for (var chd in radio.childNodes) {
+                            if (radio.childNodes[chd]['innerHTML'] == 'Imagery') radio.click();
+                        }
+                    }
+                }
+            }
+            this.imageryToggled = true;
         }
 
         private addRegionOverlayLayers(regionId: string) {

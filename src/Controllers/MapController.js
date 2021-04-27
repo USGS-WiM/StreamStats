@@ -71,6 +71,7 @@ var StreamStats;
                     color: 'red',
                     fillOpacity: 0.5
                 };
+                this.imageryToggled = false;
                 $scope.vm = this;
                 this.toaster = toaster;
                 this.angulartics = $analytics;
@@ -775,22 +776,8 @@ var StreamStats;
                 if (!this.regionServices.selectedRegion)
                     return;
                 this.removeOverlayLayers("_region", true);
-                if (this.regionServices.selectedRegion.Applications.indexOf("StormDrain") > -1) {
-                    var legendItems = document.getElementsByClassName('wimLegend-basemap-item');
-                    for (var item in legendItems) {
-                        var children = legendItems[item].childNodes;
-                        var radio;
-                        for (var child in children) {
-                            if (children[child]['className'] == 'rdo') {
-                                radio = children[child];
-                                for (var chd in radio.childNodes) {
-                                    if (radio.childNodes[chd]['innerHTML'] == 'Imagery')
-                                        radio.click();
-                                }
-                            }
-                        }
-                    }
-                }
+                if (this.studyArea.zoomLevel15 && !this.imageryToggled && this.regionServices.selectedRegion.Applications.some(function (a) { return ['StormDrain', 'Localres'].indexOf(a) > -1; }))
+                    this.toggleImageryLayer();
                 this.regionServices.loadMapLayersByRegion(this.regionServices.selectedRegion.RegionID);
             };
             MapController.prototype.onSelectedStudyAreaChanged = function () {
@@ -1104,6 +1091,8 @@ var StreamStats;
                     this.removeGeoJsonLayers('streamgages');
                 }
                 if (this.center.zoom >= 15) {
+                    if (!this.imageryToggled && this.regionServices.selectedRegion && this.regionServices.selectedRegion.Applications.some(function (a) { return ['StormDrain', 'Localres'].indexOf(a) > -1; }))
+                        this.toggleImageryLayer();
                     this.studyArea.zoomLevel15 = true;
                 }
                 else {
@@ -1142,6 +1131,23 @@ var StreamStats;
                     this.regionServices.selectedRegion = this.regionServices.regionList[0];
                     this.bounds = this.leafletBoundsHelperService.createBoundsFromArray(this.regionServices.selectedRegion.Bounds);
                 }
+            };
+            MapController.prototype.toggleImageryLayer = function () {
+                var legendItems = document.getElementsByClassName('wimLegend-basemap-item');
+                for (var item in legendItems) {
+                    var children = legendItems[item].childNodes;
+                    var radio;
+                    for (var child in children) {
+                        if (children[child]['className'] == 'rdo') {
+                            radio = children[child];
+                            for (var chd in radio.childNodes) {
+                                if (radio.childNodes[chd]['innerHTML'] == 'Imagery')
+                                    radio.click();
+                            }
+                        }
+                    }
+                }
+                this.imageryToggled = true;
             };
             MapController.prototype.addRegionOverlayLayers = function (regionId) {
                 if (this.regionServices.regionMapLayerList.length < 1)
