@@ -1,5 +1,5 @@
 var configuration = {};
-configuration.version = "4.5.2";
+configuration.version = "4.5.3";
 configuration.environment = 'development';
 
 configuration.baseurls =
@@ -33,9 +33,9 @@ configuration.queryparams =
         'NWISperiodOfRecord': '/site?seriesCatalogOutput=true&outputDataTypeCd=dv&format=rdb&site=',
         'KrigService': '/krigservices/sites/{0}/krig?&x={1}&y={2}&crs={3}',
         'RegressionScenarios': '/{0}/estimate?state={1}',
-        'statisticsGroupLookup': '/statisticgroups?regions={0},NA&regressionregions={1}',
-        'statisticsGroupParameterLookup': '/scenarios?regions={0},NA&statisticgroups={1}&regressionregions={2}&unitsystem=2',
-        'estimateFlows': '/scenarios/estimate?regions={0},NA&unitsystem=2',
+        'statisticsGroupLookup': '/statisticgroups?regions={0}&regressionregions={1}',
+        'statisticsGroupParameterLookup': '/scenarios?regions={0}&statisticgroups={1}&regressionregions={2}&unitsystem=2',
+        'estimateFlows': '/scenarios/estimate?regions={0}&unitsystem=2',
         'SSdelineation': '/streamstatsservices/watershed.{0}?rcode={1}&xlocation={2}&ylocation={3}&crs={4}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
         'SSstormwaterDelineation': '/stormwaterservices/watershed?rcode={0}&xlocation={1}&ylocation={2}&surfacecontributiononly={3}',
         'SSwatershedByWorkspace': '/streamstatsservices/watershed.{0}?rcode={1}&workspaceID={2}&crs={3}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
@@ -44,8 +44,8 @@ configuration.queryparams =
         'SSComputeParams': '/streamstatsservices/parameters.json?rcode={0}&workspaceID={1}&includeparameters={2}',
         'SSavailableFeatures': '/streamstatsservices/features.json?workspaceID={0}',
         'SSfeatures': '/streamstatsservices/features.geojson?workspaceID={0}&crs={1}&includefeatures={2}&simplify=true',
-        'SSStateLayers': '/arcgis/rest/services/StreamStats/stateServices_test/MapServer',
-        'SSNationalLayers': '/arcgis/rest/services/StreamStats/nationalLayers_test/MapServer',
+        'SSStateLayers': '/arcgis/rest/services/StreamStats/stateServices/MapServer',
+        'SSNationalLayers': '/arcgis/rest/services/StreamStats/nationalLayers/MapServer',
         'FARefGage': '/2/query?geometry={0}&geometryType=esriGeometryPoint&inSR={1}&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
         'regionService': '/arcgis/rest/services/ss_studyAreas_prod/MapServer/identify',
         'NLCDQueryService': '/LandCover/USGS_EROS_LandCover_NLCD/MapServer/4',
