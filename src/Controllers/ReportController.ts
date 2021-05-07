@@ -177,7 +177,7 @@ module StreamStats.Controllers {
             var processMainParameterTable = (data) => {
                 var finalVal = '\nBasin Characteristics\n';
                 finalVal += this.tableToCSV($('#mainParamTable'));
-                return finalVal + '\n';
+                return finalVal + '\n\n';
             };
 
             var processScenarioParamTable = (statGroup) => {
@@ -240,9 +240,7 @@ module StreamStats.Controllers {
             var csvFile = 'StreamStats Output Report\n\n' + 'State/Region ID,' + this.studyAreaService.selectedStudyArea.RegionID.toUpperCase() + '\nWorkspace ID,' + this.studyAreaService.selectedStudyArea.WorkspaceID + '\nLatitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + '\nLongitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5) + '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n';
 
             //first write main parameter table
-            if (this.nssService.selectedStatisticsGroupList.length > 1 || (this.extensions && this.extensions[0].code != 'QPPQ')) {
-                csvFile += processMainParameterTable(this.studyAreaService.studyAreaParameterList);
-            }
+            csvFile += processMainParameterTable(this.studyAreaService.studyAreaParameterList);
 
             //next loop over stat groups
             this.nssService.selectedStatisticsGroupList.forEach((statGroup) => {
