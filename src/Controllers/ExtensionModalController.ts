@@ -75,7 +75,7 @@ module StreamStats.Controllers {
             this.eventManager = events;
             this.toaster = toaster;
             this.dateRangeOptions = {
-                locale: { format: 'MMMM D, YYYY' },
+                locale: { format: 'MM/DD/YYYY' },
                 eventHandlers: { 'hide.daterangepicker': (e) => this.SetExtensionDate(e) }
             };
 
@@ -248,7 +248,8 @@ module StreamStats.Controllers {
             // TODO: we can remove all this "properties" nonsense if we remove the geojson option from the nearest gages call?
             var selectedGageDone = false;
             if (this.referenceGageList)
-                this.referenceGageList.forEach(gage => {
+                for (var i = this.referenceGageList.length - 1; i >= 0; i--) {
+                    var gage = this.referenceGageList[i];
                     if (this.selectedReferenceGage && this.selectedReferenceGage.StationID && gage.StationID == this.selectedReferenceGage.StationID) selectedGageDone = true;
                     var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + gage.StationID;
                     var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
@@ -256,21 +257,26 @@ module StreamStats.Controllers {
                     this.Execute(request).then(
                         (response: any) => {
                             var gageInfo = response.data;
-                            if (!gage.hasOwnProperty('properties')) gage['properties'] = {};
-                            if (gageInfo.hasOwnProperty('statistics')) {
-                                var hasFlowDurationStats = false;
-                                gageInfo.statistics.forEach(stat => {
-                                    if (stat['statisticGroupType'].code == 'FDS') hasFlowDurationStats = true;
-                                })
-                                gage['properties']['HasFlowDurationStats'] = hasFlowDurationStats;
+                            // remove gages that are not continuous record
+                            if (gageInfo.stationType && gageInfo.stationType.code != 'GS') {
+                                this.referenceGageList.splice(i, 1);
+                            } else {
+                                if (gageInfo.stationType) gage['properties'].StationType = gageInfo.stationType;
+                                if (!gage.hasOwnProperty('properties')) gage['properties'] = {};
+                                if (gageInfo.hasOwnProperty('statistics')) {
+                                    var hasFlowDurationStats = false;
+                                    gageInfo.statistics.forEach(stat => {
+                                        if (stat['statisticGroupType'].code == 'FDS' && stat['isPreferred']) hasFlowDurationStats = true;
+                                    })
+                                    gage['properties']['HasFlowDurationStats'] = hasFlowDurationStats;
+                                }
+                                if (gageInfo.hasOwnProperty('isRegulated')) gage['properties'].IsRegulated = gageInfo.isRegulated;
+                                if (gageInfo.hasOwnProperty('characteristics')) {
+                                    gageInfo.characteristics.forEach(char => {
+                                        if (char['variableType'].code == 'DRNAREA') gage['properties']['DrainageArea'] = char['value'];
+                                    })
+                                }
                             }
-                            if (gageInfo.hasOwnProperty('isRegulated')) gage['properties'].IsRegulated = gageInfo.isRegulated;
-                            if (gageInfo.hasOwnProperty('characteristics')) {
-                                gageInfo.characteristics.forEach(char => {
-                                    if (char['variableType'].code == 'DRNAREA') gage['properties']['DrainageArea'] = char['value'];
-                                })
-                            }
-                            if (gageInfo.stationType) gage['properties'].StationType = gageInfo.stationType;
 
                         }, (error) => {
                             //sm when error
@@ -279,7 +285,7 @@ module StreamStats.Controllers {
                     });
                     
                     this.getNWISPeriodOfRecord(gage);
-                })
+                }
             if (this.selectedReferenceGage && !selectedGageDone) {
                 var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + this.selectedReferenceGage.StationID;
                 var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
@@ -290,7 +296,7 @@ module StreamStats.Controllers {
                         if (gageInfo.hasOwnProperty('statistics')) {
                             var hasFlowDurationStats = false;
                             gageInfo.statistics.forEach(stat => {
-                                if (stat['statisticGroupType'].code == 'FDS') hasFlowDurationStats = true;
+                                if (stat['statisticGroupType'].code == 'FDS' && stat['isPreferred']) hasFlowDurationStats = true;
                             })
                             this.selectedReferenceGage['properties']['HasFlowDurationStats'] = hasFlowDurationStats;
                         }
@@ -320,8 +326,8 @@ module StreamStats.Controllers {
             var lat = this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toString();
             var long = this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toString();
             var url = configuration.baseurls.GageStatsServices;
-            if (this.queryBy == 'Nearest') url += configuration.queryparams.GageStatsServicesNearest.format(lat, long, this.distance);
-            if (this.queryBy == 'Network') url += configuration.queryparams.GageStatsServicesNetwork.format(lat, long, this.distance);
+            if (this.queryBy == 'Nearest') url += configuration.queryparams.GageStatsServicesNearest.format(lat, long, this.distance * 1.60934);
+            if (this.queryBy == 'Network') url += configuration.queryparams.GageStatsServicesNetwork.format(lat, long, this.distance * 1.60934);
 
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
             this.referenceGageList = []; // reset nearby gages
@@ -335,23 +341,29 @@ module StreamStats.Controllers {
                     } else if (response.data.hasOwnProperty('features') && response.data.features.length == 0) {
                         this.toaster.pop("warning", "Warning", "No stations located within search distance")
                     } else if (response.data.hasOwnProperty('features') && response.data.features.length > 0) {
-                        response.data.features.forEach(feat => {
-                            if (feat.properties.hasOwnProperty('Statistics')) {
-                                var hasFlowDurationStats = false;
-                                feat.properties.Statistics.forEach(stat => {
-                                    if (stat['statisticGroupType'].code == 'FDS') hasFlowDurationStats = true;
-                                })
-                                feat.properties['HasFlowDurationStats'] = hasFlowDurationStats;
+                        for (var i = response.data.features.length - 1; i >= 0; i--) {
+                            var feat = response.data.features[i];
+                            // remove gages that are not continuous record from list
+                            if (feat.properties.StationType.code != 'GS') {
+                                response.data.features.splice(i, 1);
+                            } else {
+                                if (feat.properties.hasOwnProperty('Statistics')) {
+                                    var hasFlowDurationStats = false;
+                                    feat.properties.Statistics.forEach(stat => {
+                                        if (stat['statisticGroupType'].code == 'FDS' && stat['isPreferred']) hasFlowDurationStats = true;
+                                    })
+                                    feat.properties['HasFlowDurationStats'] = hasFlowDurationStats;
+                                }
+                                if (feat.properties.hasOwnProperty('Characteristics')) {
+                                    feat.properties.Characteristics.forEach(char => {
+                                        if (char['variableType'].code == 'DRNAREA') feat.properties['DrainageArea'] = char['value'];
+                                    })
+                                }
+                                if (feat.properties.code) feat.StationID = feat.properties.code;
+                                else if (feat.properties.Code) feat.StationID = feat.properties.Code;
+                                this.getNWISPeriodOfRecord(feat);
                             }
-                            if (feat.properties.hasOwnProperty('Characteristics')) {
-                                feat.properties.Characteristics.forEach(char => {
-                                    if (char['variableType'].code == 'DRNAREA') feat.properties['DrainageArea'] = char['value'];
-                                })
-                            }
-                            if (feat.properties.code) feat.StationID = feat.properties.code;
-                            else if (feat.properties.Code) feat.StationID = feat.properties.Code;
-                            this.getNWISPeriodOfRecord(feat);
-                        });
+                        }
                         this.referenceGageList = response.data.features;
                         this.getNWISDailyValues();
 

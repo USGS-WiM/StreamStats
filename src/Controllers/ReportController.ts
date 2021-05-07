@@ -517,7 +517,7 @@ module StreamStats.Controllers {
                 flow: {
                     data: [
                         { key: result.referanceGage.name, values: result.referanceGage.discharge.observations.map(obs => { return { x: new Date(obs.date).getTime(), y: obs.hasOwnProperty('value') ? typeof obs.value == 'number' ? obs.value.toUSGSvalue() : obs.value : null } })},
-                        { key: "Estimated", values: result.estimatedFlow.observations.map(obs => { return { x: new Date(obs.date).getTime(), y: obs.hasOwnProperty('value') ? typeof obs.value == 'number' ? obs.value < 0.05 ? 0 : obs.value.toUSGSvalue() : obs.value : null } }) }
+                        { key: "Estimated (at clicked point)", values: result.estimatedFlow.observations.map(obs => { return { x: new Date(obs.date).getTime(), y: obs.hasOwnProperty('value') ? typeof obs.value == 'number' ? obs.value < 0.05 ? 0 : obs.value.toUSGSvalue() : obs.value : null } }) }
                     ],
                     options: {
                         chart: {

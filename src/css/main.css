@@ -1356,7 +1356,6 @@ div.leaflet-top > .elevation {
 #printArea h3 {
     font-size: 20px !important;
     padding: 0 0 0 3px !important;
-    font-size: 20px !important;
     margin-bottom: 15px !important;
 }
 #printArea .leaflet-control-layers-base input[type=radio]{
@@ -1496,11 +1495,19 @@ div.leaflet-top > .elevation {
     font-size: 12px !important;
 }
 
-#printArea h3,
 #printArea h4{
     font-size: 14px !important;
     font-weight: 400 !important;
 }
+#printArea h3{
+    font-size: 18px !important;
+    font-weight: 400 !important;
+}
+#printArea h2{
+    font-weight: 400 !important;
+    font-size: 24px !important;
+}
+
 
 
 #reportMap [type=checkbox]:checked, #reportMap [type=checkbox]:not(:checked) {

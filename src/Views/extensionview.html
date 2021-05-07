@@ -22,7 +22,7 @@
                 <!-- TODO: add option to enter gage number -->
 
                 <div ng-if="vm.getNearest" id="nearestGages">
-                    <h3 class="panel-title">Query Nearest Gages<small>Query StreamStats Gages near the pourpoint (a) within a radius or (b) within a distance on the network</small></h3>
+                    <h3 class="panel-title">Query Nearest Gages<small>Query StreamStats Gages near the pourpoint (a) within a radius or (b) within a distance on the network (checks up or downstream directly on network, not including offshoots or tributaries)</small></h3>
                     <div class="panel-confitem-wrapper">
                         <!-- nearest gage functionality-->
                         <div class="panel-confitem">
@@ -41,7 +41,7 @@
                             </div>
                         </div>
                         <div class="panel-confitem">
-                            <h5>Distance (km):</h5>
+                            <h5>Distance (mi):</h5>
                             <div>
                                 <div class="input-group">
                                     <input type="number" class="form-control" name="distanceValue" ng-model="vm.distance">
@@ -87,7 +87,7 @@
                                     <td>{{gage.StartDate | date:'yyyy-MM-dd'}}</td>
                                     <td>{{gage.EndDate | date:'yyyy-MM-dd'}}</td>
                                     <td>
-                                        <a ng-class="{linkDisabled: gage.StationID == vm.selectedReferenceGage.StationID || !vm.checkPeriodOfRecord(gage) || !gage.properties.HasFlowDurationStats}" ng-click="vm.selectGage(gage)">
+                                        <a ng-class="{linkDisabled: gage.StationID == vm.selectedReferenceGage.StationID || !vm.checkPeriodOfRecord(gage) || !gage.properties.HasFlowDurationStats || gage.properties.StationType.code != 'GS'}" ng-click="vm.selectGage(gage)">
                                             Select Gage
                                         </a>
                                         &nbsp;
@@ -97,7 +97,6 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="wim-alert-warning">Conditions at the reference gage may affect computation.</div>
 
             </span>
 
