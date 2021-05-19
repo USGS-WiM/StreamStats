@@ -111,7 +111,7 @@ var StreamStats;
                 var processMainParameterTable = function (data) {
                     var finalVal = '\nBasin Characteristics\n';
                     finalVal += _this.tableToCSV($('#mainParamTable'));
-                    return finalVal + '\n';
+                    return finalVal + '\n\n';
                 };
                 var processScenarioParamTable = function (statGroup) {
                     var finalVal = '\n';
@@ -150,9 +150,7 @@ var StreamStats;
                     return finalVal + '\n';
                 };
                 var csvFile = 'StreamStats Output Report\n\n' + 'State/Region ID,' + this.studyAreaService.selectedStudyArea.RegionID.toUpperCase() + '\nWorkspace ID,' + this.studyAreaService.selectedStudyArea.WorkspaceID + '\nLatitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + '\nLongitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5) + '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n';
-                if (this.nssService.selectedStatisticsGroupList.length > 1 || (this.extensions && this.extensions[0].code != 'QPPQ')) {
-                    csvFile += processMainParameterTable(this.studyAreaService.studyAreaParameterList);
-                }
+                csvFile += processMainParameterTable(this.studyAreaService.studyAreaParameterList);
                 this.nssService.selectedStatisticsGroupList.forEach(function (statGroup) {
                     csvFile += processScenarioParamTable(statGroup);
                     if (statGroup.disclaimers && (statGroup.disclaimers.Warnings || statGroup.disclaimers.Errors))
