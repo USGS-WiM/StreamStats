@@ -286,7 +286,7 @@ module StreamStats.Controllers {
                     
                     this.getNWISPeriodOfRecord(gage);
                 }
-            if (this.selectedReferenceGage && !selectedGageDone) {
+            if (this.selectedReferenceGage && this.selectedReferenceGage.StationID != "" && !selectedGageDone) {
                 var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + this.selectedReferenceGage.StationID;
                 var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
 
@@ -318,6 +318,7 @@ module StreamStats.Controllers {
         }
 
         public getNearestGages() {
+            // TODO: having issues with this call taking a while (likely because we're getting stats..)
             this.CanContinue = false;
             this.toaster.pop("wait", "Searching for gages", "Please wait...", 0);
             var headers = {

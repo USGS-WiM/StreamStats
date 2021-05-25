@@ -317,6 +317,7 @@ module StreamStats.Services {
                     if (regressionRegion.extensions)
                         (<Array<any>>regressionRegion.extensions).forEach(e => {
                             if (e.result) delete e.result;
+                            if (e.parameters) e.parameters.forEach(p => { if (p.options) delete p.options})
                         });
                         
 

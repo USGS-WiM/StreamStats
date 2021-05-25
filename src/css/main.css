@@ -1370,6 +1370,9 @@ div.leaflet-top > .elevation {
     margin-bottom: auto;
     padding-top: 5px;
 }
+#printArea span {
+    padding: 0 0 0 3px !important;
+}
 
 /*
     Extra Buttons

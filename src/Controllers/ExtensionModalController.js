@@ -245,7 +245,7 @@ var StreamStats;
                         });
                         this.getNWISPeriodOfRecord(gage);
                     }
-                if (this.selectedReferenceGage && !selectedGageDone) {
+                if (this.selectedReferenceGage && this.selectedReferenceGage.StationID != "" && !selectedGageDone) {
                     var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + this.selectedReferenceGage.StationID;
                     var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                     this.Execute(request).then(function (response) {
