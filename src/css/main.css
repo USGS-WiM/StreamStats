@@ -768,6 +768,19 @@ div.leaflet-top > .elevation {
     }
 
 
+@media only screen and (max-width: 1220px) {
+	.modal-dialog{
+		width: 90%;
+		padding: 25px;
+		margin: 5% 5% 5% 5%;
+		color: #000;
+		letter-spacing: 1px;
+		font-weight: 400;
+		max-height: 90%;
+	  }
+}
+
+
 @media only screen and (max-width: 740px) {
     .navbar-brand{
         margin-bottom: 20px;
