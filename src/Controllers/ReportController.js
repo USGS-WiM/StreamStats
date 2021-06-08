@@ -175,7 +175,7 @@ var StreamStats;
                                     }
                                 }
                                 extVal += '\n';
-                                extVal += self.tableToCSV($('#ReferanceGage'));
+                                extVal += self.tableToCSV($('#ReferenceGage'));
                                 extVal += '\n\nExceedance Probabilities\n';
                                 extVal += self.tableToCSV($('#exceedanceTable'));
                                 extVal += '\n\nEstimated Flows\n';
@@ -372,7 +372,7 @@ var StreamStats;
                     },
                     flow: {
                         data: [
-                            { key: result.referanceGage.name, values: this.processData(result.referanceGage.discharge.observations) },
+                            { key: result.referenceGage.name, values: this.processData(result.referenceGage.discharge.observations) },
                             { key: "Estimated (at clicked point)", values: this.processData(result.estimatedFlow.observations) }
                         ],
                         options: {

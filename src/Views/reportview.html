@@ -224,11 +224,11 @@
                                             <tr>
                                                 <th>Date</th>
                                                 <th>Estimated</th>
-                                                <th>{{sc.result.referanceGage.name}}</th>
+                                                <th>{{sc.result.referenceGage.name}}</th>
                                             </tr>
                                         </thead>
 
-                                        <tbody ng-repeat="obs in sc.result.referanceGage.discharge.observations track by $index">
+                                        <tbody ng-repeat="obs in sc.result.referenceGage.discharge.observations track by $index">
                                             <tr>
                                                 <td>{{obs.date| date:'yyyy/MM/dd'}}</td>
                                                 <td>{{vm.getEstimatedFlow(obs,sc.result.estimatedFlow.observations)}}</td>
@@ -240,7 +240,7 @@
 
                                 <!--Reference gage-->
                                 <div class="well well-sm">
-                                    <table id="ReferanceGage" class="table table-condensed">
+                                    <table id="ReferenceGage" class="table table-condensed">
                                         <thead>
                                             <tr>
                                                 <th>Reference Gage</th>
@@ -249,25 +249,25 @@
                                         <tbody>
                                             <tr>
                                                 <td>Station ID:</td>
-                                                <td><a ng-attr-title={{sc.result.referanceGage.name}} ng-href={{sc.result.referanceGage.url}} target="_blank">{{sc.result.referanceGage.stationID}}</a>&nbsp;
-                                                    <a ng-click="vm.openGagePage(sc.result.referanceGage.stationID)">Open Gage Page</a>
+                                                <td><a ng-attr-title={{sc.result.referenceGage.name}} ng-href={{sc.result.referenceGage.url}} target="_blank">{{sc.result.referenceGage.stationID}}</a>&nbsp;
+                                                    <a ng-click="vm.openGagePage(sc.result.referenceGage.stationID)">Open Gage Page</a>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Name:</td>
-                                                <td><span>{{sc.result.referanceGage.name}}</span></td>
+                                                <td><span>{{sc.result.referenceGage.name}}</span></td>
                                             </tr>
                                             <tr>
                                                 <td>Latitude:</td>
-                                                <td><span>{{sc.result.referanceGage.latitude_DD}}</span><span> Decimal Degrees</span></td>
+                                                <td><span>{{sc.result.referenceGage.latitude_DD}}</span><span> Decimal Degrees</span></td>
                                             </tr>
                                             <tr>
                                                 <td>Longitude:</td>
-                                                <td><span>{{sc.result.referanceGage.longitude_DD}}</span><span> Decimal Degrees</span></td>
+                                                <td><span>{{sc.result.referenceGage.longitude_DD}}</span><span> Decimal Degrees</span></td>
                                             </tr>
                                             <tr>
                                                 <td>Drainage Area:</td>
-                                                <td><span>{{sc.result.referanceGage.drainageArea_sqMI}}</span><span> square miles</span></td>
+                                                <td><span>{{sc.result.referenceGage.drainageArea_sqMI}}</span><span> square miles</span></td>
                                             </tr>
                                         </tbody>
                                     </table>

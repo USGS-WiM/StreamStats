@@ -270,7 +270,7 @@ module StreamStats.Controllers {
                         
                             // add reference gage table TODO: getting random quotation marks without \n, double new lines with \n after 'Reference gage'
                             extVal += '\n';
-                            extVal += self.tableToCSV($('#ReferanceGage'))
+                            extVal += self.tableToCSV($('#ReferenceGage'))
     
                             // add exceedance table
                             extVal += '\n\nExceedance Probabilities\n';
@@ -514,7 +514,7 @@ module StreamStats.Controllers {
                 },
                 flow: {
                     data: [
-                        { key: result.referanceGage.name, values: this.processData(result.referanceGage.discharge.observations)},
+                        { key: result.referenceGage.name, values: this.processData(result.referenceGage.discharge.observations)},
                         { key: "Estimated (at clicked point)", values: this.processData(result.estimatedFlow.observations) }
                     ],
                     options: {
