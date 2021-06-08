@@ -55,6 +55,8 @@ var StreamStats;
                 _this.doSelectNearestGage = false;
                 _this.NSSServicesVersion = '';
                 _this.extensionDateRange = null;
+                _this.extensionsConfigured = false;
+                _this.loadingDrainageArea = false;
                 _this.modalservices = modal;
                 eventManager.AddEvent(Services.onSelectedStudyParametersLoaded);
                 eventManager.AddEvent(Services.onSelectedStudyAreaChanged);
@@ -299,6 +301,46 @@ var StreamStats;
                     evnt.studyArea = _this.selectedStudyArea;
                     _this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, _this, evnt);
                     _this.selectedStudyArea.Disclaimers['isEdited'] = true;
+                });
+            };
+            StudyAreaService.prototype.loadDrainageArea = function () {
+                var _this = this;
+                this.loadingDrainageArea = true;
+                var requestParameterList = [];
+                this.toaster.clear();
+                this.toaster.pop('wait', "Calculating Selected Basin Characteristics", "Please wait...", 0);
+                requestParameterList = ['drnarea'];
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSComputeParams'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID, requestParameterList.join(','));
+                var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                request.withCredentials = true;
+                this.Execute(request).then(function (response) {
+                    if (response.data.parameters && response.data.parameters.length > 0) {
+                        _this.toaster.clear();
+                        var paramErrors = false;
+                        angular.forEach(response.data.parameters, function (parameter, index) {
+                            if (!parameter.hasOwnProperty('value') || parameter.value == -999) {
+                                paramErrors = true;
+                                console.error('Parameter failed to compute: ', parameter.code);
+                                parameter.loaded = false;
+                            }
+                            else {
+                                parameter.loaded = true;
+                            }
+                        });
+                        if (paramErrors) {
+                            _this.showModifyBasinCharacterstics = true;
+                            _this.toaster.pop('error', "Error", "Drainage area failed to compute", 0);
+                        }
+                        var results = response.data.parameters;
+                        _this.loadParameterResults(results);
+                        _this.getAdditionalFeatureList();
+                        _this.loadingDrainageArea = false;
+                    }
+                }, function (error) {
+                    _this.loadingDrainageArea = false;
+                    _this.toaster.clear();
+                    _this.toaster.pop("error", "There was an HTTP error calculating basin characteristics", "Please retry", 0);
+                }).finally(function () {
                 });
             };
             StudyAreaService.prototype.loadParameters = function () {
@@ -656,7 +698,7 @@ var StreamStats;
                     }
                     if (siteList.length > 0) {
                         sid[0].options = siteList;
-                        sid[0].value = siteList[0];
+                        sid[0].value = new StreamStats.Models.ReferenceGage("", "");
                         _this.toaster.pop('success', "Found reference gages", "Please continue", 5000);
                     }
                 }, function (error) {
@@ -828,7 +870,7 @@ var StreamStats;
                 var _this = this;
                 console.log('onNSSExtensionChanged');
                 e.extensions.forEach(function (f) {
-                    if (_this.selectedStudyArea.NSS_Extensions.indexOf(f) == -1)
+                    if (_this.checkArrayForObj(_this.selectedStudyArea.NSS_Extensions, f) == -1)
                         _this.selectedStudyArea.NSS_Extensions.push(f);
                 });
             };
@@ -868,6 +910,15 @@ var StreamStats;
                             }
                         });
                 });
+            };
+            StudyAreaService.prototype.checkArrayForObj = function (arr, obj) {
+                for (var i = 0; i < arr.length; i++) {
+                    if (angular.equals(arr[i], obj)) {
+                        return i;
+                    }
+                }
+                ;
+                return -1;
             };
             return StudyAreaService;
         }(WiM.Services.HTTPServiceBase));

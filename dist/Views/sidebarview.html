@@ -215,7 +215,10 @@
                         <div class="banner warning" ng-show="vm.studyAreaService.studyAreaParameterList.length < 1">A scenario OR one or more basin characteristics from the dropdown above must be selected to continue</div>
                     </div>
                     <form style="padding: 5px 0;">
-                        <button type="button" class="btn-blue fullwidth" ng-click="vm.calculateParameters()" ng-disabled="vm.studyAreaService.parametersLoading || vm.nssService.loadingParametersByStatisticsGroupCounter > 0 || vm.studyAreaService.studyAreaParameterList.length < 1"><i ng-class="vm.studyAreaService.parametersLoading ? 'fa fa-refresh fa-spin' : 'fa fa-check-circle'"></i>&nbsp;&nbsp;Continue</button>
+                        <button ng-if="vm.scenarioHasExtensions" type="button" class="fullwidth" ng-click="vm.configureExtensions()" ><i class="fa fa-check-circle"></i>&nbsp;&nbsp;Configure QPPQ</button>
+                    </form>
+                    <form style="padding: 5px 0;">
+                        <button type="button" class="btn-blue fullwidth" ng-click="vm.calculateParameters()" ng-disabled="vm.studyAreaService.parametersLoading || vm.nssService.loadingParametersByStatisticsGroupCounter > 0 || vm.studyAreaService.studyAreaParameterList.length < 1 || (vm.scenarioHasExtensions && !vm.extensionsConfigured)"><i ng-class="vm.studyAreaService.parametersLoading ? 'fa fa-refresh fa-spin' : 'fa fa-check-circle'"></i>&nbsp;&nbsp;Continue</button>
                     </form>
                 </div>
             </div>

@@ -175,42 +175,7 @@
                                 <h3>{{sc.name}} ({{sc.code}})</h3>
                                 <div ng-repeat="p in sc.parameters" ng-if="['sdate','edate'].indexOf(p.code) >-1">
                                     <span>{{p.name}}: {{p.value | date:'yyyy/MM/dd'}}</span><br />
-                                </div>
-
-                                <!--Reference gage-->
-                                <div class="well well-sm">
-                                    <table id="ReferanceGage" class="table table-condensed">
-                                        <thead>
-                                            <tr>
-                                                <th>Reference Gage</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>Station ID:</td>
-                                                <td><a ng-attr-title={{sc.result.referanceGage.name}} ng-href={{sc.result.referanceGage.url}} target="_blank">{{sc.result.referanceGage.stationID}}</a>&nbsp;
-                                                    <a ng-click="vm.openGagePage(sc.result.referanceGage.stationID)">Open Gage Page</a>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>Name:</td>
-                                                <td><span>{{sc.result.referanceGage.name}}</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Latitude:</td>
-                                                <td><span>{{sc.result.referanceGage.latitude_DD}}</span><span> Decimal Degrees</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Longitude:</td>
-                                                <td><span>{{sc.result.referanceGage.longitude_DD}}</span><span> Decimal Degrees</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Drainage Area:</td>
-                                                <td><span>{{sc.result.referanceGage.drainageArea_sqMI}}</span><span> square miles</span></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
+                                </div>                           
 
                                 <!--FDCTM Exceedance Probablities-->
                                 <h3 class="reportChartHeader">Exceedance Probabilities of Clicked Point</h3>
@@ -227,7 +192,7 @@
                                             <thead>
                                                 <tr>
                                                     <th>Exceedance</th>
-                                                    <th>Flow Exceeded</th>
+                                                    <th>Flow Exceeded (cfs)</th>
                                                 </tr>
                                             </thead>
                                             <tbody ng-repeat="(key, value) in sc.result.exceedanceProbabilities">
@@ -268,6 +233,41 @@
                                                 <td>{{obs.date| date:'yyyy/MM/dd'}}</td>
                                                 <td>{{vm.getEstimatedFlow(obs,sc.result.estimatedFlow.observations)}}</td>
                                                 <td>{{obs.hasOwnProperty('value') ? obs.value.toUSGSvalue() : obs.hasOwnProperty('dataCode') ? obs.dataCode : 'N/A'}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!--Reference gage-->
+                                <div class="well well-sm">
+                                    <table id="ReferanceGage" class="table table-condensed">
+                                        <thead>
+                                            <tr>
+                                                <th>Reference Gage</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Station ID:</td>
+                                                <td><a ng-attr-title={{sc.result.referanceGage.name}} ng-href={{sc.result.referanceGage.url}} target="_blank">{{sc.result.referanceGage.stationID}}</a>&nbsp;
+                                                    <a ng-click="vm.openGagePage(sc.result.referanceGage.stationID)">Open Gage Page</a>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Name:</td>
+                                                <td><span>{{sc.result.referanceGage.name}}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Latitude:</td>
+                                                <td><span>{{sc.result.referanceGage.latitude_DD}}</span><span> Decimal Degrees</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Longitude:</td>
+                                                <td><span>{{sc.result.referanceGage.longitude_DD}}</span><span> Decimal Degrees</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Drainage Area:</td>
+                                                <td><span>{{sc.result.referanceGage.drainageArea_sqMI}}</span><span> square miles</span></td>
                                             </tr>
                                         </tbody>
                                     </table>

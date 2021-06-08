@@ -84,7 +84,8 @@ module StreamStats.Controllers {
             }//next i
             return false;
         }
-        private scenarioHasExtenstions: Boolean;
+        private scenarioHasExtensions: Boolean;
+        private extensionsConfigured: Boolean;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -125,9 +126,20 @@ module StreamStats.Controllers {
             });
             $scope.$watchCollection(() => this.studyAreaService.selectedStudyAreaExtensions, (newval, oldval) => {
                 if (newval == oldval) return;
-                this.scenarioHasExtenstions = (this.studyAreaService.selectedStudyAreaExtensions.length >0 )               
+                this.scenarioHasExtensions = (this.studyAreaService.selectedStudyAreaExtensions.length >0 );
             });
-
+            $scope.$watchCollection(() => this.studyAreaService.extensionsConfigured, (newval, oldval) => {
+                if (newval == oldval) return;
+                if (!newval) {this.extensionsConfigured = newval; return; }
+                var hasAllParams = true;
+                // double check extensions have all params
+                this.studyAreaService.selectedStudyAreaExtensions.forEach(ext => {
+                    ext.parameters.forEach(p => {
+                        if (!p.hasOwnProperty('value') || p.value == undefined) hasAllParams = false;
+                    })
+                })
+                if (hasAllParams) this.extensionsConfigured = true;
+            });
             EventManager.SubscribeToEvent(Services.onSelectedStudyParametersLoaded, new WiM.Event.EventHandler<Services.StudyAreaEventArgs>((sender: any, e: Services.StudyAreaEventArgs) => {
                 this.parametersLoaded = e.parameterLoaded;
                 if (!this.parametersLoaded) this.setProcedureType(3);
@@ -218,6 +230,14 @@ module StreamStats.Controllers {
 
             //if toggled remove selected parameter set
             if (checkStatisticsGroup != -1) {
+                // need to remove QPPQ when deselected
+                if (statisticsGroup.id.indexOf('fdctm')) {
+                    var qppqExtension = this.studyAreaService.selectedStudyAreaExtensions.filter(e => e.code == 'QPPQ')[0];
+                    var extensionIndex = this.studyAreaService.selectedStudyAreaExtensions.indexOf(qppqExtension);
+                    // splice and send new event
+                    this.studyAreaService.selectedStudyAreaExtensions.splice(extensionIndex, 1);
+                    this.EventManager.RaiseEvent(Services.onScenarioExtensionChanged, this, new Services.NSSEventArgs(this.studyAreaService.selectedStudyAreaExtensions) );
+                }
 
                 //remove this statisticsGroup from the list
                 this.nssService.selectedStatisticsGroupList.splice(checkStatisticsGroup, 1);
@@ -330,13 +350,14 @@ module StreamStats.Controllers {
 
             //console.log('in Calculate Parameters');
             this.studyAreaService.loadParameters();
-            //open modal for extensions
-            if (this.scenarioHasExtenstions) {
-                this.modalService.openModal(Services.SSModalType.e_extensionsupport);
-                if (this.nssService.selectedStatisticsGroupList.length == 1) {
-                    this.nssService.showBasinCharacteristicsTable = false;
-                }
+            if (this.nssService.selectedStatisticsGroupList.length == 1) {
+                this.nssService.showBasinCharacteristicsTable = false;
             }
+        }
+
+        public configureExtensions() {
+            //open modal for extensions
+            this.modalService.openModal(Services.SSModalType.e_extensionsupport);
         }
 
         public submitBasinEdits() {

@@ -42,7 +42,24 @@ var StreamStats;
                 $scope.$watchCollection(function () { return _this.studyAreaService.selectedStudyAreaExtensions; }, function (newval, oldval) {
                     if (newval == oldval)
                         return;
-                    _this.scenarioHasExtenstions = (_this.studyAreaService.selectedStudyAreaExtensions.length > 0);
+                    _this.scenarioHasExtensions = (_this.studyAreaService.selectedStudyAreaExtensions.length > 0);
+                });
+                $scope.$watchCollection(function () { return _this.studyAreaService.extensionsConfigured; }, function (newval, oldval) {
+                    if (newval == oldval)
+                        return;
+                    if (!newval) {
+                        _this.extensionsConfigured = newval;
+                        return;
+                    }
+                    var hasAllParams = true;
+                    _this.studyAreaService.selectedStudyAreaExtensions.forEach(function (ext) {
+                        ext.parameters.forEach(function (p) {
+                            if (!p.hasOwnProperty('value') || p.value == undefined)
+                                hasAllParams = false;
+                        });
+                    });
+                    if (hasAllParams)
+                        _this.extensionsConfigured = true;
                 });
                 EventManager.SubscribeToEvent(StreamStats.Services.onSelectedStudyParametersLoaded, new WiM.Event.EventHandler(function (sender, e) {
                     _this.parametersLoaded = e.parameterLoaded;
@@ -126,6 +143,12 @@ var StreamStats;
             SidebarController.prototype.setStatisticsGroup = function (statisticsGroup) {
                 var checkStatisticsGroup = this.checkArrayForObj(this.nssService.selectedStatisticsGroupList, statisticsGroup);
                 if (checkStatisticsGroup != -1) {
+                    if (statisticsGroup.id.indexOf('fdctm')) {
+                        var qppqExtension = this.studyAreaService.selectedStudyAreaExtensions.filter(function (e) { return e.code == 'QPPQ'; })[0];
+                        var extensionIndex = this.studyAreaService.selectedStudyAreaExtensions.indexOf(qppqExtension);
+                        this.studyAreaService.selectedStudyAreaExtensions.splice(extensionIndex, 1);
+                        this.EventManager.RaiseEvent(StreamStats.Services.onScenarioExtensionChanged, this, new StreamStats.Services.NSSEventArgs(this.studyAreaService.selectedStudyAreaExtensions));
+                    }
                     this.nssService.selectedStatisticsGroupList.splice(checkStatisticsGroup, 1);
                     if (this.nssService.selectedStatisticsGroupList.length == 0) {
                         this.studyAreaService.studyAreaParameterList = [];
@@ -200,12 +223,12 @@ var StreamStats;
                     category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.studyAreaService.studyAreaParameterList.map(function (elem) { return elem.code; }).join(",")
                 });
                 this.studyAreaService.loadParameters();
-                if (this.scenarioHasExtenstions) {
-                    this.modalService.openModal(StreamStats.Services.SSModalType.e_extensionsupport);
-                    if (this.nssService.selectedStatisticsGroupList.length == 1) {
-                        this.nssService.showBasinCharacteristicsTable = false;
-                    }
+                if (this.nssService.selectedStatisticsGroupList.length == 1) {
+                    this.nssService.showBasinCharacteristicsTable = false;
                 }
+            };
+            SidebarController.prototype.configureExtensions = function () {
+                this.modalService.openModal(StreamStats.Services.SSModalType.e_extensionsupport);
             };
             SidebarController.prototype.submitBasinEdits = function () {
                 this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'sumbitEdits' });

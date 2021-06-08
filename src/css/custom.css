@@ -140,3 +140,9 @@ text.nv-axislabel {
 	line-height: 14px !important;
     letter-spacing: -0.2px;
 }
+
+.qppqInput input{
+    width: unset;
+    border: unset;
+    border-bottom: 2px solid #e0e3e6;
+}
