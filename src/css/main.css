@@ -738,10 +738,6 @@ div.leaflet-top > .elevation {
         .identifier {
             padding-bottom: 2em;
         }
-
-        svg {
-            width: 50vw !important;
-        }
     }
 
     @media print and (-ms-high-contrast: none), (-ms-high-contrast: active) {

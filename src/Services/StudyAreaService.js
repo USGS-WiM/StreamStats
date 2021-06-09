@@ -306,11 +306,9 @@ var StreamStats;
             StudyAreaService.prototype.loadDrainageArea = function () {
                 var _this = this;
                 this.loadingDrainageArea = true;
-                var requestParameterList = [];
                 this.toaster.clear();
-                this.toaster.pop('wait', "Calculating Selected Basin Characteristics", "Please wait...", 0);
-                requestParameterList = ['drnarea'];
-                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSComputeParams'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID, requestParameterList.join(','));
+                this.toaster.pop('wait', "Calculating Drainage Area", "Please wait...", 0);
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSComputeParams'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID, 'drnarea');
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 request.withCredentials = true;
                 this.Execute(request).then(function (response) {
@@ -328,18 +326,16 @@ var StreamStats;
                             }
                         });
                         if (paramErrors) {
-                            _this.showModifyBasinCharacterstics = true;
                             _this.toaster.pop('error', "Error", "Drainage area failed to compute", 0);
                         }
                         var results = response.data.parameters;
                         _this.loadParameterResults(results);
-                        _this.getAdditionalFeatureList();
                         _this.loadingDrainageArea = false;
                     }
                 }, function (error) {
                     _this.loadingDrainageArea = false;
                     _this.toaster.clear();
-                    _this.toaster.pop("error", "There was an HTTP error calculating basin characteristics", "Please retry", 0);
+                    _this.toaster.pop("error", "There was an HTTP error calculating drainage area", "Please retry", 0);
                 }).finally(function () {
                 });
             };

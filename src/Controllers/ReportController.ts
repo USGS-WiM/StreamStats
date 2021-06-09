@@ -514,7 +514,7 @@ module StreamStats.Controllers {
                 },
                 flow: {
                     data: [
-                        { key: result.referenceGage.name, values: this.processData(result.referenceGage.discharge.observations)},
+                        { key: result.referanceGage.name, values: this.processData(result.referanceGage.discharge.observations)},
                         { key: "Estimated (at clicked point)", values: this.processData(result.estimatedFlow.observations) }
                     ],
                     options: {
@@ -794,7 +794,7 @@ module StreamStats.Controllers {
 
         private processData(data) {
             var returnData = [];
-            // get earliest and latest date in array (might not be the same as the start date coming from QPPQ)
+            // get earliest and latest date in array (might not be the same as the start/end date coming from QPPQ)
             var startDate = new Date(Math.min.apply(null, data.map(function(e) {return new Date(e.date)})));
             var endDate = new Date(Math.max.apply(null, data.map(function(e) {return new Date(e.date)})));
             

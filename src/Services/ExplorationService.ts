@@ -200,8 +200,6 @@ module StreamStats.Services {
 
         public getNavigationEndPoints() {
 
-            // TODO: change all references to 'http://localhost:53812/navigation' to test local nav services
-            // TODO: remove above comment when pushing up 
             var url: string = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSNavigationServices'];
 
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);

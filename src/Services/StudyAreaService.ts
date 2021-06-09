@@ -444,17 +444,11 @@ module StreamStats.Services {
 
         public loadDrainageArea() {
             this.loadingDrainageArea = true;
-            var requestParameterList = [];
             this.toaster.clear();
-            this.toaster.pop('wait', "Calculating Selected Basin Characteristics", "Please wait...", 0);
+            this.toaster.pop('wait', "Calculating Drainage Area", "Please wait...", 0);
 
-            //only compute missing characteristics
-            requestParameterList = ['drnarea'];
-            
-
-            //console.log('request parameter list before: ', this.requestParameterList);
             var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSComputeParams'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID,
-                requestParameterList.join(','));
+                'drnarea');
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
             request.withCredentials = true;
 
@@ -480,15 +474,11 @@ module StreamStats.Services {
 
                         //if there is an issue, pop open 
                         if (paramErrors) {
-                            this.showModifyBasinCharacterstics = true;
                             this.toaster.pop('error', "Error", "Drainage area failed to compute", 0);
                         }
 
                         var results = response.data.parameters;
                         this.loadParameterResults(results);
-
-                        //get additional features for this workspace
-                        this.getAdditionalFeatureList();
 
                         this.loadingDrainageArea = false;
                     }
@@ -498,7 +488,7 @@ module StreamStats.Services {
                     //sm when error
                     this.loadingDrainageArea = false;
                     this.toaster.clear();
-                    this.toaster.pop("error", "There was an HTTP error calculating basin characteristics", "Please retry", 0);
+                    this.toaster.pop("error", "There was an HTTP error calculating drainage area", "Please retry", 0);
                 }).finally(() => {
                 });
         }
@@ -600,8 +590,6 @@ module StreamStats.Services {
         }
 
         public getAdditionalFeatureList() {
-
-            //this.toaster.pop("wait", "Information", "Querying for additional features...", 0);
             var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSavailableFeatures'].format(this.selectedStudyArea.WorkspaceID);
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
             request.withCredentials = true;
@@ -1170,10 +1158,6 @@ module StreamStats.Services {
             return featureArray;
         }
         private loadParameterResults(results: Array<WiM.Models.IParameter>) {
-
-            //this.toaster.pop('wait', "Loading Basin Characteristics", "Please wait...", 0);
-            //console.log('in load parameter results');
-
             var paramList = this.studyAreaParameterList;
             var self = this;
             results.map(function (val) {
@@ -1193,13 +1177,10 @@ module StreamStats.Services {
                     }//endif
                 });
             });
-            //console.log('params', this.studyAreaParameterList);
         }
         private loadRegulatedParameterResults(regulatedResults: Array<Models.IRegulationParameter>) {
 
             this.toaster.pop('wait', "Loading Regulated Basin Characteristics", "Please wait...");
-
-            //console.log('in load regulated parameter results');
 
             var paramList = this.studyAreaParameterList;
             regulatedResults.map(function (regulatedParam) {

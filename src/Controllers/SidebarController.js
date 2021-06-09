@@ -223,7 +223,7 @@ var StreamStats;
                     category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.studyAreaService.studyAreaParameterList.map(function (elem) { return elem.code; }).join(",")
                 });
                 this.studyAreaService.loadParameters();
-                if (this.nssService.selectedStatisticsGroupList.length == 1) {
+                if (this.scenarioHasExtensions && this.nssService.selectedStatisticsGroupList.length == 1) {
                     this.nssService.showBasinCharacteristicsTable = false;
                 }
             };

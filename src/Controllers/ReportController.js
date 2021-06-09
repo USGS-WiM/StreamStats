@@ -372,7 +372,7 @@ var StreamStats;
                     },
                     flow: {
                         data: [
-                            { key: result.referenceGage.name, values: this.processData(result.referenceGage.discharge.observations) },
+                            { key: result.referanceGage.name, values: this.processData(result.referanceGage.discharge.observations) },
                             { key: "Estimated (at clicked point)", values: this.processData(result.estimatedFlow.observations) }
                         ],
                         options: {

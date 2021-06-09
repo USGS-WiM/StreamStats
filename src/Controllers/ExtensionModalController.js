@@ -24,7 +24,6 @@ var StreamStats;
                 var _this = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
                 _this.events = events;
                 _this.isBusy = false;
-                _this.CanContinue = true;
                 _this.selectedReferenceGage = null;
                 _this.queryBy = 'Nearest';
                 _this.getNearest = false;
@@ -137,8 +136,10 @@ var StreamStats;
                 } while (parameters.length > 0);
                 if (this.studyAreaService.selectedGage)
                     this.studyAreaService.selectedGage = this.selectedReferenceGage;
-                this.getGageInfo();
-                this.getNWISDailyValues();
+                if (this.referenceGageList != undefined || this.selectedReferenceGage.StationID != "") {
+                    this.getGageInfo();
+                    this.getNWISDailyValues();
+                }
                 if (this.getDrainageArea() == 'N/A' && !this.studyAreaService.loadingDrainageArea)
                     this.studyAreaService.loadDrainageArea();
             };
@@ -210,7 +211,7 @@ var StreamStats;
             };
             ExtensionModalController.prototype.getGageInfo = function () {
                 this.toaster.pop('wait', "Querying gage information", "Please wait...", 0);
-                this.CanContinue = false;
+                this.isBusy = true;
                 var selectedGageDone = false;
                 if (this.referenceGageList)
                     for (var i = this.referenceGageList.length - 1; i >= 0; i--) {
@@ -223,14 +224,24 @@ var StreamStats;
                     this.getGageStatsStationInfo(this.selectedReferenceGage);
                 }
             };
-            ExtensionModalController.prototype.getGageStatsStationInfo = function (gage) {
+            ExtensionModalController.prototype.getGageStatsStationInfo = function (gage, newGage) {
                 var _this = this;
+                if (newGage === void 0) { newGage = false; }
                 var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + gage.StationID;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
                     var gageInfo = response.data;
                     if (gageInfo.stationType && gageInfo.stationType.code != 'GS') {
-                        _this.removeItem(gage);
+                        if (newGage) {
+                            _this.toaster.clear();
+                            _this.toaster.pop('error', "Invalid gage", "Gage is not continuous record", 0);
+                            _this.isBusy = false;
+                        }
+                        else {
+                            _this.removeItem(gage);
+                            if (_this.referenceGageList.length == 0)
+                                _this.toaster.pop('warning', "No valid gages returned", "Gages without continuous record removed from response", 0);
+                        }
                     }
                     else {
                         if (gageInfo.hasOwnProperty('isRegulated'))
@@ -253,13 +264,17 @@ var StreamStats;
                         }
                         if (gageInfo.hasOwnProperty('name'))
                             gage['Name'] = gageInfo.name;
+                        if (newGage) {
+                            if (!_this.referenceGageList)
+                                _this.referenceGageList = [];
+                            if (_this.referenceGageList.length == 0 || !_this.referenceGageList.some(function (g) { return g.StationID == gage.StationID; }))
+                                _this.referenceGageList.unshift(gage);
+                        }
                         _this.getNWISPeriodOfRecord(gage);
                     }
-                    _this.toaster.clear();
-                    _this.CanContinue = true;
                 }, function (error) {
                     _this.toaster.clear();
-                    _this.CanContinue = true;
+                    _this.isBusy = false;
                     console.log(error);
                     if (error.headers()['x-usgswim-messages']) {
                         var headerMsgs = JSON.parse(error.headers()['x-usgswim-messages']);
@@ -280,7 +295,7 @@ var StreamStats;
             };
             ExtensionModalController.prototype.getNearestGages = function () {
                 var _this = this;
-                this.CanContinue = false;
+                this.isBusy = true;
                 this.toaster.pop("wait", "Searching for gages", "Please wait...", 0);
                 var headers = {
                     "X-Is-Streamstats": true
@@ -297,7 +312,7 @@ var StreamStats;
                 this.selectedReferenceGage.StationID = '';
                 this.Execute(request).then(function (response) {
                     _this.toaster.clear();
-                    _this.CanContinue = true;
+                    _this.isBusy = false;
                     if (typeof response.data == 'string') {
                         _this.toaster.pop("warning", "Warning", response.data, 0);
                     }
@@ -309,6 +324,8 @@ var StreamStats;
                             var gage = response.data[i];
                             if (gage.stationType.code != 'GS') {
                                 response.data.splice(i, 1);
+                                if (response.data.length == 0)
+                                    _this.toaster.pop('warning', "No valid gages returned", "Gages without continuous record removed from response", 0);
                             }
                             else {
                                 if (gage.hasOwnProperty('statistics')) {
@@ -345,7 +362,7 @@ var StreamStats;
                     }
                 }, function (error) {
                     _this.toaster.clear();
-                    _this.CanContinue = true;
+                    _this.isBusy = false;
                     console.log(error);
                     if (error.headers()['x-usgswim-messages']) {
                         var headerMsgs = JSON.parse(error.headers()['x-usgswim-messages']);
@@ -407,8 +424,11 @@ var StreamStats;
                             }
                         }
                     } while (data.length > 0);
+                    _this.toaster.clear();
+                    _this.isBusy = false;
                 }, function (error) {
                     _this.toaster.clear();
+                    _this.isBusy = false;
                     _this.toaster.pop('error', "Error", "NWIS period of record not found", 0);
                 }).finally(function () {
                 });
@@ -466,60 +486,10 @@ var StreamStats;
                     return 'N/A';
             };
             ExtensionModalController.prototype.queryGage = function () {
-                var _this = this;
                 this.toaster.pop('wait', "Querying gage information", "Please wait...", 0);
-                this.CanContinue = false;
+                this.isBusy = true;
                 var gage = new StreamStats.Models.ReferenceGage(this.stationNumber, '');
-                var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + this.stationNumber;
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
-                this.Execute(request).then(function (response) {
-                    var gageInfo = response.data;
-                    if (gageInfo.stationType && gageInfo.stationType.code != 'GS') {
-                        return;
-                    }
-                    else {
-                        if (gageInfo.hasOwnProperty('isRegulated'))
-                            gage['isRegulated'] = gageInfo.isRegulated;
-                        if (gageInfo.hasOwnProperty('stationType'))
-                            gage['stationType'] = gageInfo.stationType;
-                        if (gageInfo.hasOwnProperty('statistics')) {
-                            var hasFlowDurationStats = false;
-                            gageInfo['statistics'].forEach(function (stat) {
-                                if (stat['statisticGroupType'].code == 'FDS' && stat['isPreferred'])
-                                    hasFlowDurationStats = true;
-                            });
-                            gage['HasFlowDurationStats'] = hasFlowDurationStats;
-                        }
-                        if (gageInfo.hasOwnProperty('characteristics')) {
-                            gageInfo.characteristics.forEach(function (char) {
-                                if (char['variableType'].code == 'DRNAREA')
-                                    gage['DrainageArea'] = char['value'];
-                            });
-                        }
-                        if (gageInfo.hasOwnProperty('name'))
-                            gage['Name'] = gageInfo.name;
-                        if (!_this.referenceGageList)
-                            _this.referenceGageList = [];
-                        if (_this.referenceGageList.length == 0 || !_this.referenceGageList.some(function (g) { return g.StationID == gage.StationID; }))
-                            _this.referenceGageList.unshift(gage);
-                    }
-                    _this.toaster.clear();
-                    _this.CanContinue = true;
-                }, function (error) {
-                    _this.toaster.clear();
-                    _this.CanContinue = true;
-                    console.log(error);
-                    if (error.headers()['x-usgswim-messages']) {
-                        var headerMsgs = JSON.parse(error.headers()['x-usgswim-messages']);
-                        Object.keys(headerMsgs).forEach(function (key) {
-                            headerMsgs[key].forEach(function (element) {
-                                _this.toaster.pop(key, key, element);
-                            });
-                        });
-                    }
-                }).finally(function () {
-                });
-                this.getNWISPeriodOfRecord(gage);
+                this.getGageStatsStationInfo(gage, true);
             };
             ExtensionModalController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.ModalService', 'StreamStats.Services.StudyAreaService', 'WiM.Event.EventManager', '$http', 'toaster'];
             return ExtensionModalController;

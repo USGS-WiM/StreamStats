@@ -52,7 +52,6 @@ module StreamStats.Controllers {
         public title: string;
         public isBusy: boolean = false;
         public toaster: any;
-        public CanContinue: boolean = true;
         //QPPQ
         public dateRange: IDateRange;
         public dateRangeOptions;
@@ -177,8 +176,10 @@ module StreamStats.Controllers {
             } while (parameters.length > 0);
            
             if (this.studyAreaService.selectedGage) this.studyAreaService.selectedGage = this.selectedReferenceGage;
-            this.getGageInfo();
-            this.getNWISDailyValues();
+            if (this.referenceGageList != undefined || this.selectedReferenceGage.StationID != "") {
+                this.getGageInfo();
+                this.getNWISDailyValues();
+            }
             // get drainage area if not already retrieved/retrieving
             if (this.getDrainageArea() == 'N/A' && !this.studyAreaService.loadingDrainageArea) this.studyAreaService.loadDrainageArea();
         }
@@ -251,7 +252,7 @@ module StreamStats.Controllers {
 
         public getGageInfo() {
             this.toaster.pop('wait', "Querying gage information", "Please wait...", 0);
-            this.CanContinue = false;
+            this.isBusy = true;
             var selectedGageDone = false;
             if (this.referenceGageList)
                 for (var i = this.referenceGageList.length - 1; i >= 0; i--) {
@@ -265,7 +266,7 @@ module StreamStats.Controllers {
                 
         }
 
-        public getGageStatsStationInfo(gage) {
+        public getGageStatsStationInfo(gage, newGage = false) {
             var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + gage.StationID;
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
 
@@ -274,7 +275,14 @@ module StreamStats.Controllers {
                     var gageInfo = response.data;
                     // remove gages that are not continuous record
                     if (gageInfo.stationType && gageInfo.stationType.code != 'GS') {
-                        this.removeItem(gage);
+                        if (newGage) {
+                            this.toaster.clear();
+                            this.toaster.pop('error', "Invalid gage", "Gage is not continuous record", 0);
+                            this.isBusy = false;
+                        } else {
+                            this.removeItem(gage);
+                            if (this.referenceGageList.length == 0) this.toaster.pop('warning', "No valid gages returned", "Gages without continuous record removed from response", 0);
+                        }
                     } else {
                         if (gageInfo.hasOwnProperty('isRegulated')) gage['isRegulated'] = gageInfo.isRegulated;
                         if (gageInfo.hasOwnProperty('stationType')) gage['stationType'] = gageInfo.stationType;
@@ -291,15 +299,17 @@ module StreamStats.Controllers {
                             })
                         }
                         if (gageInfo.hasOwnProperty('name')) gage['Name'] = gageInfo.name;
+                        if (newGage) {
+                            if (!this.referenceGageList) this.referenceGageList = [];
+                            if (this.referenceGageList.length == 0 || !this.referenceGageList.some(g => g.StationID == gage.StationID)) this.referenceGageList.unshift(gage);
+                        }
                         this.getNWISPeriodOfRecord(gage);
                     }
-                    this.toaster.clear();
-                    this.CanContinue = true;
 
                 }, (error) => {
                     //sm when error
                     this.toaster.clear();
-                    this.CanContinue = true;
+                    this.isBusy = false;
                     console.log(error);
                     if (error.headers()['x-usgswim-messages']) {
                         var headerMsgs = JSON.parse(error.headers()['x-usgswim-messages']);
@@ -320,7 +330,7 @@ module StreamStats.Controllers {
         }
 
         public getNearestGages() {
-            this.CanContinue = false;
+            this.isBusy = true;
             this.toaster.pop("wait", "Searching for gages", "Please wait...", 0);
             var headers = {
                 "X-Is-Streamstats": true
@@ -337,7 +347,7 @@ module StreamStats.Controllers {
             this.Execute(request).then(
                 (response: any) => {
                     this.toaster.clear();
-                    this.CanContinue = true;
+                    this.isBusy = false;
                     if (typeof response.data == 'string') {
                         this.toaster.pop("warning", "Warning", response.data, 0);
                     } else if (response.data && response.data.length == 0) {
@@ -348,6 +358,7 @@ module StreamStats.Controllers {
                             // remove gages that are not continuous record from list
                             if (gage.stationType.code != 'GS') {
                                 response.data.splice(i, 1);
+                                if (response.data.length == 0) this.toaster.pop('warning', "No valid gages returned", "Gages without continuous record removed from response", 0);
                             } else {
                                 if (gage.hasOwnProperty('statistics')) {
                                     var hasFlowDurationStats = false;
@@ -382,7 +393,7 @@ module StreamStats.Controllers {
                 }, (error) => {
                     //sm when complete
                     this.toaster.clear();
-                    this.CanContinue = true;
+                    this.isBusy = false;
                     console.log(error);
                     if (error.headers()['x-usgswim-messages']) {
                         var headerMsgs = JSON.parse(error.headers()['x-usgswim-messages']);
@@ -445,10 +456,13 @@ module StreamStats.Controllers {
                             }
                         }
                     } while (data.length > 0);
+                    this.toaster.clear();
+                    this.isBusy = false;
 
                 }, (error) => {
                     //sm when error
                     this.toaster.clear();
+                    this.isBusy = false;
                     this.toaster.pop('error', "Error", "NWIS period of record not found", 0);
                 }).finally(() => {
 
@@ -511,57 +525,9 @@ module StreamStats.Controllers {
 
         public queryGage() {
             this.toaster.pop('wait', "Querying gage information", "Please wait...", 0);
-            this.CanContinue = false;
+            this.isBusy = true;
             var gage = new Models.ReferenceGage(this.stationNumber, '');
-            var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + this.stationNumber;
-            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
-
-            this.Execute(request).then(
-                (response: any) => {
-                    var gageInfo = response.data;
-                    // remove gages that are not continuous record
-                    if (gageInfo.stationType && gageInfo.stationType.code != 'GS') {
-                        return;
-                    } else {
-                        if (gageInfo.hasOwnProperty('isRegulated')) gage['isRegulated'] = gageInfo.isRegulated;
-                        if (gageInfo.hasOwnProperty('stationType')) gage['stationType'] = gageInfo.stationType;
-                        if (gageInfo.hasOwnProperty('statistics')) {
-                            var hasFlowDurationStats = false;
-                            gageInfo['statistics'].forEach(stat => {
-                                if (stat['statisticGroupType'].code == 'FDS' && stat['isPreferred']) hasFlowDurationStats = true;
-                            })
-                            gage['HasFlowDurationStats'] = hasFlowDurationStats;
-                        }
-                        if (gageInfo.hasOwnProperty('characteristics')) {
-                            gageInfo.characteristics.forEach(char => {
-                                if (char['variableType'].code == 'DRNAREA') gage['DrainageArea'] = char['value'];
-                            })
-                        }
-                        if (gageInfo.hasOwnProperty('name')) gage['Name'] = gageInfo.name;
-                        if (!this.referenceGageList) this.referenceGageList = [];
-                        if (this.referenceGageList.length == 0 || !this.referenceGageList.some(g => g.StationID == gage.StationID)) this.referenceGageList.unshift(gage);
-                    }
-                    this.toaster.clear();
-                    this.CanContinue = true;
-
-                }, (error) => {
-                    //sm when error
-                    this.toaster.clear();
-                    this.CanContinue = true;
-                    console.log(error);
-                    if (error.headers()['x-usgswim-messages']) {
-                        var headerMsgs = JSON.parse(error.headers()['x-usgswim-messages']);
-                        Object.keys(headerMsgs).forEach(key => {
-                            headerMsgs[key].forEach(element => {
-                                this.toaster.pop(key, key, element);
-                            });
-                        })
-                    }
-                }).finally(() => {
-            });
-            
-            this.getNWISPeriodOfRecord(gage);
-                
+            this.getGageStatsStationInfo(gage, true);
         }
 
     }//end  class

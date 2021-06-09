@@ -350,7 +350,7 @@ module StreamStats.Controllers {
 
             //console.log('in Calculate Parameters');
             this.studyAreaService.loadParameters();
-            if (this.nssService.selectedStatisticsGroupList.length == 1) {
+            if (this.scenarioHasExtensions && this.nssService.selectedStatisticsGroupList.length == 1) {
                 this.nssService.showBasinCharacteristicsTable = false;
             }
         }
