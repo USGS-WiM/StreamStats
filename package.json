@@ -44,7 +44,7 @@
     "tokml": "^0.4.0",
     "usgs-search-api": "github:usgs/search_api",
     "wim-styles": "github:usgs-wim/wim-styles#master",
-    "wim_angular": "github:usgs-wim/wim_angular#KJ-107b"
+    "wim_angular": "github:usgs-wim/wim_angular#master"
   },
   "devDependencies": {
     "concurrently": "^5.1.0",
