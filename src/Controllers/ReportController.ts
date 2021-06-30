@@ -523,9 +523,9 @@ module StreamStats.Controllers {
                             height: 450,
                             margin: {
                                 top: 20,
-                                right: 20,
+                                right: 0,
                                 bottom: 50,
-                                left: 75
+                                left: 0
                             },
                             x: function (d) {
                                 return new Date(d.x).getTime();

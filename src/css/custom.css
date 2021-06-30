@@ -140,3 +140,13 @@ text.nv-axislabel {
 	line-height: 14px !important;
     letter-spacing: -0.2px;
 }
+
+.overflow-auto{
+	overflow: auto !important;
+}
+
+.graph-wrapper{
+	display: block;
+	width: 500px;
+	margin: 0 auto;
+}
