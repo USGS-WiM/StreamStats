@@ -1,6 +1,10 @@
 ﻿<div>
     <!-- Modal -->
-    <div class="modal-header">        
+    <div class="modal-header">    
+        <button class="close"
+                ng-click="vm.close()">
+            &times;
+        </button>    
         <h4 class="modal-title">{{vm.title}}</h4>
     </div>
     <div class="modal-body">
@@ -15,11 +19,13 @@
             <h5>Select/Enter a reference gage.<small style="color:red">&nbsp;&nbsp;(Required)</small></h5>
 
             <span>
-                
+                <div class="qppqInput">
+                    Enter Station Number: <input ng-model="vm.stationNumber" type="text">
+                    <button ng-click="vm.queryGage()" ng-disabled="vm.stationNumber == '' || vm.isBusy" type="button" class="btn-green"><i ng-class="vm.isBusy ? 'fa fa-refresh fa-spin' : 'fa fa-check-circle-o'"></i>&nbsp;&nbsp;Go</button>
+                </div>
                 <button class="btn-exploration-tools btn-green" ng-click="vm.setReferenceGageFromMap()" ng-disabled="vm.isBusy"><span><i ng-class=" vm.isBusy? 'fa fa-refresh fa-spin':'fa fa-map-marker'"></i>&nbsp;&nbsp;Select from Map</span></button>
                 <button class="btn-exploration-tools btn-green" ng-click="vm.setBestCorrelatedReferenceGage()" ng-disabled="vm.isBusy"><span><i ng-class="vm.isBusy? 'fa fa-crosshairs fa-spin':'fa fa-crosshairs'"></i>&nbsp;&nbsp;Best Correlated</span></button>
                 <button class="btn-exploration-tools btn-green" ng-click="vm.getNearest = !vm.getNearest" ng-disabled="vm.isBusy"><span><i ng-class="vm.isBusy? 'fa fa-crosshairs fa-spin':'fa fa-map-marker'"></i>&nbsp;&nbsp;Query Nearest Gages</span></button>
-                <!-- TODO: add option to enter gage number -->
 
                 <div ng-if="vm.getNearest" id="nearestGages">
                     <h3 class="panel-title">Query Nearest Gages<small>Query StreamStats Gages near the pourpoint (a) within a radius or (b) within a distance on the network (checks up or downstream directly on network, not including offshoots or tributaries)</small></h3>
@@ -51,7 +57,7 @@
                         </div>
 
                         <div>
-                            <button id="nearestGageButton" ng-click="vm.getNearestGages()" ng-disabled="!vm.CanContinue" type="button" class="btn-green"><i ng-class="vm.CanContinue ? 'fa fa-check-circle-o' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Go</button>
+                            <button id="nearestGageButton" ng-click="vm.getNearestGages()" ng-disabled="vm.isBusy" type="button" class="btn-green"><i ng-class="!vm.isBusy ? 'fa fa-check-circle-o' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Go</button>
                         </div>
                     </div>
                     
@@ -77,17 +83,17 @@
                             <tr ng-if="vm.referenceGageList.length > 0" ng-repeat="gage in vm.referenceGageList" ng-style="vm.getStyling(gage)">
                                 <div>
                                     <td><a title="Show Gage Page" ng-click="vm.openGagePage(gage.StationID)">{{gage.StationID}}</a></td>
-                                    <td>{{gage.properties.Name ? gage.properties.Name : gage.Name}}</td>
-                                    <td ng-if="gage.hasOwnProperty('correlation')">{{gage.correlation.toUSGSvalue()}}</td>
-                                    <td>{{gage.properties.StationType.name ? gage.properties.StationType.name : 'N/A'}}</td>
-                                    <td>{{gage.properties.IsRegulated != undefined ? gage.properties.IsRegulated : 'N/A'}}</td>
-                                    <td>{{gage.properties.DrainageArea ? gage.properties.DrainageArea : 'N/A'}}</td>
-                                    <td>{{gage.properties.HasFlowDurationStats != undefined ? gage.properties.HasFlowDurationStats : 'N/A'}}</td>
-                                    <td>{{gage.HasZeroFlows}}</td>
+                                    <td>{{gage.Name}}</td>
+                                    <td ng-if="vm.checkCorrelation()">{{gage.hasOwnProperty('correlation') ? gage.correlation.toUSGSvalue() : 'N/A'}}</td>
+                                    <td>{{gage.hasOwnProperty('stationType') ? gage.stationType.name : 'N/A'}}</td>
+                                    <td>{{gage.hasOwnProperty('isRegulated') ? gage.isRegulated : 'N/A'}}</td>
+                                    <td>{{gage.hasOwnProperty('DrainageArea') ? gage.DrainageArea : 'N/A'}}</td>
+                                    <td>{{gage.HasFlowDurationStats != undefined ? gage.HasFlowDurationStats : 'N/A'}}</td>
+                                    <td>{{gage.hasOwnProperty('HasZeroFlows') ? gage.HasZeroFlows : 'N/A'}}</td>
                                     <td>{{gage.StartDate | date:'yyyy-MM-dd'}}</td>
                                     <td>{{gage.EndDate | date:'yyyy-MM-dd'}}</td>
                                     <td>
-                                        <a ng-class="{linkDisabled: gage.StationID == vm.selectedReferenceGage.StationID || !vm.checkPeriodOfRecord(gage) || !gage.properties.HasFlowDurationStats || gage.properties.StationType.code != 'GS'}" ng-click="vm.selectGage(gage)">
+                                        <a ng-class="{linkDisabled: gage.StationID == vm.selectedReferenceGage.StationID || !vm.checkPeriodOfRecord(gage) || !gage.HasFlowDurationStats || gage.stationType.code != 'GS'}" ng-click="vm.selectGage(gage)">
                                             Select Gage
                                         </a>
                                         &nbsp;

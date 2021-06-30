@@ -270,7 +270,7 @@ module StreamStats.Controllers {
                         
                             // add reference gage table TODO: getting random quotation marks without \n, double new lines with \n after 'Reference gage'
                             extVal += '\n';
-                            extVal += self.tableToCSV($('#ReferanceGage'))
+                            extVal += self.tableToCSV($('#ReferenceGage'))
     
                             // add exceedance table
                             extVal += '\n\nExceedance Probabilities\n';
@@ -514,8 +514,8 @@ module StreamStats.Controllers {
                 },
                 flow: {
                     data: [
-                        { key: result.referanceGage.name, values: result.referanceGage.discharge.observations.map(obs => { return { x: new Date(obs.date).getTime(), y: obs.hasOwnProperty('value') ? typeof obs.value == 'number' ? obs.value.toUSGSvalue() : obs.value : null } })},
-                        { key: "Estimated (at clicked point)", values: result.estimatedFlow.observations.map(obs => { return { x: new Date(obs.date).getTime(), y: obs.hasOwnProperty('value') ? typeof obs.value == 'number' ? obs.value < 0.05 ? 0 : obs.value.toUSGSvalue() : obs.value : null } }) }
+                        { key: result.referanceGage.name, values: this.processData(result.referanceGage.discharge.observations)},
+                        { key: "Estimated (at clicked point)", values: this.processData(result.estimatedFlow.observations) }
                     ],
                     options: {
                         chart: {
@@ -546,7 +546,7 @@ module StreamStats.Controllers {
                             yAxis: {
                                 axisLabel: 'Estimated Discharge (cfs)',
                                 tickFormat: function (d) {
-                                    return d3.format('.02f')(d);
+                                    return d != null ? d.toUSGSvalue() : d;
                                 },
                                 showMaxMin: true
 
@@ -790,6 +790,21 @@ module StreamStats.Controllers {
                 else return flow.value;
             }
             else return 'N/A';
+        }
+
+        private processData(data) {
+            var returnData = [];
+            // get earliest and latest date in array (might not be the same as the start/end date coming from QPPQ)
+            var startDate = new Date(Math.min.apply(null, data.map(function(e) {return new Date(e.date)})));
+            var endDate = new Date(Math.max.apply(null, data.map(function(e) {return new Date(e.date)})));
+            
+            // parse through data and add null values where dates are missing to show gap in timeseries
+            for (var d = startDate; d <= endDate; d.setDate(d.getDate() + 1)) {
+                var obs = data.filter(item => new Date(item.date).getTime() == d.getTime())[0];
+                if (obs == undefined) returnData.push({x: d.getTime(), y: null});
+                else returnData.push({x: d.getTime(), y: obs.hasOwnProperty('value') ? typeof obs.value == 'number' ? obs.value.toUSGSvalue() : obs.value : null})
+            }
+            return returnData;
         }
     }//end class
     angular.module('StreamStats.Controllers')

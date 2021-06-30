@@ -175,7 +175,7 @@ var StreamStats;
                                     }
                                 }
                                 extVal += '\n';
-                                extVal += self.tableToCSV($('#ReferanceGage'));
+                                extVal += self.tableToCSV($('#ReferenceGage'));
                                 extVal += '\n\nExceedance Probabilities\n';
                                 extVal += self.tableToCSV($('#exceedanceTable'));
                                 extVal += '\n\nEstimated Flows\n';
@@ -372,8 +372,8 @@ var StreamStats;
                     },
                     flow: {
                         data: [
-                            { key: result.referanceGage.name, values: result.referanceGage.discharge.observations.map(function (obs) { return { x: new Date(obs.date).getTime(), y: obs.hasOwnProperty('value') ? typeof obs.value == 'number' ? obs.value.toUSGSvalue() : obs.value : null }; }) },
-                            { key: "Estimated (at clicked point)", values: result.estimatedFlow.observations.map(function (obs) { return { x: new Date(obs.date).getTime(), y: obs.hasOwnProperty('value') ? typeof obs.value == 'number' ? obs.value < 0.05 ? 0 : obs.value.toUSGSvalue() : obs.value : null }; }) }
+                            { key: result.referanceGage.name, values: this.processData(result.referanceGage.discharge.observations) },
+                            { key: "Estimated (at clicked point)", values: this.processData(result.estimatedFlow.observations) }
                         ],
                         options: {
                             chart: {
@@ -404,7 +404,7 @@ var StreamStats;
                                 yAxis: {
                                     axisLabel: 'Estimated Discharge (cfs)',
                                     tickFormat: function (d) {
-                                        return d3.format('.02f')(d);
+                                        return d != null ? d.toUSGSvalue() : d;
                                     },
                                     showMaxMin: true
                                 },
@@ -603,6 +603,19 @@ var StreamStats;
                 }
                 else
                     return 'N/A';
+            };
+            ReportController.prototype.processData = function (data) {
+                var returnData = [];
+                var startDate = new Date(Math.min.apply(null, data.map(function (e) { return new Date(e.date); })));
+                var endDate = new Date(Math.max.apply(null, data.map(function (e) { return new Date(e.date); })));
+                for (var d = startDate; d <= endDate; d.setDate(d.getDate() + 1)) {
+                    var obs = data.filter(function (item) { return new Date(item.date).getTime() == d.getTime(); })[0];
+                    if (obs == undefined)
+                        returnData.push({ x: d.getTime(), y: null });
+                    else
+                        returnData.push({ x: d.getTime(), y: obs.hasOwnProperty('value') ? typeof obs.value == 'number' ? obs.value.toUSGSvalue() : obs.value : null });
+                }
+                return returnData;
             };
             ReportController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService', 'StreamStats.Services.ModalService'];
             return ReportController;

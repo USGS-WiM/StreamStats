@@ -150,3 +150,9 @@ text.nv-axislabel {
 	width: 500px;
 	margin: 0 auto;
 }
+
+.qppqInput input{
+    width: unset;
+    border: unset;
+    border-bottom: 2px solid #e0e3e6;
+}

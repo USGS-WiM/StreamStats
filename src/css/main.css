@@ -1126,12 +1126,10 @@ div.leaflet-top > .elevation {
     Zoom Controls
     Zoom Controls
 */
-    #mainMap .leaflet-top .leaflet-control; {
-    margin-top: 65px !important;
-    position: relative;
-    top: 10px !important;
-    border-radius: 3px !important;
-}
+    #mainMap .leaflet-top .leaflet-control {
+        position: relative;
+        border-radius: 3px !important;
+    }
 	.leaflet-control-zoom-in {
 	    border-top-left-radius: 3px !important;
 	    border-top-right-radius: 3px !important;
@@ -1382,6 +1380,9 @@ div.leaflet-top > .elevation {
     max-width: 100%;
     margin-bottom: auto;
     padding-top: 5px;
+}
+#printArea span {
+    padding: 0 0 0 3px !important;
 }
 
 /*
