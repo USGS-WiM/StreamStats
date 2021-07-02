@@ -143,7 +143,7 @@ var StreamStats;
             SidebarController.prototype.setStatisticsGroup = function (statisticsGroup) {
                 var checkStatisticsGroup = this.checkArrayForObj(this.nssService.selectedStatisticsGroupList, statisticsGroup);
                 if (checkStatisticsGroup != -1) {
-                    if (statisticsGroup.id.indexOf('fdctm')) {
+                    if (typeof statisticsGroup.id != 'number' && statisticsGroup.id.indexOf('fdctm')) {
                         var qppqExtension = this.studyAreaService.selectedStudyAreaExtensions.filter(function (e) { return e.code == 'QPPQ'; })[0];
                         var extensionIndex = this.studyAreaService.selectedStudyAreaExtensions.indexOf(qppqExtension);
                         this.studyAreaService.selectedStudyAreaExtensions.splice(extensionIndex, 1);

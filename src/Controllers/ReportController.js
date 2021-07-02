@@ -381,9 +381,9 @@ var StreamStats;
                                 height: 450,
                                 margin: {
                                     top: 20,
-                                    right: 0,
+                                    right: 20,
                                     bottom: 50,
-                                    left: 0
+                                    left: 75
                                 },
                                 x: function (d) {
                                     return new Date(d.x).getTime();

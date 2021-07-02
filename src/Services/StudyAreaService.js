@@ -192,15 +192,15 @@ var StreamStats;
                 this.canUpdate = false;
                 var regionID = this.selectedStudyArea.RegionID;
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', regionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString());
-                if (['MO_STL', 'MRB'].indexOf(this.selectedStudyArea.RegionID) > -1) {
+                if (this.regionService.selectedRegion.Applications.indexOf('StormDrain') > -1) {
                     var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSstormwaterDelineation'].format(regionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString(), this.surfacecontributionsonly);
                 }
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 request.withCredentials = true;
                 this.Execute(request).then(function (response) {
-                    if (['MO_STL', 'MRB'].indexOf(_this.selectedStudyArea.RegionID) > -1) {
+                    if (_this.regionService.selectedRegion.Applications.indexOf('StormDrain') > -1) {
                         if (response.data.layers && response.data.layers.features && response.data.layers.features[1].geometry.coordinates.length > 0) {
-                            _this.selectedStudyArea.Disclaimers['isSTL_MO'] = true;
+                            _this.selectedStudyArea.Disclaimers['isStormDrain'] = true;
                             var fc = response.data.hasOwnProperty("layers") ? response.data["layers"] : null;
                             if (fc)
                                 fc.features.forEach(function (f) { return f.id = f.id.toString().toLowerCase(); });

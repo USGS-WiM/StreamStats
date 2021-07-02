@@ -292,7 +292,7 @@ module StreamStats.Services {
                 this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString());
 
             //hack for st louis stormdrain
-            if (['MO_STL', 'MRB'].indexOf(this.selectedStudyArea.RegionID) > -1) {
+            if (this.regionService.selectedRegion.Applications.indexOf('StormDrain') > -1) {
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSstormwaterDelineation'].format(regionID, this.selectedStudyArea.Pourpoint.Longitude.toString(),
                     this.selectedStudyArea.Pourpoint.Latitude.toString(), this.surfacecontributionsonly);
             }
@@ -304,9 +304,9 @@ module StreamStats.Services {
                 (response: any) => {  
 
                     //hack for st louis stormdrain
-                    if (['MO_STL', 'MRB'].indexOf(this.selectedStudyArea.RegionID) > -1) {
+                    if (this.regionService.selectedRegion.Applications.indexOf('StormDrain') > -1) {
                         if (response.data.layers && response.data.layers.features && response.data.layers.features[1].geometry.coordinates.length > 0) {
-                            this.selectedStudyArea.Disclaimers['isSTL_MO'] = true;
+                            this.selectedStudyArea.Disclaimers['isStormDrain'] = true;
                             //this.selectedStudyArea.Server = response.headers()['x-usgswim-hostname'].toLowerCase();
                             var fc: GeoJSON.FeatureCollection = response.data.hasOwnProperty("layers") ? response.data["layers"] : null;
                             if (fc) fc.features.forEach(f => f.id = f.id.toString().toLowerCase());

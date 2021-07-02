@@ -101,7 +101,7 @@
                     <button  ng-if="vm.showPreferred" ng-click="vm.showPreferred = false">Show Only Preferred  <i class="fa fa-toggle-on" ></i></button> 
                 </div>
             </div>
-            <div class="panel-body overflow-auto">
+            <div class="panel-body">
                 
                 <div class="panel panel-default" ng-repeat="statisticGroup in vm.gage.statisticsgroups" ng-if="vm.selectedStatisticGroups.length == 0 || vm.selectedStatisticGroups.indexOf(statisticGroup) > -1" ng-form="statisticGroupForm">
                     <div class="panel-heading">{{statisticGroup.name}}</div>

@@ -231,7 +231,7 @@ module StreamStats.Controllers {
             //if toggled remove selected parameter set
             if (checkStatisticsGroup != -1) {
                 // need to remove QPPQ when deselected
-                if (statisticsGroup.id.indexOf('fdctm')) {
+                if (typeof statisticsGroup.id != 'number' && statisticsGroup.id.indexOf('fdctm')) {
                     var qppqExtension = this.studyAreaService.selectedStudyAreaExtensions.filter(e => e.code == 'QPPQ')[0];
                     var extensionIndex = this.studyAreaService.selectedStudyAreaExtensions.indexOf(qppqExtension);
                     // splice and send new event
