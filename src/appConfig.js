@@ -1,5 +1,5 @@
 var configuration = {};
-configuration.version = "4.5.2";
+configuration.version = "4.5.3";
 configuration.environment = 'development';
 
 configuration.baseurls =
@@ -44,7 +44,7 @@ configuration.queryparams =
         'SSComputeParams': '/streamstatsservices/parameters.json?rcode={0}&workspaceID={1}&includeparameters={2}',
         'SSavailableFeatures': '/streamstatsservices/features.json?workspaceID={0}',
         'SSfeatures': '/streamstatsservices/features.geojson?workspaceID={0}&crs={1}&includefeatures={2}&simplify=true',
-        'SSStateLayers': '/arcgis/rest/services/StreamStats/stateServices/MapServer',
+        'SSStateLayers': '/arcgis/rest/services/StreamStats/stateServices_test/MapServer',
         'SSNationalLayers': '/arcgis/rest/services/StreamStats/nationalLayers_test/MapServer',
         'FARefGage': '/2/query?geometry={0}&geometryType=esriGeometryPoint&inSR={1}&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
         'regionService': '/arcgis/rest/services/ss_studyAreas_prod/MapServer/identify',
