@@ -15,7 +15,7 @@
   "dependencies": {
     "@turf/turf": "^5.1.6",
     "@types/geojson": "^7946.0.4",
-    "angular": "1.7.8",
+    "angular": "1.8.0",
     "angular-bootstrap": "~0.12.1",
     "angular-daterangepicker": "^0.2.3-alpha1",
     "angular-leaflet-directive": "~0.10.0",
