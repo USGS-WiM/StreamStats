@@ -1,5 +1,5 @@
 var configuration = {};
-configuration.version = "4.5.3";
+configuration.version = "4.6.0";
 configuration.environment = 'development';
 
 configuration.baseurls =
@@ -33,9 +33,9 @@ configuration.queryparams =
         'NWISperiodOfRecord': '/site?seriesCatalogOutput=true&outputDataTypeCd=dv&format=rdb&site=',
         'KrigService': '/krigservices/sites/{0}/krig?&x={1}&y={2}&crs={3}',
         'RegressionScenarios': '/{0}/estimate?state={1}',
-        'statisticsGroupLookup': '/statisticgroups?regions={0},NA&regressionregions={1}',
-        'statisticsGroupParameterLookup': '/scenarios?regions={0},NA&statisticgroups={1}&regressionregions={2}&unitsystem=2',
-        'estimateFlows': '/scenarios/estimate?regions={0},NA&unitsystem=2',
+        'statisticsGroupLookup': '/statisticgroups?regions={0}&regressionregions={1}',
+        'statisticsGroupParameterLookup': '/scenarios?regions={0}&statisticgroups={1}&regressionregions={2}',
+        'estimateFlows': '/scenarios/estimate?regions={0}',
         'SSdelineation': '/streamstatsservices/watershed.{0}?rcode={1}&xlocation={2}&ylocation={3}&crs={4}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
         'SSstormwaterDelineation': '/stormwaterservices/watershed?rcode={0}&xlocation={1}&ylocation={2}&surfacecontributiononly={3}',
         'SSwatershedByWorkspace': '/streamstatsservices/watershed.{0}?rcode={1}&workspaceID={2}&crs={3}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
@@ -323,7 +323,7 @@ configuration.regions = [
 
                 }
             },
-        "Applications": [], "regionEnabled": true, "ScenariosAvailable": true
+        "Applications": ["StormDrain"], "regionEnabled": true, "ScenariosAvailable": true
     },
     { "RegionID": "MP", "Name": "Northern Mariana Islands", "Bounds": [[14.105276, 144.89859], [20.556385, 145.870788]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { 
@@ -343,7 +343,7 @@ configuration.regions = [
 
                 }
             }, 
-		"Applications": [], "regionEnabled": false, "ScenariosAvailable": false
+		"Applications": ["StormDrain"], "regionEnabled": false, "ScenariosAvailable": false
     },
     { "RegionID": "MS", "Name": "Mississippi", "Bounds": [[30.194935, -91.643682], [35.005041, -88.090468]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     {
@@ -433,7 +433,7 @@ configuration.regions = [
     { "RegionID": "VI", "Name": "Virgin Islands", "Bounds": [[17.676666, -65.026947], [18.377777, -64.560287]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
     { "RegionID": "WA", "Name": "Washington", "Bounds": [[45.543092, -124.732769], [48.999931, -116.919132]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "WI", "Name": "Wisconsin", "Bounds": [[42.489152, -92.885397], [46.952479, -86.967712]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": false },
-    { "RegionID": "WV", "Name": "West Virginia", "Bounds": [[37.20491, -82.647158], [40.637203, -77.727467]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
+    { "RegionID": "WV", "Name": "West Virginia", "Bounds": [[37.20491, -82.647158], [40.637203, -77.727467]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "WY", "Name": "Wyoming", "Bounds": [[40.994289, -111.053428], [45.002793, -104.051705]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
     { "RegionID": "CRB", "Name": "Connecticut River Basin", "Bounds": [[41.227366, -73.254776], [45.305324, -71.059248]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": false },
     { "RegionID": "DRB", "Name": "Delaware River Basin", "Bounds": [[38.666626, -76.452907], [42.507076, -74.319593]], "Layers": {}, "Applications": ["Wateruse"], "regionEnabled": true, "ScenariosAvailable": false },

@@ -4755,7 +4755,7 @@ ul {
             padding-bottom: 5px;
         }
 
-.toast {
+/*.toast {
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -4837,7 +4837,7 @@ ul {
         .toast.intense:after {
             color: #FFF;
             opacity: 1;
-        }
+        }*/
 
 .modal-wrapper {
     display: -webkit-box;
