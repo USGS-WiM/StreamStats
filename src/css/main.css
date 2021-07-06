@@ -1295,7 +1295,7 @@ div.leaflet-top > .elevation {
     Toast
     Toast
 */
-.toast {
+/*.toast {
     background-color: #0F8AFF !important;
     color: #fff !important;
     position: fixed;
@@ -1337,7 +1337,7 @@ div.leaflet-top > .elevation {
 .toast:hover .toast-title:after {
     opacity: 1;
     transition: 0.1s;
-}
+}*/
 
 
 /*
