@@ -77,7 +77,7 @@
                     
                     <form ng-hide="vm.studyAreaService.selectedStudyArea.FeatureCollection" style="padding-bottom: 15px;">
                         <button id="delineateButton" type="button" class="btn-blue fullwidth" ng-click="vm.startDelineate()" ng-class="vm.studyAreaService.doDelineateFlag ? 'btn-orange' : 'btn-blue'" ng-hide="vm.studyAreaService.selectedStudyArea.FeatureCollection" ng-disabled="!vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint || !vm.studyAreaService.zoomLevel15"><i ng-class="vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint ? 'fa fa-map-marker' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Delineate</button>
-                        <div style="margin-top:10px;" ng-show="vm.regionService.selectedRegion.RegionID ==='MO_STL'">
+                        <div style="margin-top:10px;" ng-show="vm.regionService.selectedRegion.Applications.indexOf('StormDrain') > -1">
                             <checkbox style="height:20px; border:1px solid rgba(0,0,0,.2)!important;" ng-model="vm.studyAreaService.surfacecontributionsonly"></checkbox><span>&nbsp;&nbsp;Surface Contributing Basin only</span>
                         </div>                       
                   </form>
@@ -278,10 +278,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="footer-survey-link">
-            <a href="https://usgswaterresources.gov1.qualtrics.com/jfe/form/SV_7VOm9dWqoHHZv0y" target="_blank"><i class="fa fa-arrow-right"></i> Tell us how you use StreamStats! <i class="fa fa-arrow-left"></i></a>
         </div>
 
         <div class="identification pull-right">powered by <a href="https://wim.usgs.gov/" target="_blank">WiM</a></div>
