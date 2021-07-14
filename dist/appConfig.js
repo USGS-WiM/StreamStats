@@ -1,5 +1,5 @@
 var configuration = {};
-configuration.version = "4.6.0";
+configuration.version = "4.6.1";
 configuration.environment = 'development';
 
 configuration.baseurls =
@@ -403,7 +403,7 @@ configuration.regions = [
                         "minZoom": 12,
                         onEachFeature: function (feature, layer) {
                             var popupContent = '<h5>SCDOT Bridges</h5> ';
-                            var queryProperties = { "COUNTY_ID": "County Identifier", "RTE_TYPE": "Route Type", "RTE_NBR": "Route Number", "RTE_DIR": "Route Direction", "RTE_LRS": "Route LRS", "STRUCTURE_": "Structure ID", "CROSSING": "Crossing", "LOCATION": "Location", "STRUCTURE1": "Structure" };
+                            var queryProperties = { "COUNTY_ID": "County Identifier", "RTE_TYPE": "Route Type", "RTE_NBR": "Route Number", "RTE_DIR": "Route Direction", "RTE_LRS": "Route LRS", "STRUCTURE_": "Structure ID", "CROSSING": "Crossing", "LOCATION": "Location", "STRUCTURE1": "Structure", "ASSET_ID": "Asset ID" };
                             Object.keys(queryProperties).map(function (k) {
                                 popupContent += '<strong>' + queryProperties[k] + ': </strong>' + feature.properties[k] + '</br>';
                             });
