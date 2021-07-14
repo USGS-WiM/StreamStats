@@ -227,7 +227,7 @@ module StreamStats.Controllers {
 
                         //add explanatory row if needed
                         if (regressionRegion.results[0].intervalBounds && regressionRegion.results[0].errors && regressionRegion.results[0].errors.length > 0) finalVal +=
-                         '"PIl: Prediction Interval- Lower, PIu: Prediction Interval- Upper, SEp: Standard Error of Prediction, SE: Standard Error (other-- see report)"\r\n'
+                         '"PIl: Prediction Interval- Lower, PIu: Prediction Interval- Upper, ASEp: Average Standard Error of Prediction, SE: Standard Error (other-- see report)"\r\n'
 
                         //get this table by ID --need to use this type of selected because jquery doesn't like the possibility of colons in div id
                         finalVal += this.tableToCSV($(document.getElementById(this.camelize(statGroup.name + regressionRegion.name + 'ScenarioFlowTable')))) + '\n';
