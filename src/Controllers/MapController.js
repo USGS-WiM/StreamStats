@@ -1156,9 +1156,9 @@ var StreamStats;
                 var roots = this.regionServices.regionMapLayerList.map(function (layer) {
                     layerList.push(layer[1]);
                 });
-                var visible = true;
-                if (regionId == 'MRB')
-                    visible = false;
+                // var visible = true;
+                // if (regionId == 'MRB')
+                //     visible = false;
                 this.layers.overlays[regionId + "_region"] = new Layer(regionId + " Map layers", configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['SSStateLayers'], "agsDynamic", visible, {
                     "opacity": 1,
                     "layers": layerList,
