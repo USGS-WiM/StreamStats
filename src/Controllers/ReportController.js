@@ -143,7 +143,7 @@ var StreamStats;
                             finalVal += statGroup.name + ' Flow Report,' + regionPercent + regressionRegion.name.split("_").join(" ") + '\r\n';
                             if (regressionRegion.results[0].intervalBounds && regressionRegion.results[0].errors && regressionRegion.results[0].errors.length > 0)
                                 finalVal +=
-                                    '"PIl: Prediction Interval- Lower, PIu: Prediction Interval- Upper, SEp: Standard Error of Prediction, SE: Standard Error (other-- see report)"\r\n';
+                                    '"PIl: Prediction Interval- Lower, PIu: Prediction Interval- Upper, ASEp: Average Standard Error of Prediction, SE: Standard Error (other-- see report)"\r\n';
                             finalVal += _this.tableToCSV($(document.getElementById(_this.camelize(statGroup.name + regressionRegion.name + 'ScenarioFlowTable')))) + '\n';
                         }
                     });
@@ -381,9 +381,9 @@ var StreamStats;
                                 height: 450,
                                 margin: {
                                     top: 20,
-                                    right: 20,
+                                    right: 0,
                                     bottom: 50,
-                                    left: 75
+                                    left: 0
                                 },
                                 x: function (d) {
                                     return new Date(d.x).getTime();
