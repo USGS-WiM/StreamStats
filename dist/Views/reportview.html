@@ -208,7 +208,9 @@
                                 <!--Estimated Flow -->
                                 <h3 class="reportChartHeader">Estimated Flows</h3>
                                 <button class="chartExportButton" ng-click="vm.downloadPNG('flowgraph')">Download PNG</button>
-								<nvd3 id="flowgraph" options=sc.result.graphdata.flow.options data=sc.result.graphdata.flow.data></nvd3>
+								<div class="graph-wrapper">
+									<nvd3 id="flowgraph" options=sc.result.graphdata.flow.options data=sc.result.graphdata.flow.data></nvd3>
+								</div>
                                 <a ng-click="vm.isFlowTableOpen = !vm.isFlowTableOpen">
                                     <span ng-show="vm.isFlowTableOpen">Hide</span>
                                     <span ng-hide="vm.isFlowTableOpen">Show</span> table
