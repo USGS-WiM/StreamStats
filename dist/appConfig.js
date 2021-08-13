@@ -1,5 +1,5 @@
 var configuration = {};
-configuration.version = "4.5.3";
+configuration.version = "4.6.2";
 configuration.environment = 'development';
 
 configuration.baseurls =
@@ -33,9 +33,9 @@ configuration.queryparams =
         'NWISdailyValues': '/dv/?format=rdb&parameterCd=00060&site={0}&startDT={1}&endDT={2}',
         'KrigService': '/krigservices/sites/{0}/krig?&x={1}&y={2}&crs={3}',
         'RegressionScenarios': '/{0}/estimate?state={1}',
-        'statisticsGroupLookup': '/statisticgroups?regions={0}&regressionregions={1}',
-        'statisticsGroupParameterLookup': '/scenarios?regions={0}&statisticgroups={1}&regressionregions={2}',
-        'estimateFlows': '/scenarios/estimate?regions={0}',
+        'statisticsGroupLookup': '/statisticgroups?regions={0},NA&regressionregions={1}',
+        'statisticsGroupParameterLookup': '/scenarios?regions={0},NA&statisticgroups={1}&regressionregions={2}',
+        'estimateFlows': '/scenarios/estimate?regions={0},NA',
         'SSdelineation': '/streamstatsservices/watershed.{0}?rcode={1}&xlocation={2}&ylocation={3}&crs={4}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
         'SSstormwaterDelineation': '/stormwaterservices/watershed?rcode={0}&xlocation={1}&ylocation={2}&surfacecontributiononly={3}',
         'SSwatershedByWorkspace': '/streamstatsservices/watershed.{0}?rcode={1}&workspaceID={2}&crs={3}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
@@ -403,7 +403,7 @@ configuration.regions = [
                         "minZoom": 12,
                         onEachFeature: function (feature, layer) {
                             var popupContent = '<h5>SCDOT Bridges</h5> ';
-                            var queryProperties = { "COUNTY_ID": "County Identifier", "RTE_TYPE": "Route Type", "RTE_NBR": "Route Number", "RTE_DIR": "Route Direction", "RTE_LRS": "Route LRS", "STRUCTURE_": "Structure ID", "CROSSING": "Crossing", "LOCATION": "Location", "STRUCTURE1": "Structure" };
+                            var queryProperties = { "COUNTY_ID": "County Identifier", "RTE_TYPE": "Route Type", "RTE_NBR": "Route Number", "RTE_DIR": "Route Direction", "RTE_LRS": "Route LRS", "STRUCTURE_": "Structure ID", "CROSSING": "Crossing", "LOCATION": "Location", "STRUCTURE1": "Structure", "ASSET_ID": "Asset ID" };
                             Object.keys(queryProperties).map(function (k) {
                                 popupContent += '<strong>' + queryProperties[k] + ': </strong>' + feature.properties[k] + '</br>';
                             });
