@@ -202,6 +202,9 @@ var StreamStats;
                             regressionRegion.extensions.forEach(function (e) {
                                 if (e.result)
                                     delete e.result;
+                                if (e.parameters)
+                                    e.parameters.forEach(function (p) { if (p.options)
+                                        delete p.options; });
                             });
                     });
                     updatedScenarioObject = angular.toJson([updatedScenarioObject], null);

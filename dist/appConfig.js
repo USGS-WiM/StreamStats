@@ -28,9 +28,9 @@ if (window.location.host === 'streamstats.usgs.gov') {
 configuration.queryparams =
     {
         'NWISsite':'/site/?format=rdb,1.0&bBox={0},{1},{2},{3}&seriesCatalogOutput=true&outputDataTypeCd=dv&parameterCd=00060&siteStatus=all&hasDataTypeCd=dv',
-        'NWISinfo': '/nldi/linked-data/nwissite/USGS-{0}/?f=json',
         'NWISsiteinfo': '/site?site=',
         'NWISperiodOfRecord': '/site?seriesCatalogOutput=true&outputDataTypeCd=dv&format=rdb&site=',
+        'NWISdailyValues': '/dv/?format=rdb&parameterCd=00060&site={0}&startDT={1}&endDT={2}',
         'KrigService': '/krigservices/sites/{0}/krig?&x={1}&y={2}&crs={3}',
         'RegressionScenarios': '/{0}/estimate?state={1}',
         'statisticsGroupLookup': '/statisticgroups?regions={0},NA&regressionregions={1}',
@@ -73,8 +73,8 @@ configuration.queryparams =
         'GageStatsServicesStatistics': '/statistics/',
         'GageStatsServicesAgencies': '/agencies/',
         'GageStatsServicesStatGroups': '/statisticgroups/',
-        'GageStatsServicesNearest': '/stations/Nearest?lat={0}&lon={1}&radius={2}&geojson=true&includeStats=true',
-        'GageStatsServicesNetwork': '/stations/Network?lat={0}&lon={1}&distance={2}&includeStats=true&geojson=true',
+        'GageStatsServicesNearest': '/stations/Nearest?lat={0}&lon={1}&radius={2}&geojson=false&includeStats=true',
+        'GageStatsServicesNetwork': '/stations/Network?lat={0}&lon={1}&distance={2}&includeStats=true&geojson=false',
         'GageStatsServicesBounds': '/stations/Bounds?xmin={0}&xmax={1}&ymin={2}&ymax={3}&geojson=true'
     };
 

@@ -73,6 +73,9 @@ module StreamStats.Services {
         computeRegressionEquation(regtype: string);
         updateExtensions(); 
         freshdeskCredentials();
+        extensionsConfigured: boolean;
+        loadDrainageArea();
+        loadingDrainageArea: boolean;
     }
 
     interface IDateRange {
@@ -174,6 +177,8 @@ module StreamStats.Services {
         //QPPQ
         public extensionDateRange: IDateRange = null;
         public selectedGage: any;
+        public extensionsConfigured = false;
+        public loadingDrainageArea = false;
 
         // freshdesk
         private _freshdeskCreds: any;
@@ -437,6 +442,57 @@ module StreamStats.Services {
             });
         }
 
+        public loadDrainageArea() {
+            this.loadingDrainageArea = true;
+            this.toaster.clear();
+            this.toaster.pop('wait', "Calculating Drainage Area", "Please wait...", 0);
+
+            var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSComputeParams'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID,
+                'drnarea');
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
+            request.withCredentials = true;
+
+            this.Execute(request).then(
+                (response: any) => {
+                    if (response.data.parameters && response.data.parameters.length > 0) {
+
+                        this.toaster.clear();
+
+                        //check each returned parameter for issues
+                        var paramErrors = false;
+                        angular.forEach(response.data.parameters, (parameter, index) => {
+
+                            if (!parameter.hasOwnProperty('value') || parameter.value == -999) {
+                                paramErrors = true;
+                                console.error('Parameter failed to compute: ', parameter.code);
+                                parameter.loaded = false;
+                            }
+                            else {
+                                parameter.loaded = true;
+                            }
+                        });
+
+                        //if there is an issue, pop open 
+                        if (paramErrors) {
+                            this.toaster.pop('error', "Error", "Drainage area failed to compute", 0);
+                        }
+
+                        var results = response.data.parameters;
+                        this.loadParameterResults(results);
+
+                        this.loadingDrainageArea = false;
+                    }
+
+                    //sm when complete
+                },(error) => {
+                    //sm when error
+                    this.loadingDrainageArea = false;
+                    this.toaster.clear();
+                    this.toaster.pop("error", "There was an HTTP error calculating drainage area", "Please retry", 0);
+                }).finally(() => {
+                });
+        }
+
         public loadParameters() {
             this.parametersLoading = true;
             var argState = { "isLoaded": false };
@@ -534,8 +590,6 @@ module StreamStats.Services {
         }
 
         public getAdditionalFeatureList() {
-
-            //this.toaster.pop("wait", "Information", "Querying for additional features...", 0);
             var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSavailableFeatures'].format(this.selectedStudyArea.WorkspaceID);
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
             request.withCredentials = true;
@@ -902,7 +956,6 @@ module StreamStats.Services {
 
         public selectGage(gage) {
             // selects gage and adds it to gage options for qppq
-            // TODO: should we change this now that selecting a gage on the map only displays it in QPPQ, not selects it?
             var sid: Array<any> = this.selectedStudyAreaExtensions.reduce((acc, val) => acc.concat(val.parameters), []).filter(f => { return (<string>(f.code)).toLowerCase() == "sid" });
             var siteList:Array<Models.IReferenceGage> = [];
             let rg = new Models.ReferenceGage(gage.properties.Code, gage.properties.Name);
@@ -959,7 +1012,7 @@ module StreamStats.Services {
 
                     if (siteList.length > 0) {
                         sid[0].options = siteList;
-                        sid[0].value = siteList[0];
+                        sid[0].value = new Models.ReferenceGage("","");
 
                         this.toaster.pop('success', "Found reference gages", "Please continue", 5000);
                     }
@@ -1105,10 +1158,6 @@ module StreamStats.Services {
             return featureArray;
         }
         private loadParameterResults(results: Array<WiM.Models.IParameter>) {
-
-            //this.toaster.pop('wait', "Loading Basin Characteristics", "Please wait...", 0);
-            //console.log('in load parameter results');
-
             var paramList = this.studyAreaParameterList;
             var self = this;
             results.map(function (val) {
@@ -1128,13 +1177,10 @@ module StreamStats.Services {
                     }//endif
                 });
             });
-            //console.log('params', this.studyAreaParameterList);
         }
         private loadRegulatedParameterResults(regulatedResults: Array<Models.IRegulationParameter>) {
 
             this.toaster.pop('wait', "Loading Regulated Basin Characteristics", "Please wait...");
-
-            //console.log('in load regulated parameter results');
 
             var paramList = this.studyAreaParameterList;
             regulatedResults.map(function (regulatedParam) {
@@ -1198,7 +1244,7 @@ module StreamStats.Services {
         private onNSSExtensionChanged(sender: any, e: NSSEventArgs) {
             console.log('onNSSExtensionChanged');
             e.extensions.forEach(f => {
-                if (this.selectedStudyArea.NSS_Extensions.indexOf(f) == -1)
+                if (this.checkArrayForObj(this.selectedStudyArea.NSS_Extensions, f) == -1)
                     this.selectedStudyArea.NSS_Extensions.push(f);
             });
         }
@@ -1244,6 +1290,16 @@ module StreamStats.Services {
                         }
                     });
             })
+        }
+
+        //special function for searching arrays but ignoring angular hashkey
+        private checkArrayForObj(arr, obj) {
+            for (var i = 0; i < arr.length; i++) {
+                if (angular.equals(arr[i], obj)) {
+                    return i;
+                }
+            };
+            return -1;
         }
 
     }//end class

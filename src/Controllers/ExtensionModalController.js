@@ -28,6 +28,7 @@ var StreamStats;
                 _this.queryBy = 'Nearest';
                 _this.getNearest = false;
                 _this.distance = 10;
+                _this.stationNumber = '';
                 $scope.vm = _this;
                 _this.angulartics = $analytics;
                 _this.modalInstance = modal;
@@ -36,9 +37,10 @@ var StreamStats;
                 _this.eventManager = events;
                 _this.toaster = toaster;
                 _this.dateRangeOptions = {
-                    locale: { format: 'MMMM D, YYYY' },
+                    locale: { format: 'MM/DD/YYYY' },
                     eventHandlers: { 'hide.daterangepicker': function (e) { return _this.SetExtensionDate(e); } }
                 };
+                _this.studyAreaService.doSelectMapGage = false;
                 _this.init();
                 _this.load();
                 $scope.$watch(function () { return _this.dateRange.dates; }, function (newval, oldval) {
@@ -52,6 +54,8 @@ var StreamStats;
                             }
                         });
                     });
+                    if (newval != oldval)
+                        _this.getNWISDailyValues();
                 });
                 return _this;
             }
@@ -132,7 +136,12 @@ var StreamStats;
                 } while (parameters.length > 0);
                 if (this.studyAreaService.selectedGage)
                     this.studyAreaService.selectedGage = this.selectedReferenceGage;
-                this.getGageInfo();
+                if (this.referenceGageList != undefined || this.selectedReferenceGage.StationID != "") {
+                    this.getGageInfo();
+                    this.getNWISDailyValues();
+                }
+                if (this.getDrainageArea() == 'N/A' && !this.studyAreaService.loadingDrainageArea)
+                    this.studyAreaService.loadDrainageArea();
             };
             ExtensionModalController.prototype.verifyExtensionCanContinue = function () {
                 var _this = this;
@@ -164,6 +173,7 @@ var StreamStats;
                     });
                 });
                 this.studyAreaService.updateExtensions();
+                this.studyAreaService.extensionsConfigured = true;
                 return true;
             };
             ExtensionModalController.prototype.addDay = function (d, days) {
@@ -200,68 +210,92 @@ var StreamStats;
                 this.modalService.openModal(StreamStats.Services.SSModalType.e_gagepage, { 'siteid': siteid });
             };
             ExtensionModalController.prototype.getGageInfo = function () {
-                var _this = this;
+                this.toaster.pop('wait', "Querying gage information", "Please wait...", 0);
+                this.isBusy = true;
                 var selectedGageDone = false;
                 if (this.referenceGageList)
-                    this.referenceGageList.forEach(function (gage) {
-                        if (_this.selectedReferenceGage && _this.selectedReferenceGage.StationID && gage.StationID == _this.selectedReferenceGage.StationID)
+                    for (var i = this.referenceGageList.length - 1; i >= 0; i--) {
+                        var gage = this.referenceGageList[i];
+                        if (this.selectedReferenceGage && this.selectedReferenceGage.StationID && gage.StationID == this.selectedReferenceGage.StationID)
                             selectedGageDone = true;
-                        var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + gage.StationID;
-                        var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
-                        _this.Execute(request).then(function (response) {
-                            var gageInfo = response.data;
-                            if (!gage.hasOwnProperty('properties'))
-                                gage['properties'] = {};
-                            if (gageInfo.hasOwnProperty('statistics')) {
-                                var hasFlowDurationStats = false;
-                                gageInfo.statistics.forEach(function (stat) {
-                                    if (stat['statisticGroupType'].code == 'FDS')
-                                        hasFlowDurationStats = true;
-                                });
-                                gage['properties']['HasFlowDurationStats'] = hasFlowDurationStats;
-                            }
-                            if (gageInfo.hasOwnProperty('isRegulated'))
-                                gage['properties'].IsRegulated = gageInfo.isRegulated;
-                            if (gageInfo.hasOwnProperty('characteristics')) {
-                                gageInfo.characteristics.forEach(function (char) {
-                                    if (char['variableType'].code == 'DRNAREA')
-                                        gage['properties']['DrainageArea'] = char['value'];
-                                });
-                            }
-                            if (gageInfo.stationType)
-                                gage['properties'].StationType = gageInfo.stationType;
-                        }, function (error) {
-                        }).finally(function () {
-                        });
-                        _this.getNWISPeriodOfRecord(gage);
-                    });
-                if (this.selectedReferenceGage && !selectedGageDone) {
-                    var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + this.selectedReferenceGage.StationID;
-                    var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
-                    this.Execute(request).then(function (response) {
-                        var gageInfo = response.data;
+                        this.getGageStatsStationInfo(gage);
+                    }
+                if (this.selectedReferenceGage && this.selectedReferenceGage.StationID != "" && !selectedGageDone) {
+                    this.getGageStatsStationInfo(this.selectedReferenceGage);
+                }
+            };
+            ExtensionModalController.prototype.getGageStatsStationInfo = function (gage, newGage) {
+                var _this = this;
+                if (newGage === void 0) { newGage = false; }
+                var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + gage.StationID;
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+                this.Execute(request).then(function (response) {
+                    var gageInfo = response.data;
+                    if (gageInfo.stationType && gageInfo.stationType.code != 'GS') {
+                        if (newGage) {
+                            _this.toaster.clear();
+                            _this.toaster.pop('error', "Invalid gage", "Gage is not continuous record", 0);
+                            _this.isBusy = false;
+                        }
+                        else {
+                            _this.removeItem(gage);
+                            if (_this.referenceGageList.length == 0)
+                                _this.toaster.pop('warning', "No valid gages returned", "Gages without continuous record removed from response", 0);
+                        }
+                    }
+                    else {
+                        if (gageInfo.hasOwnProperty('isRegulated'))
+                            gage['isRegulated'] = gageInfo.isRegulated;
+                        if (gageInfo.hasOwnProperty('stationType'))
+                            gage['stationType'] = gageInfo.stationType;
                         if (gageInfo.hasOwnProperty('statistics')) {
                             var hasFlowDurationStats = false;
-                            gageInfo.statistics.forEach(function (stat) {
-                                if (stat['statisticGroupType'].code == 'FDS')
+                            gageInfo['statistics'].forEach(function (stat) {
+                                if (stat['statisticGroupType'].code == 'FDS' && stat['isPreferred'])
                                     hasFlowDurationStats = true;
                             });
-                            _this.selectedReferenceGage['properties']['HasFlowDurationStats'] = hasFlowDurationStats;
+                            gage['HasFlowDurationStats'] = hasFlowDurationStats;
                         }
                         if (gageInfo.hasOwnProperty('characteristics')) {
                             gageInfo.characteristics.forEach(function (char) {
                                 if (char['variableType'].code == 'DRNAREA')
-                                    _this.selectedReferenceGage['properties']['DrainageArea'] = char['value'];
+                                    gage['DrainageArea'] = char['value'];
                             });
                         }
-                    }, function (error) {
-                    }).finally(function () {
-                    });
-                    this.getNWISPeriodOfRecord(this.selectedReferenceGage);
-                }
+                        if (gageInfo.hasOwnProperty('name'))
+                            gage['Name'] = gageInfo.name;
+                        if (newGage) {
+                            if (!_this.referenceGageList)
+                                _this.referenceGageList = [];
+                            if (_this.referenceGageList.length == 0 || !_this.referenceGageList.some(function (g) { return g.StationID == gage.StationID; }))
+                                _this.referenceGageList.unshift(gage);
+                        }
+                        _this.getNWISPeriodOfRecord(gage);
+                    }
+                }, function (error) {
+                    _this.toaster.clear();
+                    _this.isBusy = false;
+                    console.log(error);
+                    if (error.headers()['x-usgswim-messages']) {
+                        var headerMsgs = JSON.parse(error.headers()['x-usgswim-messages']);
+                        Object.keys(headerMsgs).forEach(function (key) {
+                            headerMsgs[key].forEach(function (element) {
+                                _this.toaster.pop(key, key, element);
+                            });
+                        });
+                    }
+                    _this.removeItem(gage);
+                }).finally(function () {
+                });
+            };
+            ExtensionModalController.prototype.removeItem = function (gage) {
+                var gageIndex = this.referenceGageList.indexOf(this.referenceGageList.filter(function (item) { return item.StationID == gage.StationID; })[0]);
+                if (gageIndex)
+                    this.referenceGageList.splice(gageIndex, 1);
             };
             ExtensionModalController.prototype.getNearestGages = function () {
                 var _this = this;
+                this.isBusy = true;
                 this.toaster.pop("wait", "Searching for gages", "Please wait...", 0);
                 var headers = {
                     "X-Is-Streamstats": true
@@ -270,43 +304,53 @@ var StreamStats;
                 var long = this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toString();
                 var url = configuration.baseurls.GageStatsServices;
                 if (this.queryBy == 'Nearest')
-                    url += configuration.queryparams.GageStatsServicesNearest.format(lat, long, this.distance);
+                    url += configuration.queryparams.GageStatsServicesNearest.format(lat, long, (this.distance * 1.60934).toFixed(0));
                 if (this.queryBy == 'Network')
-                    url += configuration.queryparams.GageStatsServicesNetwork.format(lat, long, this.distance);
+                    url += configuration.queryparams.GageStatsServicesNetwork.format(lat, long, (this.distance * 1.60934).toFixed(0));
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
                 this.referenceGageList = [];
                 this.selectedReferenceGage.StationID = '';
                 this.Execute(request).then(function (response) {
                     _this.toaster.clear();
+                    _this.isBusy = false;
                     if (typeof response.data == 'string') {
                         _this.toaster.pop("warning", "Warning", response.data, 0);
                     }
-                    else if (response.data.hasOwnProperty('features') && response.data.features.length == 0) {
+                    else if (response.data && response.data.length == 0) {
                         _this.toaster.pop("warning", "Warning", "No stations located within search distance");
                     }
-                    else if (response.data.hasOwnProperty('features') && response.data.features.length > 0) {
-                        response.data.features.forEach(function (feat) {
-                            if (feat.properties.hasOwnProperty('Statistics')) {
-                                var hasFlowDurationStats = false;
-                                feat.properties.Statistics.forEach(function (stat) {
-                                    if (stat['statisticGroupType'].code == 'FDS')
-                                        hasFlowDurationStats = true;
-                                });
-                                feat.properties['HasFlowDurationStats'] = hasFlowDurationStats;
+                    else if (response.data && response.data.length > 0) {
+                        for (var i = response.data.length - 1; i >= 0; i--) {
+                            var gage = response.data[i];
+                            if (gage.stationType.code != 'GS') {
+                                response.data.splice(i, 1);
+                                if (response.data.length == 0)
+                                    _this.toaster.pop('warning', "No valid gages returned", "Gages without continuous record removed from response", 0);
                             }
-                            if (feat.properties.hasOwnProperty('Characteristics')) {
-                                feat.properties.Characteristics.forEach(function (char) {
-                                    if (char['variableType'].code == 'DRNAREA')
-                                        feat.properties['DrainageArea'] = char['value'];
-                                });
+                            else {
+                                if (gage.hasOwnProperty('statistics')) {
+                                    var hasFlowDurationStats = false;
+                                    gage.statistics.forEach(function (stat) {
+                                        if (stat['statisticGroupType'].code == 'FDS' && stat['isPreferred'])
+                                            hasFlowDurationStats = true;
+                                    });
+                                    gage['HasFlowDurationStats'] = hasFlowDurationStats;
+                                }
+                                if (gage.hasOwnProperty('characteristics')) {
+                                    gage.characteristics.forEach(function (char) {
+                                        if (char['variableType'].code == 'DRNAREA')
+                                            gage['DrainageArea'] = char['value'];
+                                    });
+                                }
+                                if (gage.hasOwnProperty('name'))
+                                    gage.Name = gage.name;
+                                if (gage.hasOwnProperty('code'))
+                                    gage.StationID = gage.code;
+                                _this.getNWISPeriodOfRecord(gage);
                             }
-                            if (feat.properties.code)
-                                feat.StationID = feat.properties.code;
-                            else if (feat.properties.Code)
-                                feat.StationID = feat.properties.Code;
-                            _this.getNWISPeriodOfRecord(feat);
-                        });
-                        _this.referenceGageList = response.data.features;
+                        }
+                        _this.referenceGageList = response.data;
+                        _this.getNWISDailyValues();
                     }
                     if (response.headers()['x-usgswim-messages']) {
                         var headerMsgs = JSON.parse(response.headers()['x-usgswim-messages']);
@@ -318,6 +362,7 @@ var StreamStats;
                     }
                 }, function (error) {
                     _this.toaster.clear();
+                    _this.isBusy = false;
                     console.log(error);
                     if (error.headers()['x-usgswim-messages']) {
                         var headerMsgs = JSON.parse(error.headers()['x-usgswim-messages']);
@@ -334,14 +379,7 @@ var StreamStats;
             };
             ExtensionModalController.prototype.selectGage = function (gage) {
                 var sid = this.studyAreaService.selectedStudyAreaExtensions.reduce(function (acc, val) { return acc.concat(val.parameters); }, []).filter(function (f) { return (f.code).toLowerCase() == "sid"; });
-                var rg;
-                if (gage.properties && gage.properties.Code) {
-                    rg = new StreamStats.Models.ReferenceGage(gage.properties.Code, gage.properties.Name);
-                    rg.properties = gage.properties;
-                }
-                else {
-                    rg = new StreamStats.Models.ReferenceGage(gage.StationID, gage.Name);
-                }
+                var rg = new StreamStats.Models.ReferenceGage(gage.StationID, gage.Name);
                 if (gage.geometry) {
                     rg.Latitude_DD = gage.geometry.coordinates[0];
                     rg.Longitude_DD = gage.geometry.coordinates[1];
@@ -358,6 +396,7 @@ var StreamStats;
                     return { 'background-color': 'unset' };
             };
             ExtensionModalController.prototype.getNWISPeriodOfRecord = function (gage) {
+                var _this = this;
                 if (!gage.StationID)
                     return;
                 var nwis_url = configuration.baseurls.NWISurl + configuration.queryparams.NWISperiodOfRecord + gage.StationID;
@@ -385,7 +424,12 @@ var StreamStats;
                             }
                         }
                     } while (data.length > 0);
+                    _this.toaster.clear();
+                    _this.isBusy = false;
                 }, function (error) {
+                    _this.toaster.clear();
+                    _this.isBusy = false;
+                    _this.toaster.pop('error', "Error", "NWIS period of record not found", 0);
                 }).finally(function () {
                 });
             };
@@ -399,6 +443,35 @@ var StreamStats;
                 }
                 return gage['SelectEnabled'];
             };
+            ExtensionModalController.prototype.getNWISDailyValues = function () {
+                var _this = this;
+                if (!this.referenceGageList)
+                    return;
+                var start = this.dateRange.dates.startDate.toISOString();
+                start = start.substr(0, start.indexOf('T'));
+                var end = this.dateRange.dates.endDate.toISOString();
+                end = end.substr(0, end.indexOf('T'));
+                this.referenceGageList.forEach(function (gage) {
+                    gage['HasZeroFlows'] = 'N/A';
+                    var nwis_url = configuration.baseurls.NWISurl + configuration.queryparams.NWISdailyValues.format(gage.StationID, start, end);
+                    var nwis_request = new WiM.Services.Helpers.RequestInfo(nwis_url, true, WiM.Services.Helpers.methodType.GET, 'TEXT');
+                    _this.Execute(nwis_request).then(function (response) {
+                        var data = response.data.split('\n').filter(function (r) { return (!r.startsWith("#") && r != ""); });
+                        data.shift();
+                        gage['HasZeroFlows'] = false;
+                        if (data.length <= 2)
+                            gage['HasZeroFlows'] = 'N/A';
+                        do {
+                            var row = data.shift().split('\t');
+                            var value = parseInt(row[3]);
+                            if (typeof (value) == 'number' && value == 0)
+                                gage['HasZeroFlows'] = 'true';
+                        } while (data.length > 0);
+                    }, function (error) {
+                        gage['HasZeroFlows'] = 'N/A';
+                    });
+                });
+            };
             ExtensionModalController.prototype.checkCorrelation = function () {
                 if (this.referenceGageList)
                     return this.referenceGageList.some(function (g) { return g.hasOwnProperty('correlation'); });
@@ -411,6 +484,12 @@ var StreamStats;
                     return drainageArea.value;
                 else
                     return 'N/A';
+            };
+            ExtensionModalController.prototype.queryGage = function () {
+                this.toaster.pop('wait', "Querying gage information", "Please wait...", 0);
+                this.isBusy = true;
+                var gage = new StreamStats.Models.ReferenceGage(this.stationNumber, '');
+                this.getGageStatsStationInfo(gage, true);
             };
             ExtensionModalController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.ModalService', 'StreamStats.Services.StudyAreaService', 'WiM.Event.EventManager', '$http', 'toaster'];
             return ExtensionModalController;

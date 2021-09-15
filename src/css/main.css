@@ -768,6 +768,19 @@ div.leaflet-top > .elevation {
     }
 
 
+@media only screen and (max-width: 1220px) {
+	.modal-dialog{
+		width: 90%;
+		padding: 25px;
+		margin: 5% 5% 5% 5%;
+		color: #000;
+		letter-spacing: 1px;
+		font-weight: 400;
+		max-height: 90%;
+	  }
+}
+
+
 @media only screen and (max-width: 740px) {
     .navbar-brand{
         margin-bottom: 20px;
@@ -1113,12 +1126,10 @@ div.leaflet-top > .elevation {
     Zoom Controls
     Zoom Controls
 */
-    #mainMap .leaflet-top .leaflet-control; {
-    margin-top: 65px !important;
-    position: relative;
-    top: 10px !important;
-    border-radius: 3px !important;
-}
+    #mainMap .leaflet-top .leaflet-control {
+        position: relative;
+        border-radius: 3px !important;
+    }
 	.leaflet-control-zoom-in {
 	    border-top-left-radius: 3px !important;
 	    border-top-right-radius: 3px !important;
@@ -1295,7 +1306,7 @@ div.leaflet-top > .elevation {
     Toast
     Toast
 */
-/*.toast {
+/* .toast {
     background-color: #0F8AFF !important;
     color: #fff !important;
     position: fixed;
@@ -1337,7 +1348,7 @@ div.leaflet-top > .elevation {
 .toast:hover .toast-title:after {
     opacity: 1;
     transition: 0.1s;
-}*/
+} */
 
 
 /*
@@ -1356,7 +1367,6 @@ div.leaflet-top > .elevation {
 #printArea h3 {
     font-size: 20px !important;
     padding: 0 0 0 3px !important;
-    font-size: 20px !important;
     margin-bottom: 15px !important;
 }
 #printArea .leaflet-control-layers-base input[type=radio]{
@@ -1370,6 +1380,9 @@ div.leaflet-top > .elevation {
     max-width: 100%;
     margin-bottom: auto;
     padding-top: 5px;
+}
+#printArea span {
+    padding: 0 0 0 3px !important;
 }
 
 /*
@@ -1496,11 +1509,19 @@ div.leaflet-top > .elevation {
     font-size: 12px !important;
 }
 
-#printArea h3,
 #printArea h4{
     font-size: 14px !important;
     font-weight: 400 !important;
 }
+#printArea h3{
+    font-size: 18px !important;
+    font-weight: 400 !important;
+}
+#printArea h2{
+    font-weight: 400 !important;
+    font-size: 24px !important;
+}
+
 
 
 #reportMap [type=checkbox]:checked, #reportMap [type=checkbox]:not(:checked) {
