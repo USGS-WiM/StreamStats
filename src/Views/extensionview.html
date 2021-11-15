@@ -5,7 +5,7 @@
                 ng-click="vm.close()">
             &times;
         </button>    
-        <h4 class="modal-title">{{vm.title}}</h4>
+        <h4 class="modal-title">{{vm.title}} (also known as QPPQ)</h4>
     </div>
     <div class="modal-body">
         <form ng-if="vm.dateRange" name="dateForm">
@@ -16,7 +16,7 @@
             </div>
         </form>
         <div ng-if="vm.selectedReferenceGage" class="form-group">
-            <h5>Select/Enter a reference gage.<small style="color:red">&nbsp;&nbsp;(Required)</small></h5>
+            <h5>Select/Enter a index gage.<small style="color:red">&nbsp;&nbsp;(Required)</small></h5>
 
             <span>
                 <div class="qppqInput">

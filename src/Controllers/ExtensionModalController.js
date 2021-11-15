@@ -239,8 +239,14 @@ var StreamStats;
                         }
                         else {
                             _this.removeItem(gage);
-                            if (_this.referenceGageList.length == 0)
+                            if (_this.referenceGageList.length == 0) {
                                 _this.toaster.pop('warning', "No valid gages returned", "Gages without continuous record removed from response", 0);
+                            }
+                            else {
+                                _this.toaster.clear();
+                                _this.toaster.pop('error', "Invalid gage", "Gage is not continuous record", 0);
+                                _this.isBusy = false;
+                            }
                         }
                     }
                     else {

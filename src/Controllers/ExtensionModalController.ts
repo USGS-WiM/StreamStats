@@ -281,7 +281,13 @@ module StreamStats.Controllers {
                             this.isBusy = false;
                         } else {
                             this.removeItem(gage);
-                            if (this.referenceGageList.length == 0) this.toaster.pop('warning', "No valid gages returned", "Gages without continuous record removed from response", 0);
+                            if (this.referenceGageList.length == 0){
+                                this.toaster.pop('warning', "No valid gages returned", "Gages without continuous record removed from response", 0);
+                            } else {
+                                this.toaster.clear();
+                                this.toaster.pop('error', "Invalid gage", "Gage is not continuous record", 0);
+                                this.isBusy = false;
+                            }
                         }
                     } else {
                         if (gageInfo.hasOwnProperty('isRegulated')) gage['isRegulated'] = gageInfo.isRegulated;

@@ -172,7 +172,7 @@
                     <div class="well well-sm" ng-show="vm.extensions">
                         <div ng-repeat="sc in vm.extensions">                            
                             <div ng-if="sc.code == 'QPPQ'" ng-init=vm.ActivateGraphs(sc.result)>
-                                <h3>{{sc.name}} ({{sc.code}})</h3>
+                                <h3>{{sc.name}} (FDCTM)</h3>
                                 <div ng-repeat="p in sc.parameters" ng-if="['sdate','edate'].indexOf(p.code) >-1">
                                     <span>{{p.name}}: {{p.value | date:'yyyy/MM/dd'}}</span><br />
                                 </div>                           
@@ -240,12 +240,12 @@
                                     </table>
                                 </div>
 
-                                <!--Reference gage-->
+                                <!--Index gage-->
                                 <div class="well well-sm">
                                     <table id="ReferenceGage" class="table table-condensed">
                                         <thead>
                                             <tr>
-                                                <th>Reference Gage</th>
+                                                <th>Index Gage</th>
                                             </tr>
                                         </thead>
                                         <tbody>

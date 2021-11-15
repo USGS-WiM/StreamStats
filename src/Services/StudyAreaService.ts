@@ -939,7 +939,7 @@ module StreamStats.Services {
                             sid[0].options = siteList;
                             sid[0].value = siteList[0];
 
-                            this.toaster.pop('success', "Found USGS NWIS reference gage", "Please continue", 5000);
+                            this.toaster.pop('success', "Found USGS NWIS index gage", "Please continue", 5000);
                              //reopen modal
                             this.modalservices.openModal(SSModalType.e_extensionsupport);
                             this.doSelectMapGage = false;
@@ -949,7 +949,7 @@ module StreamStats.Services {
                 }, (error) => {
                     //sm when complete
                     //console.log('Regression query failed, HTTP Error');
-                    this.toaster.pop('warning', "No USGS NWIS reference gage found at this location.",
+                    this.toaster.pop('warning', "No USGS NWIS index gage found at this location.",
                                         "Try zooming in closer or a different location", 5000);
                 });
         }
@@ -1014,11 +1014,11 @@ module StreamStats.Services {
                         sid[0].options = siteList;
                         sid[0].value = new Models.ReferenceGage("","");
 
-                        this.toaster.pop('success', "Found reference gages", "Please continue", 5000);
+                        this.toaster.pop('success', "Found index gages", "Please continue", 5000);
                     }
 
                 }, (error) => {
-                    this.toaster.pop('warning', "No reference gage found at this location.",
+                    this.toaster.pop('warning', "No index gage found at this location.",
                         "Please try again", 5000);
 
                 }).finally(() => {

@@ -260,7 +260,7 @@ module StreamStats.Controllers {
                 if (self.extensions) {
                     for (var sc of self.extensions) {
                         if (sc.code == 'QPPQ') {
-                            extVal += sc.name += ' (' + sc.code + ')' + '\n';
+                            extVal += sc.name += ' (FDCTM)' + '\n';
                             for (var p of sc.parameters) {
                                 if (['sdate','edate'].indexOf(p.code) >-1) {
                                     var date = new Date(p.value);
@@ -507,7 +507,7 @@ module StreamStats.Controllers {
                             yScale: d3.scale.log(),
                             title: {
                                 enable: true,
-                                text: "Flow Duration Curve Transfer Method (QPPQ) Model Estimated Exceedance Probabilities"
+                                text: "Flow Duration Curve Transfer Method (FDCTM) Model Estimated Exceedance Probabilities"
                             }
                         }
                     }
@@ -661,7 +661,7 @@ module StreamStats.Controllers {
                 this.geojson[LayerName] = {
                     data: feature,
                     style: {
-                        displayName: 'Reference Gage'
+                        displayName: 'Index Gage'
                     },
                     onEachFeature: function (feat, layer) {
                         var icon = L.icon({
@@ -674,11 +674,11 @@ module StreamStats.Controllers {
 
                     },
                     layerArray: [{
-                        "layerName": "Reference Gage",
+                        "layerName": "Index Gage",
                         "legend": [{                        
                             "contentType": "image/png",
                             "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAaJJREFUOI3dzz1IW1EYxvF/TMqpFQsJCF4QOuhUpTpEVCw6RSsdQhFB6hfiF0IDFqkoOCqKEhxEqm0H20YUgpQoqOBWOkgjpQgXowREEC5SuVBE6QtFHXQwYjSJmXzgDO85hx/PayPJsd0TcD6sqM6ZBFqAk7uD4dCyqu3dkLnhRmD6bqB/ q5DwZrl4hv6rb2MWEfEDR4mD + q9ZSl + mAC75 + HOGxvwuYDAx8MNaK / +Os3mUfj5nP + tSSlsUMbKAvfhA / dSKb3qEqvrLtwUS0CeVW + sWkbfxgcsr4zx12rFe + ZJu75PMPK / jcKfQNM1gbKBPz2Az2EzJi + ten / B1LdUse9AGxAhu//ZTXPkwanurrRd3RyeBqRrAfzM48b2IvwfPcWRG9QC76nnvlMDUY2ABkOjgbshHxWvrTRqAYPGo/s9uGWh6A3ivBR3epTZTpeWQmnabB6CkqqFOjbbvi0gG8CcSXF1NMZdCw7zqjAW7iKWOT+sVqtX5TkR6IkGXqx4IMub5EYeIQAlQrmlarmEY+uWVv1ycRDJgGAaRDZOUpINnJ5KDtx5X6hkAAAAASUVORK5CYII=",
-                            "label": "Reference Gage"
+                            "label": "Index Gage"
                         }]
                     }]
                     // TODO: can't figure out how to get this in the legend!

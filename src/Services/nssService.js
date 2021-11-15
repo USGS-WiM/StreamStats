@@ -94,7 +94,7 @@ var StreamStats;
                             if (_this.regionservice.selectedRegion.Applications.indexOf("FDCTM") > -1 && value.id == 5) {
                                 var val = JSON.parse(JSON.stringify(value));
                                 val.id += "_fdctm";
-                                val.name = "Flow-Duration QPPQ Method";
+                                val.name = "Flow-Duration Curve Transfer Method";
                                 _this.statisticsGroupList.push(val);
                             }
                         });
