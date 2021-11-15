@@ -28,7 +28,7 @@
                 <button class="btn-exploration-tools btn-green" ng-click="vm.getNearest = !vm.getNearest" ng-disabled="vm.isBusy"><span><i ng-class="vm.isBusy? 'fa fa-crosshairs fa-spin':'fa fa-map-marker'"></i>&nbsp;&nbsp;Query Nearest Gages</span></button>
 
                 <div ng-if="vm.getNearest" id="nearestGages">
-                    <h3 class="panel-title">Query Nearest Gages<small>Query StreamStats Gages near the pourpoint (a) within a radius or (b) within a distance on the network (checks up or downstream directly on network, not including offshoots or tributaries)</small></h3>
+                    <h3 class="panel-title">Query Nearest Gages<small>Query StreamStats Gages near the pourpoint (a) within a radius or (b) within a distance on the network (checks all contributing upstream reaches and all reaches downstream that target location contributes to)</small></h3>
                     <div class="panel-confitem-wrapper">
                         <!-- nearest gage functionality-->
                         <div class="panel-confitem">
