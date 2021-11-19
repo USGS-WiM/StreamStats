@@ -56,7 +56,8 @@ module StreamStats.Controllers {
         public dateRange: IDateRange;
         public dateRangeOptions;
         public selectedReferenceGage: StreamStats.Models.IReferenceGage = null;
-        public referenceGageList: Array<StreamStats.Models.IReferenceGage>;
+        public referenceGageList: Array<StreamStats.Models.IReferenceGage>;        
+        public referenceGageListAll: Array<StreamStats.Models.IReferenceGage>;
         public queryBy = 'Nearest';
         public getNearest = false;
         public distance = 10;
@@ -160,7 +161,7 @@ module StreamStats.Controllers {
         }
         private load(): void {
             let parameters:Array<any> = this.getExtensionParameters();
-
+            console.log('load')
             do {
                 let f = parameters.pop();
 
@@ -182,6 +183,25 @@ module StreamStats.Controllers {
             }
             // get drainage area if not already retrieved/retrieving
             if (this.getDrainageArea() == 'N/A' && !this.studyAreaService.loadingDrainageArea) this.studyAreaService.loadDrainageArea();
+            this.getAllCorrelatedReferenceGage();
+        }
+
+        public getAllCorrelatedReferenceGage(){
+            var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['KrigService'].format(this.studyAreaService.selectedStudyArea.RegionID, this.studyAreaService.selectedStudyArea.Pourpoint.Longitude, this.studyAreaService.selectedStudyArea.Pourpoint.Latitude, this.studyAreaService.selectedStudyArea.Pourpoint.crs, '300');
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
+            console.log(request)
+
+            this.Execute(request).then(
+                (response: any) => {
+                    console.log(response)
+                    this.referenceGageListAll = response.data
+                }, (error) => {
+                    this.toaster.pop('warning', "No index gage found at this location.",
+                        "Please try again", 5000);
+                }).finally(() => {
+                }
+            );
+
         }
         private verifyExtensionCanContinue(): boolean {
 
@@ -483,6 +503,20 @@ module StreamStats.Controllers {
                 gage['SelectEnabled'] = false;
             }
             return gage['SelectEnabled'];
+        }
+
+        public checkCorrelationMatrix(gage) {
+            console.log('checkCorrelationMatrix', gage)
+            //console.log(this.referenceGageListAll)
+            // if (!this.dateRange.dates && gage.hasOwnProperty('SelectEnabled')) return gage['SelectEnabled']; // keep last set enabled/disabled setting if user is changing dates
+
+            // if (){ //In correlation matrix
+            //     gage['SelectEnabled'] = true;
+            // } 
+            // else { //Not in correlation matrix
+            //     gage['SelectEnabled'] = false;
+            // }
+            // return gage['SelectEnabled'];
         }
 
         public getNWISDailyValues() {

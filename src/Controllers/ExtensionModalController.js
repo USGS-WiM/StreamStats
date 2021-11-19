@@ -114,6 +114,7 @@ var StreamStats;
             };
             ExtensionModalController.prototype.load = function () {
                 var parameters = this.getExtensionParameters();
+                console.log('load');
                 var _loop_1 = function () {
                     var f = parameters.pop();
                     if (this_1.selectedReferenceGage && ['sid'].indexOf(f.code) > -1) {
@@ -142,6 +143,20 @@ var StreamStats;
                 }
                 if (this.getDrainageArea() == 'N/A' && !this.studyAreaService.loadingDrainageArea)
                     this.studyAreaService.loadDrainageArea();
+                this.getAllCorrelatedReferenceGage();
+            };
+            ExtensionModalController.prototype.getAllCorrelatedReferenceGage = function () {
+                var _this = this;
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['KrigService'].format(this.studyAreaService.selectedStudyArea.RegionID, this.studyAreaService.selectedStudyArea.Pourpoint.Longitude, this.studyAreaService.selectedStudyArea.Pourpoint.Latitude, this.studyAreaService.selectedStudyArea.Pourpoint.crs, '300');
+                var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                console.log(request);
+                this.Execute(request).then(function (response) {
+                    console.log(response);
+                    _this.referenceGageListAll = response.data;
+                }, function (error) {
+                    _this.toaster.pop('warning', "No index gage found at this location.", "Please try again", 5000);
+                }).finally(function () {
+                });
             };
             ExtensionModalController.prototype.verifyExtensionCanContinue = function () {
                 var _this = this;
@@ -448,6 +463,9 @@ var StreamStats;
                     gage['SelectEnabled'] = false;
                 }
                 return gage['SelectEnabled'];
+            };
+            ExtensionModalController.prototype.checkCorrelationMatrix = function (gage) {
+                console.log('checkCorrelationMatrix', gage);
             };
             ExtensionModalController.prototype.getNWISDailyValues = function () {
                 var _this = this;
