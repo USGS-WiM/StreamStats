@@ -93,6 +93,9 @@ module StreamStats.Controllers {
                 });
                 if (newval != oldval) this.getNWISDailyValues();
             });
+            $scope.$watch(() => this.studyAreaService.allIndexGages, (newval) => {
+                this.referenceGageListAll = newval
+            });
         }
         //Methods  
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -181,28 +184,12 @@ module StreamStats.Controllers {
                 this.getNWISDailyValues();
             }
             // get drainage area if not already retrieved/retrieving
-            if (this.getDrainageArea() == 'N/A' && !this.studyAreaService.loadingDrainageArea) this.studyAreaService.loadDrainageArea();
-            this.getAllCorrelatedReferenceGage(); // This would be better to do like the drainage area so it doesnt load everytime the modal is opened
-        }
-
-        public getAllCorrelatedReferenceGage() {
-            var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['KrigService'].format(this.studyAreaService.selectedStudyArea.RegionID, this.studyAreaService.selectedStudyArea.Pourpoint.Longitude, this.studyAreaService.selectedStudyArea.Pourpoint.Latitude, this.studyAreaService.selectedStudyArea.Pourpoint.crs, '300');
-            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
-            this.toaster.pop('wait', "Getting Available Index Gages", "Please wait...", 0);
-            this.isBusy = true;
-            this.Execute(request).then(
-                (response: any) => {
-                    this.isBusy = false;
-                    this.toaster.clear();
-                    this.referenceGageListAll = response.data
-                }, (error) => {
-                    this.toaster.pop('warning', "No index gages returned.",
-                        "Please try again", 5000);
-                    this.isBusy = false;
-                }).finally(() => {
-                }
-            );
-
+            if (this.getDrainageArea() == 'N/A' && !this.studyAreaService.loadingDrainageArea){
+                this.studyAreaService.loadDrainageArea();
+            }
+            if (this.studyAreaService.allIndexGages == undefined) {
+                this.studyAreaService.loadAllIndexGages();
+            }
         }
         private verifyExtensionCanContinue(): boolean {
 
@@ -506,21 +493,16 @@ module StreamStats.Controllers {
         }
 
         public checkCorrelationMatrix(gage) {
-            if (this.referenceGageListAll == undefined) {
-                this.isBusy = true;
-            } else {
-                this.isBusy = false;
-                if (!this.dateRange.dates && gage.hasOwnProperty('SelectEnabled')) return gage['SelectEnabled']; // keep last set enabled/disabled setting if user is changing dates
-                var arrayWithIds = this.referenceGageListAll.map(function(x){
-                    return x.id
-                });
-                if (arrayWithIds.indexOf(gage.StationID) !== -1){ //In correlation matrix
-                    gage['SelectEnabled'] = true;
-                } else { //Not in correlation matrix
-                    gage['SelectEnabled'] = false;
-                }
-                return gage['SelectEnabled'];
+            if (!this.dateRange.dates && gage.hasOwnProperty('SelectEnabled')) return gage['SelectEnabled']; // keep last set enabled/disabled setting if user is changing dates
+            var arrayWithIds = this.referenceGageListAll.map(function(x){
+                return x.id
+            });
+            if (arrayWithIds.indexOf(gage.StationID) !== -1){ //In correlation matrix
+                gage['SelectEnabled'] = true;
+            } else { //Not in correlation matrix
+                gage['SelectEnabled'] = false;
             }
+            return gage['SelectEnabled'];
         }
 
         public getNWISDailyValues() {

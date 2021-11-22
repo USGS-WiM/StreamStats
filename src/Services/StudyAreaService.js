@@ -176,6 +176,7 @@ var StreamStats;
                 this.checkingDelineatedPoint = false;
                 this.studyAreaParameterList = [];
                 this.regulationCheckResults = [];
+                this.allIndexGages = undefined;
                 if (this.selectedStudyArea)
                     this.selectedStudyArea.Disclaimers = {};
                 this.showEditToolbar = false;
@@ -336,6 +337,17 @@ var StreamStats;
                     _this.loadingDrainageArea = false;
                     _this.toaster.clear();
                     _this.toaster.pop("error", "There was an HTTP error calculating drainage area", "Please retry", 0);
+                }).finally(function () {
+                });
+            };
+            StudyAreaService.prototype.loadAllIndexGages = function () {
+                var _this = this;
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['KrigService'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude, this.selectedStudyArea.Pourpoint.Latitude, this.selectedStudyArea.Pourpoint.crs, '300');
+                var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                this.Execute(request).then(function (response) {
+                    _this.allIndexGages = response.data;
+                }, function (error) {
+                    _this.toaster.pop('warning', "No index gages returned.", "Please try again", 5000);
                 }).finally(function () {
                 });
             };

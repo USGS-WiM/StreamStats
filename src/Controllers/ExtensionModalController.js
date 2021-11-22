@@ -57,6 +57,9 @@ var StreamStats;
                     if (newval != oldval)
                         _this.getNWISDailyValues();
                 });
+                $scope.$watch(function () { return _this.studyAreaService.allIndexGages; }, function (newval) {
+                    _this.referenceGageListAll = newval;
+                });
                 return _this;
             }
             ExtensionModalController.prototype.close = function () {
@@ -141,25 +144,12 @@ var StreamStats;
                     this.getGageInfo();
                     this.getNWISDailyValues();
                 }
-                if (this.getDrainageArea() == 'N/A' && !this.studyAreaService.loadingDrainageArea)
+                if (this.getDrainageArea() == 'N/A' && !this.studyAreaService.loadingDrainageArea) {
                     this.studyAreaService.loadDrainageArea();
-                this.getAllCorrelatedReferenceGage();
-            };
-            ExtensionModalController.prototype.getAllCorrelatedReferenceGage = function () {
-                var _this = this;
-                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['KrigService'].format(this.studyAreaService.selectedStudyArea.RegionID, this.studyAreaService.selectedStudyArea.Pourpoint.Longitude, this.studyAreaService.selectedStudyArea.Pourpoint.Latitude, this.studyAreaService.selectedStudyArea.Pourpoint.crs, '300');
-                var request = new WiM.Services.Helpers.RequestInfo(url, true);
-                this.toaster.pop('wait', "Getting Available Index Gages", "Please wait...", 0);
-                this.isBusy = true;
-                this.Execute(request).then(function (response) {
-                    _this.isBusy = false;
-                    _this.toaster.clear();
-                    _this.referenceGageListAll = response.data;
-                }, function (error) {
-                    _this.toaster.pop('warning', "No index gages returned.", "Please try again", 5000);
-                    _this.isBusy = false;
-                }).finally(function () {
-                });
+                }
+                if (this.studyAreaService.allIndexGages == undefined) {
+                    this.studyAreaService.loadAllIndexGages();
+                }
             };
             ExtensionModalController.prototype.verifyExtensionCanContinue = function () {
                 var _this = this;
@@ -468,24 +458,18 @@ var StreamStats;
                 return gage['SelectEnabled'];
             };
             ExtensionModalController.prototype.checkCorrelationMatrix = function (gage) {
-                if (this.referenceGageListAll == undefined) {
-                    this.isBusy = true;
+                if (!this.dateRange.dates && gage.hasOwnProperty('SelectEnabled'))
+                    return gage['SelectEnabled'];
+                var arrayWithIds = this.referenceGageListAll.map(function (x) {
+                    return x.id;
+                });
+                if (arrayWithIds.indexOf(gage.StationID) !== -1) {
+                    gage['SelectEnabled'] = true;
                 }
                 else {
-                    this.isBusy = false;
-                    if (!this.dateRange.dates && gage.hasOwnProperty('SelectEnabled'))
-                        return gage['SelectEnabled'];
-                    var arrayWithIds = this.referenceGageListAll.map(function (x) {
-                        return x.id;
-                    });
-                    if (arrayWithIds.indexOf(gage.StationID) !== -1) {
-                        gage['SelectEnabled'] = true;
-                    }
-                    else {
-                        gage['SelectEnabled'] = false;
-                    }
-                    return gage['SelectEnabled'];
+                    gage['SelectEnabled'] = false;
                 }
+                return gage['SelectEnabled'];
             };
             ExtensionModalController.prototype.getNWISDailyValues = function () {
                 var _this = this;

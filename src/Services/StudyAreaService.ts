@@ -76,6 +76,8 @@ module StreamStats.Services {
         extensionsConfigured: boolean;
         loadDrainageArea();
         loadingDrainageArea: boolean;
+        loadAllIndexGages();
+        allIndexGages;
     }
 
     interface IDateRange {
@@ -179,6 +181,7 @@ module StreamStats.Services {
         public selectedGage: any;
         public extensionsConfigured = false;
         public loadingDrainageArea = false;
+        public allIndexGages;
 
         // freshdesk
         private _freshdeskCreds: any;
@@ -271,6 +274,7 @@ module StreamStats.Services {
             this.checkingDelineatedPoint = false;
             this.studyAreaParameterList = [];  //angular.fromJson(angular.toJson(configuration.alwaysSelectedParameters));
             this.regulationCheckResults = [];
+            this.allIndexGages = undefined;
             if (this.selectedStudyArea) this.selectedStudyArea.Disclaimers = {};
             this.showEditToolbar = false;
             this.WatershedEditDecisionList = new Models.WatershedEditDecisionList();
@@ -491,6 +495,22 @@ module StreamStats.Services {
                     this.toaster.pop("error", "There was an HTTP error calculating drainage area", "Please retry", 0);
                 }).finally(() => {
                 });
+        }
+
+
+        public loadAllIndexGages() {
+            var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['KrigService'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude, this.selectedStudyArea.Pourpoint.Latitude, this.selectedStudyArea.Pourpoint.crs, '300');
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
+            this.Execute(request).then(
+                (response: any) => {
+                    this.allIndexGages = response.data;
+                }, (error) => {
+                    this.toaster.pop('warning', "No index gages returned.",
+                        "Please try again", 5000);
+                }).finally(() => {
+                }
+            );
+
         }
 
         public loadParameters() {
