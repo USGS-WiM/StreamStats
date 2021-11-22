@@ -57,7 +57,7 @@ module StreamStats.Controllers {
         public dateRangeOptions;
         public selectedReferenceGage: StreamStats.Models.IReferenceGage = null;
         public referenceGageList: Array<StreamStats.Models.IReferenceGage>;        
-        public referenceGageListAll: Array<StreamStats.Models.IReferenceGage>;
+        public referenceGageListAll;
         public queryBy = 'Nearest';
         public getNearest = false;
         public distance = 10;
@@ -133,7 +133,6 @@ module StreamStats.Controllers {
         //-+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {
             //default
-            
             this.selectedReferenceGage = null;
 
             //load from services
@@ -183,21 +182,23 @@ module StreamStats.Controllers {
             }
             // get drainage area if not already retrieved/retrieving
             if (this.getDrainageArea() == 'N/A' && !this.studyAreaService.loadingDrainageArea) this.studyAreaService.loadDrainageArea();
-            this.getAllCorrelatedReferenceGage();
+            this.getAllCorrelatedReferenceGage(); // This would be better to do like the drainage area so it doesnt load everytime the modal is opened
         }
 
-        public getAllCorrelatedReferenceGage(){
+        public getAllCorrelatedReferenceGage() {
             var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['KrigService'].format(this.studyAreaService.selectedStudyArea.RegionID, this.studyAreaService.selectedStudyArea.Pourpoint.Longitude, this.studyAreaService.selectedStudyArea.Pourpoint.Latitude, this.studyAreaService.selectedStudyArea.Pourpoint.crs, '300');
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
-            console.log(request)
-
+            this.toaster.pop('wait', "Getting Available Index Gages", "Please wait...", 0);
+            this.isBusy = true;
             this.Execute(request).then(
                 (response: any) => {
-                    console.log(response)
+                    this.isBusy = false;
+                    this.toaster.clear();
                     this.referenceGageListAll = response.data
                 }, (error) => {
-                    this.toaster.pop('warning', "No index gage found at this location.",
+                    this.toaster.pop('warning', "No index gages returned.",
                         "Please try again", 5000);
+                    this.isBusy = false;
                 }).finally(() => {
                 }
             );
@@ -497,7 +498,6 @@ module StreamStats.Controllers {
 
         public checkPeriodOfRecord(gage) {
             if (!this.dateRange.dates && gage.hasOwnProperty('SelectEnabled')) return gage['SelectEnabled']; // keep last set enabled/disabled setting if user is changing dates
-
             if (this.dateRange.dates.startDate >= this.addDay(gage['StartDate'], 1) && this.addDay(gage['EndDate'], 1) >= this.dateRange.dates.endDate) gage['SelectEnabled'] = true;
             else {
                 gage['SelectEnabled'] = false;
@@ -506,17 +506,21 @@ module StreamStats.Controllers {
         }
 
         public checkCorrelationMatrix(gage) {
-            console.log('checkCorrelationMatrix', gage)
-            //console.log(this.referenceGageListAll)
-            // if (!this.dateRange.dates && gage.hasOwnProperty('SelectEnabled')) return gage['SelectEnabled']; // keep last set enabled/disabled setting if user is changing dates
-
-            // if (){ //In correlation matrix
-            //     gage['SelectEnabled'] = true;
-            // } 
-            // else { //Not in correlation matrix
-            //     gage['SelectEnabled'] = false;
-            // }
-            // return gage['SelectEnabled'];
+            if (this.referenceGageListAll == undefined) {
+                this.isBusy = true;
+            } else {
+                this.isBusy = false;
+                if (!this.dateRange.dates && gage.hasOwnProperty('SelectEnabled')) return gage['SelectEnabled']; // keep last set enabled/disabled setting if user is changing dates
+                var arrayWithIds = this.referenceGageListAll.map(function(x){
+                    return x.id
+                });
+                if (arrayWithIds.indexOf(gage.StationID) !== -1){ //In correlation matrix
+                    gage['SelectEnabled'] = true;
+                } else { //Not in correlation matrix
+                    gage['SelectEnabled'] = false;
+                }
+                return gage['SelectEnabled'];
+            }
         }
 
         public getNWISDailyValues() {

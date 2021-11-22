@@ -149,12 +149,15 @@ var StreamStats;
                 var _this = this;
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['KrigService'].format(this.studyAreaService.selectedStudyArea.RegionID, this.studyAreaService.selectedStudyArea.Pourpoint.Longitude, this.studyAreaService.selectedStudyArea.Pourpoint.Latitude, this.studyAreaService.selectedStudyArea.Pourpoint.crs, '300');
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
-                console.log(request);
+                this.toaster.pop('wait', "Getting Available Index Gages", "Please wait...", 0);
+                this.isBusy = true;
                 this.Execute(request).then(function (response) {
-                    console.log(response);
+                    _this.isBusy = false;
+                    _this.toaster.clear();
                     _this.referenceGageListAll = response.data;
                 }, function (error) {
-                    _this.toaster.pop('warning', "No index gage found at this location.", "Please try again", 5000);
+                    _this.toaster.pop('warning', "No index gages returned.", "Please try again", 5000);
+                    _this.isBusy = false;
                 }).finally(function () {
                 });
             };
@@ -465,7 +468,24 @@ var StreamStats;
                 return gage['SelectEnabled'];
             };
             ExtensionModalController.prototype.checkCorrelationMatrix = function (gage) {
-                console.log('checkCorrelationMatrix', gage);
+                if (this.referenceGageListAll == undefined) {
+                    this.isBusy = true;
+                }
+                else {
+                    this.isBusy = false;
+                    if (!this.dateRange.dates && gage.hasOwnProperty('SelectEnabled'))
+                        return gage['SelectEnabled'];
+                    var arrayWithIds = this.referenceGageListAll.map(function (x) {
+                        return x.id;
+                    });
+                    if (arrayWithIds.indexOf(gage.StationID) !== -1) {
+                        gage['SelectEnabled'] = true;
+                    }
+                    else {
+                        gage['SelectEnabled'] = false;
+                    }
+                    return gage['SelectEnabled'];
+                }
             };
             ExtensionModalController.prototype.getNWISDailyValues = function () {
                 var _this = this;
