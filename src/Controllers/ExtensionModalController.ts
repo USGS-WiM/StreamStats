@@ -97,7 +97,12 @@ module StreamStats.Controllers {
                 if (newval != oldval) this.getNWISDailyValues();
             });
             $scope.$watch(() => this.studyAreaService.allIndexGages, (newval) => {
-                this.referenceGageListAll = newval
+                if (newval == undefined) {
+                    this.isBusy = true;
+                } else {
+                    this.referenceGageListAll = newval;
+                    this.isBusy = false;
+                }
             });
         }
         //Methods  
@@ -166,7 +171,6 @@ module StreamStats.Controllers {
         }
         private load(): void {
             let parameters:Array<any> = this.getExtensionParameters();
-            console.log('load')
             do {
                 let f = parameters.pop();
 
@@ -187,12 +191,9 @@ module StreamStats.Controllers {
                 this.getNWISDailyValues();
             }
             // get drainage area if not already retrieved/retrieving
-            if (this.getDrainageArea() == 'N/A' && !this.studyAreaService.loadingDrainageArea){
-                this.studyAreaService.loadDrainageArea();
-            }
-            if (this.studyAreaService.allIndexGages == undefined) {
-                this.studyAreaService.loadAllIndexGages();
-            }
+            if (this.getDrainageArea() == 'N/A' && !this.studyAreaService.loadingDrainageArea) this.studyAreaService.loadDrainageArea();
+            // get all drainage area if not already retrieved
+            if (this.studyAreaService.allIndexGages == undefined) this.studyAreaService.loadAllIndexGages();
         }
         private verifyExtensionCanContinue(): boolean {
 
@@ -292,7 +293,7 @@ module StreamStats.Controllers {
                             this.isBusy = false;
                         } else {
                             this.removeItem(gage);
-                            if (this.referenceGageList.length == 0){
+                            if (this.referenceGageList.length == 0) {
                                 this.toaster.pop('warning', "No valid gages returned", "Gages without continuous record removed from response", 0);
                             } else {
                                 this.toaster.clear();
@@ -301,8 +302,6 @@ module StreamStats.Controllers {
                             }
                         }
                     } else {
-                        console.log(gageInfo)
-                        console.log(gage)
                         if (gageInfo.hasOwnProperty('isRegulated')) gage['isRegulated'] = gageInfo.isRegulated;
                         if (gageInfo.hasOwnProperty('stationType')) gage['stationType'] = gageInfo.stationType;
                         if (gageInfo.hasOwnProperty('statistics')) {
@@ -323,7 +322,7 @@ module StreamStats.Controllers {
                             if (this.referenceGageList.length == 0 || !this.referenceGageList.some(g => g.StationID == gage.StationID)) this.referenceGageList.unshift(gage);
                         }
 
-                        if (gageInfo.hasOwnProperty('location')){
+                        if (gageInfo.hasOwnProperty('location')) {
                             var lat = this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toString();
                             var long = this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toString();
                             var from = turf.point(gageInfo.location.coordinates);
@@ -509,6 +508,7 @@ module StreamStats.Controllers {
 
         public checkPeriodOfRecord(gage) {
             if (!this.dateRange.dates && gage.hasOwnProperty('SelectEnabled')) return gage['SelectEnabled']; // keep last set enabled/disabled setting if user is changing dates
+
             if (this.dateRange.dates.startDate >= this.addDay(gage['StartDate'], 1) && this.addDay(gage['EndDate'], 1) >= this.dateRange.dates.endDate) gage['SelectEnabled'] = true;
             else {
                 gage['SelectEnabled'] = false;
@@ -518,10 +518,10 @@ module StreamStats.Controllers {
 
         public checkCorrelationMatrix(gage) {
             if (!this.dateRange.dates && gage.hasOwnProperty('SelectEnabled')) return gage['SelectEnabled']; // keep last set enabled/disabled setting if user is changing dates
-            var arrayWithIds = this.referenceGageListAll.map(function(x){
-                return x.id
+            var arrayWithIds = this.referenceGageListAll.map(function(x) {
+                return x.id;
             });
-            if (arrayWithIds.indexOf(gage.StationID) !== -1){ //In correlation matrix
+            if (arrayWithIds.indexOf(gage.StationID) !== -1) { //In correlation matrix
                 gage['SelectEnabled'] = true;
             } else { //Not in correlation matrix
                 gage['SelectEnabled'] = false;

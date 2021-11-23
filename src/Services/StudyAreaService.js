@@ -347,7 +347,9 @@ var StreamStats;
                 this.Execute(request).then(function (response) {
                     _this.allIndexGages = response.data;
                 }, function (error) {
-                    _this.toaster.pop('warning', "No index gages returned.", "Please try again", 5000);
+                    _this.allIndexGages = [];
+                    _this.toaster.clear();
+                    _this.toaster.pop('error', "There was an HTTP error returning index gages.", "Please retry", 0);
                 }).finally(function () {
                 });
             };

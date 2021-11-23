@@ -58,7 +58,13 @@ var StreamStats;
                         _this.getNWISDailyValues();
                 });
                 $scope.$watch(function () { return _this.studyAreaService.allIndexGages; }, function (newval) {
-                    _this.referenceGageListAll = newval;
+                    if (newval == undefined) {
+                        _this.isBusy = true;
+                    }
+                    else {
+                        _this.referenceGageListAll = newval;
+                        _this.isBusy = false;
+                    }
                 });
                 return _this;
             }
@@ -117,7 +123,6 @@ var StreamStats;
             };
             ExtensionModalController.prototype.load = function () {
                 var parameters = this.getExtensionParameters();
-                console.log('load');
                 var _loop_1 = function () {
                     var f = parameters.pop();
                     if (this_1.selectedReferenceGage && ['sid'].indexOf(f.code) > -1) {
@@ -144,12 +149,10 @@ var StreamStats;
                     this.getGageInfo();
                     this.getNWISDailyValues();
                 }
-                if (this.getDrainageArea() == 'N/A' && !this.studyAreaService.loadingDrainageArea) {
+                if (this.getDrainageArea() == 'N/A' && !this.studyAreaService.loadingDrainageArea)
                     this.studyAreaService.loadDrainageArea();
-                }
-                if (this.studyAreaService.allIndexGages == undefined) {
+                if (this.studyAreaService.allIndexGages == undefined)
                     this.studyAreaService.loadAllIndexGages();
-                }
             };
             ExtensionModalController.prototype.verifyExtensionCanContinue = function () {
                 var _this = this;
@@ -258,8 +261,6 @@ var StreamStats;
                         }
                     }
                     else {
-                        console.log(gageInfo);
-                        console.log(gage);
                         if (gageInfo.hasOwnProperty('isRegulated'))
                             gage['isRegulated'] = gageInfo.isRegulated;
                         if (gageInfo.hasOwnProperty('stationType'))

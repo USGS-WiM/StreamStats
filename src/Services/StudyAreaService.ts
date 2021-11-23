@@ -505,8 +505,9 @@ module StreamStats.Services {
                 (response: any) => {
                     this.allIndexGages = response.data;
                 }, (error) => {
-                    this.toaster.pop('warning', "No index gages returned.",
-                        "Please try again", 5000);
+                    this.allIndexGages = [];
+                    this.toaster.clear();
+                    this.toaster.pop('error', "There was an HTTP error returning index gages.", "Please retry", 0);
                 }).finally(() => {
                 }
             );
