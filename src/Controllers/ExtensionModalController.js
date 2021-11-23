@@ -258,6 +258,8 @@ var StreamStats;
                         }
                     }
                     else {
+                        console.log(gageInfo);
+                        console.log(gage);
                         if (gageInfo.hasOwnProperty('isRegulated'))
                             gage['isRegulated'] = gageInfo.isRegulated;
                         if (gageInfo.hasOwnProperty('stationType'))
@@ -283,6 +285,15 @@ var StreamStats;
                                 _this.referenceGageList = [];
                             if (_this.referenceGageList.length == 0 || !_this.referenceGageList.some(function (g) { return g.StationID == gage.StationID; }))
                                 _this.referenceGageList.unshift(gage);
+                        }
+                        if (gageInfo.hasOwnProperty('location')) {
+                            var lat = _this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toString();
+                            var long = _this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toString();
+                            var from = turf.point(gageInfo.location.coordinates);
+                            var to = turf.point([long, lat]);
+                            var options = { units: 'miles' };
+                            var distance = turf.distance(from, to, options);
+                            gage['distanceFromClick'] = distance.toFixed(2);
                         }
                         _this.getNWISPeriodOfRecord(gage);
                     }
@@ -360,6 +371,15 @@ var StreamStats;
                                     gage.Name = gage.name;
                                 if (gage.hasOwnProperty('code'))
                                     gage.StationID = gage.code;
+                                if (gage.hasOwnProperty('location')) {
+                                    var lat = _this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toString();
+                                    var long = _this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toString();
+                                    var from = turf.point(gage.location.coordinates);
+                                    var to = turf.point([long, lat]);
+                                    var options = { units: 'miles' };
+                                    var distance = turf.distance(from, to, options);
+                                    gage['distanceFromClick'] = distance.toFixed(2);
+                                }
                                 _this.getNWISPeriodOfRecord(gage);
                             }
                         }

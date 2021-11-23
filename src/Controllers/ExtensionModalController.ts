@@ -22,6 +22,9 @@
 //Import
 
 module StreamStats.Controllers {
+
+    declare var turf;
+
     'use string';
     interface IExtensionModalControllerScope extends ng.IScope {
         vm: IExtensionModalController;
@@ -298,6 +301,8 @@ module StreamStats.Controllers {
                             }
                         }
                     } else {
+                        console.log(gageInfo)
+                        console.log(gage)
                         if (gageInfo.hasOwnProperty('isRegulated')) gage['isRegulated'] = gageInfo.isRegulated;
                         if (gageInfo.hasOwnProperty('stationType')) gage['stationType'] = gageInfo.stationType;
                         if (gageInfo.hasOwnProperty('statistics')) {
@@ -316,6 +321,16 @@ module StreamStats.Controllers {
                         if (newGage) {
                             if (!this.referenceGageList) this.referenceGageList = [];
                             if (this.referenceGageList.length == 0 || !this.referenceGageList.some(g => g.StationID == gage.StationID)) this.referenceGageList.unshift(gage);
+                        }
+
+                        if (gageInfo.hasOwnProperty('location')){
+                            var lat = this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toString();
+                            var long = this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toString();
+                            var from = turf.point(gageInfo.location.coordinates);
+                            var to = turf.point([long, lat]);
+                            var options = {units: 'miles'};
+                            var distance = turf.distance(from, to, options);
+                            gage['distanceFromClick'] = distance.toFixed(2);
                         }
                         this.getNWISPeriodOfRecord(gage);
                     }
@@ -388,6 +403,15 @@ module StreamStats.Controllers {
                                 }
                                 if (gage.hasOwnProperty('name')) gage.Name = gage.name;
                                 if (gage.hasOwnProperty('code')) gage.StationID = gage.code;
+                                if (gage.hasOwnProperty('location')){
+                                    var lat = this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toString();
+                                    var long = this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toString();
+                                    var from = turf.point(gage.location.coordinates);
+                                    var to = turf.point([long, lat]);
+                                    var options = {units: 'miles'};
+                                    var distance = turf.distance(from, to, options);
+                                    gage['distanceFromClick'] = distance.toFixed(2);
+                                }
                                 this.getNWISPeriodOfRecord(gage);
                             }
                         }

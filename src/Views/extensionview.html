@@ -73,6 +73,7 @@
                             <th>Station Type</th>
                             <th>Is Regulated?</th>
                             <th>Drainage Area</th>
+                            <th>Distance from Click Point (mi)</th>
                             <th title="Indicates whether gage has any flow duration statistics.">Has Flow Duration Stats?</th>
                             <th title="Indicates whether any flow values in the selected date range is zero.">Has Zero Flows?</th>
                             <th title="Indicates the earliest date from the NWIS period of record.">Start Date</th>
@@ -88,6 +89,7 @@
                                     <td>{{gage.hasOwnProperty('stationType') ? gage.stationType.name : 'N/A'}}</td>
                                     <td>{{gage.hasOwnProperty('isRegulated') ? gage.isRegulated : 'N/A'}}</td>
                                     <td>{{gage.hasOwnProperty('DrainageArea') ? gage.DrainageArea : 'N/A'}}</td>
+                                    <td>{{gage.hasOwnProperty('distanceFromClick') ? gage.distanceFromClick : 'N/A'}}</td>
                                     <td>{{gage.HasFlowDurationStats != undefined ? gage.HasFlowDurationStats : 'N/A'}}</td>
                                     <td>{{gage.hasOwnProperty('HasZeroFlows') ? gage.HasZeroFlows : 'N/A'}}</td>
                                     <td>{{gage.StartDate | date:'yyyy-MM-dd'}}</td>
