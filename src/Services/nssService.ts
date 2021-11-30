@@ -182,7 +182,7 @@ module StreamStats.Services {
                             {
                                 let val = JSON.parse(JSON.stringify(value));
                                 val.id += "_fdctm";
-                                val.name = "Flow-Duration QPPQ Method";
+                                val.name = "Flow-Duration Curve Transfer Method";
                                 this.statisticsGroupList.push(val);
                             }
 

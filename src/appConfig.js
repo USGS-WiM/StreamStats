@@ -31,7 +31,7 @@ configuration.queryparams =
         'NWISsiteinfo': '/site?site=',
         'NWISperiodOfRecord': '/site?seriesCatalogOutput=true&outputDataTypeCd=dv&format=rdb&site=',
         'NWISdailyValues': '/dv/?format=rdb&parameterCd=00060&site={0}&startDT={1}&endDT={2}',
-        'KrigService': '/krigservices/sites/{0}/krig?&x={1}&y={2}&crs={3}',
+        'KrigService': '/krigservices/sites/{0}/krig?&x={1}&y={2}&crs={3}&count={4}',
         'RegressionScenarios': '/{0}/estimate?state={1}',
         'statisticsGroupLookup': '/statisticgroups?regions={0},NA&regressionregions={1}',
         'statisticsGroupParameterLookup': '/scenarios?regions={0},NA&statisticgroups={1}&regressionregions={2}',

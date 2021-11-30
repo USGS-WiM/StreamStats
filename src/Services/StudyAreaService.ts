@@ -76,6 +76,8 @@ module StreamStats.Services {
         extensionsConfigured: boolean;
         loadDrainageArea();
         loadingDrainageArea: boolean;
+        loadAllIndexGages();
+        allIndexGages;
     }
 
     interface IDateRange {
@@ -179,6 +181,7 @@ module StreamStats.Services {
         public selectedGage: any;
         public extensionsConfigured = false;
         public loadingDrainageArea = false;
+        public allIndexGages;
 
         // freshdesk
         private _freshdeskCreds: any;
@@ -271,6 +274,7 @@ module StreamStats.Services {
             this.checkingDelineatedPoint = false;
             this.studyAreaParameterList = [];  //angular.fromJson(angular.toJson(configuration.alwaysSelectedParameters));
             this.regulationCheckResults = [];
+            this.allIndexGages = undefined;
             if (this.selectedStudyArea) this.selectedStudyArea.Disclaimers = {};
             this.showEditToolbar = false;
             this.WatershedEditDecisionList = new Models.WatershedEditDecisionList();
@@ -491,6 +495,23 @@ module StreamStats.Services {
                     this.toaster.pop("error", "There was an HTTP error calculating drainage area", "Please retry", 0);
                 }).finally(() => {
                 });
+        }
+
+
+        public loadAllIndexGages() {
+            var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['KrigService'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude, this.selectedStudyArea.Pourpoint.Latitude, this.selectedStudyArea.Pourpoint.crs, '300');
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
+            this.Execute(request).then(
+                (response: any) => {
+                    this.allIndexGages = response.data;
+                }, (error) => {
+                    this.allIndexGages = [];
+                    this.toaster.clear();
+                    this.toaster.pop('error', "There was an HTTP error returning index gages.", "Please retry", 0);
+                }).finally(() => {
+                }
+            );
+
         }
 
         public loadParameters() {
@@ -939,7 +960,7 @@ module StreamStats.Services {
                             sid[0].options = siteList;
                             sid[0].value = siteList[0];
 
-                            this.toaster.pop('success', "Found USGS NWIS reference gage", "Please continue", 5000);
+                            this.toaster.pop('success', "Found USGS NWIS index gage", "Please continue", 5000);
                              //reopen modal
                             this.modalservices.openModal(SSModalType.e_extensionsupport);
                             this.doSelectMapGage = false;
@@ -949,7 +970,7 @@ module StreamStats.Services {
                 }, (error) => {
                     //sm when complete
                     //console.log('Regression query failed, HTTP Error');
-                    this.toaster.pop('warning', "No USGS NWIS reference gage found at this location.",
+                    this.toaster.pop('warning', "No USGS NWIS index gage found at this location.",
                                         "Try zooming in closer or a different location", 5000);
                 });
         }
@@ -990,12 +1011,11 @@ module StreamStats.Services {
         }
 
         public GetKriggedReferenceGages(): void {
-            var url = configuration.queryparams['KrigService'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude, this.selectedStudyArea.Pourpoint.Latitude, this.selectedStudyArea.Pourpoint.crs);
+            var url = configuration.queryparams['KrigService'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude, this.selectedStudyArea.Pourpoint.Latitude, this.selectedStudyArea.Pourpoint.crs, '5');
 
             if (!this.selectedStudyAreaExtensions) return;
             var sid: Array<any> = this.selectedStudyAreaExtensions.reduce((acc, val) => acc.concat(val.parameters), []).filter(f => { return (<string>(f.code)).toLowerCase() == "sid" });
             if (sid.length < 0) return;
-
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url);
             this.Execute(request).then(
                 (response: any) => {
@@ -1014,11 +1034,11 @@ module StreamStats.Services {
                         sid[0].options = siteList;
                         sid[0].value = new Models.ReferenceGage("","");
 
-                        this.toaster.pop('success', "Found reference gages", "Please continue", 5000);
+                        this.toaster.pop('success', "Found index gages", "Please continue", 5000);
                     }
 
                 }, (error) => {
-                    this.toaster.pop('warning', "No reference gage found at this location.",
+                    this.toaster.pop('warning', "No index gage found at this location.",
                         "Please try again", 5000);
 
                 }).finally(() => {

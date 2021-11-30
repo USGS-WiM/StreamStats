@@ -176,6 +176,7 @@ var StreamStats;
                 this.checkingDelineatedPoint = false;
                 this.studyAreaParameterList = [];
                 this.regulationCheckResults = [];
+                this.allIndexGages = undefined;
                 if (this.selectedStudyArea)
                     this.selectedStudyArea.Disclaimers = {};
                 this.showEditToolbar = false;
@@ -336,6 +337,19 @@ var StreamStats;
                     _this.loadingDrainageArea = false;
                     _this.toaster.clear();
                     _this.toaster.pop("error", "There was an HTTP error calculating drainage area", "Please retry", 0);
+                }).finally(function () {
+                });
+            };
+            StudyAreaService.prototype.loadAllIndexGages = function () {
+                var _this = this;
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['KrigService'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude, this.selectedStudyArea.Pourpoint.Latitude, this.selectedStudyArea.Pourpoint.crs, '300');
+                var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                this.Execute(request).then(function (response) {
+                    _this.allIndexGages = response.data;
+                }, function (error) {
+                    _this.allIndexGages = [];
+                    _this.toaster.clear();
+                    _this.toaster.pop('error', "There was an HTTP error returning index gages.", "Please retry", 0);
                 }).finally(function () {
                 });
             };
@@ -639,13 +653,13 @@ var StreamStats;
                         if (siteList.length > 0) {
                             sid[0].options = siteList;
                             sid[0].value = siteList[0];
-                            _this.toaster.pop('success', "Found USGS NWIS reference gage", "Please continue", 5000);
+                            _this.toaster.pop('success', "Found USGS NWIS index gage", "Please continue", 5000);
                             _this.modalservices.openModal(Services.SSModalType.e_extensionsupport);
                             _this.doSelectMapGage = false;
                         }
                     }
                 }, function (error) {
-                    _this.toaster.pop('warning', "No USGS NWIS reference gage found at this location.", "Try zooming in closer or a different location", 5000);
+                    _this.toaster.pop('warning', "No USGS NWIS index gage found at this location.", "Try zooming in closer or a different location", 5000);
                 });
             };
             StudyAreaService.prototype.selectGage = function (gage) {
@@ -676,7 +690,7 @@ var StreamStats;
             };
             StudyAreaService.prototype.GetKriggedReferenceGages = function () {
                 var _this = this;
-                var url = configuration.queryparams['KrigService'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude, this.selectedStudyArea.Pourpoint.Latitude, this.selectedStudyArea.Pourpoint.crs);
+                var url = configuration.queryparams['KrigService'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude, this.selectedStudyArea.Pourpoint.Latitude, this.selectedStudyArea.Pourpoint.crs, '5');
                 if (!this.selectedStudyAreaExtensions)
                     return;
                 var sid = this.selectedStudyAreaExtensions.reduce(function (acc, val) { return acc.concat(val.parameters); }, []).filter(function (f) { return (f.code).toLowerCase() == "sid"; });
@@ -695,10 +709,10 @@ var StreamStats;
                     if (siteList.length > 0) {
                         sid[0].options = siteList;
                         sid[0].value = new StreamStats.Models.ReferenceGage("", "");
-                        _this.toaster.pop('success', "Found reference gages", "Please continue", 5000);
+                        _this.toaster.pop('success', "Found index gages", "Please continue", 5000);
                     }
                 }, function (error) {
-                    _this.toaster.pop('warning', "No reference gage found at this location.", "Please try again", 5000);
+                    _this.toaster.pop('warning', "No index gage found at this location.", "Please try again", 5000);
                 }).finally(function () {
                     _this._onStudyAreaServiceFinishedChanged.raise(null, WiM.Event.EventArgs.Empty);
                 });

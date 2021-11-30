@@ -5,7 +5,7 @@
                 ng-click="vm.close()">
             &times;
         </button>    
-        <h4 class="modal-title">{{vm.title}}</h4>
+        <h4 class="modal-title">{{vm.title}} (also known as QPPQ)</h4>
     </div>
     <div class="modal-body">
         <form ng-if="vm.dateRange" name="dateForm">
@@ -16,7 +16,7 @@
             </div>
         </form>
         <div ng-if="vm.selectedReferenceGage" class="form-group">
-            <h5>Select/Enter a reference gage.<small style="color:red">&nbsp;&nbsp;(Required)</small></h5>
+            <h5>Select/Enter an index gage.<small style="color:red">&nbsp;&nbsp;(Required)</small></h5>
 
             <span>
                 <div class="qppqInput">
@@ -28,7 +28,7 @@
                 <button class="btn-exploration-tools btn-green" ng-click="vm.getNearest = !vm.getNearest" ng-disabled="vm.isBusy"><span><i ng-class="vm.isBusy? 'fa fa-crosshairs fa-spin':'fa fa-map-marker'"></i>&nbsp;&nbsp;Query Nearest Gages</span></button>
 
                 <div ng-if="vm.getNearest" id="nearestGages">
-                    <h3 class="panel-title">Query Nearest Gages<small>Query StreamStats Gages near the pourpoint (a) within a radius or (b) within a distance on the network (checks up or downstream directly on network, not including offshoots or tributaries)</small></h3>
+                    <h3 class="panel-title">Query Nearest Gages<small>Query StreamStats Gages near the pourpoint (a) within a radius or (b) within a distance on the network (checks all contributing upstream reaches and all reaches downstream that target location contributes to)</small></h3>
                     <div class="panel-confitem-wrapper">
                         <!-- nearest gage functionality-->
                         <div class="panel-confitem">
@@ -73,6 +73,7 @@
                             <th>Station Type</th>
                             <th>Is Regulated?</th>
                             <th>Drainage Area</th>
+                            <th>Distance from Click Point (mi)</th>
                             <th title="Indicates whether gage has any flow duration statistics.">Has Flow Duration Stats?</th>
                             <th title="Indicates whether any flow values in the selected date range is zero.">Has Zero Flows?</th>
                             <th title="Indicates the earliest date from the NWIS period of record.">Start Date</th>
@@ -88,12 +89,13 @@
                                     <td>{{gage.hasOwnProperty('stationType') ? gage.stationType.name : 'N/A'}}</td>
                                     <td>{{gage.hasOwnProperty('isRegulated') ? gage.isRegulated : 'N/A'}}</td>
                                     <td>{{gage.hasOwnProperty('DrainageArea') ? gage.DrainageArea : 'N/A'}}</td>
+                                    <td>{{gage.hasOwnProperty('distanceFromClick') ? gage.distanceFromClick : 'N/A'}}</td>
                                     <td>{{gage.HasFlowDurationStats != undefined ? gage.HasFlowDurationStats : 'N/A'}}</td>
                                     <td>{{gage.hasOwnProperty('HasZeroFlows') ? gage.HasZeroFlows : 'N/A'}}</td>
                                     <td>{{gage.StartDate | date:'yyyy-MM-dd'}}</td>
                                     <td>{{gage.EndDate | date:'yyyy-MM-dd'}}</td>
                                     <td>
-                                        <a ng-class="{linkDisabled: gage.StationID == vm.selectedReferenceGage.StationID || !vm.checkPeriodOfRecord(gage) || !gage.HasFlowDurationStats || gage.stationType.code != 'GS'}" ng-click="vm.selectGage(gage)">
+                                        <a ng-class="{linkDisabled: gage.StationID == vm.selectedReferenceGage.StationID || !vm.checkCorrelationMatrix(gage) || !vm.checkPeriodOfRecord(gage) || !gage.HasFlowDurationStats || gage.stationType.code != 'GS'}" ng-click="vm.selectGage(gage)">
                                             Select Gage
                                         </a>
                                         &nbsp;

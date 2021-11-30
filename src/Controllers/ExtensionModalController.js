@@ -57,6 +57,15 @@ var StreamStats;
                     if (newval != oldval)
                         _this.getNWISDailyValues();
                 });
+                $scope.$watch(function () { return _this.studyAreaService.allIndexGages; }, function (newval) {
+                    if (newval == undefined) {
+                        _this.isBusy = true;
+                    }
+                    else {
+                        _this.referenceGageListAll = newval;
+                        _this.isBusy = false;
+                    }
+                });
                 return _this;
             }
             ExtensionModalController.prototype.close = function () {
@@ -142,6 +151,8 @@ var StreamStats;
                 }
                 if (this.getDrainageArea() == 'N/A' && !this.studyAreaService.loadingDrainageArea)
                     this.studyAreaService.loadDrainageArea();
+                if (this.studyAreaService.allIndexGages == undefined)
+                    this.studyAreaService.loadAllIndexGages();
             };
             ExtensionModalController.prototype.verifyExtensionCanContinue = function () {
                 var _this = this;
@@ -239,8 +250,14 @@ var StreamStats;
                         }
                         else {
                             _this.removeItem(gage);
-                            if (_this.referenceGageList.length == 0)
+                            if (_this.referenceGageList.length == 0) {
                                 _this.toaster.pop('warning', "No valid gages returned", "Gages without continuous record removed from response", 0);
+                            }
+                            else {
+                                _this.toaster.clear();
+                                _this.toaster.pop('error', "Invalid gage", "Gage is not continuous record", 0);
+                                _this.isBusy = false;
+                            }
                         }
                     }
                     else {
@@ -269,6 +286,15 @@ var StreamStats;
                                 _this.referenceGageList = [];
                             if (_this.referenceGageList.length == 0 || !_this.referenceGageList.some(function (g) { return g.StationID == gage.StationID; }))
                                 _this.referenceGageList.unshift(gage);
+                        }
+                        if (gageInfo.hasOwnProperty('location')) {
+                            var lat = _this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toString();
+                            var long = _this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toString();
+                            var from = turf.point(gageInfo.location.coordinates);
+                            var to = turf.point([long, lat]);
+                            var options = { units: 'miles' };
+                            var distance = turf.distance(from, to, options);
+                            gage['distanceFromClick'] = distance.toFixed(2);
                         }
                         _this.getNWISPeriodOfRecord(gage);
                     }
@@ -346,6 +372,15 @@ var StreamStats;
                                     gage.Name = gage.name;
                                 if (gage.hasOwnProperty('code'))
                                     gage.StationID = gage.code;
+                                if (gage.hasOwnProperty('location')) {
+                                    var lat = _this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toString();
+                                    var long = _this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toString();
+                                    var from = turf.point(gage.location.coordinates);
+                                    var to = turf.point([long, lat]);
+                                    var options = { units: 'miles' };
+                                    var distance = turf.distance(from, to, options);
+                                    gage['distanceFromClick'] = distance.toFixed(2);
+                                }
                                 _this.getNWISPeriodOfRecord(gage);
                             }
                         }
@@ -438,6 +473,20 @@ var StreamStats;
                     return gage['SelectEnabled'];
                 if (this.dateRange.dates.startDate >= this.addDay(gage['StartDate'], 1) && this.addDay(gage['EndDate'], 1) >= this.dateRange.dates.endDate)
                     gage['SelectEnabled'] = true;
+                else {
+                    gage['SelectEnabled'] = false;
+                }
+                return gage['SelectEnabled'];
+            };
+            ExtensionModalController.prototype.checkCorrelationMatrix = function (gage) {
+                if (!this.dateRange.dates && gage.hasOwnProperty('SelectEnabled'))
+                    return gage['SelectEnabled'];
+                var arrayWithIds = this.referenceGageListAll.map(function (x) {
+                    return x.id;
+                });
+                if (arrayWithIds.indexOf(gage.StationID) !== -1) {
+                    gage['SelectEnabled'] = true;
+                }
                 else {
                     gage['SelectEnabled'] = false;
                 }
