@@ -422,34 +422,24 @@ configuration.regions = [
                     "queryProperties": { "SCDOT Bridges": { "COUNTY_ID": "County Identifier", "RTE_Type": "Route Type", "RTE_NBR": "Route Number", "RTE_DIR": "Route Direction", "RTE_LRS": "Route LRS", "Structure_": "Type", "Crossing": "Crossing", "Location": "Location", "Structure1": "Structure" } }
                 },
                 "SCDOT_Roads": {
-                    "name": "Road Network",
+                    "name": "SCDOT Road Network",
                     "url": "https://smpesri.scdot.org/arcgis/rest/services/SCDOT_Roads/MapServer/0",
                     "type": 'agsFeature',
                     "visible": true,
                     "layerOptions": {
-                        style: function (feature) {
-                            var c, o = 0.75;
-                            switch (feature.properties.ROUTE_TYPE) {
-                                case '':
-                                    c = '#007D7D';
-                                    break;
-                                default:
-                                    c = '#C0C0C0';
-                            }
-                            return { color: c, opacity: o, weight: 5 };
-                        },
+                        style: { color: '#FF0000', opacity: 0.75, weight: 5 },
                         "minZoom": 15
                     },
                     "layerArray": [{
                         note: "This overrides the ESRI legend",
-                        "layerName": "Road Network Routes",
+                        "layerName": "SCDOT Road Network Routes",
                         "legend": [{
                             "contentType": "image/png",
                             "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAC9JREFUOI1jYaAyYBk1cNTAYWtgenr6f2oYNnPmTEYWGIMaBjIwDJkwHDVwmBsIADDsBh2b0c5hAAAAAElFTkSuQmCC",
                             "label": ""
                         }]
                     }],
-                    "queryProperties": { "Road Network Routes": { 
+                    "queryProperties": { "SCDOT Road Network Routes": { 
                         "COUNTY_ID": "County Identifier",
                         "ROUTE_TYPE": "Route Type",
                         "ROUTE_NUMB": "Route Number",
@@ -464,6 +454,28 @@ configuration.regions = [
                         "EVAC_ROUTE": "Evacuation Route",
                         "STREET_NAM": "Street Name",
                         "ONEWAY": "One-way"
+                    }}
+                },
+                "Local_Roads": {
+                    "name": "Local Road Network",
+                    "url": "https://smpesri.scdot.org/arcgis/rest/services/Hosted/Other_Roads/FeatureServer/0",
+                    "type": 'agsFeature',
+                    "visible": true,
+                    "layerOptions": {
+                        style: { color: '#FF0000', opacity: 0.75, weight: 5 },
+                        "minZoom": 15
+                    },
+                    "layerArray": [{
+                        note: "This overrides the ESRI legend",
+                        "layerName": "Local Road Network Routes",
+                        "legend": [{
+                            "contentType": "image/png",
+                            "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAC9JREFUOI1jYaAyYBk1cNTAYWtgenr6f2oYNnPmTEYWGIMaBjIwDJkwHDVwmBsIADDsBh2b0c5hAAAAAElFTkSuQmCC",
+                            "label": ""
+                        }]
+                    }],
+                    "queryProperties": { "Local Road Network Routes": { 
+                        "route_type": "Route Type"
                     }}
                 }
             },
