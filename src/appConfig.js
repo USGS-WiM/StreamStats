@@ -485,9 +485,22 @@ configuration.regions = [
                         "FactoredAA": "Factored AADT",
                         "FactoredA1": " Factored AADT Year"
                     }}
+                },
+                "SC_Regulation": {
+                    "name": "Regulation Points",
+                    "url": configuration.baseurls['StreamStatsMapServices'] + "/arcgis/rest/services/regulations/sc/MapServer",
+                    "type": 'agsDynamic',
+                    "visible": true,
+                    "layerOptions": {
+                        "zIndex": 1,
+                        "format": "png8",
+                        "layers": [0],
+                        "f": "image"
+                    },
+                    "queryProperties": { "Regulation Points": { "NAME": "NID ID Number" } }
                 }
             },
-        "Applications": [], "regionEnabled": true, "ScenariosAvailable": true
+        "Applications": ["Regulation"], "regionEnabled": true, "ScenariosAvailable": true
     },
     { "RegionID": "SD", "Name": "South Dakota", "Bounds": [[42.488459, -104.061036], [45.943547, -96.439394]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "TN", "Name": "Tennessee", "Bounds": [[34.988759, -90.305448], [36.679683, -81.652272]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
