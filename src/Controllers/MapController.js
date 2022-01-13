@@ -417,7 +417,7 @@ var StreamStats;
                         var html = this.queryContent.Content.html();
                         var compiledHtml = this.$compile(html)(this.$scope);
                         var compiledHtmlIndex = 0;
-                        compiledHtml.toArray().forEach( function (htmlElement, index) {
+                        compiledHtml.toArray().forEach(function (htmlElement, index) {
                             if (htmlElement.innerHTML.length > 0) {
                                 compiledHtmlIndex = index;
                             }
