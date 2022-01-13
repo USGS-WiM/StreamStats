@@ -416,7 +416,13 @@ var StreamStats;
                     if (this.queryContent.responseCount > 0) {
                         var html = this.queryContent.Content.html();
                         var compiledHtml = this.$compile(html)(this.$scope);
-                        map.openPopup(compiledHtml[0], [latlng.lat, latlng.lng], { maxHeight: 200 });
+                        var compiledHtmlIndex = 0;
+                        compiledHtml.toArray().forEach( function (htmlElement, index) {
+                            if (htmlElement.innerHTML.length > 0) {
+                                compiledHtmlIndex = index;
+                            }
+                        });
+                        map.openPopup(compiledHtml[compiledHtmlIndex], [latlng.lat, latlng.lng], { maxHeight: 200 });
                     }
                     else {
                         this.toaster.pop("warning", "Information", "No points were found at this location", 5000);
