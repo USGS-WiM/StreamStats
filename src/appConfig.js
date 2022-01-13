@@ -427,7 +427,7 @@ configuration.regions = [
                     "type": 'agsFeature',
                     "visible": true,
                     "layerOptions": {
-                        style: { color: '#FF0000', opacity: 0.75, weight: 5 },
+                        style: { color: '#C0C0C0', opacity: 0.75, weight: 5 },
                         "minZoom": 15
                     },
                     "layerArray": [{
@@ -458,11 +458,11 @@ configuration.regions = [
                 },
                 "Local_Roads": {
                     "name": "Local Road Network",
-                    "url": "https://smpesri.scdot.org/arcgis/rest/services/Hosted/Other_Roads/FeatureServer/0",
+                    "url": "https://smpesri.scdot.org/arcgis/rest/services/EGIS_No_Imagery/MapServer/5",
                     "type": 'agsFeature',
                     "visible": true,
                     "layerOptions": {
-                        style: { color: '#FF0000', opacity: 0.75, weight: 5 },
+                        style: { color: '#C0C0C0', opacity: 0.75, weight: 5 },
                         "minZoom": 15
                     },
                     "layerArray": [{
@@ -475,7 +475,15 @@ configuration.regions = [
                         }]
                     }],
                     "queryProperties": { "Local Road Network Routes": { 
-                        "route_type": "Route Type"
+                        "RoadName": "Street Name",
+                        "RouteLRS": "Route LRS",
+                        "BeginMileP": "Beginning Milepost",
+                        "EndMilePoi": "Ending Milepost",
+                        "Functional": "Functional Class ID",
+                        "Functiona1": "Functional Class Name",
+                        "TotalNumbe": "Total Number of Lanes",
+                        "FactoredAA": "Factored AADT",
+                        "FactoredA1": " Factored AADT Year"
                     }}
                 }
             },
