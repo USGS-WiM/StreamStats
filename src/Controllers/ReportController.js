@@ -454,7 +454,6 @@ var StreamStats;
                     return;
                 this.overlays = {};
                 this.studyAreaService.selectedStudyArea.FeatureCollection.features.forEach(function (item) {
-                    console.log(item);
                     _this.addGeoJSON(item.id, item);
                 });
                 if (this.studyAreaService.selectedGage && this.studyAreaService.selectedGage.hasOwnProperty('Latitude_DD') && this.studyAreaService.selectedGage.hasOwnProperty('Longitude_DD')) {
