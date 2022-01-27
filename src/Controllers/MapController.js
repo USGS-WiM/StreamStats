@@ -887,7 +887,7 @@ var StreamStats;
                         }
                     };
                 }
-                else if (LayerName == 'regulatedWatershed') {
+                else if (LayerName == 'regulatedwatershed') {
                     this.geojson[LayerName] =
                         {
                             data: feature,
