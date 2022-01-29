@@ -1238,7 +1238,6 @@ module StreamStats.Controllers {
         }
 
         private addGeoJSON(LayerName: string, feature: any) {
-
             if (LayerName == 'globalwatershed') {
                 var verticies = feature.geometry.coordinates.reduce((count, row) => count + row.length, 0);
                 var data = this.studyArea.simplify(angular.copy(feature));
@@ -1291,8 +1290,7 @@ module StreamStats.Controllers {
                     }
                 }
             }
-
-            else if (LayerName == 'regulatedWatershed') {
+            else if (LayerName == 'regulatedwatershed') {
                 this.geojson[LayerName] =
                     {
                         data: feature,
@@ -1308,7 +1306,6 @@ module StreamStats.Controllers {
                         }
                     }
             }
-
             else if (LayerName.indexOf('netnavpoints') != -1)  {
 
                 this.geojson[LayerName] = {
@@ -1342,7 +1339,6 @@ module StreamStats.Controllers {
                     }
                 }
             }
-
             else if (LayerName == 'netnavroute') {
 
                 this.geojson[LayerName] =
@@ -1356,7 +1352,6 @@ module StreamStats.Controllers {
                         }
                     }
             }
-
             else if (LayerName == 'adds') {
 
                 //if it already exists just add the polygon
@@ -1381,8 +1376,6 @@ module StreamStats.Controllers {
                 }
 
             }
-
-
             else if (LayerName == 'removes') {
 
                 //if it already exists just add the polygon
@@ -1468,7 +1461,6 @@ module StreamStats.Controllers {
                 this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs('streamgages', 'geojson', this.geojson['streamgages'].style));
                 this.updateLegend();
             }
-
             //additional features get generic styling for now
             else {
                 this.geojson[LayerName] =
@@ -1482,8 +1474,6 @@ module StreamStats.Controllers {
                         }                 
                     }
             }
-
-
         }
         private onLayerChanged(sender: WiM.Directives.IwimLegendController, e: WiM.Directives.LegendLayerChangedEventArgs) {
 

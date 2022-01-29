@@ -600,7 +600,6 @@ module StreamStats.Controllers {
             if (!this.studyAreaService.selectedStudyArea) return;
             this.overlays = {};
             this.studyAreaService.selectedStudyArea.FeatureCollection.features.forEach((item) => {
-
                 this.addGeoJSON(item.id, item);
             });
 
@@ -684,8 +683,7 @@ module StreamStats.Controllers {
                     // TODO: can't figure out how to get this in the legend!
                 }
             }
-
-            else if (LayerName == 'regulatedWatershed') {
+            else if (LayerName == 'regulatedwatershed') {
                 this.layers.overlays[LayerName] = {
                     name: 'Basin Boundary (Regulated Area)',
                     type: 'geoJSONShape',
@@ -702,8 +700,6 @@ module StreamStats.Controllers {
                     }
                 }
             }
-                
-
             //additional features get generic styling for now
             else {
                 this.layers.overlays[LayerName] = {
@@ -719,8 +715,6 @@ module StreamStats.Controllers {
                     }
                 }
             }
-
-
         }
         private tableToCSV($table) {
 

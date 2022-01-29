@@ -527,7 +527,7 @@ var StreamStats;
                             }]
                     };
                 }
-                else if (LayerName == 'regulatedWatershed') {
+                else if (LayerName == 'regulatedwatershed') {
                     this.layers.overlays[LayerName] = {
                         name: 'Basin Boundary (Regulated Area)',
                         type: 'geoJSONShape',
