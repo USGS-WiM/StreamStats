@@ -438,7 +438,7 @@ configuration.regions = [
                     "type": 'agsFeature',
                     "visible": true,
                     "layerOptions": {
-                        style: { color: '#C0C0C0', opacity: 0.75, weight: 6 },
+                        style: { color: '#bbbbbd', opacity: 0.75, weight: 6 },
                         "minZoom": 15
                     },
                     "layerArray": [{
@@ -470,7 +470,7 @@ configuration.regions = [
                     "type": 'agsFeature',
                     "visible": true,
                     "layerOptions": {
-                        style: { color: '#C0C0C0', opacity: 0.75, weight: 3 },
+                        style: { color: '#cbc4c0', opacity: 0.75, weight: 3 },
                         "minZoom": 15
                     },
                     "layerArray": [{
