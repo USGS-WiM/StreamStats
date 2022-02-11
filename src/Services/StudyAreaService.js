@@ -488,7 +488,7 @@ var StreamStats;
                 var _this = this;
                 this.toaster.pop('wait', "Checking if study area is a coordinated reach.", "Please wait...", 0);
                 var ppt = this.selectedStudyArea.Pourpoint;
-                var ex = new L.Circle([ppt.Longitude, ppt.Latitude], 50).getBounds();
+                var ex = new L.Circle([ppt.Longitude, ppt.Latitude], 5).getBounds();
                 var outFields = "eqWithStrID.BASIN_NAME,eqWithStrID.DVA_EQ_ID,eqWithStrID.a10,eqWithStrID.b10,eqWithStrID.a25,eqWithStrID.b25,eqWithStrID.a50,eqWithStrID.b50,eqWithStrID.a100,eqWithStrID.b100,eqWithStrID.a500,eqWithStrID.b500";
                 var url = configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['coordinatedReachQueryService']
                     .format(this.selectedStudyArea.RegionID.toLowerCase(), ex.getNorth(), ex.getWest(), ex.getSouth(), ex.getEast(), ppt.crs, outFields);
