@@ -403,7 +403,18 @@ configuration.regions = [
                         "minZoom": 12,
                         onEachFeature: function (feature, layer) {
                             var popupContent = '<h5>SCDOT Bridges</h5> ';
-                            var queryProperties = { "COUNTY_ID": "County Identifier", "RTE_TYPE": "Route Type", "RTE_NBR": "Route Number", "RTE_DIR": "Route Direction", "RTE_LRS": "Route LRS", "STRUCTURE_": "Structure ID", "CROSSING": "Crossing", "LOCATION": "Location", "STRUCTURE1": "Structure", "ASSET_ID": "Asset ID" };
+                            var queryProperties = { 
+                                "STRUCTURE_": "Structure ID", 
+                                "ASSET_ID": "Asset ID",
+                                "CROSSING": "Crossing", 
+                                "COUNTY_ID": "County Identifier", 
+                                "RTE_TYPE": "Route Type", 
+                                "RTE_NBR": "Route Number", 
+                                "RTE_DIR": "Route Direction", 
+                                "RTE_LRS": "Route LRS", 
+                                "LOCATION": "Location", 
+                                "STRUCTURE1": "Structure"
+                            };
                             Object.keys(queryProperties).map(function (k) {
                                 popupContent += '<strong>' + queryProperties[k] + ': </strong>' + feature.properties[k] + '</br>';
                             });
@@ -440,19 +451,16 @@ configuration.regions = [
                         }]
                     }],
                     "queryProperties": { "SCDOT Road Network Routes": { 
-                        "COUNTY_ID": "County Identifier",
+                        "ROUTE_ID": "Route Identifier",
                         "ROUTE_TYPE": "Route Type",
+                        "COUNTY_ID": "County Identifier",
                         "ROUTE_NUMB": "Route Number",
-                        "ROUTE_AUX": "Route Aux",
-                        "ROUTE_DIR": "Route Direction",
+                        "STREET_NAM": "Street Name",
+                        "ROUTE_LRS": "Route LRS",
                         "BEG_MILEPO": "Beginning Milepost",
                         "END_MILEPO": "Ending Milepost",
-                        "STATE_ID": "State Identifier",
-                        "ROUTE_ID": "Route Identifier",
-                        "TOLL_ROAD": "Toll Road",
-                        "ROUTE_LRS": "Route LRS",
                         "EVAC_ROUTE": "Evacuation Route",
-                        "STREET_NAM": "Street Name",
+                        "TOLL_ROAD": "Toll Road",
                         "ONEWAY": "One-way"
                     }}
                 },
@@ -477,13 +485,12 @@ configuration.regions = [
                     "queryProperties": { "Local Road Network Routes": { 
                         "RoadName": "Street Name",
                         "RouteLRS": "Route LRS",
+                        "TotalNumbe": "Total Number of Lanes",
                         "BeginMileP": "Beginning Milepost",
                         "EndMilePoi": "Ending Milepost",
-                        "Functional": "Functional Class ID",
-                        "Functiona1": "Functional Class Name",
-                        "TotalNumbe": "Total Number of Lanes",
                         "FactoredAA": "Factored AADT",
-                        "FactoredA1": " Factored AADT Year"
+                        "FactoredA1": " Factored AADT Year",
+                        "Functiona1": "Functional Class Name"
                     }}
                 },
                 "SC_Regulation": {
