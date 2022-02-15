@@ -720,12 +720,21 @@ module StreamStats.Services {
         public queryCoordinatedReach() {
 
                 this.toaster.pop('wait', "Checking if study area is a coordinated reach.", "Please wait...", 0);
-                           
+
                 var ppt = this.selectedStudyArea.Pourpoint;
-                var ex = new L.Circle([ppt.Longitude, ppt.Latitude], 5).getBounds();
+
+                var turfPoint = turf.point([ppt.Longitude, ppt.Latitude]);
+                var distance = 0.005; //kilometers
+                var bearings = [-90, 0, 90, 180]; 
+                var boundingBox = [];
+                bearings.forEach((bearing, index) => {
+                    var destination = turf.destination(turfPoint, distance, bearing);
+                    boundingBox[index] = destination.geometry.coordinates[index % 2 == 0 ? 0 : 1];
+                });
+
                 var outFields = "eqWithStrID.BASIN_NAME,eqWithStrID.DVA_EQ_ID,eqWithStrID.a10,eqWithStrID.b10,eqWithStrID.a25,eqWithStrID.b25,eqWithStrID.a50,eqWithStrID.b50,eqWithStrID.a100,eqWithStrID.b100,eqWithStrID.a500,eqWithStrID.b500";
                 var url = configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['coordinatedReachQueryService']
-                    .format(this.selectedStudyArea.RegionID.toLowerCase(), ex.getNorth(), ex.getWest(), ex.getSouth(), ex.getEast(), ppt.crs, outFields);
+                    .format(this.selectedStudyArea.RegionID.toLowerCase(), boundingBox[0], boundingBox[1], boundingBox[2], boundingBox[3], ppt.crs, outFields);
                 var request: WiM.Services.Helpers.RequestInfo =
                     new WiM.Services.Helpers.RequestInfo(url, true);
 
