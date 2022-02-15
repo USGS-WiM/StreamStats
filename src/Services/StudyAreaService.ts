@@ -720,7 +720,7 @@ module StreamStats.Services {
         public queryCoordinatedReach() {
 
                 this.toaster.pop('wait', "Checking if study area is a coordinated reach.", "Please wait...", 0);
-                           
+
                 var ppt = this.selectedStudyArea.Pourpoint;
                 var ex = new L.Circle([ppt.Longitude, ppt.Latitude], 5).getBounds();
                 var outFields = "eqWithStrID.BASIN_NAME,eqWithStrID.DVA_EQ_ID,eqWithStrID.a10,eqWithStrID.b10,eqWithStrID.a25,eqWithStrID.b25,eqWithStrID.a50,eqWithStrID.b50,eqWithStrID.a100,eqWithStrID.b100,eqWithStrID.a500,eqWithStrID.b500";
