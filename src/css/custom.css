@@ -124,3 +124,35 @@
 text.nv-axislabel {
     transform: 'rotate(-90deg) translateY(-10px)' !important;
 } 
+
+#qppqTable{
+	width: 100%;
+	overflow: auto;
+}
+#qppqTable .table{
+
+}
+#qppqTable .table th{
+	ine-height: 12px !important;
+    font-weight: 500;
+}
+#qppqTable .table *{
+	line-height: 14px !important;
+    letter-spacing: -0.2px;
+}
+
+.overflow-auto{
+	overflow: auto !important;
+}
+
+.graph-wrapper{
+	display: block;
+	width: 500px;
+	margin: 0 auto;
+}
+
+.qppqInput input{
+    width: unset;
+    border: unset;
+    border-bottom: 2px solid #e0e3e6;
+}

@@ -182,7 +182,7 @@ module StreamStats.Services {
                             {
                                 let val = JSON.parse(JSON.stringify(value));
                                 val.id += "_fdctm";
-                                val.name = "Flow-Duration QPPQ Method";
+                                val.name = "Flow-Duration Curve Transfer Method";
                                 this.statisticsGroupList.push(val);
                             }
 
@@ -317,6 +317,7 @@ module StreamStats.Services {
                     if (regressionRegion.extensions)
                         (<Array<any>>regressionRegion.extensions).forEach(e => {
                             if (e.result) delete e.result;
+                            if (e.parameters) e.parameters.forEach(p => { if (p.options) delete p.options})
                         });
                         
 
