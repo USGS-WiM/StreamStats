@@ -59,13 +59,13 @@ var StreamStats;
                     for (var key in this.FlowCoefficients) {
                         params.push({
                             code: key + "CoeffA",
-                            value: Number(this.FlowCoefficients[key].CoefficientA).toFixed(3),
+                            value: this.FlowCoefficients[key].CoefficientA.toFixed(3),
                             name: key + " CoefficientA",
                             unitType: { abbr: "dim", unit: "dimensionless" }
                         });
                         params.push({
                             code: key + "CoeffB",
-                            value: Number(this.FlowCoefficients[key].CoefficientB).toFixed(3),
+                            value: this.FlowCoefficients[key].CoefficientB.toFixed(3),
                             name: key + " CoefficientB",
                             unitType: { abbr: "dim", unit: "dimensionless" }
                         });

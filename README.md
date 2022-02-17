@@ -48,7 +48,7 @@ npm start
 
 To build a production version of the app:
 ```
-npm build
+npm run-script build
 ```
 
 ## Contributing
@@ -94,10 +94,12 @@ To push tags to remote origin: `git push origin --tags`
 ## Authors
 
 
-* **[Katrin Jacobsen](https://www.usgs.gov/staff-profiles/katrin-jacobsen)**  - *Lead Developer* - [USGS Web Informatics & Mapping](https://wim.usgs.gov/)
+* **[Katrin Jacobsen](https://www.usgs.gov/staff-profiles/katrin-jacobsen)**  - *Developer* - [USGS Web Informatics & Mapping](https://wim.usgs.gov/)
 * **[Jeremy Newson](https://www.usgs.gov/staff-profiles/jeremy-k-newson)**  - *Developer* - [USGS Web Informatics & Mapping](https://wim.usgs.gov/)
 * **[Marty Smith](https://www.usgs.gov/staff-profiles/martyn-smith)**  - *Developer* - [USGS Web Informatics & Mapping](https://wim.usgs.gov/)
 * **[Tara Gross](https://www.usgs.gov/staff-profiles/tara-a-gross)**  - *Developer* - [USGS Colorado Water Science Center](https://www.usgs.gov/centers/co-water)
+* **[Andrea Medenblik](https://www.usgs.gov/staff-profiles/andrea-s-medenblik)**  - *Co-Lead Developer* - [USGS Web Informatics & Mapping](https://wim.usgs.gov/)
+* **[Harper Wavra](https://www.usgs.gov/staff-profiles/harper-wavra)**  - *Co-Lead Developer* - [USGS Web Informatics & Mapping](https://wim.usgs.gov/)
 
 See also the list of [contributors](../../graphs/contributors) who participated in this project.
 
