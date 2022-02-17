@@ -1,5 +1,5 @@
 var configuration = {};
-configuration.version = "4.6.2";
+configuration.version = "4.7.0";
 configuration.environment = 'development';
 
 configuration.baseurls =
@@ -255,7 +255,7 @@ configuration.regions = [
         "ScenariosAvailable": true
     },
     { "RegionID": "CT", "Name": "Connecticut", "Bounds": [[40.998392, -73.725237], [42.047428, -71.788249]], "Layers": {}, "Applications": ["Wateruse"], "regionEnabled": true, "ScenariosAvailable": true },
-    { "RegionID": "DE", "Name": "Delaware", "Bounds": [[38.449602, -75.791094], [39.840119, -75.045623]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
+    { "RegionID": "DE", "Name": "Delaware", "Bounds": [[38.449602, -75.791094], [39.840119, -75.045623]], "Layers": {}, "Applications": ["Localres"], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "FL", "Name": "Florida", "Bounds": [[24.956376, -87.625711], [31.003157, -80.050911]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
     { "RegionID": "GA", "Name": "Georgia", "Bounds": [[30.361291, -85.60896], [35.000366, -80.894753]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "GU", "Name": "Guam", "Bounds": [[13.234996, 144.634155], [13.65361, 144.953308]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
@@ -371,7 +371,7 @@ configuration.regions = [
     { "RegionID": "ND", "Name": "North Dakota", "Bounds": [[45.930822, -104.062991], [49.000026, -96.551931]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "NE", "Name": "Nebraska", "Bounds": [[39.992595, -104.056219], [43.003062, -95.308697]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
     { "RegionID": "NH", "Name": "New Hampshire", "Bounds": [[42.698603, -72.553428], [45.301469, -70.734139]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
-    { "RegionID": "NJ", "Name": "New Jersey", "Bounds": [[38.956682, -75.570234], [41.350573, -73.896148]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
+    { "RegionID": "NJ", "Name": "New Jersey", "Bounds": [[38.956682, -75.570234], [41.350573, -73.896148]], "Layers": {}, "Applications": ["Localres"], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "NM", "Name": "New Mexico", "Bounds": [[31.343453, -109.051346], [36.99976, -102.997401]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "NV", "Name": "Nevada", "Bounds": [[34.998914, -119.996324], [41.996637, -114.037392]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
     { "RegionID": "NY", "Name": "New York", "Bounds": [[40.506003, -79.763235], [45.006138, -71.869986]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
