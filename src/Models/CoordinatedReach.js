@@ -80,6 +80,7 @@ var StreamStats;
                     return ssg;
                 }
                 catch (e) {
+                    console.log(e);
                     return null;
                 }
             };

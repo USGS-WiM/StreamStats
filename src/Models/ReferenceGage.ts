@@ -42,6 +42,7 @@ module StreamStats.Models {
         public URL: string;
         public correlation: number;
         public properties?: any;
+        public HasZeroFlows?: any;
 
 
         // Constructor

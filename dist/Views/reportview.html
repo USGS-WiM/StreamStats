@@ -172,45 +172,10 @@
                     <div class="well well-sm" ng-show="vm.extensions">
                         <div ng-repeat="sc in vm.extensions">                            
                             <div ng-if="sc.code == 'QPPQ'" ng-init=vm.ActivateGraphs(sc.result)>
-                                <h3>{{sc.name}} ({{sc.code}})</h3>
+                                <h3>{{sc.name}} (FDCTM)</h3>
                                 <div ng-repeat="p in sc.parameters" ng-if="['sdate','edate'].indexOf(p.code) >-1">
-                                    {{p.name}}: {{p.value | date:'yyyy/MM/dd'}}<br />
-                                </div>
-
-                                <!--Reference gage-->
-                                <div class="well well-sm">
-                                    <table id="ReferanceGage" class="table table-condensed">
-                                        <thead>
-                                            <tr>
-                                                <th>Reference Gage</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>Station ID:</td>
-                                                <td><a ng-attr-title={{sc.result.referanceGage.name}} ng-href={{sc.result.referanceGage.url}} target="_blank">{{sc.result.referanceGage.stationID}}</a>&nbsp;
-                                                    <a ng-click="vm.openGagePage(sc.result.referanceGage.stationID)">Open Gage Page</a>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>Name:</td>
-                                                <td><span>{{sc.result.referanceGage.name}}</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Latitude:</td>
-                                                <td><span>{{sc.result.referanceGage.latitude_DD}}</span><span> Decimal Degrees</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Longitude:</td>
-                                                <td><span>{{sc.result.referanceGage.longitude_DD}}</span><span> Decimal Degrees</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Drainage Area:</td>
-                                                <td><span>{{sc.result.referanceGage.drainageArea_sqMI}}</span><span> square miles</span></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
+                                    <span>{{p.name}}: {{p.value | date:'yyyy/MM/dd'}}</span><br />
+                                </div>                           
 
                                 <!--FDCTM Exceedance Probablities-->
                                 <h3 class="reportChartHeader">Exceedance Probabilities of Clicked Point</h3>
@@ -227,7 +192,7 @@
                                             <thead>
                                                 <tr>
                                                     <th>Exceedance</th>
-                                                    <th>Flow Exceeded</th>
+                                                    <th>Flow Exceeded (cfs)</th>
                                                 </tr>
                                             </thead>
                                             <tbody ng-repeat="(key, value) in sc.result.exceedanceProbabilities">
@@ -243,7 +208,9 @@
                                 <!--Estimated Flow -->
                                 <h3 class="reportChartHeader">Estimated Flows</h3>
                                 <button class="chartExportButton" ng-click="vm.downloadPNG('flowgraph')">Download PNG</button>
-                                <nvd3 id="flowgraph" options=sc.result.graphdata.flow.options data=sc.result.graphdata.flow.data></nvd3>
+								<div class="graph-wrapper">
+									<nvd3 id="flowgraph" options=sc.result.graphdata.flow.options data=sc.result.graphdata.flow.data></nvd3>
+								</div>
                                 <a ng-click="vm.isFlowTableOpen = !vm.isFlowTableOpen">
                                     <span ng-show="vm.isFlowTableOpen">Hide</span>
                                     <span ng-hide="vm.isFlowTableOpen">Show</span> table
@@ -268,6 +235,41 @@
                                                 <td>{{obs.date| date:'yyyy/MM/dd'}}</td>
                                                 <td>{{vm.getEstimatedFlow(obs,sc.result.estimatedFlow.observations)}}</td>
                                                 <td>{{obs.hasOwnProperty('value') ? obs.value.toUSGSvalue() : obs.hasOwnProperty('dataCode') ? obs.dataCode : 'N/A'}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!--Index gage-->
+                                <div class="well well-sm">
+                                    <table id="ReferenceGage" class="table table-condensed">
+                                        <thead>
+                                            <tr>
+                                                <th>Index Gage</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Station ID:</td>
+                                                <td><a ng-attr-title={{sc.result.referanceGage.name}} ng-href={{sc.result.referanceGage.url}} target="_blank">{{sc.result.referanceGage.stationID}}</a>&nbsp;
+                                                    <a ng-click="vm.openGagePage(sc.result.referanceGage.stationID)">Open Gage Page</a>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Name:</td>
+                                                <td><span>{{sc.result.referanceGage.name}}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Latitude:</td>
+                                                <td><span>{{sc.result.referanceGage.latitude_DD}}</span><span> Decimal Degrees</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Longitude:</td>
+                                                <td><span>{{sc.result.referanceGage.longitude_DD}}</span><span> Decimal Degrees</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Drainage Area:</td>
+                                                <td><span>{{sc.result.referanceGage.drainageArea_sqMI}}</span><span> square miles</span></td>
                                             </tr>
                                         </tbody>
                                     </table>

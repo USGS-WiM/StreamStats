@@ -1,5 +1,5 @@
 var configuration = {};
-configuration.version = "4.6.2";
+configuration.version = "4.7.0";
 configuration.environment = 'development';
 
 configuration.baseurls =
@@ -28,10 +28,10 @@ if (window.location.host === 'streamstats.usgs.gov') {
 configuration.queryparams =
     {
         'NWISsite':'/site/?format=rdb,1.0&bBox={0},{1},{2},{3}&seriesCatalogOutput=true&outputDataTypeCd=dv&parameterCd=00060&siteStatus=all&hasDataTypeCd=dv',
-        'NWISinfo': '/nldi/linked-data/nwissite/USGS-{0}/?f=json',
         'NWISsiteinfo': '/site?site=',
         'NWISperiodOfRecord': '/site?seriesCatalogOutput=true&outputDataTypeCd=dv&format=rdb&site=',
-        'KrigService': '/krigservices/sites/{0}/krig?&x={1}&y={2}&crs={3}',
+        'NWISdailyValues': '/dv/?format=rdb&parameterCd=00060&site={0}&startDT={1}&endDT={2}',
+        'KrigService': '/krigservices/sites/{0}/krig?&x={1}&y={2}&crs={3}&count={4}',
         'RegressionScenarios': '/{0}/estimate?state={1}',
         'statisticsGroupLookup': '/statisticgroups?regions={0},NA&regressionregions={1}',
         'statisticsGroupParameterLookup': '/scenarios?regions={0},NA&statisticgroups={1}&regressionregions={2}',
@@ -73,8 +73,8 @@ configuration.queryparams =
         'GageStatsServicesStatistics': '/statistics/',
         'GageStatsServicesAgencies': '/agencies/',
         'GageStatsServicesStatGroups': '/statisticgroups/',
-        'GageStatsServicesNearest': '/stations/Nearest?lat={0}&lon={1}&radius={2}&geojson=true&includeStats=true',
-        'GageStatsServicesNetwork': '/stations/Network?lat={0}&lon={1}&distance={2}&includeStats=true&geojson=true',
+        'GageStatsServicesNearest': '/stations/Nearest?lat={0}&lon={1}&radius={2}&geojson=false&includeStats=true',
+        'GageStatsServicesNetwork': '/stations/Network?lat={0}&lon={1}&distance={2}&includeStats=true&geojson=false',
         'GageStatsServicesBounds': '/stations/Bounds?xmin={0}&xmax={1}&ymin={2}&ymax={3}&geojson=true'
     };
 
@@ -255,7 +255,7 @@ configuration.regions = [
         "ScenariosAvailable": true
     },
     { "RegionID": "CT", "Name": "Connecticut", "Bounds": [[40.998392, -73.725237], [42.047428, -71.788249]], "Layers": {}, "Applications": ["Wateruse"], "regionEnabled": true, "ScenariosAvailable": true },
-    { "RegionID": "DE", "Name": "Delaware", "Bounds": [[38.449602, -75.791094], [39.840119, -75.045623]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
+    { "RegionID": "DE", "Name": "Delaware", "Bounds": [[38.449602, -75.791094], [39.840119, -75.045623]], "Layers": {}, "Applications": ["Localres"], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "FL", "Name": "Florida", "Bounds": [[24.956376, -87.625711], [31.003157, -80.050911]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
     { "RegionID": "GA", "Name": "Georgia", "Bounds": [[30.361291, -85.60896], [35.000366, -80.894753]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "GU", "Name": "Guam", "Bounds": [[13.234996, 144.634155], [13.65361, 144.953308]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
@@ -371,7 +371,7 @@ configuration.regions = [
     { "RegionID": "ND", "Name": "North Dakota", "Bounds": [[45.930822, -104.062991], [49.000026, -96.551931]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "NE", "Name": "Nebraska", "Bounds": [[39.992595, -104.056219], [43.003062, -95.308697]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
     { "RegionID": "NH", "Name": "New Hampshire", "Bounds": [[42.698603, -72.553428], [45.301469, -70.734139]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
-    { "RegionID": "NJ", "Name": "New Jersey", "Bounds": [[38.956682, -75.570234], [41.350573, -73.896148]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
+    { "RegionID": "NJ", "Name": "New Jersey", "Bounds": [[38.956682, -75.570234], [41.350573, -73.896148]], "Layers": {}, "Applications": ["Localres"], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "NM", "Name": "New Mexico", "Bounds": [[31.343453, -109.051346], [36.99976, -102.997401]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "NV", "Name": "Nevada", "Bounds": [[34.998914, -119.996324], [41.996637, -114.037392]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
     { "RegionID": "NY", "Name": "New York", "Bounds": [[40.506003, -79.763235], [45.006138, -71.869986]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
@@ -403,7 +403,18 @@ configuration.regions = [
                         "minZoom": 12,
                         onEachFeature: function (feature, layer) {
                             var popupContent = '<h5>SCDOT Bridges</h5> ';
-                            var queryProperties = { "COUNTY_ID": "County Identifier", "RTE_TYPE": "Route Type", "RTE_NBR": "Route Number", "RTE_DIR": "Route Direction", "RTE_LRS": "Route LRS", "STRUCTURE_": "Structure ID", "CROSSING": "Crossing", "LOCATION": "Location", "STRUCTURE1": "Structure", "ASSET_ID": "Asset ID" };
+                            var queryProperties = { 
+                                "STRUCTURE_": "Structure ID", 
+                                "ASSET_ID": "Asset ID",
+                                "CROSSING": "Crossing", 
+                                "COUNTY_ID": "County Identifier", 
+                                "RTE_TYPE": "Route Type", 
+                                "RTE_NBR": "Route Number", 
+                                "RTE_DIR": "Route Direction", 
+                                "RTE_LRS": "Route LRS", 
+                                "LOCATION": "Location", 
+                                "STRUCTURE1": "Structure"
+                            };
                             Object.keys(queryProperties).map(function (k) {
                                 popupContent += '<strong>' + queryProperties[k] + ': </strong>' + feature.properties[k] + '</br>';
                             });
@@ -420,9 +431,83 @@ configuration.regions = [
                         }]
                     }],
                     "queryProperties": { "SCDOT Bridges": { "COUNTY_ID": "County Identifier", "RTE_Type": "Route Type", "RTE_NBR": "Route Number", "RTE_DIR": "Route Direction", "RTE_LRS": "Route LRS", "Structure_": "Type", "Crossing": "Crossing", "Location": "Location", "Structure1": "Structure" } }
+                },
+                "SCDOT_Roads": {
+                    "name": "SCDOT Road Network",
+                    "url": "https://smpesri.scdot.org/arcgis/rest/services/SCDOT_Roads/MapServer/0",
+                    "type": 'agsFeature',
+                    "visible": true,
+                    "layerOptions": {
+                        style: { color: '#bbbbbd', opacity: 0.75, weight: 6 },
+                        "minZoom": 15
+                    },
+                    "layerArray": [{
+                        note: "This overrides the ESRI legend",
+                        "layerName": "SCDOT Road Network Routes",
+                        "legend": [{
+                            "contentType": "image/png",
+                            "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAC9JREFUOI1jYaAyYBk1cNTAYWtgenr6f2oYNnPmTEYWGIMaBjIwDJkwHDVwmBsIADDsBh2b0c5hAAAAAElFTkSuQmCC",
+                            "label": ""
+                        }]
+                    }],
+                    "queryProperties": { "SCDOT Road Network Routes": { 
+                        "ROUTE_ID": "Route Identifier",
+                        "ROUTE_TYPE": "Route Type",
+                        "COUNTY_ID": "County Identifier",
+                        "ROUTE_NUMB": "Route Number",
+                        "STREET_NAM": "Street Name",
+                        "ROUTE_LRS": "Route LRS",
+                        "BEG_MILEPO": "Beginning Milepost",
+                        "END_MILEPO": "Ending Milepost",
+                        "EVAC_ROUTE": "Evacuation Route",
+                        "TOLL_ROAD": "Toll Road",
+                        "ONEWAY": "One-way"
+                    }}
+                },
+                "Local_Roads": {
+                    "name": "Local Road Network",
+                    "url": "https://smpesri.scdot.org/arcgis/rest/services/EGIS_No_Imagery/MapServer/5",
+                    "type": 'agsFeature',
+                    "visible": true,
+                    "layerOptions": {
+                        style: { color: '#cbc4c0', opacity: 0.75, weight: 3 },
+                        "minZoom": 15
+                    },
+                    "layerArray": [{
+                        note: "This overrides the ESRI legend",
+                        "layerName": "Local Road Network Routes",
+                        "legend": [{
+                            "contentType": "image/png",
+                            "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAC9JREFUOI1jYaAyYBk1cNTAYWtgenr6f2oYNnPmTEYWGIMaBjIwDJkwHDVwmBsIADDsBh2b0c5hAAAAAElFTkSuQmCC",
+                            "label": ""
+                        }]
+                    }],
+                    "queryProperties": { "Local Road Network Routes": { 
+                        "RoadName": "Street Name",
+                        "RouteLRS": "Route LRS",
+                        "TotalNumbe": "Total Number of Lanes",
+                        "BeginMileP": "Beginning Milepost",
+                        "EndMilePoi": "Ending Milepost",
+                        "FactoredAA": "Factored AADT",
+                        "FactoredA1": " Factored AADT Year",
+                        "Functiona1": "Functional Class Name"
+                    }}
+                },
+                "SC_Regulation": {
+                    "name": "Regulation Points",
+                    "url": configuration.baseurls['StreamStatsMapServices'] + "/arcgis/rest/services/regulations/sc/MapServer",
+                    "type": 'agsDynamic',
+                    "visible": true,
+                    "layerOptions": {
+                        "zIndex": 1,
+                        "format": "png8",
+                        "layers": [0],
+                        "f": "image"
+                    },
+                    "queryProperties": { "Regulation Points": { "NAME": "NID ID Number" } }
                 }
             },
-        "Applications": [], "regionEnabled": true, "ScenariosAvailable": true
+        "Applications": ["Regulation"], "regionEnabled": true, "ScenariosAvailable": true
     },
     { "RegionID": "SD", "Name": "South Dakota", "Bounds": [[42.488459, -104.061036], [45.943547, -96.439394]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "TN", "Name": "Tennessee", "Bounds": [[34.988759, -90.305448], [36.679683, -81.652272]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },

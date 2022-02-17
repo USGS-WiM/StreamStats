@@ -166,7 +166,7 @@ var StreamStats;
                         for (var _i = 0, _a = self.extensions; _i < _a.length; _i++) {
                             var sc = _a[_i];
                             if (sc.code == 'QPPQ') {
-                                extVal += sc.name += ' (' + sc.code + ')' + '\n';
+                                extVal += sc.name += ' (FDCTM)' + '\n';
                                 for (var _b = 0, _c = sc.parameters; _b < _c.length; _b++) {
                                     var p = _c[_b];
                                     if (['sdate', 'edate'].indexOf(p.code) > -1) {
@@ -175,7 +175,7 @@ var StreamStats;
                                     }
                                 }
                                 extVal += '\n';
-                                extVal += self.tableToCSV($('#ReferanceGage'));
+                                extVal += self.tableToCSV($('#ReferenceGage'));
                                 extVal += '\n\nExceedance Probabilities\n';
                                 extVal += self.tableToCSV($('#exceedanceTable'));
                                 extVal += '\n\nEstimated Flows\n';
@@ -365,15 +365,15 @@ var StreamStats;
                                 yScale: d3.scale.log(),
                                 title: {
                                     enable: true,
-                                    text: "Flow Duration Curve Transfer Method (QPPQ) Model Estimated Exceedance Probabilities"
+                                    text: "Flow Duration Curve Transfer Method (FDCTM) Model Estimated Exceedance Probabilities"
                                 }
                             }
                         }
                     },
                     flow: {
                         data: [
-                            { key: result.referanceGage.name, values: result.referanceGage.discharge.observations.map(function (obs) { return { x: new Date(obs.date).getTime(), y: obs.hasOwnProperty('value') ? typeof obs.value == 'number' ? obs.value.toUSGSvalue() : obs.value : null }; }) },
-                            { key: "Estimated", values: result.estimatedFlow.observations.map(function (obs) { return { x: new Date(obs.date).getTime(), y: obs.hasOwnProperty('value') ? typeof obs.value == 'number' ? obs.value < 0.05 ? 0 : obs.value.toUSGSvalue() : obs.value : null }; }) }
+                            { key: result.referanceGage.name, values: this.processData(result.referanceGage.discharge.observations) },
+                            { key: "Estimated (at clicked point)", values: this.processData(result.estimatedFlow.observations) }
                         ],
                         options: {
                             chart: {
@@ -381,9 +381,9 @@ var StreamStats;
                                 height: 450,
                                 margin: {
                                     top: 20,
-                                    right: 20,
+                                    right: 0,
                                     bottom: 50,
-                                    left: 75
+                                    left: 0
                                 },
                                 x: function (d) {
                                     return new Date(d.x).getTime();
@@ -404,7 +404,7 @@ var StreamStats;
                                 yAxis: {
                                     axisLabel: 'Estimated Discharge (cfs)',
                                     tickFormat: function (d) {
-                                        return d3.format('.02f')(d);
+                                        return d != null ? d.toUSGSvalue() : d;
                                     },
                                     showMaxMin: true
                                 },
@@ -506,7 +506,7 @@ var StreamStats;
                     this.geojson[LayerName] = {
                         data: feature,
                         style: {
-                            displayName: 'Reference Gage'
+                            displayName: 'Index Gage'
                         },
                         onEachFeature: function (feat, layer) {
                             var icon = L.icon({
@@ -518,16 +518,16 @@ var StreamStats;
                             layer.setIcon(icon);
                         },
                         layerArray: [{
-                                "layerName": "Reference Gage",
+                                "layerName": "Index Gage",
                                 "legend": [{
                                         "contentType": "image/png",
                                         "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAaJJREFUOI3dzz1IW1EYxvF/TMqpFQsJCF4QOuhUpTpEVCw6RSsdQhFB6hfiF0IDFqkoOCqKEhxEqm0H20YUgpQoqOBWOkgjpQgXowREEC5SuVBE6QtFHXQwYjSJmXzgDO85hx/PayPJsd0TcD6sqM6ZBFqAk7uD4dCyqu3dkLnhRmD6bqB/ q5DwZrl4hv6rb2MWEfEDR4mD + q9ZSl + mAC75 + HOGxvwuYDAx8MNaK / +Os3mUfj5nP + tSSlsUMbKAvfhA / dSKb3qEqvrLtwUS0CeVW + sWkbfxgcsr4zx12rFe + ZJu75PMPK / jcKfQNM1gbKBPz2Az2EzJi + ten / B1LdUse9AGxAhu//ZTXPkwanurrRd3RyeBqRrAfzM48b2IvwfPcWRG9QC76nnvlMDUY2ABkOjgbshHxWvrTRqAYPGo/s9uGWh6A3ivBR3epTZTpeWQmnabB6CkqqFOjbbvi0gG8CcSXF1NMZdCw7zqjAW7iKWOT+sVqtX5TkR6IkGXqx4IMub5EYeIQAlQrmlarmEY+uWVv1ycRDJgGAaRDZOUpINnJ5KDtx5X6hkAAAAASUVORK5CYII=",
-                                        "label": "Reference Gage"
+                                        "label": "Index Gage"
                                     }]
                             }]
                     };
                 }
-                else if (LayerName == 'regulatedWatershed') {
+                else if (LayerName == 'regulatedwatershed') {
                     this.layers.overlays[LayerName] = {
                         name: 'Basin Boundary (Regulated Area)',
                         type: 'geoJSONShape',
@@ -603,6 +603,19 @@ var StreamStats;
                 }
                 else
                     return 'N/A';
+            };
+            ReportController.prototype.processData = function (data) {
+                var returnData = [];
+                var startDate = new Date(Math.min.apply(null, data.map(function (e) { return new Date(e.date); })));
+                var endDate = new Date(Math.max.apply(null, data.map(function (e) { return new Date(e.date); })));
+                for (var d = startDate; d <= endDate; d.setDate(d.getDate() + 1)) {
+                    var obs = data.filter(function (item) { return new Date(item.date).getTime() == d.getTime(); })[0];
+                    if (obs == undefined)
+                        returnData.push({ x: d.getTime(), y: null });
+                    else
+                        returnData.push({ x: d.getTime(), y: obs.hasOwnProperty('value') ? typeof obs.value == 'number' ? obs.value.toUSGSvalue() : obs.value : null });
+                }
+                return returnData;
             };
             ReportController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService', 'StreamStats.Services.ModalService'];
             return ReportController;
