@@ -1241,6 +1241,23 @@ var StreamStats;
                 var clientID = "NPEkBrm9Cq5cofm1";
                 var protocol = window.location.protocol;
                 var callbackPage = protocol + '//127.0.0.1:8080/src/Views/callback.html';
+                window.oauthCallback = function (token) {
+                    esri.get("https://www.arcgis.com/sharing/rest/portals/self", {
+                        token: token
+                    }, function (error, response) {
+                        if (error) {
+                            return;
+                        }
+                        console.log(token);
+                        configuration.regions.forEach(function (region) {
+                            if (region.RegionID === "MA") {
+                                console.log(region);
+                                region.Layers.Culverts.layerOptions.token = token;
+                            }
+                        });
+                    });
+                };
+                e.preventDefault();
                 window.open('https://www.arcgis.com/sharing/oauth2/authorize?client_id=' + clientID + '&response_type=token&expiration=20160&redirect_uri=' + window.encodeURIComponent(callbackPage), 'oauth', 'height=400,width=600,menubar=no,location=yes,resizable=yes,scrollbars=yes,status=yes');
             };
             MapController.$inject = ['$scope', '$compile', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack'];

@@ -1721,12 +1721,6 @@ module StreamStats.Controllers {
             var protocol = window.location.protocol;
             // var callbackPage = protocol + '//127.0.0.1:8080/src/';
             var callbackPage = protocol + '//127.0.0.1:8080/src/Views/callback.html';
-            // configuration.regions.forEach(function(region){
-            //     if(region.RegionID === "MA"){
-            //         console.log(region)
-            //         region.Layers.Culverts.layerOptions.token = "LH9-fczdFilYobOxUOHoTmuId-wTOnt7nHDJ4sNj6ZCOIKQnyUginsALv2_9LB1nnEG9-jxNmqy0qaaJT_Evi6HMstalBcX3GkdSrOtFet73sjRhBpDFqw2ufbJhDnxjQHgjcx9LaUmir3mdtOiy616g1uT2FbLp8YYN9956Uj-jSfzxgcZEthxEi2oSjGavLASozbyCdXR5pyLPgRwl5Vnz7G3GxLvJ2Iipy4C2A_o";
-            //     }
-            // })
             // this function will be called when the oauth process is complete
             (window as any).oauthCallback = function (token) {
                 esri.get(
@@ -1743,7 +1737,7 @@ module StreamStats.Controllers {
                     configuration.regions.forEach(function(region){
                         if(region.RegionID === "MA"){
                             console.log(region)
-                            region.Layers.Culverts.layerOptions.token = "LH9-fczdFilYobOxUOHoTmuId-wTOnt7nHDJ4sNj6ZCOIKQnyUginsALv2_9LB1nnEG9-jxNmqy0qaaJT_Evi6HMstalBcX3GkdSrOtFet73sjRhBpDFqw2ufbJhDnxjQHgjcx9LaUmir3mdtOiy616g1uT2FbLp8YYN9956Uj-jSfzxgcZEthxEi2oSjGavLASozbyCdXR5pyLPgRwl5Vnz7G3GxLvJ2Iipy4C2A_o";
+                            region.Layers.Culverts.layerOptions.token = token;
                         }
                     })
                 }
