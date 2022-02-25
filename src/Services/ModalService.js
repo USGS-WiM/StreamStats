@@ -35,6 +35,14 @@ var StreamStats;
                                 backdropClass: 'backdropZ',
                                 windowClass: 'windowZ',
                             };
+                        case SSModalType.e_culvertreport:
+                            return {
+                                templateUrl: 'Views/culvertreportview.html',
+                                controller: 'StreamStats.Controllers.CulvertReportController',
+                                size: 'lg',
+                                backdropClass: 'backdropZ',
+                                windowClass: 'windowZ',
+                            };
                         case SSModalType.e_wateruse:
                             return {
                                 templateUrl: 'Views/wateruse.html',
@@ -139,6 +147,7 @@ var StreamStats;
             SSModalType[SSModalType["e_extensionsupport"] = 9] = "e_extensionsupport";
             SSModalType[SSModalType["e_gagepage"] = 10] = "e_gagepage";
             SSModalType[SSModalType["e_nearestgages"] = 11] = "e_nearestgages";
+            SSModalType[SSModalType["e_culvertreport"] = 12] = "e_culvertreport";
         })(SSModalType = Services.SSModalType || (Services.SSModalType = {}));
         factory.$inject = ['$modal'];
         function factory($modal) {

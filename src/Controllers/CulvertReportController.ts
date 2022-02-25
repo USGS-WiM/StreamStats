@@ -116,15 +116,6 @@ module StreamStats.Controllers {
         //     var canshow = Object.keys(this.studyAreaService.selectedStudyArea.Disclaimers).length > 0;            
         //     return canshow;            
         // }
-        // public get showRegulation(): boolean {
-        //     if (this.regionService.selectedRegion.Applications.indexOf("RegulationFlows") > -1) return true;
-        //     else return false;                
-        // }
-        // public get ActiveExtensions(): Array<any> {
-        //     if (this.studyAreaService.selectedStudyArea.NSS_Extensions && this.studyAreaService.selectedStudyArea.NSS_Extensions.length > 0)
-        //         return this.studyAreaService.selectedStudyArea.NSS_Extensions
-        //     else return null;
-        // }
         private _graphData: any = {
             data: {},
             options: {}
@@ -146,6 +137,7 @@ module StreamStats.Controllers {
             this.reportComments = 'Some comments here';
             this.AppVersion = configuration.version;
             this.environment = configuration.environment;
+            this.selectedTabName = "10-yr Flow";
             this.initMap();
 
             $scope.$on('leafletDirectiveMap.reportMap.load',(event, args) => {

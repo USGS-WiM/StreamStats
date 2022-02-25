@@ -84,12 +84,48 @@
                                     <th>Unit</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody ng-if="vm.selectedTabName ==='10-yr Flow'">
                                 <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList">
+                                    <div ng-if="parameter.code.substring(0, 3) ==='10F'">
+                                        <td ng-bind="parameter.code"></td>
+                                        <td>{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
+                                        <td ng-bind="parameter.unit"></td>
+                                    </div>
+                                </tr>
+                            </tbody>
+                            <tbody ng-if="vm.selectedTabName ==='25-yr Flow'">
+                                <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList">
+                                    <div ng-if="parameter.code.substring(0, 3) ==='25F'">
+                                        <td ng-bind="parameter.code"></td>
+                                        <td>{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
+                                        <td ng-bind="parameter.unit"></td>
+                                    </div>
+                                </tr>
+                            </tbody>
+                            <tbody ng-if="vm.selectedTabName ==='50-yr Flow'">
+                                <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList">
+                                    <div ng-if="parameter.code.substring(0, 3) ==='50F'">
+                                        <td ng-bind="parameter.code"></td>
+                                        <td>{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
+                                        <td ng-bind="parameter.unit"></td>
+                                    </div>
+                                </tr>
+                            </tbody>
+                            <tbody ng-if="vm.selectedTabName ==='100-yr Flow'">
+                                <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList">
+                                    <div ng-if="parameter.code.substring(0, 3) ==='100F'">
+                                        <td ng-bind="parameter.code"></td>
+                                        <td>{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
+                                        <td ng-bind="parameter.unit"></td>
+                                    </div>
+                                </tr>
+                            </tbody>
+                            <tbody ng-if="vm.selectedTabName ==='MA SCS'">
+                                <!-- <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList">
                                     <td ng-bind="parameter.code"></td>
                                     <td>{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
                                     <td ng-bind="parameter.unit"></td>
-                                </tr>
+                                </tr> -->
                             </tbody>
                         </table>
                     </div>
@@ -106,11 +142,11 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList">
+                                <!-- <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList">
                                     <td ng-bind="parameter.code"></td>
                                     <td ng-bind="parameter.description"></td>
                                     <td ng-bind="parameter.unit"></td>
-                                </tr>
+                                </tr> -->
                             </tbody>
                         </table>
                     </div>
