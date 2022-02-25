@@ -232,10 +232,7 @@ configuration.regions = [
     { "RegionID": "AZ", "Name": "Arizona", "Bounds": [[31.335634, -114.821761], [37.003926, -109.045615]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "CA", "Name": "California", "Bounds": [[32.535781, -124.392638], [42.002191, -114.12523]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     {
-        "RegionID": "CO", "Name": "Colorado", "Bounds": [[36.988994, -109.055861], [41.003375, -102.037207]],
-
-        "Layers":
-        {
+        "RegionID": "CO", "Name": "Colorado", "Bounds": [[36.988994, -109.055861], [41.003375, -102.037207]], "Layers": {
             "CO_Regulation": {
                 "name": "Regulation Points",
                 "url": configuration.baseurls['StreamStatsMapServices'] + "/arcgis/rest/services/regulations/co/MapServer",
@@ -249,8 +246,7 @@ configuration.regions = [
                 },
                 "queryProperties": { "Regulation Points": {"Source_Fea":"Description", "Source_Dat": "Source" } }
             }
-        },
-        "Applications": ["Regulation", "StormRunoff"],
+        }, "Applications": ["Regulation", "StormRunoff"],
         "regionEnabled": true,
         "ScenariosAvailable": true
     },
@@ -268,7 +264,20 @@ configuration.regions = [
     },
     { "RegionID": "ID", "Name": "Idaho", "Bounds": [[41.994599, -117.236921], [48.99995, -111.046771]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "IL", "Name": "Illinois", "Bounds": [[36.986822, -91.516284], [42.509363, -87.507909]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
-    { "RegionID": "IN", "Name": "Indiana", "Bounds": [[37.776224, -88.10149], [41.76554, -84.787446]], "Layers": {}, "Applications": ["CoordinatedReach"], "regionEnabled": true, "ScenariosAvailable": true },
+    { 
+        "RegionID": "IN", "Name": "Indiana", "Bounds": [[37.776224, -88.10149], [41.76554, -84.787446]], "Layers": {
+            "IN_Reaches": {
+                "name": "Reaches",
+                "url": configuration.baseurls['StreamStatsMapServices'] + "/arcgis/rest/services/coordinatedreaches/in/MapServer",
+                "type": 'agsDynamic',
+                "visible": true,
+                "layerOptions": {
+                    style: { color: '#ffff00', opacity: 0.75, weight: 6 }, // this is not working
+                    "minZoom": 15               
+                },
+            }
+        }, "Applications": ["CoordinatedReach"], "regionEnabled": true, "ScenariosAvailable": true 
+    },
     { "RegionID": "KS", "Name": "Kansas", "Bounds": [[36.988875, -102.051535], [40.002987, -94.601224]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     {
         "RegionID": "KY", "Name": "Kentucky", "Bounds": [[36.49657, -89.568231], [39.142063, -81.959575]], "Layers":
