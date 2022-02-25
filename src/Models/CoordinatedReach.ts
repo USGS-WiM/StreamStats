@@ -29,9 +29,12 @@ module StreamStats.Models {
         CoefficientB: number
     }
     export interface ICoordinatedReach {
-        readonly Name: string;
-        readonly ID: string;
+        readonly streamID: string;
+        readonly streamName: string;
+        readonly basinName: string;
+        readonly eqID: string;
         readonly FlowCoefficients: { [code: string]: ICoordReachCoeff; }; 
+        readonly label: string;
         AddFlowCoefficient(code: string, aCoeff: number, bCoeff: number): void
         Execute(parameters: Array<Services.IParameter>): Services.IRegressionRegion
     }
@@ -40,19 +43,37 @@ module StreamStats.Models {
         private _flowCoefficients:{ [code: string]: ICoordReachCoeff; };
         public get FlowCoefficients(): { [code: string]: ICoordReachCoeff; } {
             return this._flowCoefficients;
-    }
-        private _name: string;
-        public get Name(): string {
-            return this._name;
         }
-        private _id: string
-        public get ID(): string {
-            return this._id;
+        private _basinName: string;
+        public get basinName(): string {
+            return this._basinName;
+        }
+        private _eqID: string
+        public get eqID(): string {
+            return this._eqID;
+        }
+
+        private _streamID: string
+        public get streamID(): string {
+            return this._streamID;
+        }
+
+        private _streamName: string
+        public get streamName(): string {
+            return this._streamName;
+        }
+
+        private _label: string
+        public get label(): string {
+            return this._label;
         }
  
-        constructor(name: string, id: string) {
-            this._name = "Coordinated Reach: " +name;
-            this._id = id;
+        constructor(basinName: string, eqID: string, streamName: string, streamID: string) {
+            this._label = "Coordinated Reach - Stream ID:" + streamID + ", Stream Name:" + streamName + ", Basin Name:" + basinName
+            this._basinName = basinName;
+            this._eqID = eqID;
+            this._streamName = streamName;
+            this._streamID = streamID;
             this._flowCoefficients = {};
         }
 
@@ -93,15 +114,13 @@ module StreamStats.Models {
                 for (var key in this.FlowCoefficients) {
                     params.push({
                         code: key + "CoeffA",
-                        //value: Number(this.FlowCoefficients[key].CoefficientA).toFixed(3),
-                        value: this.FlowCoefficients[key].CoefficientA.toFixed(3),
+                        value: Number(this.FlowCoefficients[key].CoefficientA).toFixed(3),
                         name: key + " CoefficientA",
                         unitType: { abbr: "dim", unit: "dimensionless" }
                     })
                     params.push({
                         code: key + "CoeffB",
-                        //value: Number(this.FlowCoefficients[key].CoefficientB).toFixed(3),
-                        value: this.FlowCoefficients[key].CoefficientB.toFixed(3),
+                        value: Number(this.FlowCoefficients[key].CoefficientB).toFixed(3),
                         name: key + " CoefficientB",
                         unitType: { abbr: "dim", unit: "dimensionless" }
                     })
@@ -110,8 +129,8 @@ module StreamStats.Models {
 
                 var ssg: Services.IRegressionRegion = {
                     id: 0,
-                    name: this.Name,
-                    code: this.ID,
+                    name: this.label,
+                    code: this.eqID,
                     parameters: params, 
                     results:result
                 }
