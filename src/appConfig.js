@@ -75,7 +75,8 @@ configuration.queryparams =
         'GageStatsServicesStatGroups': '/statisticgroups/',
         'GageStatsServicesNearest': '/stations/Nearest?lat={0}&lon={1}&radius={2}&geojson=false&includeStats=true',
         'GageStatsServicesNetwork': '/stations/Network?lat={0}&lon={1}&distance={2}&includeStats=true&geojson=false',
-        'GageStatsServicesBounds': '/stations/Bounds?xmin={0}&xmax={1}&ymin={2}&ymax={3}&geojson=true'
+        'GageStatsServicesBounds': '/stations/Bounds?xmin={0}&xmax={1}&ymin={2}&ymax={3}&geojson=true',
+        'CulvertWatersheds': '/query?where=SurveyID={0}&f=pgeojson',
     };
 
 configuration.SupportTicketService = {

@@ -91,6 +91,15 @@ module StreamStats.Services {
                             windowClass: 'windowZ',
 
                         };
+                    case SSModalType.e_culvertreport:
+                        return {
+                            templateUrl: 'Views/culvertreportview.html',
+                            controller: 'StreamStats.Controllers.CulvertReportController',
+                            size: 'lg',
+                            backdropClass: 'backdropZ',
+                            windowClass: 'windowZ',
+
+                        };
                     case SSModalType.e_wateruse:
                         return {
                             templateUrl: 'Views/wateruse.html',
@@ -197,7 +206,8 @@ module StreamStats.Services {
         e_prosper = 8,
         e_extensionsupport = 9,
         e_gagepage = 10,
-        e_nearestgages = 11
+        e_nearestgages = 11,
+        e_culvertreport = 12
         
     }
 
