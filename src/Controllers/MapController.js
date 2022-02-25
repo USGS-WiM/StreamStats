@@ -1234,6 +1234,13 @@ var StreamStats;
                 if (isInExclusionArea && excludeReason)
                     this.studyArea.selectedStudyArea.Disclaimers['isInExclusionArea'] = 'The delineation point is in an exclusion area. ' + excludeReason;
             };
+            MapController.prototype.signIn = function (e) {
+                console.log("sign in");
+                var accessToken;
+                var callbacks = [];
+                var protocol = window.location.protocol;
+                var callbackPage = protocol + '//127.0.0.1:8080/src/';
+            };
             MapController.$inject = ['$scope', '$compile', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack'];
             return MapController;
         }());

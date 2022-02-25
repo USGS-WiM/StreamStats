@@ -27,6 +27,7 @@ module StreamStats.Controllers {
 
     declare var turf;
     declare var ga;
+    declare var esri;
 
     'use strict';
     interface ILeafletData {
@@ -1710,6 +1711,26 @@ module StreamStats.Controllers {
 
             //add disclaimer here
             if (isInExclusionArea && excludeReason) this.studyArea.selectedStudyArea.Disclaimers['isInExclusionArea'] = 'The delineation point is in an exclusion area. ' + excludeReason;
+        }
+
+        public signIn(e) {
+            console.log("sign in")
+            var accessToken;
+            var callbacks = [];
+            var protocol = window.location.protocol;
+            var callbackPage = protocol + '//127.0.0.1:8080/src/';
+            // var callbackPage = protocol + '//127.0.0.1:8080/src/Views/callback.html';
+            // console.log(callbackPage)
+            // configuration.regions.forEach(function(region){
+            //     if(region.RegionID === "MA"){
+            //         console.log(region)
+            //         region.Layers.Culverts.layerOptions.token = "LH9-fczdFilYobOxUOHoTmuId-wTOnt7nHDJ4sNj6ZCOIKQnyUginsALv2_9LB1nnEG9-jxNmqy0qaaJT_Evi6HMstalBcX3GkdSrOtFet73sjRhBpDFqw2ufbJhDnxjQHgjcx9LaUmir3mdtOiy616g1uT2FbLp8YYN9956Uj-jSfzxgcZEthxEi2oSjGavLASozbyCdXR5pyLPgRwl5Vnz7G3GxLvJ2Iipy4C2A_o";
+            //     }
+            // })
+
+            // e.preventDefault();
+
+            // window.open('https://www.arcgis.com/sharing/oauth2/authorize?client_id=' + clientID + '&response_type=token&expiration=20160&redirect_uri=' + window.encodeURIComponent(callbackPage), 'oauth', 'height=400,width=600,menubar=no,location=yes,resizable=yes,scrollbars=yes,status=yes');
         }
     }//end class
 
