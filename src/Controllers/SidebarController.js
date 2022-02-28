@@ -256,7 +256,7 @@ var StreamStats;
                 });
                 if (this.nssService.showHydraulicModelTable) {
                     this.toaster.clear();
-                    this.modalService.openModal(StreamStats.Services.SSModalType.e_culvertreport);
+                    this.modalService.openModal(StreamStats.Services.SSModalType.e_report);
                     this.nssService.reportGenerated = true;
                 }
                 else if (this.nssService.selectedStatisticsGroupList.length > 0 && this.nssService.showFlowsTable) {
@@ -312,6 +312,7 @@ var StreamStats;
             SidebarController.prototype.skipDelineateAndShowCulvertResults = function (lat, lng, properties) {
                 var studyArea = new StreamStats.Models.StudyArea(this.regionService.selectedRegion.RegionID, new WiM.Models.Point(lat, lng, '4326'));
                 this.studyAreaService.AddStudyArea(studyArea);
+                this.studyAreaService.loadCulvertBoundary(properties.SurveyID);
                 var paramList = [];
                 for (var k in properties) {
                     paramList.push({ code: k, value: properties[k] });

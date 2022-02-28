@@ -791,6 +791,11 @@ var StreamStats;
                 var bbox;
                 if (!this.studyArea.selectedStudyArea || !this.studyArea.selectedStudyArea.FeatureCollection)
                     return;
+                if (this.regionServices.selectedRegion.RegionID === "MA") {
+                    this.addGeoJSON("MACulvertWatershed", this.studyArea.selectedStudyArea.FeatureCollection['features'][0]);
+                    this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs("MACulvertWatershed", "geojson", this.geojson["MACulvertWatershed"].style));
+                    return;
+                }
                 this.markers = {};
                 this.removeOverlayLayers('globalwatershed', true);
                 this.studyArea.selectedStudyArea.FeatureCollection['features'].forEach(function (layer) {
@@ -1037,6 +1042,28 @@ var StreamStats;
                     };
                     this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs('streamgages', 'geojson', this.geojson['streamgages'].style));
                     this.updateLegend();
+                }
+                else if (LayerName == 'MACulvertWatershed') {
+                    this.geojson[LayerName] = {
+                        data: feature,
+                        visible: true,
+                        style: {
+                            displayName: "Basin Boundary",
+                            fillColor: "yellow",
+                            weight: 2,
+                            opacity: 1,
+                            color: 'white',
+                            fillOpacity: 0.5
+                        },
+                        layerArray: [{
+                                "layerName": "MA Stream Crossings",
+                                "legend": [{
+                                        "contentType": "image/png",
+                                        "imageData": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABHklEQVQ4jaWTwYnDMBBF3yE9GLsIQXBaMOTgEhZ8SwpwAXKugTSgWyAdJIcF1WACKsIhXexBo81YxGRhB4Qt6c+b+TBa8c9YLZzXsiqgBG7ACEx/AQyAbYBCloddiHcHuV8EXA20PdCowx4IQAf2CS2weQcYDLTfC54McAe2UIfYxaABNWCPWVJQySnOwBos4IDpF9Bkwg7w8v8FJHgh9ny04hKgKrLKXu0vAkkFRFtpC6UGfArRlhpw87DrZWOk4kX2uT3p7qEBY5DWk/AoEJgnJx1w1YAJOHRg70qsE1Oc4scRJ3M+B09ot1CfXz5nlU+x/RHYp/N8EjcBhjVYIx3IKKe2nU5+B4A4YS5AG16P6SGex1y89BonqfYxfgDUS0KdfzRtEwAAAABJRU5ErkJggg==",
+                                        "label": ""
+                                    }]
+                            }],
+                    };
                 }
                 else {
                     this.geojson[LayerName] =

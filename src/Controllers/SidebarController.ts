@@ -405,7 +405,7 @@ module StreamStats.Controllers {
 
             if(this.nssService.showHydraulicModelTable){
                     this.toaster.clear();
-                    this.modalService.openModal(Services.SSModalType.e_culvertreport);
+                    this.modalService.openModal(Services.SSModalType.e_report);
                     this.nssService.reportGenerated = true;
             } else if (this.nssService.selectedStatisticsGroupList.length > 0 && this.nssService.showFlowsTable) {
                 var strippedoutStatisticGroups = []; 
@@ -472,7 +472,7 @@ module StreamStats.Controllers {
             
             var studyArea: Models.IStudyArea = new Models.StudyArea(this.regionService.selectedRegion.RegionID, new WiM.Models.Point(lat, lng, '4326'));
             this.studyAreaService.AddStudyArea(studyArea);
-            // this.studyAreaService.loadCulvertBoundary(properties.SurveyID);
+            this.studyAreaService.loadCulvertBoundary(properties.SurveyID);
 
             var paramList = [];
             // Reformat properties for parameter list

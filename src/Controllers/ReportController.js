@@ -41,6 +41,7 @@ var StreamStats;
                 this.AppVersion = configuration.version;
                 this.extensions = this.ActiveExtensions;
                 this.environment = configuration.environment;
+                this.selectedTabName = "10-yr Flow";
                 this.initMap();
                 $scope.$on('leafletDirectiveMap.reportMap.load', function (event, args) {
                     _this.showFeatures();
@@ -53,6 +54,19 @@ var StreamStats;
                 };
                 this.NSSServicesVersion = this.studyAreaService.NSSServicesVersion;
             }
+            Object.defineProperty(ReportController.prototype, "isCulvertReport", {
+                get: function () {
+                    if (this.studyAreaService.selectedStudyArea.RegionID === "MA") {
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
+                },
+                enumerable: false,
+                configurable: true
+            });
+            ;
             Object.defineProperty(ReportController.prototype, "showReport", {
                 get: function () {
                     if (!this.studyAreaService.studyAreaParameterList)
@@ -104,6 +118,11 @@ var StreamStats;
                 enumerable: false,
                 configurable: true
             });
+            ReportController.prototype.selectCulvertTab = function (tabname) {
+                if (this.selectedTabName == tabname)
+                    return;
+                this.selectedTabName = tabname;
+            };
             ReportController.prototype.downloadCSV = function () {
                 var _this = this;
                 this.angulartics.eventTrack('Download', { category: 'Report', label: 'CSV' });
@@ -453,27 +472,46 @@ var StreamStats;
                 if (!this.studyAreaService.selectedStudyArea)
                     return;
                 this.overlays = {};
-                this.studyAreaService.selectedStudyArea.FeatureCollection.features.forEach(function (item) {
-                    _this.addGeoJSON(item.id, item);
-                });
-                if (this.studyAreaService.selectedGage && this.studyAreaService.selectedGage.hasOwnProperty('Latitude_DD') && this.studyAreaService.selectedGage.hasOwnProperty('Longitude_DD')) {
-                    var gagePoint = {
+                if (!this.isCulvertReport) {
+                    this.studyAreaService.selectedStudyArea.FeatureCollection.features.forEach(function (item) {
+                        _this.addGeoJSON(item.id, item);
+                    });
+                    if (this.studyAreaService.selectedGage && this.studyAreaService.selectedGage.hasOwnProperty('Latitude_DD') && this.studyAreaService.selectedGage.hasOwnProperty('Longitude_DD')) {
+                        var gagePoint = {
+                            type: "Feature",
+                            geometry: {
+                                coordinates: [
+                                    this.studyAreaService.selectedGage["Latitude_DD"],
+                                    this.studyAreaService.selectedGage["Longitude_DD"]
+                                ],
+                                type: "Point"
+                            }
+                        };
+                        this.addGeoJSON('referenceGage', gagePoint);
+                    }
+                    var bbox = this.studyAreaService.selectedStudyArea.FeatureCollection.bbox;
+                    this.leafletData.getMap("reportMap").then(function (map) {
+                        map.invalidateSize();
+                        map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
+                    });
+                }
+                else {
+                    this.addGeoJSON("MACulvertWatershed", this.studyAreaService.selectedStudyArea.FeatureCollection['features'][0]);
+                    var culvertLatLng = [this.studyAreaService.selectedStudyArea.Pourpoint["Latitude"],
+                        this.studyAreaService.selectedStudyArea.Pourpoint["Longitude"]];
+                    var culvertPoint = {
                         type: "Feature",
                         geometry: {
-                            coordinates: [
-                                this.studyAreaService.selectedGage["Latitude_DD"],
-                                this.studyAreaService.selectedGage["Longitude_DD"]
-                            ],
+                            coordinates: [culvertLatLng[1], culvertLatLng[0]],
                             type: "Point"
                         }
                     };
-                    this.addGeoJSON('referenceGage', gagePoint);
+                    this.addGeoJSON('culvertPoint', culvertPoint);
+                    this.leafletData.getMap("reportMap").then(function (map) {
+                        map.invalidateSize();
+                        map.setView(culvertLatLng, 13);
+                    });
                 }
-                var bbox = this.studyAreaService.selectedStudyArea.FeatureCollection.bbox;
-                this.leafletData.getMap("reportMap").then(function (map) {
-                    map.invalidateSize();
-                    map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
-                });
             };
             ReportController.prototype.addGeoJSON = function (LayerName, feature) {
                 if (LayerName == 'globalwatershed') {
@@ -542,6 +580,51 @@ var StreamStats;
                                 fillOpacity: 0.5
                             }
                         }
+                    };
+                }
+                else if (LayerName == 'MACulvertWatershed') {
+                    this.layers.overlays[LayerName] = {
+                        name: "Basin Boundary",
+                        type: 'geoJSONShape',
+                        data: feature,
+                        visible: true,
+                        layerOptions: {
+                            style: {
+                                fillColor: "yellow",
+                                weight: 2,
+                                opacity: 1,
+                                color: 'white',
+                                fillOpacity: 0.5
+                            }
+                        }
+                    };
+                }
+                else if (LayerName == 'culvertPoint') {
+                    this.layers.overlays[LayerName] = {
+                        name: "Stream Crossing",
+                        type: 'geoJSONShape',
+                        data: feature,
+                        visible: true,
+                        layerOptions: {
+                            pointToLayer: function (geojson, latlng) {
+                                return L.marker(latlng, {
+                                    icon: L.icon({
+                                        iconUrl: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABHklEQVQ4jaWTwYnDMBBF3yE9GLsIQXBaMOTgEhZ8SwpwAXKugTSgWyAdJIcF1WACKsIhXexBo81YxGRhB4Qt6c+b+TBa8c9YLZzXsiqgBG7ACEx/AQyAbYBCloddiHcHuV8EXA20PdCowx4IQAf2CS2weQcYDLTfC54McAe2UIfYxaABNWCPWVJQySnOwBos4IDpF9Bkwg7w8v8FJHgh9ny04hKgKrLKXu0vAkkFRFtpC6UGfArRlhpw87DrZWOk4kX2uT3p7qEBY5DWk/AoEJgnJx1w1YAJOHRg70qsE1Oc4scRJ3M+B09ot1CfXz5nlU+x/RHYp/N8EjcBhjVYIx3IKKe2nU5+B4A4YS5AG16P6SGex1y89BonqfYxfgDUS0KdfzRtEwAAAABJRU5ErkJggg==",
+                                        iconSize: [18, 18],
+                                        iconAnchor: [13.5, 17.5],
+                                        popupAnchor: [0, -11]
+                                    })
+                                });
+                            }
+                        },
+                        layerArray: [{
+                                "layerName": "MA Stream Crossings",
+                                "legend": [{
+                                        "contentType": "image/png",
+                                        "imageData": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABHklEQVQ4jaWTwYnDMBBF3yE9GLsIQXBaMOTgEhZ8SwpwAXKugTSgWyAdJIcF1WACKsIhXexBo81YxGRhB4Qt6c+b+TBa8c9YLZzXsiqgBG7ACEx/AQyAbYBCloddiHcHuV8EXA20PdCowx4IQAf2CS2weQcYDLTfC54McAe2UIfYxaABNWCPWVJQySnOwBos4IDpF9Bkwg7w8v8FJHgh9ny04hKgKrLKXu0vAkkFRFtpC6UGfArRlhpw87DrZWOk4kX2uT3p7qEBY5DWk/AoEJgnJx1w1YAJOHRg70qsE1Oc4scRJ3M+B09ot1CfXz5nlU+x/RHYp/N8EjcBhjVYIx3IKKe2nU5+B4A4YS5AG16P6SGex1y89BonqfYxfgDUS0KdfzRtEwAAAABJRU5ErkJggg==",
+                                        "label": ""
+                                    }]
+                            }],
                     };
                 }
                 else {

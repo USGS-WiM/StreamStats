@@ -1170,6 +1170,15 @@ module StreamStats.Controllers {
 
             if (!this.studyArea.selectedStudyArea || !this.studyArea.selectedStudyArea.FeatureCollection) return;
 
+            if(this.regionServices.selectedRegion.RegionID === "MA"){
+                // Add layer
+                this.addGeoJSON("MACulvertWatershed", this.studyArea.selectedStudyArea.FeatureCollection['features'][0]);
+
+                // Add layer to legend
+                this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs("MACulvertWatershed", "geojson", this.geojson["MACulvertWatershed"].style));
+                return;
+            }
+
             //clear out this.markers
             this.markers = {};
 
@@ -1460,6 +1469,20 @@ module StreamStats.Controllers {
                 }
                 this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs('streamgages', 'geojson', this.geojson['streamgages'].style));
                 this.updateLegend();
+            }
+            else if(LayerName == 'MACulvertWatershed') {
+                this.geojson[LayerName] = {
+                    data: feature,
+                    visible: true,
+                    style: {
+                        displayName: "Basin Boundary",
+                        fillColor: "yellow",
+                        weight: 2,
+                        opacity: 1,
+                        color: 'white',
+                        fillOpacity: 0.5
+                    },
+                }
             }
             //additional features get generic styling for now
             else {

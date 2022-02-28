@@ -31,6 +31,7 @@ module StreamStats.Services {
         selectedStudyArea: Models.IStudyArea;
         undoEdit();
         loadParameters();
+        loadCulvertBoundary(surveyID: string);
         loadStudyBoundary();
         upstreamRegulation();
         AddStudyArea(sa: Models.IStudyArea);
@@ -284,6 +285,33 @@ module StreamStats.Services {
             this.regressionRegionQueryLoading = false;
 
             this.eventManager.RaiseEvent(Services.onStudyAreaReset, this, WiM.Event.EventArgs.Empty);
+        }
+
+        public loadCulvertBoundary(surveyID) {
+            // this.canUpdate = false;
+            var url = ('https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/Massachusetts_Stream_Crossing_Project_Data/FeatureServer/1' + configuration.queryparams['CulvertWatersheds'] + '&token=' +  configuration.regions[20].Layers.Culverts.layerOptions.token).format(surveyID);
+
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
+            this.Execute(request).then(
+                (response: any) => {  
+                    this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
+
+                    //reconfigure response
+                    this.selectedStudyArea.FeatureCollection = response.data;
+
+                    this.selectedStudyArea.Date = new Date();
+
+                    this.toaster.clear();
+                    this.eventManager.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);
+                    // this.canUpdate = true;
+                },(error) => {
+                    //sm when error
+                    this.clearStudyArea();
+                    this.toaster.clear();
+                    this.toaster.pop("error", "There was an HTTP error with the delineation request", "Please retry", 0);
+                }).finally(() => {
+
+                });
         }
 
         public loadStudyBoundary() {
