@@ -272,9 +272,10 @@ configuration.regions = [
                 "type": 'agsDynamic',
                 "visible": true,
                 "layerOptions": {
-                    style: { color: '#ffff00', opacity: 0.75, weight: 6 }, // this is not working
-                    "minZoom": 15               
-                },
+                    "zIndex": 1,
+                    "format": "png8",
+                    "f": "image"
+                }
             }
         }, "Applications": ["CoordinatedReach"], "regionEnabled": true, "ScenariosAvailable": true 
     },

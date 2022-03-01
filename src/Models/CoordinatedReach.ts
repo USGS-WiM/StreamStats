@@ -69,7 +69,7 @@ module StreamStats.Models {
         }
  
         constructor(basinName: string, eqID: string, streamName: string, streamID: string) {
-            this._label = "Coordinated Reach - Stream ID:" + streamID + ", Stream Name:" + streamName + ", Basin Name:" + basinName
+            this._label = "Coordinated Reach - Stream ID: " + streamID + ", Stream Name: " + streamName + ", Basin Name: " + basinName
             this._basinName = basinName;
             this._eqID = eqID;
             this._streamName = streamName;

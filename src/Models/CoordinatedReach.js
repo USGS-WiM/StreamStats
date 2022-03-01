@@ -4,7 +4,7 @@ var StreamStats;
     (function (Models) {
         var CoordinatedReach = (function () {
             function CoordinatedReach(basinName, eqID, streamName, streamID) {
-                this._label = "Coordinated Reach - Stream ID:" + streamID + ", Stream Name:" + streamName + ", Basin Name:" + basinName;
+                this._label = "Coordinated Reach - Stream ID: " + streamID + ", Stream Name: " + streamName + ", Basin Name: " + basinName;
                 this._basinName = basinName;
                 this._eqID = eqID;
                 this._streamName = streamName;
