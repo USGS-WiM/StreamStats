@@ -274,7 +274,8 @@ configuration.regions = [
                 "layerOptions": {
                     "zIndex": 1,
                     "format": "png8",
-                    "f": "image"
+                    "f": "image",
+                    "minZoom": 15,
                 }
             }
         }, "Applications": ["CoordinatedReach"], "regionEnabled": true, "ScenariosAvailable": true 
