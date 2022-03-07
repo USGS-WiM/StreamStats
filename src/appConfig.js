@@ -325,19 +325,22 @@ configuration.regions = [
                     },
                     "layerArray": [{
                         note: "This overrides the ESRI legend",
-                        "layerName": "MA Stream Crossings",
+                        "layerName": "Stream Crossings",
                         "legend": [{
                             "contentType": "image/png",
                             "imageData": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABHklEQVQ4jaWTwYnDMBBF3yE9GLsIQXBaMOTgEhZ8SwpwAXKugTSgWyAdJIcF1WACKsIhXexBo81YxGRhB4Qt6c+b+TBa8c9YLZzXsiqgBG7ACEx/AQyAbYBCloddiHcHuV8EXA20PdCowx4IQAf2CS2weQcYDLTfC54McAe2UIfYxaABNWCPWVJQySnOwBos4IDpF9Bkwg7w8v8FJHgh9ny04hKgKrLKXu0vAkkFRFtpC6UGfArRlhpw87DrZWOk4kX2uT3p7qEBY5DWk/AoEJgnJx1w1YAJOHRg70qsE1Oc4scRJ3M+B09ot1CfXz5nlU+x/RHYp/N8EjcBhjVYIx3IKKe2nU5+B4A4YS5AG16P6SGex1y89BonqfYxfgDUS0KdfzRtEwAAAABJRU5ErkJggg==",
                             "label": ""
                         }]
                     }],
-                    "queryProperties": { "MA Stream Crossings": { 
+                    "queryProperties": { "Stream Crossings": { 
                         "SurveyID": "Survey ID",
+                        "HQSCORE": "Habitat Quality Score",
+                        "RCPSCORE": "Restoration Connectivity Potential Score",
+                        "MEPCF": "Maximum Extent Practicable (MEP) Cost Factor",
                     }}
                 },
             }, 
-        "Applications": ["Wateruse"], "regionEnabled": true, "ScenariosAvailable": true 
+        "Applications": ["Wateruse", "Culverts"], "regionEnabled": true, "ScenariosAvailable": true 
     },
     { "RegionID": "MD", "Name": "Maryland and District of Columbia", "Bounds": [[37.970255, -79.489865], [39.725461, -75.045623]], "Layers": {}, "Applications": ["Wateruse"], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "ME", "Name": "Maine", "Bounds": [[43.09105, -71.087509], [47.453334, -66.969271]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
@@ -604,6 +607,8 @@ configuration.overlayedLayers = {
 };//end overlayedLayers
 
 configuration.stateGeoJSONurl = './data/jsonstates.json';
+
+configuration.culvertDataDictURL = './data/Massachusetts_Hydraulic_Model_StreamStats_Data_Dictionary.csv';
 
 configuration.streamgageSymbology = [{
     "contentType": "image/png",

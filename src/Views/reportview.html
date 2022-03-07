@@ -6,13 +6,11 @@
         <h4 ng-show="vm.isCulvertReport" class="modal-title">Culvert Replacement Reports</h4>
     </div>
     <div class="modal-body" >
-    <!-- <ul id="culvertTabs" class="nav nav-tabs">
-        <li ng-class="{'active':vm.selectedTabName==='10-yr Flow'}"><a ng-click="vm.selectCulvertTab('10-yr Flow')">10-yr Flow</a></li>
-        <li ng-class="{'active':vm.selectedTabName==='25-yr Flow'}"><a ng-click="vm.selectCulvertTab('25-yr Flow')">25-yr Flow</a></li>
-        <li ng-class="{'active':vm.selectedTabName==='50-yr Flow'}"><a ng-click="vm.selectCulvertTab('50-yr Flow')">50-yr Flow</a></li>
-        <li ng-class="{'active':vm.selectedTabName==='100-yr Flow'}"><a ng-click="vm.selectCulvertTab('100-yr Flow')">100-yr Flow</a></li>
-        <li ng-class="{'active':vm.selectedTabName==='MA SCS'}"><a ng-click="vm.selectCulvertTab('MA SCS')">MA SCS</a></li>
-    </ul>  -->
+    <ul id="culvertTabs" class="nav nav-tabs" ng-show="vm.isCulvertReport">
+        <li ng-class="{'active':vm.selectedTabName==='Box'}"><a ng-click="vm.selectCulvertTab('Box')">Box</a></li>
+        <li ng-class="{'active':vm.selectedTabName==='Arch'}"><a ng-click="vm.selectCulvertTab('Arch')">Arch</a></li>
+        <li ng-class="{'active':vm.selectedTabName==='Pipe'}"><a ng-click="vm.selectCulvertTab('Pipe')">Pipe</a></li>
+    </ul> 
      <div ng-hide="vm.studyAreaService.selectedStudyArea">A study area is needed before viewing the report</div>   
      <div ng-show="vm.studyAreaService.selectedStudyArea">
             <div class="form-group hidden-print">
@@ -176,117 +174,81 @@
 
                     </div>
 
-                    <!-- Culvert tables -->
+                    <!-- Culvert Report -->
                     <div ng-show="vm.isCulvertReport">
-                        <!-- Parameter table -->
-                        <div class="well well-sm">
-                            <h3>Design, flow and channel geometry characteristics</h3>
-                            <table id="mainParamTable" class="mainParamTable table table-condensed">
-                                <thead class="param-table">
-                                    <tr>
-                                        <th>Parameter</th>
-                                        <th>Value</th>
-                                        <th>Unit</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <!-- <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList">
-                                        <td ng-bind="parameter.code"></td>
-                                        <td>{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
-                                        <td ng-bind="parameter.unit"></td>
-                                    </tr> -->
-                                </tbody>
-                            </table>
+                        <!-- Culvert Images -->
+                        <div ng-if="vm.selectedTabName ==='Box'">
+                            <div>
+                                <img class="culvert-img"src="images/BoxCulvert.png" alt="Box Culvert" title="Box Culvert"/>
+                            </div>
+
+                        </div>
+                        <div ng-if="vm.selectedTabName ==='Arch'">
+                            <div>
+                                <img class="culvert-img"src="images/ArchCulvert.png" alt="Arch Culvert" title="Arch Culvert"/>
+                            </div>
+                        </div>
+                        <div ng-if="vm.selectedTabName ==='Pipe'">
+                            <div>
+                                <img class="culvert-img" src="images/PipeCulvert.png" alt="Pipe Culvert" title="Pipe Culvert"/>
+                            </div>
                         </div>
 
-                        <!-- Hyraulic model values table -->
+                        <!-- Culvert table -->
                         <div class="well well-sm">
-                            <h3>Hydraulic Model Values</h3>
-                            <table id="mainParamTable" class="mainParamTable table table-condensed">
+                            <h3>Hydraulic Model Report</h3>
+                            <table id="scsParamTable" class="mainParamTable table table-condensed">
                                 <thead class="param-table">
                                     <tr>
-                                        <th>Parameter Code</th>
-                                        <th>Value</th>
-                                        <th>Unit</th>
-                                    </tr>
-                                </thead>
-                                <tbody ng-if="vm.selectedTabName ==='10-yr Flow'">
-                                    <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList">
-                                        <!-- <div ng-if="parameter.code.substring(0, 3) ==='10F'"> -->
-                                            <td ng-bind="parameter.code"></td>
-                                            <td>{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
-                                            <td ng-bind="parameter.unit"></td>
-                                        <!-- </div> -->
-                                    </tr>
-                                </tbody>
-                                <!-- <tbody ng-if="vm.selectedTabName ==='25-yr Flow'">
-                                    <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList">
-                                        <div ng-if="parameter.code.substring(0, 3) ==='25F'">
-                                            <td ng-bind="parameter.code"></td>
-                                            <td>{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
-                                            <td ng-bind="parameter.unit"></td>
-                                        </div>
-                                    </tr>
-                                </tbody>
-                                <tbody ng-if="vm.selectedTabName ==='50-yr Flow'">
-                                    <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList">
-                                        <div ng-if="parameter.code.substring(0, 3) ==='50F'">
-                                            <td ng-bind="parameter.code"></td>
-                                            <td>{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
-                                            <td ng-bind="parameter.unit"></td>
-                                        </div>
-                                    </tr>
-                                </tbody>
-                                <tbody ng-if="vm.selectedTabName ==='100-yr Flow'">
-                                    <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList">
-                                        <div ng-if="parameter.code.substring(0, 3) ==='100F'">
-                                            <td ng-bind="parameter.code"></td>
-                                            <td>{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
-                                            <td ng-bind="parameter.unit"></td>
-                                        </div>
-                                    </tr>
-                                </tbody>
-                                <tbody ng-if="vm.selectedTabName ==='MA SCS'"> -->
-                                    <!-- <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList">
-                                        <td ng-bind="parameter.code"></td>
-                                        <td>{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
-                                        <td ng-bind="parameter.unit"></td>
-                                    </tr> -->
-                                <!-- </tbody> -->
-                            </table>
-                        </div>
-
-                        <!-- SCS table -->
-                        <div class="well well-sm">
-                            <h3>MA Stream Crossing Standards</h3>
-                            <table id="mainParamTable" class="mainParamTable table table-condensed">
-                                <thead class="param-table">
-                                    <tr>
-                                        <th>Standard</th>
-                                        <th>Requirement</th>
+                                        <th>Parameter Name</th>
+                                        <th>Parameter Description</th>
+                                        <th>10-Yr Flow</th>
+                                        <th>25-Yr Flow</th>
                                         <th>Meets SCS</th>
+                                        <th>Unit</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <!-- <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList">
-                                        <td ng-bind="parameter.code"></td>
-                                        <td ng-bind="parameter.description"></td>
-                                        <td ng-bind="parameter.unit"></td>
-                                    </tr> -->
+                                    <!-- Box Culvert Table -->
+                                    <div ng-if="vm.selectedTabName ==='Box'">
+                                        <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList" ng-if="parameter.code.substring(0, 2) ==='BC'">
+                                                <td ng-bind="parameter.code"></td>
+                                                <td ng-bind="parameter.description"></td>
+                                                <td ng-if="parameter.code.includes('10YR')">{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
+                                                <td ng-if="parameter.code.includes('25YR')">{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
+                                                <td ng-if="parameter.code.substring(parameter.code.length - 3) ==='SCS'">{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
+                                                <td ng-bind="parameter.unit"></td>
+                                        </tr>
+                                    </div>
+                                    <!-- Arch Culvert Table -->
+                                    <div ng-if="vm.selectedTabName ==='Arch'">
+                                        <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList" ng-if="parameter.code.substring(0, 2) ==='AC'">
+                                                <td ng-bind="parameter.code"></td>
+                                                <td ng-bind="parameter.description"></td>
+                                                <td ng-if="parameter.code.includes('10YR')">{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
+                                                <td ng-if="parameter.code.includes('25YR')">{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
+                                                <td ng-if="parameter.code.substring(parameter.code.length - 3) ==='SCS'">{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
+                                                <td ng-bind="parameter.unit"></td>
+                                        </tr>
+                                    </div>
+                                    <!-- Pipe Culvert Table -->
+                                    <div ng-if="vm.selectedTabName ==='Pipe'">
+                                        <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList" ng-if="parameter.code.substring(0, 2) ==='PC'">
+                                                <td ng-bind="parameter.code"></td>
+                                                <td ng-bind="parameter.description"></td>
+                                                <td ng-if="parameter.code.includes('10YR')">{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
+                                                <td ng-if="parameter.code.includes('25YR')">{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
+                                                <td ng-if="parameter.code.substring(parameter.code.length - 3) ==='SCS'">{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
+                                                <td ng-bind="parameter.unit"></td>
+                                        </tr>
+                                    </div>
                                 </tbody>
                             </table>
                         </div>
 
-                        <h4>LiDAR Data Citations</h4>
+                        <h4>Hydraulic Model Report Citations</h4>
                         <div ng-repeat="citation in statisticsGroup.citations">
-                                <a href="{{citation.citationURL.replace('#','')}}" target="_blank">{{citation.author}}{{citation.title}}</a>
-                        </div>
-
-                        <!-- Culvert images -->
-                        <div>
-                            <img src="images/PipeCulvert.png" alt="Pipe Culvert" title="Pipe Culvert"/>
-                            <img src="images/BoxCulvert.png" alt="Box Culvert" title="Box Culvert"/>
-                            <img src="images/ArchCulvert.png" alt="Arch Culvert" title="Arch Culvert"/>
+                            <span>{{citation}}</span>
                         </div>
                     </div>
 

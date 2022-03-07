@@ -1,0 +1,143 @@
+Name,Code,Description,Field type,NAACC Field,Maximum Extent Practicable Culvert Design ,10%-AEP Design Flow Culvert Design,25%-AEP Design Flow Culvert Design,In Report,Units,Accuracy,Citation
+Assessed,Assessed,NAACC boolean field where 0=not assessed and 1=assessed,,Yes,No,No,No,,,,
+SurveyID,SurveyID,,,Yes,No,No,No,,,,
+CrosCode,CrosCode,,,Yes,No,No,No,,,,
+CrosType,CrosType,,,Yes,No,No,No,,,,
+AopNaacc,AopNaacc,,,Yes,No,No,No,,,,
+AqScNaac,AqScNaac,,,Yes,No,No,No,,,,
+DateObsd,DateObsd,,,Yes,No,No,No,,,,
+Eval,Eval,,,Yes,No,No,No,,,,
+GPSx,GPSx,,,Yes,No,No,No,,,,
+GPSy,GPSy,,,Yes,No,No,No,,,,
+LastUpdat,LastUpdat,,,Yes,No,No,No,,,,
+Road,Road,,,Yes,No,No,No,,,,
+CrState,CrState,,,Yes,No,No,No,,,,
+StrmName,StrmName,,,Yes,No,No,No,,,,
+CrTown,CrTown,,,Yes,No,No,No,,,,
+Latitude,Latitude,,,Yes,No,No,No,,,,
+Longitud,Longitud,,,Yes,No,No,No,,,,
+gTown,gTown,,,Yes,No,No,No,,,,
+gWshed,gWshed,,,Yes,No,No,No,,,,
+gState,gState,,,Yes,No,No,No,,,,
+NoCross,NoCross,,,Yes,No,No,No,,,,
+Approved,Approved,,,Yes,No,No,No,,,,
+Drainage Area,DRNAREA,Area that drains to a point on a stream,Double,No,No,No,No,Yes,Square Miles,0.01,
+Mean Basin Elevation,ELEV,Mean basin elevation,Double,No,No,No,No,Yes,Feet,1,USGS Zarriello reports
+Storage Area,LC06STOR,Percentage of water bodies and wetlands determined from the NLCD 2006,Double,No,No,No,No,Yes,%,0.01,USGS Zarriello reports
+Mean Basin Slope,BSLDEM10M,Mean basin slope computed from 10 m DEM,Double,No,No,No,No,Yes,%,0.001,USGS Zarriello reports
+10-year Peakflow,PK10AEP,Maximum instantaneous flow that occurs with a 10% annual exceedance probability,Double,No,No,No,No,Yes,Cubic Feet per second,1,
+25-year Peakflow,PK4AEP,Maximum instantaneous flow that occurs with a 4% annual exceedance probability,Double,No,No,No,No,Yes,Cubic Feet per second,1,
+50-year Peakflow,PK2AEP,Maximum instantaneous flow that occurs with a 2% annual exceedance probability,Double,No,No,No,No,Yes,Cubic Feet per second,1,
+100-year Peakflow,PK1AEP,Maximum instantaneous flow that occurs with a 1% annual exceedance probability,Double,No,No,No,No,Yes,Cubic Feet per second,1,
+Bankfull Width,BFWDTH,Bankfull width,Double,No,No,No,No,Yes,Feet,0.1,USGS Zarriello reports
+Bankfull Mean Depth,BFDPTH,Bankfull depth,Double,No,No,No,No,Yes,Feet,0.001,USGS Zarriello reports
+Bankfull XS Area,BFAREA,Bankfull area,Double,No,No,No,No,Yes,Square Feet,0.1,USGS Zarriello reports
+Coldwater Fisheries Resources ,HQCOWFISH,"Stream is a coldwater fishery. Boolean value 0=no, 1=yes",short integer,No,No,No,No,Yes,,,
+Essential Fish Habitat,HQESSFISH,"Stream is a essential fish habitat. Boolean value 0=no, 1=yes",short integer,No,No,No,No,Yes,,,
+Anadromous Fish Run,HQFISHRUN,"Stream is a Anadromous Fish Run. Boolean value 0=no, 1=yes",short integer,No,No,No,No,Yes,,,
+Areas of Critical Environmental Concerns ,HQACEC,"Stream is an Area of Critical Environmental Concerns . Boolean value 0=no, 1=yes",short integer,No,No,No,No,Yes,,,
+BioMap 2 Aquatic Core,HQBIOMA2,"Stream is a BioMap 2 Aquatic Core. Boolean value 0=no, 1=yes",short integer,No,No,No,No,Yes,,,
+Wild and Scenic Rivers,HQWSRIVER,"Stream is a Wild and Scenic Rivers. Boolean value 0=no, 1=yes",short integer,No,No,No,No,Yes,,,
+Habitat Quality Score,HQSCORE,"Sum of habitat scores (0 = General, 1 = high, >=2 = highest)",short integer,No,No,No,No,Yes,,,
+Critical Linkages,RCPLINK,"Critical Linkages Percentile (top 5%, 10%, and 20%): Derived from UMass DSL data",,No,No,No,No,Yes,,,
+Cold Water Critical Linkage ,RCPCWLINK,"Coldwater Critical Linkages Percentile (top 5%, 10%, and 20%): Derived from UMass DSL data",,No,No,No,No,Yes,,,
+Restoration Connectivity Potential Score,RCPSCORE,Value derived from Critical linkages and cold water critical linkages fields.. TBD,,No,No,No,No,Yes,,,
+Maximum Extent Practicable (MEP) Cost Factor,MEPCF,TBD,,No,No,No,No,Yes,,,
+MassDOT road functional classification ,HWYCLASS,Mass DOT highway classification code values 0-7 classification codes TBD,short integer,No,No,No,No,Yes,,,
+MassDOT associated hydraulic design flow ,HWYHDF,"Hydraulic Design Flood Annual Chance (%) (Annual Exceedence Probability), 10=10%AEP, 25=4% AEP, 50=2%AEP, 100=1%AEP",long integer,No,No,No,No,Yes,,,
+Box Culvert Span,MEPBCSPN,Span of box culvert design,Double,No,Yes,No,No,Yes,Feet,0.1,
+Box Culvert Height,MEPBCHT,Height of box culvert design,Double,No,Yes,No,No,Yes,Feet,0.1,
+Box Culvert Length,MEPBCLEN,Length of box culvert design,Double,No,Yes,No,No,Yes,Feet,0.1,
+Box Culvert Area,MEPBCAREA,Area of box culvert design,Double,No,Yes,No,No,Yes,Square Feet,0.1,
+Box Culvert Material,MEPBCMAT,Box culvert material,string,No,Yes,No,No,Yes,,,
+Box MA SCS Culvert Type,MEPBCTYPE,Culvert design (3-sided box culvert = Meets MA Stream Crossing Standards) ,string,No,Yes,No,No,Yes,,,Singler et al MA Streams Crossing Handbook 2013
+Box MA SCS Embedment,MEPBCEMBT,Not applicable for 3-sided box culvert designs,string,No,Yes,No,No,Yes,Feet,0.1,Singler et al MA Streams Crossing Handbook 2014
+Box MA SCS Substrate,MEPBCSUBT,Material at culvert bottom (Natural = Meets MA Stream Crossing Standards),string,No,Yes,No,No,Yes,,,Singler et al MA Streams Crossing Handbook 2015
+Box MA SCS Velocity Ratio ,MEPBCVELR,TBD - variety of flows or just some low-flow like 90% flow duration,Double,No,Yes,No,No,Yes,,0.1,Singler et al MA Streams Crossing Handbook 2016
+Box MA SCS Span Ratio,MEPBCSPBW,Ratio of box culvert span to bankfull width. (Meets MA Stream Crossing Standards >= 1.2 ),Double,No,Yes,No,No,Yes,,0.1,Singler et al MA Streams Crossing Handbook 2017
+Box MA SCS Openness Ratio,MEPBCOR,Ratio of box culvert cross-sectional area to length. ( Meets MA Stream Crossing Standards >= 0.82),Double,No,Yes,No,No,Yes,,0.01,Singler et al MA Streams Crossing Handbook 2018
+Arch Culvert Span,MEPACSPN,Span of arch culvert design,Double,No,Yes,No,No,Yes,Feet,0.1,
+Arch Culvert Height,MEPACHT,Height of arch culvert design,Double,No,Yes,No,No,Yes,Feet,0.1,
+Arch Culvert Length,MEPACLEN,Length of arch culvert design,Double,No,Yes,No,No,Yes,Feet,0.1,
+Arch Culvert Area,MEPACAREA,Area of arch culvert design,Double,No,Yes,No,No,Yes,Square Feet,0.1,
+Arch Culvert Material,MEPACMAT,Arch culvert material,string,No,Yes,No,No,Yes,,,
+Arch MA SCS Culvert Type,MEPACTYPE,Culvert design (3-sided arch culvert = Meets MA Stream Crossing Standards) ,string,No,Yes,No,No,Yes,,,Singler et al MA Streams Crossing Handbook 2013
+Arch MA SCS Embedment,MEPACEMBT,Not applicable for 3-sided arch culvert designs,string,No,Yes,No,No,Yes,Feet,0.1,Singler et al MA Streams Crossing Handbook 2014
+Arch MA SCS Substrate,MEPACSUBT,Material at culvert bottom (Natural = Meets SCS),string,No,Yes,No,No,Yes,,,Singler et al MA Streams Crossing Handbook 2015
+Arch MA SCS Velocity Ratio ,MEPACVELR,TBD - variety of flows or just some low-flow like 90% flow duration,Double,No,Yes,No,No,Yes,,0.1,Singler et al MA Streams Crossing Handbook 2016
+Arch MA SCS Span Ratio,MEPACSPBW,Ratio of arch culvert span to bankfull width. (Meets SCS >= 1.2 ),Double,No,Yes,No,No,Yes,,0.1,Singler et al MA Streams Crossing Handbook 2017
+Arch MA SCS Openness Ratio,MEPACOR,Ratio of arch culvert cross-sectional area to length. ( Meets SCS >= 0.82),Double,No,Yes,No,No,Yes,,0.01,Singler et al MA Streams Crossing Handbook 2018
+Pipe Culvert Diameter,MEPPCDIAM,Diameter of pipe culvert design,Double,No,Yes,No,No,Yes,Feet,0.1,
+Pipe Culvert Length,MEPPCLEN,Length of pipe culvert design,Double,No,Yes,No,No,Yes,Feet,0.1,
+Pipe Culvert Area,MEPPCAREA,Area of pipe culvert design,Double,No,Yes,No,No,Yes,Square Feet,0.1,
+Pipe Culvert Material,MEPPCMAT,Pipe culvert material,string,No,Yes,No,No,Yes,,,
+Pipe MA SCS Culvert Type,MEPPCTYPE,Culvert design (closed pipe does not meets SCS) ,string,No,Yes,No,No,Yes,,,Singler et al MA Streams Crossing Handbook 2013
+Pipe MA SCS Embedment,MEPPCEMBT,Depth of buried section of culvert. (2ft meets SCS for diametes < 8ft) ,short integer,No,Yes,No,No,Yes,Feet,0.1,Singler et al MA Streams Crossing Handbook 2014
+Pipe MA SCS Substrate,MEPPCSUBT,Material at culvert bottom (Natural = Meets SCS),string,No,Yes,No,No,Yes,,,Singler et al MA Streams Crossing Handbook 2015
+Pipe MA SCS Velocity Ratio ,MEPPCVELR,TBD - variety of flows or just some low-flow like 90% flow duration,Double,No,Yes,No,No,Yes,,0.1,Singler et al MA Streams Crossing Handbook 2016
+Pipe MA SCS Span Ratio,MEPPCSPBW,Ratio of pipe culvert span to bankfull width. (Meets SCS >= 1.2 ),Double,No,Yes,No,No,Yes,,0.1,Singler et al MA Streams Crossing Handbook 2017
+Pipe MA SCS Openness Ratio,MEPPCOR,Ratio of pipe culvert cross-sectional area to length. ( Meets SCS >= 0.82),Double,No,Yes,No,No,Yes,,0.01,Singler et al MA Streams Crossing Handbook 2018
+Box Culvert Span,10FBCSPN,Span of box culvert design,Double,No,No,Yes,No,Yes,Feet,0.1,
+Box Culvert Height,10FBCHT,Height of box culvert design,Double,No,No,Yes,No,Yes,Feet,0.1,
+Box Culvert Length,10FBCLEN,Length of box culvert design,Double,No,No,Yes,No,Yes,Feet,0.1,
+Box Culvert Area,10FBCAREA,Area of box culvert design,Double,No,No,Yes,No,Yes,Square Feet,0.1,
+Box Culvert Material,10FBCMAT,Box culvert material,string,No,No,Yes,No,Yes,,,
+Box MA SCS Culvert Type,10FBCTYPE,Culvert design (3-sided box culvert = Meets MA Stream Crossing Standards) ,string,No,No,Yes,No,Yes,,,Singler et al MA Streams Crossing Handbook 2013
+Box MA SCS Embedment,10FBCEMBT,Not applicable for 3-sided box culvert designs,string,No,No,Yes,No,Yes,Feet,0.1,Singler et al MA Streams Crossing Handbook 2014
+Box MA SCS Substrate,10FBCSUBT,Material at culvert bottom (Natural = Meets MA Stream Crossing Standards),string,No,No,Yes,No,Yes,,,Singler et al MA Streams Crossing Handbook 2015
+Box MA SCS Velocity Ratio ,10FBCVELR,TBD - variety of flows or just some low-flow like 90% flow duration,Double,No,No,Yes,No,Yes,,0.1,Singler et al MA Streams Crossing Handbook 2016
+Box MA SCS Span Ratio,10FBCSPBW,Ratio of box culvert span to bankfull width. (Meets MA Stream Crossing Standards >= 1.2 ),Double,No,No,Yes,No,Yes,,0.1,Singler et al MA Streams Crossing Handbook 2017
+Box MA SCS Openness Ratio,10FBCOR,Ratio of box culvert cross-sectional area to length. ( Meets MA Stream Crossing Standards >= 0.82),Double,No,No,Yes,No,Yes,,0.01,Singler et al MA Streams Crossing Handbook 2018
+Arch Culvert Span,10FACSPN,Span of arch culvert design,Double,No,No,Yes,No,Yes,Feet,0.1,
+Arch Culvert Height,10FACHT,Height of arch culvert design,Double,No,No,Yes,No,Yes,Feet,0.1,
+Arch Culvert Length,10FACLEN,Length of arch culvert design,Double,No,No,Yes,No,Yes,Feet,0.1,
+Arch Culvert Area,10FACAREA,Area of arch culvert design,Double,No,No,Yes,No,Yes,Square Feet,0.1,
+Arch Culvert Material,10FACMAT,Arch culvert material,string,No,No,Yes,No,Yes,,,
+Arch MA SCS Culvert Type,10FACTYPE,Culvert design (3-sided arch culvert = Meets MA Stream Crossing Standards) ,string,No,No,Yes,No,Yes,,,Singler et al MA Streams Crossing Handbook 2013
+Arch MA SCS Embedment,10FACEMBT,Not applicable for 3-sided arch culvert designs,string,No,No,Yes,No,Yes,Feet,0.1,Singler et al MA Streams Crossing Handbook 2014
+Arch MA SCS Substrate,10FACSUBT,Material at culvert bottom (Natural = Meets SCS),string,No,No,Yes,No,Yes,,,Singler et al MA Streams Crossing Handbook 2015
+Arch MA SCS Velocity Ratio ,10FACVELR,TBD - variety of flows or just some low-flow like 90% flow duration,Double,No,No,Yes,No,Yes,,0.1,Singler et al MA Streams Crossing Handbook 2016
+Arch MA SCS Span Ratio,10FACSPBW,Ratio of arch culvert span to bankfull width. (Meets SCS >= 1.2 ),Double,No,No,Yes,No,Yes,,0.1,Singler et al MA Streams Crossing Handbook 2017
+Arch MA SCS Openness Ratio,10FACOR,Ratio of arch culvert cross-sectional area to length. ( Meets SCS >= 0.82),Double,No,No,Yes,No,Yes,,0.01,Singler et al MA Streams Crossing Handbook 2018
+Pipe Culvert Diameter,10FPCDIAM,Diameter of pipe culvert design,Double,No,No,Yes,No,Yes,Feet,0.1,
+Pipe Culvert Length,10FPCLEN,Length of pipe culvert design,Double,No,No,Yes,No,Yes,Feet,0.1,
+Pipe Culvert Area,10FPCAREA,Area of pipe culvert design,Double,No,No,Yes,No,Yes,Square Feet,0.1,
+Pipe Culvert Material,10FPCMAT,Pipe culvert material,string,No,No,Yes,No,Yes,,,
+Pipe MA SCS Culvert Type,10FPCTYPE,Culvert design (closed pipe does not meets SCS) ,string,No,No,Yes,No,Yes,,,Singler et al MA Streams Crossing Handbook 2013
+Pipe MA SCS Embedment,10FPCEMBT,Depth of buried section of culvert. (2ft meets SCS for diametes < 8ft) ,short integer,No,No,Yes,No,Yes,Feet,0.1,Singler et al MA Streams Crossing Handbook 2014
+Pipe MA SCS Substrate,10FPCSUBT,Material at culvert bottom (Natural = Meets SCS),string,No,No,Yes,No,Yes,,,Singler et al MA Streams Crossing Handbook 2015
+Pipe MA SCS Velocity Ratio ,10FPCVELR,TBD - variety of flows or just some low-flow like 90% flow duration,Double,No,No,Yes,No,Yes,,0.1,Singler et al MA Streams Crossing Handbook 2016
+Pipe MA SCS Span Ratio,10FPCSPBW,Ratio of pipe culvert span to bankfull width. (Meets SCS >= 1.2 ),Double,No,No,Yes,No,Yes,,0.1,Singler et al MA Streams Crossing Handbook 2017
+Pipe MA SCS Openness Ratio,10FPCOR,Ratio of pipe culvert cross-sectional area to length. ( Meets SCS >= 0.82),Double,No,No,Yes,No,Yes,,0.01,Singler et al MA Streams Crossing Handbook 2018
+Box Culvert Span,25FBCSPN,Span of box culvert design,Double,No,No,No,Yes,Yes,Feet,0.1,
+Box Culvert Height,25FBCHT,Height of box culvert design,Double,No,No,No,Yes,Yes,Feet,0.1,
+Box Culvert Length,25FBCLEN,Length of box culvert design,Double,No,No,No,Yes,Yes,Feet,0.1,
+Box Culvert Area,25FBCAREA,Area of box culvert design,Double,No,No,No,Yes,Yes,Square Feet,0.1,
+Box Culvert Material,25FBCMAT,Box culvert material,string,No,No,No,Yes,Yes,,,
+Box MA SCS Culvert Type,25FBCTYPE,Culvert design (3-sided box culvert = Meets MA Stream Crossing Standards) ,string,No,No,No,Yes,Yes,,,Singler et al MA Streams Crossing Handbook 2013
+Box MA SCS Embedment,25FBCEMBT,Not applicable for 3-sided box culvert designs,string,No,No,No,Yes,Yes,Feet,0.1,Singler et al MA Streams Crossing Handbook 2014
+Box MA SCS Substrate,25FBCSUBT,Material at culvert bottom (Natural = Meets MA Stream Crossing Standards),string,No,No,No,Yes,Yes,,,Singler et al MA Streams Crossing Handbook 2015
+Box MA SCS Velocity Ratio ,25FBCVELR,TBD - variety of flows or just some low-flow like 90% flow duration,Double,No,No,No,Yes,Yes,,0.1,Singler et al MA Streams Crossing Handbook 2016
+Box MA SCS Span Ratio,25FBCSPBW,Ratio of box culvert span to bankfull width. (Meets MA Stream Crossing Standards >= 1.2 ),Double,No,No,No,Yes,Yes,,0.1,Singler et al MA Streams Crossing Handbook 2017
+Box MA SCS Openness Ratio,25FBCOR,Ratio of box culvert cross-sectional area to length. ( Meets MA Stream Crossing Standards >= 0.82),Double,No,No,No,Yes,Yes,,0.01,Singler et al MA Streams Crossing Handbook 2018
+Arch Culvert Span,25FACSPN,Span of arch culvert design,Double,No,No,No,Yes,Yes,Feet,0.1,
+Arch Culvert Height,25FACHT,Height of arch culvert design,Double,No,No,No,Yes,Yes,Feet,0.1,
+Arch Culvert Length,25FACLEN,Length of arch culvert design,Double,No,No,No,Yes,Yes,Feet,0.1,
+Arch Culvert Area,25FACAREA,Area of arch culvert design,Double,No,No,No,Yes,Yes,Square Feet,0.1,
+Arch Culvert Material,25FACMAT,Arch culvert material,string,No,No,No,Yes,Yes,,,
+Arch MA SCS Culvert Type,25FACTYPE,Culvert design (3-sided arch culvert = Meets MA Stream Crossing Standards) ,string,No,No,No,Yes,Yes,,,Singler et al MA Streams Crossing Handbook 2013
+Arch MA SCS Embedment,25FACEMBT,Not applicable for 3-sided arch culvert designs,string,No,No,No,Yes,Yes,Feet,0.1,Singler et al MA Streams Crossing Handbook 2014
+Arch MA SCS Substrate,25FACSUBT,Material at culvert bottom (Natural = Meets SCS),string,No,No,No,Yes,Yes,,,Singler et al MA Streams Crossing Handbook 2015
+Arch MA SCS Velocity Ratio ,25FACVELR,TBD - variety of flows or just some low-flow like 90% flow duration,Double,No,No,No,Yes,Yes,,0.1,Singler et al MA Streams Crossing Handbook 2016
+Arch MA SCS Span Ratio,25FACSPBW,Ratio of arch culvert span to bankfull width. (Meets SCS >= 1.2 ),Double,No,No,No,Yes,Yes,,0.1,Singler et al MA Streams Crossing Handbook 2017
+Arch MA SCS Openness Ratio,25FACOR,Ratio of arch culvert cross-sectional area to length. ( Meets SCS >= 0.82),Double,No,No,No,Yes,Yes,,0.01,Singler et al MA Streams Crossing Handbook 2018
+Pipe Culvert Diameter,25FPCDIAM,Diameter of pipe culvert design,Double,No,No,No,Yes,Yes,Feet,0.1,
+Pipe Culvert Length,25FPCLEN,Length of pipe culvert design,Double,No,No,No,Yes,Yes,Feet,0.1,
+Pipe Culvert Area,25FPCAREA,Area of pipe culvert design,Double,No,No,No,Yes,Yes,Square Feet,0.1,
+Pipe Culvert Material,25FPCMAT,Pipe culvert material,string,No,No,No,Yes,Yes,,,
+Pipe MA SCS Culvert Type,25FPCTYPE,Culvert design (closed pipe does not meets SCS) ,string,No,No,No,Yes,Yes,,,Singler et al MA Streams Crossing Handbook 2013
+Pipe MA SCS Embedment,25FPCEMBT,Depth of buried section of culvert. (2ft meets SCS for diametes < 8ft) ,short integer,No,No,No,Yes,Yes,Feet,0.1,Singler et al MA Streams Crossing Handbook 2014
+Pipe MA SCS Substrate,25FPCSUBT,Material at culvert bottom (Natural = Meets SCS),string,No,No,No,Yes,Yes,,,Singler et al MA Streams Crossing Handbook 2015
+Pipe MA SCS Velocity Ratio ,25FPCVELR,TBD - variety of flows or just some low-flow like 90% flow duration,Double,No,No,No,Yes,Yes,,0.1,Singler et al MA Streams Crossing Handbook 2016
+Pipe MA SCS Span Ratio,25FPCSPBW,Ratio of pipe culvert span to bankfull width. (Meets SCS >= 1.2 ),Double,No,No,No,Yes,Yes,,0.1,Singler et al MA Streams Crossing Handbook 2017
+Pipe MA SCS Openness Ratio,25FPCOR,Ratio of pipe culvert cross-sectional area to length. ( Meets SCS >= 0.82),Double,No,No,No,Yes,Yes,,0.01,Singler et al MA Streams Crossing Handbook 2018

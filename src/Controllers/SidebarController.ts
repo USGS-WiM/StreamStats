@@ -468,18 +468,68 @@ module StreamStats.Controllers {
             this.studyAreaService.upstreamRegulation();
         }
 
-        public skipDelineateAndShowCulvertResults(lat, lng, properties) {
+        public csvJSON(csv){
+
+            var lines=csv.split("\n");
+          
+            var result = [];
+          
+            var headers=lines[0].split(",");
+          
+            for(var i=1;i<lines.length;i++){
+          
+                var obj = {};
+                var currentline=lines[i].split(",");
+          
+                for(var j=0;j<headers.length;j++){
+                    obj[headers[j]] = currentline[j];
+                }
+          
+                result.push(obj);
+          
+            }
+          
+            //return result; //JavaScript object
+            return JSON.stringify(result); //JSON
+          }
+
+        public skipDelineateAndShowCulvertResults(lat, lng, properties, regionIndex) {
             
             var studyArea: Models.IStudyArea = new Models.StudyArea(this.regionService.selectedRegion.RegionID, new WiM.Models.Point(lat, lng, '4326'));
             this.studyAreaService.AddStudyArea(studyArea);
-            this.studyAreaService.loadCulvertBoundary(properties.SurveyID);
+            this.studyAreaService.loadCulvertBoundary(properties.SurveyID, regionIndex);
 
             var paramList = [];
-            // Reformat properties for parameter list
-            for(var k in properties) {
-                paramList.push({code: k, value: properties[k]});
-            };
-            this.studyAreaService.studyAreaParameterList = paramList;
+            var citations = [];
+            var culvertCSV;
+            let self = this;
+            $.ajax({
+                url: configuration.culvertDataDictURL,
+                type:'get',
+                dataType:'text',
+                success:function(data){
+                    culvertCSV = data;
+                    var culvertDict = self.csvJSON(culvertCSV);
+                    // Reformat properties for parameter list
+                    console.log(culvertDict)
+                    for(var k in properties) {
+                        // Need to get description and name from data dictionary
+                        // for(var param in culvertDict) {
+                        //     if (param.code === k) {
+                        //         paramList.push({code: k, value: properties[k], name: param.name, description: param.description, unit: param.unit});
+                        //             citations.push(citation);
+                        //     }
+                        // }
+                        paramList.push({code: k, value: properties[k]});
+                    };
+                    
+                    self.studyAreaService.studyAreaParameterList = paramList;
+                    self.studyAreaService.culvertCitations = citations;
+                },
+                error: function (error) {
+                    console.log(error)
+                }
+            })
 
             this.selectedProcedure = 4;
             this.setProcedureType(4);
@@ -488,13 +538,18 @@ module StreamStats.Controllers {
         }
 
         private setCulvertPopups() {
+            // Need to set popup content here to create Display Report button
             let self = this;
-            configuration.regions.forEach(function(region){
-                if(region.RegionID === "MA"){
+            configuration.regions.forEach(function(region, i){
+                if(region.Applications.indexOf('Culverts') != -1){
+                    var regionIndex = i;
                     region.Layers.Culverts.layerOptions.onEachFeature = function (feature, layer) {
-                        var popupContent = '<div><h5>MA Stream Crossings</h5> ';
+                        var popupContent = '<div><h5>Stream Crossings</h5> ';
                         var queryProperties = { 
                             "SurveyID": "Survey ID",
+                            "HQSCORE": "Habitat Quality Score",
+                            "RCPSCORE": "Restoration Connectivity Potential Score",
+                            "MEPCF": "Maximum Extent Practicable (MEP) Cost Factor",
                         };
                         Object.keys(queryProperties).map(function (k) {
                             popupContent += '<strong>' + queryProperties[k] + ': </strong>' + feature.properties[k] + '</br></br>';
@@ -503,7 +558,7 @@ module StreamStats.Controllers {
                         var lat = latlng.lat;
                         var lon = latlng.lng;
                         var properties = JSON.stringify(feature.properties)
-                        popupContent += `<button type='button' id='displayCulvertReport' ng-click='vm.skipDelineateAndShowCulvertResults(`+ lat + `,`+ lon + `,` + properties + `)' class='btn-black fullwidth'>&nbsp;&nbsp;Display Report</button></div>`
+                        popupContent += `<button type='button' id='displayCulvertReport' ng-click='vm.skipDelineateAndShowCulvertResults(`+ lat + `,`+ lon + `,` + properties + `,` + i + `)' class='btn-black fullwidth'>&nbsp;&nbsp;Display Report</button></div>`
                         var compiledHtml = self.$compile(popupContent)(self.$scope);
                         layer.bindPopup(compiledHtml[0]);
                     };

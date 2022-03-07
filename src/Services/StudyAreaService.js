@@ -187,9 +187,9 @@ var StreamStats;
                 this.regressionRegionQueryLoading = false;
                 this.eventManager.RaiseEvent(Services.onStudyAreaReset, this, WiM.Event.EventArgs.Empty);
             };
-            StudyAreaService.prototype.loadCulvertBoundary = function (surveyID) {
+            StudyAreaService.prototype.loadCulvertBoundary = function (surveyID, regionIndex) {
                 var _this = this;
-                var url = ('https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/Massachusetts_Stream_Crossing_Project_Data/FeatureServer/1' + configuration.queryparams['CulvertWatersheds'] + '&token=' + configuration.regions[20].Layers.Culverts.layerOptions.token).format(surveyID);
+                var url = ('https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/Massachusetts_Stream_Crossing_Project_Data/FeatureServer/1' + configuration.queryparams['CulvertWatersheds'] + '&token=' + configuration.regions[regionIndex].Layers.Culverts.layerOptions.token).format(surveyID);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     _this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;

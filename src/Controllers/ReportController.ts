@@ -104,11 +104,8 @@ module StreamStats.Controllers {
         public selectedTabName: string;
 
         public get isCulvertReport(): boolean {
-            if(this.studyAreaService.selectedStudyArea.RegionID === "MA"){
-                return true;
-            }else{
-                return false;
-            }
+            if(this.regionService.selectedRegion.Applications.indexOf("Culverts") !== -1) return true; 
+            else return false;
         };
 
         public get showReport(): boolean {
@@ -155,7 +152,7 @@ module StreamStats.Controllers {
             this.AppVersion = configuration.version;
             this.extensions = this.ActiveExtensions;
             this.environment = configuration.environment;
-            this.selectedTabName = "10-yr Flow";
+            this.selectedTabName = "Box";
             this.initMap();
             
 
@@ -180,8 +177,8 @@ module StreamStats.Controllers {
         public selectCulvertTab(tabname: string): void {
             if (this.selectedTabName == tabname) return;
             this.selectedTabName = tabname;
-            //console.log('selected tab: '+tabname);
         }
+
         public downloadCSV() {
 
             //ga event
@@ -294,6 +291,11 @@ module StreamStats.Controllers {
                             // add flow table
                             extVal += '\n\nEstimated Flows\n';
                             extVal += self.tableToCSV($('#flowTable'));
+
+                            
+                            // add SCS table
+                            extVal += '\n\nHydraulic Model\n';
+                            extVal += self.tableToCSV($('#scsParamTable'));
                         }
                     }
 
@@ -642,7 +644,7 @@ module StreamStats.Controllers {
                     map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
                 });
             }else{
-                this.addGeoJSON("MACulvertWatershed", this.studyAreaService.selectedStudyArea.FeatureCollection['features'][0]);
+                this.addGeoJSON("CulvertWatershed", this.studyAreaService.selectedStudyArea.FeatureCollection['features'][0]);
                 var culvertLatLng = [this.studyAreaService.selectedStudyArea.Pourpoint["Latitude"],
                     this.studyAreaService.selectedStudyArea.Pourpoint["Longitude"]];
                 // Add culvert point to report map
@@ -737,7 +739,7 @@ module StreamStats.Controllers {
                     }
                 }
             }
-            else if(LayerName == 'MACulvertWatershed') {
+            else if(LayerName == 'CulvertWatershed') {
                 this.layers.overlays[LayerName] = {
                     name: "Basin Boundary",
                     type: 'geoJSONShape',
@@ -751,7 +753,7 @@ module StreamStats.Controllers {
                             color: 'white',
                             fillOpacity: 0.5
                         }
-                    }
+                    },
                 }
             }
             else if(LayerName == 'culvertPoint') {
@@ -760,6 +762,9 @@ module StreamStats.Controllers {
                     type: 'geoJSONShape',
                     data: feature,
                     visible: true,
+                    style: {
+                        imagesrc: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABHklEQVQ4jaWTwYnDMBBF3yE9GLsIQXBaMOTgEhZ8SwpwAXKugTSgWyAdJIcF1WACKsIhXexBo81YxGRhB4Qt6c+b+TBa8c9YLZzXsiqgBG7ACEx/AQyAbYBCloddiHcHuV8EXA20PdCowx4IQAf2CS2weQcYDLTfC54McAe2UIfYxaABNWCPWVJQySnOwBos4IDpF9Bkwg7w8v8FJHgh9ny04hKgKrLKXu0vAkkFRFtpC6UGfArRlhpw87DrZWOk4kX2uT3p7qEBY5DWk/AoEJgnJx1w1YAJOHRg70qsE1Oc4scRJ3M+B09ot1CfXz5nlU+x/RHYp/N8EjcBhjVYIx3IKKe2nU5+B4A4YS5AG16P6SGex1y89BonqfYxfgDUS0KdfzRtEwAAAABJRU5ErkJggg==",
+                    },
                     layerOptions: {
                         pointToLayer: function (geojson, latlng) {
                             return L.marker(latlng, {
@@ -773,11 +778,11 @@ module StreamStats.Controllers {
                         }
                     },
                     layerArray: [{
-                        "layerName": "MA Stream Crossings",
-                        "legend": [{
-                            "contentType": "image/png",
-                            "imageData": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABHklEQVQ4jaWTwYnDMBBF3yE9GLsIQXBaMOTgEhZ8SwpwAXKugTSgWyAdJIcF1WACKsIhXexBo81YxGRhB4Qt6c+b+TBa8c9YLZzXsiqgBG7ACEx/AQyAbYBCloddiHcHuV8EXA20PdCowx4IQAf2CS2weQcYDLTfC54McAe2UIfYxaABNWCPWVJQySnOwBos4IDpF9Bkwg7w8v8FJHgh9ny04hKgKrLKXu0vAkkFRFtpC6UGfArRlhpw87DrZWOk4kX2uT3p7qEBY5DWk/AoEJgnJx1w1YAJOHRg70qsE1Oc4scRJ3M+B09ot1CfXz5nlU+x/RHYp/N8EjcBhjVYIx3IKKe2nU5+B4A4YS5AG16P6SGex1y89BonqfYxfgDUS0KdfzRtEwAAAABJRU5ErkJggg==",
-                            "label": ""
+                        layerName: "Stream Crossing",
+                        legend: [{
+                            contentType: "image/png",
+                            imageData: "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABHklEQVQ4jaWTwYnDMBBF3yE9GLsIQXBaMOTgEhZ8SwpwAXKugTSgWyAdJIcF1WACKsIhXexBo81YxGRhB4Qt6c+b+TBa8c9YLZzXsiqgBG7ACEx/AQyAbYBCloddiHcHuV8EXA20PdCowx4IQAf2CS2weQcYDLTfC54McAe2UIfYxaABNWCPWVJQySnOwBos4IDpF9Bkwg7w8v8FJHgh9ny04hKgKrLKXu0vAkkFRFtpC6UGfArRlhpw87DrZWOk4kX2uT3p7qEBY5DWk/AoEJgnJx1w1YAJOHRg70qsE1Oc4scRJ3M+B09ot1CfXz5nlU+x/RHYp/N8EjcBhjVYIx3IKKe2nU5+B4A4YS5AG16P6SGex1y89BonqfYxfgDUS0KdfzRtEwAAAABJRU5ErkJggg==",
+                            label: ""
                         }]
                     }],
                 }

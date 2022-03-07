@@ -309,16 +309,47 @@ var StreamStats;
             SidebarController.prototype.checkRegulation = function () {
                 this.studyAreaService.upstreamRegulation();
             };
-            SidebarController.prototype.skipDelineateAndShowCulvertResults = function (lat, lng, properties) {
+            SidebarController.prototype.csvJSON = function (csv) {
+                var lines = csv.split("\n");
+                var result = [];
+                var headers = lines[0].split(",");
+                for (var i = 1; i < lines.length; i++) {
+                    var obj = {};
+                    var currentline = lines[i].split(",");
+                    for (var j = 0; j < headers.length; j++) {
+                        obj[headers[j]] = currentline[j];
+                    }
+                    result.push(obj);
+                }
+                return JSON.stringify(result);
+            };
+            SidebarController.prototype.skipDelineateAndShowCulvertResults = function (lat, lng, properties, regionIndex) {
                 var studyArea = new StreamStats.Models.StudyArea(this.regionService.selectedRegion.RegionID, new WiM.Models.Point(lat, lng, '4326'));
                 this.studyAreaService.AddStudyArea(studyArea);
-                this.studyAreaService.loadCulvertBoundary(properties.SurveyID);
+                this.studyAreaService.loadCulvertBoundary(properties.SurveyID, regionIndex);
                 var paramList = [];
-                for (var k in properties) {
-                    paramList.push({ code: k, value: properties[k] });
-                }
-                ;
-                this.studyAreaService.studyAreaParameterList = paramList;
+                var citations = [];
+                var culvertCSV;
+                var self = this;
+                $.ajax({
+                    url: configuration.culvertDataDictURL,
+                    type: 'get',
+                    dataType: 'text',
+                    success: function (data) {
+                        culvertCSV = data;
+                        var culvertDict = self.csvJSON(culvertCSV);
+                        console.log(culvertDict);
+                        for (var k in properties) {
+                            paramList.push({ code: k, value: properties[k] });
+                        }
+                        ;
+                        self.studyAreaService.studyAreaParameterList = paramList;
+                        self.studyAreaService.culvertCitations = citations;
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
                 this.selectedProcedure = 4;
                 this.setProcedureType(4);
                 this.nssService.showHydraulicModelTable = true;
@@ -326,12 +357,16 @@ var StreamStats;
             };
             SidebarController.prototype.setCulvertPopups = function () {
                 var self = this;
-                configuration.regions.forEach(function (region) {
-                    if (region.RegionID === "MA") {
+                configuration.regions.forEach(function (region, i) {
+                    if (region.Applications.indexOf('Culverts') != -1) {
+                        var regionIndex = i;
                         region.Layers.Culverts.layerOptions.onEachFeature = function (feature, layer) {
-                            var popupContent = '<div><h5>MA Stream Crossings</h5> ';
+                            var popupContent = '<div><h5>Stream Crossings</h5> ';
                             var queryProperties = {
                                 "SurveyID": "Survey ID",
+                                "HQSCORE": "Habitat Quality Score",
+                                "RCPSCORE": "Restoration Connectivity Potential Score",
+                                "MEPCF": "Maximum Extent Practicable (MEP) Cost Factor",
                             };
                             Object.keys(queryProperties).map(function (k) {
                                 popupContent += '<strong>' + queryProperties[k] + ': </strong>' + feature.properties[k] + '</br></br>';
@@ -340,7 +375,7 @@ var StreamStats;
                             var lat = latlng.lat;
                             var lon = latlng.lng;
                             var properties = JSON.stringify(feature.properties);
-                            popupContent += "<button type='button' id='displayCulvertReport' ng-click='vm.skipDelineateAndShowCulvertResults(" + lat + "," + lon + "," + properties + ")' class='btn-black fullwidth'>&nbsp;&nbsp;Display Report</button></div>";
+                            popupContent += "<button type='button' id='displayCulvertReport' ng-click='vm.skipDelineateAndShowCulvertResults(" + lat + "," + lon + "," + properties + "," + i + ")' class='btn-black fullwidth'>&nbsp;&nbsp;Display Report</button></div>";
                             var compiledHtml = self.$compile(popupContent)(self.$scope);
                             layer.bindPopup(compiledHtml[0]);
                         };

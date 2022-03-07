@@ -1170,12 +1170,12 @@ module StreamStats.Controllers {
 
             if (!this.studyArea.selectedStudyArea || !this.studyArea.selectedStudyArea.FeatureCollection) return;
 
-            if(this.regionServices.selectedRegion.RegionID === "MA"){
+            if(this.regionServices.selectedRegion.Applications.indexOf('Culverts') != -1){
                 // Add layer
-                this.addGeoJSON("MACulvertWatershed", this.studyArea.selectedStudyArea.FeatureCollection['features'][0]);
+                this.addGeoJSON("CulvertWatershed", this.studyArea.selectedStudyArea.FeatureCollection['features'][0]);
 
                 // Add layer to legend
-                this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs("MACulvertWatershed", "geojson", this.geojson["MACulvertWatershed"].style));
+                this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs("CulvertWatershed", "geojson", this.geojson["CulvertWatershed"].style));
                 return;
             }
 
@@ -1470,7 +1470,7 @@ module StreamStats.Controllers {
                 this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs('streamgages', 'geojson', this.geojson['streamgages'].style));
                 this.updateLegend();
             }
-            else if(LayerName == 'MACulvertWatershed') {
+            else if(LayerName == 'CulvertWatershed') {
                 this.geojson[LayerName] = {
                     data: feature,
                     visible: true,

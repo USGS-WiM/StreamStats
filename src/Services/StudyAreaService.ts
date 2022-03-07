@@ -31,7 +31,7 @@ module StreamStats.Services {
         selectedStudyArea: Models.IStudyArea;
         undoEdit();
         loadParameters();
-        loadCulvertBoundary(surveyID: string);
+        loadCulvertBoundary(surveyID: string, regionIndex: number);
         loadStudyBoundary();
         upstreamRegulation();
         AddStudyArea(sa: Models.IStudyArea);
@@ -42,6 +42,7 @@ module StreamStats.Services {
         checkingDelineatedPoint: boolean;
         canUpdate: boolean;
         studyAreaParameterList: Array<IParameter>;
+        culvertCitations: Array<any>;
         drawControl: any;
         drawControlOption: any;
         WatershedEditDecisionList: Models.IEditDecisionList;
@@ -153,6 +154,7 @@ module StreamStats.Services {
             else return this.selectedStudyArea.NSS_Extensions
         }
         public studyAreaParameterList: Array<IParameter>;
+        public culvertCitations: Array<any>;
         public drawControl: any;
         public showEditToolbar: boolean;
         public drawControlOption: any;
@@ -287,9 +289,9 @@ module StreamStats.Services {
             this.eventManager.RaiseEvent(Services.onStudyAreaReset, this, WiM.Event.EventArgs.Empty);
         }
 
-        public loadCulvertBoundary(surveyID) {
+        public loadCulvertBoundary(surveyID, regionIndex) {
             // this.canUpdate = false;
-            var url = ('https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/Massachusetts_Stream_Crossing_Project_Data/FeatureServer/1' + configuration.queryparams['CulvertWatersheds'] + '&token=' +  configuration.regions[20].Layers.Culverts.layerOptions.token).format(surveyID);
+            var url = ('https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/Massachusetts_Stream_Crossing_Project_Data/FeatureServer/1' + configuration.queryparams['CulvertWatersheds'] + '&token=' +  configuration.regions[regionIndex].Layers.Culverts.layerOptions.token).format(surveyID);
 
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
             this.Execute(request).then(
