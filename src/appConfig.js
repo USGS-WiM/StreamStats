@@ -540,15 +540,260 @@ configuration.regions = [
 configuration.overlayedLayers = {
     "SSLayer": {
         "name": "National Layers",
-        "url": configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['SSNationalLayers'], // note: we should remove the streamgages from the NationalLayer when ready
+        "url": "https://hydro.nationalmap.gov/arcgis/rest/services/wbd/MapServer",
         "type": 'agsDynamic',
         "visible": true,
         "layerOptions": {
+            "dynamicLayers": JSON.stringify([
+                {
+                    "id": 1,
+                    "source":{"type":"mapLayer","mapLayerId":1},
+                    "drawingInfo":{
+                        "renderer":{
+                            "type":"simple",
+                            "label":"",
+                            "description":"",
+                            "symbol":{
+                                "color":[0, 0, 0, 0],
+                                "outline":{
+                                    "color":[156, 156, 156, 255],"width":3.0,"type":"esriSLS","style":"esriSLSSolid"
+                                },
+                                "type":"esriSFS",
+                                "style":"esriSFSSolid"
+                            }
+                        },
+                        "showLabels":false,
+                        "transparency": 0
+                    },
+                },
+                {
+                    "id": 2,
+                    "source":{"type":"mapLayer","mapLayerId":2},
+                    "drawingInfo":{
+                        "renderer":{
+                            "type":"simple",
+                            "label":"",
+                            "description":"",
+                            "symbol":{
+                                "color":[0, 0, 0, 0],
+                                "outline":{
+                                    "color":[156, 156, 156, 255],"width":1.5,"type":"esriSLS","style":"esriSLSSolid"
+                                },
+                                "type":"esriSFS",
+                                "style":"esriSFSSolid"
+                            }
+                        },
+                        "showLabels":false,
+                        "transparency": 0
+                    },
+                },
+                {
+                    "id": 3,
+                    "source":{"type":"mapLayer","mapLayerId":3},
+                    "drawingInfo":{
+                        "renderer":{
+                            "type":"simple",
+                            "label":"",
+                            "description":"",
+                            "symbol":{
+                                "color":[0, 0, 0, 0],
+                                "outline":{
+                                    "color":[156, 156, 156, 255],"width":1.5,"type":"esriSLS","style":"esriSLSSolid"
+                                },
+                                "type":"esriSFS",
+                                "style":"esriSFSSolid"
+                            }
+                        },
+                        "showLabels":false,
+                        "transparency": 0
+                    },
+                },
+                {
+                    "id": 4,
+                    "source":{"type":"mapLayer","mapLayerId":4},
+                    "drawingInfo":{
+                        "renderer":{
+                            "type":"simple",
+                            "label":"",
+                            "description":"",
+                            "symbol":{
+                                "color":[0, 0, 0, 0],
+                                "outline":{
+                                    "color":[156, 156, 156, 255],"width":1.5,"type":"esriSLS","style":"esriSLSSolid"
+                                },
+                                "type":"esriSFS",
+                                "style":"esriSFSSolid"
+                            }
+                        },
+                        "showLabels":false,
+                        "transparency": 0
+                    },
+                },
+                {
+                    "id": 5,
+                    "source":{"type":"mapLayer","mapLayerId":5},
+                    "drawingInfo":{
+                        "renderer":{
+                            "type":"simple",
+                            "label":"",
+                            "description":"",
+                            "symbol":{
+                                "color":[0, 0, 0, 0],
+                                "outline":{
+                                    "color":[156, 156, 156, 255],"width":1.5,"type":"esriSLS","style":"esriSLSSolid"
+                                },
+                                "type":"esriSFS",
+                                "style":"esriSFSSolid"
+                            }
+                        },
+                        "showLabels":false,
+                        "transparency": 0
+                    },
+                },
+                {
+                    "id": 6,
+                    "source":{"type":"mapLayer","mapLayerId":6},
+                    "drawingInfo":{
+                        "renderer":{
+                            "type":"simple",
+                            "label":"",
+                            "description":"",
+                            "symbol":{
+                                "color":[0, 0, 0, 0],
+                                "outline":{
+                                    "color":[156, 156, 156, 255],"width":1.5,"type":"esriSLS","style":"esriSLSSolid"
+                                },
+                                "type":"esriSFS",
+                                "style":"esriSFSSolid"
+                            }
+                        },
+                        "showLabels":false,
+                        "transparency": 0
+                    },
+                },
+                {
+                    "id": 7,
+                    "source":{"type":"mapLayer","mapLayerId":7},
+                    "drawingInfo":{
+                        "renderer":{
+                            "type":"simple",
+                            "label":"",
+                            "description":"",
+                            "symbol":{
+                                "color":[0, 0, 0, 0],
+                                "outline":{
+                                    "color":[156, 156, 156, 255],"width":1.5,"type":"esriSLS","style":"esriSLSSolid"
+                                },
+                                "type":"esriSFS",
+                                "style":"esriSFSSolid"
+                            }
+                        },
+                        "showLabels":false,
+                        "transparency": 0
+                    },
+                },
+                {
+                    "id": 8,
+                    "source":{"type":"mapLayer","mapLayerId":8},
+                    "drawingInfo":{
+                        "renderer":{
+                            "type":"simple",
+                            "label":"",
+                            "description":"",
+                            "symbol":{
+                                "color":[0, 0, 0, 0],
+                                "outline":{
+                                    "color":[156, 156, 156, 255],"width":1.5,"type":"esriSLS","style":"esriSLSSolid"
+                                },
+                                "type":"esriSFS",
+                                "style":"esriSFSSolid"
+                            }
+                        },
+                        "showLabels":false,
+                        "transparency": 0
+                    },
+                },
+            ]),
             "opacity": 1,
-            "format": "png8",
+            "format": "png32",
+            "zIndex": 1,
             "f": "image",
-            "layers": [1,2,3,4,5,6,7]
+            "layers": [1,2,3,4,5,6,7,8],
         },
+        "layerArray": [
+            {
+                "layerName": "Region",
+                "layerId": 1,
+                "legend": [{                        
+                    "contentType": "image/png",
+                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAEhJREFUOI1jYWBgYJg7d+5/BiqA5ORkRhZqGcbAAHEYC7UMgwHaG5icnMxIigHoQTYEvTxq4KiBw9JASouzIeDl5ORkRmpWAQArIxX92VSV8QAAAABJRU5ErkJggg==",
+                    "label": "2-digit HU"
+                }]
+            },
+            {
+                "layerName": "Subregion",
+                "layerId": 2,
+                "legend": [{                        
+                    "contentType": "image/png",
+                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAElJREFUOI3t1DEKACAMA8AI/jTvylvrVEFwqpmkmTpdM2XCnAkAkuIVIjk26IikIDkOML9UsLxtDRtssMGPQccu2hoeA1vdwVsWQMARe7k7EAEAAAAASUVORK5CYII=",
+                    "label": "4-digit HU"
+                }]
+            },
+            {
+                "layerName": "Basin",
+                "layerId": 3,
+                "legend": [{                        
+                    "contentType": "image/png",
+                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAElJREFUOI3t1DEKACAMA8AI/jTvylvrVEFwqpmkmTpdM2XCnAkAkuIVIjk26IikIDkOML9UsLxtDRtssMGPQccu2hoeA1vdwVsWQMARe7k7EAEAAAAASUVORK5CYII=",
+                    "label": "6-digit HU"
+                }]
+            },
+            {
+                "layerName": "Subbasin",
+                "layerId": 4,
+                "legend": [{                        
+                    "contentType": "image/png",
+                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAElJREFUOI3t1DEKACAMA8AI/jTvylvrVEFwqpmkmTpdM2XCnAkAkuIVIjk26IikIDkOML9UsLxtDRtssMGPQccu2hoeA1vdwVsWQMARe7k7EAEAAAAASUVORK5CYII=",
+                    "label": "8-digit HU"
+                }]
+            },
+            {
+                "layerName": "Watershed",
+                "layerId": 5,
+                "legend": [{                        
+                    "contentType": "image/png",
+                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAElJREFUOI3t1DEKACAMA8AI/jTvylvrVEFwqpmkmTpdM2XCnAkAkuIVIjk26IikIDkOML9UsLxtDRtssMGPQccu2hoeA1vdwVsWQMARe7k7EAEAAAAASUVORK5CYII=",
+                    "label": "10-digit HU"
+                }]
+            },
+            {
+                "layerName": "Subwatershed",
+                "layerId": 6,
+                "legend": [{                        
+                    "contentType": "image/png",
+                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAElJREFUOI3t1DEKACAMA8AI/jTvylvrVEFwqpmkmTpdM2XCnAkAkuIVIjk26IikIDkOML9UsLxtDRtssMGPQccu2hoeA1vdwVsWQMARe7k7EAEAAAAASUVORK5CYII=",
+                    "label": "12-digit HU"
+                }]
+            },
+            {
+                "layerName": "",
+                "layerId": 7,
+                "legend": [{                        
+                    "contentType": "image/png",
+                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAElJREFUOI3t1DEKACAMA8AI/jTvylvrVEFwqpmkmTpdM2XCnAkAkuIVIjk26IikIDkOML9UsLxtDRtssMGPQccu2hoeA1vdwVsWQMARe7k7EAEAAAAASUVORK5CYII=",
+                    "label": "14-digit HU"
+                }]
+            },
+            {
+                "layerName": "",
+                "layerId": 8,
+                "legend": [{                        
+                    "contentType": "image/png",
+                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAElJREFUOI3t1DEKACAMA8AI/jTvylvrVEFwqpmkmTpdM2XCnAkAkuIVIjk26IikIDkOML9UsLxtDRtssMGPQccu2hoeA1vdwVsWQMARe7k7EAEAAAAASUVORK5CYII=",
+                    "label": "16-digit HU"
+                }]
+            }
+        ],
         "queryProperties": { "Streamgages":{ "STA_ID": "Station ID", "STA_NAME": "Station Name", "Latitude": "Latitude", "Longitude": "Longitude", "FeatureURL": "URL" }}
     },//end ssLayer
     "MaskLayer": {
