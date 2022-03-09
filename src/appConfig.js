@@ -556,7 +556,7 @@ configuration.overlayedLayers = {
                             "symbol":{
                                 "color":[0, 0, 0, 0],
                                 "outline":{
-                                    "color":[156, 156, 156, 255],"width":3.0,"type":"esriSLS","style":"esriSLSSolid"
+                                    "color":[135, 135, 135, 255],"width":3.0,"type":"esriSLS","style":"esriSLSSolid"
                                 },
                                 "type":"esriSFS",
                                 "style":"esriSFSSolid"
@@ -577,7 +577,7 @@ configuration.overlayedLayers = {
                             "symbol":{
                                 "color":[0, 0, 0, 0],
                                 "outline":{
-                                    "color":[156, 156, 156, 255],"width":1.5,"type":"esriSLS","style":"esriSLSSolid"
+                                    "color":[135, 135, 135, 255],"width":1.5,"type":"esriSLS","style":"esriSLSSolid"
                                 },
                                 "type":"esriSFS",
                                 "style":"esriSFSSolid"
@@ -598,7 +598,7 @@ configuration.overlayedLayers = {
                             "symbol":{
                                 "color":[0, 0, 0, 0],
                                 "outline":{
-                                    "color":[156, 156, 156, 255],"width":1.5,"type":"esriSLS","style":"esriSLSSolid"
+                                    "color":[135, 135, 135, 255],"width":1.5,"type":"esriSLS","style":"esriSLSSolid"
                                 },
                                 "type":"esriSFS",
                                 "style":"esriSFSSolid"
@@ -619,7 +619,7 @@ configuration.overlayedLayers = {
                             "symbol":{
                                 "color":[0, 0, 0, 0],
                                 "outline":{
-                                    "color":[156, 156, 156, 255],"width":1.5,"type":"esriSLS","style":"esriSLSSolid"
+                                    "color":[135, 135, 135, 255],"width":1.5,"type":"esriSLS","style":"esriSLSSolid"
                                 },
                                 "type":"esriSFS",
                                 "style":"esriSFSSolid"
@@ -640,7 +640,7 @@ configuration.overlayedLayers = {
                             "symbol":{
                                 "color":[0, 0, 0, 0],
                                 "outline":{
-                                    "color":[156, 156, 156, 255],"width":1.5,"type":"esriSLS","style":"esriSLSSolid"
+                                    "color":[135, 135, 135, 255],"width":1.5,"type":"esriSLS","style":"esriSLSSolid"
                                 },
                                 "type":"esriSFS",
                                 "style":"esriSFSSolid"
@@ -661,7 +661,7 @@ configuration.overlayedLayers = {
                             "symbol":{
                                 "color":[0, 0, 0, 0],
                                 "outline":{
-                                    "color":[156, 156, 156, 255],"width":1.5,"type":"esriSLS","style":"esriSLSSolid"
+                                    "color":[135, 135, 135, 255],"width":1.5,"type":"esriSLS","style":"esriSLSSolid"
                                 },
                                 "type":"esriSFS",
                                 "style":"esriSFSSolid"
@@ -682,7 +682,7 @@ configuration.overlayedLayers = {
                             "symbol":{
                                 "color":[0, 0, 0, 0],
                                 "outline":{
-                                    "color":[156, 156, 156, 255],"width":1.5,"type":"esriSLS","style":"esriSLSSolid"
+                                    "color":[135, 135, 135, 255],"width":1.5,"type":"esriSLS","style":"esriSLSSolid"
                                 },
                                 "type":"esriSFS",
                                 "style":"esriSFSSolid"
@@ -703,7 +703,7 @@ configuration.overlayedLayers = {
                             "symbol":{
                                 "color":[0, 0, 0, 0],
                                 "outline":{
-                                    "color":[156, 156, 156, 255],"width":1.5,"type":"esriSLS","style":"esriSLSSolid"
+                                    "color":[135, 135, 135, 255],"width":1.5,"type":"esriSLS","style":"esriSLSSolid"
                                 },
                                 "type":"esriSFS",
                                 "style":"esriSFSSolid"
