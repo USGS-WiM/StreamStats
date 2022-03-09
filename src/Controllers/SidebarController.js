@@ -310,7 +310,9 @@ var StreamStats;
                 this.studyAreaService.upstreamRegulation();
             };
             SidebarController.prototype.csvJSON = function (csv) {
-                var lines = csv.split("\n");
+                console.log(csv);
+                var lines = csv.split("\r\n");
+                console.log(lines);
                 var result = [];
                 var headers = lines[0].split(",");
                 for (var i = 1; i < lines.length; i++) {
@@ -321,7 +323,8 @@ var StreamStats;
                     }
                     result.push(obj);
                 }
-                return JSON.stringify(result);
+                console.log(result);
+                return JSON.stringify(result).replace(/\\r/g, "");
             };
             SidebarController.prototype.skipDelineateAndShowCulvertResults = function (lat, lng, properties, regionIndex) {
                 var studyArea = new StreamStats.Models.StudyArea(this.regionService.selectedRegion.RegionID, new WiM.Models.Point(lat, lng, '4326'));
@@ -338,11 +341,65 @@ var StreamStats;
                     success: function (data) {
                         culvertCSV = data;
                         var culvertDict = self.csvJSON(culvertCSV);
-                        console.log(culvertDict);
+                        var culvertJSON = JSON.parse(culvertDict);
                         for (var k in properties) {
-                            paramList.push({ code: k, value: properties[k] });
+                            if (k !== "OBJECTID") {
+                                culvertJSON.forEach(function (param) {
+                                    if (param.WMSCode === k) {
+                                        var code;
+                                        if (param.Matchcode !== "None") {
+                                            code = param.Matchcode;
+                                            var index = -1;
+                                            for (var i = 0; i < paramList.length; i++) {
+                                                if (paramList[i].code === code) {
+                                                    index = i;
+                                                    break;
+                                                }
+                                            }
+                                            if (index !== -1) {
+                                                if (param.Code.includes('10YR')) {
+                                                    paramList[index].value.value_10yr = properties[k];
+                                                }
+                                                else if (param.Code.includes('25YR')) {
+                                                    paramList[index].value.value_25yr = properties[k];
+                                                }
+                                                else if (param.Code.substring(param.code.length - 3) === 'SCS') {
+                                                    paramList[index].value.value_scs = properties[k];
+                                                }
+                                            }
+                                            else {
+                                                paramList.push({ code: code, value: {}, name: param.Name, description: param.Description, unit: param.Units });
+                                                var newIndex;
+                                                for (var i = 0; i < paramList.length; i++) {
+                                                    if (paramList[i].code === code) {
+                                                        newIndex = i;
+                                                        break;
+                                                    }
+                                                }
+                                                if (param.Code.includes('10YR')) {
+                                                    paramList[newIndex].value.value_10yr = properties[k];
+                                                }
+                                                else if (param.Code.includes('25YR')) {
+                                                    paramList[newIndex].value.value_25yr = properties[k];
+                                                }
+                                                else if (param.Code.substring(param.Code.length - 3) === 'SCS') {
+                                                    paramList[newIndex].value.value_scs = properties[k];
+                                                }
+                                            }
+                                        }
+                                        else {
+                                            code = param.Code;
+                                            paramList.push({ code: code, value: { value: properties[k] }, name: param.Name, description: param.Description, unit: param.Units });
+                                        }
+                                        if (citations.indexOf(param.Citation) !== -1) {
+                                            citations.push(param.Citation);
+                                        }
+                                    }
+                                });
+                            }
                         }
                         ;
+                        console.log(paramList);
                         self.studyAreaService.studyAreaParameterList = paramList;
                         self.studyAreaService.culvertCitations = citations;
                     },

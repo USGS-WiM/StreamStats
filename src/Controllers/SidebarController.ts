@@ -469,8 +469,10 @@ module StreamStats.Controllers {
         }
 
         public csvJSON(csv){
+            console.log(csv)
 
-            var lines=csv.split("\n");
+            var lines=csv.split("\r\n");
+            console.log(lines)
           
             var result = [];
           
@@ -488,9 +490,10 @@ module StreamStats.Controllers {
                 result.push(obj);
           
             }
+            console.log(result)
           
-            //return result; //JavaScript object
-            return JSON.stringify(result); //JSON
+            //return string result without carriage returns
+            return JSON.stringify(result).replace(/\\r/g, "");
           }
 
         public skipDelineateAndShowCulvertResults(lat, lng, properties, regionIndex) {
@@ -511,18 +514,62 @@ module StreamStats.Controllers {
                     culvertCSV = data;
                     var culvertDict = self.csvJSON(culvertCSV);
                     // Reformat properties for parameter list
-                    console.log(culvertDict)
+                    var culvertJSON = JSON.parse(culvertDict);
                     for(var k in properties) {
-                        // Need to get description and name from data dictionary
-                        // for(var param in culvertDict) {
-                        //     if (param.code === k) {
-                        //         paramList.push({code: k, value: properties[k], name: param.name, description: param.description, unit: param.unit});
-                        //             citations.push(citation);
-                        //     }
-                        // }
-                        paramList.push({code: k, value: properties[k]});
+                        if(k !== "OBJECTID"){
+                            // Need to get description and name from data dictionary
+                            culvertJSON.forEach(function(param) {
+                                if (param.WMSCode === k) {
+                                    var code;
+                                    // If matching codes in data dict, need to rearrange json to get 10yr, 15yr, and scs column values in report
+                                    if(param.Matchcode !== "None"){
+                                        code = param.Matchcode;
+                                        var index = -1;
+                                        for(var i = 0; i < paramList.length; i++) {
+                                            if (paramList[i].code === code) {
+                                                index = i;
+                                                break;
+                                            }
+                                        }
+                                        if(index !== -1){
+                                            // Code is already in list, just need to add a value
+                                            if(param.Code.includes('10YR')){
+                                                paramList[index].value.value_10yr = properties[k];
+                                            }else if(param.Code.includes('25YR')){
+                                                paramList[index].value.value_25yr = properties[k];
+                                            }else if(param.Code.substring(param.code.length - 3) ==='SCS'){
+                                                paramList[index].value.value_scs = properties[k];
+                                            }
+                                        }else{
+                                            // Code not yet in list
+                                            paramList.push({code: code, value: {}, name: param.Name, description: param.Description, unit: param.Units});
+                                            var newIndex;
+                                            for(var i = 0; i < paramList.length; i++) {
+                                                if (paramList[i].code === code) {
+                                                    newIndex = i;
+                                                    break;
+                                                }
+                                            }
+                                            if(param.Code.includes('10YR')){
+                                                paramList[newIndex].value.value_10yr = properties[k];
+                                            }else if(param.Code.includes('25YR')){
+                                                paramList[newIndex].value.value_25yr = properties[k];
+                                            }else if(param.Code.substring(param.Code.length - 3) ==='SCS'){
+                                                paramList[newIndex].value.value_scs = properties[k];
+                                            }
+                                        }
+                                    }else{
+                                        code = param.Code;
+                                        paramList.push({code: code, value: {value: properties[k]}, name: param.Name, description: param.Description, unit: param.Units});
+                                    }
+                                    if(citations.indexOf(param.Citation) !== -1){
+                                        citations.push(param.Citation);
+                                    }
+                                }
+                            })
+                        }
                     };
-                    
+                    console.log(paramList)
                     self.studyAreaService.studyAreaParameterList = paramList;
                     self.studyAreaService.culvertCitations = citations;
                 },
