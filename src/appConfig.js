@@ -608,7 +608,7 @@ configuration.overlayedLayers = {
 
 configuration.stateGeoJSONurl = './data/jsonstates.json';
 
-configuration.culvertDataDictURL = './data/MA_Statewide_Hydraulic_Model_StreamStats_Data_Dictionary.csv';
+configuration.culvertDataDictURL = './data/MA_Culverts_DataDict.json';
 
 configuration.streamgageSymbology = [{
     "contentType": "image/png",

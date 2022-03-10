@@ -217,9 +217,9 @@
                                                     <td ng-bind="parameter.name"></td>
                                                     <td ng-bind="parameter.code"></td>
                                                     <td ng-bind="parameter.description"></td>
-                                                    <td>{{parameter.value.value_10yr !== '' && parameter.value !== null ? parameter.value.value_10yr : 'undefined'}}</td>
-                                                    <td>{{parameter.value.value_25yr !== '' && parameter.value !== null ? parameter.value.value_25yr : 'undefined'}}</td>
-                                                    <td>{{parameter.value.value_scs !== '' && parameter.value !== null ? parameter.value.value_scs : 'undefined'}}</td>
+                                                    <td>{{parameter.value[0].value_10yr !== '' && parameter.value[0].value_10yr !== null ? parameter.value[0].value_10yr : ''}}</td>
+                                                    <td>{{parameter.value[0].value_25yr !== '' && parameter.value[0].value_25yr !== null ? parameter.value[0].value_25yr : ''}}</td>
+                                                    <td>{{parameter.value[0].value_scs !== '' && parameter.value[0].value_scs !== null ? parameter.value[0].value_scs : ''}}</td>
                                                     <td ng-bind="parameter.unit"></td>
                                             </tr>
                                     </tbody>
@@ -248,9 +248,9 @@
                                             <td ng-bind="parameter.name"></td>
                                             <td ng-bind="parameter.code"></td>
                                             <td ng-bind="parameter.description"></td>
-                                            <td>{{parameter.value.value_10yr !== '' && parameter.value !== null ? parameter.value.value_10yr : 'undefined'}}</td>
-                                            <td>{{parameter.value.value_25yr !== '' && parameter.value !== null ? parameter.value.value_25yr : 'undefined'}}</td>
-                                            <td>{{parameter.value.value_scs !== '' && parameter.value !== null ? parameter.value.value_scs : 'undefined'}}</td>
+                                            <td>{{parameter.value[0].value_10yr !== '' && parameter.value[0].value_10yr !== null ? parameter.value[0].value_10yr : ''}}</td>
+                                            <td>{{parameter.value[0].value_25yr !== '' && parameter.value[0].value_25yr !== null ? parameter.value[0].value_25yr : ''}}</td>
+                                            <td>{{parameter.value[0].value_scs !== '' && parameter.value[0].value_scs !== null ? parameter.value[0].value_scs : ''}}</td>
                                             <td ng-bind="parameter.unit"></td>
                                         </tr>
                                     </tbody>
@@ -278,9 +278,9 @@
                                             <td ng-bind="parameter.name"></td>
                                             <td ng-bind="parameter.code"></td>
                                             <td ng-bind="parameter.description"></td>
-                                            <td>{{parameter.value.value_10yr !== '' && parameter.value !== null ? parameter.value.value_10yr : 'undefined'}}</td>
-                                            <td>{{parameter.value.value_25yr !== '' && parameter.value !== null ? parameter.value.value_25yr : 'undefined'}}</td>
-                                            <td>{{parameter.value.value_scs !== '' && parameter.value !== null ? parameter.value.value_scs : 'undefined'}}</td>
+                                            <td>{{parameter.value[0].value_10yr !== '' && parameter.value[0].value_10yr !== null ? parameter.value[0].value_10yr : ''}}</td>
+                                            <td>{{parameter.value[0].value_25yr !== '' && parameter.value[0].value_25yr !== null ? parameter.value[0].value_25yr : ''}}</td>
+                                            <td>{{parameter.value[0].value_scs !== '' && parameter.value[0].value_scs !== null ? parameter.value[0].value_scs : ''}}</td>
                                             <td ng-bind="parameter.unit"></td>
                                         </tr>
                                     </tbody>

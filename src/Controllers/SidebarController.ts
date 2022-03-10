@@ -468,34 +468,6 @@ module StreamStats.Controllers {
             this.studyAreaService.upstreamRegulation();
         }
 
-        public csvJSON(csv){
-            console.log(csv)
-
-            var lines=csv.split("\r\n");
-            console.log(lines)
-          
-            var result = [];
-          
-            var headers=lines[0].split(",");
-          
-            for(var i=1;i<lines.length;i++){
-          
-                var obj = {};
-                var currentline=lines[i].split(",");
-          
-                for(var j=0;j<headers.length;j++){
-                    obj[headers[j]] = currentline[j];
-                }
-          
-                result.push(obj);
-          
-            }
-            console.log(result)
-          
-            //return string result without carriage returns
-            return JSON.stringify(result).replace(/\\r/g, "");
-          }
-
         public skipDelineateAndShowCulvertResults(lat, lng, properties, regionIndex) {
             
             var studyArea: Models.IStudyArea = new Models.StudyArea(this.regionService.selectedRegion.RegionID, new WiM.Models.Point(lat, lng, '4326'));
@@ -504,17 +476,13 @@ module StreamStats.Controllers {
 
             var paramList = [];
             var citations = [];
-            var culvertCSV;
             let self = this;
             $.ajax({
                 url: configuration.culvertDataDictURL,
                 type:'get',
-                dataType:'text',
+                dataType:'json',
                 success:function(data){
-                    culvertCSV = data;
-                    var culvertDict = self.csvJSON(culvertCSV);
-                    // Reformat properties for parameter list
-                    var culvertJSON = JSON.parse(culvertDict);
+                    var culvertJSON = data;
                     for(var k in properties) {
                         if(k !== "OBJECTID"){
                             // Need to get description and name from data dictionary
@@ -534,15 +502,15 @@ module StreamStats.Controllers {
                                         if(index !== -1){
                                             // Code is already in list, just need to add a value
                                             if(param.Code.includes('10YR')){
-                                                paramList[index].value.value_10yr = properties[k];
+                                                paramList[index].value[0].value_10yr = properties[k];
                                             }else if(param.Code.includes('25YR')){
-                                                paramList[index].value.value_25yr = properties[k];
+                                                paramList[index].value[0].value_25yr = properties[k];
                                             }else if(param.Code.substring(param.code.length - 3) ==='SCS'){
-                                                paramList[index].value.value_scs = properties[k];
+                                                paramList[index].value[0].value_scs = properties[k];
                                             }
                                         }else{
                                             // Code not yet in list
-                                            paramList.push({code: code, value: {}, name: param.Name, description: param.Description, unit: param.Units});
+                                            paramList.push({code: code, value: [{}], name: param.Name, description: param.Description, unit: param.Units});
                                             var newIndex;
                                             for(var i = 0; i < paramList.length; i++) {
                                                 if (paramList[i].code === code) {
@@ -551,16 +519,16 @@ module StreamStats.Controllers {
                                                 }
                                             }
                                             if(param.Code.includes('10YR')){
-                                                paramList[newIndex].value.value_10yr = properties[k];
+                                                paramList[newIndex].value[0].value_10yr = properties[k];
                                             }else if(param.Code.includes('25YR')){
-                                                paramList[newIndex].value.value_25yr = properties[k];
+                                                paramList[newIndex].value[0].value_25yr = properties[k];
                                             }else if(param.Code.substring(param.Code.length - 3) ==='SCS'){
-                                                paramList[newIndex].value.value_scs = properties[k];
+                                                paramList[newIndex].value[0].value_scs = properties[k];
                                             }
                                         }
                                     }else{
                                         code = param.Code;
-                                        paramList.push({code: code, value: {value: properties[k]}, name: param.Name, description: param.Description, unit: param.Units});
+                                        paramList.push({code: code, value: properties[k], name: param.Name, description: param.Description, unit: param.Units});
                                     }
                                     if(citations.indexOf(param.Citation) !== -1){
                                         citations.push(param.Citation);
@@ -569,7 +537,6 @@ module StreamStats.Controllers {
                             })
                         }
                     };
-                    console.log(paramList)
                     self.studyAreaService.studyAreaParameterList = paramList;
                     self.studyAreaService.culvertCitations = citations;
                 },
