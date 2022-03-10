@@ -267,7 +267,7 @@ configuration.regions = [
     { 
         "RegionID": "IN", "Name": "Indiana", "Bounds": [[37.776224, -88.10149], [41.76554, -84.787446]], "Layers": {
             "IN_Reaches": {
-                "name": "Reaches",
+                "name": "Coordinated Reaches",
                 "url": configuration.baseurls['StreamStatsMapServices'] + "/arcgis/rest/services/coordinatedreaches/in/MapServer",
                 "type": 'agsDynamic',
                 "visible": true,
