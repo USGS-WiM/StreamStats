@@ -36,6 +36,7 @@
     "leaflet-draw": "^0.4.14",
     "leaflet.elevation": "github:mrmufflon/Leaflet.Elevation#b7943da40c85fa2351484776e7c3e93bef7aed01",
     "leaflet.locatecontrol": "^0.60.0",
+    "marker-creator": "github:usgs-wim/marker-creator#master",
     "mobile-angular-ui": "1.2.1",
     "mobileangularui-checkbox": "github:usgs-wim/mobileangularui-checkbox",
     "ng-file-upload": "~12.0.1",
