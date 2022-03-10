@@ -333,11 +333,6 @@ configuration.regions = [
                     }],
                     "queryProperties": { "MA Stream Crossings": { 
                         "SurveyID": "Survey ID",
-                        "Flow_10yr_CFS": "Flow_10yr_CFS",
-                        "Flow_25yr_CFS": "Flow_25yr_CFS",
-                        "Flow_50yr_CFS": "Flow_50yr_CFS",
-                        "Flow_100yr_CFS": "Flow_100yr_CFS",
-                        "Flow_500yr_CFS": "Flow_500yr_CFS",
                     }}
                 },
             }, 

@@ -41,7 +41,7 @@ var StreamStats;
             return MapDefault;
         }());
         var MapController = (function () {
-            function MapController($scope, $compile, toaster, $analytics, $location, $stateParams, leafletBoundsHelper, leafletData, search, region, studyArea, StatisticsGroup, exploration, _prosperServices, eventManager, modal, modalStack) {
+            function MapController($scope, $compile, toaster, $analytics, $location, $stateParams, leafletBoundsHelper, leafletData, search, region, studyArea, StatisticsGroup, exploration, _prosperServices, eventManager, modal, modalStack, $http) {
                 var _this = this;
                 this.$scope = $scope;
                 this.$compile = $compile;
@@ -87,6 +87,8 @@ var StreamStats;
                 this.cursorStyle = 'pointer';
                 this.environment = configuration.environment;
                 this.selectedExplorationTool = null;
+                this.http = $http;
+                this.getCulvertCreds();
                 this.init();
                 this.eventManager.SubscribeToEvent(StreamStats.Services.onSelectedStudyAreaChanged, new WiM.Event.EventHandler(function () {
                     _this.onSelectedStudyAreaChanged();
@@ -1234,33 +1236,16 @@ var StreamStats;
                 if (isInExclusionArea && excludeReason)
                     this.studyArea.selectedStudyArea.Disclaimers['isInExclusionArea'] = 'The delineation point is in an exclusion area. ' + excludeReason;
             };
-            MapController.prototype.signIn = function (e) {
-                console.log("sign in");
-                var accessToken;
-                var callbacks = [];
-                var clientID = "NPEkBrm9Cq5cofm1";
-                var protocol = window.location.protocol;
-                var callbackPage = protocol + '//127.0.0.1:8080/src/Views/callback.html';
-                window.oauthCallback = function (token) {
-                    esri.get("https://www.arcgis.com/sharing/rest/portals/self", {
-                        token: token
-                    }, function (error, response) {
-                        if (error) {
-                            return;
+            MapController.prototype.getCulvertCreds = function () {
+                this.http.get('./data/culvert_secrets.json').then(function (response) {
+                    configuration.regions.forEach(function (region) {
+                        if (region.RegionID === "MA") {
+                            region.Layers.Culverts.layerOptions.token = response.data.token;
                         }
-                        console.log(token);
-                        configuration.regions.forEach(function (region) {
-                            if (region.RegionID === "MA") {
-                                console.log(region);
-                                region.Layers.Culverts.layerOptions.token = token;
-                            }
-                        });
                     });
-                };
-                e.preventDefault();
-                window.open('https://www.arcgis.com/sharing/oauth2/authorize?client_id=' + clientID + '&response_type=token&expiration=20160&redirect_uri=' + window.encodeURIComponent(callbackPage), 'oauth', 'height=400,width=600,menubar=no,location=yes,resizable=yes,scrollbars=yes,status=yes');
+                });
             };
-            MapController.$inject = ['$scope', '$compile', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack'];
+            MapController.$inject = ['$scope', '$compile', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack', '$http'];
             return MapController;
         }());
         angular.module('StreamStats.Controllers')

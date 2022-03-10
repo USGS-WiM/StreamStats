@@ -27,7 +27,6 @@ module StreamStats.Controllers {
 
     declare var turf;
     declare var ga;
-    declare var esri;
 
     'use strict';
     interface ILeafletData {
@@ -202,10 +201,12 @@ module StreamStats.Controllers {
         }
         public imageryToggled = false;
 
+        private http: any;
+
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$compile', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack'];
-        constructor(public $scope: IMapControllerScope, public $compile: IMapControllerCompile, toaster, $analytics, $location: ng.ILocationService, $stateParams, leafletBoundsHelper: any, leafletData: ILeafletData, search: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, exploration: Services.IExplorationService, private _prosperServices: Services.IProsperService, eventManager: WiM.Event.IEventManager, private modal: Services.IModalService, private modalStack: ng.ui.bootstrap.IModalStackService) {
+        static $inject = ['$scope', '$compile', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack', '$http'];
+        constructor(public $scope: IMapControllerScope, public $compile: IMapControllerCompile, toaster, $analytics, $location: ng.ILocationService, $stateParams, leafletBoundsHelper: any, leafletData: ILeafletData, search: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, exploration: Services.IExplorationService, private _prosperServices: Services.IProsperService, eventManager: WiM.Event.IEventManager, private modal: Services.IModalService, private modalStack: ng.ui.bootstrap.IModalStackService, $http: ng.IHttpService,) {
             $scope.vm = this;
             
             this.toaster = toaster;
@@ -222,6 +223,8 @@ module StreamStats.Controllers {
             this.cursorStyle = 'pointer';
             this.environment = configuration.environment;
             this.selectedExplorationTool = null;
+            this.http = $http;
+            this.getCulvertCreds();
 
             this.init();
 
@@ -1712,41 +1715,14 @@ module StreamStats.Controllers {
             //add disclaimer here
             if (isInExclusionArea && excludeReason) this.studyArea.selectedStudyArea.Disclaimers['isInExclusionArea'] = 'The delineation point is in an exclusion area. ' + excludeReason;
         }
-
-        public signIn(e) {
-            console.log("sign in")
-            var accessToken;
-            var callbacks = [];
-            var clientID = "NPEkBrm9Cq5cofm1"
-            var protocol = window.location.protocol;
-            // var callbackPage = protocol + '//127.0.0.1:8080/src/';
-            var callbackPage = protocol + '//127.0.0.1:8080/src/Views/callback.html';
-            // this function will be called when the oauth process is complete
-            (window as any).oauthCallback = function (token) {
-                esri.get(
-                "https://www.arcgis.com/sharing/rest/portals/self",
-                {
-                    token: token
-                },
-                function (error, response) {
-                    if (error) {
-                    return;
+        private getCulvertCreds() {
+            this.http.get('./data/culvert_secrets.json').then(function(response) {
+                configuration.regions.forEach(function(region){
+                    if(region.RegionID === "MA"){
+                        region.Layers.Culverts.layerOptions.token = response.data.token;
                     }
-
-                    console.log(token);
-                    configuration.regions.forEach(function(region){
-                        if(region.RegionID === "MA"){
-                            console.log(region)
-                            region.Layers.Culverts.layerOptions.token = token;
-                        }
-                    })
-                }
-                );
-            };
-
-            e.preventDefault();
-
-            window.open('https://www.arcgis.com/sharing/oauth2/authorize?client_id=' + clientID + '&response_type=token&expiration=20160&redirect_uri=' + window.encodeURIComponent(callbackPage), 'oauth', 'height=400,width=600,menubar=no,location=yes,resizable=yes,scrollbars=yes,status=yes');
+                })
+            })
         }
     }//end class
 
