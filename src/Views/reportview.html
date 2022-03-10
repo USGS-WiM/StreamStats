@@ -149,7 +149,7 @@
                                 <tbody>
                                     <tr ng-repeat="stat in regressionRegion.results">
                                         <td>{{stat.name}}</td>
-                                        <td ng-bind="stat.value.toUSGSvalue()"></td>
+                                        <td>{{stat.value == -99999 ? 'undefined' : stat.value.toUSGSvalue()}}</td>
                                         <td ng-if="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated && vm.showRegulation" ng-bind="stat.unRegulatedValue.toUSGSvalue()"></td>
                                         <td ng-bind="stat.unit.abbr"></td>
                                         <td ng-if="stat.intervalBounds.lower" ng-bind="stat.intervalBounds.lower.toUSGSvalue()"></td>
