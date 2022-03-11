@@ -187,6 +187,23 @@ var StreamStats;
                 this.regressionRegionQueryLoading = false;
                 this.eventManager.RaiseEvent(Services.onStudyAreaReset, this, WiM.Event.EventArgs.Empty);
             };
+            StudyAreaService.prototype.loadCulvertBoundary = function (surveyID, regionIndex) {
+                var _this = this;
+                var url = ('https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/Massachusetts_Stream_Crossing_Project_Data/FeatureServer/1' + configuration.queryparams['CulvertWatersheds'] + '&token=' + configuration.regions[regionIndex].Layers.Culverts.layerOptions.token).format(surveyID);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                this.Execute(request).then(function (response) {
+                    _this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
+                    _this.selectedStudyArea.FeatureCollection = response.data;
+                    _this.selectedStudyArea.Date = new Date();
+                    _this.toaster.clear();
+                    _this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, _this, StudyAreaEventArgs.Empty);
+                }, function (error) {
+                    _this.clearStudyArea();
+                    _this.toaster.clear();
+                    _this.toaster.pop("error", "There was an HTTP error with the delineation request", "Please retry", 0);
+                }).finally(function () {
+                });
+            };
             StudyAreaService.prototype.loadStudyBoundary = function () {
                 var _this = this;
                 this.toaster.pop("wait", "Delineating Basin", "Please wait...", 0);

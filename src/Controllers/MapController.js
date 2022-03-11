@@ -793,6 +793,11 @@ var StreamStats;
                 var bbox;
                 if (!this.studyArea.selectedStudyArea || !this.studyArea.selectedStudyArea.FeatureCollection)
                     return;
+                if (this.regionServices.selectedRegion.Applications.indexOf('Culverts') != -1) {
+                    this.addGeoJSON("CulvertWatershed", this.studyArea.selectedStudyArea.FeatureCollection['features'][0]);
+                    this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs("CulvertWatershed", "geojson", this.geojson["CulvertWatershed"].style));
+                    return;
+                }
                 this.markers = {};
                 this.removeOverlayLayers('globalwatershed', true);
                 this.studyArea.selectedStudyArea.FeatureCollection['features'].forEach(function (layer) {
@@ -1039,6 +1044,20 @@ var StreamStats;
                     };
                     this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs('streamgages', 'geojson', this.geojson['streamgages'].style));
                     this.updateLegend();
+                }
+                else if (LayerName == 'CulvertWatershed') {
+                    this.geojson[LayerName] = {
+                        data: feature,
+                        visible: true,
+                        style: {
+                            displayName: "Basin Boundary",
+                            fillColor: "yellow",
+                            weight: 2,
+                            opacity: 1,
+                            color: 'white',
+                            fillOpacity: 0.5
+                        },
+                    };
                 }
                 else {
                     this.geojson[LayerName] =

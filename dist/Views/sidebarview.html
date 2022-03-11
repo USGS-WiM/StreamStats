@@ -107,7 +107,7 @@
                                     </form>
                                 </div>
 
-                        <div class="well well-sm" ng-show="vm.regionService.selectedRegion.Applications.length > 0">
+                        <div class="well well-sm" ng-show="vm.regionService.selectedRegion.Applications.length > 0 && !(vm.regionService.selectedRegion.Applications.length == 1 && vm.regionService.selectedRegion.Applications.indexOf('Culverts') != -1) ">
                             <strong>State/Region Specific Functions</strong>
                             <p>The following additional functions are available for {{vm.regionService.selectedRegion.Name}}.</p>
                             <form style="padding: 5px 0;">
@@ -228,17 +228,17 @@
 
                 <div class="list-group-body" ng-show="vm.selectedProcedure == 4">
 
-                    <div id="step4info" class="banner">
+                    <div id="step4info" class="banner" ng-show="!vm.nssService.showHydraulicModelTable">
                         <div class="banner-body"><strong>Step 1:</strong> You can modify computed basin characteristics here, then select the types of reports you wish to generate.  Then click the "Build Report" button</div>
                     </div>
 
                     <!--<div class="wim-alert">You can modify computed basin characteristics here, then select the types of reports you wish to generate.  Then click the "Build Report" button</div>-->
 
-                    <form style="padding: 5px 0;">
+                    <form style="padding: 5px 0;" ng-show="!vm.nssService.showHydraulicModelTable">
                         <button class="fullwidth" ng-click="vm.studyAreaService.showModifyBasinCharacterstics = !vm.studyAreaService.showModifyBasinCharacterstics"><span ng-hide="vm.studyAreaService.showModifyBasinCharacterstics "><i class="fa fa-chevron-down"></i>&nbsp;&nbsp;Show Basin Characteristics</span><span ng-show="vm.studyAreaService.showModifyBasinCharacterstics "><i class="fa fa-chevron-up"></i>&nbsp;&nbsp;Hide Basin Characteristics</span></button>
                     </form>
 
-                    <div class="well well-sm" ng-init="vm.studyAreaService.showModifyBasinCharacterstics = false" ng-show="vm.studyAreaService.showModifyBasinCharacterstics">
+                    <div class="well well-sm" ng-init="vm.studyAreaService.showModifyBasinCharacterstics = false" ng-show="vm.studyAreaService.showModifyBasinCharacterstics && !vm.nssService.showHydraulicModelTable">
                         <p>Basin Characteristics can be edited here</p>
 
                         <form style="padding: 5px 0;" ng-show="vm.ParameterValuesMissing">
@@ -273,9 +273,11 @@
                         <form style="padding: 5px 0;" ng-show="vm.nssService.selectedStatisticsGroupList.length > 0">
                             <checkbox large ng-model="vm.nssService.showFlowsTable"></checkbox><span>&nbsp;&nbsp;Scenario Flow Reports</span>
                         </form>
+                        <form style="padding: 5px 0;" ng-show="vm.nssService.showHydraulicModelTable">
+                            <checkbox large ng-model="vm.nssService.showHydraulicModelTable"></checkbox><span>&nbsp;&nbsp;Hydraulic Model Report</span>
+                        </form>
 
-
-                        <form style="padding: 5px 0;" ng-show="vm.nssService.showBasinCharacteristicsTable || vm.nssService.showFlowsTable">
+                        <form style="padding: 5px 0;" ng-show="vm.nssService.showBasinCharacteristicsTable || vm.nssService.showFlowsTable || vm.nssService.showHydraulicModelTable">
                             <button  ng-disabled="vm.studyAreaService.requestParameterList.length > 0 || vm.studyAreaService.doSelectMapGage" ng-click="vm.generateReport()" type="button" class="btn-blue fullwidth"><i ng-class="vm.nssService.canUpdate ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Continue</button>
                         </form>
                     </div>

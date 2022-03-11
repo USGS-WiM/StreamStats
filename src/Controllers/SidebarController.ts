@@ -33,6 +33,9 @@ module StreamStats.Controllers {
     interface ISidebarControllerScope extends ng.IScope {
         vm: SidebarController;
     }
+    interface ISidebarControllerCompile extends ng.ICompileService {
+        vm: SidebarController;
+    }
     interface ILeafletData {
         getMap(mapID: any): ng.IPromise<any>;
         getLayers(mapID: any): ng.IPromise<any>;
@@ -89,12 +92,13 @@ module StreamStats.Controllers {
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', 'toaster', '$analytics', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ModalService', 'leafletData', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager'];
-        constructor($scope: ISidebarControllerScope, toaster, $analytics, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, modal: Services.IModalService, leafletData: ILeafletData, exploration: Services.IExplorationService, private EventManager:WiM.Event.IEventManager) {
+        static $inject = ['$scope', 'toaster', '$analytics', '$compile', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ModalService', 'leafletData', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager'];
+        constructor(public $scope: ISidebarControllerScope, toaster, $analytics, public $compile: ISidebarControllerCompile, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, modal: Services.IModalService, leafletData: ILeafletData, exploration: Services.IExplorationService, private EventManager:WiM.Event.IEventManager) {
             this.dateRange = { dates: { startDate: new Date(), endDate: new Date() }, minDate: new Date(1900, 1, 1), maxDate: new Date() };
 
             $scope.vm = this;
             this.init();
+            this.setCulvertPopups();
 
             this.toaster = toaster;
             this.angulartics = $analytics;
@@ -399,7 +403,11 @@ module StreamStats.Controllers {
             this.angulartics.eventTrack('CalculateFlows', {
                 category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.nssService.selectedStatisticsGroupList.map(function (elem) { return elem.name; }).join(",") });
 
-            if (this.nssService.selectedStatisticsGroupList.length > 0 && this.nssService.showFlowsTable) {
+            if(this.nssService.showHydraulicModelTable){
+                    this.toaster.clear();
+                    this.modalService.openModal(Services.SSModalType.e_report);
+                    this.nssService.reportGenerated = true;
+            } else if (this.nssService.selectedStatisticsGroupList.length > 0 && this.nssService.showFlowsTable) {
                 var strippedoutStatisticGroups = []; 
                 if (this.studyAreaService.selectedStudyArea.CoordinatedReach != null) {
                     //first remove from nssservice
@@ -458,6 +466,129 @@ module StreamStats.Controllers {
         public checkRegulation() {
             //console.log('checking for regulation');
             this.studyAreaService.upstreamRegulation();
+        }
+
+        public skipDelineateAndShowCulvertResults(lat, lng, properties, regionIndex) {
+            
+            var studyArea: Models.IStudyArea = new Models.StudyArea(this.regionService.selectedRegion.RegionID, new WiM.Models.Point(lat, lng, '4326'));
+            this.studyAreaService.AddStudyArea(studyArea);
+            this.studyAreaService.loadCulvertBoundary(properties.SurveyID, regionIndex);
+
+            var paramList = [];
+            var citations = [];
+            let self = this;
+            $.ajax({
+                url: configuration.culvertDataDictURL,
+                type:'get',
+                dataType:'json',
+                success:function(data){
+                    var culvertJSON = data;
+                    var citedCodeList = [];
+                    var citationList = [];
+                    for(var k in properties) {
+                        if(k !== "OBJECTID"){
+                            // Need to get description and name from data dictionary
+                            culvertJSON.forEach(function(param) {
+                                if (param.WMSCode === k) {
+                                    var code;
+                                    // If matching codes in data dict, need to rearrange json to get 10yr, 15yr, and scs column values in report
+                                    if(param.Matchcode !== "None"){
+                                        code = param.Matchcode;
+                                        var index = -1;
+                                        for(var i = 0; i < paramList.length; i++) {
+                                            if (paramList[i].code === code) {
+                                                index = i;
+                                                break;
+                                            }
+                                        }
+                                        if(index !== -1){
+                                            // Code is already in list, just need to add a value
+                                            if(param.Code.includes('10YR')){
+                                                paramList[index].value[0].value_10yr = properties[k];
+                                            }else if(param.Code.includes('25YR')){
+                                                paramList[index].value[0].value_25yr = properties[k];
+                                            }else if(param.Code.substring(param.code.length - 3) ==='SCS'){
+                                                paramList[index].value[0].value_scs = properties[k];
+                                            }
+                                        }else{
+                                            // Code not yet in list
+                                            paramList.push({code: code, value: [{}], name: param.Name, description: param.Description, unit: param.Units});
+                                            var newIndex;
+                                            for(var i = 0; i < paramList.length; i++) {
+                                                if (paramList[i].code === code) {
+                                                    newIndex = i;
+                                                    break;
+                                                }
+                                            }
+                                            if(param.Code.includes('10YR')){
+                                                paramList[newIndex].value[0].value_10yr = properties[k];
+                                            }else if(param.Code.includes('25YR')){
+                                                paramList[newIndex].value[0].value_25yr = properties[k];
+                                            }else if(param.Code.substring(param.Code.length - 3) ==='SCS'){
+                                                paramList[newIndex].value[0].value_scs = properties[k];
+                                            }
+                                        }
+                                    }else{
+                                        code = param.Code;
+                                        paramList.push({code: code, value: properties[k], name: param.Name, description: param.Description, unit: param.Units});
+                                    }
+                                    // Add unique citations
+                                    if(param.Citation !== ''){
+                                        if((code.substring(0, 2) ==='BC' || code.substring(0, 2) ==='PC' || code.substring(0, 2) ==='AC') && (citedCodeList.indexOf(code) === -1 || citationList.indexOf(param.Citation) === -1)){
+                                            citations.push({code: code, citation: param.Citation});
+                                            citedCodeList.push(code);
+                                            citationList.push(param.Citation);
+                                        }else if(citationList.indexOf(param.Citation) === -1){
+                                            citations.push({code: code, citation: param.Citation});
+                                            citedCodeList.push(code);
+                                            citationList.push(param.Citation);
+                                        }
+                                    }
+                                }
+                            })
+                        }
+                    };
+                    self.studyAreaService.studyAreaParameterList = paramList;
+                    self.studyAreaService.culvertCitations = citations;
+                },
+                error: function (error) {
+                    console.log(error)
+                }
+            })
+
+            this.selectedProcedure = 4;
+            this.setProcedureType(4);
+            this.nssService.showHydraulicModelTable = true;
+            this.nssService.showBasinCharacteristicsTable = false;
+        }
+
+        private setCulvertPopups() {
+            // Need to set popup content here to create Display Report button
+            let self = this;
+            configuration.regions.forEach(function(region, i){
+                if(region.Applications.indexOf('Culverts') != -1){
+                    var regionIndex = i;
+                    region.Layers.Culverts.layerOptions.onEachFeature = function (feature, layer) {
+                        var popupContent = '<div><h5>Stream Crossings</h5> ';
+                        var queryProperties = { 
+                            "SurveyID": "Survey ID",
+                            "HQSCORE": "Habitat Quality Score",
+                            "RCPSCORE": "Restoration Connectivity Potential Score",
+                            "MEPCF": "Maximum Extent Practicable (MEP) Cost Factor",
+                        };
+                        Object.keys(queryProperties).map(function (k) {
+                            popupContent += '<strong>' + queryProperties[k] + ': </strong>' + feature.properties[k] + '</br></br>';
+                        });
+                        var latlng = layer.getLatLng();
+                        var lat = latlng.lat;
+                        var lon = latlng.lng;
+                        var properties = JSON.stringify(feature.properties)
+                        popupContent += `<button type='button' id='displayCulvertReport' ng-click='vm.skipDelineateAndShowCulvertResults(`+ lat + `,`+ lon + `,` + properties + `,` + i + `)' class='btn-black fullwidth'>&nbsp;&nbsp;Display Report</button></div>`
+                        var compiledHtml = self.$compile(popupContent)(self.$scope);
+                        layer.bindPopup(compiledHtml[0]);
+                    };
+                }
+            })
         }
 
         private queryRegressionRegions() {

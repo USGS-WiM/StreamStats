@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="../node_modules/leaflet.locatecontrol/dist/L.Control.Locate.css" />
     <link rel="stylesheet" href="../node_modules/leaflet-draw/dist/leaflet.draw.css" />
     <link rel="stylesheet" href="../node_modules/leaflet.elevation/dist/leaflet.elevation-0.0.4.css" />
+    <link rel="stylesheet" href="../node_modules/marker-creator/app/stylesheets/css/markers.css" />
     <link rel="stylesheet" href="../node_modules/angularjs-toaster/toaster.css" />
     <link rel="stylesheet" href="../node_modules/angularjs-slider/dist/rzslider.css" />
     <link rel="stylesheet" href="../node_modules/nvd3/build/nv.d3.css" />
@@ -81,6 +82,8 @@
     <!-- endbuild -->
     <!-- build:js scripts/custom.min.js -->
     <script src="config.js"></script>
+    <!-- Culverts data dictionary -->
+    <script type="text/csv" id="culvertCSV" src="data/MA_Culverts_DataDict.json"></script>
     <!-- Models ref-->
     <script src="Models/StudyArea.js"></script>
     <script src="Models/WatershedEDL.js"></script>
