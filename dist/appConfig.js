@@ -75,7 +75,8 @@ configuration.queryparams =
         'GageStatsServicesStatGroups': '/statisticgroups/',
         'GageStatsServicesNearest': '/stations/Nearest?lat={0}&lon={1}&radius={2}&geojson=false&includeStats=true',
         'GageStatsServicesNetwork': '/stations/Network?lat={0}&lon={1}&distance={2}&includeStats=true&geojson=false',
-        'GageStatsServicesBounds': '/stations/Bounds?xmin={0}&xmax={1}&ymin={2}&ymax={3}&geojson=true'
+        'GageStatsServicesBounds': '/stations/Bounds?xmin={0}&xmax={1}&ymin={2}&ymax={3}&geojson=true',
+        'CulvertWatersheds': '/query?where=SurveyID={0}&f=pgeojson',
     };
 
 configuration.SupportTicketService = {
@@ -335,22 +336,25 @@ configuration.regions = [
                     },
                     "layerArray": [{
                         note: "This overrides the ESRI legend",
-                        "layerName": "MA Stream Crossings",
+                        "layerName": "Stream Crossings",
                         "legend": [{
                             "contentType": "image/png",
                             "imageData": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABHklEQVQ4jaWTwYnDMBBF3yE9GLsIQXBaMOTgEhZ8SwpwAXKugTSgWyAdJIcF1WACKsIhXexBo81YxGRhB4Qt6c+b+TBa8c9YLZzXsiqgBG7ACEx/AQyAbYBCloddiHcHuV8EXA20PdCowx4IQAf2CS2weQcYDLTfC54McAe2UIfYxaABNWCPWVJQySnOwBos4IDpF9Bkwg7w8v8FJHgh9ny04hKgKrLKXu0vAkkFRFtpC6UGfArRlhpw87DrZWOk4kX2uT3p7qEBY5DWk/AoEJgnJx1w1YAJOHRg70qsE1Oc4scRJ3M+B09ot1CfXz5nlU+x/RHYp/N8EjcBhjVYIx3IKKe2nU5+B4A4YS5AG16P6SGex1y89BonqfYxfgDUS0KdfzRtEwAAAABJRU5ErkJggg==",
                             "label": ""
                         }]
                     }],
-                    "queryProperties": { "MA Stream Crossings": { 
+                    "queryProperties": { "Stream Crossings": { 
                         "SurveyID": "Survey ID",
+                        "HQSCORE": "Habitat Quality Score",
+                        "RCPSCORE": "Restoration Connectivity Potential Score",
+                        "MEPCF": "Maximum Extent Practicable (MEP) Cost Factor",
                     }}
                 },
             }, 
-        "Applications": ["Wateruse"], "regionEnabled": true, "ScenariosAvailable": true 
+        "Applications": ["Wateruse", "Culverts"], "regionEnabled": true, "ScenariosAvailable": true 
     },
-    { "RegionID": "MD", "Name": "Maryland and District of Columbia", "Bounds": [[37.970255, -79.489865], [39.725461, -75.045623]], "Layers": {}, "Applications": ["Wateruse"], "regionEnabled": false, "ScenariosAvailable": true },
-    { "RegionID": "ME", "Name": "Maine", "Bounds": [[43.09105, -71.087509], [47.453334, -66.969271]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
+    { "RegionID": "MD", "Name": "Maryland and District of Columbia", "Bounds": [[37.970255, -79.489865], [39.725461, -75.045623]], "Layers": {}, "Applications": ["Wateruse"], "regionEnabled": true, "ScenariosAvailable": true },
+    { "RegionID": "ME", "Name": "Maine", "Bounds": [[43.09105, -71.087509], [47.453334, -66.969271]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "MI", "Name": "Michigan", "Bounds": [[41.697494, -90.4082], [48.173795, -82.419836]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
     { "RegionID": "MN", "Name": "Minnesota", "Bounds": [[43.498102, -97.229436], [49.37173, -89.530673]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
     { "RegionID": "MO", "Name": "Missouri", "Bounds": [[35.989656, -95.767479], [40.609784, -89.105034]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
@@ -859,6 +863,8 @@ configuration.overlayedLayers = {
 };//end overlayedLayers
 
 configuration.stateGeoJSONurl = './data/jsonstates.json';
+
+configuration.culvertDataDictURL = './data/MA_Culverts_DataDict.json';
 
 configuration.streamgageSymbology = [{
     "contentType": "image/png",

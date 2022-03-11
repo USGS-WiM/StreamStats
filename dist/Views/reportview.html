@@ -2,7 +2,8 @@
     <!-- Modal -->
     <div class="modal-header hidden-print">
         <button type="button" class="close" ng-click="vm.close()"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Report</h4>
+        <h4 ng-show="!vm.isCulvertReport" class="modal-title">Report</h4>
+        <h4 ng-show="vm.isCulvertReport" class="modal-title">Culvert Replacement Reports</h4>
     </div>
     <div class="modal-body" >
      <div ng-hide="vm.studyAreaService.selectedStudyArea">A study area is needed before viewing the report</div>   
@@ -166,6 +167,185 @@
                             <a href="{{citation.citationURL.replace('#','')}}" target="_blank">{{citation.author}}{{citation.title}}</a>
                         </div>
 
+                    </div>
+
+                    <!-- Culvert Report -->
+                    <div ng-show="vm.isCulvertReport">
+
+                        <!-- Culvert table -->
+                        <!-- Basic Characteristics -->
+                        <div class="well well-sm">
+                            <h3>Basin Characteristics</h3>
+                            <table id="scsParamTable" class="mainParamTable table table-condensed">
+                                <table id="mainParamTable" class="mainParamTable table table-condensed">
+                                    <thead class="param-table">
+                                        <tr>
+                                            <th>Parameter Code</th>
+                                            <th>Parameter Description</th>
+                                            <th>Value</th>
+                                            <th>Unit</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList"  ng-if="parameter.code.substring(0, 2) !=='BC' && parameter.code.substring(0, 2) !=='PC' && parameter.code.substring(0, 2) !=='AC'">
+                                            <td ng-bind="parameter.code"></td>
+                                            <td ng-bind="parameter.description"></td>
+                                            <td>{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
+                                            <td ng-bind="parameter.unit"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </table>
+                        </div>
+
+                        <h4>Basin Characteristics Citations</h4>
+                        <div ng-repeat="citation in vm.studyAreaService.culvertCitations" ng-if="citation.code.substring(0, 2) !=='BC' && citation.code.substring(0, 2) !=='PC' && citation.code.substring(0, 2) !=='AC'">
+                            <span>{{citation.citation}}</span>
+                        </div>
+
+                        <!-- Culvert Images -->
+                        <!-- <div ng-if="vm.selectedTabName ==='Box'">
+                            <div>
+                                <img class="culvert-img"src="images/BoxCulvert.png" alt="Box Culvert" title="Box Culvert"/>
+                            </div>
+
+                        </div>
+                        <div ng-if="vm.selectedTabName ==='Arch'">
+                            <div>
+                                <img class="culvert-img"src="images/ArchCulvert.png" alt="Arch Culvert" title="Arch Culvert"/>
+                            </div>
+                        </div>
+                        <div ng-if="vm.selectedTabName ==='Pipe'">
+                            <div>
+                                <img class="culvert-img" src="images/PipeCulvert.png" alt="Pipe Culvert" title="Pipe Culvert"/>
+                            </div>
+                        </div> -->
+                        <ul id="culvertTabs" class="nav nav-tabs" ng-show="vm.isCulvertReport">
+                            <li ng-class="{'active':vm.selectedTabName==='Box'}"><a ng-click="vm.selectCulvertTab('Box')">Box</a></li>
+                            <li ng-class="{'active':vm.selectedTabName==='Arch'}"><a ng-click="vm.selectCulvertTab('Arch')">Arch</a></li>
+                            <li ng-class="{'active':vm.selectedTabName==='Pipe'}"><a ng-click="vm.selectCulvertTab('Pipe')">Pipe</a></li>
+                        </ul> 
+
+                        <!-- Box Culvert Table -->
+                        <div ng-if="vm.selectedTabName ==='Box'">
+
+                            <div>
+                                <img class="culvert-img"src="images/BoxCulvert.png" alt="Box Culvert" title="Box Culvert"/>
+                            </div>
+
+                            <div class="well well-sm">
+                                <h3>Hydraulic Model Report</h3>
+                                <table id="scsParamTable" class="mainParamTable table table-condensed">
+                                    <thead class="param-table">
+                                        <tr>
+                                            <th>Parameter Name</th>
+                                            <th>Parameter Description</th>
+                                            <th>10-Yr Flow</th>
+                                            <th>25-Yr Flow</th>
+                                            <th>Meets SCS</th>
+                                            <th>Unit</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                            <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList" ng-if="parameter.code.substring(0, 2) ==='BC'">
+                                                    <td ng-bind="parameter.name"></td>
+                                                    <td ng-bind="parameter.description"></td>
+                                                    <td>{{parameter.value[0].value_10yr !== '' && parameter.value[0].value_10yr !== null ? parameter.value[0].value_10yr : ''}}</td>
+                                                    <td>{{parameter.value[0].value_25yr !== '' && parameter.value[0].value_25yr !== null ? parameter.value[0].value_25yr : ''}}</td>
+                                                    <td>{{parameter.value[0].value_scs !== '' && parameter.value[0].value_scs !== null ? parameter.value[0].value_scs : ''}}</td>
+                                                    <td ng-bind="parameter.unit"></td>
+                                            </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Arch Culvert Table -->
+                        <div ng-if="vm.selectedTabName ==='Arch'">
+
+                            <div>
+                                <img class="culvert-img"src="images/ArchCulvert.png" alt="Arch Culvert" title="Arch Culvert"/>
+                            </div>
+
+                            <div class="well well-sm">
+                                <h3>Hydraulic Model Report</h3>
+                                <table id="scsParamTable" class="mainParamTable table table-condensed">
+                                    <thead class="param-table">
+                                        <tr>
+                                            <th>Parameter Name</th>
+                                            <th>Parameter Description</th>
+                                            <th>10-Yr Flow</th>
+                                            <th>25-Yr Flow</th>
+                                            <th>Meets SCS</th>
+                                            <th>Unit</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList" ng-if="parameter.code.substring(0, 2) ==='AC'">
+                                            <td ng-bind="parameter.name"></td>
+                                            <td ng-bind="parameter.description"></td>
+                                            <td>{{parameter.value[0].value_10yr !== '' && parameter.value[0].value_10yr !== null ? parameter.value[0].value_10yr : ''}}</td>
+                                            <td>{{parameter.value[0].value_25yr !== '' && parameter.value[0].value_25yr !== null ? parameter.value[0].value_25yr : ''}}</td>
+                                            <td>{{parameter.value[0].value_scs !== '' && parameter.value[0].value_scs !== null ? parameter.value[0].value_scs : ''}}</td>
+                                            <td ng-bind="parameter.unit"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Pipe Culvert Table -->
+                        <div ng-if="vm.selectedTabName ==='Pipe'">
+
+                            <div>
+                                <img class="culvert-img" src="images/PipeCulvert.png" alt="Pipe Culvert" title="Pipe Culvert"/>
+                            </div>
+
+                            <div class="well well-sm">
+                                <h3>Hydraulic Model Report</h3>
+                                <table id="scsParamTable" class="mainParamTable table table-condensed">
+                                    <thead class="param-table">
+                                        <tr>
+                                            <th>Parameter Name</th>
+                                            <th>Parameter Description</th>
+                                            <th>10-Yr Flow</th>
+                                            <th>25-Yr Flow</th>
+                                            <th>Meets SCS</th>
+                                            <th>Unit</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList" ng-if="parameter.code.substring(0, 2) ==='PC'">
+                                            <td ng-bind="parameter.name"></td>
+                                            <td ng-bind="parameter.description"></td>
+                                            <td>{{parameter.value[0].value_10yr !== '' && parameter.value[0].value_10yr !== null ? parameter.value[0].value_10yr : ''}}</td>
+                                            <td>{{parameter.value[0].value_25yr !== '' && parameter.value[0].value_25yr !== null ? parameter.value[0].value_25yr : ''}}</td>
+                                            <td>{{parameter.value[0].value_scs !== '' && parameter.value[0].value_scs !== null ? parameter.value[0].value_scs : ''}}</td>
+                                            <td ng-bind="parameter.unit"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <h4>Hydraulic Model Citations</h4>
+                        <div ng-if="vm.selectedTabName ==='Box'">
+                            <div ng-repeat="citation in vm.studyAreaService.culvertCitations" ng-if="citation.code.substring(0, 2) ==='BC'">
+                                <span>{{citation.citation}}</span>
+                            </div>
+                        </div>
+
+                        <div ng-if="vm.selectedTabName ==='Arch'">
+                            <div ng-repeat="citation in vm.studyAreaService.culvertCitations" ng-if="citation.code.substring(0, 2) ==='AC'">
+                                <span>{{citation.citation}}</span>
+                            </div>
+                        </div>
+                        
+                        <div ng-if="vm.selectedTabName ==='Pipe'">
+                            <div ng-repeat="citation in vm.studyAreaService.culvertCitations" ng-if="citation.code.substring(0, 2) ==='PC'">
+                                <span>{{citation.citation}}</span>
+                            </div>
+                        </div>
                     </div>
 
                     <!--Extensions results-->
