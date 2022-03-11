@@ -722,7 +722,6 @@ module StreamStats.Services {
                 this.toaster.pop('wait', "Checking if study area is a coordinated reach.", "Please wait...", 0);
 
                 var ppt = this.selectedStudyArea.Pourpoint;
-
                 var turfPoint = turf.point([ppt.Longitude, ppt.Latitude]);
                 var distance = 0.005; //kilometers
                 var bearings = [-90, 0, 90, 180]; 
@@ -732,7 +731,7 @@ module StreamStats.Services {
                     boundingBox[index] = destination.geometry.coordinates[index % 2 == 0 ? 0 : 1];
                 });
 
-                var outFields = "eqWithStrID.BASIN_NAME,eqWithStrID.DVA_EQ_ID,eqWithStrID.a10,eqWithStrID.b10,eqWithStrID.a25,eqWithStrID.b25,eqWithStrID.a50,eqWithStrID.b50,eqWithStrID.a100,eqWithStrID.b100,eqWithStrID.a500,eqWithStrID.b500";
+                var outFields = "eqWithStrID.Stream_Name,eqWithStrID.StreamID_ID,eqWithStrID.BASIN_NAME,eqWithStrID.DVA_EQ_ID,eqWithStrID.a10,eqWithStrID.b10,eqWithStrID.a25,eqWithStrID.b25,eqWithStrID.a50,eqWithStrID.b50,eqWithStrID.a100,eqWithStrID.b100,eqWithStrID.a500,eqWithStrID.b500";
                 var url = configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['coordinatedReachQueryService']
                     .format(this.selectedStudyArea.RegionID.toLowerCase(), boundingBox[0], boundingBox[1], boundingBox[2], boundingBox[3], ppt.crs, outFields);
                 var request: WiM.Services.Helpers.RequestInfo =
@@ -750,7 +749,7 @@ module StreamStats.Services {
                             var attributes = response.data.features[0].attributes
                             //console.log('query success');
 
-                            this.selectedStudyArea.CoordinatedReach = new Models.CoordinatedReach(attributes["eqWithStrID.BASIN_NAME"], attributes["eqWithStrID.DVA_EQ_ID"]);
+                            this.selectedStudyArea.CoordinatedReach = new Models.CoordinatedReach(attributes["eqWithStrID.BASIN_NAME"], attributes["eqWithStrID.DVA_EQ_ID"],attributes["eqWithStrID.Stream_Name"], attributes["eqWithStrID.StreamID_ID"]);
                             //remove from arrays
                             delete attributes["eqWithStrID.BASIN_NAME"];
                             delete attributes["eqWithStrID.DVA_EQ_ID"];

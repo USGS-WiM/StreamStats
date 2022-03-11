@@ -3,9 +3,12 @@ var StreamStats;
     var Models;
     (function (Models) {
         var CoordinatedReach = (function () {
-            function CoordinatedReach(name, id) {
-                this._name = "Coordinated Reach: " + name;
-                this._id = id;
+            function CoordinatedReach(basinName, eqID, streamName, streamID) {
+                this._label = "Coordinated Reach - Stream ID: " + streamID + ", Stream Name: " + streamName + ", Basin Name: " + basinName;
+                this._basinName = basinName;
+                this._eqID = eqID;
+                this._streamName = streamName;
+                this._streamID = streamID;
                 this._flowCoefficients = {};
             }
             Object.defineProperty(CoordinatedReach.prototype, "FlowCoefficients", {
@@ -15,16 +18,37 @@ var StreamStats;
                 enumerable: false,
                 configurable: true
             });
-            Object.defineProperty(CoordinatedReach.prototype, "Name", {
+            Object.defineProperty(CoordinatedReach.prototype, "basinName", {
                 get: function () {
-                    return this._name;
+                    return this._basinName;
                 },
                 enumerable: false,
                 configurable: true
             });
-            Object.defineProperty(CoordinatedReach.prototype, "ID", {
+            Object.defineProperty(CoordinatedReach.prototype, "eqID", {
                 get: function () {
-                    return this._id;
+                    return this._eqID;
+                },
+                enumerable: false,
+                configurable: true
+            });
+            Object.defineProperty(CoordinatedReach.prototype, "streamID", {
+                get: function () {
+                    return this._streamID;
+                },
+                enumerable: false,
+                configurable: true
+            });
+            Object.defineProperty(CoordinatedReach.prototype, "streamName", {
+                get: function () {
+                    return this._streamName;
+                },
+                enumerable: false,
+                configurable: true
+            });
+            Object.defineProperty(CoordinatedReach.prototype, "label", {
+                get: function () {
+                    return this._label;
                 },
                 enumerable: false,
                 configurable: true
@@ -72,8 +96,8 @@ var StreamStats;
                     }
                     var ssg = {
                         id: 0,
-                        name: this.Name,
-                        code: this.ID,
+                        name: this.label,
+                        code: this.eqID,
                         parameters: params,
                         results: result
                     };
