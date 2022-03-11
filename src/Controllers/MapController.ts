@@ -201,10 +201,12 @@ module StreamStats.Controllers {
         }
         public imageryToggled = false;
 
+        private http: any;
+
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$compile', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack'];
-        constructor(public $scope: IMapControllerScope, public $compile: IMapControllerCompile, toaster, $analytics, $location: ng.ILocationService, $stateParams, leafletBoundsHelper: any, leafletData: ILeafletData, search: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, exploration: Services.IExplorationService, private _prosperServices: Services.IProsperService, eventManager: WiM.Event.IEventManager, private modal: Services.IModalService, private modalStack: ng.ui.bootstrap.IModalStackService) {
+        static $inject = ['$scope', '$compile', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack', '$http'];
+        constructor(public $scope: IMapControllerScope, public $compile: IMapControllerCompile, toaster, $analytics, $location: ng.ILocationService, $stateParams, leafletBoundsHelper: any, leafletData: ILeafletData, search: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, exploration: Services.IExplorationService, private _prosperServices: Services.IProsperService, eventManager: WiM.Event.IEventManager, private modal: Services.IModalService, private modalStack: ng.ui.bootstrap.IModalStackService, $http: ng.IHttpService,) {
             $scope.vm = this;
             
             this.toaster = toaster;
@@ -221,6 +223,8 @@ module StreamStats.Controllers {
             this.cursorStyle = 'pointer';
             this.environment = configuration.environment;
             this.selectedExplorationTool = null;
+            this.http = $http;
+            this.getCulvertCreds();
 
             this.init();
 
@@ -1733,6 +1737,15 @@ module StreamStats.Controllers {
 
             //add disclaimer here
             if (isInExclusionArea && excludeReason) this.studyArea.selectedStudyArea.Disclaimers['isInExclusionArea'] = 'The delineation point is in an exclusion area. ' + excludeReason;
+        }
+        private getCulvertCreds() {
+            this.http.get('./data/culvert_secrets.json').then(function(response) {
+                configuration.regions.forEach(function(region){
+                    if(region.RegionID === "MA"){
+                        region.Layers.Culverts.layerOptions.token = response.data.token;
+                    }
+                })
+            })
         }
     }//end class
 

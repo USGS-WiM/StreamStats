@@ -41,7 +41,7 @@ var StreamStats;
             return MapDefault;
         }());
         var MapController = (function () {
-            function MapController($scope, $compile, toaster, $analytics, $location, $stateParams, leafletBoundsHelper, leafletData, search, region, studyArea, StatisticsGroup, exploration, _prosperServices, eventManager, modal, modalStack) {
+            function MapController($scope, $compile, toaster, $analytics, $location, $stateParams, leafletBoundsHelper, leafletData, search, region, studyArea, StatisticsGroup, exploration, _prosperServices, eventManager, modal, modalStack, $http) {
                 var _this = this;
                 this.$scope = $scope;
                 this.$compile = $compile;
@@ -87,6 +87,8 @@ var StreamStats;
                 this.cursorStyle = 'pointer';
                 this.environment = configuration.environment;
                 this.selectedExplorationTool = null;
+                this.http = $http;
+                this.getCulvertCreds();
                 this.init();
                 this.eventManager.SubscribeToEvent(StreamStats.Services.onSelectedStudyAreaChanged, new WiM.Event.EventHandler(function () {
                     _this.onSelectedStudyAreaChanged();
@@ -1253,7 +1255,16 @@ var StreamStats;
                 if (isInExclusionArea && excludeReason)
                     this.studyArea.selectedStudyArea.Disclaimers['isInExclusionArea'] = 'The delineation point is in an exclusion area. ' + excludeReason;
             };
-            MapController.$inject = ['$scope', '$compile', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack'];
+            MapController.prototype.getCulvertCreds = function () {
+                this.http.get('./data/culvert_secrets.json').then(function (response) {
+                    configuration.regions.forEach(function (region) {
+                        if (region.RegionID === "MA") {
+                            region.Layers.Culverts.layerOptions.token = response.data.token;
+                        }
+                    });
+                });
+            };
+            MapController.$inject = ['$scope', '$compile', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack', '$http'];
             return MapController;
         }());
         angular.module('StreamStats.Controllers')
