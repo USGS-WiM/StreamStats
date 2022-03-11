@@ -322,6 +322,8 @@ var StreamStats;
                     dataType: 'json',
                     success: function (data) {
                         var culvertJSON = data;
+                        var citedCodeList = [];
+                        var citationList = [];
                         for (var k in properties) {
                             if (k !== "OBJECTID") {
                                 culvertJSON.forEach(function (param) {
@@ -337,10 +339,6 @@ var StreamStats;
                                                 }
                                             }
                                             if (index !== -1) {
-                                                console.log(index);
-                                                console.log(paramList[index]);
-                                                console.log(paramList[index].value);
-                                                console.log(paramList[index].value[0]);
                                                 if (param.Code.includes('10YR')) {
                                                     paramList[index].value[0].value_10yr = properties[k];
                                                 }
@@ -375,15 +373,23 @@ var StreamStats;
                                             code = param.Code;
                                             paramList.push({ code: code, value: properties[k], name: param.Name, description: param.Description, unit: param.Units });
                                         }
-                                        if (citations.indexOf(param.Citation) !== -1) {
-                                            citations.push(param.Citation);
+                                        if (param.Citation !== '') {
+                                            if ((code.substring(0, 2) === 'BC' || code.substring(0, 2) === 'PC' || code.substring(0, 2) === 'AC') && (citedCodeList.indexOf(code) === -1 || citationList.indexOf(param.Citation) === -1)) {
+                                                citations.push({ code: code, citation: param.Citation });
+                                                citedCodeList.push(code);
+                                                citationList.push(param.Citation);
+                                            }
+                                            else if (citationList.indexOf(param.Citation) === -1) {
+                                                citations.push({ code: code, citation: param.Citation });
+                                                citedCodeList.push(code);
+                                                citationList.push(param.Citation);
+                                            }
                                         }
                                     }
                                 });
                             }
                         }
                         ;
-                        console.log(paramList);
                         self.studyAreaService.studyAreaParameterList = paramList;
                         self.studyAreaService.culvertCitations = citations;
                     },

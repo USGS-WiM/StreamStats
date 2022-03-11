@@ -483,6 +483,8 @@ module StreamStats.Controllers {
                 dataType:'json',
                 success:function(data){
                     var culvertJSON = data;
+                    var citedCodeList = [];
+                    var citationList = [];
                     for(var k in properties) {
                         if(k !== "OBJECTID"){
                             // Need to get description and name from data dictionary
@@ -530,8 +532,17 @@ module StreamStats.Controllers {
                                         code = param.Code;
                                         paramList.push({code: code, value: properties[k], name: param.Name, description: param.Description, unit: param.Units});
                                     }
-                                    if(citations.indexOf(param.Citation) !== -1){
-                                        citations.push(param.Citation);
+                                    // Add unique citations
+                                    if(param.Citation !== ''){
+                                        if((code.substring(0, 2) ==='BC' || code.substring(0, 2) ==='PC' || code.substring(0, 2) ==='AC') && (citedCodeList.indexOf(code) === -1 || citationList.indexOf(param.Citation) === -1)){
+                                            citations.push({code: code, citation: param.Citation});
+                                            citedCodeList.push(code);
+                                            citationList.push(param.Citation);
+                                        }else if(citationList.indexOf(param.Citation) === -1){
+                                            citations.push({code: code, citation: param.Citation});
+                                            citedCodeList.push(code);
+                                            citationList.push(param.Citation);
+                                        }
                                     }
                                 }
                             })
