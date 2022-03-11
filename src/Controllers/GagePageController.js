@@ -78,6 +78,7 @@ var StreamStats;
             __extends(GagePageController, _super);
             function GagePageController($scope, $http, modalService, modal) {
                 var _this = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
+                _this.filteredStatGroupsChar = [];
                 _this.showPreferred = false;
                 _this.multiselectOptions = {
                     displayProp: 'name'
@@ -87,6 +88,7 @@ var StreamStats;
                 _this.modalService = modalService;
                 _this.init();
                 _this.selectedStatisticGroups = [];
+                _this.selectedStatGroupsChar = [];
                 _this.showPreferred = false;
                 return _this;
             }
@@ -125,6 +127,15 @@ var StreamStats;
                             _this.gage.citations.push(char.citation);
                         }
                     }
+                    if (!_this.checkForCharStatisticGroup(char.variableType.statisticGroupTypeID)) {
+                        if (char.hasOwnProperty('statisticGroupType')) {
+                            var statgroup = char.statisticGroupType;
+                            _this.filteredStatGroupsChar.push(statgroup);
+                        }
+                        else {
+                            _this.getCharStatGroup(char.variableType.statisticGroupTypeID);
+                        }
+                    }
                 });
             };
             GagePageController.prototype.checkForCitation = function (id) {
@@ -161,8 +172,21 @@ var StreamStats;
                         _this.gage.statisticsgroups.push(response.data);
                 });
             };
+            GagePageController.prototype.getCharStatGroup = function (id) {
+                var _this = this;
+                var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStatGroups + id;
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+                this.Execute(request).then(function (response) {
+                    if (!_this.checkForCharStatisticGroup(response.data.id))
+                        _this.filteredStatGroupsChar.push(response.data);
+                });
+            };
             GagePageController.prototype.checkForStatisticGroup = function (id) {
                 var found = this.gage.statisticsgroups.some(function (el) { return el.id === id; });
+                return found;
+            };
+            GagePageController.prototype.checkForCharStatisticGroup = function (id) {
+                var found = this.filteredStatGroupsChar.some(function (el) { return el.id === id; });
                 return found;
             };
             GagePageController.prototype.checkForPredInt = function (statGroupID) {

@@ -66,27 +66,36 @@
 
         
         <div class="panel panel-default" ng-show="vm.gage.characteristics.length > 0">
-            <div class="panel-heading">Physical Characteristics</div>
+            <div  class="table-title stat-table-title">Physical Characteristics
+                <div class="stat-filters">
+                    <label>Filter By Statistic Group: </label>
+                    <div id="statGroupSelect" ng-dropdown-multiselect="" options="vm.filteredStatGroupsChar" selected-model="vm.selectedStatGroupsChar" extra-settings="vm.multiselectOptions"></div>        
+                </div>
+            </div>
             <div class="panel-body">
+                
+                <div class="panel panel-default" ng-repeat="statisticGroup in vm.filteredStatGroupsChar" ng-if="vm.selectedStatGroupsChar.length == 0 || vm.selectedStatGroupsChar.indexOf(statisticGroup) > -1" ng-form="characteristicStatsGroupForm">
+                    <div class="panel-heading">{{statisticGroup.name}}</div>
  
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th >Characteristic Name</th>
-                            <th >Value</th>
-                            <th >Units</th>
-                            <th >Citation</th>
-                        </tr>
-                    </thead>
-                    <tbody >
-                        <tr ng-repeat="characteristic in vm.gage.characteristics" ng-form="characteristicForm">
-                            <td ng-bind="characteristic.variableType.name"></td>
-                            <td ng-bind="characteristic.value"></td>
-                            <td ng-bind="characteristic.unitType.name"></td>
-                            <td ><a href="#{{characteristic.citationID}}">{{characteristic.citationID}}</a></td>
-                          <tr>
-                      </tbody>
-                </table>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th >Characteristic Name</th>
+                                <th >Value</th>
+                                <th >Units</th>
+                                <th >Citation</th>
+                            </tr>
+                        </thead>
+                        <tbody >
+                            <tr ng-repeat="characteristic in vm.gage.characteristics" ng-if="characteristic.variableType.statisticGroupTypeID == statisticGroup.id" ng-form="characteristicForm">
+                                <td ng-bind="characteristic.variableType.name"></td>
+                                <td ng-bind="characteristic.value"></td>
+                                <td ng-bind="characteristic.unitType.name"></td>
+                                <td ><a href="#{{characteristic.citationID}}">{{characteristic.citationID}}</a></td>
+                            <tr>
+                        </tbody>
+                    </table>
+                </div>
 
                 
             </div>
