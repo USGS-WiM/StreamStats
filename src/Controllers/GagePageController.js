@@ -88,6 +88,9 @@ var StreamStats;
                 _this.init();
                 _this.selectedStatisticGroups = [];
                 _this.showPreferred = false;
+                _this.print = function () {
+                    window.print();
+                };
                 return _this;
             }
             GagePageController.prototype.Close = function () {
