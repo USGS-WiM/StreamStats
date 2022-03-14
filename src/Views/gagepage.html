@@ -59,6 +59,10 @@
                             <th scope="row">Agency</th>
                             <td>{{vm.gage.agency.name}}</td>
                          </tr>
+                         <tr>
+                            <th scope="row">NWIS Period of Record</th>
+                            <td>{{vm.gage.StartDate | date:'MM/dd/yyyy'}} - {{vm.gage.EndDate | date:'MM/dd/yyyy'}}</td>
+                         </tr>
                       </tbody>
                 </table>
             </div>
