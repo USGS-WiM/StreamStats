@@ -68,7 +68,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList">
+                                <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList  | orderBy:'code'">
                                     <td ng-bind="parameter.code"></td>
                                     <td ng-bind="parameter.description"></td>
                                     <td>{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
@@ -110,7 +110,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr ng-repeat="parameter in regressionRegion.parameters">
+                                    <tr ng-repeat="parameter in regressionRegion.parameters | orderBy:'code'">
                                         <td ng-bind="parameter.code"></td>
                                         <td ng-bind="parameter.name"></td>
                                         <td ng-class="(parameter.value < parameter.limits.min) || (parameter.value > parameter.limits.max) ? 'wim-warning' : ''">{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
