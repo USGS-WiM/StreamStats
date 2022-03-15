@@ -27,6 +27,8 @@ var StreamStats;
                 this.isExceedanceTableOpen = false;
                 this.isFlowTableOpen = false;
                 this.SSServicesVersion = '1.2.22';
+                this.QPPQError = false;
+                this.QPPQErrorMsg = "Failed to compute FDCTM.";
                 this._graphData = {
                     data: {},
                     options: {}
@@ -333,90 +335,101 @@ var StreamStats;
                 }, margins);
             };
             ReportController.prototype.ActivateGraphs = function (result) {
-                result.graphdata = {
-                    exceedance: {
-                        data: [{ values: [], area: true, color: '#7777ff' }],
-                        options: {
-                            chart: {
-                                type: 'lineChart',
-                                height: 450,
-                                margin: {
-                                    top: 20,
-                                    right: 30,
-                                    bottom: 60,
-                                    left: 65
-                                },
-                                x: function (d) { return d.label; },
-                                y: function (d) { return d.value; },
-                                showLegend: false,
-                                valueFormat: function (d) {
-                                    return d3.format(',.3f')(d);
-                                },
-                                xAxis: {
-                                    showMaxMin: false
-                                },
-                                yAxis: {
-                                    axisLabel: 'Discharge (cfs)',
-                                    tickFormat: function (d) {
-                                        return d3.format(',.0f')(d);
+                var _this = this;
+                if (result == undefined) {
+                    this.QPPQError = true;
+                    this.nssService.selectedStatisticsGroupList.forEach(function (statGroup) {
+                        if (statGroup.disclaimers['Error'] && (statGroup.disclaimers['Error']).includes("Failed to compute FDCTM")) {
+                            _this.QPPQErrorMsg = (statGroup.disclaimers['Error']);
+                        }
+                    });
+                }
+                else {
+                    result.graphdata = {
+                        exceedance: {
+                            data: [{ values: [], area: true, color: '#7777ff' }],
+                            options: {
+                                chart: {
+                                    type: 'lineChart',
+                                    height: 450,
+                                    margin: {
+                                        top: 20,
+                                        right: 30,
+                                        bottom: 60,
+                                        left: 65
                                     },
-                                    tickValues: [1, 10, 100, 1000, 10000, 1000000]
-                                },
-                                yScale: d3.scale.log(),
-                                title: {
-                                    enable: true,
-                                    text: "Flow Duration Curve Transfer Method (FDCTM) Model Estimated Exceedance Probabilities"
+                                    x: function (d) { return d.label; },
+                                    y: function (d) { return d.value; },
+                                    showLegend: false,
+                                    valueFormat: function (d) {
+                                        return d3.format(',.3f')(d);
+                                    },
+                                    xAxis: {
+                                        showMaxMin: false
+                                    },
+                                    yAxis: {
+                                        axisLabel: 'Discharge (cfs)',
+                                        tickFormat: function (d) {
+                                            return d3.format(',.0f')(d);
+                                        },
+                                        tickValues: [1, 10, 100, 1000, 10000, 1000000]
+                                    },
+                                    yScale: d3.scale.log(),
+                                    title: {
+                                        enable: true,
+                                        text: "Flow Duration Curve Transfer Method (FDCTM) Model Estimated Exceedance Probabilities"
+                                    }
+                                }
+                            }
+                        },
+                        flow: {
+                            data: [
+                                { key: result.referanceGage.name, values: this.processData(result.referanceGage.discharge.observations) },
+                                { key: "Estimated (at clicked point)", values: this.processData(result.estimatedFlow.observations) }
+                            ],
+                            options: {
+                                chart: {
+                                    type: 'lineChart',
+                                    height: 450,
+                                    margin: {
+                                        top: 20,
+                                        right: 0,
+                                        bottom: 50,
+                                        left: 0
+                                    },
+                                    x: function (d) {
+                                        return new Date(d.x).getTime();
+                                    },
+                                    y: function (d) {
+                                        return d.y;
+                                    },
+                                    useInteractiveGuideline: false,
+                                    interactive: true,
+                                    tooltips: true,
+                                    xAxis: {
+                                        tickFormat: function (d) {
+                                            return d3.time.format('%x')(new Date(d));
+                                        },
+                                        rotateLabels: -30,
+                                        showMaxMin: true
+                                    },
+                                    yAxis: {
+                                        axisLabel: 'Estimated Discharge (cfs)',
+                                        tickFormat: function (d) {
+                                            return d != null ? d.toUSGSvalue() : d;
+                                        },
+                                        showMaxMin: true
+                                    },
+                                    zoom: {
+                                        enabled: false
+                                    }
                                 }
                             }
                         }
-                    },
-                    flow: {
-                        data: [
-                            { key: result.referanceGage.name, values: this.processData(result.referanceGage.discharge.observations) },
-                            { key: "Estimated (at clicked point)", values: this.processData(result.estimatedFlow.observations) }
-                        ],
-                        options: {
-                            chart: {
-                                type: 'lineChart',
-                                height: 450,
-                                margin: {
-                                    top: 20,
-                                    right: 0,
-                                    bottom: 50,
-                                    left: 0
-                                },
-                                x: function (d) {
-                                    return new Date(d.x).getTime();
-                                },
-                                y: function (d) {
-                                    return d.y;
-                                },
-                                useInteractiveGuideline: false,
-                                interactive: true,
-                                tooltips: true,
-                                xAxis: {
-                                    tickFormat: function (d) {
-                                        return d3.time.format('%x')(new Date(d));
-                                    },
-                                    rotateLabels: -30,
-                                    showMaxMin: true
-                                },
-                                yAxis: {
-                                    axisLabel: 'Estimated Discharge (cfs)',
-                                    tickFormat: function (d) {
-                                        return d != null ? d.toUSGSvalue() : d;
-                                    },
-                                    showMaxMin: true
-                                },
-                                zoom: {
-                                    enabled: false
-                                }
-                            }
-                        }
+                    };
+                    for (var key in result.exceedanceProbabilities) {
+                        result.graphdata.exceedance.data[0].values.push({ label: key, value: result.exceedanceProbabilities[key] });
                     }
-                };
-                for (var key in result.exceedanceProbabilities) {
-                    result.graphdata.exceedance.data[0].values.push({ label: key, value: result.exceedanceProbabilities[key] });
                 }
             };
             ReportController.prototype.initMap = function () {
