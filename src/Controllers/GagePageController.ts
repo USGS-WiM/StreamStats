@@ -139,6 +139,7 @@ module StreamStats.Controllers {
     class GagePageController extends WiM.Services.HTTPServiceBase implements IGagePageController {
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
+        public print: any;
         public sce: any;
         private modalInstance: ng.ui.bootstrap.IModalServiceInstance;
         private modalService: Services.IModalService;
@@ -168,6 +169,10 @@ module StreamStats.Controllers {
             this.selectedStatisticGroups = [];
             this.selectedStatGroupsChar = [];
             this.showPreferred = false;
+
+            this.print = function () {
+                window.print();
+            };
         }  
         
         //Methods  

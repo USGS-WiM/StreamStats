@@ -90,6 +90,9 @@ var StreamStats;
                 _this.selectedStatisticGroups = [];
                 _this.selectedStatGroupsChar = [];
                 _this.showPreferred = false;
+                _this.print = function () {
+                    window.print();
+                };
                 return _this;
             }
             GagePageController.prototype.Close = function () {
