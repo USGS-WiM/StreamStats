@@ -309,16 +309,17 @@ module StreamStats.Controllers {
         }
 
         public citationSelected(statistic) {
-            let self = this;
+            var returnValue = false;
+            var self = this;
             this.selectedCitations.forEach(function(citation, i) {
-                console.log(citation.id)
                 if(citation.id === statistic.citationID){
-                    return true;
+                    returnValue = true;
                 }else if(i === self.selectedCitations.length - 1){
                     // Last index, no matches
-                    return false;
+                    returnValue = false;
                 }
             })
+            return returnValue;
         }
         
         //Helper Methods

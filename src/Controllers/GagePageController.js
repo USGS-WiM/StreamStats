@@ -185,16 +185,17 @@ var StreamStats;
                 });
             };
             GagePageController.prototype.citationSelected = function (statistic) {
+                var returnValue = false;
                 var self = this;
                 this.selectedCitations.forEach(function (citation, i) {
-                    console.log(citation.id);
                     if (citation.id === statistic.citationID) {
-                        return true;
+                        returnValue = true;
                     }
                     else if (i === self.selectedCitations.length - 1) {
-                        return false;
+                        returnValue = false;
                     }
                 });
+                return returnValue;
             };
             GagePageController.prototype.init = function () {
                 this.AppVersion = configuration.version;

@@ -126,7 +126,7 @@
                                 </tr>
                             </thead>
                             <tbody >
-                                <tr ng-repeat="statistic in vm.gage.statistics" ng-if="statistic.statisticGroupTypeID == statisticGroup.id && (vm.showPreferred == false || statistic.isPreferred) || vm.citationSelected(statistic)" ng-form="statisticsForm">
+                                <tr ng-repeat="statistic in vm.gage.statistics" ng-if="statistic.statisticGroupTypeID == statisticGroup.id && (vm.showPreferred == false || statistic.isPreferred) && (vm.citationSelected(statistic) || vm.selectedCitations.length == 0)" ng-form="statisticsForm">
                                     <td class="stat-names" ng-bind="statistic.regressionType.name"></td>
                                     <td ng-bind="statistic.value"></td>
                                     <td ng-bind="statistic.unitType.name"></td>
