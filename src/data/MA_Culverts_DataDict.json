@@ -130,14 +130,14 @@
       {
         "Name": "GPSx",
         "Code": "GPSx",
-        "Description": "GPS longitude (decimal degree)",
+        "Description": "NAACC GPS longitude",
         "Field type": "",
         "NAACC Field": "Yes",
         "Maximum Extent Practicable Culvert Design": "No",
         "10%-AEP Design Flow Culvert Design": "No",
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "",
-        "Units": "",
+        "Units": "Decimal Degrees",
         "Accuracy": "",
         "Citation": "",
         "WMSCode": "GPSx",
@@ -146,14 +146,14 @@
       {
         "Name": "GPSy",
         "Code": "GPSy",
-        "Description": "GPS latitude (decimal degree)",
+        "Description": "NAACC GPS latitude",
         "Field type": "",
         "NAACC Field": "Yes",
         "Maximum Extent Practicable Culvert Design": "No",
         "10%-AEP Design Flow Culvert Design": "No",
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "",
-        "Units": "",
+        "Units": "Decimal Degrees",
         "Accuracy": "",
         "Citation": "",
         "WMSCode": "GPSy",
@@ -162,7 +162,7 @@
       {
         "Name": "LastUpdat",
         "Code": "LastUpdat",
-        "Description": "Late update to NAACC",
+        "Description": "Late date NAACC site file updated",
         "Field type": "",
         "NAACC Field": "Yes",
         "Maximum Extent Practicable Culvert Design": "No",
@@ -178,7 +178,7 @@
       {
         "Name": "Road",
         "Code": "Road",
-        "Description": "Road name",
+        "Description": "NAACC Road name",
         "Field type": "",
         "NAACC Field": "Yes",
         "Maximum Extent Practicable Culvert Design": "No",
@@ -194,7 +194,7 @@
       {
         "Name": "CrState",
         "Code": "CrState",
-        "Description": "State name",
+        "Description": "NAACC State name",
         "Field type": "",
         "NAACC Field": "Yes",
         "Maximum Extent Practicable Culvert Design": "No",
@@ -210,7 +210,7 @@
       {
         "Name": "StrmName",
         "Code": "StrmName",
-        "Description": "Stream name from USGS topographic maps",
+        "Description": "NAACC Stream name from USGS topographic maps",
         "Field type": "",
         "NAACC Field": "Yes",
         "Maximum Extent Practicable Culvert Design": "No",
@@ -226,7 +226,7 @@
       {
         "Name": "CrTown",
         "Code": "CrTown",
-        "Description": "Community name",
+        "Description": "NAACC Community name",
         "Field type": "",
         "NAACC Field": "Yes",
         "Maximum Extent Practicable Culvert Design": "No",
@@ -429,7 +429,7 @@
         "Accuracy": "1",
         "Citation": "",
         "WMSCode": "PK10AEP",
-        "Matchcode": "None"
+        "Matchcode": "STATS"
       },
       {
         "Name": "25-year Peakflow",
@@ -445,7 +445,7 @@
         "Accuracy": "1",
         "Citation": "",
         "WMSCode": "PK4AEP",
-        "Matchcode": "None"
+        "Matchcode": "STATS"
       },
       {
         "Name": "50-year Peakflow",
@@ -461,7 +461,7 @@
         "Accuracy": "1",
         "Citation": "",
         "WMSCode": "PK2AEP",
-        "Matchcode": "None"
+        "Matchcode": "STATS"
       },
       {
         "Name": "100-year Peakflow",
@@ -477,7 +477,7 @@
         "Accuracy": "1",
         "Citation": "",
         "WMSCode": "PK1AEP",
-        "Matchcode": "None"
+        "Matchcode": "STATS"
       },
       {
         "Name": "Bankfull Width",
@@ -493,7 +493,7 @@
         "Accuracy": "0.1",
         "Citation": "USGS Zarriello reports",
         "WMSCode": "BFWDTH",
-        "Matchcode": "None"
+        "Matchcode": "STATS"
       },
       {
         "Name": "Bankfull Mean Depth",
@@ -506,10 +506,10 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Units": "Feet",
-        "Accuracy": "0.001",
+        "Accuracy": "0.01",
         "Citation": "USGS Zarriello reports",
         "WMSCode": "BFDPTH",
-        "Matchcode": "None"
+        "Matchcode": "STATS"
       },
       {
         "Name": "Bankfull XS Area",
@@ -525,7 +525,7 @@
         "Accuracy": "0.1",
         "Citation": "USGS Zarriello reports",
         "WMSCode": "BFAREA",
-        "Matchcode": "None"
+        "Matchcode": "STATS"
       },
       {
         "Name": "Coldwater Fisheries Resources ",
@@ -737,7 +737,7 @@
       },
       {
         "Name": "Box Culvert Span",
-        "Code": "BCSPNSCS",
+        "Code": "BCSPN",
         "Description": "Span of box culvert design MA meets Stream Crossing Standards",
         "Field type": "Double",
         "NAACC Field": "No",
@@ -753,7 +753,7 @@
       },
       {
         "Name": "Box Culvert Height",
-        "Code": "BCHTSCS",
+        "Code": "BCHGT",
         "Description": "Height of box culvert design MA meets Stream Crossing Standards",
         "Field type": "Double",
         "NAACC Field": "No",
@@ -769,7 +769,7 @@
       },
       {
         "Name": "Box Culvert Length",
-        "Code": "BCLENSCS",
+        "Code": "BCLEN",
         "Description": "Length of box culvert design MA meets Stream Crossing Standards",
         "Field type": "Double",
         "NAACC Field": "No",
@@ -785,7 +785,7 @@
       },
       {
         "Name": "Box Culvert Area",
-        "Code": "BCAREASCS",
+        "Code": "BCAREA",
         "Description": "Area of box culvert design MA meets Stream Crossing Standards",
         "Field type": "Double",
         "NAACC Field": "No",
@@ -801,7 +801,7 @@
       },
       {
         "Name": "Box Culvert Material",
-        "Code": "BCMATSCS",
+        "Code": "BCMAT",
         "Description": "Box culvert material meets MA meets Stream Crossing Standards",
         "Field type": "string",
         "NAACC Field": "No",
@@ -817,7 +817,7 @@
       },
       {
         "Name": "Box MA SCS Culvert Type",
-        "Code": "BCTYPESCS",
+        "Code": "BCTYPE",
         "Description": "Culvert design (3-sided box culvert meets MA Stream Crossing Standards) ",
         "Field type": "string",
         "NAACC Field": "No",
@@ -833,7 +833,7 @@
       },
       {
         "Name": "Box MA SCS Embedment",
-        "Code": "BCEMBTSCS",
+        "Code": "BCEMBT",
         "Description": "Not applicable for 3-sided box culvert designs",
         "Field type": "string",
         "NAACC Field": "No",
@@ -849,7 +849,7 @@
       },
       {
         "Name": "Box MA SCS Substrate",
-        "Code": "BCSUBTSCS",
+        "Code": "BCSUBS",
         "Description": "Material at culvert bottom (Natural meets MA Stream Crossing Standards)",
         "Field type": "string",
         "NAACC Field": "No",
@@ -865,7 +865,7 @@
       },
       {
         "Name": "Box MA SCS Velocity Ratio ",
-        "Code": "BCVELRSCS",
+        "Code": "BCVELR",
         "Description": "TBD - variety of flows or just some low-flow like 90% flow duration",
         "Field type": "Double",
         "NAACC Field": "No",
@@ -881,7 +881,7 @@
       },
       {
         "Name": "Box MA SCS Span Ratio",
-        "Code": "BCSPBWSCS",
+        "Code": "BCBFWR",
         "Description": "Ratio of box culvert span to bankfull width. (Meets MA Stream Crossing Standards >= 1.2 )",
         "Field type": "Double",
         "NAACC Field": "No",
@@ -897,7 +897,7 @@
       },
       {
         "Name": "Box MA SCS Openness Ratio",
-        "Code": "BCORSCS",
+        "Code": "BCOR",
         "Description": "Ratio of box culvert cross-sectional area to length. (Meets MA Stream Crossing Standards >= 0.82)",
         "Field type": "Double",
         "NAACC Field": "No",
@@ -913,7 +913,7 @@
       },
       {
         "Name": "Arch Culvert Span",
-        "Code": "ACSPNSCS",
+        "Code": "ACSPN",
         "Description": "Span of arch culvert design meets MA Stream Crossing Standards",
         "Field type": "Double",
         "NAACC Field": "No",
@@ -929,7 +929,7 @@
       },
       {
         "Name": "Arch Culvert Height",
-        "Code": "ACHTSCS",
+        "Code": "ACHGT",
         "Description": "Height of arch culvert design meets MA Stream Crossing Standards",
         "Field type": "Double",
         "NAACC Field": "No",
@@ -945,7 +945,7 @@
       },
       {
         "Name": "Arch Culvert Length",
-        "Code": "ACLENSCS",
+        "Code": "ACLEN",
         "Description": "Length of arch culvert design meets MA Stream Crossing Standards",
         "Field type": "Double",
         "NAACC Field": "No",
@@ -961,7 +961,7 @@
       },
       {
         "Name": "Arch Culvert Area",
-        "Code": "ACAREASCS",
+        "Code": "ACAREA",
         "Description": "Area of arch culvert design meets MA Stream Crossing Standards",
         "Field type": "Double",
         "NAACC Field": "No",
@@ -977,7 +977,7 @@
       },
       {
         "Name": "Arch Culvert Material",
-        "Code": "ACMATSCS",
+        "Code": "ACMAT",
         "Description": "Arch culvert material meets MA Stream Crossing Standards",
         "Field type": "string",
         "NAACC Field": "No",
@@ -993,7 +993,7 @@
       },
       {
         "Name": "Arch MA SCS Culvert Type",
-        "Code": "ACTYPESCS",
+        "Code": "ACTYPE",
         "Description": "Culvert design (3-sided arch culvert meets MA Stream Crossing Standards) ",
         "Field type": "string",
         "NAACC Field": "No",
@@ -1009,7 +1009,7 @@
       },
       {
         "Name": "Arch MA SCS Embedment",
-        "Code": "ACEMBTSCS",
+        "Code": "ACEMBT",
         "Description": "Not applicable for 3-sided arch culvert designs",
         "Field type": "string",
         "NAACC Field": "No",
@@ -1025,7 +1025,7 @@
       },
       {
         "Name": "Arch MA SCS Substrate",
-        "Code": "ACSUBTSCS",
+        "Code": "ACSUBS",
         "Description": "Material at culvert bottom (Natural meets MA Stream Crossing Standards)",
         "Field type": "string",
         "NAACC Field": "No",
@@ -1041,7 +1041,7 @@
       },
       {
         "Name": "Arch MA SCS Velocity Ratio ",
-        "Code": "ACVELRSCS",
+        "Code": "ACVELR",
         "Description": "TBD - variety of flows or just some low-flow like 90% flow duration",
         "Field type": "Double",
         "NAACC Field": "No",
@@ -1057,7 +1057,7 @@
       },
       {
         "Name": "Arch MA SCS Span Ratio",
-        "Code": "ACSPBWSCS",
+        "Code": "ACBFWR",
         "Description": "Ratio of arch culvert span to bankfull width. (Meets MA Stream Crossing Standards >= 1.2 )",
         "Field type": "Double",
         "NAACC Field": "No",
@@ -1073,7 +1073,7 @@
       },
       {
         "Name": "Arch MA SCS Openness Ratio",
-        "Code": "ACORSCS",
+        "Code": "ACOR",
         "Description": "Ratio of arch culvert cross-sectional area to length. (Meets MA Stream Crossing Standards >= 0.82)",
         "Field type": "Double",
         "NAACC Field": "No",
@@ -1089,7 +1089,7 @@
       },
       {
         "Name": "Pipe Culvert Diameter",
-        "Code": "PCDIAMSCS",
+        "Code": "PCDIAM",
         "Description": "Diameter of pipe culvert design meets MA Stream Crossing Standards",
         "Field type": "Double",
         "NAACC Field": "No",
@@ -1105,7 +1105,7 @@
       },
       {
         "Name": "Pipe Culvert Length",
-        "Code": "PCLENSCS",
+        "Code": "PCLEN",
         "Description": "Length of pipe culvert design meets MA Stream Crossing Standards",
         "Field type": "Double",
         "NAACC Field": "No",
@@ -1121,7 +1121,7 @@
       },
       {
         "Name": "Pipe Culvert Area",
-        "Code": "PCAREASCS",
+        "Code": "PCAREA",
         "Description": "Area of pipe culvert design meets MA Stream Crossing Standards",
         "Field type": "Double",
         "NAACC Field": "No",
@@ -1137,7 +1137,7 @@
       },
       {
         "Name": "Pipe Culvert Material",
-        "Code": "PCMATSCS",
+        "Code": "PCMAT",
         "Description": "Pipe culvert material meets MA Stream Crossing Standards",
         "Field type": "string",
         "NAACC Field": "No",
@@ -1153,7 +1153,7 @@
       },
       {
         "Name": "Pipe MA SCS Culvert Type",
-        "Code": "PCTYPESCS",
+        "Code": "PCTYPE",
         "Description": "Culvert design (pipe does not meets MA Stream Crossing Standards) ",
         "Field type": "string",
         "NAACC Field": "No",
@@ -1169,7 +1169,7 @@
       },
       {
         "Name": "Pipe MA SCS Embedment",
-        "Code": "PCEMBTSCS",
+        "Code": "PCEMBT",
         "Description": "Depth of buried section of culvert. (2 ft meets MA Stream Crossing Standards for diameters < 8ft) ",
         "Field type": "short integer",
         "NAACC Field": "No",
@@ -1185,7 +1185,7 @@
       },
       {
         "Name": "Pipe MA SCS Substrate",
-        "Code": "PCSUBTSCS",
+        "Code": "PCSUBT",
         "Description": "Material at culvert bottom (Natural meets MA Stream Crossing Standards)",
         "Field type": "string",
         "NAACC Field": "No",
@@ -1201,7 +1201,7 @@
       },
       {
         "Name": "Pipe MA SCS Velocity Ratio ",
-        "Code": "PCVELRSCS",
+        "Code": "PCVELR",
         "Description": "TBD - variety of flows or just some low-flow like 90% flow duration",
         "Field type": "Double",
         "NAACC Field": "No",
@@ -1217,7 +1217,7 @@
       },
       {
         "Name": "Pipe MA SCS Span Ratio",
-        "Code": "PCSPBWSCS",
+        "Code": "PCBFWR",
         "Description": "Ratio of pipe culvert span to bankfull width. (Meets MA Stream Crossing Standards >= 1.2 )",
         "Field type": "Double",
         "NAACC Field": "No",
@@ -1233,7 +1233,7 @@
       },
       {
         "Name": "Pipe MA SCS Openness Ratio",
-        "Code": "PCORSCS",
+        "Code": "PCOR",
         "Description": "Ratio of pipe culvert cross-sectional area to length. (Meets MA Stream Crossing Standards >= 0.82)",
         "Field type": "Double",
         "NAACC Field": "No",
@@ -2270,5 +2270,8 @@
         "Citation": "Singler et al MA Streams Crossing Handbook 2018",
         "WMSCode": "F25FPCOR",
         "Matchcode": "PCOR"
+      },
+      {
+        "Name": ""
       }
     ]

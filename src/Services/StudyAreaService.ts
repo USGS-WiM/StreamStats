@@ -43,6 +43,7 @@ module StreamStats.Services {
         canUpdate: boolean;
         studyAreaParameterList: Array<IParameter>;
         culvertCitations: Array<any>;
+        culvertStatCitations: Array<any>;
         drawControl: any;
         drawControlOption: any;
         WatershedEditDecisionList: Models.IEditDecisionList;
@@ -155,6 +156,7 @@ module StreamStats.Services {
         }
         public studyAreaParameterList: Array<IParameter>;
         public culvertCitations: Array<any>;
+        public culvertStatCitations: Array<any>;
         public drawControl: any;
         public showEditToolbar: boolean;
         public drawControlOption: any;

@@ -309,12 +309,35 @@ var StreamStats;
             SidebarController.prototype.checkRegulation = function () {
                 this.studyAreaService.upstreamRegulation();
             };
+            SidebarController.prototype.getAccuracy = function (param, value) {
+                if (value !== null && value !== '' && value !== 'None') {
+                    if (param.Accuracy === "1") {
+                        return Math.round(parseFloat(value));
+                    }
+                    else if (param.Accuracy === "0.1") {
+                        return parseFloat(value).toFixed(1);
+                    }
+                    else if (param.Accuracy === "0.01") {
+                        return parseFloat(value).toFixed(2);
+                    }
+                    else if (param.Accuracy === "0.001") {
+                        return parseFloat(value).toFixed(3);
+                    }
+                    else {
+                        return value;
+                    }
+                }
+                else {
+                    return value;
+                }
+            };
             SidebarController.prototype.skipDelineateAndShowCulvertResults = function (lat, lng, properties, regionIndex) {
                 var studyArea = new StreamStats.Models.StudyArea(this.regionService.selectedRegion.RegionID, new WiM.Models.Point(lat, lng, '4326'));
                 this.studyAreaService.AddStudyArea(studyArea);
                 this.studyAreaService.loadCulvertBoundary(properties.SurveyID, regionIndex);
                 var paramList = [];
                 var citations = [];
+                var statCitations = [];
                 var self = this;
                 $.ajax({
                     url: configuration.culvertDataDictURL,
@@ -324,12 +347,13 @@ var StreamStats;
                         var culvertJSON = data;
                         var citedCodeList = [];
                         var citationList = [];
+                        var citationStatList = [];
                         for (var k in properties) {
                             if (k !== "OBJECTID") {
                                 culvertJSON.forEach(function (param) {
                                     if (param.WMSCode === k) {
                                         var code;
-                                        if (param.Matchcode !== "None") {
+                                        if (param.Matchcode !== "None" && param.Matchcode !== "STATS") {
                                             code = param.Matchcode;
                                             var index = -1;
                                             for (var i = 0; i < paramList.length; i++) {
@@ -339,14 +363,15 @@ var StreamStats;
                                                 }
                                             }
                                             if (index !== -1) {
+                                                var roundedValue = self.getAccuracy(param, properties[k]);
                                                 if (param.Code.includes('10YR')) {
-                                                    paramList[index].value[0].value_10yr = properties[k];
+                                                    paramList[index].value[0].value_10yr = roundedValue;
                                                 }
                                                 else if (param.Code.includes('25YR')) {
-                                                    paramList[index].value[0].value_25yr = properties[k];
+                                                    paramList[index].value[0].value_25yr = roundedValue;
                                                 }
-                                                else if (param.Code.substring(param.code.length - 3) === 'SCS') {
-                                                    paramList[index].value[0].value_scs = properties[k];
+                                                else {
+                                                    paramList[index].value[0].value_scs = roundedValue;
                                                 }
                                             }
                                             else {
@@ -358,26 +383,37 @@ var StreamStats;
                                                         break;
                                                     }
                                                 }
+                                                var roundedValue = self.getAccuracy(param, properties[k]);
                                                 if (param.Code.includes('10YR')) {
-                                                    paramList[newIndex].value[0].value_10yr = properties[k];
+                                                    paramList[newIndex].value[0].value_10yr = roundedValue;
                                                 }
                                                 else if (param.Code.includes('25YR')) {
-                                                    paramList[newIndex].value[0].value_25yr = properties[k];
+                                                    paramList[newIndex].value[0].value_25yr = roundedValue;
                                                 }
-                                                else if (param.Code.substring(param.Code.length - 3) === 'SCS') {
-                                                    paramList[newIndex].value[0].value_scs = properties[k];
+                                                else {
+                                                    paramList[newIndex].value[0].value_scs = roundedValue;
                                                 }
                                             }
                                         }
+                                        else if (param.Matchcode === "STATS") {
+                                            code = param.Matchcode + param.Code;
+                                            var roundedValue = self.getAccuracy(param, properties[k]);
+                                            paramList.push({ code: code, value: roundedValue, name: param.Name, description: param.Description, unit: param.Units });
+                                        }
                                         else {
                                             code = param.Code;
-                                            paramList.push({ code: code, value: properties[k], name: param.Name, description: param.Description, unit: param.Units });
+                                            var roundedValue = self.getAccuracy(param, properties[k]);
+                                            paramList.push({ code: code, value: roundedValue, name: param.Name, description: param.Description, unit: param.Units });
                                         }
                                         if (param.Citation !== '') {
                                             if ((code.substring(0, 2) === 'BC' || code.substring(0, 2) === 'PC' || code.substring(0, 2) === 'AC') && (citedCodeList.indexOf(code) === -1 || citationList.indexOf(param.Citation) === -1)) {
                                                 citations.push({ code: code, citation: param.Citation });
                                                 citedCodeList.push(code);
                                                 citationList.push(param.Citation);
+                                            }
+                                            else if ((code.substring(0, 5) === 'STATS') && (citationStatList.indexOf(param.Citation) === -1)) {
+                                                statCitations.push({ code: code, citation: param.Citation });
+                                                citationStatList.push(param.Citation);
                                             }
                                             else if (citationList.indexOf(param.Citation) === -1) {
                                                 citations.push({ code: code, citation: param.Citation });
@@ -392,6 +428,7 @@ var StreamStats;
                         ;
                         self.studyAreaService.studyAreaParameterList = paramList;
                         self.studyAreaService.culvertCitations = citations;
+                        self.studyAreaService.culvertStatCitations = statCitations;
                     },
                     error: function (error) {
                         console.log(error);
@@ -422,7 +459,7 @@ var StreamStats;
                             var lat = latlng.lat;
                             var lon = latlng.lng;
                             var properties = JSON.stringify(feature.properties);
-                            popupContent += "<button type='button' id='displayCulvertReport' ng-click='vm.skipDelineateAndShowCulvertResults(" + lat + "," + lon + "," + properties + "," + i + ")' class='btn-black fullwidth'>&nbsp;&nbsp;Display Report</button></div>";
+                            popupContent += "<button type='button' id='displayCulvertReport' ng-click='vm.skipDelineateAndShowCulvertResults(" + lat + "," + lon + "," + properties + "," + i + ")' class='btn-black fullwidth'>&nbsp;&nbsp;Build Report</button></div>";
                             var compiledHtml = self.$compile(popupContent)(self.$scope);
                             layer.bindPopup(compiledHtml[0]);
                         };
