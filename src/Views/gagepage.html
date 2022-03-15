@@ -96,7 +96,9 @@
             <div class="table-title stat-table-title">Streamflow Statistics
                 <div class="stat-filters">
                     <label>Filter By Statistic Group: </label>
-                    <div id="statGroupSelect" ng-dropdown-multiselect="" options="vm.gage.statisticsgroups" selected-model="vm.selectedStatisticGroups" extra-settings="vm.multiselectOptions"></div>        
+                    <div id="statGroupSelect" ng-dropdown-multiselect="" options="vm.gage.statisticsgroups" selected-model="vm.selectedStatisticGroups" extra-settings="vm.multiselectOptions"></div> 
+                    <label>Filter By Citation: </label>
+                    <div id="statGroupCitationSelect" ng-dropdown-multiselect="" options="vm.gage.citations" selected-model="vm.selectedCitations" extra-settings="vm.citationMultiselectOptions"></div>          
                     <button  ng-if="!vm.showPreferred" ng-click="vm.showPreferred = true">Show Only Preferred  <i class="fa fa-toggle-off" ></i></button>
                     <button  ng-if="vm.showPreferred" ng-click="vm.showPreferred = false">Show Only Preferred  <i class="fa fa-toggle-on" ></i></button> 
                 </div>
@@ -124,7 +126,7 @@
                                 </tr>
                             </thead>
                             <tbody >
-                                <tr ng-repeat="statistic in vm.gage.statistics" ng-if="statistic.statisticGroupTypeID == statisticGroup.id && (vm.showPreferred == false || statistic.isPreferred)" ng-form="statisticsForm">
+                                <tr ng-repeat="statistic in vm.gage.statistics" ng-if="statistic.statisticGroupTypeID == statisticGroup.id && (vm.showPreferred == false || statistic.isPreferred) || vm.citationSelected(statistic)" ng-form="statisticsForm">
                                     <td class="stat-names" ng-bind="statistic.regressionType.name"></td>
                                     <td ng-bind="statistic.value"></td>
                                     <td ng-bind="statistic.unitType.name"></td>

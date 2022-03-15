@@ -82,11 +82,15 @@ var StreamStats;
                 _this.multiselectOptions = {
                     displayProp: 'name'
                 };
+                _this.citationMultiselectOptions = {
+                    displayProp: 'id'
+                };
                 $scope.vm = _this;
                 _this.modalInstance = modal;
                 _this.modalService = modalService;
                 _this.init();
                 _this.selectedStatisticGroups = [];
+                _this.selectedCitations = [];
                 _this.showPreferred = false;
                 return _this;
             }
@@ -178,6 +182,18 @@ var StreamStats;
                     var latLong = response.data.split(_this.gage.name)[1].match(regex);
                     _this.NWISlat = latLong[0];
                     _this.NWISlng = latLong[1];
+                });
+            };
+            GagePageController.prototype.citationSelected = function (statistic) {
+                var self = this;
+                this.selectedCitations.forEach(function (citation, i) {
+                    console.log(citation.id);
+                    if (citation.id === statistic.citationID) {
+                        return true;
+                    }
+                    else if (i === self.selectedCitations.length - 1) {
+                        return false;
+                    }
                 });
             };
             GagePageController.prototype.init = function () {

@@ -145,9 +145,13 @@ module StreamStats.Controllers {
         public AppVersion: string;
         public gage: GageInfo;
         public selectedStatisticGroups;
+        public selectedCitations;
         public showPreferred = false;
         public multiselectOptions = {
             displayProp: 'name'
+        }
+        public citationMultiselectOptions = {
+            displayProp: 'id'
         }
         public NWISlat: string;
         public NWISlng: string;
@@ -162,6 +166,7 @@ module StreamStats.Controllers {
             this.modalService = modalService;
             this.init();  
             this.selectedStatisticGroups = [];
+            this.selectedCitations = [];
             this.showPreferred = false;
         }  
         
@@ -301,6 +306,19 @@ module StreamStats.Controllers {
                     this.NWISlat = latLong[0];
                     this.NWISlng = latLong[1];
                 });
+        }
+
+        public citationSelected(statistic) {
+            let self = this;
+            this.selectedCitations.forEach(function(citation, i) {
+                console.log(citation.id)
+                if(citation.id === statistic.citationID){
+                    return true;
+                }else if(i === self.selectedCitations.length - 1){
+                    // Last index, no matches
+                    return false;
+                }
+            })
         }
         
         //Helper Methods
