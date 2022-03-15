@@ -181,7 +181,7 @@
     <div class="modal-footer hidden-print">
         <div class="btn-group">
             <button ng-click="vm.Close()" class="btn-black"><i class="fa fa-close"></i><span>&nbsp;&nbsp;Close</span></button>
-            <button class="btn-blue" ng-click="vm.print()"><i class="fa fa-print"></i>&nbsp;&nbsp;Print</button>
+            <button class="btn-blue" ng-click="vm.print()" analytics-on analytics-event="Print" analytics-category="GagePage" analytics-label="gagePagePrint"><i class="fa fa-print"></i>&nbsp;&nbsp;Print</button>
         </div>
     </div>
 </div>
