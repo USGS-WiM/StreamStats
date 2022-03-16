@@ -70,6 +70,8 @@
                 <div class="stat-filters">
                     <label>Filter By Statistic Group: </label>                    
                     <div id="statGroupSelect" ng-dropdown-multiselect="" options="vm.filteredStatGroupsChar" selected-model="vm.selectedStatGroupsChar" extra-settings="vm.multiselectOptions"></div>
+                    <label>Filter By Citation: </label>
+                    <div id="statGroupCitationSelect" ng-dropdown-multiselect="" options="vm.charCitationList" selected-model="vm.selectedCitationsChar" extra-settings="vm.citationMultiselectOptions"></div>
                 </div>
             </div>
             <div class="panel-body">
@@ -87,7 +89,7 @@
                             </tr>
                         </thead>
                         <tbody >
-                            <tr ng-repeat="characteristic in vm.gage.characteristics" ng-if="characteristic.variableType.statisticGroupTypeID == statisticGroup.id" ng-form="characteristicForm">
+                            <tr ng-repeat="characteristic in vm.gage.characteristics" ng-if="characteristic.variableType.statisticGroupTypeID == statisticGroup.id  && (vm.citationSelected(characteristic, vm.selectedCitationsChar) || vm.selectedCitationsChar.length == 0)" ng-form="characteristicForm">
                                 <td ng-bind="characteristic.variableType.name"></td>
                                 <td ng-bind="characteristic.value"></td>
                                 <td ng-bind="characteristic.unitType.name"></td>
@@ -106,7 +108,7 @@
                         <label>Filter By Statistic Group: </label>
                         <div id="statGroupSelect" ng-dropdown-multiselect="" options="vm.gage.statisticsgroups" selected-model="vm.selectedStatisticGroups" extra-settings="vm.multiselectOptions"></div>
                         <label>Filter By Citation: </label>
-                        <div id="statGroupCitationSelect" ng-dropdown-multiselect="" options="vm.gage.citations" selected-model="vm.selectedCitations" extra-settings="vm.citationMultiselectOptions"></div>          
+                        <div id="statGroupCitationSelect" ng-dropdown-multiselect="" options="vm.statCitationList" selected-model="vm.selectedCitations" extra-settings="vm.citationMultiselectOptions"></div>          
                         <button  ng-if="!vm.showPreferred" ng-click="vm.showPreferred = true">Show Only Preferred  <i class="fa fa-toggle-off" ></i></button>
                         <button  ng-if="vm.showPreferred" ng-click="vm.showPreferred = false">Show Only Preferred  <i class="fa fa-toggle-on" ></i></button> 
                     </div>
@@ -133,7 +135,7 @@
                                     </tr>
                                 </thead>
                                 <tbody >
-                                    <tr ng-repeat="statistic in vm.gage.statistics" ng-if="statistic.statisticGroupTypeID == statisticGroup.id && (vm.showPreferred == false || statistic.isPreferred) && (vm.citationSelected(statistic) || vm.selectedCitations.length == 0)" ng-form="statisticsForm">
+                                    <tr ng-repeat="statistic in vm.gage.statistics" ng-if="statistic.statisticGroupTypeID == statisticGroup.id && (vm.showPreferred == false || statistic.isPreferred) && (vm.citationSelected(statistic, vm.selectedCitations) || vm.selectedCitations.length == 0)" ng-form="statisticsForm">
                                         <td class="stat-names" ng-bind="statistic.regressionType.name"></td>
                                         <td ng-bind="statistic.value"></td>
                                         <td ng-bind="statistic.unitType.name"></td>

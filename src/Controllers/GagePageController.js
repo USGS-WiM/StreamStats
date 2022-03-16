@@ -93,6 +93,9 @@ var StreamStats;
                 _this.selectedStatisticGroups = [];
                 _this.selectedCitations = [];
                 _this.selectedStatGroupsChar = [];
+                _this.selectedCitationsChar = [];
+                _this.statCitationList = [];
+                _this.charCitationList = [];
                 _this.showPreferred = false;
                 _this.print = function () {
                     window.print();
@@ -133,6 +136,9 @@ var StreamStats;
                         if (!_this.checkForCitation(char.citation.id)) {
                             _this.gage.citations.push(char.citation);
                         }
+                        if (!_this.checkForStatOrCharCitation(char.citation.id, _this.charCitationList)) {
+                            _this.charCitationList.push(char.citation);
+                        }
                     }
                     if (!_this.checkForCharStatisticGroup(char.variableType.statisticGroupTypeID)) {
                         if (char.hasOwnProperty('statisticGroupType')) {
@@ -149,6 +155,10 @@ var StreamStats;
                 var found = this.gage.citations.some(function (el) { return el.id === id; });
                 return found;
             };
+            GagePageController.prototype.checkForStatOrCharCitation = function (id, citationlist) {
+                var found = citationlist.some(function (el) { return el.id === id; });
+                return found;
+            };
             GagePageController.prototype.getStationStatistics = function (statistics) {
                 var _this = this;
                 statistics.forEach(function (stat, index) {
@@ -157,6 +167,9 @@ var StreamStats;
                             stat.citation.citationURL = stat.citation.citationURL.replace('#', '');
                         if (!_this.checkForCitation(stat.citation.id)) {
                             _this.gage.citations.push(stat.citation);
+                        }
+                        if (!_this.checkForStatOrCharCitation(stat.citation.id, _this.statCitationList)) {
+                            _this.statCitationList.push(stat.citation);
                         }
                     }
                     if (!_this.checkForStatisticGroup(stat.statisticGroupTypeID)) {
@@ -211,18 +224,13 @@ var StreamStats;
                     _this.NWISlng = latLong[1];
                 });
             };
-            GagePageController.prototype.citationSelected = function (statistic) {
-                var returnValue = false;
-                var self = this;
-                this.selectedCitations.forEach(function (citation, i) {
-                    if (citation.id === statistic.citationID) {
-                        returnValue = true;
+            GagePageController.prototype.citationSelected = function (item, list) {
+                for (var citation in list) {
+                    if (list[citation].id === item.citationID) {
+                        return true;
                     }
-                    else if (i === self.selectedCitations.length - 1) {
-                        returnValue = false;
-                    }
-                });
-                return returnValue;
+                }
+                return false;
             };
             GagePageController.prototype.init = function () {
                 this.AppVersion = configuration.version;
