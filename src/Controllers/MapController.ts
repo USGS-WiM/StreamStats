@@ -1274,6 +1274,8 @@ module StreamStats.Controllers {
                 var rcode = this.studyArea.selectedStudyArea.RegionID;
                 var workspaceID = this.studyArea.selectedStudyArea.WorkspaceID;
 
+                console.log(feature) // This is the point from the streamgrid if you select off the streamgrid this is where is puts the correct marker
+
                 this.geojson[LayerName] = {
                     data: feature,
                     onEachFeature: function (feature, layer) {

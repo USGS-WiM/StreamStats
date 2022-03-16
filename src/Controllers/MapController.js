@@ -871,6 +871,7 @@ var StreamStats;
                     var lng = this.studyArea.selectedStudyArea.Pourpoint.Longitude;
                     var rcode = this.studyArea.selectedStudyArea.RegionID;
                     var workspaceID = this.studyArea.selectedStudyArea.WorkspaceID;
+                    console.log(feature);
                     this.geojson[LayerName] = {
                         data: feature,
                         onEachFeature: function (feature, layer) {

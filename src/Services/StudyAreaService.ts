@@ -114,6 +114,7 @@ module StreamStats.Services {
     class StudyAreaService extends WiM.Services.HTTPServiceBase implements IStudyAreaService {
         //Events
         private _onStudyAreaServiceFinishedChanged: WiM.Event.Delegate<WiM.Event.EventArgs> = new WiM.Event.Delegate<WiM.Event.EventArgs>();
+        snappedPourPoint: any;
         public get onStudyAreaServiceBusyChanged(): WiM.Event.Delegate<WiM.Event.EventArgs> {
             return this._onStudyAreaServiceFinishedChanged;
         }
@@ -331,6 +332,7 @@ module StreamStats.Services {
 
                     //otherwise old method
                     else if (response.data.hasOwnProperty("featurecollection") && response.data.featurecollection[1] && response.data.featurecollection[1].feature.features.length > 0) {
+                        console.log(response)
                         this.selectedStudyArea.Server = response.headers()['usgswim-hostname'].toLowerCase();
                         this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
 
@@ -341,6 +343,8 @@ module StreamStats.Services {
                             bbox: response.data.featurecollection.filter(f=>f.name == "globalwatershed")[0].feature.features[0].bbox
                         };
 
+                        this.snappedPourPoint = response.data.featurecollection.filter(f=>f.name == "globalwatershedpoint")[0].feature.features[0].geometry.coordinates;
+                        
                         this.selectedStudyArea.Date = new Date();
 
                         this.toaster.clear();
@@ -721,15 +725,30 @@ module StreamStats.Services {
 
                 this.toaster.pop('wait', "Checking if study area is a coordinated reach.", "Please wait...", 0);
 
-                var ppt = this.selectedStudyArea.Pourpoint;
-                var turfPoint = turf.point([ppt.Longitude, ppt.Latitude]);
-                var distance = 0.005; //kilometers
+                var ppt = this.snappedPourPoint;
+                console.log(this.snappedPourPoint)
+                // var pptWorked = this.selectedStudyArea.Pourpoint;
+                // console.log(pptWorked)
+                var turfPoint = turf.point([ppt[0], ppt[1]]);
+                console.log(turfPoint)
+                // var turfPointWorked = turf.point([pptWorked.Longitude, pptWorked.Latitude]);
+                // console.log(turfPointWorked)
+
+                var distance = 0.01; //kilometers
                 var bearings = [-90, 0, 90, 180]; 
                 var boundingBox = [];
                 bearings.forEach((bearing, index) => {
                     var destination = turf.destination(turfPoint, distance, bearing);
                     boundingBox[index] = destination.geometry.coordinates[index % 2 == 0 ? 0 : 1];
                 });
+                console.log(boundingBox)
+
+                // var boundingBoxWorked = [];
+                // bearings.forEach((bearing, index) => {
+                //     var destinationWorked = turf.destination(turfPointWorked, distance, bearing);
+                //     boundingBoxWorked[index] = destinationWorked.geometry.coordinates[index % 2 == 0 ? 0 : 1];
+                // });
+                // console.log(boundingBoxWorked)
 
                 var outFields = "eqWithStrID.Stream_Name,eqWithStrID.StreamID_ID,eqWithStrID.BASIN_NAME,eqWithStrID.DVA_EQ_ID,eqWithStrID.a10,eqWithStrID.b10,eqWithStrID.a25,eqWithStrID.b25,eqWithStrID.a50,eqWithStrID.b50,eqWithStrID.a100,eqWithStrID.b100,eqWithStrID.a500,eqWithStrID.b500";
                 var url = configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['coordinatedReachQueryService']
