@@ -139,12 +139,17 @@ module StreamStats.Controllers {
     class GagePageController extends WiM.Services.HTTPServiceBase implements IGagePageController {
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
+        public print: any;
         public sce: any;
         private modalInstance: ng.ui.bootstrap.IModalServiceInstance;
         private modalService: Services.IModalService;
         public AppVersion: string;
         public gage: GageInfo;
         public selectedStatisticGroups;
+        public selectedStatGroupsChar;
+        public filteredStatGroupsChar = [];
+        public statIds;
+        public statIdsChar;
         public showPreferred = false;
         public multiselectOptions = {
             displayProp: 'name'
@@ -162,7 +167,12 @@ module StreamStats.Controllers {
             this.modalService = modalService;
             this.init();  
             this.selectedStatisticGroups = [];
+            this.selectedStatGroupsChar = [];
             this.showPreferred = false;
+
+            this.print = function () {
+                window.print();
+            };
         }  
         
         //Methods  
@@ -225,6 +235,15 @@ module StreamStats.Controllers {
                         this.gage.citations.push(char.citation);
                     }
                 }
+
+                if (!this.checkForCharStatisticGroup(char.variableType.statisticGroupTypeID)) {
+                    if (char.hasOwnProperty('statisticGroupType')) {
+                        var statgroup = char.statisticGroupType;
+                        this.filteredStatGroupsChar.push(statgroup);
+                    } else {
+                        this.getCharStatGroup(char.variableType.statisticGroupTypeID);
+                    }
+                }
         
             }); 
         }
@@ -276,10 +295,26 @@ module StreamStats.Controllers {
                 });
         }
 
+        public getCharStatGroup(id: number) {
+            var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStatGroups + id;
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+
+            this.Execute(request).then(
+                (response: any) => {
+                    if (!this.checkForCharStatisticGroup(response.data.id)) this.filteredStatGroupsChar.push(response.data);
+                });
+        }
+
         public checkForStatisticGroup(id: number) {
 
             //console.log('checking for statisticGroup', id, this.gage.statisticsgroups)
             var found = this.gage.statisticsgroups.some(el => el.id === id);
+            return found;
+        }
+
+        public checkForCharStatisticGroup(id: number) {
+
+            var found = this.filteredStatGroupsChar.some(el => el.id === id);
             return found;
         }
 
