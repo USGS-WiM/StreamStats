@@ -146,13 +146,20 @@ module StreamStats.Controllers {
         public AppVersion: string;
         public gage: GageInfo;
         public selectedStatisticGroups;
+        public selectedCitations;
         public selectedStatGroupsChar;
+        public selectedCitationsChar;
         public filteredStatGroupsChar = [];
+        public statCitationList;
+        public charCitationList;
         public statIds;
         public statIdsChar;
         public showPreferred = false;
         public multiselectOptions = {
             displayProp: 'name'
+        }
+        public citationMultiselectOptions = {
+            displayProp: 'id'
         }
         public NWISlat: string;
         public NWISlng: string;
@@ -167,7 +174,11 @@ module StreamStats.Controllers {
             this.modalService = modalService;
             this.init();  
             this.selectedStatisticGroups = [];
+            this.selectedCitations = [];
             this.selectedStatGroupsChar = [];
+            this.selectedCitationsChar = [];
+            this.statCitationList = [];
+            this.charCitationList = [];
             this.showPreferred = false;
 
             this.print = function () {
@@ -234,6 +245,11 @@ module StreamStats.Controllers {
                     if (!this.checkForCitation(char.citation.id)) {
                         this.gage.citations.push(char.citation);
                     }
+
+                    // Citation options for filtering chars by citation
+                     if (!this.checkForStatOrCharCitation(char.citation.id, this.charCitationList)) {
+                        this.charCitationList.push(char.citation)
+                    }
                 }
 
                 if (!this.checkForCharStatisticGroup(char.variableType.statisticGroupTypeID)) {
@@ -256,6 +272,11 @@ module StreamStats.Controllers {
             return found;
         }
 
+        public checkForStatOrCharCitation(id: number, citationlist: Array<any>) {
+            var found = citationlist.some(el => el.id === id);
+            return found;
+        }
+
         public getStationStatistics(statistics: Array<any>) {
 
             //loop over each statistic and request more info
@@ -269,6 +290,11 @@ module StreamStats.Controllers {
                     //check if we already have the citation
                     if (!this.checkForCitation(stat.citation.id)) {
                         this.gage.citations.push(stat.citation);
+                    }
+
+                    // Citation options for filtering stats by citation
+                    if (!this.checkForStatOrCharCitation(stat.citation.id, this.statCitationList)) {
+                        this.statCitationList.push(stat.citation)
                     }
                 }
 
@@ -336,6 +362,15 @@ module StreamStats.Controllers {
                     this.NWISlat = latLong[0];
                     this.NWISlng = latLong[1];
                 });
+        }
+
+        public citationSelected(item, list) {
+            for(var citation in list){
+                if(list[citation].id === item.citationID){
+                    return true;
+                }
+            }
+            return false;
         }
         
         //Helper Methods

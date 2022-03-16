@@ -1788,6 +1788,25 @@ input[name=distanceValue] {
     padding-left: 0px !important;
 }
 
+#statGroupCitationSelect {
+    margin: 0px;
+    padding: 0px;
+    display: inline-block;
+}
+
+#statGroupCitationSelect button {
+    background-color:#e0e3e6;
+}
+
+#statGroupCitationSelect ul, #statGroupCitationSelect ul li {
+    padding: 0px;
+    padding-left: 0px !important;
+}
+
+#statGroupCitationSelect dropdown-menu {
+    padding-left: 0px !important;
+}
+
 .panel .panel-default {
     padding-top: 5px;
     padding-left: 5px;
