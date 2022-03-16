@@ -1478,9 +1478,12 @@ module StreamStats.Controllers {
         private onLayerChanged(sender: WiM.Directives.IwimLegendController, e: WiM.Directives.LegendLayerChangedEventArgs) {
 
             if (e.PropertyName === "visible") {
-                if (!e.Value)
+                if (!e.Value){
                     delete this.geojson[e.LayerName];
-                else {
+                    if(e.LayerName === "streamgages"){
+                        this.studyArea.streamgagesVisible = false;
+                    }
+                }else {
                     //get feature
                     var value: any = null;
 
@@ -1531,7 +1534,9 @@ module StreamStats.Controllers {
                     this.toaster.pop("info", "Information", "User input is needed to continue", 5000);
                 }
 
-                this.studyArea.getStreamgages(this.bounds.southWest.lng, this.bounds.northEast.lng, this.bounds.southWest.lat, this.bounds.northEast.lat);
+                if(this.studyArea.streamgagesVisible){
+                    this.studyArea.getStreamgages(this.bounds.southWest.lng, this.bounds.northEast.lng, this.bounds.southWest.lat, this.bounds.northEast.lat);
+                }
             }
 
             if (this.center.zoom < 8 && oldValue !== newValue) {

@@ -1054,8 +1054,12 @@ var StreamStats;
             MapController.prototype.onLayerChanged = function (sender, e) {
                 var _this = this;
                 if (e.PropertyName === "visible") {
-                    if (!e.Value)
+                    if (!e.Value) {
                         delete this.geojson[e.LayerName];
+                        if (e.LayerName === "streamgages") {
+                            this.studyArea.streamgagesVisible = false;
+                        }
+                    }
                     else {
                         var value = null;
                         if (this.studyArea.selectedStudyArea && this.studyArea.selectedStudyArea.FeatureCollection.features.length > 0) {
@@ -1090,7 +1094,9 @@ var StreamStats;
                     if (!this.regionServices.selectedRegion) {
                         this.toaster.pop("info", "Information", "User input is needed to continue", 5000);
                     }
-                    this.studyArea.getStreamgages(this.bounds.southWest.lng, this.bounds.northEast.lng, this.bounds.southWest.lat, this.bounds.northEast.lat);
+                    if (this.studyArea.streamgagesVisible) {
+                        this.studyArea.getStreamgages(this.bounds.southWest.lng, this.bounds.northEast.lng, this.bounds.southWest.lat, this.bounds.northEast.lat);
+                    }
                 }
                 if (this.center.zoom < 8 && oldValue !== newValue) {
                     this.regionServices.regionList = [];
