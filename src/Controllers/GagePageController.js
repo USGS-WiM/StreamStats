@@ -234,8 +234,6 @@ var StreamStats;
                     var data = response.data.split('\n').filter(function (r) { return (!r.startsWith("#") && r != ""); });
                     var headers = data.shift().split('\t');
                     data.shift();
-                    console.log(data);
-                    console.log(data.length);
                     do {
                         var station = data.shift().split('\t');
                         if (station[headers.indexOf("parm_cd")] == "00060") {
@@ -256,7 +254,7 @@ var StreamStats;
                         }
                     } while (data.length > 0);
                 });
-            }
+            };
             GagePageController.prototype.citationSelected = function (item, list) {
                 for (var citation in list) {
                     if (list[citation].id === item.citationID) {
