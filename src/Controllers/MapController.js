@@ -1084,6 +1084,9 @@ var StreamStats;
                         if (e.LayerName == 'streamgages' && this.center.zoom >= 8) {
                             this.studyArea.getStreamgages(this.bounds.southWest.lng, this.bounds.northEast.lng, this.bounds.southWest.lat, this.bounds.northEast.lat);
                         }
+                        else if (e.LayerName == 'streamgages' && this.center.zoom < 8) {
+                            this.studyArea.streamgagesVisible = true;
+                        }
                     }
                 }
             };

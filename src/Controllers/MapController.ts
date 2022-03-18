@@ -1515,6 +1515,9 @@ module StreamStats.Controllers {
                     if (e.LayerName == 'streamgages' && this.center.zoom >= 8) {
                         // re-query streamgages on toggle
                         this.studyArea.getStreamgages(this.bounds.southWest.lng, this.bounds.northEast.lng, this.bounds.southWest.lat, this.bounds.northEast.lat);
+                    }else if(e.LayerName == 'streamgages' && this.center.zoom < 8){
+                        // Streamgages checked but not added to map at this zoom level
+                        this.studyArea.streamgagesVisible = true;
                     }
 
 
