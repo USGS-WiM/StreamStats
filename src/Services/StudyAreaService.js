@@ -490,7 +490,7 @@ var StreamStats;
                 this.toaster.pop('wait', "Checking if study area is a coordinated reach.", "Please wait...", 0);
                 var ppt = this.snappedPourPoint;
                 var turfPoint = turf.point([ppt[0], ppt[1]]);
-                var distance = 0.01;
+                var distance = 0.005;
                 var bearings = [-90, 0, 90, 180];
                 var boundingBox = [];
                 bearings.forEach(function (bearing, index) {

@@ -726,7 +726,7 @@ module StreamStats.Services {
 
                 var ppt = this.snappedPourPoint;
                 var turfPoint = turf.point([ppt[0], ppt[1]]);
-                var distance = 0.01; //kilometers
+                var distance = 0.005; //kilometers
                 var bearings = [-90, 0, 90, 180]; 
                 var boundingBox = [];
                 bearings.forEach((bearing, index) => {
