@@ -253,6 +253,10 @@ var StreamStats;
                             }
                         }
                     } while (data.length > 0);
+                }, function (error) {
+                    gage['StartDate'] = undefined;
+                    gage['EndDate'] = undefined;
+                }).finally(function () {
                 });
             };
             GagePageController.prototype.citationSelected = function (item, list) {

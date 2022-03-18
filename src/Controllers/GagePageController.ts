@@ -393,8 +393,12 @@ module StreamStats.Controllers {
                             }
                         }
                     } while (data.length > 0);
+                }, (error) => {
+                    gage['StartDate'] = undefined;
+                    gage['EndDate'] = undefined;
+                }).finally(() => {
 
-                });
+            });
         }
 
         public citationSelected(item, list) {
