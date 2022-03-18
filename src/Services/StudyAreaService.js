@@ -219,7 +219,6 @@ var StreamStats;
                         }
                     }
                     else if (response.data.hasOwnProperty("featurecollection") && response.data.featurecollection[1] && response.data.featurecollection[1].feature.features.length > 0) {
-                        console.log(response);
                         _this.selectedStudyArea.Server = response.headers()['usgswim-hostname'].toLowerCase();
                         _this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
                         _this.selectedStudyArea.FeatureCollection = {
@@ -490,9 +489,7 @@ var StreamStats;
                 var _this = this;
                 this.toaster.pop('wait', "Checking if study area is a coordinated reach.", "Please wait...", 0);
                 var ppt = this.snappedPourPoint;
-                console.log(this.snappedPourPoint);
                 var turfPoint = turf.point([ppt[0], ppt[1]]);
-                console.log(turfPoint);
                 var distance = 0.01;
                 var bearings = [-90, 0, 90, 180];
                 var boundingBox = [];
@@ -500,7 +497,6 @@ var StreamStats;
                     var destination = turf.destination(turfPoint, distance, bearing);
                     boundingBox[index] = destination.geometry.coordinates[index % 2 == 0 ? 0 : 1];
                 });
-                console.log(boundingBox);
                 var outFields = "eqWithStrID.Stream_Name,eqWithStrID.StreamID_ID,eqWithStrID.BASIN_NAME,eqWithStrID.DVA_EQ_ID,eqWithStrID.a10,eqWithStrID.b10,eqWithStrID.a25,eqWithStrID.b25,eqWithStrID.a50,eqWithStrID.b50,eqWithStrID.a100,eqWithStrID.b100,eqWithStrID.a500,eqWithStrID.b500";
                 var url = configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['coordinatedReachQueryService']
                     .format(this.selectedStudyArea.RegionID.toLowerCase(), boundingBox[0], boundingBox[1], boundingBox[2], boundingBox[3], this.selectedStudyArea.Pourpoint.crs, outFields);
