@@ -67,6 +67,7 @@ module StreamStats.Services {
         doSelectNearestGage: boolean;
         selectGage(gage: any): void;
         getStreamgages(xmin: number, xmax: number, ymin: number, ymax: number);
+        streamgagesVisible: boolean;
         streamgageLayer: any;
         extensionDateRange: IDateRange;
         selectedGage: any;
@@ -171,6 +172,7 @@ module StreamStats.Services {
         private modalservices: IModalService;
         public NSSServicesVersion = '';
         public streamgageLayer: any;
+        public streamgagesVisible: boolean = true;
         private parameterloadedEventHandler: WiM.Event.EventHandler<Services.StudyAreaEventArgs>;
         private statisticgroupEventHandler: WiM.Event.EventHandler<Services.NSSEventArgs>;
         private q10EventHandler: WiM.Event.EventHandler<Services.NSSEventArgs>;
@@ -1012,6 +1014,7 @@ module StreamStats.Services {
             this.Execute(request).then(
                 (response: any) => {
                     this.streamgageLayer = response.data;
+                    this.streamgagesVisible = true;
 
                 }, (error) => {
                     //sm when error

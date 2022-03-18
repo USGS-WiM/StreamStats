@@ -54,6 +54,7 @@ var StreamStats;
                 _this.doSelectMapGage = false;
                 _this.doSelectNearestGage = false;
                 _this.NSSServicesVersion = '';
+                _this.streamgagesVisible = true;
                 _this.extensionDateRange = null;
                 _this.extensionsConfigured = false;
                 _this.loadingDrainageArea = false;
@@ -691,6 +692,7 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
                     _this.streamgageLayer = response.data;
+                    _this.streamgagesVisible = true;
                 }, function (error) {
                     _this.toaster.clear();
                     _this.toaster.pop('error', "Error querying streamgage layer");
