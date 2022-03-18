@@ -119,6 +119,7 @@ var StreamStats;
                     _this.getStationCharacteristics(response.data.characteristics);
                     _this.getStationStatistics(response.data.statistics);
                     _this.getNWISInfo();
+                    _this.getNWISPeriodOfRecord(_this.gage);
                 }, function (error) {
                 }).finally(function () {
                 });
@@ -222,6 +223,40 @@ var StreamStats;
                     var latLong = response.data.split(_this.gage.name)[1].match(regex);
                     _this.NWISlat = latLong[0];
                     _this.NWISlng = latLong[1];
+                });
+            };
+            GagePageController.prototype.getNWISPeriodOfRecord = function (gage) {
+                if (!gage.code)
+                    return;
+                var nwis_url = configuration.baseurls.NWISurl + configuration.queryparams.NWISperiodOfRecord + gage.code;
+                var nwis_request = new WiM.Services.Helpers.RequestInfo(nwis_url, true, WiM.Services.Helpers.methodType.GET, 'TEXT');
+                this.Execute(nwis_request).then(function (response) {
+                    var data = response.data.split('\n').filter(function (r) { return (!r.startsWith("#") && r != ""); });
+                    var headers = data.shift().split('\t');
+                    data.shift();
+                    do {
+                        var station = data.shift().split('\t');
+                        if (station[headers.indexOf("parm_cd")] == "00060") {
+                            if (gage['StartDate'] == undefined)
+                                gage['StartDate'] = new Date(station[headers.indexOf("begin_date")]);
+                            else {
+                                var nextStartDate = new Date(station[headers.indexOf("begin_date")]);
+                                if (nextStartDate < gage['StartDate'])
+                                    gage['StartDate'] = nextStartDate;
+                            }
+                            if (gage['EndDate'] == undefined)
+                                gage['EndDate'] = new Date(station[headers.indexOf("end_date")]);
+                            else {
+                                var nextEndDate = new Date(station[headers.indexOf("end_date")]);
+                                if (nextEndDate > gage['EndDate'])
+                                    gage['EndDate'] = nextEndDate;
+                            }
+                        }
+                    } while (data.length > 0);
+                }, function (error) {
+                    gage['StartDate'] = undefined;
+                    gage['EndDate'] = undefined;
+                }).finally(function () {
                 });
             };
             GagePageController.prototype.citationSelected = function (item, list) {
