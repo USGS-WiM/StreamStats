@@ -67,6 +67,7 @@ module StreamStats.Services {
         doSelectNearestGage: boolean;
         selectGage(gage: any): void;
         getStreamgages(xmin: number, xmax: number, ymin: number, ymax: number);
+        streamgagesVisible: boolean;
         streamgageLayer: any;
         extensionDateRange: IDateRange;
         selectedGage: any;
@@ -114,6 +115,7 @@ module StreamStats.Services {
     class StudyAreaService extends WiM.Services.HTTPServiceBase implements IStudyAreaService {
         //Events
         private _onStudyAreaServiceFinishedChanged: WiM.Event.Delegate<WiM.Event.EventArgs> = new WiM.Event.Delegate<WiM.Event.EventArgs>();
+        snappedPourPoint: any;
         public get onStudyAreaServiceBusyChanged(): WiM.Event.Delegate<WiM.Event.EventArgs> {
             return this._onStudyAreaServiceFinishedChanged;
         }
@@ -170,6 +172,7 @@ module StreamStats.Services {
         private modalservices: IModalService;
         public NSSServicesVersion = '';
         public streamgageLayer: any;
+        public streamgagesVisible: boolean = true;
         private parameterloadedEventHandler: WiM.Event.EventHandler<Services.StudyAreaEventArgs>;
         private statisticgroupEventHandler: WiM.Event.EventHandler<Services.NSSEventArgs>;
         private q10EventHandler: WiM.Event.EventHandler<Services.NSSEventArgs>;
@@ -341,6 +344,8 @@ module StreamStats.Services {
                             bbox: response.data.featurecollection.filter(f=>f.name == "globalwatershed")[0].feature.features[0].bbox
                         };
 
+                        this.snappedPourPoint = response.data.featurecollection.filter(f=>f.name == "globalwatershedpoint")[0].feature.features[0].geometry.coordinates;
+                        
                         this.selectedStudyArea.Date = new Date();
 
                         this.toaster.clear();
@@ -721,8 +726,8 @@ module StreamStats.Services {
 
                 this.toaster.pop('wait', "Checking if study area is a coordinated reach.", "Please wait...", 0);
 
-                var ppt = this.selectedStudyArea.Pourpoint;
-                var turfPoint = turf.point([ppt.Longitude, ppt.Latitude]);
+                var ppt = this.snappedPourPoint;
+                var turfPoint = turf.point([ppt[0], ppt[1]]);
                 var distance = 0.005; //kilometers
                 var bearings = [-90, 0, 90, 180]; 
                 var boundingBox = [];
@@ -733,7 +738,7 @@ module StreamStats.Services {
 
                 var outFields = "eqWithStrID.Stream_Name,eqWithStrID.StreamID_ID,eqWithStrID.BASIN_NAME,eqWithStrID.DVA_EQ_ID,eqWithStrID.a10,eqWithStrID.b10,eqWithStrID.a25,eqWithStrID.b25,eqWithStrID.a50,eqWithStrID.b50,eqWithStrID.a100,eqWithStrID.b100,eqWithStrID.a500,eqWithStrID.b500";
                 var url = configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['coordinatedReachQueryService']
-                    .format(this.selectedStudyArea.RegionID.toLowerCase(), boundingBox[0], boundingBox[1], boundingBox[2], boundingBox[3], ppt.crs, outFields);
+                    .format(this.selectedStudyArea.RegionID.toLowerCase(), boundingBox[0], boundingBox[1], boundingBox[2], boundingBox[3], this.selectedStudyArea.Pourpoint.crs, outFields);
                 var request: WiM.Services.Helpers.RequestInfo =
                     new WiM.Services.Helpers.RequestInfo(url, true);
 
@@ -1009,6 +1014,7 @@ module StreamStats.Services {
             this.Execute(request).then(
                 (response: any) => {
                     this.streamgageLayer = response.data;
+                    this.streamgagesVisible = true;
 
                 }, (error) => {
                     //sm when error

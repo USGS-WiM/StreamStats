@@ -214,6 +214,7 @@ module StreamStats.Controllers {
                     this.getStationCharacteristics(response.data.characteristics);
                     this.getStationStatistics(response.data.statistics);
                     this.getNWISInfo();
+                    this.getNWISPeriodOfRecord(this.gage);
 
                 }, (error) => {
                     //sm when error
@@ -362,6 +363,42 @@ module StreamStats.Controllers {
                     this.NWISlat = latLong[0];
                     this.NWISlng = latLong[1];
                 });
+        }
+
+        public getNWISPeriodOfRecord(gage) {
+            if (!gage.code) return;
+            var nwis_url = configuration.baseurls.NWISurl + configuration.queryparams.NWISperiodOfRecord + gage.code;
+            var nwis_request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(nwis_url, true, WiM.Services.Helpers.methodType.GET, 'TEXT');
+
+            this.Execute(nwis_request).then(
+                (response: any) => {
+                    var data = response.data.split('\n').filter(r => { return (!r.startsWith("#") && r != "") });
+                    var headers:Array<string> = data.shift().split('\t');
+                    //remove extra random line
+                    data.shift();
+                    do {
+                        var station = data.shift().split('\t');
+                        // Physical - discharge, cubic feet per second
+                        if (station[headers.indexOf("parm_cd")] == "00060") {
+                            if (gage['StartDate'] == undefined) gage['StartDate'] = new Date(station[headers.indexOf("begin_date")]);
+                            else {
+                                var nextStartDate = new Date(station[headers.indexOf("begin_date")]);
+                                if (nextStartDate < gage['StartDate']) gage['StartDate'] = nextStartDate;
+                            }
+
+                            if (gage['EndDate'] == undefined) gage['EndDate'] = new Date(station[headers.indexOf("end_date")]);
+                            else {
+                                var nextEndDate = new Date(station[headers.indexOf("end_date")]);
+                                if (nextEndDate > gage['EndDate']) gage['EndDate'] = nextEndDate;
+                            }
+                        }
+                    } while (data.length > 0);
+                }, (error) => {
+                    gage['StartDate'] = undefined;
+                    gage['EndDate'] = undefined;
+                }).finally(() => {
+
+            });
         }
 
         public citationSelected(item, list) {
