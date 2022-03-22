@@ -509,7 +509,7 @@ module StreamStats.Controllers {
                         if(k !== "OBJECTID"){
                             // Need to get description and name from data dictionary
                             culvertJSON.forEach(function(param) {
-                                if (param.WMSCode === k) {
+                                if (param.Code === k) {
                                     var code;
                                     // If matching codes in data dict, need to rearrange json to get 10yr, 15yr, and scs column values in report
                                     if(param.Matchcode !== "None" && param.Matchcode !== "STATS"){
@@ -529,12 +529,10 @@ module StreamStats.Controllers {
                                                 paramList[index].value[0].value_10yr = roundedValue;
                                             }else if(param.Code.includes('25YR')){
                                                 paramList[index].value[0].value_25yr = roundedValue;
-                                            }else{
-                                                paramList[index].value[0].value_scs = roundedValue;
                                             }
-                                            // else if(param.Code.substring(param.code.length - 3) ==='SCS'){
-                                            //     paramList[index].value[0].value_scs = properties[k];
-                                            // }
+                                            else if(param.Code.substring(param.Code.length - 3) ==='SCS'){
+                                                paramList[index].value[0].value_scs = properties[k];
+                                            }
                                         }else{
                                             // Code not yet in list
                                             paramList.push({code: code, value: [{}], name: param.Name, description: param.Description, unit: param.Units});
@@ -550,12 +548,10 @@ module StreamStats.Controllers {
                                                 paramList[newIndex].value[0].value_10yr = roundedValue;
                                             }else if(param.Code.includes('25YR')){
                                                 paramList[newIndex].value[0].value_25yr = roundedValue;
-                                            }else{
-                                                paramList[newIndex].value[0].value_scs = roundedValue;
                                             }
-                                            // else if(param.Code.substring(param.Code.length - 3) ==='SCS'){
-                                            //     paramList[newIndex].value[0].value_scs = properties[k];
-                                            // }
+                                            else if(param.Code.substring(param.Code.length - 3) ==='SCS'){
+                                                paramList[newIndex].value[0].value_scs = properties[k];
+                                            }
                                         }
                                     }else if(param.Matchcode === "STATS"){
                                         code = param.Matchcode + param.Code;

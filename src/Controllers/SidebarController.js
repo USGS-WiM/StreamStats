@@ -351,7 +351,7 @@ var StreamStats;
                         for (var k in properties) {
                             if (k !== "OBJECTID") {
                                 culvertJSON.forEach(function (param) {
-                                    if (param.WMSCode === k) {
+                                    if (param.Code === k) {
                                         var code;
                                         if (param.Matchcode !== "None" && param.Matchcode !== "STATS") {
                                             code = param.Matchcode;
@@ -370,8 +370,8 @@ var StreamStats;
                                                 else if (param.Code.includes('25YR')) {
                                                     paramList[index].value[0].value_25yr = roundedValue;
                                                 }
-                                                else {
-                                                    paramList[index].value[0].value_scs = roundedValue;
+                                                else if (param.Code.substring(param.Code.length - 3) === 'SCS') {
+                                                    paramList[index].value[0].value_scs = properties[k];
                                                 }
                                             }
                                             else {
@@ -390,8 +390,8 @@ var StreamStats;
                                                 else if (param.Code.includes('25YR')) {
                                                     paramList[newIndex].value[0].value_25yr = roundedValue;
                                                 }
-                                                else {
-                                                    paramList[newIndex].value[0].value_scs = roundedValue;
+                                                else if (param.Code.substring(param.Code.length - 3) === 'SCS') {
+                                                    paramList[newIndex].value[0].value_scs = properties[k];
                                                 }
                                             }
                                         }
@@ -426,6 +426,7 @@ var StreamStats;
                             }
                         }
                         ;
+                        console.log(paramList);
                         self.studyAreaService.studyAreaParameterList = paramList;
                         self.studyAreaService.culvertCitations = citations;
                         self.studyAreaService.culvertStatCitations = statCitations;
