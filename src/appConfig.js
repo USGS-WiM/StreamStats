@@ -374,7 +374,7 @@ configuration.regions = [
                     "queryProperties": { "Regulation Points": { "Descript": "Description" } }
                 }
             },
-        "Applications": ["Regulation"],
+        "Applications": ["Regulation", "EquationWeighting"],
         "regionEnabled": true,
         "ScenariosAvailable": true
     },
