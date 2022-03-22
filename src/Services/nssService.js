@@ -293,7 +293,7 @@ var StreamStats;
                         _this.toaster.pop('error', "There was an error Estimating Flows", "HTTP request error", 0);
                     }).finally(function () {
                         _this.toaster.clear();
-                        if (statGroup.disclaimers['Error']) {
+                        if (statGroup.disclaimers && statGroup.disclaimers['Error']) {
                             _this.toaster.pop('error', statGroup.disclaimers['Error'], "No results were returned", 0);
                         }
                         _this.estimateFlowsCounter--;
