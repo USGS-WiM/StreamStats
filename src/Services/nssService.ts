@@ -449,7 +449,7 @@ module StreamStats.Services {
                         //if success and counter is zero, clear toast
                         
                         this.toaster.clear()
-                        if (statGroup.disclaimers['Error']) {
+                        if (statGroup.disclaimers && statGroup.disclaimers['Error']) {
                             this.toaster.pop('error', statGroup.disclaimers['Error'], "No results were returned", 0);
                         }
                         
