@@ -168,10 +168,13 @@ module StreamStats.Models {
             return "{0} year Peak Flood".format(result);
         }
         private getValue(item: ICoordReachCoeff, drnArea: number): number {
-             //compute flow = acoeff*DRNArea^bcoeff
+            //compute flow = acoeff*DRNArea^bcoeff
             try {
-                if (!item.CoefficientA || !item.CoefficientB || !drnArea) return null;
-                return item.CoefficientA * drnArea ** item.CoefficientB; //** is equivalent to Math.pow
+                if (item.CoefficientA || item.CoefficientA === 0 || item.CoefficientB || item.CoefficientB === 0 || drnArea) {
+                    return item.CoefficientA * drnArea ** item.CoefficientB; //** is equivalent to Math.pow
+                } else {
+                    return null 
+                }
             } catch (e) {
                 return null;
             }
