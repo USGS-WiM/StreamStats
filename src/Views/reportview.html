@@ -282,6 +282,32 @@
                         </div><!--end sc-->
                     </div><!--end extension-->
 
+                <div class="well well-sm"  ng-if="vm.regionService.selectedRegion.Applications.indexOf('EquationWeighting') != -1 && vm.nssService.selectedStatisticsGroupList.name.indexOf('Peak-Flow Statistics') != -1">
+                    <h3>Methods Weighting</h3>
+                    <table class="scenarioFlowTable table table-condensed">
+                        <thead class="flow-table">
+                            <tr>
+                                <th>Statistic</th>
+                                <th>Value</th>
+                                <th>Unit</th>
+                                <th>PIl</th>
+                                <th>PIu</th>
+                                <th>SEP</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <!-- Is this printing all statistics from all reports?? -->
+                                <td>Name</td>
+                                <td>Value from weighting service?</td>
+                                <td>Unit from which report?</td>
+                                <td>PIl</td>
+                                <td>PIu</td>
+                                <td>SEP from NSSServices?</td> <!-- Which stats SEP would we show?? -->
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
                 <div class="disclaimerReport">
                     <p ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isStormDrain">
                         USGS Storm Drain Disclaimer:
