@@ -1,183 +1,203 @@
 ﻿<!-- Modal -->
+<div id="print-content">
+    <div class="modal-header">
+        <button class="close hidden-print"
+                ng-click="vm.Close()">
+            &times;
+        </button>
+        <h4 class="modal-title">StreamStats Data-Collection Station Report</h4>
+    </div>
+    <div class="modal-body" id="printArea">
 
-<div class="modal-header">
-    <button class="close"
-            ng-click="vm.Close()">
-        &times;
-    </button>
-    <h4 class="modal-title">StreamStats Data-Collection Station Report</h4>
-</div>
-<div class="modal-body">
+        <div style="padding-top: 10px;">
 
-    <div style="padding-top: 10px;">
-
-        <div class="panel panel-default">
-            <div class="panel-heading">Gage Information</div>
-            <div class="panel-body">
- 
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th >Name</th>
-                            <th >Value</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                          <th scope="row">USGS Station Number</th>
-                          <td><a href="https://waterdata.usgs.gov/monitoring-location/{{vm.gage.code}}">{{vm.gage.code}}&nbsp;&nbsp;</a><a href="https://nwis.waterdata.usgs.gov/nwis/inventory/?site_no={{vm.gage.code}}">(Legacy NWIS link)</a></td>
-                        </tr>
-                        <tr>
-                          <th scope="row">Station Name</th>
-                          <td>{{vm.gage.name}}</td>
-                           </tr>
-                        <tr>
-                            <th scope="row">Station Type</th>
-                            <td>{{vm.gage.stationType.name}}</td>
-                        </tr>
-                        <tr>
-                          <th scope="row">Latitude</th>
-                          <td>{{vm.gage.lat}}</td>
-                         </tr>
-                         <tr>
-                            <th scope="row">Longitude</th>
-                            <td>{{vm.gage.lng}}</td>
-                         </tr>
-                         <tr>
-                            <th scope="row">NWIS Latitude</th>
-                            <td>{{vm.NWISlat}}</td>
-                           </tr>
-                           <tr>
-                              <th scope="row">NWIS Longitude</th>
-                              <td>{{vm.NWISlng}}</td>
-                           </tr>
-                         <tr>
-                            <th scope="row">Is regulated?</th>
-                            <td>{{vm.gage.isRegulated}}</td>
-                         </tr>
-                         <tr>
-                            <th scope="row">Agency</th>
-                            <td>{{vm.gage.agency.name}}</td>
-                         </tr>
-                      </tbody>
-                </table>
+            <div class="panel panel-default">
+                <div class="panel-heading">Gage Information</div>
+                <div class="panel-body">
+    
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th >Name</th>
+                                <th >Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                            <th scope="row">USGS Station Number</th>
+                            <td><a href="https://waterdata.usgs.gov/monitoring-location/{{vm.gage.code}}">{{vm.gage.code}}&nbsp;&nbsp;</a><a href="https://nwis.waterdata.usgs.gov/nwis/inventory/?site_no={{vm.gage.code}}">(Legacy NWIS link)</a></td>
+                            </tr>
+                            <tr>
+                            <th scope="row">Station Name</th>
+                            <td>{{vm.gage.name}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Station Type</th>
+                                <td>{{vm.gage.stationType.name}}</td>
+                            </tr>
+                            <tr>
+                            <th scope="row">Latitude</th>
+                            <td>{{vm.gage.lat}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Longitude</th>
+                                <td>{{vm.gage.lng}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">NWIS Latitude</th>
+                                <td>{{vm.NWISlat}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">NWIS Longitude</th>
+                                <td>{{vm.NWISlng}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Is regulated?</th>
+                                <td>{{vm.gage.isRegulated}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Agency</th>
+                                <td>{{vm.gage.agency.name}}</td>
+                            </tr>
+                            <tr>
+                               <th scope="row">NWIS Discharge Period of Record</th>
+                               <td ng-if="vm.gage.StartDate !== undefined || vm.gage.EndDate !== undefined">{{vm.gage.StartDate | date:'MM/dd/yyyy'}} - {{vm.gage.EndDate | date:'MM/dd/yyyy'}}</td>
+                               <td ng-if="vm.gage.StartDate === undefined || vm.gage.EndDate === undefined">Undefined</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
 
         
         <div class="panel panel-default" ng-show="vm.gage.characteristics.length > 0">
-            <div class="panel-heading">Physical Characteristics</div>
-            <div class="panel-body">
- 
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th >Characteristic Name</th>
-                            <th >Value</th>
-                            <th >Units</th>
-                            <th >Citation</th>
-                        </tr>
-                    </thead>
-                    <tbody >
-                        <tr ng-repeat="characteristic in vm.gage.characteristics" ng-form="characteristicForm">
-                            <td ng-bind="characteristic.variableType.name"></td>
-                            <td ng-bind="characteristic.value"></td>
-                            <td ng-bind="characteristic.unitType.name"></td>
-                            <td ><a href="#{{characteristic.citationID}}">{{characteristic.citationID}}</a></td>
-                          <tr>
-                      </tbody>
-                </table>
-
-                
-            </div>
-        </div>
-
-        <div class="panel panel-default" ng-show="vm.gage.statisticsgroups.length > 0">
-            <div class="table-title stat-table-title">Streamflow Statistics
+            <div  class="table-title stat-table-title">Physical Characteristics
                 <div class="stat-filters">
-                    <label>Filter By Statistic Group: </label>
-                    <div id="statGroupSelect" ng-dropdown-multiselect="" options="vm.gage.statisticsgroups" selected-model="vm.selectedStatisticGroups" extra-settings="vm.multiselectOptions"></div>        
-                    <button  ng-if="!vm.showPreferred" ng-click="vm.showPreferred = true">Show Only Preferred  <i class="fa fa-toggle-off" ></i></button>
-                    <button  ng-if="vm.showPreferred" ng-click="vm.showPreferred = false">Show Only Preferred  <i class="fa fa-toggle-on" ></i></button> 
+                    <label>Filter By Statistic Group: </label>                    
+                    <div id="statGroupSelect" ng-dropdown-multiselect="" options="vm.filteredStatGroupsChar" selected-model="vm.selectedStatGroupsChar" extra-settings="vm.multiselectOptions"></div>
+                    <label>Filter By Citation: </label>
+                    <div id="statGroupCitationSelect" ng-dropdown-multiselect="" options="vm.charCitationList" selected-model="vm.selectedCitationsChar" extra-settings="vm.citationMultiselectOptions"></div>
                 </div>
             </div>
             <div class="panel-body">
                 
-                <div class="panel panel-default" ng-repeat="statisticGroup in vm.gage.statisticsgroups" ng-if="vm.selectedStatisticGroups.length == 0 || vm.selectedStatisticGroups.indexOf(statisticGroup) > -1" ng-form="statisticGroupForm">
+                <div class="panel panel-default" ng-repeat="statisticGroup in vm.filteredStatGroupsChar" ng-if="vm.selectedStatGroupsChar.length == 0 || vm.selectedStatGroupsChar.indexOf(statisticGroup) > -1" ng-form="characteristicStatsGroupForm">
                     <div class="panel-heading">{{statisticGroup.name}}</div>
-                    <div class="panel-body">
+ 
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th >Characteristic Name</th>
+                                <th >Value</th>
+                                <th >Units</th>
+                                <th >Citation</th>
+                            </tr>
+                        </thead>
+                        <tbody >
+                            <tr ng-repeat="characteristic in vm.gage.characteristics" ng-if="characteristic.variableType.statisticGroupTypeID == statisticGroup.id  && (vm.citationSelected(characteristic, vm.selectedCitationsChar) || vm.selectedCitationsChar.length == 0)" ng-form="characteristicForm">
+                                <td ng-bind="characteristic.variableType.name"></td>
+                                <td ng-bind="characteristic.value"></td>
+                                <td ng-bind="characteristic.unitType.name"></td>
+                                <td ><a href="#{{characteristic.citationID}}">{{characteristic.citationID}}</a></td>
+                            <tr>
+                        </tbody>
+                    </table>
+                </div>
+                    
+                </div>
+            </div>
 
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th >Statistic Name</th>
-                                    <th >Value</th>
-                                    <th >Units</th>
-                                    <th>Preferred?</th>
-                                    <th>Years of Record</th>
-                                    <th>Standard Error, percent</th>
-                                    <th ng-if="vm.checkForPredInt(statisticGroup.id)">Variance</th>
-                                    <th ng-if="vm.checkForPredInt(statisticGroup.id)">Lower 90% Prediction Interval</th>
-                                    <th ng-if="vm.checkForPredInt(statisticGroup.id)">Upper 90% Prediction Interval</th>
-                                    <th>Citation</th>
-                                    <th>Comments</th>
-                                </tr>
-                            </thead>
-                            <tbody >
-                                <tr ng-repeat="statistic in vm.gage.statistics" ng-if="statistic.statisticGroupTypeID == statisticGroup.id && (vm.showPreferred == false || statistic.isPreferred)" ng-form="statisticsForm">
-                                    <td class="stat-names" ng-bind="statistic.regressionType.name"></td>
-                                    <td ng-bind="statistic.value"></td>
-                                    <td ng-bind="statistic.unitType.name"></td>
-                                    <td>
-										<i ng-if="statistic.isPreferred" class="fa fa-check"></i>
-                                    </td>
-                                    <td ng-bind="statistic.yearsofRecord"></td>
-                                    <td>
-                                        <div ng-if="statistic.statisticErrors.length > 0" ng-repeat="error in statistic.statisticErrors">
-                                            {{error.value}}
-                                        </div>
-                                    </td>
-                                    <td ng-bind="statistic.predictionInterval.variance" ng-if="vm.checkForPredInt(statisticGroup.id)"></td>
-                                    <td ng-bind="statistic.predictionInterval.lowerConfidenceInterval" ng-if="vm.checkForPredInt(statisticGroup.id)"></td>
-                                    <td ng-bind="statistic.predictionInterval.upperConfidenceInterval" ng-if="vm.checkForPredInt(statisticGroup.id)"></td>
-                                    <td ><a href="#{{statistic.citationID}}">{{statistic.citationID}}</a></td>
-                                    <td ng-bind="statistic.comments"></td>
-                                </tr>
-                
-                            </tbody>
-                        </table>
+            <div class="panel panel-default" ng-show="vm.gage.statisticsgroups.length > 0">
+                <div class="table-title stat-table-title">Streamflow Statistics
+                    <div class="stat-filters">
+                        <label>Filter By Statistic Group: </label>
+                        <div id="statGroupSelect" ng-dropdown-multiselect="" options="vm.gage.statisticsgroups" selected-model="vm.selectedStatisticGroups" extra-settings="vm.multiselectOptions"></div>
+                        <label>Filter By Citation: </label>
+                        <div id="statGroupCitationSelect" ng-dropdown-multiselect="" options="vm.statCitationList" selected-model="vm.selectedCitations" extra-settings="vm.citationMultiselectOptions"></div>          
+                        <button  ng-if="!vm.showPreferred" ng-click="vm.showPreferred = true">Show Only Preferred  <i class="fa fa-toggle-off" ></i></button>
+                        <button  ng-if="vm.showPreferred" ng-click="vm.showPreferred = false">Show Only Preferred  <i class="fa fa-toggle-on" ></i></button> 
                     </div>
                 </div>
+                <div class="panel-body">
+                    
+                    <div class="panel panel-default" ng-repeat="statisticGroup in vm.gage.statisticsgroups" ng-if="vm.selectedStatisticGroups.length == 0 || vm.selectedStatisticGroups.indexOf(statisticGroup) > -1" ng-form="statisticGroupForm">
+                        <div class="panel-heading">{{statisticGroup.name}}</div>
+                        <div class="panel-body">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th >Statistic Name</th>
+                                        <th >Value</th>
+                                        <th >Units</th>
+                                        <th>Preferred?</th>
+                                        <th>Years of Record</th>
+                                        <th>Standard Error, percent</th>
+                                        <th ng-if="vm.checkForPredInt(statisticGroup.id)">Variance</th>
+                                        <th ng-if="vm.checkForPredInt(statisticGroup.id)">Lower 90% Prediction Interval</th>
+                                        <th ng-if="vm.checkForPredInt(statisticGroup.id)">Upper 90% Prediction Interval</th>
+                                        <th>Citation</th>
+                                        <th>Comments</th>
+                                    </tr>
+                                </thead>
+                                <tbody >
+                                    <tr ng-repeat="statistic in vm.gage.statistics" ng-if="statistic.statisticGroupTypeID == statisticGroup.id && (vm.showPreferred == false || statistic.isPreferred) && (vm.citationSelected(statistic, vm.selectedCitations) || vm.selectedCitations.length == 0)" ng-form="statisticsForm">
+                                        <td class="stat-names" ng-bind="statistic.regressionType.name"></td>
+                                        <td ng-bind="statistic.value"></td>
+                                        <td ng-bind="statistic.unitType.name"></td>
+                                        <td>
+                                            <i ng-if="statistic.isPreferred" class="fa fa-check"></i>
+                                        </td>
+                                        <td ng-bind="statistic.yearsofRecord"></td>
+                                        <td>
+                                            <div ng-if="statistic.statisticErrors.length > 0" ng-repeat="error in statistic.statisticErrors">
+                                                {{error.value}}
+                                            </div>
+                                        </td>
+                                        <td ng-bind="statistic.predictionInterval.variance" ng-if="vm.checkForPredInt(statisticGroup.id)"></td>
+                                        <td ng-bind="statistic.predictionInterval.lowerConfidenceInterval" ng-if="vm.checkForPredInt(statisticGroup.id)"></td>
+                                        <td ng-bind="statistic.predictionInterval.upperConfidenceInterval" ng-if="vm.checkForPredInt(statisticGroup.id)"></td>
+                                        <td ><a href="#{{statistic.citationID}}">{{statistic.citationID}}</a></td>
+                                        <td ng-bind="statistic.comments"></td>
+                                    </tr>
+                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
 
- 
+    
+                </div>
             </div>
-        </div>
 
-        <div class="panel panel-default" ng-show="vm.gage.citations.length > 0">
-            <div class="panel-heading">Citations</div>
-            <div class="panel-body">
- 
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th >ID</th>
-                            <th >Citation</th>
-                        </tr>
-                    </thead>
-                    <tbody >
-                        <tr ng-repeat="citation in vm.gage.citations" ng-form="citationsForm">
-                            <td ng-bind="citation.id" id="{{citation.id}}"></td>
-                            <td><a href="{{citation.citationURL}}">{{citation.author}}&nbsp;{{citation.title}}</a></td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="panel panel-default" ng-show="vm.gage.citations.length > 0">
+                <div class="panel-heading">Citations</div>
+                <div class="panel-body">
+    
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th >ID</th>
+                                <th >Citation</th>
+                            </tr>
+                        </thead>
+                        <tbody >
+                            <tr ng-repeat="citation in vm.gage.citations" ng-form="citationsForm">
+                                <td ng-bind="citation.id" id="{{citation.id}}"></td>
+                                <td><a href="{{citation.citationURL}}">{{citation.author}}&nbsp;{{citation.title}}</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
 
+        </div>
     </div>
-</div>
 
-<div class="modal-footer">
-    <button ng-click="vm.Close()" class="btn-black"><i class="fa fa-close"></i><span>&nbsp;&nbsp;Close</span></button>
+    <div class="modal-footer hidden-print">
+        <div class="btn-group">
+            <button ng-click="vm.Close()" class="btn-black"><i class="fa fa-close"></i><span>&nbsp;&nbsp;Close</span></button>
+            <button class="btn-blue" ng-click="vm.print()" analytics-on analytics-event="Print" analytics-category="GagePage" analytics-label="gagePagePrint"><i class="fa fa-print"></i>&nbsp;&nbsp;Print</button>
+        </div>
+    </div>
 </div>

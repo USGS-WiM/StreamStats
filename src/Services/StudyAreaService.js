@@ -54,6 +54,7 @@ var StreamStats;
                 _this.doSelectMapGage = false;
                 _this.doSelectNearestGage = false;
                 _this.NSSServicesVersion = '';
+                _this.streamgagesVisible = true;
                 _this.extensionDateRange = null;
                 _this.extensionsConfigured = false;
                 _this.loadingDrainageArea = false;
@@ -226,6 +227,7 @@ var StreamStats;
                             features: _this.reconfigureWatershedResponse(response.data.featurecollection),
                             bbox: response.data.featurecollection.filter(function (f) { return f.name == "globalwatershed"; })[0].feature.features[0].bbox
                         };
+                        _this.snappedPourPoint = response.data.featurecollection.filter(function (f) { return f.name == "globalwatershedpoint"; })[0].feature.features[0].geometry.coordinates;
                         _this.selectedStudyArea.Date = new Date();
                         _this.toaster.clear();
                         _this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, _this, StudyAreaEventArgs.Empty);
@@ -487,11 +489,18 @@ var StreamStats;
             StudyAreaService.prototype.queryCoordinatedReach = function () {
                 var _this = this;
                 this.toaster.pop('wait', "Checking if study area is a coordinated reach.", "Please wait...", 0);
-                var ppt = this.selectedStudyArea.Pourpoint;
-                var ex = new L.Circle([ppt.Longitude, ppt.Latitude], 50).getBounds();
-                var outFields = "eqWithStrID.BASIN_NAME,eqWithStrID.DVA_EQ_ID,eqWithStrID.a10,eqWithStrID.b10,eqWithStrID.a25,eqWithStrID.b25,eqWithStrID.a50,eqWithStrID.b50,eqWithStrID.a100,eqWithStrID.b100,eqWithStrID.a500,eqWithStrID.b500";
+                var ppt = this.snappedPourPoint;
+                var turfPoint = turf.point([ppt[0], ppt[1]]);
+                var distance = 0.005;
+                var bearings = [-90, 0, 90, 180];
+                var boundingBox = [];
+                bearings.forEach(function (bearing, index) {
+                    var destination = turf.destination(turfPoint, distance, bearing);
+                    boundingBox[index] = destination.geometry.coordinates[index % 2 == 0 ? 0 : 1];
+                });
+                var outFields = "eqWithStrID.Stream_Name,eqWithStrID.StreamID_ID,eqWithStrID.BASIN_NAME,eqWithStrID.DVA_EQ_ID,eqWithStrID.a10,eqWithStrID.b10,eqWithStrID.a25,eqWithStrID.b25,eqWithStrID.a50,eqWithStrID.b50,eqWithStrID.a100,eqWithStrID.b100,eqWithStrID.a500,eqWithStrID.b500";
                 var url = configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['coordinatedReachQueryService']
-                    .format(this.selectedStudyArea.RegionID.toLowerCase(), ex.getNorth(), ex.getWest(), ex.getSouth(), ex.getEast(), ppt.crs, outFields);
+                    .format(this.selectedStudyArea.RegionID.toLowerCase(), boundingBox[0], boundingBox[1], boundingBox[2], boundingBox[3], this.selectedStudyArea.Pourpoint.crs, outFields);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     if (response.data.error) {
@@ -500,7 +509,7 @@ var StreamStats;
                     }
                     if (response.data.features.length > 0) {
                         var attributes = response.data.features[0].attributes;
-                        _this.selectedStudyArea.CoordinatedReach = new StreamStats.Models.CoordinatedReach(attributes["eqWithStrID.BASIN_NAME"], attributes["eqWithStrID.DVA_EQ_ID"]);
+                        _this.selectedStudyArea.CoordinatedReach = new StreamStats.Models.CoordinatedReach(attributes["eqWithStrID.BASIN_NAME"], attributes["eqWithStrID.DVA_EQ_ID"], attributes["eqWithStrID.Stream_Name"], attributes["eqWithStrID.StreamID_ID"]);
                         delete attributes["eqWithStrID.BASIN_NAME"];
                         delete attributes["eqWithStrID.DVA_EQ_ID"];
                         var feildprecursor = "eqWithStrID.";
@@ -683,6 +692,7 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
                     _this.streamgageLayer = response.data;
+                    _this.streamgagesVisible = true;
                 }, function (error) {
                     _this.toaster.clear();
                     _this.toaster.pop('error', "Error querying streamgage layer");
