@@ -226,15 +226,11 @@ var StreamStats;
                             var headerMsgs = response.headers()['x-usgswim-messages'].split(';');
                             statGroup.disclaimers = {};
                             headerMsgs.forEach(function (item) {
-                                var headerMsg = JSON.parse(item);
-                                if (headerMsg.warning) {
-                                    var headerMsgWarning = JSON.stringify(headerMsg.warning);
-                                    statGroup.disclaimers['Warnings'] = headerMsgWarning.substring(headerMsgWarning.indexOf('"') + 1, headerMsgWarning.lastIndexOf('"'));
-                                }
-                                if (headerMsg.error) {
-                                    var headerMsgError = JSON.stringify(headerMsg.error);
-                                    statGroup.disclaimers['Error'] = headerMsgError.substring(headerMsgError.indexOf('"') + 1, headerMsgError.lastIndexOf('"'));
-                                }
+                                var headerMsg = item.split(':');
+                                if (headerMsg[0] == 'warning')
+                                    statGroup.disclaimers['Warnings'] = headerMsg[1].trim();
+                                if (headerMsg[0] == 'error')
+                                    statGroup.disclaimers['Error'] = headerMsg[1].trim();
                             });
                         }
                         if (response.data[0].regressionRegions.length > 0 && response.data[0].regressionRegions[0].results && response.data[0].regressionRegions[0].results.length > 0) {
@@ -292,12 +288,9 @@ var StreamStats;
                         _this.toaster.clear();
                         _this.toaster.pop('error', "There was an error Estimating Flows", "HTTP request error", 0);
                     }).finally(function () {
-                        _this.toaster.clear();
-                        if (statGroup.disclaimers['Error']) {
-                            _this.toaster.pop('error', statGroup.disclaimers['Error'], "No results were returned", 0);
-                        }
                         _this.estimateFlowsCounter--;
                         if (_this.estimateFlowsCounter < 1) {
+                            _this.toaster.clear();
                             _this.estimateFlowsCounter = 0;
                             _this.canUpdate = true;
                             if (showReport) {

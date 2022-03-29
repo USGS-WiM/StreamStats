@@ -227,6 +227,7 @@ var StreamStats;
                             features: _this.reconfigureWatershedResponse(response.data.featurecollection),
                             bbox: response.data.featurecollection.filter(function (f) { return f.name == "globalwatershed"; })[0].feature.features[0].bbox
                         };
+                        _this.snappedPourPoint = response.data.featurecollection.filter(function (f) { return f.name == "globalwatershedpoint"; })[0].feature.features[0].geometry.coordinates;
                         _this.selectedStudyArea.Date = new Date();
                         _this.toaster.clear();
                         _this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, _this, StudyAreaEventArgs.Empty);
@@ -488,8 +489,8 @@ var StreamStats;
             StudyAreaService.prototype.queryCoordinatedReach = function () {
                 var _this = this;
                 this.toaster.pop('wait', "Checking if study area is a coordinated reach.", "Please wait...", 0);
-                var ppt = this.selectedStudyArea.Pourpoint;
-                var turfPoint = turf.point([ppt.Longitude, ppt.Latitude]);
+                var ppt = this.snappedPourPoint;
+                var turfPoint = turf.point([ppt[0], ppt[1]]);
                 var distance = 0.005;
                 var bearings = [-90, 0, 90, 180];
                 var boundingBox = [];
@@ -499,7 +500,7 @@ var StreamStats;
                 });
                 var outFields = "eqWithStrID.Stream_Name,eqWithStrID.StreamID_ID,eqWithStrID.BASIN_NAME,eqWithStrID.DVA_EQ_ID,eqWithStrID.a10,eqWithStrID.b10,eqWithStrID.a25,eqWithStrID.b25,eqWithStrID.a50,eqWithStrID.b50,eqWithStrID.a100,eqWithStrID.b100,eqWithStrID.a500,eqWithStrID.b500";
                 var url = configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['coordinatedReachQueryService']
-                    .format(this.selectedStudyArea.RegionID.toLowerCase(), boundingBox[0], boundingBox[1], boundingBox[2], boundingBox[3], ppt.crs, outFields);
+                    .format(this.selectedStudyArea.RegionID.toLowerCase(), boundingBox[0], boundingBox[1], boundingBox[2], boundingBox[3], this.selectedStudyArea.Pourpoint.crs, outFields);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     if (response.data.error) {

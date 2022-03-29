@@ -59,6 +59,11 @@
                                 <th scope="row">Agency</th>
                                 <td>{{vm.gage.agency.name}}</td>
                             </tr>
+                            <tr>
+                               <th scope="row">NWIS Discharge Period of Record</th>
+                               <td ng-if="vm.gage.StartDate !== undefined || vm.gage.EndDate !== undefined">{{vm.gage.StartDate | date:'MM/dd/yyyy'}} - {{vm.gage.EndDate | date:'MM/dd/yyyy'}}</td>
+                               <td ng-if="vm.gage.StartDate === undefined || vm.gage.EndDate === undefined">Undefined</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>

@@ -160,9 +160,12 @@ var StreamStats;
             };
             CoordinatedReach.prototype.getValue = function (item, drnArea) {
                 try {
-                    if (!item.CoefficientA || !item.CoefficientB || !drnArea)
+                    if (item.CoefficientA || item.CoefficientA === 0 || item.CoefficientB || item.CoefficientB === 0 || drnArea) {
+                        return item.CoefficientA * Math.pow(drnArea, item.CoefficientB);
+                    }
+                    else {
                         return null;
-                    return item.CoefficientA * Math.pow(drnArea, item.CoefficientB);
+                    }
                 }
                 catch (e) {
                     return null;
