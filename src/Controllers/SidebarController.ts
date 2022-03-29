@@ -415,9 +415,15 @@ module StreamStats.Controllers {
                             break;
                         }//end if
                     }//next
-
-                    
                 }//end if
+                if (this.regionService.selectedRegion.Applications.indexOf('EquationWeighting') != -1 ) {
+                    if (this.nssService.selectedStatisticsGroupList.some(e => e.name === 'Peak-Flow Statistics')) {
+                        console.log('do caluclations')
+                        this.queryEquationWeighting();
+                        
+                        //var test = this.studyAreaService.selectedStudyArea.EquationWeighting.Execute();
+                      }
+                }
                 this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList,"value", this.regionService.selectedRegion.RegionID);
                 if (this.regionService.selectedRegion.Applications.indexOf("RegulationFlows") !=-1) {
                     setTimeout(() => {
@@ -453,6 +459,21 @@ module StreamStats.Controllers {
                     }//next
                 });//end getLayers                                
             });//end getMap 
+        }
+
+        public queryEquationWeighting() {
+            //this.studyAreaService.selectedStudyArea.EquationWeighting = new Models.EquationWeighting("Name","Unit");   
+            // Name: string
+            // Value: number
+            // Unit: string
+            // PIl: number
+            // PIu: number
+            // SEP: number
+            console.log('queryEquationWeighting')
+
+
+
+            console.log('done queryEquationWeighting')
         }
 
         public checkRegulation() {
