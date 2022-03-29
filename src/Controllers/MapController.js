@@ -629,7 +629,16 @@ var StreamStats;
                                 _this.cursorStyle = 'pointer';
                                 return;
                             }
-                            maplayers.overlays[selectedRegionLayerName].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run(function (error, results) {
+                            var layerName;
+                            for (var layer in maplayers.overlays) {
+                                for (var llayer in _this.layers.overlays) {
+                                    if (llayer === layer && _this.layers.overlays[llayer].layerArray !== undefined && _this.layers.overlays[llayer].layerArray[0].layerName === 'ExcludePolys') {
+                                        layerName = layer;
+                                    }
+                                }
+                            }
+                            ;
+                            maplayers.overlays[layerName].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run(function (error, results) {
                                 _this.toaster.clear();
                                 if (results.features.length == 0) {
                                     _this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'valid' });
@@ -1177,7 +1186,7 @@ var StreamStats;
                 if (regionId == 'MRB')
                     visible = false;
                 layerList.forEach(function (layer) {
-                    _this.layers.overlays[regionId + " Map Layers " + layer] =
+                    _this.layers.overlays[regionId + "_region" + layer] =
                         {
                             name: String(layer),
                             group: regionId + " Map layers",
@@ -1192,17 +1201,9 @@ var StreamStats;
                             },
                         };
                 });
-                console.log(this.layers.overlays);
-                var streamGridVisible = true;
-                if (this.regionServices.selectedRegion.Applications.indexOf("StormDrain") > -1) {
-                    var streamGridVisible = false;
-                }
-                else {
-                    var streamGridVisible = true;
-                }
                 this.leafletData.getLayers("mainMap").then(function (maplayers) {
                     layerList.forEach(function (layer) {
-                        maplayers.overlays[regionId + " Map Layers " + layer].bringToBack();
+                        maplayers.overlays[regionId + "_region" + layer].bringToBack();
                     });
                     maplayers.overlays.SSLayer.bringToFront();
                 });

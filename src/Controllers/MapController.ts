@@ -912,9 +912,17 @@ module StreamStats.Controllers {
                             this.cursorStyle = 'pointer';
                             return;
                         }
-
+                        // Get name of exclude poly layer
+                        var layerName;
+                        for(var layer in maplayers.overlays) {
+                            for(var llayer in this.layers.overlays){
+                                if(llayer === layer && this.layers.overlays[llayer].layerArray !== undefined && this.layers.overlays[llayer].layerArray[0].layerName === 'ExcludePolys'){
+                                    layerName = layer;
+                                }
+                            }
+                        };
                         //do point validation query
-                        maplayers.overlays[selectedRegionLayerName].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run((error: any, results: any) => {
+                        maplayers.overlays[layerName].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run((error: any, results: any) => {
                             //console.log('exclusion area check: ', queryString, results); 
                             this.toaster.clear();
 
@@ -1634,7 +1642,7 @@ module StreamStats.Controllers {
             var visible = true;
             if (regionId == 'MRB') visible = false;
             layerList.forEach(layer => {
-                this.layers.overlays[regionId + " Map Layers " + layer] = 
+                this.layers.overlays[regionId + "_region" + layer] = 
                 {
                     name: String(layer),
                     group: regionId + " Map layers",
@@ -1650,17 +1658,10 @@ module StreamStats.Controllers {
                 }
             });
 
-            var streamGridVisible = true;
-            if (this.regionServices.selectedRegion.Applications.indexOf("StormDrain") > -1) {
-                var streamGridVisible = false;
-            }else {
-                var streamGridVisible = true;
-            }
-
             //bring streamgages (all national layers) to front
             this.leafletData.getLayers("mainMap").then((maplayers: any) => {
                 layerList.forEach(layer => {
-                    maplayers.overlays[regionId + " Map Layers " + layer].bringToBack();
+                    maplayers.overlays[regionId + "_region" + layer].bringToBack();
                 });
                 maplayers.overlays.SSLayer.bringToFront();
             });
