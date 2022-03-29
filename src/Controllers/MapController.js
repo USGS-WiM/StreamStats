@@ -629,7 +629,7 @@ var StreamStats;
                                 _this.cursorStyle = 'pointer';
                                 return;
                             }
-                            maplayers.overlays["ExcludePolys"].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run(function (error, results) {
+                            maplayers.overlays[selectedRegionLayerName].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run(function (error, results) {
                                 _this.toaster.clear();
                                 if (results.features.length == 0) {
                                     _this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'valid' });
@@ -1138,31 +1138,6 @@ var StreamStats;
                     }, 500);
                 }
             };
-            MapController.prototype.updateRegionLegend = function (regionId) {
-                var _this = this;
-                if (!this.regionLegendFix) {
-                    setTimeout(function () {
-                        var legendItems = document.getElementsByClassName('wimLegend-list-group-item');
-                        for (var item in legendItems) {
-                            var htmlEl = legendItems[item]['children'][0];
-                            var innerText = htmlEl.innerText;
-                            if (innerText === regionId + " Map Layers") {
-                                var children = legendItems[item]['children'][0]['children'];
-                                for (var child in children) {
-                                    console.log(children[child]);
-                                    if (children[child]['innerHTML'] && (children[child]['innerHTML'].indexOf('StreamGrid') > -1 || children[child]['innerHTML'].indexOf('ExcludePoly') > -1) && !_this.regionLegendFix) {
-                                        var layer = children[child]['children'][0];
-                                        var node = document.createElement('div');
-                                        node.innerHTML = "<label for=\"checkbox{{$id}}\" class=\"chx\" ng-click=\"layer.visible = (layer.visible) ? false : true;\">\n                                                                   <input type=\"checkbox\" id=\"checkbox{{$id}}\" ng-checked=\"layer.visible\" />";
-                                        layer.appendChild(node);
-                                        _this.regionLegendFix = true;
-                                    }
-                                }
-                            }
-                        }
-                    }, 700);
-                }
-            };
             MapController.prototype.updateRegion = function () {
                 var key = (this.$locationService.search()).region;
                 this.setBoundsByRegion(key);
@@ -1191,6 +1166,7 @@ var StreamStats;
                 this.imageryToggled = true;
             };
             MapController.prototype.addRegionOverlayLayers = function (regionId) {
+                var _this = this;
                 if (this.regionServices.regionMapLayerList.length < 1)
                     return;
                 var layerList = [];
@@ -1200,6 +1176,23 @@ var StreamStats;
                 var visible = true;
                 if (regionId == 'MRB')
                     visible = false;
+                layerList.forEach(function (layer) {
+                    _this.layers.overlays[regionId + " Map Layers " + layer] =
+                        {
+                            name: String(layer),
+                            group: regionId + " Map layers",
+                            url: configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['SSStateLayers'],
+                            type: 'agsDynamic',
+                            visible: visible,
+                            layerOptions: {
+                                opacity: 1,
+                                layers: [layer],
+                                format: "png8",
+                                f: "image"
+                            },
+                        };
+                });
+                console.log(this.layers.overlays);
                 var streamGridVisible = true;
                 if (this.regionServices.selectedRegion.Applications.indexOf("StormDrain") > -1) {
                     var streamGridVisible = false;
@@ -1207,21 +1200,10 @@ var StreamStats;
                 else {
                     var streamGridVisible = true;
                 }
-                this.layers.overlays["StreamGrid"] = new Layer("StreamGrid", configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['SSStateLayers'], "agsDynamic", streamGridVisible, {
-                    "opacity": 1,
-                    "layers": [layerList[0]],
-                    "format": "png8",
-                    "f": "image"
-                });
-                this.layers.overlays["ExcludePolys"] = new Layer("ExcludePolys", configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['SSStateLayers'], "agsDynamic", visible, {
-                    "opacity": 1,
-                    "layers": [layerList[1]],
-                    "format": "png8",
-                    "f": "image"
-                });
                 this.leafletData.getLayers("mainMap").then(function (maplayers) {
-                    maplayers.overlays["StreamGrid"].bringToBack();
-                    maplayers.overlays["ExcludePolys"].bringToBack();
+                    layerList.forEach(function (layer) {
+                        maplayers.overlays[regionId + " Map Layers " + layer].bringToBack();
+                    });
                     maplayers.overlays.SSLayer.bringToFront();
                 });
                 var layers = this.regionServices.selectedRegion.Layers;

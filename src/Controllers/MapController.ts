@@ -914,8 +914,7 @@ module StreamStats.Controllers {
                         }
 
                         //do point validation query
-                        // maplayers.overlays[selectedRegionLayerName].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run((error: any, results: any) => {
-                        maplayers.overlays["ExcludePolys"].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run((error: any, results: any) => {
+                        maplayers.overlays[selectedRegionLayerName].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run((error: any, results: any) => {
                             //console.log('exclusion area check: ', queryString, results); 
                             this.toaster.clear();
 
@@ -1586,33 +1585,6 @@ module StreamStats.Controllers {
                 }, 500);
             }
         }
-        private updateRegionLegend(regionId) {
-                    // find legend item for Streamgages layer and adjust inner html to include gage symbology
-            if (!this.regionLegendFix) {
-                setTimeout(() => {
-                    var legendItems = document.getElementsByClassName('wimLegend-list-group-item');
-                    for (var item in legendItems) {
-                        var htmlEl = legendItems[item]['children'][0] as HTMLElement;
-                        var innerText = htmlEl.innerText;
-                        if (innerText === regionId + " Map Layers") {
-                            var children = legendItems[item]['children'][0]['children'];
-                            for (var child in children) {
-                                console.log(children[child])
-                                if (children[child]['innerHTML'] && (children[child]['innerHTML'].indexOf('StreamGrid') > -1 || children[child]['innerHTML'].indexOf('ExcludePoly') > -1) && !this.regionLegendFix) {
-                                    var layer = children[child]['children'][0];
-                                    var node = document.createElement('div');
-                                    node.innerHTML = `<label for="checkbox{{$id}}" class="chx" ng-click="layer.visible = (layer.visible) ? false : true;">
-                                                                   <input type="checkbox" id="checkbox{{$id}}" ng-checked="layer.visible" />`
-                                    layer.appendChild(node);
-                                    this.regionLegendFix = true;
-                                }
-                            }
-                            // var children = legendItems[item]['children'][0].getElementsByClassName('legendGroup');
-                        }
-                    }
-                }, 700);
-            }
-        }
         private updateRegion() {
             //get regionkey
             var key: string = (this.$locationService.search()).region
@@ -1661,69 +1633,35 @@ module StreamStats.Controllers {
             });
             var visible = true;
             if (regionId == 'MRB') visible = false;
+            layerList.forEach(layer => {
+                this.layers.overlays[regionId + " Map Layers " + layer] = 
+                {
+                    name: String(layer),
+                    group: regionId + " Map layers",
+                    url: configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['SSStateLayers'],
+                    type: 'agsDynamic',
+                    visible: visible,
+                    layerOptions: {
+                        opacity: 1,
+                        layers: [layer],
+                        format: "png8",
+                        f: "image"
+                    },
+                }
+            });
 
-            // this.layers.overlays[regionId + "_region"] = new Layer(regionId + " Map layers", configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['SSStateLayers'],
-            //     "agsDynamic", visible, {
-            //         "opacity": 1,
-            //         "layers": layerList,
-            //         "format": "png8",
-            //         "f": "image"
-            //     });
-
-            // this.layers.overlays[regionId + "_region"] = 
-            //     {
-            //         "name": regionId + " Map layers",
-            //         "url": configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['SSStateLayers'],
-            //         "type": 'agsDynamic',
-            //         "visible": visible,
-            //         "layerOptions": {
-            //             "opacity": 1,
-            //             "layers": layerList,
-            //             "format": "png8",
-            //             "f": "image"
-            //         },
-            //     }
             var streamGridVisible = true;
             if (this.regionServices.selectedRegion.Applications.indexOf("StormDrain") > -1) {
                 var streamGridVisible = false;
             }else {
                 var streamGridVisible = true;
             }
-            this.layers.overlays["StreamGrid"] = new Layer("StreamGrid", configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['SSStateLayers'],
-            "agsDynamic", streamGridVisible, {
-                "opacity": 1,
-                "layers": [layerList[0]],
-                "format": "png8",
-                "f": "image"
-            });
-            this.layers.overlays["ExcludePolys"] = new Layer("ExcludePolys", configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['SSStateLayers'],
-            "agsDynamic", visible, {
-                "opacity": 1,
-                "layers": [layerList[1]],
-                "format": "png8",
-                "f": "image"
-            });
-            // this.layers.overlays[regionId + "_region"] = [new Layer("StreamGrid", configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['SSStateLayers'],
-            // "agsDynamic", visible, {
-            //     "opacity": 1,
-            //     "layers": [layerList[0]],
-            //     "format": "png8",
-            //     "f": "image"
-            // }), new Layer("ExcludePolys", configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['SSStateLayers'],
-            // "agsDynamic", visible, {
-            //     "opacity": 1,
-            //     "layers": [layerList[1]],
-            //     "format": "png8",
-            //     "f": "image"
-            // })];
 
             //bring streamgages (all national layers) to front
             this.leafletData.getLayers("mainMap").then((maplayers: any) => {
-                // maplayers.overlays[regionId + "_region"].bringToBack();
-                maplayers.overlays["StreamGrid"].bringToBack();
-                maplayers.overlays["ExcludePolys"].bringToBack();
-                // maplayers.overlays[regionId + "_region"][0].bringToBack();
-                // maplayers.overlays[regionId + "_region"][1].bringToBack();
+                layerList.forEach(layer => {
+                    maplayers.overlays[regionId + " Map Layers " + layer].bringToBack();
+                });
                 maplayers.overlays.SSLayer.bringToFront();
             });
             
@@ -1734,8 +1672,6 @@ module StreamStats.Controllers {
             for (var layer in layers) {
                 this.layers.overlays[layer + "_region"] = layers[layer];
             }
-            
-            // this.updateRegionLegend(regionId)
 
         }
         private removeOverlayLayers(name: string, isPartial: boolean = false) {
