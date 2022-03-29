@@ -470,9 +470,18 @@ module StreamStats.Controllers {
             // PIu: number
             // SEP: number
             console.log('queryEquationWeighting')
-
-
-
+            //stat in vm.nssService.selectedStatisticsGroupList regressionRegion.results
+            
+            console.log(this.nssService.selectedStatisticsGroupList)
+            this.nssService.selectedStatisticsGroupList.forEach(statGroup => { 
+                console.log(statGroup.regressionRegions[0].results);
+                if (statGroup.name == "Peak-Flow Statistics") { // Only need to do for peakflow
+                    console.log("is Peakflow")
+                    statGroup.regressionRegions.forEach(regressionRegion => {
+                        console.log(regressionRegion)
+                    });
+                }
+            });
             console.log('done queryEquationWeighting')
         }
 

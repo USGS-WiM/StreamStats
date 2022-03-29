@@ -306,6 +306,16 @@ var StreamStats;
             };
             SidebarController.prototype.queryEquationWeighting = function () {
                 console.log('queryEquationWeighting');
+                console.log(this.nssService.selectedStatisticsGroupList);
+                this.nssService.selectedStatisticsGroupList.forEach(function (statGroup) {
+                    console.log(statGroup.regressionRegions[0].results);
+                    if (statGroup.name == "Peak-Flow Statistics") {
+                        console.log("is Peakflow");
+                        statGroup.regressionRegions.forEach(function (regressionRegion) {
+                            console.log(regressionRegion);
+                        });
+                    }
+                });
                 console.log('done queryEquationWeighting');
             };
             SidebarController.prototype.checkRegulation = function () {
