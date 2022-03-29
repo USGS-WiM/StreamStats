@@ -354,28 +354,9 @@ module StreamStats.Services {
                             statGroup.disclaimers = {};
 
                             headerMsgs.forEach((item) => {
-                                var headerMsg = JSON.parse(item);
-                                if (headerMsg.warning) {
-                                    var headerMsgWarning = JSON.stringify(headerMsg.warning);
-                                    statGroup.disclaimers['Warnings'] = headerMsgWarning.substring(
-                                        headerMsgWarning.indexOf('"') + 1, 
-                                        headerMsgWarning.lastIndexOf('"'));
-                                }
-                                
-                                if (headerMsg.error) {
-                                    var headerMsgError = JSON.stringify(headerMsg.error);
-                                    statGroup.disclaimers['Error'] = headerMsgError.substring(
-                                        headerMsgError.indexOf('"') + 1, 
-                                        headerMsgError.lastIndexOf('"'));
-                                }
-
-                                // Comment out for now, not useful
-                                // if (headerMsg.info) {
-                                //     var headerMsgInfo = JSON.stringify(headerMsg.info);
-                                //     statGroup.disclaimers['Info'] = headerMsgInfo.substring(
-                                //         headerMsgInfo.indexOf('"') + 1, 
-                                //         headerMsgInfo.lastIndexOf('"'));
-                                // }
+                                var headerMsg = item.split(':');
+                                if (headerMsg[0] == 'warning') statGroup.disclaimers['Warnings'] = headerMsg[1].trim();
+                                if (headerMsg[0] == 'error') statGroup.disclaimers['Error'] = headerMsg[1].trim();
                             });
                         }
 
@@ -447,15 +428,9 @@ module StreamStats.Services {
                         this.toaster.pop('error', "There was an error Estimating Flows", "HTTP request error", 0);
                     }).finally(() => {
                         //if success and counter is zero, clear toast
-                        
-                        this.toaster.clear()
-                        if (statGroup.disclaimers && statGroup.disclaimers['Error']) {
-                            this.toaster.pop('error', statGroup.disclaimers['Error'], "No results were returned", 0);
-                        }
-                        
-
                         this.estimateFlowsCounter--;
                         if (this.estimateFlowsCounter < 1) {
+                            this.toaster.clear();
                             this.estimateFlowsCounter = 0;
                             this.canUpdate = true;
                             //move to nssService
