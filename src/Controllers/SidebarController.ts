@@ -223,7 +223,6 @@ module StreamStats.Controllers {
         }
 
         public setStatisticsGroup(statisticsGroup: Services.IStatisticsGroup) {
-
             var checkStatisticsGroup = this.checkArrayForObj(this.nssService.selectedStatisticsGroupList, statisticsGroup);
 
             //console.log('set stat group: ', statisticsGroup, checkStatisticsGroup);
@@ -392,7 +391,6 @@ module StreamStats.Controllers {
 
         public generateReport() {
 
-            //console.log('in estimateFlows');
             this.toaster.pop('wait', "Opening Report", "Please wait...",5000);
 
             //ga event
@@ -416,14 +414,7 @@ module StreamStats.Controllers {
                         }//end if
                     }//next
                 }//end if
-                if (this.regionService.selectedRegion.Applications.indexOf('EquationWeighting') != -1 ) {
-                    if (this.nssService.selectedStatisticsGroupList.some(e => e.name === 'Peak-Flow Statistics')) {
-                        console.log('do caluclations')
-                        this.queryEquationWeighting();
-                        
-                        //var test = this.studyAreaService.selectedStudyArea.EquationWeighting.Execute();
-                      }
-                }
+                
                 this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList,"value", this.regionService.selectedRegion.RegionID);
                 if (this.regionService.selectedRegion.Applications.indexOf("RegulationFlows") !=-1) {
                     setTimeout(() => {
@@ -461,29 +452,6 @@ module StreamStats.Controllers {
             });//end getMap 
         }
 
-        public queryEquationWeighting() {
-            //this.studyAreaService.selectedStudyArea.EquationWeighting = new Models.EquationWeighting("Name","Unit");   
-            // Name: string
-            // Value: number
-            // Unit: string
-            // PIl: number
-            // PIu: number
-            // SEP: number
-            console.log('queryEquationWeighting')
-            //stat in vm.nssService.selectedStatisticsGroupList regressionRegion.results
-            
-            console.log(this.nssService.selectedStatisticsGroupList)
-            this.nssService.selectedStatisticsGroupList.forEach(statGroup => { 
-                console.log(statGroup.regressionRegions[0].results);
-                if (statGroup.name == "Peak-Flow Statistics") { // Only need to do for peakflow
-                    console.log("is Peakflow")
-                    statGroup.regressionRegions.forEach(regressionRegion => {
-                        console.log(regressionRegion)
-                    });
-                }
-            });
-            console.log('done queryEquationWeighting')
-        }
 
         public checkRegulation() {
             //console.log('checking for regulation');

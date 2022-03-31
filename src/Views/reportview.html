@@ -296,13 +296,13 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Name</td> <!-- take from AEP stats -->
-                                <td>Value from weighting service?</td> <!-- from weighting service Z -->
-                                <td>Unit</td> <!-- take from AEP stats -->
-                                <td>PIl</td> <!-- from weighting service PIl -->
-                                <td>PIu</td> <!-- from weighting service PIu -->
-                                <td>SEP</td> <!-- from weighting service SEPZ -->
+                            <tr ng-repeat="stat in vm.nssService.equationWeightingResults">
+                                <td>{{stat.Name}}</td>
+                                <td>{{stat.Z.toUSGSvalue()}}</td> 
+                                <td>{{stat.Unit.abbr}}</td> 
+                                <td>{{stat.PIl.toUSGSvalue()}}</td> 
+                                <td>{{stat.PIu.toUSGSvalue()}}</td> 
+                                <td>{{stat.SEPZ.toUSGSvalue()}}</td> 
                             </tr>
                         </tbody>
                     </table>

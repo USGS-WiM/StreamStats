@@ -46,6 +46,7 @@ var StreamStats;
                 _this.$q = $q;
                 _this.regionservice = regionservice;
                 _this.eventManager = eventManager;
+                _this.equationWeightingResults = [];
                 _this.toaster = toaster;
                 _this.modalService = modal;
                 _this._onSelectedStatisticsGroupChanged = new WiM.Event.Delegate();
@@ -296,6 +297,11 @@ var StreamStats;
                         if (statGroup.disclaimers && statGroup.disclaimers['Error']) {
                             _this.toaster.pop('error', statGroup.disclaimers['Error'], "No results were returned", 0);
                         }
+                        if (_this.regionservice.selectedRegion.Applications.indexOf('EquationWeighting') != -1) {
+                            if (_this.selectedStatisticsGroupList.some(function (e) { return e.name === 'Peak-Flow Statistics'; })) {
+                                _this.queryEquationWeighting();
+                            }
+                        }
                         _this.estimateFlowsCounter--;
                         if (_this.estimateFlowsCounter < 1) {
                             _this.estimateFlowsCounter = 0;
@@ -308,6 +314,71 @@ var StreamStats;
                         _this._onQ10Loaded.raise(null, WiM.Event.EventArgs.Empty);
                     });
                 });
+            };
+            nssService.prototype.queryEquationWeighting = function () {
+                console.log('queryEquationWeighting');
+                var BCPK = [];
+                var ACPK = [];
+                var BFPK = [];
+                var RSPK = [];
+                var code;
+                this.selectedStatisticsGroupList.forEach(function (statGroup) {
+                    if (statGroup.name == "Peak-Flow Statistics") {
+                        statGroup.regressionRegions.forEach(function (regressionRegion) {
+                            if (regressionRegion.name != "Area-Averaged") {
+                                regressionRegion.results.forEach(function (result, index) {
+                                    if (result.code.includes("ACPK")) {
+                                        code = result.code;
+                                        ACPK[index] = {
+                                            Value: result.value,
+                                            SEP: .2
+                                        };
+                                    }
+                                    else if (result.code.includes("BWPK")) {
+                                        code = result.code;
+                                        BFPK[index] = {
+                                            Value: result.value,
+                                            SEP: .2
+                                        };
+                                    }
+                                    else if (result.code.includes("RSPK")) {
+                                        code = result.code;
+                                        RSPK[index] = {
+                                            Value: result.value,
+                                            SEP: .2
+                                        };
+                                    }
+                                    else {
+                                        BCPK[index] = {
+                                            Value: result.value,
+                                            SEP: .2
+                                        };
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+                console.log(BCPK);
+                console.log(ACPK);
+                console.log(BFPK);
+                console.log(RSPK);
+                var count = 0;
+                if (BCPK.length)
+                    count++;
+                if (ACPK.length)
+                    count++;
+                if (BFPK.length)
+                    count++;
+                if (RSPK.length)
+                    count++;
+                var url = configuration.baseurls['WeightingServices'] + '/weightest' + count.toString();
+                var headers = {
+                    "accept": "application/json",
+                    "Content-Type": "application/json"
+                };
+                console.log(url);
+                console.log('done queryEquationWeighting');
             };
             nssService.prototype.getSelectedCitations = function (citationUrl, statGroup) {
                 var _this = this;
