@@ -171,6 +171,11 @@
 
                     <!-- Culvert Report -->
                     <div ng-show="vm.isCulvertReport">
+                        <!-- Disclaimer -->
+                        <div class="well well-sm">
+                            <h3>Disclaimer for delineated basin:</h3>
+                            <span class="wim-alert-warning">The basin presented on this map and available for download was delineated from LiDAR and not by StreamStats.</span>
+                        </div>
 
                         <!-- Culvert table -->
                         <!-- Basin Characteristics -->
@@ -196,11 +201,11 @@
                                     </tbody>
                                 </table>
                             </table>
-                        </div>
 
-                        <h4>Basin Characteristics Citations</h4>
-                        <div ng-repeat="citation in vm.studyAreaService.culvertCitations" ng-if="citation.code.substring(0, 2) !=='BC' && citation.code.substring(0, 2) !=='PC' && citation.code.substring(0, 2) !=='AC' && citation.code.substring(0, 5) !== 'STATS'">
-                            <span>{{citation.citation}}</span>
+                            <h4>Basin Characteristics Citations</h4>
+                            <div ng-repeat="citation in vm.studyAreaService.culvertCitations" ng-if="citation.code.substring(0, 2) !=='BC' && citation.code.substring(0, 2) !=='PC' && citation.code.substring(0, 2) !=='AC' && citation.code.substring(0, 5) !== 'STATS'">
+                                <span>{{citation.citation}}</span>
+                            </div>
                         </div>
 
                         <!-- Peak-Flow Statistics -->
@@ -226,11 +231,11 @@
                                     </tbody>
                                 </table>
                             </table>
-                        </div>
 
-                        <h4>Peak-Flow Statistics Citations</h4>
-                        <div ng-repeat="citation in vm.studyAreaService.culvertStatCitations" ng-if="citation.code.substring(0, 5) ==='STATS'">
-                            <span>{{citation.citation}}</span>
+                            <h4>Peak-Flow Statistics Citations</h4>
+                            <div ng-repeat="citation in vm.studyAreaService.culvertStatCitations" ng-if="citation.code.substring(0, 5) ==='STATS'">
+                                <span>{{citation.citation}}</span>
+                            </div>
                         </div>
 
                         <ul id="culvertTabs" class="nav nav-tabs" ng-show="vm.isCulvertReport">
@@ -271,6 +276,11 @@
                                             </tr>
                                     </tbody>
                                 </table>
+
+                                <h4>Hydraulic Model Citations</h4>
+                                <div ng-repeat="citation in vm.studyAreaService.culvertCitations" ng-if="citation.code.substring(0, 2) ==='BC'">
+                                    <span>{{citation.citation}}</span>
+                                </div>
                             </div>
                         </div>
 
@@ -306,6 +316,11 @@
                                         </tr>
                                     </tbody>
                                 </table>
+
+                                <h4>Hydraulic Model Citations</h4>
+                                <div ng-repeat="citation in vm.studyAreaService.culvertCitations" ng-if="citation.code.substring(0, 2) ==='AC'">
+                                    <span>{{citation.citation}}</span>
+                                </div>
                             </div>
                         </div>
 
@@ -341,25 +356,11 @@
                                         </tr>
                                     </tbody>
                                 </table>
-                            </div>
-                        </div>
 
-                        <h4>Hydraulic Model Citations</h4>
-                        <div ng-if="vm.selectedTabName ==='Box'">
-                            <div ng-repeat="citation in vm.studyAreaService.culvertCitations" ng-if="citation.code.substring(0, 2) ==='BC'">
-                                <span>{{citation.citation}}</span>
-                            </div>
-                        </div>
-
-                        <div ng-if="vm.selectedTabName ==='Arch'">
-                            <div ng-repeat="citation in vm.studyAreaService.culvertCitations" ng-if="citation.code.substring(0, 2) ==='AC'">
-                                <span>{{citation.citation}}</span>
-                            </div>
-                        </div>
-                        
-                        <div ng-if="vm.selectedTabName ==='Pipe'">
-                            <div ng-repeat="citation in vm.studyAreaService.culvertCitations" ng-if="citation.code.substring(0, 2) ==='PC'">
-                                <span>{{citation.citation}}</span>
+                                <h4>Hydraulic Model Citations</h4>
+                                <div ng-repeat="citation in vm.studyAreaService.culvertCitations" ng-if="citation.code.substring(0, 2) ==='PC'">
+                                    <span>{{citation.citation}}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
