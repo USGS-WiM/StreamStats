@@ -426,7 +426,6 @@ var StreamStats;
                             }
                         }
                         ;
-                        console.log(paramList);
                         self.studyAreaService.studyAreaParameterList = paramList;
                         self.studyAreaService.culvertCitations = citations;
                         self.studyAreaService.culvertStatCitations = statCitations;

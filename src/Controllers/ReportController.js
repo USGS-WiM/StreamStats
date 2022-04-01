@@ -42,6 +42,7 @@ var StreamStats;
                 this.extensions = this.ActiveExtensions;
                 this.environment = configuration.environment;
                 this.selectedTabName = "Box";
+                this.showTooltip = false;
                 this.initMap();
                 $scope.$on('leafletDirectiveMap.reportMap.load', function (event, args) {
                     _this.showFeatures();
