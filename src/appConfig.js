@@ -312,7 +312,23 @@ configuration.regions = [
     { "RegionID": "LA", "Name": "Louisiana", "Bounds": [[28.939655, -94.041785], [33.023422, -89.021803]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
     { "RegionID": "MA", "Name": "Massachusetts", "Bounds": [[41.238279, -73.49884], [42.886877, -69.91778]], "Layers": {}, "Applications": ["Wateruse"], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "MD", "Name": "Maryland and District of Columbia", "Bounds": [[37.970255, -79.489865], [39.725461, -75.045623]], "Layers": {}, "Applications": ["Wateruse"], "regionEnabled": true, "ScenariosAvailable": true },
-    { "RegionID": "ME", "Name": "Maine", "Bounds": [[43.09105, -71.087509], [47.453334, -66.969271]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
+    { "RegionID": "ME", "Name": "Maine", "Bounds": [[43.09105, -71.087509], [47.453334, -66.969271]], "Layers": 
+    {
+        "MeanAugustBaseflowStateScaleView": {
+            "name": "Mean August Baseflow",
+            "url": "https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/Maine_Mean_August_Baseflow_Zoom_Level_Map/FeatureServer/7",
+            "type": 'agsFeature',
+            "visible": true,
+            "layerOptions": {
+                "zIndex": 1,
+                "format": "png8",
+                "layers": [0],
+                "f": "image"
+            },
+            "queryProperties": { }
+
+        }
+    }, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "MI", "Name": "Michigan", "Bounds": [[41.697494, -90.4082], [48.173795, -82.419836]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
     { "RegionID": "MN", "Name": "Minnesota", "Bounds": [[43.498102, -97.229436], [49.37173, -89.530673]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "MO", "Name": "Missouri", "Bounds": [[35.989656, -95.767479], [40.609784, -89.105034]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
