@@ -76,10 +76,16 @@ module StreamStats.Services {
         PIu: number;
         SEPZ: number;
     }
-
     export interface IEquationWeightingInputs {
-        Value: number;
-        SEP: number;
+        name: string,
+        on: boolean,
+        values: Array<test>
+    }
+    
+    export interface test{
+        value: number,
+        SEP: number,
+        code: string
     }
 
     export class StatisticsGroup implements IStatisticsGroup {
@@ -357,7 +363,7 @@ module StreamStats.Services {
                 this.Execute(request).then(
                     (response: any) => {
 
-                        //console.log('estimate flows: ', response);
+                        console.log('estimate flows: ', response);
 
                         //nested requests for citations
                         var citationUrl = response.data[0].links[0].href;
@@ -498,44 +504,65 @@ module StreamStats.Services {
             //this.studyAreaService.selectedStudyArea.EquationWeighting = new Models.EquationWeighting("Name","Unit");   
             console.log('queryEquationWeighting')
 
-            var BCPK: Array<IEquationWeightingInputs> = [];
-            var ACPK: Array<IEquationWeightingInputs> = [];
-            var BFPK: Array<IEquationWeightingInputs> = [];
-            var RSPK: Array<IEquationWeightingInputs> = [];
-            var code;
-            // In each RR I need code sep and value
+            var inputs: Array<IEquationWeightingInputs> = [
+                { 
+                    "name":'BCPK',
+                    "on": false,
+                    "values": []
+                }, { 
+                    "name":'ACPK',
+                    "on": false,
+                    "values": [] 
+                }, { 
+                    "name":'BFPK',
+                    "on": false,
+                    "values": [] 
+                }, {   
+                    "name":'RSPK',
+                    "on": false,
+                    "values": []
+                }
+            ];
+            var code; 
 
-
-            //Get Names and Unit Types -- need better way to get just basic regression result names
+            
+            // In each regressionregion we need code, sep and value
             this.selectedStatisticsGroupList.forEach(statGroup => { 
                 if (statGroup.name == "Peak-Flow Statistics") { // Only need to do for peakflow
                     statGroup.regressionRegions.forEach(regressionRegion => {
                         if (regressionRegion.name != "Area-Averaged") {
                             regressionRegion.results.forEach((result, index) => {
                                 if (result.code.includes("ACPK")) {
-                                    code = result.code
-                                    ACPK[index] = {
-                                        Value: result.value,
-                                        SEP: .2
+                                    code = regressionRegion.code
+                                    inputs[1].values[index] = {
+                                        value: result.value,
+                                        SEP: result.sep,
+                                        code: result.code
                                     };
+                                    inputs[1].on = true; 
                                 } else if (result.code.includes("BWPK")) {
-                                    code = result.code
-                                    BFPK[index] = {
-                                        Value: result.value,
-                                        SEP: .2
+                                    code = regressionRegion.code
+                                    inputs[2].values[index] = {
+                                        value: result.value,
+                                        SEP: result.sep,
+                                        code: result.code
                                     };
+                                    inputs[2].on = true; 
                                 } else if (result.code.includes("RSPK")) {
-                                    code = result.code
-                                    RSPK[index] = {
-                                        Value: result.value,
-                                        SEP: .2
+                                    code = regressionRegion.code
+                                    inputs[3].values[index] = {
+                                        value: result.value,
+                                        SEP: result.sep,
+                                        code: result.code
                                     };
+                                    inputs[3].on = true; 
                                 } else {
-                                    BCPK[index] = {
-                                        Value: result.value,
-                                        SEP: .2
+                                    inputs[0].values[index] = {
+                                        value: result.value,
+                                        SEP: result.sep,
+                                        code: result.code
                                     };
-
+                                    inputs[0].on = true; 
                                 }
                             })
                         }
@@ -544,64 +571,98 @@ module StreamStats.Services {
                 }
             });
 
-            console.log(BCPK)
-            console.log(ACPK)
-            console.log(BFPK)
-            console.log(RSPK)
+            console.log(inputs)
+
+            // remove input object with on = false
+            inputs = inputs.filter(function( obj ) {
+                return obj.on == false;
+            });
 
             //Figure out if we should use weightest2, weightest3, or weightest4
-            var count = 0;
-            if(BCPK.length) count ++
-            if(ACPK.length) count ++
-            if(BFPK.length) count ++
-            if(RSPK.length) count ++
+            var count = inputs.length;
+            console.log(count)
 
-            var url = configuration.baseurls['WeightingServices'] +  '/weightest' + count.toString(); // /weightest2/ /weightest4/
-            var headers = {
-                "accept": "application/json",
-                "Content-Type": "application/json"
-            };
-
-            console.log(url)
-            // //Send to weighting service and get value, unit, PIl, PIu, SEP
-            // this.equationWeightingResults.forEach((result,index) =>{
+            if (count > 2) {
                 
-            //    // PK1AEP - percentAEPflood, ACPK1AEP - Active Channel, BFPK1AEP - Bankfull, RSPK1AEP - Rem Sens
 
-            //     var input = {
-            //         "x1": 549.54,
-            //         "x2": 281.84,
-            //         "x3": 316.23,
-            //         "x4": 398.11,
-            //         "sep1": 0.234,
-            //         "sep2": 0.262,
-            //         "sep3": 0.283,
-            //         "sep4": 0.299,
-            //         "regressionRegionCode": code,
-            //         "code1": "PK1AEP",
-            //         "code2": "ACPK1AEP",
-            //         "code3": "BFPK1AEP",
-            //         "code4": "RSPK1AEP"
-            //       }
+                // get length for count
 
-            //     var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(input), headers);
-            //     this.Execute(request).then(
-            //         (response: any) => {
-            //             console.log(response.data);
-            //             this.equationWeightingResults[index] = {
-            //                 Name: null,
-            //                 Z: response.data.Z,
-            //                 Unit: null,
-            //                 PIl: response.data.PIL,
-            //                 PIu: response.data.PIU,
-            //                 SEPZ: response.data.SEPZ,
-            //             };
-            //         },(error) => {
-            //             console.log(error)
-            //         }).finally(() => {
-            //     });
-            // })
-            
+
+                var url = configuration.baseurls['WeightingServices'] +  '/weightest' + count.toString(); 
+                var headers = {
+                    "accept": "application/json",
+                    "Content-Type": "application/json"
+                };
+                var input = {};
+                console.log(url)
+                
+                // this.equationWeightingResults.forEach((result,index) => {
+
+                // Send combined inputed to weighting service and get weighted value, unit, PIl, PIu, SEP
+                if (count == 4){
+                    input = {
+                        "x1": inputs[0].values[0].value,
+                        "x2": inputs[1].values[0].value,
+                        "x3": inputs[2].values[0].value,
+                        "x4": inputs[3].values[0].value,
+                        "sep1": inputs[0].values[0].SEP,
+                        "sep2": inputs[1].values[0].SEP,
+                        "sep3": inputs[2].values[0].SEP,
+                        "sep4": inputs[3].values[0].SEP,
+                        "regressionRegionCode": code,
+                        "code1": inputs[0].values[0].code,
+                        "code2": inputs[1].values[0].code,
+                        "code3": inputs[2].values[0].code,
+                        "code4": inputs[3].values[0].code
+                    }
+                } else if (count == 3){
+                    input = {
+                        "x1": 549.54,
+                        "x2": 281.84,
+                        "x3": 316.23,
+                        "sep1": 0.234,
+                        "sep2": 0.262,
+                        "sep3": 0.283,
+                        "regressionRegionCode": "GC1851",
+                        "code1": "PK1AEP",
+                        "code2": "ACPK1AEP",
+                        "code3": "BFPK1AEP"
+                      }
+                } else if (count ==2){
+                    input = {
+                        "x1": 40.46,
+                        "x2": 63.39,
+                        "sep1": 0.554,
+                        "sep2": 0.677,
+                        "regressionRegionCode": "GC1847",
+                        "code1": "PK1AEP",
+                        "code2": "BFPK1AEP"
+                      }
+                }
+                console.log(input)
+                    
+                    // var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(input), headers);
+                    // this.Execute(request).then(
+                    //     (response: any) => {
+                    //         console.log(response.data);
+                    //         this.equationWeightingResults[0] = {
+                    //             Name: null,
+                    //             Z: response.data.Z,
+                    //             Unit: null,
+                    //             PIl: response.data.PIL,
+                    //             PIu: response.data.PIU,
+                    //             SEPZ: response.data.SEPZ,
+                    //         };
+                    //     },(error) => {
+                    //         console.log(error)
+                    //     }).finally(() => {
+                    // });
+
+                // })
+            } else {
+                console.log('Can not equation weight');
+            }
+            console.log(this.equationWeightingResults)
             console.log('done queryEquationWeighting')
         }
 

@@ -219,6 +219,7 @@ var StreamStats;
                     var request = new WiM.Services.Helpers.RequestInfo(url, true, 1, 'json', updatedScenarioObject);
                     statGroup.citations = [];
                     _this.Execute(request).then(function (response) {
+                        console.log('estimate flows: ', response);
                         var citationUrl = response.data[0].links[0].href;
                         var regregionCheck = citationUrl.split("regressionregions=")[1];
                         if (!append && regregionCheck && regregionCheck.length > 0)
@@ -317,10 +318,25 @@ var StreamStats;
             };
             nssService.prototype.queryEquationWeighting = function () {
                 console.log('queryEquationWeighting');
-                var BCPK = [];
-                var ACPK = [];
-                var BFPK = [];
-                var RSPK = [];
+                var inputs = [
+                    {
+                        "name": 'BCPK',
+                        "on": false,
+                        "values": []
+                    }, {
+                        "name": 'ACPK',
+                        "on": false,
+                        "values": []
+                    }, {
+                        "name": 'BFPK',
+                        "on": false,
+                        "values": []
+                    }, {
+                        "name": 'RSPK',
+                        "on": false,
+                        "values": []
+                    }
+                ];
                 var code;
                 this.selectedStatisticsGroupList.forEach(function (statGroup) {
                     if (statGroup.name == "Peak-Flow Statistics") {
@@ -328,56 +344,107 @@ var StreamStats;
                             if (regressionRegion.name != "Area-Averaged") {
                                 regressionRegion.results.forEach(function (result, index) {
                                     if (result.code.includes("ACPK")) {
-                                        code = result.code;
-                                        ACPK[index] = {
-                                            Value: result.value,
-                                            SEP: .2
+                                        code = regressionRegion.code;
+                                        inputs[1].values[index] = {
+                                            value: result.value,
+                                            SEP: result.sep,
+                                            code: result.code
                                         };
+                                        inputs[1].on = true;
                                     }
                                     else if (result.code.includes("BWPK")) {
-                                        code = result.code;
-                                        BFPK[index] = {
-                                            Value: result.value,
-                                            SEP: .2
+                                        code = regressionRegion.code;
+                                        inputs[2].values[index] = {
+                                            value: result.value,
+                                            SEP: result.sep,
+                                            code: result.code
                                         };
+                                        inputs[2].on = true;
                                     }
                                     else if (result.code.includes("RSPK")) {
-                                        code = result.code;
-                                        RSPK[index] = {
-                                            Value: result.value,
-                                            SEP: .2
+                                        code = regressionRegion.code;
+                                        inputs[3].values[index] = {
+                                            value: result.value,
+                                            SEP: result.sep,
+                                            code: result.code
                                         };
+                                        inputs[3].on = true;
                                     }
                                     else {
-                                        BCPK[index] = {
-                                            Value: result.value,
-                                            SEP: .2
+                                        inputs[0].values[index] = {
+                                            value: result.value,
+                                            SEP: result.sep,
+                                            code: result.code
                                         };
+                                        inputs[0].on = true;
                                     }
                                 });
                             }
                         });
                     }
                 });
-                console.log(BCPK);
-                console.log(ACPK);
-                console.log(BFPK);
-                console.log(RSPK);
-                var count = 0;
-                if (BCPK.length)
-                    count++;
-                if (ACPK.length)
-                    count++;
-                if (BFPK.length)
-                    count++;
-                if (RSPK.length)
-                    count++;
-                var url = configuration.baseurls['WeightingServices'] + '/weightest' + count.toString();
-                var headers = {
-                    "accept": "application/json",
-                    "Content-Type": "application/json"
-                };
-                console.log(url);
+                console.log(inputs);
+                inputs = inputs.filter(function (obj) {
+                    return obj.on == false;
+                });
+                var count = inputs.length;
+                console.log(count);
+                if (count > 2) {
+                    var url = configuration.baseurls['WeightingServices'] + '/weightest' + count.toString();
+                    var headers = {
+                        "accept": "application/json",
+                        "Content-Type": "application/json"
+                    };
+                    var input = {};
+                    console.log(url);
+                    if (count == 4) {
+                        input = {
+                            "x1": inputs[0].values[0].value,
+                            "x2": inputs[1].values[0].value,
+                            "x3": inputs[2].values[0].value,
+                            "x4": inputs[3].values[0].value,
+                            "sep1": inputs[0].values[0].SEP,
+                            "sep2": inputs[1].values[0].SEP,
+                            "sep3": inputs[2].values[0].SEP,
+                            "sep4": inputs[3].values[0].SEP,
+                            "regressionRegionCode": code,
+                            "code1": inputs[0].values[0].code,
+                            "code2": inputs[1].values[0].code,
+                            "code3": inputs[2].values[0].code,
+                            "code4": inputs[3].values[0].code
+                        };
+                    }
+                    else if (count == 3) {
+                        input = {
+                            "x1": 549.54,
+                            "x2": 281.84,
+                            "x3": 316.23,
+                            "sep1": 0.234,
+                            "sep2": 0.262,
+                            "sep3": 0.283,
+                            "regressionRegionCode": "GC1851",
+                            "code1": "PK1AEP",
+                            "code2": "ACPK1AEP",
+                            "code3": "BFPK1AEP"
+                        };
+                    }
+                    else if (count == 2) {
+                        input = {
+                            "x1": 40.46,
+                            "x2": 63.39,
+                            "sep1": 0.554,
+                            "sep2": 0.677,
+                            "regressionRegionCode": "GC1847",
+                            "code1": "PK1AEP",
+                            "code2": "BFPK1AEP"
+                        };
+                    }
+                    console.log(input);
+                }
+                else {
+                    console.log('Can not equation weight');
+                }
+                console.log(this.equationWeightingResults);
                 console.log('done queryEquationWeighting');
             };
             nssService.prototype.getSelectedCitations = function (citationUrl, statGroup) {
