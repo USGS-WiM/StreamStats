@@ -416,7 +416,7 @@ module StreamStats.Controllers {
                         }//end if
                     }//next
 
-
+                    
                 }//end if
                 this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList,"value", this.regionService.selectedRegion.RegionID);
                 if (this.regionService.selectedRegion.Applications.indexOf("RegulationFlows") !=-1) {
