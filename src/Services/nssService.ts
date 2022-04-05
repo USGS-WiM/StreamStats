@@ -80,10 +80,10 @@ module StreamStats.Services {
     export interface IEquationWeightingInputs {
         name: string,
         on: boolean,
-        values: Array<test>
+        values: Array<IEquationWeightingInputValues>
     }
     
-    export interface test{
+    export interface IEquationWeightingInputValues {
         value: number,
         SEP: number,
         code: string
@@ -364,7 +364,7 @@ module StreamStats.Services {
                 this.Execute(request).then(
                     (response: any) => {
 
-                        console.log('estimate flows: ', response);
+                        //console.log('estimate flows: ', response);
 
                         //nested requests for citations
                         var citationUrl = response.data[0].links[0].href;
@@ -502,6 +502,13 @@ module StreamStats.Services {
         }
 
         public queryEquationWeighting() {
+            //Still Need to Test
+                // weightest4
+                // weightest3
+                // weightest2
+                // selecting multple scenarios
+                // point with only 1?
+
             //this.studyAreaService.selectedStudyArea.EquationWeighting = new Models.EquationWeighting("Name","Unit");   
             console.log('queryEquationWeighting')
 

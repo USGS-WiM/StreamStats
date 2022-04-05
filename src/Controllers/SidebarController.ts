@@ -223,6 +223,7 @@ module StreamStats.Controllers {
         }
 
         public setStatisticsGroup(statisticsGroup: Services.IStatisticsGroup) {
+
             var checkStatisticsGroup = this.checkArrayForObj(this.nssService.selectedStatisticsGroupList, statisticsGroup);
 
             //console.log('set stat group: ', statisticsGroup, checkStatisticsGroup);
@@ -391,6 +392,7 @@ module StreamStats.Controllers {
 
         public generateReport() {
 
+            //console.log('in estimateFlows');
             this.toaster.pop('wait', "Opening Report", "Please wait...",5000);
 
             //ga event
@@ -413,8 +415,9 @@ module StreamStats.Controllers {
                             break;
                         }//end if
                     }//next
+
+
                 }//end if
-                
                 this.nssService.estimateFlows(this.studyAreaService.studyAreaParameterList,"value", this.regionService.selectedRegion.RegionID);
                 if (this.regionService.selectedRegion.Applications.indexOf("RegulationFlows") !=-1) {
                     setTimeout(() => {
@@ -451,7 +454,6 @@ module StreamStats.Controllers {
                 });//end getLayers                                
             });//end getMap 
         }
-
 
         public checkRegulation() {
             //console.log('checking for regulation');

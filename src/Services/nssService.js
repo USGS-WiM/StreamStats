@@ -219,7 +219,6 @@ var StreamStats;
                     var request = new WiM.Services.Helpers.RequestInfo(url, true, 1, 'json', updatedScenarioObject);
                     statGroup.citations = [];
                     _this.Execute(request).then(function (response) {
-                        console.log('estimate flows: ', response);
                         var citationUrl = response.data[0].links[0].href;
                         var regregionCheck = citationUrl.split("regressionregions=")[1];
                         if (!append && regregionCheck && regregionCheck.length > 0)
