@@ -334,10 +334,6 @@ configuration.regions = [
                     var popupContent = '<h5>Mean August Baseflow</h5> ';
                     var queryProperties = { 
                         "GNIS_Name": "GNIS_Name", 
-                        "ReachCode": "ReachCode",
-                        "NHDPlusID": "NHDPlusID",
-                        "From_Node": "From_Node",
-                        "To_Node": "To_Node",
                         "DASQMI": "DASQMI",
                         "SANDGRAVAF":"SANDGRAVAF",
                         "JULYAVPRE": "JULYAVPRE",
@@ -357,20 +353,19 @@ configuration.regions = [
                     var color = '#000000';
                     if (feature.properties.AUGAVGBF >= .76){ 
                         color = '#fd4df7'; 
-                    }
-                    if (feature.properties.AUGAVGBF >= .55 && feature.properties.AUGAVGBF <.76){ 
+                    }else if (feature.properties.AUGAVGBF >= .55 && feature.properties.AUGAVGBF <.76){ 
                         color = '#b135f6'; 
-                    }
-                    if (feature.properties.AUGAVGBF >= .4 && feature.properties.AUGAVGBF <.55){ 
+                    }else if (feature.properties.AUGAVGBF >= .4 && feature.properties.AUGAVGBF <.55){ 
                         color = '#8689f9'; 
-                    }
-                    if (feature.properties.AUGAVGBF <.4){ 
+                    }else if (feature.properties.AUGAVGBF <.4){ 
                         color = '#39f7f9'; 
                     }
                     return {
                         color: color
                     }
-                }
+                },
+                "minZoom":10,
+                "maxZoom":11
             },
             "layerArray": [{
                 "layerName": "Mean August Baseflow",
@@ -383,22 +378,242 @@ configuration.regions = [
             "queryProperties": { 
                 "Mean August Baseflow": { 
                     "GNIS_Name": "GNIS_Name", 
-                    "ReachCode": "ReachCode",
-                    "NHDPlusID": "NHDPlusID",
-                    "From_Node": "From_Node",
-                    "To_Node": "To_Node",
-                    "DASQMI": "DASQMI",
-                    "SANDGRAVAF":"SANDGRAVAF",
-                    "JULYAVPRE": "JULYAVPRE",
-                    "AUGAVGBF": "AUGAVGBF",
-                    "OOB_DA": "OOB_DA",
-                    "OOB_JULYAV": "OOB_JULYAV",
-                    "OOB_SANDGR": "OOB_SANDGR",
-                    "OOB_WARNIN": "OOB_WARNIN",
-                    "REGULATED": "REGULATED" 
+                    "DASQMI": "Drainage Area (mi2)",
+                    "SANDGRAVAF": "Aquifer Area (%)",
+                    "JULYAVPRE": "Mean July Precip (in)",
+                    "AUGAVGBF": "Mean August Baseflow (cfs/mi2",
+                    "OOB_DA": "Drainage Area out-of-bounds",
+                    "OOB_JULYAV":"Mean July Precip out-of-bounds",
+                    "OOB_WARNIN": "% Aquifer Area out-of-bounds",
+                    "REGULATED": "Regulated stream/river"
                 } 
             }
         },
+        "MeanAugustBaseflowCountyScaleView": {
+            "name": "Mean August Baseflow",
+            "url": "https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/Maine_Mean_August_Baseflow_Zoom_Level_Map/FeatureServer/3",
+            "type": 'agsFeature',
+            "visible": true,
+            "layerOptions": {
+                pointToLayer: function (geojson, latlng) {
+                    return L.marker(latlng, {
+                        icon: L.icon({
+                            iconUrl: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAQCAYAAAAS7Y8mAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAe9JREFUOI21lMFLG0EYxd837taDNXhoKZsixEslWMhhDfYivVRCIXvzpKInN9B/wuTPyOLFv0DQvfQgHqSK1j0ImiW5GCgkl56E0GKSeT00azdNm0Ro32n45pvfvGHmjYH/ JCMaaK0dAHkATaVU8TEQrbUjIi6AoogED2CSNoCDerWK1Pw8tNaBUupwHGi09jYMMZdO50kWRMQzAEBEApK4OT3F00QCzyzrgORitPsI6GG9WsWXWg1z6TQA / HLcUyG3sVH2d3exsr6OqUTiUmvtjTBsf202rcrZGd5vboJkSSnVDxYRjyRyW1vlj3t7eLe2hgnDcIdRv7VaONnfh7O9DVHKF5FiNBd3DBHxtNb229VVtzQzM8LsTxXv7mCYpi8iTrxu / N4oIt7U9PRQp3E9mZwEyYG7GAD / Kw2ASTrdbvdRkOgN / xVM0iW588n38aFSwYQx / EDfWy0Ex8d4k8tZWuuyUqowAO4lr / z56AiZ5WU8TyYDkv4op7dhaIVBgLRtuyQDEfH6wCKyU7u6wovZ2QhaGiN9RZKN6 / Nzq1GvI5lKlXvwIB5pu31 / j1eZDMaEAgA6nc7i66Wly + uLCyuZSgGADSB4iHS73X65kM3mSTbHhQKAaZoNks5CNusC8Po + oagBwKgI / 1E9WCFe+wGwdtl + 2b+bewAAAABJRU5ErkJggg == ",
+                            iconSize: [27, 31],
+                            iconAnchor: [13.5, 17.5],
+                            popupAnchor: [0, -11]
+                        })
+                    });
+                },
+                onEachFeature: function (feature, layer) {
+                    var popupContent = '<h5>Mean August Baseflow</h5> ';
+                    var queryProperties = { 
+                        "GNIS_Name": "GNIS_Name", 
+                        "DASQMI": "DASQMI",
+                        "SANDGRAVAF":"SANDGRAVAF",
+                        "JULYAVPRE": "JULYAVPRE",
+                        "AUGAVGBF": "AUGAVGBF",
+                        "OOB_DA": "OOB_DA",
+                        "OOB_JULYAV": "OOB_JULYAV",
+                        "OOB_SANDGR": "OOB_SANDGR",
+                        "OOB_WARNIN": "OOB_WARNIN",
+                        "REGULATED": "REGULATED"
+                    };
+                    Object.keys(queryProperties).map(function (k) {
+                        popupContent += '<strong>' + queryProperties[k] + ': </strong>' + feature.properties[k] + '</br>';
+                    });
+                    layer.bindPopup(popupContent);                     
+                },
+                style: function (feature) {
+                    var color = '#000000';
+                    if (feature.properties.AUGAVGBF >= .6){ 
+                        color = '#fd4df7'; 
+                    }else if (feature.properties.AUGAVGBF >= .45 && feature.properties.AUGAVGBF <.6){ 
+                        color = '#b135f6'; 
+                    }else if (feature.properties.AUGAVGBF >= .3 && feature.properties.AUGAVGBF <.45){ 
+                        color = '#8689f9'; 
+                    }else if (feature.properties.AUGAVGBF <.3){ 
+                        color = '#39f7f9'; 
+                    }
+                    return {
+                        color: color
+                    }
+                },
+                "minZoom":12,
+                "maxZoom":13
+            },
+            "layerArray": [{
+                "layerName": "Mean August Baseflow",
+                "legend": [{
+                    "contentType": "image/png",
+                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAUlJREFUOI3VlDFLAmEYx/+PnUoS4hKBINgSODm4tEhLIQ1tTgpuLn2K+h4ufgKXWwLBIVI8uEEoxVs6CHJpEt6uzuHfEHedXORlBvVOLw+8P37v8/zfV8OGl/ Z / gCQpIrIOJHhW8wr2dLoWlCTvJxP / rG941 + 9jJ53+FtQTebAs7BcK8A1FRBauS73Vwkm9DpKMAnyazTAeDHDaaPg13zCeSMizUrxqt3Fcq2FL + 3pejlK47nRw1mxCYjEs9dBb26kUjqpVXGYyUQRxMZ9Di8cRbNESUETk1XEiXRcAEslkqPa7wSZJR6mNAnGj6zgfj1cO5UUpmL0eDiuVcLA9O6PbRbFcxm42i1VZ9AI9MU0USqVlQ5K0RiPs5XKRYMD7AEnydjjEo22HX8rCdXFQLEaChaCGgWw+/2G47qcQhH4a7J9Avf3f/2DfAC / knupCOYW2AAAAAElFTkSuQmCC",
+                    "label": ""
+                }]
+            }],
+            "queryProperties": { 
+                "Mean August Baseflow": { 
+                    "GNIS_Name": "GNIS_Name", 
+                    "DASQMI": "Drainage Area (mi2)",
+                    "SANDGRAVAF": "Aquifer Area (%)",
+                    "JULYAVPRE": "Mean July Precip (in)",
+                    "AUGAVGBF": "Mean August Baseflow (cfs/mi2",
+                    "OOB_DA": "Drainage Area out-of-bounds",
+                    "OOB_JULYAV":"Mean July Precip out-of-bounds",
+                    "OOB_WARNIN": "% Aquifer Area out-of-bounds",
+                    "REGULATED": "Regulated stream/river"
+                } 
+            }
+        },
+        "MeanAugustBaseflowTownScaleView": {
+            "name": "Mean August Baseflow",
+            "url": "https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/Maine_Mean_August_Baseflow_Zoom_Level_Map/FeatureServer/10",
+            "type": 'agsFeature',
+            "visible": true,
+            "layerOptions": {
+                pointToLayer: function (geojson, latlng) {
+                    return L.marker(latlng, {
+                        icon: L.icon({
+                            iconUrl: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAQCAYAAAAS7Y8mAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAe9JREFUOI21lMFLG0EYxd837taDNXhoKZsixEslWMhhDfYivVRCIXvzpKInN9B/wuTPyOLFv0DQvfQgHqSK1j0ImiW5GCgkl56E0GKSeT00azdNm0Ro32n45pvfvGHmjYH/ JCMaaK0dAHkATaVU8TEQrbUjIi6AoogED2CSNoCDerWK1Pw8tNaBUupwHGi09jYMMZdO50kWRMQzAEBEApK4OT3F00QCzyzrgORitPsI6GG9WsWXWg1z6TQA / HLcUyG3sVH2d3exsr6OqUTiUmvtjTBsf202rcrZGd5vboJkSSnVDxYRjyRyW1vlj3t7eLe2hgnDcIdRv7VaONnfh7O9DVHKF5FiNBd3DBHxtNb229VVtzQzM8LsTxXv7mCYpi8iTrxu / N4oIt7U9PRQp3E9mZwEyYG7GAD / Kw2ASTrdbvdRkOgN / xVM0iW588n38aFSwYQx / EDfWy0Ex8d4k8tZWuuyUqowAO4lr / z56AiZ5WU8TyYDkv4op7dhaIVBgLRtuyQDEfH6wCKyU7u6wovZ2QhaGiN9RZKN6 / Nzq1GvI5lKlXvwIB5pu31 / j1eZDMaEAgA6nc7i66Wly + uLCyuZSgGADSB4iHS73X65kM3mSTbHhQKAaZoNks5CNusC8Po + oagBwKgI / 1E9WCFe+wGwdtl + 2b+bewAAAABJRU5ErkJggg == ",
+                            iconSize: [27, 31],
+                            iconAnchor: [13.5, 17.5],
+                            popupAnchor: [0, -11]
+                        })
+                    });
+                },
+                onEachFeature: function (feature, layer) {
+                    var popupContent = '<h5>Mean August Baseflow</h5> ';
+                    var queryProperties = { 
+                        "GNIS_Name": "GNIS_Name", 
+                        "DASQMI": "DASQMI",
+                        "SANDGRAVAF":"SANDGRAVAF",
+                        "JULYAVPRE": "JULYAVPRE",
+                        "AUGAVGBF": "AUGAVGBF",
+                        "OOB_DA": "OOB_DA",
+                        "OOB_JULYAV": "OOB_JULYAV",
+                        "OOB_SANDGR": "OOB_SANDGR",
+                        "OOB_WARNIN": "OOB_WARNIN",
+                        "REGULATED": "REGULATED"
+                    };
+                    Object.keys(queryProperties).map(function (k) {
+                        popupContent += '<strong>' + queryProperties[k] + ': </strong>' + feature.properties[k] + '</br>';
+                    });
+                    layer.bindPopup(popupContent);                     
+                },
+                style: function (feature) {
+                    var color = '#000000';
+                    if (feature.properties.AUGAVGBF >= .5){ 
+                        color = '#fd4df7'; 
+                    }else if (feature.properties.AUGAVGBF >= .4 && feature.properties.AUGAVGBF <.5){ 
+                        color = '#b135f6'; 
+                    }else if (feature.properties.AUGAVGBF >= .2 && feature.properties.AUGAVGBF <.4){ 
+                        color = '#8689f9'; 
+                    }else if (feature.properties.AUGAVGBF <.2){ 
+                        color = '#39f7f9'; 
+                    }
+                    return {
+                        color: color
+                    }
+                },
+                "minZoom":14,
+                "maxZoom":15
+            },
+            "layerArray": [{
+                "layerName": "Mean August Baseflow",
+                "legend": [{
+                    "contentType": "image/png",
+                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAUlJREFUOI3VlDFLAmEYx/+PnUoS4hKBINgSODm4tEhLIQ1tTgpuLn2K+h4ufgKXWwLBIVI8uEEoxVs6CHJpEt6uzuHfEHedXORlBvVOLw+8P37v8/zfV8OGl/ Z / gCQpIrIOJHhW8wr2dLoWlCTvJxP / rG941 + 9jJ53+FtQTebAs7BcK8A1FRBauS73Vwkm9DpKMAnyazTAeDHDaaPg13zCeSMizUrxqt3Fcq2FL + 3pejlK47nRw1mxCYjEs9dBb26kUjqpVXGYyUQRxMZ9Di8cRbNESUETk1XEiXRcAEslkqPa7wSZJR6mNAnGj6zgfj1cO5UUpmL0eDiuVcLA9O6PbRbFcxm42i1VZ9AI9MU0USqVlQ5K0RiPs5XKRYMD7AEnydjjEo22HX8rCdXFQLEaChaCGgWw+/2G47qcQhH4a7J9Avf3f/2DfAC / knupCOYW2AAAAAElFTkSuQmCC",
+                    "label": ""
+                }]
+            }],
+            "queryProperties": { 
+                "Mean August Baseflow": { 
+                    "GNIS_Name": "GNIS_Name", 
+                    "DASQMI": "Drainage Area (mi2)",
+                    "SANDGRAVAF": "Aquifer Area (%)",
+                    "JULYAVPRE": "Mean July Precip (in)",
+                    "AUGAVGBF": "Mean August Baseflow (cfs/mi2",
+                    "OOB_DA": "Drainage Area out-of-bounds",
+                    "OOB_JULYAV":"Mean July Precip out-of-bounds",
+                    "OOB_WARNIN": "% Aquifer Area out-of-bounds",
+                    "REGULATED": "Regulated stream/river"
+                } 
+            }
+        },
+        "MeanAugustBaseflowNeighborhoodScaleView": {
+            "name": "Mean August Baseflow",
+            "url": "https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/Maine_Mean_August_Baseflow_Zoom_Level_Map/FeatureServer/11",
+            "type": 'agsFeature',
+            "visible": true,
+            "layerOptions": {
+                pointToLayer: function (geojson, latlng) {
+                    return L.marker(latlng, {
+                        icon: L.icon({
+                            iconUrl: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAQCAYAAAAS7Y8mAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAe9JREFUOI21lMFLG0EYxd837taDNXhoKZsixEslWMhhDfYivVRCIXvzpKInN9B/wuTPyOLFv0DQvfQgHqSK1j0ImiW5GCgkl56E0GKSeT00azdNm0Ro32n45pvfvGHmjYH/ JCMaaK0dAHkATaVU8TEQrbUjIi6AoogED2CSNoCDerWK1Pw8tNaBUupwHGi09jYMMZdO50kWRMQzAEBEApK4OT3F00QCzyzrgORitPsI6GG9WsWXWg1z6TQA / HLcUyG3sVH2d3exsr6OqUTiUmvtjTBsf202rcrZGd5vboJkSSnVDxYRjyRyW1vlj3t7eLe2hgnDcIdRv7VaONnfh7O9DVHKF5FiNBd3DBHxtNb229VVtzQzM8LsTxXv7mCYpi8iTrxu / N4oIt7U9PRQp3E9mZwEyYG7GAD / Kw2ASTrdbvdRkOgN / xVM0iW588n38aFSwYQx / EDfWy0Ex8d4k8tZWuuyUqowAO4lr / z56AiZ5WU8TyYDkv4op7dhaIVBgLRtuyQDEfH6wCKyU7u6wovZ2QhaGiN9RZKN6 / Nzq1GvI5lKlXvwIB5pu31 / j1eZDMaEAgA6nc7i66Wly + uLCyuZSgGADSB4iHS73X65kM3mSTbHhQKAaZoNks5CNusC8Po + oagBwKgI / 1E9WCFe+wGwdtl + 2b+bewAAAABJRU5ErkJggg == ",
+                            iconSize: [27, 31],
+                            iconAnchor: [13.5, 17.5],
+                            popupAnchor: [0, -11]
+                        })
+                    });
+                },
+                onEachFeature: function (feature, layer) {
+                    var popupContent = '<h5>Mean August Baseflow</h5> ';
+                    var queryProperties = { 
+                        "GNIS_Name": "GNIS_Name", 
+                        "DASQMI": "DASQMI",
+                        "SANDGRAVAF":"SANDGRAVAF",
+                        "JULYAVPRE": "JULYAVPRE",
+                        "AUGAVGBF": "AUGAVGBF",
+                        "OOB_DA": "OOB_DA",
+                        "OOB_JULYAV": "OOB_JULYAV",
+                        "OOB_SANDGR": "OOB_SANDGR",
+                        "OOB_WARNIN": "OOB_WARNIN",
+                        "REGULATED": "REGULATED"
+                    };
+                    Object.keys(queryProperties).map(function (k) {
+                        popupContent += '<strong>' + queryProperties[k] + ': </strong>' + feature.properties[k] + '</br>';
+                    });
+                    layer.bindPopup(popupContent);                     
+                },
+                style: function (feature) {
+                    var color = '#000000';
+                    if (feature.properties.AUGAVGBF >= .35){ 
+                        color = '#fd4df7'; 
+                    }else if (feature.properties.AUGAVGBF >= .25 && feature.properties.AUGAVGBF <.35){ 
+                        color = '#b135f6'; 
+                    }else if (feature.properties.AUGAVGBF >= .15 && feature.properties.AUGAVGBF <.25){ 
+                        color = '#8689f9'; 
+                    }else if (feature.properties.AUGAVGBF <.15){ 
+                        color = '#39f7f9'; 
+                    }
+                    return {
+                        color: color
+                    }
+                },
+                "minZoom":16,
+                "maxZoom":16
+            },
+            "layerArray": [{
+                "layerName": "Mean August Baseflow",
+                "legend": [{
+                    "contentType": "image/png",
+                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAUlJREFUOI3VlDFLAmEYx/+PnUoS4hKBINgSODm4tEhLIQ1tTgpuLn2K+h4ufgKXWwLBIVI8uEEoxVs6CHJpEt6uzuHfEHedXORlBvVOLw+8P37v8/zfV8OGl/ Z / gCQpIrIOJHhW8wr2dLoWlCTvJxP / rG941 + 9jJ53+FtQTebAs7BcK8A1FRBauS73Vwkm9DpKMAnyazTAeDHDaaPg13zCeSMizUrxqt3Fcq2FL + 3pejlK47nRw1mxCYjEs9dBb26kUjqpVXGYyUQRxMZ9Di8cRbNESUETk1XEiXRcAEslkqPa7wSZJR6mNAnGj6zgfj1cO5UUpmL0eDiuVcLA9O6PbRbFcxm42i1VZ9AI9MU0USqVlQ5K0RiPs5XKRYMD7AEnydjjEo22HX8rCdXFQLEaChaCGgWw+/2G47qcQhH4a7J9Avf3f/2DfAC / knupCOYW2AAAAAElFTkSuQmCC",
+                    "label": ""
+                }]
+            }],
+            "queryProperties": { 
+                "Mean August Baseflow": { 
+                    "GNIS_Name": "GNIS_Name", 
+                    "DASQMI": "Drainage Area (mi2)",
+                    "SANDGRAVAF": "Aquifer Area (%)",
+                    "JULYAVPRE": "Mean July Precip (in)",
+                    "AUGAVGBF": "Mean August Baseflow (cfs/mi2",
+                    "OOB_DA": "Drainage Area out-of-bounds",
+                    "OOB_JULYAV":"Mean July Precip out-of-bounds",
+                    "OOB_WARNIN": "% Aquifer Area out-of-bounds",
+                    "REGULATED": "Regulated stream/river"
+                } 
+            }
+        }
     }, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "MI", "Name": "Michigan", "Bounds": [[41.697494, -90.4082], [48.173795, -82.419836]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
     { "RegionID": "MN", "Name": "Minnesota", "Bounds": [[43.498102, -97.229436], [49.37173, -89.530673]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
