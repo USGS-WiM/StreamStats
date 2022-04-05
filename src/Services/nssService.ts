@@ -479,8 +479,7 @@ module StreamStats.Services {
                         if (this.regionservice.selectedRegion.Applications.indexOf('EquationWeighting') != -1 ) {
                             if (this.selectedStatisticsGroupList.some(e => e.name === 'Peak-Flow Statistics')) {
                                 this.queryEquationWeighting();
-                                //var test = this.studyAreaService.selectedStudyArea.EquationWeighting.Execute();
-                              }
+                            }
                         }
 
                         this.estimateFlowsCounter--;
@@ -509,9 +508,7 @@ module StreamStats.Services {
                 // selecting multple scenarios
                 // point with only 1?
 
-            //this.studyAreaService.selectedStudyArea.EquationWeighting = new Models.EquationWeighting("Name","Unit");   
             console.log('queryEquationWeighting')
-
             var code; 
             var inputs: Array<IEquationWeightingInputs> = [
                 { 

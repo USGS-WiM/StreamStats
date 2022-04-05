@@ -38,7 +38,6 @@ module StreamStats.Models {
         Disclaimers: Object;
         isGlobal: boolean;
         CoordinatedReach: Models.ICoordinatedReach;
-        EquationWeighting: Models.IEquationWeighting;
         NSS_StatisticGroups: Array<Services.IStatisticsGroup>;
         ActiveExtension: Array<any>;
         NSS_Extensions:Array<any>;
@@ -60,7 +59,6 @@ module StreamStats.Models {
         public Disclaimers: Object;
         public isGlobal: boolean;
         public CoordinatedReach: Models.ICoordinatedReach;        
-        public EquationWeighting: Models.IEquationWeighting;
         public NSS_StatisticGroups: Array<Services.IStatisticsGroup>;
         public ActiveExtension: Array<any>;
         public NSS_Extensions: Array<any>;
@@ -70,7 +68,6 @@ module StreamStats.Models {
             this.RegionID = region;
             this.Pourpoint = point;
             this.CoordinatedReach = null;
-            this.EquationWeighting = null;
             this.ActiveExtension = [];
             this.NSS_Extensions = [];
         }

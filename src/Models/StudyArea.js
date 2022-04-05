@@ -7,7 +7,6 @@ var StreamStats;
                 this.RegionID = region;
                 this.Pourpoint = point;
                 this.CoordinatedReach = null;
-                this.EquationWeighting = null;
                 this.ActiveExtension = [];
                 this.NSS_Extensions = [];
             }
