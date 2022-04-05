@@ -317,7 +317,9 @@ var StreamStats;
                 });
             };
             nssService.prototype.queryEquationWeighting = function () {
+                var _this = this;
                 console.log('queryEquationWeighting');
+                var code;
                 var inputs = [
                     {
                         "name": 'BCPK',
@@ -337,7 +339,6 @@ var StreamStats;
                         "values": []
                     }
                 ];
-                var code;
                 this.selectedStatisticsGroupList.forEach(function (statGroup) {
                     if (statGroup.name == "Peak-Flow Statistics") {
                         statGroup.regressionRegions.forEach(function (regressionRegion) {
@@ -383,63 +384,77 @@ var StreamStats;
                         });
                     }
                 });
-                console.log(inputs);
                 inputs = inputs.filter(function (obj) {
-                    return obj.on == false;
+                    return obj.on == true;
                 });
                 var count = inputs.length;
-                console.log(count);
                 if (count > 2) {
+                    var input = {};
                     var url = configuration.baseurls['WeightingServices'] + '/weightest' + count.toString();
                     var headers = {
                         "accept": "application/json",
                         "Content-Type": "application/json"
                     };
-                    var input = {};
-                    console.log(url);
-                    if (count == 4) {
-                        input = {
-                            "x1": inputs[0].values[0].value,
-                            "x2": inputs[1].values[0].value,
-                            "x3": inputs[2].values[0].value,
-                            "x4": inputs[3].values[0].value,
-                            "sep1": inputs[0].values[0].SEP,
-                            "sep2": inputs[1].values[0].SEP,
-                            "sep3": inputs[2].values[0].SEP,
-                            "sep4": inputs[3].values[0].SEP,
-                            "regressionRegionCode": code,
-                            "code1": inputs[0].values[0].code,
-                            "code2": inputs[1].values[0].code,
-                            "code3": inputs[2].values[0].code,
-                            "code4": inputs[3].values[0].code
-                        };
-                    }
-                    else if (count == 3) {
-                        input = {
-                            "x1": 549.54,
-                            "x2": 281.84,
-                            "x3": 316.23,
-                            "sep1": 0.234,
-                            "sep2": 0.262,
-                            "sep3": 0.283,
-                            "regressionRegionCode": "GC1851",
-                            "code1": "PK1AEP",
-                            "code2": "ACPK1AEP",
-                            "code3": "BFPK1AEP"
-                        };
-                    }
-                    else if (count == 2) {
-                        input = {
-                            "x1": 40.46,
-                            "x2": 63.39,
-                            "sep1": 0.554,
-                            "sep2": 0.677,
-                            "regressionRegionCode": "GC1847",
-                            "code1": "PK1AEP",
-                            "code2": "BFPK1AEP"
-                        };
-                    }
-                    console.log(input);
+                    inputs[0].values.forEach(function (result, index) {
+                        if (count == 4) {
+                            input = {
+                                "x1": inputs[0].values[index].value,
+                                "x2": inputs[1].values[index].value,
+                                "x3": inputs[2].values[index].value,
+                                "x4": inputs[3].values[index].value,
+                                "sep1": inputs[0].values[index].SEP,
+                                "sep2": inputs[1].values[index].SEP,
+                                "sep3": inputs[2].values[index].SEP,
+                                "sep4": inputs[3].values[index].SEP,
+                                "regressionRegionCode": code,
+                                "code1": inputs[0].values[index].code,
+                                "code2": inputs[1].values[index].code,
+                                "code3": inputs[2].values[index].code,
+                                "code4": inputs[3].values[index].code
+                            };
+                        }
+                        else if (count == 3) {
+                            input = {
+                                "x1": inputs[0].values[index].value,
+                                "x2": inputs[1].values[index].value,
+                                "x3": inputs[2].values[index].value,
+                                "sep1": inputs[0].values[index].SEP,
+                                "sep2": inputs[1].values[index].SEP,
+                                "sep3": inputs[2].values[index].SEP,
+                                "regressionRegionCode": code,
+                                "code1": inputs[0].values[index].code,
+                                "code2": inputs[1].values[index].code,
+                                "code3": inputs[2].values[index].code,
+                            };
+                        }
+                        else if (count == 2) {
+                            input = {
+                                "x1": inputs[0].values[index].value,
+                                "x2": inputs[1].values[index].value,
+                                "sep1": inputs[0].values[index].SEP,
+                                "sep2": inputs[1].values[index].SEP,
+                                "regressionRegionCode": code,
+                                "code1": inputs[0].values[index].code,
+                                "code2": inputs[1].values[index].code,
+                            };
+                        }
+                        console.log(input);
+                        var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(input), headers);
+                        _this.Execute(request).then(function (response) {
+                            console.log(response.data);
+                            _this.equationWeightingResults[index] = {
+                                Name: 'todo',
+                                Z: response.data.Z,
+                                Unit: 'todo',
+                                PIl: response.data.PIL,
+                                PIu: response.data.PIU,
+                                SEPZ: response.data.SEPZ,
+                            };
+                        }, function (error) {
+                            console.log(error);
+                        }).finally(function () {
+                        });
+                    });
                 }
                 else {
                     console.log('Can not equation weight');
