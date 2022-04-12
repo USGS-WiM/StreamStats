@@ -193,7 +193,7 @@
                                     <tbody>
                                         <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList"  ng-if="parameter.code.substring(0, 2) !=='BC' && parameter.code.substring(0, 2) !=='PC' && parameter.code.substring(0, 2) !=='AC' && parameter.code.substring(0, 5) !== 'STATS'">
                                             <td>{{parameter.name}}
-                                                <i ng-mouseover="showTooltip = true" ng-mouseleave="showTooltip = false" class="fa fa-info-circle"></i>
+                                                <i ng-show="parameter.description !== ''" ng-mouseover="showTooltip = true" ng-mouseleave="showTooltip = false" class="fa fa-info-circle"></i>
                                                 <span ng-show="showTooltip" class="culvert-tooltip">
                                                     <span ng-bind="parameter.description"></span>
                                                 </span>
