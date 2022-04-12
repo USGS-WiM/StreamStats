@@ -71,15 +71,13 @@ module StreamStats.Services {
     export interface IEquationWeightingResults {
         Name: string;
         Z: number;
-        //Unit: IUnit;
-        Unit: string;
+        Unit: IUnit;
         PIl: number;
         PIu: number;
         SEPZ: number;
     }
     export interface IEquationWeightingInputs {
         name: string,
-        on: boolean,
         values: Array<IEquationWeightingInputValues>
     }
     
@@ -87,6 +85,7 @@ module StreamStats.Services {
         value: number,
         SEP: number,
         code: string
+        sortCode: number
     }
 
     export class StatisticsGroup implements IStatisticsGroup {
@@ -502,30 +501,27 @@ module StreamStats.Services {
 
         public queryEquationWeighting() {
             //Still Need to Test
-                // weightest4
-                // weightest3
-                // weightest2
                 // selecting multple scenarios
-                // point with only 1?
+                // is it possible to area weight regions from two seperate hydrologic regions
 
-            console.log('queryEquationWeighting')
             var code; 
+            var acpkCount = 0, bfpkCount = 0, bcpkCount = 0, rspkCount = 0;
+            var units = [];
+            var names = [];
+            this.equationWeightingResults = [];
+            var regex = /[0-9]+(\.[0-9]+)?/g;
             var inputs: Array<IEquationWeightingInputs> = [
                 { 
                     "name":'BCPK',
-                    "on": false,
                     "values": []
                 }, { 
                     "name":'ACPK',
-                    "on": false,
                     "values": [] 
                 }, { 
                     "name":'BFPK',
-                    "on": false,
                     "values": [] 
                 }, {   
                     "name":'RSPK',
-                    "on": false,
                     "values": []
                 }
             ];
@@ -534,130 +530,152 @@ module StreamStats.Services {
             this.selectedStatisticsGroupList.forEach(statGroup => { 
                 if (statGroup.name == "Peak-Flow Statistics") { // Only need to do for peakflow
                     statGroup.regressionRegions.forEach(regressionRegion => {
-                        if (regressionRegion.name != "Area-Averaged") {
-                            regressionRegion.results.forEach((result, index) => {
+                        console.log(regressionRegion)
+                        regressionRegion.results.forEach((result, index) => {
+                            if (regressionRegion.name == "Area-Averaged") {
+                                if (result.code.includes("ACPK")) {
+                                    var value, SEP, sortCode;
+                                    if (result.value > 0 ) {
+                                        value = result.value
+                                        SEP = result.sep
+                                        sortCode = result.code.replace("_",'.')
+                                        sortCode = sortCode.match(regex)[0].valueOf()
+                                    } else {
+                                        value = null;
+                                        SEP = null;
+                                        sortCode = null
+                                    }
+                                    inputs[1].values[acpkCount] = {
+                                        value: value,
+                                        SEP: SEP,
+                                        code: result.code,
+                                        sortCode: sortCode
+                                    };
+                                    acpkCount ++;
+                                } else if (result.code.includes("BWPK")) {
+                                    var value, SEP;
+                                    if (result.value > 0 ) {
+                                        value = result.value
+                                        SEP = result.sep
+                                        sortCode = result.code.replace("_",'.')
+                                        sortCode = sortCode.match(regex)[0].valueOf()
+                                    } else {
+                                        value = null;
+                                        SEP = null;
+                                        sortCode = null
+                                    }
+                                    inputs[2].values[bfpkCount] = {
+                                        value: value,
+                                        SEP: SEP,
+                                        code: result.code,
+                                        sortCode: sortCode
+                                    };
+                                    bfpkCount ++;
+                                } else if (result.code.includes("RSPK")) {
+                                    var value, SEP;
+                                    if (result.value > 0 ) {
+                                        value = result.value
+                                        SEP = result.sep
+                                        sortCode = result.code.replace("_",'.')
+                                        sortCode = sortCode.match(regex)[0].valueOf()
+                                    } else {
+                                        value = null;
+                                        SEP = null;
+                                        sortCode=null;
+                                    }
+                                    inputs[3].values[rspkCount] = {
+                                        value: value,
+                                        SEP: SEP,
+                                        code: result.code,
+                                        sortCode: sortCode
+                                    };
+                                    rspkCount ++;
+                                } else {
+                                    units.push(result.unit);
+                                    names.push(result.name)
+                                    var value, SEP;
+                                    if (result.value > 0 ) {
+                                        value = result.value
+                                        SEP = result.sep
+                                        sortCode = result.code.replace("_",'.')
+                                        sortCode = sortCode.match(regex)[0].valueOf()
+                                    } else {
+                                        value = null;
+                                        SEP = null;
+                                        sortCode = null;
+                                    }
+                                    inputs[0].values[bcpkCount] = {
+                                        value: value,
+                                        SEP: SEP,
+                                        code: result.code,
+                                        sortCode: sortCode
+                                    };
+                                    bcpkCount++;
+                                }
+                            } else {
+                                console.log(regressionRegion)
                                 if (result.code.includes("ACPK")) {
                                     code = regressionRegion.code
-                                    inputs[1].values[index] = {
-                                        value: result.value,
-                                        SEP: result.sep,
-                                        code: result.code
-                                    };
-                                    inputs[1].on = true; 
                                 } else if (result.code.includes("BWPK")) {
                                     code = regressionRegion.code
-                                    inputs[2].values[index] = {
-                                        value: result.value,
-                                        SEP: result.sep,
-                                        code: result.code
-                                    };
-                                    inputs[2].on = true; 
                                 } else if (result.code.includes("RSPK")) {
                                     code = regressionRegion.code
-                                    inputs[3].values[index] = {
-                                        value: result.value,
-                                        SEP: result.sep,
-                                        code: result.code
-                                    };
-                                    inputs[3].on = true; 
-                                } else {
-                                    inputs[0].values[index] = {
-                                        value: result.value,
-                                        SEP: result.sep,
-                                        code: result.code
-                                    };
-                                    inputs[0].on = true; 
-                                }
-                            })
-                        }
+                                } 
+                            }
+                        })
                         
                     });
                 }
             });
 
-            // keep input objects with on = true
-            inputs = inputs.filter(function( obj ) {
-                return obj.on == true;
-            });
+            console.log(inputs)
 
-            //Figure out if we should use weightest2, weightest3, or weightest4
-            var count = inputs.length;
-
-            if (count > 2) {
-                // set up URL and input
-                var input = {};
-                var url = configuration.baseurls['WeightingServices'] +  '/weightest' + count.toString(); 
-                var headers = {
-                    "accept": "application/json",
-                    "Content-Type": "application/json"
-                };
+            // set up URL and input
+            var input = {};
+            var url = configuration.baseurls['WeightingServices'] +  '/weightest/'; 
+            var headers = {
+                "accept": "application/json",
+                "Content-Type": "application/json"
+            };
+        
+            inputs[0].values.forEach((result,index) => {
+                // Send combined inputed to weighting service and get weighted value, unit, PIl, PIu, SEP
+                input = {
+                    "x1": inputs[0].values[index].value,
+                    "x2": inputs[1].values[index].value,
+                    "x3": inputs[2].values[index].value,
+                    "x4": inputs[3].values[index].value,
+                    "sep1": inputs[0].values[index].SEP,
+                    "sep2": inputs[1].values[index].SEP,
+                    "sep3": inputs[2].values[index].SEP,
+                    "sep4": inputs[3].values[index].SEP,
+                    "regressionRegionCode": code,
+                    "code1": inputs[0].values[index].code,
+                    "code2": inputs[1].values[index].code,
+                    "code3": inputs[2].values[index].code,
+                    "code4": inputs[3].values[index].code
+                }
                 
-                inputs[0].values.forEach((result,index) => {
-                    // Send combined inputed to weighting service and get weighted value, unit, PIl, PIu, SEP
-                    if (count == 4){
-                        input = {
-                            "x1": inputs[0].values[index].value,
-                            "x2": inputs[1].values[index].value,
-                            "x3": inputs[2].values[index].value,
-                            "x4": inputs[3].values[index].value,
-                            "sep1": inputs[0].values[index].SEP,
-                            "sep2": inputs[1].values[index].SEP,
-                            "sep3": inputs[2].values[index].SEP,
-                            "sep4": inputs[3].values[index].SEP,
-                            "regressionRegionCode": code,
-                            "code1": inputs[0].values[index].code,
-                            "code2": inputs[1].values[index].code,
-                            "code3": inputs[2].values[index].code,
-                            "code4": inputs[3].values[index].code
-                        }
-                    } else if (count == 3){
-                        input = {
-                            "x1": inputs[0].values[index].value,
-                            "x2": inputs[1].values[index].value,
-                            "x3": inputs[2].values[index].value,
-                            "sep1": inputs[0].values[index].SEP,
-                            "sep2": inputs[1].values[index].SEP,
-                            "sep3": inputs[2].values[index].SEP,
-                            "regressionRegionCode": code,
-                            "code1": inputs[0].values[index].code,
-                            "code2": inputs[1].values[index].code,
-                            "code3": inputs[2].values[index].code,
-                        }
-                    } else if (count ==2){
-                        input = {
-                            "x1": inputs[0].values[index].value,
-                            "x2": inputs[1].values[index].value,
-                            "sep1": inputs[0].values[index].SEP,
-                            "sep2": inputs[1].values[index].SEP,
-                            "regressionRegionCode": code,
-                            "code1": inputs[0].values[index].code,
-                            "code2": inputs[1].values[index].code,
-                        }
-                    }
-                    console.log(input)
-                    
-                    var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(input), headers);
-                    this.Execute(request).then(
-                        (response: any) => {
-                            console.log(response.data);
-                            this.equationWeightingResults[index] = {
-                                Name: 'todo',
-                                Z: response.data.Z,
-                                Unit: 'todo',
-                                PIl: response.data.PIL,
-                                PIu: response.data.PIU,
-                                SEPZ: response.data.SEPZ,
-                            };
-                        },(error) => {
-                            console.log(error)
-                        }).finally(() => {
-                    });
-                })
-            } else {
-                console.log('Can not equation weight');
-            }
-            console.log(this.equationWeightingResults)
-            console.log('done queryEquationWeighting')
+                console.log(input)
+
+                var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(input), headers);
+                this.Execute(request).then(
+                    (response: any) => {
+                        this.equationWeightingResults[index] = {
+                            Name: names[index],
+                            Z: response.data.Z,
+                            Unit: units[index],
+                            PIl: response.data.PIL,
+                            PIu: response.data.PIU,
+                            SEPZ: response.data.SEPZ
+                        };
+                    },(error) => {
+                        this.toaster.clear();
+                        this.toaster.pop('error', "Can not Methods Weight: " + error.data.detail, "HTTP request error", 0);
+                    }).finally(() => {
+                });
+            })
+
         }
 
         public getSelectedCitations(citationUrl: string, statGroup: any): any {

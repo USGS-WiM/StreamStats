@@ -283,29 +283,32 @@
                     </div><!--end extension-->
 
                 <div class="well well-sm"  ng-if="vm.regionService.selectedRegion.Applications.indexOf('EquationWeighting') != -1 && vm.nssService.selectedStatisticsGroupList.name.indexOf('Peak-Flow Statistics') != -1">
-                    <h3>Methods Weighting</h3>
-                    <table class="scenarioFlowTable table table-condensed">
-                        <thead class="flow-table">
-                            <tr>
-                                <th>Statistic</th>
-                                <th>Value</th>
-                                <th>Unit</th>
-                                <th>PIl</th>
-                                <th>PIu</th>
-                                <th>SEP</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="stat in vm.nssService.equationWeightingResults">
-                                <td>{{stat.Name}}</td>
-                                <td>{{stat.Z.toUSGSvalue()}}</td> 
-                                <td>{{stat.Unit}}</td> 
-                                <td>{{stat.PIl.toUSGSvalue()}}</td> 
-                                <td>{{stat.PIu.toUSGSvalue()}}</td> 
-                                <td>{{stat.SEPZ.toUSGSvalue()}}</td> 
-                            </tr>
-                        </tbody>
-                    </table>
+                    <h3>Methods Weighting [what equations it weighted]</h3>
+                    <div ng-if="vm.nssService.equationWeightingResults.length == 0">No method weighting results returned</div>
+                    <div ng-if="vm.nssService.equationWeightingResults.length != 0">
+                        <table class="scenarioFlowTable table table-condensed">
+                            <thead class="flow-table">
+                                <tr>
+                                    <th>Statistic</th>
+                                    <th>Value</th>
+                                    <th>Unit</th>
+                                    <th>PIl</th>
+                                    <th>PIu</th>
+                                    <th>SEP</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="stat in vm.nssService.equationWeightingResults">
+                                    <td>{{stat.Name}}</td>
+                                    <td>{{stat.Z.toUSGSvalue()}}</td> 
+                                    <td>{{stat.Unit.abbr}}</td> 
+                                    <td>{{stat.PIl.toUSGSvalue()}}</td> 
+                                    <td>{{stat.PIu.toUSGSvalue()}}</td> 
+                                    <td>{{stat.SEPZ.toUSGSvalue()}}</td> 
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 <div class="disclaimerReport">
                     <p ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isStormDrain">
