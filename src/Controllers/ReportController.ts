@@ -102,6 +102,7 @@ module StreamStats.Controllers {
         public NSSServicesVersion: string;
         public SSServicesVersion = '1.2.22'; // TODO: This needs to pull from the services when ready
         public selectedTabName: string;
+        public showTooltip: Boolean;
 
         public get isCulvertReport(): boolean {
             if(this.regionService.selectedRegion.Applications.indexOf("Culverts") !== -1) return true; 
@@ -153,6 +154,7 @@ module StreamStats.Controllers {
             this.extensions = this.ActiveExtensions;
             this.environment = configuration.environment;
             this.selectedTabName = "Box";
+            this.showTooltip = false;
             this.initMap();
             
 
