@@ -317,176 +317,224 @@ var StreamStats;
             };
             nssService.prototype.queryEquationWeighting = function () {
                 var _this = this;
+                console.log(this.selectedStatisticsGroupList);
                 var code;
-                var acpkCount = 0, bfpkCount = 0, bcpkCount = 0, rspkCount = 0;
-                var units = [];
-                var names = [];
-                this.equationWeightingResults = [];
-                var regex = /[0-9]+(\.[0-9]+)?/g;
-                var inputs = [
-                    {
-                        "name": 'BCPK',
-                        "values": []
-                    }, {
-                        "name": 'ACPK',
-                        "values": []
-                    }, {
-                        "name": 'BFPK',
-                        "values": []
-                    }, {
-                        "name": 'RSPK',
-                        "values": []
-                    }
-                ];
+                var units = null;
+                var inputs = [];
                 this.selectedStatisticsGroupList.forEach(function (statGroup) {
                     if (statGroup.name == "Peak-Flow Statistics") {
-                        statGroup.regressionRegions.forEach(function (regressionRegion) {
-                            console.log(regressionRegion);
-                            regressionRegion.results.forEach(function (result, index) {
-                                if (regressionRegion.name == "Area-Averaged") {
+                        statGroup.regressionRegions.forEach(function (regressionRegion, rindex) {
+                            if (regressionRegion.name != "Area-Averaged") {
+                                inputs[rindex] = { "name": null, "inUse": false, "values": [] };
+                                regressionRegion.results.forEach(function (result, index) {
                                     if (result.code.includes("ACPK")) {
-                                        var value, SEP, sortCode;
+                                        inputs[rindex].name = "ACPK";
                                         if (result.value > 0) {
-                                            value = result.value;
-                                            SEP = result.sep;
-                                            sortCode = result.code.replace("_", '.');
-                                            sortCode = sortCode.match(regex)[0].valueOf();
+                                            code = regressionRegion.code;
+                                            inputs[rindex].inUse = true;
+                                            inputs[rindex].values[index] = {
+                                                value: result.value,
+                                                SEP: result.sep,
+                                                code: result.code
+                                            };
                                         }
                                         else {
-                                            value = null;
-                                            SEP = null;
-                                            sortCode = null;
+                                            inputs[rindex].inUse = false;
+                                            inputs[rindex].values[index] = {
+                                                value: null,
+                                                SEP: null,
+                                                code: result.code
+                                            };
                                         }
-                                        inputs[1].values[acpkCount] = {
-                                            value: value,
-                                            SEP: SEP,
-                                            code: result.code,
-                                            sortCode: sortCode
-                                        };
-                                        acpkCount++;
                                     }
                                     else if (result.code.includes("BWPK")) {
-                                        var value, SEP;
+                                        inputs[rindex].name = "BFPK";
                                         if (result.value > 0) {
-                                            value = result.value;
-                                            SEP = result.sep;
-                                            sortCode = result.code.replace("_", '.');
-                                            sortCode = sortCode.match(regex)[0].valueOf();
+                                            code = regressionRegion.code;
+                                            inputs[rindex].inUse = true;
+                                            inputs[rindex].values[index] = {
+                                                value: result.value,
+                                                SEP: result.sep,
+                                                code: result.code
+                                            };
                                         }
                                         else {
-                                            value = null;
-                                            SEP = null;
-                                            sortCode = null;
+                                            inputs[rindex].inUse = false;
+                                            inputs[rindex].values[index] = {
+                                                value: null,
+                                                SEP: null,
+                                                code: result.code
+                                            };
                                         }
-                                        inputs[2].values[bfpkCount] = {
-                                            value: value,
-                                            SEP: SEP,
-                                            code: result.code,
-                                            sortCode: sortCode
-                                        };
-                                        bfpkCount++;
                                     }
                                     else if (result.code.includes("RSPK")) {
-                                        var value, SEP;
+                                        inputs[rindex].name = "RSPK";
                                         if (result.value > 0) {
-                                            value = result.value;
-                                            SEP = result.sep;
-                                            sortCode = result.code.replace("_", '.');
-                                            sortCode = sortCode.match(regex)[0].valueOf();
+                                            code = regressionRegion.code;
+                                            inputs[rindex].inUse = true;
+                                            inputs[rindex].values[index] = {
+                                                value: result.value,
+                                                SEP: result.sep,
+                                                code: result.code
+                                            };
                                         }
                                         else {
-                                            value = null;
-                                            SEP = null;
-                                            sortCode = null;
+                                            inputs[rindex].inUse = false;
+                                            inputs[rindex].values[index] = {
+                                                value: null,
+                                                SEP: null,
+                                                code: result.code
+                                            };
                                         }
-                                        inputs[3].values[rspkCount] = {
-                                            value: value,
-                                            SEP: SEP,
-                                            code: result.code,
-                                            sortCode: sortCode
-                                        };
-                                        rspkCount++;
                                     }
                                     else {
-                                        units.push(result.unit);
-                                        names.push(result.name);
-                                        var value, SEP;
+                                        inputs[rindex].name = "BCPK";
                                         if (result.value > 0) {
-                                            value = result.value;
-                                            SEP = result.sep;
-                                            sortCode = result.code.replace("_", '.');
-                                            sortCode = sortCode.match(regex)[0].valueOf();
+                                            units = result.unit;
+                                            inputs[rindex].inUse = true;
+                                            inputs[rindex].values[index] = {
+                                                value: result.value,
+                                                SEP: result.sep,
+                                                code: result.code
+                                            };
                                         }
                                         else {
-                                            value = null;
-                                            SEP = null;
-                                            sortCode = null;
+                                            inputs[rindex].inUse = false;
+                                            inputs[rindex].values[index] = {
+                                                value: null,
+                                                SEP: null,
+                                                code: result.code
+                                            };
                                         }
-                                        inputs[0].values[bcpkCount] = {
-                                            value: value,
-                                            SEP: SEP,
-                                            code: result.code,
-                                            sortCode: sortCode
-                                        };
-                                        bcpkCount++;
                                     }
-                                }
-                                else {
-                                    console.log(regressionRegion);
-                                    if (result.code.includes("ACPK")) {
-                                        code = regressionRegion.code;
-                                    }
-                                    else if (result.code.includes("BWPK")) {
-                                        code = regressionRegion.code;
-                                    }
-                                    else if (result.code.includes("RSPK")) {
-                                        code = regressionRegion.code;
-                                    }
-                                }
-                            });
+                                });
+                            }
                         });
                     }
                 });
-                console.log(inputs);
-                var input = {};
-                var url = configuration.baseurls['WeightingServices'] + '/weightest/';
-                var headers = {
-                    "accept": "application/json",
-                    "Content-Type": "application/json"
-                };
-                inputs[0].values.forEach(function (result, index) {
-                    input = {
-                        "x1": inputs[0].values[index].value,
-                        "x2": inputs[1].values[index].value,
-                        "x3": inputs[2].values[index].value,
-                        "x4": inputs[3].values[index].value,
-                        "sep1": inputs[0].values[index].SEP,
-                        "sep2": inputs[1].values[index].SEP,
-                        "sep3": inputs[2].values[index].SEP,
-                        "sep4": inputs[3].values[index].SEP,
-                        "regressionRegionCode": code,
-                        "code1": inputs[0].values[index].code,
-                        "code2": inputs[1].values[index].code,
-                        "code3": inputs[2].values[index].code,
-                        "code4": inputs[3].values[index].code
-                    };
-                    console.log(input);
-                    var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(input), headers);
-                    _this.Execute(request).then(function (response) {
-                        _this.equationWeightingResults[index] = {
-                            Name: names[index],
-                            Z: response.data.Z,
-                            Unit: units[index],
-                            PIl: response.data.PIL,
-                            PIu: response.data.PIU,
-                            SEPZ: response.data.SEPZ
-                        };
-                    }, function (error) {
-                        _this.toaster.clear();
-                        _this.toaster.pop('error', "Can not Methods Weight: " + error.data.detail, "HTTP request error", 0);
-                    }).finally(function () {
-                    });
+                var rrCount = inputs.filter(function (el) { return el.name == "BCPK"; });
+                var temp = inputs.filter(function (obj) {
+                    return obj.inUse == true;
                 });
+                var count = temp.length / rrCount.length;
+                inputs.sort(function (a, b) {
+                    return a.name.localeCompare(b.name);
+                });
+                for (var i = 0; i < inputs.length; i++) {
+                    inputs[i].values.sort(function (a, b) { return a.code.localeCompare(b.code); });
+                }
+                console.log(inputs, count);
+                if (count >= 2) {
+                    var subCounter = 0;
+                    var input = {};
+                    var url = configuration.baseurls['WeightingServices'] + '/weightest/';
+                    var headers = {
+                        "accept": "application/json",
+                        "Content-Type": "application/json"
+                    };
+                    if (rrCount.length > 1) {
+                        console.log(' weight equations with area weighting');
+                        var x_1 = 0;
+                        while (x_1 < rrCount.length) {
+                            console.log(this.equationWeightingResults);
+                            inputs[0].values.forEach(function (result, index) {
+                                input = {
+                                    "x1": inputs[0 * rrCount.length + x_1].values[index].value,
+                                    "x2": inputs[1 * rrCount.length + x_1].values[index].value,
+                                    "x3": inputs[2 * rrCount.length + x_1].values[index].value,
+                                    "x4": inputs[3 * rrCount.length + x_1].values[index].value,
+                                    "sep1": inputs[0 * rrCount.length + x_1].values[index].SEP,
+                                    "sep2": inputs[1 * rrCount.length + x_1].values[index].SEP,
+                                    "sep3": inputs[2 * rrCount.length + x_1].values[index].SEP,
+                                    "sep4": inputs[3 * rrCount.length + x_1].values[index].SEP,
+                                    "regressionRegionCode": code,
+                                    "code1": inputs[0 * rrCount.length + x_1].values[index].code,
+                                    "code2": inputs[1 * rrCount.length + x_1].values[index].code,
+                                    "code3": inputs[2 * rrCount.length + x_1].values[index].code,
+                                    "code4": inputs[3 * rrCount.length + x_1].values[index].code
+                                };
+                                console.log(input);
+                                console.log(x_1);
+                                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(input), headers);
+                                _this.Execute(request).then(function (response) {
+                                    _this.equationWeightingResults[subCounter] = {
+                                        RR: 'test',
+                                        Name: inputs[2].values[index].code,
+                                        Z: response.data.Z,
+                                        Unit: units,
+                                        PIl: response.data.PIL,
+                                        PIu: response.data.PIU,
+                                        SEPZ: response.data.SEPZ
+                                    };
+                                }, function (error) {
+                                    console.log(error);
+                                    _this.toaster.clear();
+                                    if (error.data && error.data.detail) {
+                                        _this.toaster.pop('error', "Cannot Methods Weight: " + error.data.detail, "HTTP request error", 0);
+                                    }
+                                    else {
+                                        _this.toaster.pop('error', 'Cannot Methods Weight');
+                                    }
+                                }).finally(function () {
+                                    subCounter++;
+                                    if (subCounter == 20) {
+                                        console.log('time to area weight with: ');
+                                        console.log(_this.equationWeightingResults);
+                                    }
+                                });
+                            });
+                            x_1++;
+                        }
+                    }
+                    else {
+                        console.log('weight equations with no area weighting');
+                        inputs[0].values.forEach(function (result, index) {
+                            input = {
+                                "x1": inputs[0].values[index].value,
+                                "x2": inputs[1].values[index].value,
+                                "x3": inputs[2].values[index].value,
+                                "x4": inputs[3].values[index].value,
+                                "sep1": inputs[0].values[index].SEP,
+                                "sep2": inputs[1].values[index].SEP,
+                                "sep3": inputs[2].values[index].SEP,
+                                "sep4": inputs[3].values[index].SEP,
+                                "regressionRegionCode": code,
+                                "code1": inputs[0].values[index].code,
+                                "code2": inputs[1].values[index].code,
+                                "code3": inputs[2].values[index].code,
+                                "code4": inputs[3].values[index].code
+                            };
+                            console.log(input);
+                            var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(input), headers);
+                            _this.Execute(request).then(function (response) {
+                                _this.equationWeightingResults[index] = {
+                                    RR: "test",
+                                    Name: inputs[1].values[index].code,
+                                    Z: response.data.Z,
+                                    Unit: units,
+                                    PIl: response.data.PIL,
+                                    PIu: response.data.PIU,
+                                    SEPZ: response.data.SEPZ
+                                };
+                            }, function (error) {
+                                console.log(error);
+                                _this.toaster.clear();
+                                if (error.data && error.data.detail) {
+                                    _this.toaster.pop('error', "Cannot Methods Weight: " + error.data.detail, "HTTP request error", 0);
+                                }
+                                else {
+                                    _this.toaster.pop('error', 'Cannot Methods Weight');
+                                }
+                            }).finally(function () {
+                            });
+                        });
+                    }
+                }
+                else {
+                    this.toaster.pop('error', 'Cannot Methods Weigh, not enough values');
+                    console.log('Cannot Methods Weigh, not enough values');
+                }
+                console.log(this.equationWeightingResults);
             };
             nssService.prototype.getSelectedCitations = function (citationUrl, statGroup) {
                 var _this = this;
