@@ -31,6 +31,7 @@ module StreamStats.Services {
         statisticsGroupList: Array<IStatisticsGroup>;
         selectedStatisticsGroupList: Array<IStatisticsGroup>;
         equationWeightingResults: Array<IEquationWeightingResults>;
+        equationWeightingDisclaimers: boolean;
         loadStatisticsGroupTypes(rcode: string, regressionregion: string):Array<any>;
         loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregion: string, percentWeights: any, regressionTypes?: string);
         estimateFlows(studyAreaParameterList: Array<IParameter>, paramValueField: string, rcode: string, append?: boolean, regressionTypes?:string, showReport?:boolean)
@@ -70,6 +71,9 @@ module StreamStats.Services {
 
     export interface IEquationWeightingResults {
         RR: string;
+        Results: Array<IEquationWeightingResultsValues>
+    }
+    export interface IEquationWeightingResultsValues {
         Name: string;
         Z: number;
         Unit: IUnit;
@@ -80,6 +84,8 @@ module StreamStats.Services {
     export interface IEquationWeightingInputs {
         name: string,
         inUse: boolean,
+        percentWeight: number,
+        RegressionRegionName: string,
         values: Array<IEquationWeightingInputValues>
     }
 
@@ -142,6 +148,7 @@ module StreamStats.Services {
         public loadingStatisticsGroup: boolean;
         public selectedStatisticsGroupList: Array<IStatisticsGroup>;
         public equationWeightingResults: Array<IEquationWeightingResults> = [];
+        public equationWeightingDisclaimers: boolean;
         public canUpdate: boolean;
         public toaster: any;
         public showBasinCharacteristicsTable: boolean;
@@ -517,24 +524,29 @@ module StreamStats.Services {
 
             //Still Need to Test
                 // selecting multple scenarios
-                // three regressino regions?
+                // three regression regions?
+                // find a way to find which index BCPK is in for the results
 
             var code; 
             var units = null;
             var inputs: Array<IEquationWeightingInputs> = [];
-            
+            this.equationWeightingDisclaimers = false;
+            this.equationWeightingResults = [];
+
             // In each regressionregion we need code, sep and value
             this.selectedStatisticsGroupList.forEach(statGroup => { 
                 if (statGroup.name == "Peak-Flow Statistics") { // Only need to do for peakflow
                     statGroup.regressionRegions.forEach((regressionRegion, rindex) => {
                         if (regressionRegion.name != "Area-Averaged") { // Need to do nothing for area weighting 
-                            inputs[rindex]={ "name":null,"inUse":false, "values":[] };
+                            inputs[rindex]={ "name":null,"inUse":false, "percentWeight":null, "RegressionRegionName": null, "values":[] };
                             regressionRegion.results.forEach((result, index) => {
                                 if (result.code.includes("ACPK") ) {
-                                    inputs[rindex].name ="ACPK"
+                                    inputs[rindex].name ="ACPK";
                                     if (result.value > 0) { 
-                                        code = regressionRegion.code
+                                        code = regressionRegion.code;
                                         inputs[rindex].inUse = true;
+                                        inputs[rindex].RegressionRegionName = regressionRegion.name.substring(0, regressionRegion.name.indexOf('Region') + 'Region'.length);
+                                        inputs[rindex].percentWeight = regressionRegion.percentWeight;
                                         inputs[rindex].values[index] = {
                                             value: result.value,
                                             SEP: result.sep,
@@ -542,6 +554,8 @@ module StreamStats.Services {
                                         };
                                     } else {
                                         inputs[rindex].inUse = false;
+                                        inputs[rindex].RegressionRegionName = null;
+                                        inputs[rindex].percentWeight = null;
                                         inputs[rindex].values[index] = {
                                             value: null,
                                             SEP: null,
@@ -549,46 +563,12 @@ module StreamStats.Services {
                                         };
                                     }                                 
                                 } else if (result.code.includes("BWPK")) {
-                                    inputs[rindex].name ="BFPK"
-                                    if(result.value > 0) {
-                                        code = regressionRegion.code
+                                    inputs[rindex].name ="BFPK";
+                                    if (result.value > 0) {
+                                        code = regressionRegion.code;
                                         inputs[rindex].inUse = true;
-                                        inputs[rindex].values[index] = {
-                                            value: result.value,
-                                            SEP: result.sep,
-                                            code: result.code
-                                        };
-                                    }else {
-                                        inputs[rindex].inUse = false;
-                                        inputs[rindex].values[index] = {
-                                            value: null,
-                                            SEP: null,
-                                            code: result.code
-                                        };
-                                    }  
-                                } else if (result.code.includes("RSPK")) {
-                                    inputs[rindex].name ="RSPK"
-                                    if(result.value > 0) { 
-                                        code = regressionRegion.code
-                                        inputs[rindex].inUse = true;
-                                        inputs[rindex].values[index] = {
-                                            value: result.value,
-                                            SEP: result.sep,
-                                            code: result.code
-                                        };
-                                    }else {
-                                        inputs[rindex].inUse = false;
-                                        inputs[rindex].values[index] = {
-                                            value: null,
-                                            SEP: null,
-                                            code: result.code
-                                        };
-                                    }  
-                                } else {
-                                    inputs[rindex].name ="BCPK"
-                                    if(result.value > 0) {
-                                        units = result.unit;
-                                        inputs[rindex].inUse = true;
+                                        inputs[rindex].RegressionRegionName = regressionRegion.name.substring(0, regressionRegion.name.indexOf('Region') + 'Region'.length);
+                                        inputs[rindex].percentWeight = regressionRegion.percentWeight;
                                         inputs[rindex].values[index] = {
                                             value: result.value,
                                             SEP: result.sep,
@@ -596,6 +576,52 @@ module StreamStats.Services {
                                         };
                                     } else {
                                         inputs[rindex].inUse = false;
+                                        inputs[rindex].RegressionRegionName = null;
+                                        inputs[rindex].percentWeight = null;
+                                        inputs[rindex].values[index] = {
+                                            value: null,
+                                            SEP: null,
+                                            code: result.code
+                                        };
+                                    }  
+                                } else if (result.code.includes("RSPK")) {
+                                    inputs[rindex].name ="RSPK";
+                                    if (result.value > 0) { 
+                                        code = regressionRegion.code;
+                                        inputs[rindex].inUse = true;
+                                        inputs[rindex].RegressionRegionName = regressionRegion.name.substring(0, regressionRegion.name.indexOf('Region') + 'Region'.length);
+                                        inputs[rindex].percentWeight = regressionRegion.percentWeight;
+                                        inputs[rindex].values[index] = {
+                                            value: result.value,
+                                            SEP: result.sep,
+                                            code: result.code
+                                        };
+                                    } else {
+                                        inputs[rindex].inUse = false;
+                                        inputs[rindex].RegressionRegionName = null;
+                                        inputs[rindex].percentWeight = null;
+                                        inputs[rindex].values[index] = {
+                                            value: null,
+                                            SEP: null,
+                                            code: result.code
+                                        };
+                                    }  
+                                } else {
+                                    inputs[rindex].name ="BCPK";
+                                    if (result.value > 0) {
+                                        units = result.unit;
+                                        inputs[rindex].inUse = true;
+                                        inputs[rindex].RegressionRegionName = regressionRegion.name.substring(0, regressionRegion.name.indexOf('Region') + 'Region'.length);
+                                        inputs[rindex].percentWeight = regressionRegion.percentWeight;
+                                        inputs[rindex].values[index] = {
+                                            value: result.value,
+                                            SEP: result.sep,
+                                            code: result.code
+                                        };
+                                    } else {
+                                        inputs[rindex].inUse = false;
+                                        inputs[rindex].RegressionRegionName = null;
+                                        inputs[rindex].percentWeight = null;
                                         inputs[rindex].values[index] = {
                                             value: null,
                                             SEP: null,
@@ -610,102 +636,92 @@ module StreamStats.Services {
                 }
             });
 
-            var rrCount = inputs.filter(function(el) { return el.name == "BCPK"; }); // get number of regression regions
+            var rrCount = inputs.filter(function(el) { return el.name == "BCPK"; }); // get number of regression regions in delinated basin
+            var temp = inputs.filter(function (obj) { return obj.inUse == true; }); // get only parameters being used in weighting
+            var weightCount = temp.length/rrCount.length; // get number of values to be weighted 
 
+            // Sort values alphabetically for input
+            inputs.sort(function(a, b) { return a.name.localeCompare(b.name) });
+            for (var i = 0; i < inputs.length; i++) { inputs[i].values.sort(function(a, b) {  return a.code.localeCompare(b.code) }); }
 
-            var temp = inputs.filter(function (obj) {
-                return obj.inUse == true;
-            });
-            var count = temp.length/rrCount.length; // get numner of values to weight
-
-            // Sort values for input
-            inputs.sort(function(a, b) {
-                return a.name.localeCompare(b.name)
-            });
-            for (var i = 0; i < inputs.length; i++) {
-                inputs[i].values.sort(function(a, b) {  return a.code.localeCompare(b.code) });
-            }
-
-
-            console.log(inputs, count);
-
-            if (count >= 2) {
-                // set up URL and input
-                var subCounter = 0;
+            if (weightCount >= 2) { // If there are two or more values we can send to the weighting service
+                var subscriptionCounter = 0;
                 var input = {};
+                var results = null;
+                // set up URL
                 var url = configuration.baseurls['WeightingServices'] +  '/weightest/' 
                 var headers = {
                     "accept": "application/json",
                     "Content-Type": "application/json"
                 };
 
-                if (rrCount.length > 1 ) { // Area Weight 
-                    console.log(' weight equations with area weighting')
-                    // weight each regression region 
-                    let x = 0;
-                    while (x < rrCount.length) { 
-                        console.log(this.equationWeightingResults);
-
+                if (rrCount.length > 1 ) { // If more than one regression region in delineated basin we need to Area Weight 
+                    console.log('weight equations with area weighting')
+                    let rrCounter = 0;
+                    let subscriptionRRCounter = 0;
+                    var subscriptionIndex = 0;
+                    let statCount = inputs[0].values.length; 
+                    // send values to weighting service for each regression region 
+                    while (rrCounter < rrCount.length) { 
+                        this.equationWeightingResults[rrCounter]={ "RR":inputs[rrCounter].RegressionRegionName,"Results":[] };
                         inputs[0].values.forEach((result,index) => {
-
-                            // Send combined inputed to weighting service and get weighted value, unit, PIl, PIu, SEP
+                            // Send combined inputs to weighting service and get weighted value, unit, PIl, PIu, SEP
                             input = {
-                                "x1": inputs[0 * rrCount.length + x].values[index].value,
-                                "x2": inputs[1 * rrCount.length + x].values[index].value,
-                                "x3": inputs[2 * rrCount.length + x].values[index].value,
-                                "x4": inputs[3 * rrCount.length + x].values[index].value,
-                                "sep1": inputs[0 * rrCount.length + x].values[index].SEP,
-                                "sep2": inputs[1 * rrCount.length + x].values[index].SEP,
-                                "sep3": inputs[2 * rrCount.length + x].values[index].SEP,
-                                "sep4": inputs[3 * rrCount.length + x].values[index].SEP,
+                                "x1": inputs[0 * rrCount.length + rrCounter].values[index].value,
+                                "x2": inputs[1 * rrCount.length + rrCounter].values[index].value,
+                                "x3": inputs[2 * rrCount.length + rrCounter].values[index].value,
+                                "x4": inputs[3 * rrCount.length + rrCounter].values[index].value,
+                                "sep1": inputs[0 * rrCount.length + rrCounter].values[index].SEP,
+                                "sep2": inputs[1 * rrCount.length + rrCounter].values[index].SEP,
+                                "sep3": inputs[2 * rrCount.length + rrCounter].values[index].SEP,
+                                "sep4": inputs[3 * rrCount.length + rrCounter].values[index].SEP,
                                 "regressionRegionCode": code,
-                                "code1": inputs[0 * rrCount.length + x].values[index].code,
-                                "code2": inputs[1 * rrCount.length + x].values[index].code,
-                                "code3": inputs[2 * rrCount.length + x].values[index].code,
-                                "code4": inputs[3 * rrCount.length + x].values[index].code
+                                "code1": inputs[0 * rrCount.length + rrCounter].values[index].code,
+                                "code2": inputs[1 * rrCount.length + rrCounter].values[index].code,
+                                "code3": inputs[2 * rrCount.length + rrCounter].values[index].code,
+                                "code4": inputs[3 * rrCount.length + rrCounter].values[index].code
                             }
                             console.log(input)
-                            console.log(x)
                             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(input), headers);
                             this.Execute(request).then(
                                 (response: any) => {
-                                    this.equationWeightingResults[subCounter] = {
-                                        RR: 'test',
-                                        Name: inputs[2].values[index].code,      // since its sorted alphabetically BCPK is always in spot 1
-                                        Z: response.data.Z,
-                                        Unit: units,
-                                        PIl: response.data.PIL,
-                                        PIu: response.data.PIU,
-                                        SEPZ: response.data.SEPZ
-                                    };
+                                    results = response
                                 },(error) => {
                                     console.log(error)
                                     this.toaster.clear();
                                     if (error.data && error.data.detail ) {this.toaster.pop('error', "Cannot Methods Weight: " + error.data.detail, "HTTP request error", 0);}
                                     else {this.toaster.pop('error', 'Cannot Methods Weight')}
                                 }).finally(() => {
-                                    subCounter++;
-                                    if (subCounter == 20) {
-                                        console.log('time to area weight with: ')
-                                        console.log(this.equationWeightingResults)
+                                    if (results) {
+                                        this.equationWeightingResults[subscriptionRRCounter].Results[subscriptionIndex] = {
+                                            Name: inputs[2].values[index].code,      // since its sorted alphabetically BCPK is always in spot 1
+                                            Z: results.data.Z,
+                                            Unit: units,
+                                            PIl: results.data.PIL,
+                                            PIu: results.data.PIU,
+                                            SEPZ: results.data.SEPZ
+                                        };
+                                    }
+                                    subscriptionCounter++; subscriptionIndex++;
+                                    if(subscriptionCounter % statCount == 0 ){
+                                        subscriptionRRCounter++;
+                                        subscriptionIndex=0;
+                                    }
+                                    if (subscriptionCounter == statCount * rrCount.length) {
+                                        // area weight regression region results together 
+                                        console.log('time to area weight with: ' + this.equationWeightingResults)
+                                        this.equationWeightingResults[rrCounter]={ "RR":"Area Weighted","Results":[] };
                                     }
                                 }
                             );
                         });
-                        x++;
+                        rrCounter++;
                     }
-
-                    // area weight regression region results together 
-                    //this.equationWeightingResults[x]={ "Name":"Area Weighted","Values":[] };
-
-
-
-                } else { // No Area Weight 
+                } else { // If only one regression region in delinated basin there is No Area Weighting
                     console.log('weight equations with no area weighting');
-
+                    this.equationWeightingResults[0]={ "RR": inputs[1].RegressionRegionName,"Results":[] };
                     inputs[0].values.forEach((result,index) => {
-
-                        // Send combined inputed to weighting service and get weighted value, unit, PIl, PIu, SEP
+                        // Send combined inputs to weighting service and get weighted value, unit, PIl, PIu, SEP
                         input = {
                             "x1": inputs[0].values[index].value,
                             "x2": inputs[1].values[index].value,
@@ -725,29 +741,33 @@ module StreamStats.Services {
                         var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(input), headers);
                         this.Execute(request).then(
                             (response: any) => {
-                                this.equationWeightingResults[index] = {
-                                    RR:"test",
-                                    Name: inputs[1].values[index].code,      // since its sorted alphabetically BCPK is always in spot 1
-                                    Z: response.data.Z,
-                                    Unit: units,
-                                    PIl: response.data.PIL,
-                                    PIu: response.data.PIU,
-                                    SEPZ: response.data.SEPZ
-                                };
+                                results = response;
                             },(error) => {
                                 console.log(error)
                                 this.toaster.clear();
                                 if (error.data && error.data.detail ) {this.toaster.pop('error', "Cannot Methods Weight: " + error.data.detail, "HTTP request error", 0);}
                                 else {this.toaster.pop('error', 'Cannot Methods Weight')}
                             }).finally(() => {
+                                if (results) {
+                                    this.equationWeightingResults[0].Results[subscriptionCounter] = {
+                                        Name: inputs[1].values[index].code,      // since its sorted alphabetically BCPK is always in spot 1
+                                        Z: results.data.Z,
+                                        Unit: units,
+                                        PIl: results.data.PIL,
+                                        PIu: results.data.PIU,
+                                        SEPZ: results.data.SEPZ
+                                    };
+                                }
+                                subscriptionCounter++;
                         });
                     });
                 }
-            } else {
-                this.toaster.pop('error', 'Cannot Methods Weigh, not enough values')
-                console.log('Cannot Methods Weigh, not enough values');
+                if (weightCount == 4) {
+                    this.equationWeightingDisclaimers = true;
+                }
+            } else { // Not enough values to weight
+                this.toaster.pop('error', 'Cannot Methods Weight, not enough values')
             }
-            console.log(this.equationWeightingResults)
         }
 
         public getSelectedCitations(citationUrl: string, statGroup: any): any {
