@@ -32,6 +32,7 @@ module StreamStats.Services {
         undoEdit();
         loadParameters();
         loadCulvertBoundary(surveyID: string, regionIndex: number);
+        getCulvertAttachments(surveyID: string, regionIndex: number);
         loadStudyBoundary();
         upstreamRegulation();
         AddStudyArea(sa: Models.IStudyArea);
@@ -44,6 +45,7 @@ module StreamStats.Services {
         studyAreaParameterList: Array<IParameter>;
         culvertCitations: Array<any>;
         culvertStatCitations: Array<any>;
+        culvertAttachments: any;
         drawControl: any;
         drawControlOption: any;
         WatershedEditDecisionList: Models.IEditDecisionList;
@@ -157,6 +159,7 @@ module StreamStats.Services {
         public studyAreaParameterList: Array<IParameter>;
         public culvertCitations: Array<any>;
         public culvertStatCitations: Array<any>;
+        public culvertAttachments: any;
         public drawControl: any;
         public showEditToolbar: boolean;
         public drawControlOption: any;
@@ -313,6 +316,22 @@ module StreamStats.Services {
                     this.clearStudyArea();
                     this.toaster.clear();
                     this.toaster.pop("error", "There was an HTTP error with the delineation request", "Please retry", 0);
+                }).finally(() => {
+
+                });
+        }
+
+        public getCulvertAttachments(surveyID, regionIndex) {
+            var url = ('https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/Massachusetts_Stream_Crossing_Project_Data/FeatureServer/0' + configuration.queryparams['CulvertGeometryFiles'] + '&token=' +  configuration.regions[regionIndex].Layers.Culverts.layerOptions.token).format(surveyID);
+
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
+            this.Execute(request).then(
+                (response: any) => {  
+                    this.culvertAttachments = {filename: surveyID, url: response.data.attachmentGroups[0].attachmentInfos[0].url + "?token=" + configuration.regions[regionIndex].Layers.Culverts.layerOptions.token};
+                },(error) => {
+                    //sm when error
+                    this.toaster.clear();
+                    this.toaster.pop("error", "There was an HTTP error with the geometry file zip request", "", 0);
                 }).finally(() => {
 
                 });

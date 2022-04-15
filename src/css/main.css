@@ -1385,6 +1385,10 @@ div.leaflet-top > .elevation {
     padding: 0 0 0 3px !important;
 }
 
+#reportDropdown {
+    overflow: auto;
+}
+
 .culvert-img {
     width: 60%;
     margin-left: auto;

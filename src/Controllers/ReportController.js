@@ -352,6 +352,10 @@ var StreamStats;
                     pdf.save('Test.pdf');
                 }, margins);
             };
+            ReportController.prototype.downloadGeomFileZip = function () {
+                var zipfile = this.studyAreaService.culvertAttachments.url;
+                window.open(zipfile, '_self');
+            };
             ReportController.prototype.ActivateGraphs = function (result) {
                 result.graphdata = {
                     exceedance: {
