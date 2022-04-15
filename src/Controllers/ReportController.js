@@ -41,6 +41,9 @@ var StreamStats;
                 this.AppVersion = configuration.version;
                 this.extensions = this.ActiveExtensions;
                 this.environment = configuration.environment;
+                this.sectionCollapsed = [];
+                this.basinCharCollapsed = false;
+                this.collapsed = false;
                 this.initMap();
                 $scope.$on('leafletDirectiveMap.reportMap.load', function (event, args) {
                     _this.showFeatures();
@@ -331,6 +334,51 @@ var StreamStats;
                 }, function (dispose) {
                     pdf.save('Test.pdf');
                 }, margins);
+            };
+            ReportController.prototype.collapseSection = function (e, type, group) {
+                var content = e.currentTarget.nextElementSibling;
+                if (content.style.display === "none") {
+                    content.style.display = "block";
+                    if (type === "stats")
+                        this.sectionCollapsed[group] = false;
+                    if (type === "basin")
+                        this.basinCharCollapsed = false;
+                }
+                else {
+                    content.style.display = "none";
+                    if (type === "stats")
+                        this.sectionCollapsed[group] = true;
+                    if (type === "basin")
+                        this.basinCharCollapsed = true;
+                }
+            };
+            ReportController.prototype.expandAll = function (expandOrCollapse) {
+                var _this = this;
+                var content = document.querySelectorAll(".collapsible-content");
+                console.log(document.querySelectorAll(".collapsible-content")[0].style.display);
+                console.log(expandOrCollapse);
+                if (expandOrCollapse === "expand") {
+                    content.forEach(function (element) {
+                        element.style.display = "block";
+                    });
+                    this.basinCharCollapsed = false;
+                    this.nssService.statisticsGroupList.forEach(function (group) {
+                        _this.sectionCollapsed[group.name] = false;
+                    });
+                    this.collapsed = false;
+                    console.log(this.collapsed);
+                }
+                else {
+                    content.forEach(function (element) {
+                        element.style.display = "none";
+                    });
+                    this.basinCharCollapsed = true;
+                    this.nssService.statisticsGroupList.forEach(function (group) {
+                        _this.sectionCollapsed[group.name] = true;
+                    });
+                    this.collapsed = true;
+                    console.log(this.collapsed);
+                }
             };
             ReportController.prototype.ActivateGraphs = function (result) {
                 result.graphdata = {

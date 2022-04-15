@@ -102,6 +102,10 @@ module StreamStats.Controllers {
         public NSSServicesVersion: string;
         public SSServicesVersion = '1.2.22'; // TODO: This needs to pull from the services when ready
 
+        public sectionCollapsed: Array<any>;
+        public basinCharCollapsed;
+        public collapsed;
+
         public get showReport(): boolean {
             if (!this.studyAreaService.studyAreaParameterList) return false;
             for (var i = 0; i < this.studyAreaService.studyAreaParameterList.length; i++) {
@@ -131,6 +135,7 @@ module StreamStats.Controllers {
         public get GraphData():any {
             return this._graphData;
         }
+
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService', 'StreamStats.Services.ModalService'];
@@ -146,6 +151,9 @@ module StreamStats.Controllers {
             this.AppVersion = configuration.version;
             this.extensions = this.ActiveExtensions;
             this.environment = configuration.environment;
+            this.sectionCollapsed = [];
+            this.basinCharCollapsed = false;
+            this.collapsed = false;
             this.initMap();
             
 
@@ -470,6 +478,42 @@ module StreamStats.Controllers {
                     //          this allow the insertion of new lines after html
                     pdf.save('Test.pdf');
                 }, margins);
+        }
+
+        public collapseSection(e, type, group: "") {
+            var content = e.currentTarget.nextElementSibling;
+            if (content.style.display === "none") {
+                content.style.display = "block";
+                if(type === "stats") this.sectionCollapsed[group] = false;
+                if(type === "basin") this.basinCharCollapsed = false;
+            } else {
+                content.style.display = "none";
+                if(type === "stats") this.sectionCollapsed[group] = true;
+                if(type === "basin") this.basinCharCollapsed = true;
+            }
+        }
+
+        public expandAll(expandOrCollapse) {
+            let content = document.querySelectorAll<HTMLElement>(".collapsible-content")
+            if(expandOrCollapse === "expand"){
+                content.forEach((element) => {
+                    element.style.display = "block";
+                });
+                this.basinCharCollapsed = false;
+                this.nssService.statisticsGroupList.forEach((group) => {
+                    this.sectionCollapsed[group.name] = false;
+                })
+                this.collapsed = false;
+            }else{
+                content.forEach((element) => {
+                    element.style.display = "none";
+                });
+                this.basinCharCollapsed = true;
+                this.nssService.statisticsGroupList.forEach((group) => {
+                    this.sectionCollapsed[group.name] = true;
+                })
+                this.collapsed = true;
+            }
         }
 
         public ActivateGraphs(result: any) {
