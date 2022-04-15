@@ -335,6 +335,7 @@ var StreamStats;
                 var studyArea = new StreamStats.Models.StudyArea(this.regionService.selectedRegion.RegionID, new WiM.Models.Point(lat, lng, '4326'));
                 this.studyAreaService.AddStudyArea(studyArea);
                 this.studyAreaService.loadCulvertBoundary(properties.SurveyID, regionIndex);
+                this.studyAreaService.getCulvertAttachments(properties.SurveyID, regionIndex);
                 var paramList = [];
                 var citations = [];
                 var statCitations = [];

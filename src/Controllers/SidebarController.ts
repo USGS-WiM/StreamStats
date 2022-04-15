@@ -491,6 +491,8 @@ module StreamStats.Controllers {
             var studyArea: Models.IStudyArea = new Models.StudyArea(this.regionService.selectedRegion.RegionID, new WiM.Models.Point(lat, lng, '4326'));
             this.studyAreaService.AddStudyArea(studyArea);
             this.studyAreaService.loadCulvertBoundary(properties.SurveyID, regionIndex);
+            // Call to studyAreaService to execute query of feature service attachments
+            this.studyAreaService.getCulvertAttachments(properties.SurveyID, regionIndex);
 
             var paramList = [];
             var citations = [];
