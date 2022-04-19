@@ -347,7 +347,7 @@
       {
         "Name": "Habitat Quality Score",
         "Code": "HQSCORE",
-        "Description": "Habitat quality score. Sum of “yes’s (1’s) for coldwater fisheries, essential fish habitat, Anadromous fish run, Area of Critical Environmental Concern, Biomap2 aquatic core, and Wild and Scenic River (values can be from 0 – 6; 0 = General quality, 1 = high quality, >=2 = highest quality)",
+        "Description": "Habitat quality score. Sum of yes's (1's) for coldwater fisheries, essential fish habitat, Anadromous fish run, Area of Critical Environmental Concern, Biomap2 aquatic core, and Wild and Scenic River (values can be from 0 to 6; 0 = General quality, 1 = high quality, >=2 = highest quality)",
         "Units": "",
         "Accuracy": "",
         "Field type": "short integer",

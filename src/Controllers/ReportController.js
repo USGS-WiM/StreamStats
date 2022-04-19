@@ -131,6 +131,17 @@ var StreamStats;
                     finalVal += _this.tableToCSV($('#mainParamTable'));
                     return finalVal + '\n\n';
                 };
+                var processCulvertParameterTables = function (data) {
+                    var finalVal = '\nBasin Characteristics\n';
+                    finalVal += _this.tableToCSV($('#mainCulvertParamTable'));
+                    finalVal += '\nPeak Flow Statistics\n';
+                    finalVal += _this.tableToCSV($('#peakFlowTable'));
+                    finalVal += '\nHydraulic Model Report\n';
+                    finalVal += _this.tableToCSV($('#boxParamTable')) + '\n';
+                    finalVal += _this.tableToCSV($('#archParamTable')) + '\n';
+                    finalVal += _this.tableToCSV($('#pipeParamTable'));
+                    return finalVal + '\n\n';
+                };
                 var processScenarioParamTable = function (statGroup) {
                     var finalVal = '\n';
                     statGroup.regressionRegions.forEach(function (regressionRegion) {
@@ -168,7 +179,12 @@ var StreamStats;
                     return finalVal + '\n';
                 };
                 var csvFile = 'StreamStats Output Report\n\n' + 'State/Region ID,' + this.studyAreaService.selectedStudyArea.RegionID.toUpperCase() + '\nWorkspace ID,' + this.studyAreaService.selectedStudyArea.WorkspaceID + '\nLatitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + '\nLongitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5) + '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n';
-                csvFile += processMainParameterTable(this.studyAreaService.studyAreaParameterList);
+                if (this.isCulvertReport) {
+                    csvFile += processCulvertParameterTables(this.studyAreaService.studyAreaParameterList);
+                }
+                else {
+                    csvFile += processMainParameterTable(this.studyAreaService.studyAreaParameterList);
+                }
                 this.nssService.selectedStatisticsGroupList.forEach(function (statGroup) {
                     csvFile += processScenarioParamTable(statGroup);
                     if (statGroup.disclaimers && (statGroup.disclaimers.Warnings || statGroup.disclaimers.Errors))
@@ -198,8 +214,6 @@ var StreamStats;
                                 extVal += self.tableToCSV($('#exceedanceTable'));
                                 extVal += '\n\nEstimated Flows\n';
                                 extVal += self.tableToCSV($('#flowTable'));
-                                extVal += '\n\nHydraulic Model\n';
-                                extVal += self.tableToCSV($('#scsParamTable'));
                             }
                         }
                         csvFile += extVal + '\n\n';
@@ -651,6 +665,7 @@ var StreamStats;
                 }
             };
             ReportController.prototype.tableToCSV = function ($table) {
+                var self = this;
                 var $headers = $table.find('tr:has(th)'), $rows = $table.find('tr:has(td)'), tmpColDelim = String.fromCharCode(11), tmpRowDelim = String.fromCharCode(0), colDelim = '","', rowDelim = '"\r\n"';
                 var csv = '"';
                 csv += formatRows($headers.map(grabRow));

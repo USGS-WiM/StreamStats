@@ -194,6 +194,18 @@ module StreamStats.Controllers {
                 return finalVal + '\n\n';
             };
 
+            var processCulvertParameterTables = (data) => {
+                var finalVal = '\nBasin Characteristics\n';
+                finalVal += this.tableToCSV($('#mainCulvertParamTable'));
+                finalVal += '\nPeak Flow Statistics\n';
+                finalVal += this.tableToCSV($('#peakFlowTable'));
+                finalVal += '\nHydraulic Model Report\n';
+                finalVal += this.tableToCSV($('#boxParamTable')) + '\n';
+                finalVal += this.tableToCSV($('#archParamTable')) + '\n';
+                finalVal += this.tableToCSV($('#pipeParamTable'));
+                return finalVal + '\n\n';
+            };
+
             var processScenarioParamTable = (statGroup) => {
                 var finalVal = '\n';
      
@@ -254,8 +266,11 @@ module StreamStats.Controllers {
             var csvFile = 'StreamStats Output Report\n\n' + 'State/Region ID,' + this.studyAreaService.selectedStudyArea.RegionID.toUpperCase() + '\nWorkspace ID,' + this.studyAreaService.selectedStudyArea.WorkspaceID + '\nLatitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + '\nLongitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5) + '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n';
 
             //first write main parameter table
-            csvFile += processMainParameterTable(this.studyAreaService.studyAreaParameterList);
-
+            if(this.isCulvertReport){
+                csvFile += processCulvertParameterTables(this.studyAreaService.studyAreaParameterList);
+            }else {
+                csvFile += processMainParameterTable(this.studyAreaService.studyAreaParameterList);
+            }
             //next loop over stat groups
             this.nssService.selectedStatisticsGroupList.forEach((statGroup) => {
                 csvFile += processScenarioParamTable(statGroup);
@@ -293,11 +308,6 @@ module StreamStats.Controllers {
                             // add flow table
                             extVal += '\n\nEstimated Flows\n';
                             extVal += self.tableToCSV($('#flowTable'));
-
-                            
-                            // add SCS table
-                            extVal += '\n\nHydraulic Model\n';
-                            extVal += self.tableToCSV($('#scsParamTable'));
                         }
                     }
 
@@ -811,6 +821,7 @@ module StreamStats.Controllers {
             }
         }
         private tableToCSV($table) {
+            let self = this;
 
             var $headers = $table.find('tr:has(th)')
                 , $rows = $table.find('tr:has(td)')

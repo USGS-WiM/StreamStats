@@ -181,28 +181,26 @@
                         <!-- Basin Characteristics -->
                         <div class="well well-sm">
                             <h3>Basin Characteristics</h3>
-                            <table id="scsParamTable" class="mainParamTable table table-condensed">
-                                <table id="mainParamTable" class="mainParamTable table table-condensed">
-                                    <thead class="param-table">
-                                        <tr>
-                                            <th>Parameter Name</th>
-                                            <th>Value</th>
-                                            <th>Unit</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList"  ng-if="parameter.code.substring(0, 2) !=='BC' && parameter.code.substring(0, 2) !=='PC' && parameter.code.substring(0, 2) !=='AC' && parameter.code.substring(0, 5) !== 'STATS'">
-                                            <td>{{parameter.name}}
-                                                <i ng-show="parameter.description !== ''" ng-mouseover="showTooltip = true" ng-mouseleave="showTooltip = false" class="fa fa-info-circle"></i>
-                                                <span ng-show="showTooltip" class="culvert-tooltip">
-                                                    <span ng-bind="parameter.description"></span>
-                                                </span>
-                                            </td>
-                                            <td>{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
-                                            <td ng-bind="parameter.unit"></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                            <table id="mainCulvertParamTable" class="mainCulvertParamTable table table-condensed">
+                                <thead class="param-table">
+                                    <tr>
+                                        <th>Parameter Name</th>
+                                        <th>Value</th>
+                                        <th>Unit</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList"  ng-if="parameter.code.substring(0, 2) !=='BC' && parameter.code.substring(0, 2) !=='PC' && parameter.code.substring(0, 2) !=='AC' && parameter.code.substring(0, 5) !== 'STATS'">
+                                        <td>{{parameter.name}}
+                                            <i ng-show="parameter.description !== ''" ng-mouseover="showTooltip = true" ng-mouseleave="showTooltip = false" class="fa fa-info-circle"></i>
+                                            <span ng-show="showTooltip" class="culvert-tooltip">
+                                                <span ng-bind="parameter.description"></span>
+                                            </span>
+                                        </td>
+                                        <td>{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
+                                        <td ng-bind="parameter.unit"></td>
+                                    </tr>
+                                </tbody>
                             </table>
 
                             <h4>Basin Characteristics Citations</h4>
@@ -214,29 +212,27 @@
                         <!-- Peak-Flow Statistics -->
                         <div class="well well-sm">
                             <h3>Peak-Flow Statistics</h3>
-                            <table id="scsParamTable" class="mainParamTable table table-condensed">
-                                <table id="mainParamTable" class="mainParamTable table table-condensed">
-                                    <thead class="param-table">
-                                        <tr>
-                                            <th>Parameter Name</th>
-                                            <th>Value</th>
-                                            <th>Unit</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList"  ng-if="parameter.code.substring(0, 5) === 'STATS'">
-                                            <!-- <td>{{parameter.code.substring(5)}}</td> -->
-                                            <td>{{parameter.name}}
-                                                <i ng-mouseover="showTooltip = true" ng-mouseleave="showTooltip = false" class="fa fa-info-circle"></i>
-                                                <span ng-show="showTooltip" class="culvert-tooltip">
-                                                    <span ng-bind="parameter.description"></span>
-                                                </span>
-                                            </td>
-                                            <td>{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
-                                            <td ng-bind="parameter.unit"></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                            <table id="peakFlowTable" class="scenarioFlowTable table table-condensed">
+                                <thead class="flow-table">
+                                    <tr>
+                                        <th>Parameter Name</th>
+                                        <th>Value</th>
+                                        <th>Unit</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList"  ng-if="parameter.code.substring(0, 5) === 'STATS'">
+                                        <!-- <td>{{parameter.code.substring(5)}}</td> -->
+                                        <td>{{parameter.name}}
+                                            <i ng-mouseover="showTooltip = true" ng-mouseleave="showTooltip = false" class="fa fa-info-circle"></i>
+                                            <span ng-show="showTooltip" class="culvert-tooltip">
+                                                <span ng-bind="parameter.description"></span>
+                                            </span>
+                                        </td>
+                                        <td>{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
+                                        <td ng-bind="parameter.unit"></td>
+                                    </tr>
+                                </tbody>
                             </table>
 
                             <h4>Peak-Flow Statistics Citations</h4>
@@ -252,7 +248,7 @@
                         </ul> 
 
                         <!-- Box Culvert Table -->
-                        <div ng-if="vm.selectedTabName ==='Box'">
+                        <div ng-show="vm.selectedTabName ==='Box'">
                             
                             <h5>Preliminary Culvert Designs</h5>
                             <div>
@@ -261,8 +257,8 @@
 
                             <div class="well well-sm">
                                 <h3>Hydraulic Model Report</h3>
-                                <table id="scsParamTable" class="mainParamTable table table-condensed">
-                                    <thead class="param-table">
+                                <table id="boxParamTable" class="scenarioParamTable table table-condensed">
+                                    <thead class="culvert-table">
                                         <tr>
                                             <th>Parameter Name</th>
                                             <th>10-Yr Flow</th>
@@ -295,7 +291,7 @@
                         </div>
 
                         <!-- Arch Culvert Table -->
-                        <div ng-if="vm.selectedTabName ==='Arch'">
+                        <div ng-show="vm.selectedTabName ==='Arch'">
 
                             <h5>Preliminary Culvert Designs</h5>
                             <div>
@@ -304,8 +300,8 @@
 
                             <div class="well well-sm">
                                 <h3>Hydraulic Model Report</h3>
-                                <table id="scsParamTable" class="mainParamTable table table-condensed">
-                                    <thead class="param-table">
+                                <table id="archParamTable" class="scenarioParamTable table table-condensed">
+                                    <thead class="culvert-table">
                                         <tr>
                                             <th>Parameter Name</th>
                                             <th>10-Yr Flow</th>
@@ -338,7 +334,7 @@
                         </div>
 
                         <!-- Pipe Culvert Table -->
-                        <div ng-if="vm.selectedTabName ==='Pipe'">
+                        <div ng-show="vm.selectedTabName ==='Pipe'">
 
                             <h5>Preliminary Culvert Designs</h5>
                             <div>
@@ -347,8 +343,8 @@
 
                             <div class="well well-sm">
                                 <h3>Hydraulic Model Report</h3>
-                                <table id="scsParamTable" class="mainParamTable table table-condensed">
-                                    <thead class="param-table">
+                                <table id="pipeParamTable" class="scenarioParamTable table table-condensed">
+                                    <thead class="culvert-table">
                                         <tr>
                                             <th>Parameter Name</th>
                                             <th>10-Yr Flow</th>
