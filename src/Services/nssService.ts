@@ -86,6 +86,7 @@ module StreamStats.Services {
         inUse: boolean,
         percentWeight: number,
         RegressionRegionName: string,
+        code: string;
         values: Array<IEquationWeightingInputValues>
     }
 
@@ -524,9 +525,8 @@ module StreamStats.Services {
 
             //Still Need to Test
                 // three regression regions?
-                // not using the right code
+                // weight equations
 
-            var code = []; 
             var units = null;
             var inputs: Array<IEquationWeightingInputs> = [];
             this.equationWeightingDisclaimers = false;
@@ -537,13 +537,13 @@ module StreamStats.Services {
                 if (statGroup.name == "Peak-Flow Statistics") { // Only need to do for peakflow
                     statGroup.regressionRegions.forEach((regressionRegion, rindex) => {
                         if (regressionRegion.name != "Area-Averaged") { // Need to do nothing for area weighting 
-                            if(regressionRegion.results){
-                                inputs[rindex] = { "name":null,"inUse":false, "percentWeight":null, "RegressionRegionName": null, "values":[] };
+                            if (regressionRegion.results) {
+                                inputs[rindex] = { "name":null,"inUse":false, "percentWeight":null, "RegressionRegionName": null, "code": null, "values":[] };
                                 regressionRegion.results.forEach((result, index) => {
-                                    if (result.code.includes("ACPK") ) {
+                                    if (result.code.includes("ACPK")) {
                                         inputs[rindex].name ="ACPK";
                                         if (result.value > 0) { 
-                                            code.push(regressionRegion.code);
+                                            inputs[rindex].code = regressionRegion.code;
                                             inputs[rindex].inUse = true;
                                             inputs[rindex].RegressionRegionName = regressionRegion.name.substring(0, regressionRegion.name.indexOf('Region') + 'Region'.length);
                                             inputs[rindex].percentWeight = regressionRegion.percentWeight;
@@ -553,6 +553,7 @@ module StreamStats.Services {
                                                 code: result.code
                                             };
                                         } else {
+                                            inputs[rindex].code = null;
                                             inputs[rindex].inUse = false;
                                             inputs[rindex].RegressionRegionName = null;
                                             inputs[rindex].percentWeight = null;
@@ -565,7 +566,7 @@ module StreamStats.Services {
                                     } else if (result.code.includes("BWPK")) {
                                         inputs[rindex].name ="BFPK";
                                         if (result.value > 0) {
-                                            code.push(regressionRegion.code);
+                                            inputs[rindex].code = regressionRegion.code;
                                             inputs[rindex].inUse = true;
                                             inputs[rindex].RegressionRegionName = regressionRegion.name.substring(0, regressionRegion.name.indexOf('Region') + 'Region'.length);
                                             inputs[rindex].percentWeight = regressionRegion.percentWeight;
@@ -575,6 +576,7 @@ module StreamStats.Services {
                                                 code: result.code
                                             };
                                         } else {
+                                            inputs[rindex].code = null;
                                             inputs[rindex].inUse = false;
                                             inputs[rindex].RegressionRegionName = null;
                                             inputs[rindex].percentWeight = null;
@@ -587,7 +589,7 @@ module StreamStats.Services {
                                     } else if (result.code.includes("RSPK")) {
                                         inputs[rindex].name ="RSPK";
                                         if (result.value > 0) { 
-                                            code.push(regressionRegion.code);
+                                            inputs[rindex].code = regressionRegion.code;
                                             inputs[rindex].inUse = true;
                                             inputs[rindex].RegressionRegionName = regressionRegion.name.substring(0, regressionRegion.name.indexOf('Region') + 'Region'.length);
                                             inputs[rindex].percentWeight = regressionRegion.percentWeight;
@@ -597,6 +599,7 @@ module StreamStats.Services {
                                                 code: result.code
                                             };
                                         } else {
+                                            inputs[rindex].code = null;
                                             inputs[rindex].inUse = false;
                                             inputs[rindex].RegressionRegionName = null;
                                             inputs[rindex].percentWeight = null;
@@ -632,12 +635,10 @@ module StreamStats.Services {
                                 })
                             }
                         }
-
                     });
                 }
             });
 
-            console.log(code)
 
             var rrCount = inputs.filter(function(el) { return el.name == "BCPK"; }); // get number of regression regions in delinated basin
             var temp = inputs.filter(function (obj) { return obj.inUse == true; }); // get only parameters being used in weighting
@@ -649,7 +650,7 @@ module StreamStats.Services {
 
             if (weightCount >= 2) { // If there are two or more values we can send to the weighting service
                 // set up URL
-                var url = configuration.baseurls['WeightingServices'] +  '/weightest/' 
+                var url = configuration.baseurls['WeightingServices'] +  '/weightest/'; 
                 var headers = {
                     "accept": "application/json",
                     "Content-Type": "application/json"
@@ -660,21 +661,28 @@ module StreamStats.Services {
                 while (rrCounter < rrCount.length) { 
                     this.equationWeightingResults[rrCounter]={ "RR": inputs[rrCounter].RegressionRegionName,"Results":[] };
                     let lastIndex = inputs[0].values.length - 1;
-                    this.recursiveSubscription(inputs[0].values, lastIndex, inputs, url, headers, code, units, rrCount, rrCounter);
+                    this.recursiveAreaWeightSubscription(inputs[0].values, lastIndex, inputs, url, headers, units, rrCount, rrCounter);
                     rrCounter++;
                 }
                 if (weightCount == 4) {
                     this.equationWeightingDisclaimers = true;
                 }
             } else { // Not enough values to weight
-                this.toaster.pop('error', 'Cannot Methods Weight, not enough values')
+                this.toaster.pop('error', 'Cannot Methods Weight, not enough values');
             }
         }
 
 
-        public recursiveSubscription(parentLevelIdArray, lastIndex, inputs, url, headers, code, units, rrCount, rrCounter) {
+        public recursiveAreaWeightSubscription(parentLevelIdArray, lastIndex, inputs, url, headers, units, rrCount, rrCounter) {
             if (lastIndex >= 0) {
-                var input = {}
+                var input = {};
+                var code; 
+                // get code to use for service call
+                if (inputs[0 * rrCount.length + rrCounter].code) code = inputs[0 * rrCount.length + rrCounter].code;
+                if (inputs[1 * rrCount.length + rrCounter].code) code = inputs[1 * rrCount.length + rrCounter].code;
+                if (inputs[2 * rrCount.length + rrCounter].code) code = inputs[2 * rrCount.length + rrCounter].code;
+                if (inputs[3 * rrCount.length + rrCounter].code) code = inputs[3 * rrCount.length + rrCounter].code;
+
                 // Send combined inputs to weighting service and get weighted value, unit, PIl, PIu, SEP
                 input = {
                     "x1": inputs[0 * rrCount.length + rrCounter].values[lastIndex].value,
@@ -685,18 +693,18 @@ module StreamStats.Services {
                     "sep2": inputs[1 * rrCount.length + rrCounter].values[lastIndex].SEP,
                     "sep3": inputs[2 * rrCount.length + rrCounter].values[lastIndex].SEP,
                     "sep4": inputs[3 * rrCount.length + rrCounter].values[lastIndex].SEP,
-                    "regressionRegionCode": 'GC1832', //TODO
+                    "regressionRegionCode": code,
                     "code1": inputs[0 * rrCount.length + rrCounter].values[lastIndex].code,
                     "code2": inputs[1 * rrCount.length + rrCounter].values[lastIndex].code,
                     "code3": inputs[2 * rrCount.length + rrCounter].values[lastIndex].code,
                     "code4": inputs[3 * rrCount.length + rrCounter].values[lastIndex].code
-                }
+                };
 
                 console.log(input)
                 var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(input), headers);
                 this.Execute(request).then((response: any) => {
                     this.equationWeightingResults[rrCounter].Results[lastIndex] = {
-                        Name: inputs[1 * rrCount.length + rrCounter].values[lastIndex].code,      // since its sorted alphabetically BCPK is always in spot same spot
+                        Name: inputs[1 * rrCount.length + rrCounter].values[lastIndex].code,      
                         Z: response.data.Z,
                         Unit: units,
                         PIl: response.data.PIL,
@@ -706,26 +714,19 @@ module StreamStats.Services {
                 },(error) => {
                     console.log(error)
                     this.toaster.clear();
-                    if (error.data && error.data.detail ) {this.toaster.pop('error', "Cannot Methods Weight: " + error.data.detail, "HTTP request error", 0);}
-                    else {this.toaster.pop('error', 'Cannot Methods Weight')}
+                    if (error.data && error.data.detail) { this.toaster.pop('error', "Cannot Methods Weight: " + error.data.detail, "HTTP request error", 0); }
+                    else { this.toaster.pop('error', 'Cannot Methods Weight'); }
                 }).finally(() => {
                     lastIndex = lastIndex - 1;
-                    this.recursiveSubscription(parentLevelIdArray, lastIndex, inputs, url, headers, code, units, rrCount, rrCounter);
-                });
-                        
+                    this.recursiveAreaWeightSubscription(parentLevelIdArray, lastIndex, inputs, url, headers, units, rrCount, rrCounter); // recursively call function 
+                });  
             } else {
-                if (rrCount.length == rrCounter + 1) {
-                    this.equationWeightingResults = this.equationWeightingResults.filter(function (obj) { return obj.Results.length > 0; });
-
-                    if (rrCount.length > 1 && this.equationWeightingResults.length > 0) {
-                        console.log('area weight')
+                if (rrCount.length == rrCounter + 1) { // Checks if we are done weighting all regression regions
+                    this.equationWeightingResults = this.equationWeightingResults.filter(function (obj) { return obj.Results.length > 0; }); // remove results if they failed and returned nothing
+                    if (rrCount.length > 1 && this.equationWeightingResults.length > 0) { // need to area weight reuslts
                         this.equationWeightingResults[rrCounter + 1]={ "RR": "Area Weighted","Results":[] };
                         console.log(this.equationWeightingResults)
-                    } else {
-                        console.log('no area weight')
-                        console.log(this.equationWeightingResults)
-
-                    }
+                    } // else no area weighting 
                 }
             }
         }

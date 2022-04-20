@@ -317,7 +317,6 @@ var StreamStats;
             };
             nssService.prototype.queryEquationWeighting = function () {
                 console.log(this.selectedStatisticsGroupList);
-                var code = [];
                 var units = null;
                 var inputs = [];
                 this.equationWeightingDisclaimers = false;
@@ -327,12 +326,12 @@ var StreamStats;
                         statGroup.regressionRegions.forEach(function (regressionRegion, rindex) {
                             if (regressionRegion.name != "Area-Averaged") {
                                 if (regressionRegion.results) {
-                                    inputs[rindex] = { "name": null, "inUse": false, "percentWeight": null, "RegressionRegionName": null, "values": [] };
+                                    inputs[rindex] = { "name": null, "inUse": false, "percentWeight": null, "RegressionRegionName": null, "code": null, "values": [] };
                                     regressionRegion.results.forEach(function (result, index) {
                                         if (result.code.includes("ACPK")) {
                                             inputs[rindex].name = "ACPK";
                                             if (result.value > 0) {
-                                                code.push(regressionRegion.code);
+                                                inputs[rindex].code = regressionRegion.code;
                                                 inputs[rindex].inUse = true;
                                                 inputs[rindex].RegressionRegionName = regressionRegion.name.substring(0, regressionRegion.name.indexOf('Region') + 'Region'.length);
                                                 inputs[rindex].percentWeight = regressionRegion.percentWeight;
@@ -343,6 +342,7 @@ var StreamStats;
                                                 };
                                             }
                                             else {
+                                                inputs[rindex].code = null;
                                                 inputs[rindex].inUse = false;
                                                 inputs[rindex].RegressionRegionName = null;
                                                 inputs[rindex].percentWeight = null;
@@ -356,7 +356,7 @@ var StreamStats;
                                         else if (result.code.includes("BWPK")) {
                                             inputs[rindex].name = "BFPK";
                                             if (result.value > 0) {
-                                                code.push(regressionRegion.code);
+                                                inputs[rindex].code = regressionRegion.code;
                                                 inputs[rindex].inUse = true;
                                                 inputs[rindex].RegressionRegionName = regressionRegion.name.substring(0, regressionRegion.name.indexOf('Region') + 'Region'.length);
                                                 inputs[rindex].percentWeight = regressionRegion.percentWeight;
@@ -367,6 +367,7 @@ var StreamStats;
                                                 };
                                             }
                                             else {
+                                                inputs[rindex].code = null;
                                                 inputs[rindex].inUse = false;
                                                 inputs[rindex].RegressionRegionName = null;
                                                 inputs[rindex].percentWeight = null;
@@ -380,7 +381,7 @@ var StreamStats;
                                         else if (result.code.includes("RSPK")) {
                                             inputs[rindex].name = "RSPK";
                                             if (result.value > 0) {
-                                                code.push(regressionRegion.code);
+                                                inputs[rindex].code = regressionRegion.code;
                                                 inputs[rindex].inUse = true;
                                                 inputs[rindex].RegressionRegionName = regressionRegion.name.substring(0, regressionRegion.name.indexOf('Region') + 'Region'.length);
                                                 inputs[rindex].percentWeight = regressionRegion.percentWeight;
@@ -391,6 +392,7 @@ var StreamStats;
                                                 };
                                             }
                                             else {
+                                                inputs[rindex].code = null;
                                                 inputs[rindex].inUse = false;
                                                 inputs[rindex].RegressionRegionName = null;
                                                 inputs[rindex].percentWeight = null;
@@ -431,7 +433,6 @@ var StreamStats;
                         });
                     }
                 });
-                console.log(code);
                 var rrCount = inputs.filter(function (el) { return el.name == "BCPK"; });
                 var temp = inputs.filter(function (obj) { return obj.inUse == true; });
                 var weightCount = temp.length / rrCount.length;
@@ -450,7 +451,7 @@ var StreamStats;
                     while (rrCounter < rrCount.length) {
                         this.equationWeightingResults[rrCounter] = { "RR": inputs[rrCounter].RegressionRegionName, "Results": [] };
                         var lastIndex = inputs[0].values.length - 1;
-                        this.recursiveSubscription(inputs[0].values, lastIndex, inputs, url, headers, code, units, rrCount, rrCounter);
+                        this.recursiveAreaWeightSubscription(inputs[0].values, lastIndex, inputs, url, headers, units, rrCount, rrCounter);
                         rrCounter++;
                     }
                     if (weightCount == 4) {
@@ -461,10 +462,19 @@ var StreamStats;
                     this.toaster.pop('error', 'Cannot Methods Weight, not enough values');
                 }
             };
-            nssService.prototype.recursiveSubscription = function (parentLevelIdArray, lastIndex, inputs, url, headers, code, units, rrCount, rrCounter) {
+            nssService.prototype.recursiveAreaWeightSubscription = function (parentLevelIdArray, lastIndex, inputs, url, headers, units, rrCount, rrCounter) {
                 var _this = this;
                 if (lastIndex >= 0) {
                     var input = {};
+                    var code;
+                    if (inputs[0 * rrCount.length + rrCounter].code)
+                        code = inputs[0 * rrCount.length + rrCounter].code;
+                    if (inputs[1 * rrCount.length + rrCounter].code)
+                        code = inputs[1 * rrCount.length + rrCounter].code;
+                    if (inputs[2 * rrCount.length + rrCounter].code)
+                        code = inputs[2 * rrCount.length + rrCounter].code;
+                    if (inputs[3 * rrCount.length + rrCounter].code)
+                        code = inputs[3 * rrCount.length + rrCounter].code;
                     input = {
                         "x1": inputs[0 * rrCount.length + rrCounter].values[lastIndex].value,
                         "x2": inputs[1 * rrCount.length + rrCounter].values[lastIndex].value,
@@ -474,7 +484,7 @@ var StreamStats;
                         "sep2": inputs[1 * rrCount.length + rrCounter].values[lastIndex].SEP,
                         "sep3": inputs[2 * rrCount.length + rrCounter].values[lastIndex].SEP,
                         "sep4": inputs[3 * rrCount.length + rrCounter].values[lastIndex].SEP,
-                        "regressionRegionCode": 'GC1832',
+                        "regressionRegionCode": code,
                         "code1": inputs[0 * rrCount.length + rrCounter].values[lastIndex].code,
                         "code2": inputs[1 * rrCount.length + rrCounter].values[lastIndex].code,
                         "code3": inputs[2 * rrCount.length + rrCounter].values[lastIndex].code,
@@ -502,19 +512,14 @@ var StreamStats;
                         }
                     }).finally(function () {
                         lastIndex = lastIndex - 1;
-                        _this.recursiveSubscription(parentLevelIdArray, lastIndex, inputs, url, headers, code, units, rrCount, rrCounter);
+                        _this.recursiveAreaWeightSubscription(parentLevelIdArray, lastIndex, inputs, url, headers, units, rrCount, rrCounter);
                     });
                 }
                 else {
                     if (rrCount.length == rrCounter + 1) {
                         this.equationWeightingResults = this.equationWeightingResults.filter(function (obj) { return obj.Results.length > 0; });
                         if (rrCount.length > 1 && this.equationWeightingResults.length > 0) {
-                            console.log('area weight');
                             this.equationWeightingResults[rrCounter + 1] = { "RR": "Area Weighted", "Results": [] };
-                            console.log(this.equationWeightingResults);
-                        }
-                        else {
-                            console.log('no area weight');
                             console.log(this.equationWeightingResults);
                         }
                     }
