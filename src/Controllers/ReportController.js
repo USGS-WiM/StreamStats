@@ -355,8 +355,6 @@ var StreamStats;
             ReportController.prototype.expandAll = function (expandOrCollapse) {
                 var _this = this;
                 var content = document.querySelectorAll(".collapsible-content");
-                console.log(document.querySelectorAll(".collapsible-content")[0].style.display);
-                console.log(expandOrCollapse);
                 if (expandOrCollapse === "expand") {
                     content.forEach(function (element) {
                         element.style.display = "block";
@@ -366,7 +364,6 @@ var StreamStats;
                         _this.sectionCollapsed[group.name] = false;
                     });
                     this.collapsed = false;
-                    console.log(this.collapsed);
                 }
                 else {
                     content.forEach(function (element) {
@@ -377,7 +374,6 @@ var StreamStats;
                         _this.sectionCollapsed[group.name] = true;
                     });
                     this.collapsed = true;
-                    console.log(this.collapsed);
                 }
             };
             ReportController.prototype.ActivateGraphs = function (result) {
