@@ -457,7 +457,7 @@ module StreamStats.Services {
                     }).finally(() => {
                         //Equation Weighting 
                         if (this.regionservice.selectedRegion.Applications.indexOf('EquationWeighting') != -1 ) {
-                            if (this.selectedStatisticsGroupList.some(e => e.name === 'Peak-Flow Statistics')) {
+                            if (statGroup.name == "Peak-Flow Statistics") {
                                 this.queryEquationWeighting();
                             }
                         }
@@ -496,11 +496,11 @@ module StreamStats.Services {
                             regressionRegion.results.forEach((result, index) => {
                                 if (result.code.includes("ACPK")) {
                                     inputs[rindex].name ="ACPK";
+                                    inputs[rindex].RegressionRegionName = regressionRegion.name.substring(0, regressionRegion.name.indexOf('Region') + 'Region'.length);
+                                    inputs[rindex].percentWeight = regressionRegion.percentWeight;
                                     if (result.value > 0) { 
                                         inputs[rindex].code = regressionRegion.code;
                                         inputs[rindex].inUse = true;
-                                        inputs[rindex].RegressionRegionName = regressionRegion.name.substring(0, regressionRegion.name.indexOf('Region') + 'Region'.length);
-                                        inputs[rindex].percentWeight = regressionRegion.percentWeight;
                                         inputs[rindex].values[index] = {
                                             value: result.value,
                                             SEP: (result.sep) ? result.sep : null,
@@ -509,8 +509,6 @@ module StreamStats.Services {
                                     } else {
                                         inputs[rindex].code = null;
                                         inputs[rindex].inUse = false;
-                                        inputs[rindex].RegressionRegionName = null;
-                                        inputs[rindex].percentWeight = null;
                                         inputs[rindex].values[index] = {
                                             value: null,
                                             SEP: null,
@@ -519,11 +517,11 @@ module StreamStats.Services {
                                     }                                 
                                 } else if (result.code.includes("BWPK")) {
                                     inputs[rindex].name ="BFPK";
+                                    inputs[rindex].RegressionRegionName = regressionRegion.name.substring(0, regressionRegion.name.indexOf('Region') + 'Region'.length);
+                                    inputs[rindex].percentWeight = regressionRegion.percentWeight;
                                     if (result.value > 0) {
                                         inputs[rindex].code = regressionRegion.code;
                                         inputs[rindex].inUse = true;
-                                        inputs[rindex].RegressionRegionName = regressionRegion.name.substring(0, regressionRegion.name.indexOf('Region') + 'Region'.length);
-                                        inputs[rindex].percentWeight = regressionRegion.percentWeight;
                                         inputs[rindex].values[index] = {
                                             value: result.value,
                                             SEP: (result.sep) ? result.sep : null,
@@ -532,8 +530,6 @@ module StreamStats.Services {
                                     } else {
                                         inputs[rindex].code = null;
                                         inputs[rindex].inUse = false;
-                                        inputs[rindex].RegressionRegionName = null;
-                                        inputs[rindex].percentWeight = null;
                                         inputs[rindex].values[index] = {
                                             value: null,
                                             SEP: null,
@@ -542,11 +538,11 @@ module StreamStats.Services {
                                     }  
                                 } else if (result.code.includes("RSPK")) {
                                     inputs[rindex].name ="RSPK";
+                                    inputs[rindex].RegressionRegionName = regressionRegion.name.substring(0, regressionRegion.name.indexOf('Region') + 'Region'.length);
+                                    inputs[rindex].percentWeight = regressionRegion.percentWeight;
                                     if (result.value > 0) { 
                                         inputs[rindex].code = regressionRegion.code;
                                         inputs[rindex].inUse = true;
-                                        inputs[rindex].RegressionRegionName = regressionRegion.name.substring(0, regressionRegion.name.indexOf('Region') + 'Region'.length);
-                                        inputs[rindex].percentWeight = regressionRegion.percentWeight;
                                         inputs[rindex].values[index] = {
                                             value: result.value,
                                             SEP: (result.sep) ? result.sep : null,
@@ -555,8 +551,6 @@ module StreamStats.Services {
                                     } else {
                                         inputs[rindex].code = null;
                                         inputs[rindex].inUse = false;
-                                        inputs[rindex].RegressionRegionName = null;
-                                        inputs[rindex].percentWeight = null;
                                         inputs[rindex].values[index] = {
                                             value: null,
                                             SEP: null,
@@ -565,11 +559,11 @@ module StreamStats.Services {
                                     }  
                                 } else {
                                     inputs[rindex].name ="BCPK";
+                                    inputs[rindex].RegressionRegionName = regressionRegion.name.substring(0, regressionRegion.name.indexOf('Region') + 'Region'.length);
+                                    inputs[rindex].percentWeight = regressionRegion.percentWeight;
                                     if (result.value > 0) {
                                         units = result.unit;
                                         inputs[rindex].inUse = true;
-                                        inputs[rindex].RegressionRegionName = regressionRegion.name.substring(0, regressionRegion.name.indexOf('Region') + 'Region'.length);
-                                        inputs[rindex].percentWeight = regressionRegion.percentWeight;
                                         inputs[rindex].values[index] = {
                                             value: result.value,
                                             SEP: (result.sep) ? result.sep : null,
@@ -577,8 +571,6 @@ module StreamStats.Services {
                                         };
                                     } else {
                                         inputs[rindex].inUse = false;
-                                        inputs[rindex].RegressionRegionName = null;
-                                        inputs[rindex].percentWeight = null;
                                         inputs[rindex].values[index] = {
                                             value: null,
                                             SEP: null,
@@ -681,14 +673,20 @@ module StreamStats.Services {
                         for (let i=0; i<inputs[0].values.length; ++i) { Ztotal[i] = 0; SEPZtotal[i] = 0; PIutotal[i] = 0; PIltotal[i] = 0; }
 
                         for (var i = 0; i < this.equationWeightingResults.length - 1; i++) { // area weighting calculations
-                            var Z = this.equationWeightingResults[i].Results.reduce((c, v) => c.concat(v), []).map(o => o.Z);
+                            var Z = []; var PIl = []; var PIu = []; var SEPZ = [];
+                            for (let j=0; j<this.equationWeightingResults[i].Results.length; j++) {
+                                if (this.equationWeightingResults[i].Results[j]) {
+                                    Z.push(this.equationWeightingResults[i].Results[j].Z);
+                                    PIl.push(this.equationWeightingResults[i].Results[j].PIl);
+                                    PIu.push(this.equationWeightingResults[i].Results[j].PIu);
+                                    SEPZ.push(this.equationWeightingResults[i].Results[j].SEPZ);
+                                }
+                            }
                             Z = Z.map(function(item) { return item*(inputs[i].percentWeight/100) });
-                            var PIl = this.equationWeightingResults[i].Results.reduce((c, v) => c.concat(v), []).map(o => o.PIl);
                             PIl = PIl.map(function(item) { return item*(inputs[i].percentWeight/100) });
-                            var PIu = this.equationWeightingResults[i].Results.reduce((c, v) => c.concat(v), []).map(o => o.PIu);
                             PIu = PIu.map(function(item) { return item*(inputs[i].percentWeight/100) });
-                            var SEPZ = this.equationWeightingResults[i].Results.reduce((c, v) => c.concat(v), []).map(o => o.SEPZ);
                             SEPZ = SEPZ.map(function(item) { return item*(inputs[i].percentWeight/100) });
+
                             Ztotal = Ztotal.map(function (num, idx) { return num + Z[idx]; });
                             PIltotal = PIltotal.map(function (num, idx) { return num + PIl[idx]; });
                             PIutotal = PIutotal.map(function (num, idx) { return num + PIu[idx]; });

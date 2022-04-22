@@ -290,7 +290,7 @@ var StreamStats;
                         _this.toaster.pop('error', "There was an error Estimating Flows", "HTTP request error", 0);
                     }).finally(function () {
                         if (_this.regionservice.selectedRegion.Applications.indexOf('EquationWeighting') != -1) {
-                            if (_this.selectedStatisticsGroupList.some(function (e) { return e.name === 'Peak-Flow Statistics'; })) {
+                            if (statGroup.name == "Peak-Flow Statistics") {
                                 _this.queryEquationWeighting();
                             }
                         }
@@ -321,11 +321,11 @@ var StreamStats;
                                 regressionRegion.results.forEach(function (result, index) {
                                     if (result.code.includes("ACPK")) {
                                         inputs[rindex].name = "ACPK";
+                                        inputs[rindex].RegressionRegionName = regressionRegion.name.substring(0, regressionRegion.name.indexOf('Region') + 'Region'.length);
+                                        inputs[rindex].percentWeight = regressionRegion.percentWeight;
                                         if (result.value > 0) {
                                             inputs[rindex].code = regressionRegion.code;
                                             inputs[rindex].inUse = true;
-                                            inputs[rindex].RegressionRegionName = regressionRegion.name.substring(0, regressionRegion.name.indexOf('Region') + 'Region'.length);
-                                            inputs[rindex].percentWeight = regressionRegion.percentWeight;
                                             inputs[rindex].values[index] = {
                                                 value: result.value,
                                                 SEP: (result.sep) ? result.sep : null,
@@ -335,8 +335,6 @@ var StreamStats;
                                         else {
                                             inputs[rindex].code = null;
                                             inputs[rindex].inUse = false;
-                                            inputs[rindex].RegressionRegionName = null;
-                                            inputs[rindex].percentWeight = null;
                                             inputs[rindex].values[index] = {
                                                 value: null,
                                                 SEP: null,
@@ -346,11 +344,11 @@ var StreamStats;
                                     }
                                     else if (result.code.includes("BWPK")) {
                                         inputs[rindex].name = "BFPK";
+                                        inputs[rindex].RegressionRegionName = regressionRegion.name.substring(0, regressionRegion.name.indexOf('Region') + 'Region'.length);
+                                        inputs[rindex].percentWeight = regressionRegion.percentWeight;
                                         if (result.value > 0) {
                                             inputs[rindex].code = regressionRegion.code;
                                             inputs[rindex].inUse = true;
-                                            inputs[rindex].RegressionRegionName = regressionRegion.name.substring(0, regressionRegion.name.indexOf('Region') + 'Region'.length);
-                                            inputs[rindex].percentWeight = regressionRegion.percentWeight;
                                             inputs[rindex].values[index] = {
                                                 value: result.value,
                                                 SEP: (result.sep) ? result.sep : null,
@@ -360,8 +358,6 @@ var StreamStats;
                                         else {
                                             inputs[rindex].code = null;
                                             inputs[rindex].inUse = false;
-                                            inputs[rindex].RegressionRegionName = null;
-                                            inputs[rindex].percentWeight = null;
                                             inputs[rindex].values[index] = {
                                                 value: null,
                                                 SEP: null,
@@ -371,11 +367,11 @@ var StreamStats;
                                     }
                                     else if (result.code.includes("RSPK")) {
                                         inputs[rindex].name = "RSPK";
+                                        inputs[rindex].RegressionRegionName = regressionRegion.name.substring(0, regressionRegion.name.indexOf('Region') + 'Region'.length);
+                                        inputs[rindex].percentWeight = regressionRegion.percentWeight;
                                         if (result.value > 0) {
                                             inputs[rindex].code = regressionRegion.code;
                                             inputs[rindex].inUse = true;
-                                            inputs[rindex].RegressionRegionName = regressionRegion.name.substring(0, regressionRegion.name.indexOf('Region') + 'Region'.length);
-                                            inputs[rindex].percentWeight = regressionRegion.percentWeight;
                                             inputs[rindex].values[index] = {
                                                 value: result.value,
                                                 SEP: (result.sep) ? result.sep : null,
@@ -385,8 +381,6 @@ var StreamStats;
                                         else {
                                             inputs[rindex].code = null;
                                             inputs[rindex].inUse = false;
-                                            inputs[rindex].RegressionRegionName = null;
-                                            inputs[rindex].percentWeight = null;
                                             inputs[rindex].values[index] = {
                                                 value: null,
                                                 SEP: null,
@@ -396,11 +390,11 @@ var StreamStats;
                                     }
                                     else {
                                         inputs[rindex].name = "BCPK";
+                                        inputs[rindex].RegressionRegionName = regressionRegion.name.substring(0, regressionRegion.name.indexOf('Region') + 'Region'.length);
+                                        inputs[rindex].percentWeight = regressionRegion.percentWeight;
                                         if (result.value > 0) {
                                             units = result.unit;
                                             inputs[rindex].inUse = true;
-                                            inputs[rindex].RegressionRegionName = regressionRegion.name.substring(0, regressionRegion.name.indexOf('Region') + 'Region'.length);
-                                            inputs[rindex].percentWeight = regressionRegion.percentWeight;
                                             inputs[rindex].values[index] = {
                                                 value: result.value,
                                                 SEP: (result.sep) ? result.sep : null,
@@ -409,8 +403,6 @@ var StreamStats;
                                         }
                                         else {
                                             inputs[rindex].inUse = false;
-                                            inputs[rindex].RegressionRegionName = null;
-                                            inputs[rindex].percentWeight = null;
                                             inputs[rindex].values[index] = {
                                                 value: null,
                                                 SEP: null,
@@ -518,13 +510,21 @@ var StreamStats;
                                 PIltotal[i_1] = 0;
                             }
                             for (var i = 0; i < this.equationWeightingResults.length - 1; i++) {
-                                var Z = this.equationWeightingResults[i].Results.reduce(function (c, v) { return c.concat(v); }, []).map(function (o) { return o.Z; });
+                                var Z = [];
+                                var PIl = [];
+                                var PIu = [];
+                                var SEPZ = [];
+                                for (var j = 0; j < this.equationWeightingResults[i].Results.length; j++) {
+                                    if (this.equationWeightingResults[i].Results[j]) {
+                                        Z.push(this.equationWeightingResults[i].Results[j].Z);
+                                        PIl.push(this.equationWeightingResults[i].Results[j].PIl);
+                                        PIu.push(this.equationWeightingResults[i].Results[j].PIu);
+                                        SEPZ.push(this.equationWeightingResults[i].Results[j].SEPZ);
+                                    }
+                                }
                                 Z = Z.map(function (item) { return item * (inputs[i].percentWeight / 100); });
-                                var PIl = this.equationWeightingResults[i].Results.reduce(function (c, v) { return c.concat(v); }, []).map(function (o) { return o.PIl; });
                                 PIl = PIl.map(function (item) { return item * (inputs[i].percentWeight / 100); });
-                                var PIu = this.equationWeightingResults[i].Results.reduce(function (c, v) { return c.concat(v); }, []).map(function (o) { return o.PIu; });
                                 PIu = PIu.map(function (item) { return item * (inputs[i].percentWeight / 100); });
-                                var SEPZ = this.equationWeightingResults[i].Results.reduce(function (c, v) { return c.concat(v); }, []).map(function (o) { return o.SEPZ; });
                                 SEPZ = SEPZ.map(function (item) { return item * (inputs[i].percentWeight / 100); });
                                 Ztotal = Ztotal.map(function (num, idx) { return num + Z[idx]; });
                                 PIltotal = PIltotal.map(function (num, idx) { return num + PIl[idx]; });
