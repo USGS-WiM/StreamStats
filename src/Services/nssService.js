@@ -47,6 +47,7 @@ var StreamStats;
                 _this.regionservice = regionservice;
                 _this.eventManager = eventManager;
                 _this.equationWeightingResults = [];
+                _this.sum = [];
                 _this.toaster = toaster;
                 _this.modalService = modal;
                 _this._onSelectedStatisticsGroupChanged = new WiM.Event.Delegate();
@@ -316,7 +317,6 @@ var StreamStats;
                 });
             };
             nssService.prototype.queryEquationWeighting = function () {
-                console.log(this.selectedStatisticsGroupList);
                 var units = null;
                 var inputs = [];
                 this.equationWeightingDisclaimers = false;
@@ -447,7 +447,6 @@ var StreamStats;
                         "Content-Type": "application/json"
                     };
                     var rrCounter = 0;
-                    console.log(inputs);
                     while (rrCounter < rrCount.length) {
                         this.equationWeightingResults[rrCounter] = { "RR": inputs[rrCounter].RegressionRegionName, "Results": [] };
                         var lastIndex = inputs[0].values.length - 1;
@@ -490,7 +489,6 @@ var StreamStats;
                         "code3": inputs[2 * rrCount.length + rrCounter].values[lastIndex].code,
                         "code4": inputs[3 * rrCount.length + rrCounter].values[lastIndex].code
                     };
-                    console.log(input);
                     var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(input), headers);
                     this.Execute(request).then(function (response) {
                         _this.equationWeightingResults[rrCounter].Results[lastIndex] = {
@@ -502,7 +500,6 @@ var StreamStats;
                             SEPZ: response.data.SEPZ
                         };
                     }, function (error) {
-                        console.log(error);
                         _this.toaster.clear();
                         if (error.data && error.data.detail) {
                             _this.toaster.pop('error', "Cannot Methods Weight: " + error.data.detail, "HTTP request error", 0);
@@ -520,7 +517,41 @@ var StreamStats;
                         this.equationWeightingResults = this.equationWeightingResults.filter(function (obj) { return obj.Results.length > 0; });
                         if (rrCount.length > 1 && this.equationWeightingResults.length > 0) {
                             this.equationWeightingResults[rrCounter + 1] = { "RR": "Area Weighted", "Results": [] };
-                            console.log(this.equationWeightingResults);
+                            var Z, PIl, PIu, SEPZ;
+                            var PIltotal = new Array(inputs[0].values.length);
+                            var PIutotal = new Array(inputs[0].values.length);
+                            var SEPZtotal = new Array(inputs[0].values.length);
+                            var Ztotal = new Array(inputs[0].values.length);
+                            for (var i_1 = 0; i_1 < inputs[0].values.length; ++i_1) {
+                                Ztotal[i_1] = 0;
+                                SEPZtotal[i_1] = 0;
+                                PIutotal[i_1] = 0;
+                                PIltotal[i_1] = 0;
+                            }
+                            for (var i = 0; i < this.equationWeightingResults.length - 1; i++) {
+                                Z = this.equationWeightingResults[i].Results.reduce(function (c, v) { return c.concat(v); }, []).map(function (o) { return o.Z; });
+                                Z = Z.map(function (item) { return item * (inputs[i].percentWeight / 100); });
+                                PIl = this.equationWeightingResults[i].Results.reduce(function (c, v) { return c.concat(v); }, []).map(function (o) { return o.PIl; });
+                                PIl = PIl.map(function (item) { return item * (inputs[i].percentWeight / 100); });
+                                PIu = this.equationWeightingResults[i].Results.reduce(function (c, v) { return c.concat(v); }, []).map(function (o) { return o.PIu; });
+                                PIu = PIu.map(function (item) { return item * (inputs[i].percentWeight / 100); });
+                                SEPZ = this.equationWeightingResults[i].Results.reduce(function (c, v) { return c.concat(v); }, []).map(function (o) { return o.SEPZ; });
+                                SEPZ = SEPZ.map(function (item) { return item * (inputs[i].percentWeight / 100); });
+                                Ztotal = Ztotal.map(function (num, idx) { return num + Z[idx]; });
+                                PIltotal = PIltotal.map(function (num, idx) { return num + PIl[idx]; });
+                                PIutotal = PIutotal.map(function (num, idx) { return num + PIu[idx]; });
+                                SEPZtotal = SEPZtotal.map(function (num, idx) { return num + SEPZ[idx]; });
+                            }
+                            for (var i_2 = 0; i_2 < inputs[0].values.length; ++i_2) {
+                                this.equationWeightingResults[this.equationWeightingResults.length - 1].Results[i_2] = {
+                                    Name: inputs[1 * rrCount.length + rrCounter].values[i_2].code,
+                                    Z: Ztotal[i_2],
+                                    Unit: units,
+                                    PIl: PIltotal[i_2],
+                                    PIu: PIutotal[i_2],
+                                    SEPZ: SEPZtotal[i_2]
+                                };
+                            }
                         }
                     }
                 }

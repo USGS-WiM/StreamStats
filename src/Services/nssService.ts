@@ -149,6 +149,7 @@ module StreamStats.Services {
         public loadingStatisticsGroup: boolean;
         public selectedStatisticsGroupList: Array<IStatisticsGroup>;
         public equationWeightingResults: Array<IEquationWeightingResults> = [];
+        public sum = [];
         public equationWeightingDisclaimers: boolean;
         public canUpdate: boolean;
         public toaster: any;
@@ -510,23 +511,6 @@ module StreamStats.Services {
         }
 
         public queryEquationWeighting() {
-            console.log(this.selectedStatisticsGroupList);
-            // If not over two regression regions 
-                // send regression region BC AC BF and RS to the weighting services and get response
-                // send single response back to report 
-                // loop around all AEP stats
-
-            // If over two regression regions - area weight
-                // send 1st regression regions BC AC BF and RS to the weighting services and get response
-                // send 2nd regression regions BC AC BF and RS to the weighting services and get response
-                // area weight response from 1st and 2nd regression region 
-                // send all three results back to report
-                // loop around all AEP stats
-
-            //Still Need to Test
-                // three regression regions?
-                // weight equations
-
             var units = null;
             var inputs: Array<IEquationWeightingInputs> = [];
             this.equationWeightingDisclaimers = false;
@@ -639,7 +623,6 @@ module StreamStats.Services {
                 }
             });
 
-
             var rrCount = inputs.filter(function(el) { return el.name == "BCPK"; }); // get number of regression regions in delinated basin
             var temp = inputs.filter(function (obj) { return obj.inUse == true; }); // get only parameters being used in weighting
             var weightCount = temp.length/rrCount.length; // get number of values to be weighted 
@@ -649,7 +632,7 @@ module StreamStats.Services {
             for (var i = 0; i < inputs.length; i++) { inputs[i].values.sort(function(a, b) {  return a.code.localeCompare(b.code) }); }
 
             if (weightCount >= 2) { // If there are two or more values we can send to the weighting service
-                // set up URL
+                // set up URL and counter
                 var url = configuration.baseurls['WeightingServices'] +  '/weightest/'; 
                 var headers = {
                     "accept": "application/json",
@@ -657,9 +640,8 @@ module StreamStats.Services {
                 };
                 let rrCounter = 0;
 
-                console.log(inputs)
                 while (rrCounter < rrCount.length) { 
-                    this.equationWeightingResults[rrCounter]={ "RR": inputs[rrCounter].RegressionRegionName,"Results":[] };
+                    this.equationWeightingResults[rrCounter] = { "RR": inputs[rrCounter].RegressionRegionName,"Results":[] };
                     let lastIndex = inputs[0].values.length - 1;
                     this.recursiveAreaWeightSubscription(inputs[0].values, lastIndex, inputs, url, headers, units, rrCount, rrCounter);
                     rrCounter++;
@@ -672,12 +654,12 @@ module StreamStats.Services {
             }
         }
 
-
         public recursiveAreaWeightSubscription(parentLevelIdArray, lastIndex, inputs, url, headers, units, rrCount, rrCounter) {
             if (lastIndex >= 0) {
                 var input = {};
                 var code; 
-                // get code to use for service call
+
+                // get regression region code to use for service call
                 if (inputs[0 * rrCount.length + rrCounter].code) code = inputs[0 * rrCount.length + rrCounter].code;
                 if (inputs[1 * rrCount.length + rrCounter].code) code = inputs[1 * rrCount.length + rrCounter].code;
                 if (inputs[2 * rrCount.length + rrCounter].code) code = inputs[2 * rrCount.length + rrCounter].code;
@@ -700,7 +682,6 @@ module StreamStats.Services {
                     "code4": inputs[3 * rrCount.length + rrCounter].values[lastIndex].code
                 };
 
-                console.log(input)
                 var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(input), headers);
                 this.Execute(request).then((response: any) => {
                     this.equationWeightingResults[rrCounter].Results[lastIndex] = {
@@ -712,7 +693,6 @@ module StreamStats.Services {
                         SEPZ: response.data.SEPZ
                     };
                 },(error) => {
-                    console.log(error)
                     this.toaster.clear();
                     if (error.data && error.data.detail) { this.toaster.pop('error', "Cannot Methods Weight: " + error.data.detail, "HTTP request error", 0); }
                     else { this.toaster.pop('error', 'Cannot Methods Weight'); }
@@ -725,7 +705,40 @@ module StreamStats.Services {
                     this.equationWeightingResults = this.equationWeightingResults.filter(function (obj) { return obj.Results.length > 0; }); // remove results if they failed and returned nothing
                     if (rrCount.length > 1 && this.equationWeightingResults.length > 0) { // need to area weight reuslts
                         this.equationWeightingResults[rrCounter + 1]={ "RR": "Area Weighted","Results":[] };
-                        console.log(this.equationWeightingResults)
+                        // Weight Equations 
+                        var Z, PIl, PIu, SEPZ;
+                        var PIltotal = new Array(inputs[0].values.length); 
+                        var PIutotal = new Array(inputs[0].values.length);
+                        var SEPZtotal = new Array(inputs[0].values.length);
+                        var Ztotal = new Array(inputs[0].values.length); 
+                        for (let i=0; i<inputs[0].values.length; ++i) { Ztotal[i] = 0; SEPZtotal[i] = 0; PIutotal[i] = 0; PIltotal[i] = 0; }
+
+                        for (var i = 0; i < this.equationWeightingResults.length - 1; i++) { 
+                            Z = this.equationWeightingResults[i].Results.reduce((c, v) => c.concat(v), []).map(o => o.Z);
+                            Z = Z.map(function(item) { return item*(inputs[i].percentWeight/100) })
+                            PIl = this.equationWeightingResults[i].Results.reduce((c, v) => c.concat(v), []).map(o => o.PIl);
+                            PIl = PIl.map(function(item) { return item*(inputs[i].percentWeight/100) })
+                            PIu = this.equationWeightingResults[i].Results.reduce((c, v) => c.concat(v), []).map(o => o.PIu);
+                            PIu = PIu.map(function(item) { return item*(inputs[i].percentWeight/100) })
+                            SEPZ = this.equationWeightingResults[i].Results.reduce((c, v) => c.concat(v), []).map(o => o.SEPZ);
+                            SEPZ = SEPZ.map(function(item) { return item*(inputs[i].percentWeight/100) })
+
+                            Ztotal = Ztotal.map(function (num, idx) { return num + Z[idx]; });
+                            PIltotal = PIltotal.map(function (num, idx) { return num + PIl[idx]; });
+                            PIutotal = PIutotal.map(function (num, idx) { return num + PIu[idx]; });
+                            SEPZtotal = SEPZtotal.map(function (num, idx) { return num + SEPZ[idx]; });
+                        }
+
+                        for (let i=0; i<inputs[0].values.length; ++i) {
+                            this.equationWeightingResults[this.equationWeightingResults.length - 1].Results[i] = {
+                                Name: inputs[1 * rrCount.length + rrCounter].values[i].code,      
+                                Z: Ztotal[i],
+                                Unit: units,
+                                PIl: PIltotal[i],
+                                PIu: PIutotal[i],
+                                SEPZ: SEPZtotal[i]
+                            };
+                        }
                     } // else no area weighting 
                 }
             }
