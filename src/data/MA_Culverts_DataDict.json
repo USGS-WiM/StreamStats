@@ -1,5 +1,20 @@
 [
       {
+        "Name": "Assessed",
+        "Code": "Assessed",
+        "Description": "NAACC Stream Crossing Assessment, 0=No and 1=Yes",
+        "Units": "",
+        "Accuracy": "",
+        "Field type": "",
+        "NAACC Field": "Yes",
+        "Maximum Extent Practicable Culvert Design ": "No",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "No",
+        "Matchcode": "None",
+        "Citation": ""
+      },
+      {
         "Name": "NAACC Survey ID",
         "Code": "SurveyID",
         "Description": "NAACC Survey Identification",
@@ -11,7 +26,7 @@
         "10%-AEP Design Flow Culvert Design": "No",
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
-        "Matchcode": "None",
+        "Matchcode": "SiteInfo",
         "Citation": ""
       },
       {
@@ -26,7 +41,7 @@
         "10%-AEP Design Flow Culvert Design": "No",
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
-        "Matchcode": "None",
+        "Matchcode": "SiteInfo",
         "Citation": ""
       },
       {
@@ -41,6 +56,111 @@
         "10%-AEP Design Flow Culvert Design": "No",
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
+        "Matchcode": "SiteInfo",
+        "Citation": ""
+      },
+      {
+        "Name": "AopNaacc",
+        "Code": "AopNaacc",
+        "Description": "NAACC Stream Crossing Classification (No AOP = 1, Reduced AOP = 2, and Full AOP = 3)",
+        "Units": "",
+        "Accuracy": "",
+        "Field type": "",
+        "NAACC Field": "Yes",
+        "Maximum Extent Practicable Culvert Design ": "No",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "No",
+        "Matchcode": "None",
+        "Citation": ""
+      },
+      {
+        "Name": "AqScNaac",
+        "Code": "AqScNaac",
+        "Description": "NAACC Aquatic Passability Score (0.00 - 1.00) ",
+        "Units": "",
+        "Accuracy": "",
+        "Field type": "",
+        "NAACC Field": "Yes",
+        "Maximum Extent Practicable Culvert Design ": "No",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "No",
+        "Matchcode": "None",
+        "Citation": ""
+      },
+      {
+        "Name": "DateObsd",
+        "Code": "DateObsd",
+        "Description": "Date of Stream Crossing Assessment",
+        "Units": "",
+        "Accuracy": "",
+        "Field type": "",
+        "NAACC Field": "Yes",
+        "Maximum Extent Practicable Culvert Design ": "No",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "No",
+        "Matchcode": "None",
+        "Citation": ""
+      },
+      {
+        "Name": "Eval",
+        "Code": "Eval",
+        "Description": "NAACC Aquatic Passability Evaluation (Severe barrier = 0-0.19, Significant barrier = 0.2-0.39, Moderate barrier = 0.4-0.59, Minor barrier = 0.6-0.79, Insignificant barrier = 0.8-0.99, No barrier = 1.0)",
+        "Units": "",
+        "Accuracy": "",
+        "Field type": "",
+        "NAACC Field": "Yes",
+        "Maximum Extent Practicable Culvert Design ": "No",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "No",
+        "Matchcode": "None",
+        "Citation": ""
+      },
+      {
+        "Name": "GPSx",
+        "Code": "GPSx",
+        "Description": "NAACC GPS longitude",
+        "Units": "Decimal Degrees",
+        "Accuracy": "",
+        "Field type": "",
+        "NAACC Field": "Yes",
+        "Maximum Extent Practicable Culvert Design ": "No",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "No",
+        "Matchcode": "None",
+        "Citation": ""
+      },
+      {
+        "Name": "GPSy",
+        "Code": "GPSy",
+        "Description": "NAACC GPS latitude",
+        "Units": "Decimal Degrees",
+        "Accuracy": "",
+        "Field type": "",
+        "NAACC Field": "Yes",
+        "Maximum Extent Practicable Culvert Design ": "No",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "No",
+        "Matchcode": "None",
+        "Citation": ""
+      },
+      {
+        "Name": "LastUpdat",
+        "Code": "LastUpdat",
+        "Description": "Late date NAACC site file updated",
+        "Units": "",
+        "Accuracy": "",
+        "Field type": "",
+        "NAACC Field": "Yes",
+        "Maximum Extent Practicable Culvert Design ": "No",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "No",
         "Matchcode": "None",
         "Citation": ""
       },
@@ -56,6 +176,21 @@
         "10%-AEP Design Flow Culvert Design": "No",
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
+        "Matchcode": "SiteInfo",
+        "Citation": ""
+      },
+      {
+        "Name": "CrState",
+        "Code": "CrState",
+        "Description": "NAACC State name",
+        "Units": "",
+        "Accuracy": "",
+        "Field type": "",
+        "NAACC Field": "Yes",
+        "Maximum Extent Practicable Culvert Design ": "No",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "No",
         "Matchcode": "None",
         "Citation": ""
       },
@@ -75,6 +210,51 @@
         "Citation": ""
       },
       {
+        "Name": "CrTown",
+        "Code": "CrTown",
+        "Description": "NAACC Community name",
+        "Units": "",
+        "Accuracy": "",
+        "Field type": "",
+        "NAACC Field": "Yes",
+        "Maximum Extent Practicable Culvert Design ": "No",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "No",
+        "Matchcode": "None",
+        "Citation": ""
+      },
+      {
+        "Name": "Latitude",
+        "Code": "Latitude",
+        "Description": "",
+        "Units": "",
+        "Accuracy": "",
+        "Field type": "",
+        "NAACC Field": "Yes",
+        "Maximum Extent Practicable Culvert Design ": "No",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "No",
+        "Matchcode": "None",
+        "Citation": ""
+      },
+      {
+        "Name": "Longitud",
+        "Code": "Longitud",
+        "Description": "",
+        "Units": "",
+        "Accuracy": "",
+        "Field type": "",
+        "NAACC Field": "Yes",
+        "Maximum Extent Practicable Culvert Design ": "No",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "No",
+        "Matchcode": "None",
+        "Citation": ""
+      },
+      {
         "Name": "Town",
         "Code": "gTown",
         "Description": "",
@@ -86,6 +266,66 @@
         "10%-AEP Design Flow Culvert Design": "No",
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
+        "Matchcode": "SiteInfo",
+        "Citation": ""
+      },
+      {
+        "Name": "NHD HUC8",
+        "Code": "gWshed",
+        "Description": "NHD HUC8 watershed name",
+        "Units": "",
+        "Accuracy": "",
+        "Field type": "",
+        "NAACC Field": "Yes",
+        "Maximum Extent Practicable Culvert Design ": "No",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "No",
+        "Matchcode": "None",
+        "Citation": ""
+      },
+      {
+        "Name": "gState",
+        "Code": "gState",
+        "Description": "",
+        "Units": "",
+        "Accuracy": "",
+        "Field type": "",
+        "NAACC Field": "Yes",
+        "Maximum Extent Practicable Culvert Design ": "No",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "No",
+        "Matchcode": "None",
+        "Citation": ""
+      },
+      {
+        "Name": "NoCross",
+        "Code": "NoCross",
+        "Description": "",
+        "Units": "",
+        "Accuracy": "",
+        "Field type": "",
+        "NAACC Field": "Yes",
+        "Maximum Extent Practicable Culvert Design ": "No",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "No",
+        "Matchcode": "None",
+        "Citation": ""
+      },
+      {
+        "Name": "Approved",
+        "Code": "Approved",
+        "Description": "",
+        "Units": "",
+        "Accuracy": "",
+        "Field type": "",
+        "NAACC Field": "Yes",
+        "Maximum Extent Practicable Culvert Design ": "No",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "No",
         "Matchcode": "None",
         "Citation": ""
       },
@@ -101,7 +341,7 @@
         "10%-AEP Design Flow Culvert Design": "No",
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
-        "Matchcode": "None",
+        "Matchcode": "BasinChar",
         "Citation": ""
       },
       {
@@ -116,7 +356,7 @@
         "10%-AEP Design Flow Culvert Design": "No",
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
-        "Matchcode": "None",
+        "Matchcode": "BasinChar",
         "Citation": "USGS Zarriello reports"
       },
       {
@@ -131,7 +371,7 @@
         "10%-AEP Design Flow Culvert Design": "No",
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
-        "Matchcode": "None",
+        "Matchcode": "BasinChar",
         "Citation": "USGS Zarriello reports"
       },
       {
@@ -146,7 +386,7 @@
         "10%-AEP Design Flow Culvert Design": "No",
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
-        "Matchcode": "None",
+        "Matchcode": "BasinChar",
         "Citation": "USGS Zarriello reports"
       },
       {
@@ -161,7 +401,7 @@
         "10%-AEP Design Flow Culvert Design": "No",
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
-        "Matchcode": "STATS",
+        "Matchcode": "PeakflowStats",
         "Citation": ""
       },
       {
@@ -176,7 +416,7 @@
         "10%-AEP Design Flow Culvert Design": "No",
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
-        "Matchcode": "STATS",
+        "Matchcode": "PeakflowStats",
         "Citation": ""
       },
       {
@@ -191,7 +431,7 @@
         "10%-AEP Design Flow Culvert Design": "No",
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
-        "Matchcode": "STATS",
+        "Matchcode": "PeakflowStats",
         "Citation": ""
       },
       {
@@ -206,7 +446,7 @@
         "10%-AEP Design Flow Culvert Design": "No",
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
-        "Matchcode": "STATS",
+        "Matchcode": "PeakflowStats",
         "Citation": ""
       },
       {
@@ -221,7 +461,7 @@
         "10%-AEP Design Flow Culvert Design": "No",
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
-        "Matchcode": "STATS",
+        "Matchcode": "BankfullStats",
         "Citation": "USGS Zarriello reports"
       },
       {
@@ -236,7 +476,7 @@
         "10%-AEP Design Flow Culvert Design": "No",
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
-        "Matchcode": "STATS",
+        "Matchcode": "BankfullStats",
         "Citation": "USGS Zarriello reports"
       },
       {
@@ -251,7 +491,7 @@
         "10%-AEP Design Flow Culvert Design": "No",
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
-        "Matchcode": "STATS",
+        "Matchcode": "BankfullStats",
         "Citation": "USGS Zarriello reports"
       },
       {
@@ -266,7 +506,7 @@
         "10%-AEP Design Flow Culvert Design": "No",
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
-        "Matchcode": "None",
+        "Matchcode": "StreamHabitat",
         "Citation": ""
       },
       {
@@ -281,7 +521,7 @@
         "10%-AEP Design Flow Culvert Design": "No",
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
-        "Matchcode": "None",
+        "Matchcode": "StreamHabitat",
         "Citation": ""
       },
       {
@@ -296,7 +536,7 @@
         "10%-AEP Design Flow Culvert Design": "No",
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
-        "Matchcode": "None",
+        "Matchcode": "StreamHabitat",
         "Citation": ""
       },
       {
@@ -311,7 +551,7 @@
         "10%-AEP Design Flow Culvert Design": "No",
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
-        "Matchcode": "None",
+        "Matchcode": "StreamHabitat",
         "Citation": ""
       },
       {
@@ -326,7 +566,7 @@
         "10%-AEP Design Flow Culvert Design": "No",
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
-        "Matchcode": "None",
+        "Matchcode": "StreamHabitat",
         "Citation": ""
       },
       {
@@ -341,7 +581,7 @@
         "10%-AEP Design Flow Culvert Design": "No",
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
-        "Matchcode": "None",
+        "Matchcode": "StreamHabitat",
         "Citation": ""
       },
       {
@@ -356,7 +596,7 @@
         "10%-AEP Design Flow Culvert Design": "No",
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
-        "Matchcode": "None",
+        "Matchcode": "StreamHabitat",
         "Citation": ""
       },
       {
@@ -371,7 +611,7 @@
         "10%-AEP Design Flow Culvert Design": "No",
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
-        "Matchcode": "None",
+        "Matchcode": "StreamHabitat",
         "Citation": ""
       },
       {
@@ -386,7 +626,7 @@
         "10%-AEP Design Flow Culvert Design": "No",
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
-        "Matchcode": "None",
+        "Matchcode": "StreamHabitat",
         "Citation": ""
       },
       {
@@ -401,7 +641,7 @@
         "10%-AEP Design Flow Culvert Design": "No",
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
-        "Matchcode": "None",
+        "Matchcode": "StreamHabitat",
         "Citation": ""
       },
       {
@@ -416,13 +656,13 @@
         "10%-AEP Design Flow Culvert Design": "No",
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
-        "Matchcode": "None",
+        "Matchcode": "StreamHabitat",
         "Citation": ""
       },
       {
-        "Name": "MassDOT road functional classification ",
+        "Name": "Roadway Classification",
         "Code": "HWYCLASS",
-        "Description": "MassDOT highway classification code values 0-7 classification codes TBD",
+        "Description": "Roadway classification code values 0-7 classification codes TBD",
         "Units": "",
         "Accuracy": "",
         "Field type": "short integer",
@@ -431,13 +671,13 @@
         "10%-AEP Design Flow Culvert Design": "No",
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
-        "Matchcode": "None",
+        "Matchcode": "RoadCrossing",
         "Citation": ""
       },
       {
-        "Name": "MassDOT associated hydraulic design flow ",
+        "Name": "Hydraulic Design Flood",
         "Code": "HWYHDF",
-        "Description": "Hydraulic Design Flood Annual Chance (%) (Annual Exceedence Probability), 10=10%AEP, 25=4% AEP, 50=2%AEP, 100=1%AEP",
+        "Description": "Hydraulic Design Flood Recurrence Interval, 10=10-yr, 25=25-yr, 50=50-yr, 100=100-yr",
         "Units": "",
         "Accuracy": "",
         "Field type": "long integer",
@@ -446,7 +686,7 @@
         "10%-AEP Design Flow Culvert Design": "No",
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
-        "Matchcode": "None",
+        "Matchcode": "RoadCrossing",
         "Citation": ""
       },
       {
