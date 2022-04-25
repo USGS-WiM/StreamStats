@@ -491,6 +491,11 @@ module StreamStats.Controllers {
                 }, margins);
         }
 
+        public downloadGeomFileZip() {
+            var zipfile = this.studyAreaService.culvertAttachments.url;
+            window.open(zipfile, '_self');
+        }
+
         public ActivateGraphs(result: any) {
             // TODO: fix flow graph yaxis label - gets overlapped with tick labels sometimes
             result.graphdata = {

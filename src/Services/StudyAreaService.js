@@ -204,6 +204,18 @@ var StreamStats;
                 }).finally(function () {
                 });
             };
+            StudyAreaService.prototype.getCulvertAttachments = function (surveyID, regionIndex) {
+                var _this = this;
+                var url = ('https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/Massachusetts_Stream_Crossing_Project_Data/FeatureServer/0' + configuration.queryparams['CulvertGeometryFiles'] + '&token=' + configuration.regions[regionIndex].Layers.Culverts.layerOptions.token).format(surveyID);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                this.Execute(request).then(function (response) {
+                    _this.culvertAttachments = { filename: surveyID, url: response.data.attachmentGroups[0].attachmentInfos[0].url + "?token=" + configuration.regions[regionIndex].Layers.Culverts.layerOptions.token };
+                }, function (error) {
+                    _this.toaster.clear();
+                    _this.toaster.pop("error", "There was an HTTP error with the geometry file zip request", "", 0);
+                }).finally(function () {
+                });
+            };
             StudyAreaService.prototype.loadStudyBoundary = function () {
                 var _this = this;
                 this.toaster.pop("wait", "Delineating Basin", "Please wait...", 0);
