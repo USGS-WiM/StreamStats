@@ -304,7 +304,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr ng-repeat="stat in rr.Results track by $index">
+                                    <tr ng-repeat="stat in rr.Results | orderBy:'Name' track by $index ">
                                         <td>{{stat.Name}}</td>
                                         <td>{{stat.Z.toUSGSvalue()}}</td> 
                                         <td>{{stat.Unit.abbr}}</td> 

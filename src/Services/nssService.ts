@@ -665,44 +665,44 @@ module StreamStats.Services {
                 if (rrCount.length == rrCounter + 1) { //Checks if we are done weighting all regression regions
                     this.equationWeightingResults = this.equationWeightingResults.filter(function (obj) { return obj.Results.length > 0; }); // remove results if they failed and returned nothing
                     if (rrCount.length > 1 && this.equationWeightingResults.length > 0) { //need to area weight results
-                        this.equationWeightingResults[rrCounter + 1]={ "RR": "Area Weighted","Results":[] };
-                        var PIltotal = new Array(inputs[0].values.length); 
-                        var PIutotal = new Array(inputs[0].values.length);
-                        var SEPZtotal = new Array(inputs[0].values.length);
-                        var Ztotal = new Array(inputs[0].values.length); 
-                        for (let i=0; i<inputs[0].values.length; ++i) { Ztotal[i] = 0; SEPZtotal[i] = 0; PIutotal[i] = 0; PIltotal[i] = 0; }
+                        setTimeout(() => {
+                            this.equationWeightingResults[rrCounter + 1] = { "RR": "Area Weighted","Results":[] };
+                            var PIltotal = new Array(inputs[0].values.length); 
+                            var PIutotal = new Array(inputs[0].values.length);
+                            var SEPZtotal = new Array(inputs[0].values.length);
+                            var Ztotal = new Array(inputs[0].values.length); 
+                            for (let i=0; i<inputs[0].values.length; ++i) { Ztotal[i] = 0; SEPZtotal[i] = 0; PIutotal[i] = 0; PIltotal[i] = 0; }
 
-                        for (var i = 0; i < this.equationWeightingResults.length - 1; i++) { // area weighting calculations
-                            var Z = []; var PIl = []; var PIu = []; var SEPZ = [];
-                            for (let j=0; j<this.equationWeightingResults[i].Results.length; j++) {
-                                if (this.equationWeightingResults[i].Results[j]) {
+                            for (var i = 0; i < this.equationWeightingResults.length - 1; i++) { // area weighting calculations
+                                var Z = []; var PIl = []; var PIu = []; var SEPZ = [];
+                                for (let j=0; j<this.equationWeightingResults[i].Results.length; j++) {
                                     Z.push(this.equationWeightingResults[i].Results[j].Z);
                                     PIl.push(this.equationWeightingResults[i].Results[j].PIl);
                                     PIu.push(this.equationWeightingResults[i].Results[j].PIu);
                                     SEPZ.push(this.equationWeightingResults[i].Results[j].SEPZ);
                                 }
+                                Z = Z.map(function(item) { return item*(inputs[i].percentWeight/100) });
+                                PIl = PIl.map(function(item) { return item*(inputs[i].percentWeight/100) });
+                                PIu = PIu.map(function(item) { return item*(inputs[i].percentWeight/100) });
+                                SEPZ = SEPZ.map(function(item) { return item*(inputs[i].percentWeight/100) });
+
+                                Ztotal = Ztotal.map(function (num, idx) { return num + Z[idx]; });
+                                PIltotal = PIltotal.map(function (num, idx) { return num + PIl[idx]; });
+                                PIutotal = PIutotal.map(function (num, idx) { return num + PIu[idx]; });
+                                SEPZtotal = SEPZtotal.map(function (num, idx) { return num + SEPZ[idx]; });
                             }
-                            Z = Z.map(function(item) { return item*(inputs[i].percentWeight/100) });
-                            PIl = PIl.map(function(item) { return item*(inputs[i].percentWeight/100) });
-                            PIu = PIu.map(function(item) { return item*(inputs[i].percentWeight/100) });
-                            SEPZ = SEPZ.map(function(item) { return item*(inputs[i].percentWeight/100) });
 
-                            Ztotal = Ztotal.map(function (num, idx) { return num + Z[idx]; });
-                            PIltotal = PIltotal.map(function (num, idx) { return num + PIl[idx]; });
-                            PIutotal = PIutotal.map(function (num, idx) { return num + PIu[idx]; });
-                            SEPZtotal = SEPZtotal.map(function (num, idx) { return num + SEPZ[idx]; });
-                        }
-
-                        for (let i=0; i<inputs[0].values.length; ++i) {
-                            this.equationWeightingResults[this.equationWeightingResults.length - 1].Results[i] = {
-                                Name: inputs[1 * rrCount.length + rrCounter].values[i].code,      
-                                Z: Ztotal[i],
-                                Unit: units,
-                                PIl: PIltotal[i],
-                                PIu: PIutotal[i],
-                                SEPZ: SEPZtotal[i]
-                            };
-                        }
+                            for (let i=0; i<inputs[0].values.length; ++i) {
+                                this.equationWeightingResults[this.equationWeightingResults.length - 1].Results[i] = {
+                                    Name: inputs[1 * rrCount.length + rrCounter].values[i].code,      
+                                    Z: Ztotal[i],
+                                    Unit: units,
+                                    PIl: PIltotal[i],
+                                    PIu: PIutotal[i],
+                                    SEPZ: SEPZtotal[i]
+                                };
+                            }
+                        }, 75);
                     } // else no area weighting 
                 }
             }

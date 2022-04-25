@@ -498,49 +498,49 @@ var StreamStats;
                     if (rrCount.length == rrCounter + 1) {
                         this.equationWeightingResults = this.equationWeightingResults.filter(function (obj) { return obj.Results.length > 0; });
                         if (rrCount.length > 1 && this.equationWeightingResults.length > 0) {
-                            this.equationWeightingResults[rrCounter + 1] = { "RR": "Area Weighted", "Results": [] };
-                            var PIltotal = new Array(inputs[0].values.length);
-                            var PIutotal = new Array(inputs[0].values.length);
-                            var SEPZtotal = new Array(inputs[0].values.length);
-                            var Ztotal = new Array(inputs[0].values.length);
-                            for (var i_1 = 0; i_1 < inputs[0].values.length; ++i_1) {
-                                Ztotal[i_1] = 0;
-                                SEPZtotal[i_1] = 0;
-                                PIutotal[i_1] = 0;
-                                PIltotal[i_1] = 0;
-                            }
-                            for (var i = 0; i < this.equationWeightingResults.length - 1; i++) {
-                                var Z = [];
-                                var PIl = [];
-                                var PIu = [];
-                                var SEPZ = [];
-                                for (var j = 0; j < this.equationWeightingResults[i].Results.length; j++) {
-                                    if (this.equationWeightingResults[i].Results[j]) {
-                                        Z.push(this.equationWeightingResults[i].Results[j].Z);
-                                        PIl.push(this.equationWeightingResults[i].Results[j].PIl);
-                                        PIu.push(this.equationWeightingResults[i].Results[j].PIu);
-                                        SEPZ.push(this.equationWeightingResults[i].Results[j].SEPZ);
-                                    }
+                            setTimeout(function () {
+                                _this.equationWeightingResults[rrCounter + 1] = { "RR": "Area Weighted", "Results": [] };
+                                var PIltotal = new Array(inputs[0].values.length);
+                                var PIutotal = new Array(inputs[0].values.length);
+                                var SEPZtotal = new Array(inputs[0].values.length);
+                                var Ztotal = new Array(inputs[0].values.length);
+                                for (var i_1 = 0; i_1 < inputs[0].values.length; ++i_1) {
+                                    Ztotal[i_1] = 0;
+                                    SEPZtotal[i_1] = 0;
+                                    PIutotal[i_1] = 0;
+                                    PIltotal[i_1] = 0;
                                 }
-                                Z = Z.map(function (item) { return item * (inputs[i].percentWeight / 100); });
-                                PIl = PIl.map(function (item) { return item * (inputs[i].percentWeight / 100); });
-                                PIu = PIu.map(function (item) { return item * (inputs[i].percentWeight / 100); });
-                                SEPZ = SEPZ.map(function (item) { return item * (inputs[i].percentWeight / 100); });
-                                Ztotal = Ztotal.map(function (num, idx) { return num + Z[idx]; });
-                                PIltotal = PIltotal.map(function (num, idx) { return num + PIl[idx]; });
-                                PIutotal = PIutotal.map(function (num, idx) { return num + PIu[idx]; });
-                                SEPZtotal = SEPZtotal.map(function (num, idx) { return num + SEPZ[idx]; });
-                            }
-                            for (var i_2 = 0; i_2 < inputs[0].values.length; ++i_2) {
-                                this.equationWeightingResults[this.equationWeightingResults.length - 1].Results[i_2] = {
-                                    Name: inputs[1 * rrCount.length + rrCounter].values[i_2].code,
-                                    Z: Ztotal[i_2],
-                                    Unit: units,
-                                    PIl: PIltotal[i_2],
-                                    PIu: PIutotal[i_2],
-                                    SEPZ: SEPZtotal[i_2]
-                                };
-                            }
+                                for (var i = 0; i < _this.equationWeightingResults.length - 1; i++) {
+                                    var Z = [];
+                                    var PIl = [];
+                                    var PIu = [];
+                                    var SEPZ = [];
+                                    for (var j = 0; j < _this.equationWeightingResults[i].Results.length; j++) {
+                                        Z.push(_this.equationWeightingResults[i].Results[j].Z);
+                                        PIl.push(_this.equationWeightingResults[i].Results[j].PIl);
+                                        PIu.push(_this.equationWeightingResults[i].Results[j].PIu);
+                                        SEPZ.push(_this.equationWeightingResults[i].Results[j].SEPZ);
+                                    }
+                                    Z = Z.map(function (item) { return item * (inputs[i].percentWeight / 100); });
+                                    PIl = PIl.map(function (item) { return item * (inputs[i].percentWeight / 100); });
+                                    PIu = PIu.map(function (item) { return item * (inputs[i].percentWeight / 100); });
+                                    SEPZ = SEPZ.map(function (item) { return item * (inputs[i].percentWeight / 100); });
+                                    Ztotal = Ztotal.map(function (num, idx) { return num + Z[idx]; });
+                                    PIltotal = PIltotal.map(function (num, idx) { return num + PIl[idx]; });
+                                    PIutotal = PIutotal.map(function (num, idx) { return num + PIu[idx]; });
+                                    SEPZtotal = SEPZtotal.map(function (num, idx) { return num + SEPZ[idx]; });
+                                }
+                                for (var i_2 = 0; i_2 < inputs[0].values.length; ++i_2) {
+                                    _this.equationWeightingResults[_this.equationWeightingResults.length - 1].Results[i_2] = {
+                                        Name: inputs[1 * rrCount.length + rrCounter].values[i_2].code,
+                                        Z: Ztotal[i_2],
+                                        Unit: units,
+                                        PIl: PIltotal[i_2],
+                                        PIu: PIutotal[i_2],
+                                        SEPZ: SEPZtotal[i_2]
+                                    };
+                                }
+                            }, 75);
                         }
                     }
                 }
