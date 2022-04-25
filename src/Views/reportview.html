@@ -178,6 +178,39 @@
                         </div>
 
                         <!-- Culvert table -->
+                        <!-- Site Information -->
+                        <div class="well well-sm">
+                            <h3>Site Information</h3>
+                            <table id="scsParamTable" class="mainParamTable table table-condensed">
+                                <table id="mainParamTable" class="mainParamTable table table-condensed">
+                                    <thead class="param-table">
+                                        <tr>
+                                            <th>Parameter Name</th>
+                                            <th>Value</th>
+                                            <th>Unit</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList"  ng-if="parameter.code.substring(0, 8) ==='SiteInfo'">
+                                            <td>{{parameter.name}}
+                                                <i ng-show="parameter.description !== ''" ng-mouseover="showTooltip = true" ng-mouseleave="showTooltip = false" class="fa fa-info-circle"></i>
+                                                <span ng-show="showTooltip" class="culvert-tooltip">
+                                                    <span ng-bind="parameter.description"></span>
+                                                </span>
+                                            </td>
+                                            <td>{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
+                                            <td ng-bind="parameter.unit"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </table>
+
+                            <h4>Site Information Citations</h4>
+                            <div ng-repeat="citation in vm.studyAreaService.culvertCitations" ng-if="citation.code.substring(0, 8) === 'SiteInfo'">
+                                <span>{{citation.citation}}</span>
+                            </div>
+                        </div>
+                        
                         <!-- Basin Characteristics -->
                         <div class="well well-sm">
                             <h3>Basin Characteristics</h3>
@@ -191,7 +224,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList"  ng-if="parameter.code.substring(0, 2) !=='BC' && parameter.code.substring(0, 2) !=='PC' && parameter.code.substring(0, 2) !=='AC' && parameter.code.substring(0, 5) !== 'STATS'">
+                                        <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList"  ng-if="parameter.code.substring(0, 9) ==='BasinChar'">
                                             <td>{{parameter.name}}
                                                 <i ng-show="parameter.description !== ''" ng-mouseover="showTooltip = true" ng-mouseleave="showTooltip = false" class="fa fa-info-circle"></i>
                                                 <span ng-show="showTooltip" class="culvert-tooltip">
@@ -206,14 +239,14 @@
                             </table>
 
                             <h4>Basin Characteristics Citations</h4>
-                            <div ng-repeat="citation in vm.studyAreaService.culvertCitations" ng-if="citation.code.substring(0, 2) !=='BC' && citation.code.substring(0, 2) !=='PC' && citation.code.substring(0, 2) !=='AC' && citation.code.substring(0, 5) !== 'STATS'">
+                            <div ng-repeat="citation in vm.studyAreaService.culvertCitations" ng-if="citation.code.substring(0, 9) ==='BasinChar'">
                                 <span>{{citation.citation}}</span>
                             </div>
                         </div>
 
-                        <!-- Peak-Flow Statistics -->
+                        <!-- Stream Habitat and Connectivity Characteristics -->
                         <div class="well well-sm">
-                            <h3>Peak-Flow Statistics</h3>
+                            <h3>Stream Habitat and Connectivity Characteristics</h3>
                             <table id="scsParamTable" class="mainParamTable table table-condensed">
                                 <table id="mainParamTable" class="mainParamTable table table-condensed">
                                     <thead class="param-table">
@@ -224,8 +257,73 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList"  ng-if="parameter.code.substring(0, 5) === 'STATS'">
-                                            <!-- <td>{{parameter.code.substring(5)}}</td> -->
+                                        <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList"  ng-if="parameter.code.substring(0, 13) ==='StreamHabitat'">
+                                            <td>{{parameter.name}}
+                                                <i ng-show="parameter.description !== ''" ng-mouseover="showTooltip = true" ng-mouseleave="showTooltip = false" class="fa fa-info-circle"></i>
+                                                <span ng-show="showTooltip" class="culvert-tooltip">
+                                                    <span ng-bind="parameter.description"></span>
+                                                </span>
+                                            </td>
+                                            <td>{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
+                                            <td ng-bind="parameter.unit"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </table>
+
+                            <h4>Stream Habitat and Connectivity Characteristics Citations</h4>
+                            <div ng-repeat="citation in vm.studyAreaService.culvertCitations" ng-if="citation.code.substring(0, 13) ==='StreamHabitat'">
+                                <span>{{citation.citation}}</span>
+                            </div>
+                        </div>
+
+                        <!-- Road Crossing Characteristics -->
+                        <div class="well well-sm">
+                            <h3>Road Crossing Characteristics</h3>
+                            <table id="scsParamTable" class="mainParamTable table table-condensed">
+                                <table id="mainParamTable" class="mainParamTable table table-condensed">
+                                    <thead class="param-table">
+                                        <tr>
+                                            <th>Parameter Name</th>
+                                            <th>Value</th>
+                                            <th>Unit</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList"  ng-if="parameter.code.substring(0, 12) ==='RoadCrossing'">
+                                            <td>{{parameter.name}}
+                                                <i ng-show="parameter.description !== ''" ng-mouseover="showTooltip = true" ng-mouseleave="showTooltip = false" class="fa fa-info-circle"></i>
+                                                <span ng-show="showTooltip" class="culvert-tooltip">
+                                                    <span ng-bind="parameter.description"></span>
+                                                </span>
+                                            </td>
+                                            <td>{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
+                                            <td ng-bind="parameter.unit"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </table>
+
+                            <h4>Road Crossing Characteristics Citations</h4>
+                            <div ng-repeat="citation in vm.studyAreaService.culvertCitations" ng-if="citation.code.substring(0, 12) ==='RoadCrossing'">
+                                <span>{{citation.citation}}</span>
+                            </div>
+                        </div>
+
+                        <!-- Peak-Flow Statistics Flow Report -->
+                        <div class="well well-sm">
+                            <h3>Peak-Flow Statistics Flow Report</h3>
+                            <table id="scsParamTable" class="mainParamTable table table-condensed">
+                                <table id="mainParamTable" class="mainParamTable table table-condensed">
+                                    <thead class="param-table">
+                                        <tr>
+                                            <th>Parameter Name</th>
+                                            <th>Value</th>
+                                            <th>Unit</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList"  ng-if="parameter.code.substring(0, 13) === 'PeakflowStats'">
                                             <td>{{parameter.name}}
                                                 <i ng-mouseover="showTooltip = true" ng-mouseleave="showTooltip = false" class="fa fa-info-circle"></i>
                                                 <span ng-show="showTooltip" class="culvert-tooltip">
@@ -240,7 +338,40 @@
                             </table>
 
                             <h4>Peak-Flow Statistics Citations</h4>
-                            <div ng-repeat="citation in vm.studyAreaService.culvertStatCitations" ng-if="citation.code.substring(0, 5) ==='STATS'">
+                            <div ng-repeat="citation in vm.studyAreaService.culvertStatCitations" ng-if="citation.code.substring(0, 13) === 'PeakflowStats'">
+                                <span>{{citation.citation}}</span>
+                            </div>
+                        </div>
+
+                        <!-- Bankfull Statistics Flow Report -->
+                        <div class="well well-sm">
+                            <h3>Bankfull Statistics Flow Report</h3>
+                            <table id="scsParamTable" class="mainParamTable table table-condensed">
+                                <table id="mainParamTable" class="mainParamTable table table-condensed">
+                                    <thead class="param-table">
+                                        <tr>
+                                            <th>Parameter Name</th>
+                                            <th>Value</th>
+                                            <th>Unit</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList"  ng-if="parameter.code.substring(0, 13) === 'BankfullStats'">
+                                            <td>{{parameter.name}}
+                                                <i ng-mouseover="showTooltip = true" ng-mouseleave="showTooltip = false" class="fa fa-info-circle"></i>
+                                                <span ng-show="showTooltip" class="culvert-tooltip">
+                                                    <span ng-bind="parameter.description"></span>
+                                                </span>
+                                            </td>
+                                            <td>{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
+                                            <td ng-bind="parameter.unit"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </table>
+
+                            <h4>Bankfull Statistics Citations</h4>
+                            <div ng-repeat="citation in vm.studyAreaService.culvertStatCitations" ng-if="citation.code.substring(0, 13) === 'BankfullStats'">
                                 <span>{{citation.citation}}</span>
                             </div>
                         </div>
@@ -254,13 +385,13 @@
                         <!-- Box Culvert Table -->
                         <div ng-if="vm.selectedTabName ==='Box'">
                             
-                            <h5>Preliminary Culvert Designs</h5>
+                            <h5>Preliminary 3-Sided Box Culvert Design meeting the 10- and 25-Year Flood Flows and Stream Crossing Standards</h5>
                             <div>
                                 <img class="culvert-img"src="images/BoxCulvert.png" alt="Box Culvert" title="Box Culvert"/>
                             </div>
 
                             <div class="well well-sm">
-                                <h3>Hydraulic Model Report</h3>
+                                <!-- <h3>Hydraulic Model Report</h3> -->
                                 <table id="scsParamTable" class="mainParamTable table table-condensed">
                                     <thead class="param-table">
                                         <tr>
@@ -297,13 +428,13 @@
                         <!-- Arch Culvert Table -->
                         <div ng-if="vm.selectedTabName ==='Arch'">
 
-                            <h5>Preliminary Culvert Designs</h5>
+                            <h5>Preliminary 3-Sided Arch Culvert Design meeting the 10- and 25-Year Flood Flows and Stream Crossing Standards </h5>
                             <div>
                                 <img class="culvert-img"src="images/ArchCulvert.png" alt="Arch Culvert" title="Arch Culvert"/>
                             </div>
 
                             <div class="well well-sm">
-                                <h3>Hydraulic Model Report</h3>
+                                <!-- <h3>Hydraulic Model Report</h3> -->
                                 <table id="scsParamTable" class="mainParamTable table table-condensed">
                                     <thead class="param-table">
                                         <tr>
@@ -340,13 +471,13 @@
                         <!-- Pipe Culvert Table -->
                         <div ng-if="vm.selectedTabName ==='Pipe'">
 
-                            <h5>Preliminary Culvert Designs</h5>
+                            <h5>Preliminary Pipe Culvert Design meeting the 10- and 25-Year Flood Flows and Stream Crossing Standards </h5>
                             <div>
                                 <img class="culvert-img" src="images/PipeCulvert.png" alt="Pipe Culvert" title="Pipe Culvert"/>
                             </div>
 
                             <div class="well well-sm">
-                                <h3>Hydraulic Model Report</h3>
+                                <!-- <h3>Hydraulic Model Report</h3> -->
                                 <table id="scsParamTable" class="mainParamTable table table-condensed">
                                     <thead class="param-table">
                                         <tr>

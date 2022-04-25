@@ -354,7 +354,7 @@ var StreamStats;
                                 culvertJSON.forEach(function (param) {
                                     if (param.Code === k) {
                                         var code;
-                                        if (param.Matchcode !== "None" && param.Matchcode !== "STATS") {
+                                        if (param.Matchcode !== "None" && param.Matchcode !== "BankfullStats" && param.Matchcode !== "PeakflowStats" && param.Matchcode !== "SiteInfo" && param.Matchcode !== "BasinChar" && param.Matchcode !== "StreamHabitat" && param.Matchcode !== "RoadCrossing") {
                                             code = param.Matchcode;
                                             var index = -1;
                                             for (var i = 0; i < paramList.length; i++) {
@@ -396,13 +396,8 @@ var StreamStats;
                                                 }
                                             }
                                         }
-                                        else if (param.Matchcode === "STATS") {
-                                            code = param.Matchcode + param.Code;
-                                            var roundedValue = self.getAccuracy(param, properties[k]);
-                                            paramList.push({ code: code, value: roundedValue, name: param.Name, description: param.Description, unit: param.Units });
-                                        }
                                         else {
-                                            code = param.Code;
+                                            code = param.Matchcode + param.Code;
                                             var roundedValue = self.getAccuracy(param, properties[k]);
                                             paramList.push({ code: code, value: roundedValue, name: param.Name, description: param.Description, unit: param.Units });
                                         }
@@ -412,7 +407,7 @@ var StreamStats;
                                                 citedCodeList.push(code);
                                                 citationList.push(param.Citation);
                                             }
-                                            else if ((code.substring(0, 5) === 'STATS') && (citationStatList.indexOf(param.Citation) === -1)) {
+                                            else if ((code.substring(0, 13) === 'BankfullStats' || code.substring(0, 13) === 'PeakflowStats') && (citationStatList.indexOf(param.Citation) === -1)) {
                                                 statCitations.push({ code: code, citation: param.Citation });
                                                 citationStatList.push(param.Citation);
                                             }
