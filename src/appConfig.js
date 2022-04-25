@@ -364,8 +364,8 @@ configuration.regions = [
                         color: color
                     }
                 },
-                "minZoom":10,
-                "maxZoom":11
+                "minZoom":13,
+                "maxZoom":13
             },
             "layerArray": [{
                 "layerName": "Mean August Baseflow",
@@ -439,8 +439,8 @@ configuration.regions = [
                         color: color
                     }
                 },
-                "minZoom":12,
-                "maxZoom":13
+                "minZoom":14,
+                "maxZoom":14
             },
             "layerArray": [{
                 "layerName": "Mean August Baseflow",
@@ -514,7 +514,7 @@ configuration.regions = [
                         color: color
                     }
                 },
-                "minZoom":14,
+                "minZoom":15,
                 "maxZoom":15
             },
             "layerArray": [{
