@@ -285,35 +285,41 @@
                         </div><!--end sc-->
                     </div><!--end extension-->
 
-                <div class="well well-sm"  ng-if="vm.regionService.selectedRegion.Applications.indexOf('EquationWeighting') != -1 && vm.nssService.selectedStatisticsGroupList.name.indexOf('Peak-Flow Statistics') != -1">
+                <div class="well well-sm"  ng-if="vm.regionService.selectedRegion.Applications.indexOf('ChannelWidthWeighting') != -1 && vm.nssService.selectedStatisticsGroupList.name.indexOf('Peak-Flow Statistics') != -1">
                     <div class="wim-alert-warning" ng-show="vm.nssService.equationWeightingDisclaimers == true">Only 3 estimation methods can be weighted; the 3 estimation methods with lowest SEP values were weighted. </div>
-                    <h3>Methods Weighting</h3>
-                    <div ng-if="vm.nssService.equationWeightingResults.length == 0">No method weighting results returned</div>
-                    <div ng-if="vm.nssService.equationWeightingResults.length != 0">
-                        <div ng-repeat="rr in vm.nssService.equationWeightingResults">
-                            <h4>{{rr.RR}}</h4>
-                            <table class="scenarioFlowTable table table-condensed">
-                                <thead class="flow-table">
-                                    <tr>
-                                        <th>Statistic</th>
-                                        <th>Value</th>
-                                        <th>Unit</th>
-                                        <th>PIl</th>
-                                        <th>PIu</th>
-                                        <th>SEP</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr ng-repeat="stat in rr.Results | orderBy:'Name' track by $index ">
-                                        <td>{{stat.Name}}</td>
-                                        <td>{{stat.Z.toUSGSvalue()}}</td> 
-                                        <td>{{stat.Unit.abbr}}</td> 
-                                        <td>{{stat.PIl.toUSGSvalue()}}</td> 
-                                        <td>{{stat.PIu.toUSGSvalue()}}</td> 
-                                        <td>{{stat.SEPZ.toUSGSvalue()}}</td> 
-                                    </tr>
-                                </tbody>
-                            </table>
+                    <h3 class="collapsible" ng-click="vm.collapseSection($event, 'stats', 'ChannelWidthWeighting')"><i ng-class="!vm.sectionCollapsed['ChannelWidthWeighting'] ? 'fa fa-chevron-right': 'fa fa-chevron-down'"></i>&nbsp;&nbsp;Channel-width Methods Weighting</h3>
+                        <div class="collapsible-content">
+                            <div ng-if="vm.nssService.equationWeightingResults.length == 0">No method weighting results returned.</div>
+                            <div ng-if="vm.nssService.equationWeightingResults.length != 0">
+                                <span>PIl: Prediction Interval-Lower, PIu: Prediction Interval-Upper, ASEp: Average Standard Error of Prediction</span>
+                                <div ng-repeat="rr in vm.nssService.equationWeightingResults">
+                                    <h3>{{rr.RR}}</h3>
+                                    <table class="scenarioFlowTable table table-condensed">
+                                        <thead class="flow-table">
+                                            <tr>
+                                                <th>Statistic</th>
+                                                <th>Value</th>
+                                                <th>Unit</th>
+                                                <th>PIl</th>
+                                                <th>PIu</th>
+                                                <th>SEP</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-repeat="stat in rr.Results | orderBy:'Name' track by $index ">
+                                                <td>{{stat.Name}}</td>
+                                                <td>{{stat.Z.toUSGSvalue()}}</td> 
+                                                <td>{{stat.Unit.abbr}}</td> 
+                                                <td>{{stat.PIl.toUSGSvalue()}}</td> 
+                                                <td>{{stat.PIu.toUSGSvalue()}}</td> 
+                                                <td>{{stat.SEPZ.toUSGSvalue()}}</td> 
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <h4>Channel-width Methods Weighting Citations</h4>
+                                <a href="https://pubs.er.usgs.gov/publication/sir20205142" target="_blank">Chase, K.J., Sando, R., Armstrong, D.W., and McCarthy, P., 2021, Regional regression equations based on channel-width characteristics to estimate peak-flow frequencies at ungaged sites in Montana using peak-flow frequency data through water year 2011 (ver. 1.1, September 2021): U.S. Geological Survey Scientific Investigations Report 2020-5142, 49 p.</a>
+                            </div>
                         </div>
                     </div>
                 </div>

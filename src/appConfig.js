@@ -375,7 +375,7 @@ configuration.regions = [
                     "queryProperties": { "Regulation Points": { "Descript": "Description" } }
                 }
             },
-        "Applications": ["Regulation", "EquationWeighting"],
+        "Applications": ["Regulation", "ChannelWidthWeighting"],
         "regionEnabled": true,
         "ScenariosAvailable": true
     },

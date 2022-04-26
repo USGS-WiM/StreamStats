@@ -339,14 +339,14 @@ var StreamStats;
                 var content = e.currentTarget.nextElementSibling;
                 if (content.style.display === "none") {
                     content.style.display = "block";
-                    if (type === "stats")
+                    if (type === "stats" || "ChannelWidthWeighting")
                         this.sectionCollapsed[group] = false;
                     if (type === "basin")
                         this.basinCharCollapsed = false;
                 }
                 else {
                     content.style.display = "none";
-                    if (type === "stats")
+                    if (type === "stats" || "ChannelWidthWeighting")
                         this.sectionCollapsed[group] = true;
                     if (type === "basin")
                         this.basinCharCollapsed = true;

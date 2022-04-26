@@ -456,7 +456,7 @@ module StreamStats.Services {
                         this.toaster.pop('error', "There was an error Estimating Flows", "HTTP request error", 0);
                     }).finally(() => {
                         //Equation Weighting 
-                        if (this.regionservice.selectedRegion.Applications.indexOf('EquationWeighting') != -1 ) {
+                        if (this.regionservice.selectedRegion.Applications.indexOf('ChannelWidthWeighting') != -1 ) {
                             if (statGroup.name == "Peak-Flow Statistics") {
                                 this.queryEquationWeighting();
                             }
@@ -666,7 +666,7 @@ module StreamStats.Services {
                     this.equationWeightingResults = this.equationWeightingResults.filter(function (obj) { return obj.Results.length > 0; }); // remove results if they failed and returned nothing
                     if (rrCount.length > 1 && this.equationWeightingResults.length > 0) { //need to area weight results
                         setTimeout(() => {
-                            this.equationWeightingResults[rrCounter + 1] = { "RR": "Area Weighted","Results":[] };
+                            this.equationWeightingResults[rrCounter + 1] = { "RR": "Area-Averaged","Results":[] };
                             var PIltotal = new Array(inputs[0].values.length); 
                             var PIutotal = new Array(inputs[0].values.length);
                             var SEPZtotal = new Array(inputs[0].values.length);
