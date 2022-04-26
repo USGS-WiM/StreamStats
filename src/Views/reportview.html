@@ -286,11 +286,13 @@
                     </div><!--end extension-->
 
                 <div class="well well-sm"  ng-if="vm.regionService.selectedRegion.Applications.indexOf('ChannelWidthWeighting') != -1 && vm.nssService.selectedStatisticsGroupList.name.indexOf('Peak-Flow Statistics') != -1">
-                    <div class="wim-alert-warning" ng-show="vm.nssService.equationWeightingDisclaimers == true">Only 3 estimation methods can be weighted; the 3 estimation methods with lowest SEP values were weighted. </div>
                     <h3 class="collapsible" ng-click="vm.collapseSection($event, 'stats', 'ChannelWidthWeighting')"><i ng-class="!vm.sectionCollapsed['ChannelWidthWeighting'] ? 'fa fa-chevron-right': 'fa fa-chevron-down'"></i>&nbsp;&nbsp;Channel-width Methods Weighting</h3>
                         <div class="collapsible-content">
                             <div ng-if="vm.nssService.equationWeightingResults.length == 0">No method weighting results returned.</div>
                             <div ng-if="vm.nssService.equationWeightingResults.length != 0">
+                                <div ng-repeat="message in vm.nssService.equationWeightingDisclaimers track by $index">
+                                    <div class="wim-alert-warning">{{message}}</div>
+                                </div>
                                 <span>PIl: Prediction Interval-Lower, PIu: Prediction Interval-Upper, ASEp: Average Standard Error of Prediction</span>
                                 <div ng-repeat="rr in vm.nssService.equationWeightingResults">
                                     <h3>{{rr.RR}}</h3>

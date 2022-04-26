@@ -31,7 +31,7 @@ module StreamStats.Services {
         statisticsGroupList: Array<IStatisticsGroup>;
         selectedStatisticsGroupList: Array<IStatisticsGroup>;
         equationWeightingResults: Array<IEquationWeightingResults>;
-        equationWeightingDisclaimers: boolean;
+        equationWeightingDisclaimers: Array<string>;
         loadStatisticsGroupTypes(rcode: string, regressionregion: string):Array<any>;
         loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregion: string, percentWeights: any, regressionTypes?: string);
         estimateFlows(studyAreaParameterList: Array<IParameter>, paramValueField: string, rcode: string, append?: boolean, regressionTypes?:string, showReport?:boolean)
@@ -145,7 +145,7 @@ module StreamStats.Services {
         public loadingStatisticsGroup: boolean;
         public selectedStatisticsGroupList: Array<IStatisticsGroup>;
         public equationWeightingResults: Array<IEquationWeightingResults> = [];
-        public equationWeightingDisclaimers: boolean;
+        public equationWeightingDisclaimers: Array<string> = [];
         public canUpdate: boolean;
         public toaster: any;
         public showBasinCharacteristicsTable: boolean;
@@ -469,7 +469,7 @@ module StreamStats.Services {
                             this.estimateFlowsCounter = 0;
                             this.canUpdate = true;
                             //move to nssService
-                            if(showReport) {
+                            if (showReport) {
                                 this.modalService.openModal(Services.SSModalType.e_report);
                                 this.reportGenerated = true;
                             }
@@ -485,9 +485,8 @@ module StreamStats.Services {
         public queryEquationWeighting() {
             var units = null;
             var inputs: Array<IEquationWeightingInputs> = [];
-            this.equationWeightingDisclaimers = false;
             this.equationWeightingResults = [];
-
+            this.equationWeightingDisclaimers = [];
             this.selectedStatisticsGroupList.forEach(statGroup => { 
                 if (statGroup.name == "Peak-Flow Statistics") { // Only need to equation weight in peakflow statgroup
                     statGroup.regressionRegions.forEach((regressionRegion, rindex) => {
@@ -597,7 +596,7 @@ module StreamStats.Services {
                 var url = configuration.baseurls['WeightingServices'] +  '/weightest/'; 
                 var headers = {
                     "accept": "application/json",
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 };
                 let rrCounter = 0;
 
@@ -606,9 +605,6 @@ module StreamStats.Services {
                     let lastIndex = inputs[0].values.length - 1;
                     this.recursiveAreaWeightSubscription(inputs[0].values, lastIndex, inputs, url, headers, units, rrCount, rrCounter);
                     rrCounter++;
-                }
-                if (weightCount == 4) {
-                    this.equationWeightingDisclaimers = true;
                 }
             } else { //Not enough values to weight
                 this.toaster.pop('error', 'Cannot Methods Weight, not enough values');
@@ -653,6 +649,15 @@ module StreamStats.Services {
                         PIu: response.data.PIU,
                         SEPZ: response.data.SEPZ
                     };
+                    if (response.headers('x-usgswim-messages')) {
+                        var headerMsgs = JSON.parse(response.headers()['x-usgswim-messages']);
+                        Object.keys(headerMsgs).forEach(key => {
+                            let arr = headerMsgs[key].split('. ');
+                            arr.forEach(i => {
+                                this.equationWeightingDisclaimers.push(i);
+                            })
+                        })
+                    }
                 },(error) => {
                     this.toaster.clear();
                     if (error.data && error.data.detail) { this.toaster.pop('error', "Cannot Methods Weight: " + error.data.detail, "HTTP request error", 0); }
@@ -664,6 +669,11 @@ module StreamStats.Services {
             } else {
                 if (rrCount.length == rrCounter + 1) { //Checks if we are done weighting all regression regions
                     this.equationWeightingResults = this.equationWeightingResults.filter(function (obj) { return obj.Results.length > 0; }); // remove results if they failed and returned nothing
+                    this.equationWeightingDisclaimers = this.equationWeightingDisclaimers.filter((c, index) => {
+                        return this.equationWeightingDisclaimers.indexOf(c) === index;
+                    });
+                    this.equationWeightingDisclaimers = this.equationWeightingDisclaimers.filter(Boolean)
+
                     if (rrCount.length > 1 && this.equationWeightingResults.length > 0) { //need to area weight results
                         setTimeout(() => {
                             this.equationWeightingResults[rrCounter + 1] = { "RR": "Area-Averaged","Results":[] };

@@ -47,6 +47,7 @@ var StreamStats;
                 _this.regionservice = regionservice;
                 _this.eventManager = eventManager;
                 _this.equationWeightingResults = [];
+                _this.equationWeightingDisclaimers = [];
                 _this.toaster = toaster;
                 _this.modalService = modal;
                 _this._onSelectedStatisticsGroupChanged = new WiM.Event.Delegate();
@@ -311,8 +312,8 @@ var StreamStats;
             nssService.prototype.queryEquationWeighting = function () {
                 var units = null;
                 var inputs = [];
-                this.equationWeightingDisclaimers = false;
                 this.equationWeightingResults = [];
+                this.equationWeightingDisclaimers = [];
                 this.selectedStatisticsGroupList.forEach(function (statGroup) {
                     if (statGroup.name == "Peak-Flow Statistics") {
                         statGroup.regressionRegions.forEach(function (regressionRegion, rindex) {
@@ -426,7 +427,7 @@ var StreamStats;
                     var url = configuration.baseurls['WeightingServices'] + '/weightest/';
                     var headers = {
                         "accept": "application/json",
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/json",
                     };
                     var rrCounter = 0;
                     while (rrCounter < rrCount.length) {
@@ -434,9 +435,6 @@ var StreamStats;
                         var lastIndex = inputs[0].values.length - 1;
                         this.recursiveAreaWeightSubscription(inputs[0].values, lastIndex, inputs, url, headers, units, rrCount, rrCounter);
                         rrCounter++;
-                    }
-                    if (weightCount == 4) {
-                        this.equationWeightingDisclaimers = true;
                     }
                 }
                 else {
@@ -481,6 +479,15 @@ var StreamStats;
                             PIu: response.data.PIU,
                             SEPZ: response.data.SEPZ
                         };
+                        if (response.headers('x-usgswim-messages')) {
+                            var headerMsgs = JSON.parse(response.headers()['x-usgswim-messages']);
+                            Object.keys(headerMsgs).forEach(function (key) {
+                                var arr = headerMsgs[key].split('. ');
+                                arr.forEach(function (i) {
+                                    _this.equationWeightingDisclaimers.push(i);
+                                });
+                            });
+                        }
                     }, function (error) {
                         _this.toaster.clear();
                         if (error.data && error.data.detail) {
@@ -497,6 +504,10 @@ var StreamStats;
                 else {
                     if (rrCount.length == rrCounter + 1) {
                         this.equationWeightingResults = this.equationWeightingResults.filter(function (obj) { return obj.Results.length > 0; });
+                        this.equationWeightingDisclaimers = this.equationWeightingDisclaimers.filter(function (c, index) {
+                            return _this.equationWeightingDisclaimers.indexOf(c) === index;
+                        });
+                        this.equationWeightingDisclaimers = this.equationWeightingDisclaimers.filter(Boolean);
                         if (rrCount.length > 1 && this.equationWeightingResults.length > 0) {
                             setTimeout(function () {
                                 _this.equationWeightingResults[rrCounter + 1] = { "RR": "Area-Averaged", "Results": [] };
