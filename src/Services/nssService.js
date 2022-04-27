@@ -445,7 +445,7 @@ var StreamStats;
                     }
                 }
                 else {
-                    this.toaster.pop('error', 'Cannot Methods Weight, not enough values');
+                    this.toaster.pop('error', 'Cannot Weight Channel-width Methods, not enough values');
                 }
             };
             nssService.prototype.recursiveAreaWeightSubscription = function (parentLevelIdArray, lastIndex, inputs, url, headers, units, rrCount, rrCounter) {
@@ -502,10 +502,10 @@ var StreamStats;
                     }, function (error) {
                         _this.toaster.clear();
                         if (error.data && error.data.detail) {
-                            _this.toaster.pop('error', "Cannot Methods Weight: " + error.data.detail, "HTTP request error", 0);
+                            _this.toaster.pop('error', "Cannot Weight Channel-width Methods: " + error.data.detail, "HTTP request error", 0);
                         }
                         else {
-                            _this.toaster.pop('error', 'Cannot Methods Weight');
+                            _this.toaster.pop('error', 'Cannot Weight Channel-width Methods');
                         }
                     }).finally(function () {
                         lastIndex = lastIndex - 1;

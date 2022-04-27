@@ -613,7 +613,7 @@ module StreamStats.Services {
                     rrCounter++;
                 }
             } else { //Not enough values to weight
-                this.toaster.pop('error', 'Cannot Methods Weight, not enough values');
+                this.toaster.pop('error', 'Cannot Weight Channel-width Methods, not enough values');
             }
         }
 
@@ -671,8 +671,8 @@ module StreamStats.Services {
                     this.equationWeightingDisclaimers = this.equationWeightingDisclaimers.filter(Boolean)
                 },(error) => {
                     this.toaster.clear();
-                    if (error.data && error.data.detail) { this.toaster.pop('error', "Cannot Methods Weight: " + error.data.detail, "HTTP request error", 0); }
-                    else { this.toaster.pop('error', 'Cannot Methods Weight'); }
+                    if (error.data && error.data.detail) { this.toaster.pop('error', "Cannot Weight Channel-width Methods: " + error.data.detail, "HTTP request error", 0); }
+                    else { this.toaster.pop('error', 'Cannot Weight Channel-width Methods'); }
                 }).finally(() => {
                     lastIndex = lastIndex - 1;
                     this.recursiveAreaWeightSubscription(parentLevelIdArray, lastIndex, inputs, url, headers, units, rrCount, rrCounter); // recursively call function 
