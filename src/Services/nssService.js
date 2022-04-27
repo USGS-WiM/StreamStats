@@ -299,8 +299,15 @@ var StreamStats;
                         if (_this.estimateFlowsCounter < 1) {
                             _this.toaster.clear();
                             _this.estimateFlowsCounter = 0;
-                            _this.canUpdate = true;
-                            if (showReport) {
+                            if (showReport && _this.regionservice.selectedRegion.Applications.indexOf('ChannelWidthWeighting') != -1) {
+                                setTimeout(function () {
+                                    _this.canUpdate = true;
+                                    _this.modalService.openModal(Services.SSModalType.e_report);
+                                    _this.reportGenerated = true;
+                                }, 1000);
+                            }
+                            else if (showReport) {
+                                _this.canUpdate = true;
                                 _this.modalService.openModal(Services.SSModalType.e_report);
                                 _this.reportGenerated = true;
                             }
@@ -488,6 +495,10 @@ var StreamStats;
                                 });
                             });
                         }
+                        _this.equationWeightingDisclaimers = _this.equationWeightingDisclaimers.filter(function (c, index) {
+                            return _this.equationWeightingDisclaimers.indexOf(c) === index;
+                        });
+                        _this.equationWeightingDisclaimers = _this.equationWeightingDisclaimers.filter(Boolean);
                     }, function (error) {
                         _this.toaster.clear();
                         if (error.data && error.data.detail) {
@@ -504,10 +515,6 @@ var StreamStats;
                 else {
                     if (rrCount.length == rrCounter + 1) {
                         this.equationWeightingResults = this.equationWeightingResults.filter(function (obj) { return obj.Results.length > 0; });
-                        this.equationWeightingDisclaimers = this.equationWeightingDisclaimers.filter(function (c, index) {
-                            return _this.equationWeightingDisclaimers.indexOf(c) === index;
-                        });
-                        this.equationWeightingDisclaimers = this.equationWeightingDisclaimers.filter(Boolean);
                         if (rrCount.length > 1 && this.equationWeightingResults.length > 0) {
                             setTimeout(function () {
                                 _this.equationWeightingResults[rrCounter + 1] = { "RR": "Area-Averaged", "Results": [] };

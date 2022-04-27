@@ -467,9 +467,15 @@ module StreamStats.Services {
                         if (this.estimateFlowsCounter < 1) {
                             this.toaster.clear();
                             this.estimateFlowsCounter = 0;
-                            this.canUpdate = true;
                             //move to nssService
-                            if (showReport) {
+                            if (showReport && this.regionservice.selectedRegion.Applications.indexOf('ChannelWidthWeighting') != -1 ) {
+                                setTimeout(() => { // gives time for equation weighting to finish
+                                    this.canUpdate = true;
+                                    this.modalService.openModal(Services.SSModalType.e_report);
+                                    this.reportGenerated = true;
+                                }, 1000);
+                            } else if (showReport) {
+                                this.canUpdate = true;
                                 this.modalService.openModal(Services.SSModalType.e_report);
                                 this.reportGenerated = true;
                             }
@@ -649,6 +655,7 @@ module StreamStats.Services {
                         PIu: response.data.PIU,
                         SEPZ: response.data.SEPZ
                     };
+                    // Get warnings
                     if (response.headers('x-usgswim-messages')) {
                         var headerMsgs = JSON.parse(response.headers()['x-usgswim-messages']);
                         Object.keys(headerMsgs).forEach(key => {
@@ -658,6 +665,10 @@ module StreamStats.Services {
                             })
                         })
                     }
+                    this.equationWeightingDisclaimers = this.equationWeightingDisclaimers.filter((c, index) => {
+                        return this.equationWeightingDisclaimers.indexOf(c) === index;
+                    });
+                    this.equationWeightingDisclaimers = this.equationWeightingDisclaimers.filter(Boolean)
                 },(error) => {
                     this.toaster.clear();
                     if (error.data && error.data.detail) { this.toaster.pop('error', "Cannot Methods Weight: " + error.data.detail, "HTTP request error", 0); }
@@ -669,11 +680,7 @@ module StreamStats.Services {
             } else {
                 if (rrCount.length == rrCounter + 1) { //Checks if we are done weighting all regression regions
                     this.equationWeightingResults = this.equationWeightingResults.filter(function (obj) { return obj.Results.length > 0; }); // remove results if they failed and returned nothing
-                    this.equationWeightingDisclaimers = this.equationWeightingDisclaimers.filter((c, index) => {
-                        return this.equationWeightingDisclaimers.indexOf(c) === index;
-                    });
-                    this.equationWeightingDisclaimers = this.equationWeightingDisclaimers.filter(Boolean)
-
+                    
                     if (rrCount.length > 1 && this.equationWeightingResults.length > 0) { //need to area weight results
                         setTimeout(() => {
                             this.equationWeightingResults[rrCounter + 1] = { "RR": "Area-Averaged","Results":[] };
