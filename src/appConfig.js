@@ -353,7 +353,27 @@ configuration.regions = [
                 "maxZoom":16
             },
             "layerArray": [{
-                "layerName": "Mean August Baseflow"
+                "legend": [{                        
+                    "contentType": "image/png",
+                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAADFJREFUOI1jYaAyYBk1cNTAwWKgZyHDf2oYtr2fgZE2Ltzez8BIVQOpCUYNHDWQDAAArzAEmJdX26AAAAAASUVORK5CYII =",
+                    "label": ""
+                },
+                {                        
+                    "contentType": "image/png",
+                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAADFJREFUOI1jYaAyYBk1cNTAwWKgZyHDf2oYtr2fgZE2Ltzez8BIVQOpCUYNHDWQDAAArzAEmJdX26AAAAAASUVORK5CYII =",
+                    "label": ""
+                },
+                {                        
+                    "contentType": "image/png",
+                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAADFJREFUOI1jYaAyYBk1cNTAwWKgZyHDf2oYtr2fgZE2Ltzez8BIVQOpCUYNHDWQDAAArzAEmJdX26AAAAAASUVORK5CYII =",
+                    "label": ""
+                },
+                {                        
+                    "contentType": "image/png",
+                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAADFJREFUOI1jYaAyYBk1cNTAwWKgZyHDf2oYtr2fgZE2Ltzez8BIVQOpCUYNHDWQDAAArzAEmJdX26AAAAAASUVORK5CYII =",
+                    "label": ""
+                }
+            ],    
             }],
             "queryProperties": { 
                 "Mean August Baseflow": { 

@@ -1045,8 +1045,13 @@ var StreamStats;
                     this.updateLegend();
                 }
                 else if (LayerName == "MeanAugustBaseflow") {
+                    console.log(this.layers.overlays['MeanAugustBaseflow_region']);
                     this.leafletData.getLayers("mainMap").then(function (maplayers) {
                         if (_this.center.zoom == 12) {
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.76 - 1.33 cfs/mi^2";
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[1].label = "0.55 - 0.76 cfs/mi^2";
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[2].label = "0.40 - 0.55 cfs/mi^2";
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[3].label = "0.08 - 0.40 cfs/mi^2";
                             maplayers.overlays["MeanAugustBaseflow_region"].setStyle(function (feature) {
                                 var color = '#000000';
                                 if (feature.properties.AUGAVGBF >= .76) {
@@ -1067,6 +1072,10 @@ var StreamStats;
                             });
                         }
                         else if (_this.center.zoom == 13 || _this.center.zoom == 14) {
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.60 - 1.2 cfs/mi^2";
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[1].label = "0.45 - 0.60 cfs/mi^2";
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[2].label = "0.30 - 0.45 cfs/mi^2";
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[3].label = "0.10 - 0.30 cfs/mi^2";
                             maplayers.overlays["MeanAugustBaseflow_region"].setStyle(function (feature) {
                                 var color = '#000000';
                                 if (feature.properties.AUGAVGBF >= .6) {
@@ -1087,6 +1096,10 @@ var StreamStats;
                             });
                         }
                         else if (_this.center.zoom == 15) {
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.50 - 0.81 cfs/mi^2";
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[1].label = "0.40 - 0.50 cfs/mi^2";
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[2].label = "0.20 - 0.40 cfs/mi^2";
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[3].label = "0.10 - 0.20 cfs/mi^2";
                             maplayers.overlays["MeanAugustBaseflow_region"].setStyle(function (feature) {
                                 var color = '#000000';
                                 if (feature.properties.AUGAVGBF >= .5) {
@@ -1107,6 +1120,10 @@ var StreamStats;
                             });
                         }
                         else if (_this.center.zoom == 16) {
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.35 - 0.8 cfs/mi^2";
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[1].label = "0.25 - 0.35 cfs/mi^2";
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[2].label = "0.15 - 0.25 cfs/mi^2";
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[3].label = "0.1 - 0.15 cfs/mi^2";
                             maplayers.overlays["MeanAugustBaseflow_region"].setStyle(function (feature) {
                                 var color = '#000000';
                                 if (feature.properties.AUGAVGBF >= .35) {
@@ -1127,6 +1144,7 @@ var StreamStats;
                             });
                         }
                     });
+                    this.updateLegend();
                 }
                 else {
                     this.geojson[LayerName] =
