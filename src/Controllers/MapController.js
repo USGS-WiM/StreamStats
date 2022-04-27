@@ -128,6 +128,11 @@ var StreamStats;
                 $scope.$on('leafletDirectiveMap.mainMap.dragend', function (event, args) {
                     _this.cursorStyle = 'pointer';
                 });
+                $scope.$on('leafletDirectiveMap.mainMap.zoomend', function (event, args) {
+                    if (_this.regionServices.selectedRegion && _this.center.zoom > 11 && _this.regionServices.selectedRegion.RegionID == "ME") {
+                        _this.addGeoJSON("MeanAugustBaseflow", null);
+                    }
+                });
                 $scope.$on('leafletDirectiveMap.mainMap.click', function (event, args) {
                     if (_this._prosperServices.CanQuery) {
                         _this._prosperServices.GetPredictionValues(args.leafletEvent, _this.bounds);
@@ -838,6 +843,7 @@ var StreamStats;
                 }
             };
             MapController.prototype.addGeoJSON = function (LayerName, feature) {
+                var _this = this;
                 if (LayerName == 'globalwatershed') {
                     var verticies = feature.geometry.coordinates.reduce(function (count, row) { return count + row.length; }, 0);
                     var data = this.studyArea.simplify(angular.copy(feature));
@@ -1038,6 +1044,90 @@ var StreamStats;
                     this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs('streamgages', 'geojson', this.geojson['streamgages'].style));
                     this.updateLegend();
                 }
+                else if (LayerName == "MeanAugustBaseflow") {
+                    this.leafletData.getLayers("mainMap").then(function (maplayers) {
+                        if (_this.center.zoom == 12) {
+                            maplayers.overlays["MeanAugustBaseflow_region"].setStyle(function (feature) {
+                                var color = '#000000';
+                                if (feature.properties.AUGAVGBF >= .76) {
+                                    color = '#fd4df7';
+                                }
+                                else if (feature.properties.AUGAVGBF >= .55 && feature.properties.AUGAVGBF < .76) {
+                                    color = '#b135f6';
+                                }
+                                else if (feature.properties.AUGAVGBF >= .4 && feature.properties.AUGAVGBF < .55) {
+                                    color = '#8689f9';
+                                }
+                                else if (feature.properties.AUGAVGBF < .4) {
+                                    color = '#39f7f9';
+                                }
+                                return {
+                                    color: color
+                                };
+                            });
+                        }
+                        else if (_this.center.zoom == 13 || _this.center.zoom == 14) {
+                            maplayers.overlays["MeanAugustBaseflow_region"].setStyle(function (feature) {
+                                var color = '#000000';
+                                if (feature.properties.AUGAVGBF >= .6) {
+                                    color = '#fd4df7';
+                                }
+                                else if (feature.properties.AUGAVGBF >= .45 && feature.properties.AUGAVGBF < .6) {
+                                    color = '#b135f6';
+                                }
+                                else if (feature.properties.AUGAVGBF >= .3 && feature.properties.AUGAVGBF < .45) {
+                                    color = '#8689f9';
+                                }
+                                else if (feature.properties.AUGAVGBF < .3) {
+                                    color = '#39f7f9';
+                                }
+                                return {
+                                    color: color
+                                };
+                            });
+                        }
+                        else if (_this.center.zoom == 15) {
+                            maplayers.overlays["MeanAugustBaseflow_region"].setStyle(function (feature) {
+                                var color = '#000000';
+                                if (feature.properties.AUGAVGBF >= .5) {
+                                    color = '#fd4df7';
+                                }
+                                else if (feature.properties.AUGAVGBF >= .4 && feature.properties.AUGAVGBF < .5) {
+                                    color = '#b135f6';
+                                }
+                                else if (feature.properties.AUGAVGBF >= .2 && feature.properties.AUGAVGBF < .4) {
+                                    color = '#8689f9';
+                                }
+                                else if (feature.properties.AUGAVGBF < .2) {
+                                    color = '#39f7f9';
+                                }
+                                return {
+                                    color: color
+                                };
+                            });
+                        }
+                        else if (_this.center.zoom == 16) {
+                            maplayers.overlays["MeanAugustBaseflow_region"].setStyle(function (feature) {
+                                var color = '#000000';
+                                if (feature.properties.AUGAVGBF >= .35) {
+                                    color = '#fd4df7';
+                                }
+                                else if (feature.properties.AUGAVGBF >= .25 && feature.properties.AUGAVGBF < .35) {
+                                    color = '#b135f6';
+                                }
+                                else if (feature.properties.AUGAVGBF >= .15 && feature.properties.AUGAVGBF < .25) {
+                                    color = '#8689f9';
+                                }
+                                else if (feature.properties.AUGAVGBF < .15) {
+                                    color = '#39f7f9';
+                                }
+                                return {
+                                    color: color
+                                };
+                            });
+                        }
+                    });
+                }
                 else {
                     this.geojson[LayerName] =
                         {
@@ -1189,6 +1279,9 @@ var StreamStats;
                     return;
                 for (var layer in layers) {
                     this.layers.overlays[layer + "_region"] = layers[layer];
+                    if (this.layers.overlays[layer + "_region"].name == "Mean August Baseflow") {
+                        this.addGeoJSON("MeanAugustBaseflow", null);
+                    }
                 }
             };
             MapController.prototype.removeOverlayLayers = function (name, isPartial) {
