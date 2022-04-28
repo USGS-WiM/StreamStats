@@ -1467,7 +1467,6 @@ module StreamStats.Controllers {
                 this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs('streamgages', 'geojson', this.geojson['streamgages'].style));
                 this.updateLegend();
             } else if(LayerName == "MeanAugustBaseflow") { // Update MeanAugustBaseflow style
-                console.log(this.layers.overlays['MeanAugustBaseflow_region'])
                 this.leafletData.getLayers("mainMap").then((maplayers: any) => { 
                     if (this.center.zoom == 12) {
                         this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.76 - 1.33 cfs/mi^2"

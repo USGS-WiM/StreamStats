@@ -1045,7 +1045,6 @@ var StreamStats;
                     this.updateLegend();
                 }
                 else if (LayerName == "MeanAugustBaseflow") {
-                    console.log(this.layers.overlays['MeanAugustBaseflow_region']);
                     this.leafletData.getLayers("mainMap").then(function (maplayers) {
                         if (_this.center.zoom == 12) {
                             _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.76 - 1.33 cfs/mi^2";
