@@ -321,16 +321,6 @@ configuration.regions = [
             "type": 'agsFeature',
             "visible": true,
             "layerOptions": {
-                pointToLayer: function (geojson, latlng) {
-                    return L.marker(latlng, {
-                        icon: L.icon({
-                            iconUrl: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAQCAYAAAAS7Y8mAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAe9JREFUOI21lMFLG0EYxd837taDNXhoKZsixEslWMhhDfYivVRCIXvzpKInN9B/wuTPyOLFv0DQvfQgHqSK1j0ImiW5GCgkl56E0GKSeT00azdNm0Ro32n45pvfvGHmjYH/ JCMaaK0dAHkATaVU8TEQrbUjIi6AoogED2CSNoCDerWK1Pw8tNaBUupwHGi09jYMMZdO50kWRMQzAEBEApK4OT3F00QCzyzrgORitPsI6GG9WsWXWg1z6TQA / HLcUyG3sVH2d3exsr6OqUTiUmvtjTBsf202rcrZGd5vboJkSSnVDxYRjyRyW1vlj3t7eLe2hgnDcIdRv7VaONnfh7O9DVHKF5FiNBd3DBHxtNb229VVtzQzM8LsTxXv7mCYpi8iTrxu / N4oIt7U9PRQp3E9mZwEyYG7GAD / Kw2ASTrdbvdRkOgN / xVM0iW588n38aFSwYQx / EDfWy0Ex8d4k8tZWuuyUqowAO4lr / z56AiZ5WU8TyYDkv4op7dhaIVBgLRtuyQDEfH6wCKyU7u6wovZ2QhaGiN9RZKN6 / Nzq1GvI5lKlXvwIB5pu31 / j1eZDMaEAgA6nc7i66Wly + uLCyuZSgGADSB4iHS73X65kM3mSTbHhQKAaZoNks5CNusC8Po + oagBwKgI / 1E9WCFe+wGwdtl + 2b+bewAAAABJRU5ErkJggg == ",
-                            iconSize: [27, 31],
-                            iconAnchor: [13.5, 17.5],
-                            popupAnchor: [0, -11]
-                        })
-                    });
-                },
                 onEachFeature: function (feature, layer) {
                     var popupContent = '<h5>Mean August Baseflow</h5> ';
                     var queryProperties = { 
@@ -346,6 +336,10 @@ configuration.regions = [
                         "REGULATED": "REGULATED"
                     };
                     Object.keys(queryProperties).map(function (k) {
+                        if (queryProperties[k] == "OOB_DA" || queryProperties[k] == "OOB_JULYAV" || queryProperties[k] == "OOB_WARNIN" || queryProperties[k] == "REGULATED") {
+                            if (feature.properties[k] == 0) feature.properties[k] = "No"
+                            else if (feature.properties[k] == 1) feature.properties[k] = "Yes"
+                        }
                         popupContent += '<strong>' + queryProperties[k] + ': </strong>' + feature.properties[k] + '</br>';
                     });
                     layer.bindPopup(popupContent);                     
