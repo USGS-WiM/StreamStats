@@ -321,31 +321,24 @@ configuration.regions = [
             "type": 'agsFeature',
             "visible": true,
             "layerOptions": {
-                pointToLayer: function (geojson, latlng) {
-                    return L.marker(latlng, {
-                        icon: L.icon({
-                            iconUrl: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAQCAYAAAAS7Y8mAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAe9JREFUOI21lMFLG0EYxd837taDNXhoKZsixEslWMhhDfYivVRCIXvzpKInN9B/wuTPyOLFv0DQvfQgHqSK1j0ImiW5GCgkl56E0GKSeT00azdNm0Ro32n45pvfvGHmjYH/ JCMaaK0dAHkATaVU8TEQrbUjIi6AoogED2CSNoCDerWK1Pw8tNaBUupwHGi09jYMMZdO50kWRMQzAEBEApK4OT3F00QCzyzrgORitPsI6GG9WsWXWg1z6TQA / HLcUyG3sVH2d3exsr6OqUTiUmvtjTBsf202rcrZGd5vboJkSSnVDxYRjyRyW1vlj3t7eLe2hgnDcIdRv7VaONnfh7O9DVHKF5FiNBd3DBHxtNb229VVtzQzM8LsTxXv7mCYpi8iTrxu / N4oIt7U9PRQp3E9mZwEyYG7GAD / Kw2ASTrdbvdRkOgN / xVM0iW588n38aFSwYQx / EDfWy0Ex8d4k8tZWuuyUqowAO4lr / z56AiZ5WU8TyYDkv4op7dhaIVBgLRtuyQDEfH6wCKyU7u6wovZ2QhaGiN9RZKN6 / Nzq1GvI5lKlXvwIB5pu31 / j1eZDMaEAgA6nc7i66Wly + uLCyuZSgGADSB4iHS73X65kM3mSTbHhQKAaZoNks5CNusC8Po + oagBwKgI / 1E9WCFe+wGwdtl + 2b+bewAAAABJRU5ErkJggg == ",
-                            iconSize: [27, 31],
-                            iconAnchor: [13.5, 17.5],
-                            popupAnchor: [0, -11]
-                        })
-                    });
-                },
                 onEachFeature: function (feature, layer) {
                     var popupContent = '<h5>Mean August Baseflow</h5> ';
                     var queryProperties = { 
-                        "GNIS_Name": "GNIS_Name", 
-                        "DASQMI": "DASQMI",
-                        "SANDGRAVAF":"SANDGRAVAF",
-                        "JULYAVPRE": "JULYAVPRE",
-                        "AUGAVGBF": "AUGAVGBF",
-                        "OOB_DA": "OOB_DA",
-                        "OOB_JULYAV": "OOB_JULYAV",
-                        "OOB_SANDGR": "OOB_SANDGR",
-                        "OOB_WARNIN": "OOB_WARNIN",
-                        "REGULATED": "REGULATED"
+                        "GNIS_Name": "GNIS Name", 
+                        "DASQMI": "Drainage Area (mi2)",
+                        "SANDGRAVAF":"Aquifer Area (%)",
+                        "JULYAVPRE": "Mean July Precip (in)",
+                        "AUGAVGBF": "Mean August Baseflow (cfs/mi2",
+                        "OOB_DA": "Drainage Area out-of-bounds",
+                        "OOB_JULYAV":"Mean July Precip out-of-bounds",
+                        "OOB_WARNIN": "% Aquifer Area out-of-bounds",
+                        "REGULATED": "Regulated stream/river"
                     };
                     Object.keys(queryProperties).map(function (k) {
+                        if (queryProperties[k] == "Drainage Area out-of-bounds" || queryProperties[k] == "Mean July Precip out-of-bounds" || queryProperties[k] == "% Aquifer Area out-of-bounds" || queryProperties[k] == "Regulated stream/river") {
+                            if (feature.properties[k] == 0) feature.properties[k] = "No"
+                            else if (feature.properties[k] == 1) feature.properties[k] = "Yes"
+                        }
                         popupContent += '<strong>' + queryProperties[k] + ': </strong>' + feature.properties[k] + '</br>';
                     });
                     layer.bindPopup(popupContent);                     
@@ -354,6 +347,7 @@ configuration.regions = [
                 "maxZoom":16
             },
             "layerArray": [{
+                "layerName": "Mean August Baseflow",
                 "legend": [{                        
                     "contentType": "image/svg+xml;base64",
                     "imageData": "PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/Pgo8IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMC8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9UUi8yMDAxL1JFQy1TVkctMjAwMTA5MDQvRFREL3N2ZzEwLmR0ZCI+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgaWQ9ImJvZHlfMSIgd2lkdGg9IjI1IiBoZWlnaHQ9IjUiPgoKPGcgdHJhbnNmb3JtPSJtYXRyaXgoMC4xOTY4NTAzOSAwIDAgMC4yMDAwMDAwMiAwIDApIj4KICAgIDxwYXRoIGQ9Ik0wIDBMMCAyNUwxMjcgMjVMMTI3IDBMMCAweiIgc3Ryb2tlPSJub25lIiBmaWxsPSIjRkZGRkZGIiBmaWxsLXJ1bGU9Im5vbnplcm8iIC8+CiAgICA8cGF0aCBkPSJNNC42MDMzOSA0LjAyNzc4QyAxLjQxNTI1IDYuNTUyODMgMS45Mzg3IDE3LjQzMjQgNi4xNDgxNSAxOC42ODIxQyAxMy44ODYxIDIwLjk3OTQgMjQuOTM0NyAxOSAzMyAxOUwzMyAxOUw5MyAxOUMgOTguMzgwNCAxOSAxMTYuNDQ4IDIxLjg0NTkgMTE5Ljk3MiAxNy4zOTY2QyAxMjIuMzM4IDE0LjQwOTYgMTIyLjAwOSA0LjU1MTk4IDExNy44NTIgMy4zMTc5QyAxMTAuMTE0IDEuMDIwNiA5OS4wNjUzIDMgOTEgM0w5MSAzTDMyIDNDIDI1Ljc3NzUgMyA5LjU3MDQyIDAuMDkzODI0NCA0LjYwMzM5IDQuMDI3Nzh6IiBzdHJva2U9Im5vbmUiIGZpbGw9IiNGRDRERjciIGZpbGwtcnVsZT0ibm9uemVybyIgLz4KPC9nPgo8L3N2Zz4=",
@@ -378,7 +372,7 @@ configuration.regions = [
             }],
             "queryProperties": { 
                 "Mean August Baseflow": { 
-                    "GNIS_Name": "GNIS_Name", 
+                    "GNIS_Name": "GNIS Name", 
                     "DASQMI": "Drainage Area (mi2)",
                     "SANDGRAVAF": "Aquifer Area (%)",
                     "JULYAVPRE": "Mean July Precip (in)",
