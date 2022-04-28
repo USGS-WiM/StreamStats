@@ -592,14 +592,21 @@ module StreamStats.Controllers {
                             let queryProperties = this.layers.overlays[lyr].queryProperties[item.layerName];
                             Object.keys(queryProperties).map(k => {
                                 if (item.layerName == "Streamgages" && k == "FeatureURL") {
-    
+
                                     var siteNo = queryResult.properties[k].split('site_no=')[1];
                                     var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm'
                                     var SSgagepageNew = "vm.openGagePage('" + siteNo + "')";
                                     var html = '<strong>NWIS page: </strong><a href="' + queryResult.properties[k] + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br><strong>New StreamStats Gage Modal: </strong><a ng-click="' + SSgagepageNew + '">link</a></br>';
-    
+                                    
                                     querylayers.append(html);
                                     this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'streamgageQuery' });
+                                }
+                                else if (item.layerName == "Mean August Baseflow") {
+                                    if (queryProperties[k] == "Drainage Area out-of-bounds" || queryProperties[k] == "Mean July Precip out-of-bounds" || queryProperties[k] == "% Aquifer Area out-of-bounds" || queryProperties[k] == "Regulated stream/river") {
+                                        if (queryResult.properties[k] == 0) queryResult.properties[k] = "No"
+                                        else if (queryResult.properties[k] == 1) queryResult.properties[k] = "Yes"
+                                    }
+                                    querylayers.append('<strong>' + queryProperties[k] + ': </strong>' + queryResult.properties[k] + '</br>');
                                 }
                                 else {
                                     querylayers.append('<strong>' + queryProperties[k] + ': </strong>' + queryResult.properties[k] + '</br>');
