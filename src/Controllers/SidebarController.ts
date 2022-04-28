@@ -514,7 +514,7 @@ module StreamStats.Controllers {
                                 if (param.Code === k) {
                                     var code;
                                     // If matching codes in data dict, need to rearrange json to get 10yr, 15yr, and scs column values in report
-                                    if(param.Matchcode !== "None" && param.Matchcode !== "STATS"){
+                                    if(param.Matchcode !== "None" && param.Matchcode !== "BankfullStats" && param.Matchcode !== "PeakflowStats" && param.Matchcode !== "SiteInfo" && param.Matchcode !== "BasinChar" && param.Matchcode !== "StreamHabitat" && param.Matchcode !== "RoadCrossing"){
                                         code = param.Matchcode;
                                         // code = param.Code;
                                         var index = -1;
@@ -555,12 +555,9 @@ module StreamStats.Controllers {
                                                 paramList[newIndex].value[0].value_scs = properties[k];
                                             }
                                         }
-                                    }else if(param.Matchcode === "STATS"){
-                                        code = param.Matchcode + param.Code;
-                                        var roundedValue = self.getAccuracy(param, properties[k]);
-                                        paramList.push({code: code, value: roundedValue, name: param.Name, description: param.Description, unit: param.Units});
+                                    // Stats tables, Basin char, Site Info, Stream Habitat and Road Crossing tables 
                                     }else{
-                                        code = param.Code;
+                                        code = param.Matchcode + param.Code;
                                         var roundedValue = self.getAccuracy(param, properties[k]);
                                         paramList.push({code: code, value: roundedValue, name: param.Name, description: param.Description, unit: param.Units});
                                     }
@@ -571,7 +568,7 @@ module StreamStats.Controllers {
                                             citedCodeList.push(code);
                                             citationList.push(param.Citation);
                                         }
-                                        else if((code.substring(0, 5) ==='STATS') && (citationStatList.indexOf(param.Citation) === -1)){
+                                        else if((code.substring(0, 13) ==='BankfullStats' || code.substring(0, 13) ==='PeakflowStats') && (citationStatList.indexOf(param.Citation) === -1)){
                                             statCitations.push({code: code, citation: param.Citation});
                                             citationStatList.push(param.Citation);
                                         }

@@ -132,13 +132,23 @@ var StreamStats;
                     return finalVal + '\n\n';
                 };
                 var processCulvertParameterTables = function (data) {
-                    var finalVal = '\nBasin Characteristics\n';
+                    var finalVal = '\nSite Info\n';
+                    finalVal += _this.tableToCSV($('#siteInfoTable'));
+                    finalVal += '\nBasin Characteristics\n';
                     finalVal += _this.tableToCSV($('#mainCulvertParamTable'));
-                    finalVal += '\nPeak Flow Statistics\n';
+                    finalVal += '\nStream Habitat and Connectivity Characteristics\n';
+                    finalVal += _this.tableToCSV($('#streamHabitatTable'));
+                    finalVal += '\nRoad Crossing Characteristics\n';
+                    finalVal += _this.tableToCSV($('#roadCrossTable'));
+                    finalVal += '\nPeak-Flow Statistics Flow Report\n';
                     finalVal += _this.tableToCSV($('#peakFlowTable'));
-                    finalVal += '\nHydraulic Model Report\n';
+                    finalVal += '\nBankfull Statistics Flow Report\n';
+                    finalVal += _this.tableToCSV($('#bankfullTable'));
+                    finalVal += '\nPreliminary 3-Sided Box Culvert Design meeting the 10- and 25-Year Flood Flows and Stream Crossing Standards\n';
                     finalVal += _this.tableToCSV($('#boxParamTable')) + '\n';
+                    finalVal += '\nPreliminary 3-Sided Arch Culvert Design meeting the 10- and 25-Year Flood Flows and Stream Crossing Standards\n';
                     finalVal += _this.tableToCSV($('#archParamTable')) + '\n';
+                    finalVal += '\nPreliminary Pipe Culvert Design meeting the 10- and 25-Year Flood Flows and Stream Crossing Standards\n';
                     finalVal += _this.tableToCSV($('#pipeParamTable'));
                     return finalVal + '\n\n';
                 };
@@ -665,7 +675,6 @@ var StreamStats;
                 }
             };
             ReportController.prototype.tableToCSV = function ($table) {
-                var self = this;
                 var $headers = $table.find('tr:has(th)'), $rows = $table.find('tr:has(td)'), tmpColDelim = String.fromCharCode(11), tmpRowDelim = String.fromCharCode(0), colDelim = '","', rowDelim = '"\r\n"';
                 var csv = '"';
                 csv += formatRows($headers.map(grabRow));

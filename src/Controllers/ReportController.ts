@@ -195,13 +195,23 @@ module StreamStats.Controllers {
             };
 
             var processCulvertParameterTables = (data) => {
-                var finalVal = '\nBasin Characteristics\n';
+                var finalVal = '\nSite Info\n';
+                finalVal += this.tableToCSV($('#siteInfoTable'));
+                finalVal += '\nBasin Characteristics\n';
                 finalVal += this.tableToCSV($('#mainCulvertParamTable'));
-                finalVal += '\nPeak Flow Statistics\n';
+                finalVal += '\nStream Habitat and Connectivity Characteristics\n';
+                finalVal += this.tableToCSV($('#streamHabitatTable'));
+                finalVal += '\nRoad Crossing Characteristics\n';
+                finalVal += this.tableToCSV($('#roadCrossTable'));
+                finalVal += '\nPeak-Flow Statistics Flow Report\n';
                 finalVal += this.tableToCSV($('#peakFlowTable'));
-                finalVal += '\nHydraulic Model Report\n';
+                finalVal += '\nBankfull Statistics Flow Report\n';
+                finalVal += this.tableToCSV($('#bankfullTable'));
+                finalVal += '\nPreliminary 3-Sided Box Culvert Design meeting the 10- and 25-Year Flood Flows and Stream Crossing Standards\n';
                 finalVal += this.tableToCSV($('#boxParamTable')) + '\n';
+                finalVal += '\nPreliminary 3-Sided Arch Culvert Design meeting the 10- and 25-Year Flood Flows and Stream Crossing Standards\n';
                 finalVal += this.tableToCSV($('#archParamTable')) + '\n';
+                finalVal += '\nPreliminary Pipe Culvert Design meeting the 10- and 25-Year Flood Flows and Stream Crossing Standards\n';
                 finalVal += this.tableToCSV($('#pipeParamTable'));
                 return finalVal + '\n\n';
             };
@@ -821,7 +831,6 @@ module StreamStats.Controllers {
             }
         }
         private tableToCSV($table) {
-            let self = this;
 
             var $headers = $table.find('tr:has(th)')
                 , $rows = $table.find('tr:has(td)')
