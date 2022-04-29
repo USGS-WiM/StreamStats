@@ -388,6 +388,10 @@
                             </div>
                         </div>
 
+                        <div ng-show="vm.isCulvertReport" class="wim-alert hidden-print">
+                            Note: HEC-RAS Model Files are available for download below.
+                         </div>
+
                         <ul id="culvertTabs" class="nav nav-tabs" ng-show="vm.isCulvertReport">
                             <li ng-class="{'active':vm.selectedTabName==='Box'}"><a ng-click="vm.selectCulvertTab('Box')">Box</a></li>
                             <li ng-class="{'active':vm.selectedTabName==='Arch'}"><a ng-click="vm.selectCulvertTab('Arch')">Arch</a></li>
@@ -688,7 +692,7 @@
                       <li><a href="#" ng-click="vm.isFlowTableOpen = true; vm.isExceedanceTableOpen = true; vm.downloadCSV()" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="CSV"><span class="fa fa-download"></span>&nbsp;&nbsp;CSV</a></li>
                       <li><a href="#" ng-click="vm.downloadShapeFile()" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="ShapeFile"><span class="fa fa-download"></span>&nbsp;&nbsp;ShapeFile</a></li>
                       <li><a href="#" ng-click="vm.downloadKML()" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="KML"><span class="fa fa-download"></span>&nbsp;&nbsp;KML</a></li>
-                      <li ng-show="vm.isCulvertReport"><a href="#" ng-click="vm.downloadGeomFileZip()" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="Culvert Geometry File"><span class="fa fa-download"></span>&nbsp;&nbsp;Geometry File Zip</a></li>
+                      <li ng-show="vm.isCulvertReport"><a href="#" ng-click="vm.downloadGeomFileZip()" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="Culvert Geometry File"><span class="fa fa-download"></span>&nbsp;&nbsp;HEC-RAS Model Files</a></li>
                   </ul>
                 </div>
             </div>
