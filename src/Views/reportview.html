@@ -181,28 +181,30 @@
                         <!-- Site Information -->
                         <div class="well well-sm">
                             <h3>Site Information</h3>
-                            <table id="scsParamTable" class="mainParamTable table table-condensed">
-                                <table id="mainParamTable" class="mainParamTable table table-condensed">
-                                    <thead class="param-table">
-                                        <tr>
-                                            <th>Parameter Name</th>
-                                            <th>Value</th>
-                                            <th>Unit</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList"  ng-if="parameter.code.substring(0, 8) ==='SiteInfo'">
-                                            <td>{{parameter.name}}
-                                                <i ng-show="parameter.description !== ''" ng-mouseover="showTooltip = true" ng-mouseleave="showTooltip = false" class="fa fa-info-circle"></i>
-                                                <span ng-show="showTooltip" class="culvert-tooltip">
-                                                    <span ng-bind="parameter.description"></span>
-                                                </span>
-                                            </td>
-                                            <td>{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
-                                            <td ng-bind="parameter.unit"></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                            <table id="siteInfoTable" class="siteInfoTable table table-condensed">
+                                <thead class="param-table">
+                                    <tr>
+                                        <th>Parameter Name</th>
+                                        <!-- Need this hidden column to add into csv -->
+                                        <th ng-hide="true">Parameter Description</th>
+                                        <th>Value</th>
+                                        <th>Unit</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList"  ng-if="parameter.code.substring(0, 8) ==='SiteInfo'">
+                                        <td>{{parameter.name}}
+                                            <i ng-show="parameter.description !== ''" ng-mouseover="showTooltip = true" ng-mouseleave="showTooltip = false" class="fa fa-info-circle"></i>
+                                            <span ng-show="showTooltip" class="culvert-tooltip">
+                                                <span ng-bind="parameter.description"></span>
+                                            </span>
+                                        </td>
+                                        <!-- Need this hidden column to add into csv -->
+                                        <td ng-hide="true">{{parameter.description}}</td>
+                                        <td>{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
+                                        <td ng-bind="parameter.unit"></td>
+                                    </tr>
+                                </tbody>
                             </table>
 
                             <h4>Site Information Citations</h4>
@@ -214,28 +216,30 @@
                         <!-- Basin Characteristics -->
                         <div class="well well-sm">
                             <h3>Basin Characteristics</h3>
-                            <table id="scsParamTable" class="mainParamTable table table-condensed">
-                                <table id="mainParamTable" class="mainParamTable table table-condensed">
-                                    <thead class="param-table">
-                                        <tr>
-                                            <th>Parameter Name</th>
-                                            <th>Value</th>
-                                            <th>Unit</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList"  ng-if="parameter.code.substring(0, 9) ==='BasinChar'">
-                                            <td>{{parameter.name}}
-                                                <i ng-show="parameter.description !== ''" ng-mouseover="showTooltip = true" ng-mouseleave="showTooltip = false" class="fa fa-info-circle"></i>
-                                                <span ng-show="showTooltip" class="culvert-tooltip">
-                                                    <span ng-bind="parameter.description"></span>
-                                                </span>
-                                            </td>
-                                            <td>{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
-                                            <td ng-bind="parameter.unit"></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                            <table id="mainCulvertParamTable" class="mainCulvertParamTable table table-condensed">
+                                <thead class="param-table">
+                                    <tr>
+                                        <th>Parameter Name</th>
+                                        <!-- Need this hidden column to add into csv -->
+                                        <th ng-hide="true">Parameter Description</th>
+                                        <th>Value</th>
+                                        <th>Unit</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList"  ng-if="parameter.code.substring(0, 9) ==='BasinChar'">
+                                        <td>{{parameter.name}}
+                                            <i ng-show="parameter.description !== ''" ng-mouseover="showTooltip = true" ng-mouseleave="showTooltip = false" class="fa fa-info-circle"></i>
+                                            <span ng-show="showTooltip" class="culvert-tooltip">
+                                                <span ng-bind="parameter.description"></span>
+                                            </span>
+                                        </td>
+                                        <!-- Need this hidden column to add into csv -->
+                                        <td ng-hide="true">{{parameter.description}}</td>
+                                        <td>{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
+                                        <td ng-bind="parameter.unit"></td>
+                                    </tr>
+                                </tbody>
                             </table>
 
                             <h4>Basin Characteristics Citations</h4>
@@ -247,28 +251,30 @@
                         <!-- Stream Habitat and Connectivity Characteristics -->
                         <div class="well well-sm">
                             <h3>Stream Habitat and Connectivity Characteristics</h3>
-                            <table id="scsParamTable" class="mainParamTable table table-condensed">
-                                <table id="mainParamTable" class="mainParamTable table table-condensed">
-                                    <thead class="param-table">
-                                        <tr>
-                                            <th>Parameter Name</th>
-                                            <th>Value</th>
-                                            <th>Unit</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList"  ng-if="parameter.code.substring(0, 13) ==='StreamHabitat'">
-                                            <td>{{parameter.name}}
-                                                <i ng-show="parameter.description !== ''" ng-mouseover="showTooltip = true" ng-mouseleave="showTooltip = false" class="fa fa-info-circle"></i>
-                                                <span ng-show="showTooltip" class="culvert-tooltip">
-                                                    <span ng-bind="parameter.description"></span>
-                                                </span>
-                                            </td>
-                                            <td>{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
-                                            <td ng-bind="parameter.unit"></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                            <table id="streamHabitatTable" class="streamHabitatParamTable table table-condensed">
+                                <thead class="param-table">
+                                    <tr>
+                                        <th>Parameter Name</th>
+                                        <!-- Need this hidden column to add into csv -->
+                                        <th ng-hide="true">Parameter Description</th>
+                                        <th>Value</th>
+                                        <th>Unit</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList"  ng-if="parameter.code.substring(0, 13) ==='StreamHabitat'">
+                                        <td>{{parameter.name}}
+                                            <i ng-show="parameter.description !== ''" ng-mouseover="showTooltip = true" ng-mouseleave="showTooltip = false" class="fa fa-info-circle"></i>
+                                            <span ng-show="showTooltip" class="culvert-tooltip">
+                                                <span ng-bind="parameter.description"></span>
+                                            </span>
+                                        </td>
+                                        <!-- Need this hidden column to add into csv -->
+                                        <td ng-hide="true">{{parameter.description}}</td>
+                                        <td>{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
+                                        <td ng-bind="parameter.unit"></td>
+                                    </tr>
+                                </tbody>
                             </table>
 
                             <h4>Stream Habitat and Connectivity Characteristics Citations</h4>
@@ -280,28 +286,30 @@
                         <!-- Road Crossing Characteristics -->
                         <div class="well well-sm">
                             <h3>Road Crossing Characteristics</h3>
-                            <table id="scsParamTable" class="mainParamTable table table-condensed">
-                                <table id="mainParamTable" class="mainParamTable table table-condensed">
-                                    <thead class="param-table">
-                                        <tr>
-                                            <th>Parameter Name</th>
-                                            <th>Value</th>
-                                            <th>Unit</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList"  ng-if="parameter.code.substring(0, 12) ==='RoadCrossing'">
-                                            <td>{{parameter.name}}
-                                                <i ng-show="parameter.description !== ''" ng-mouseover="showTooltip = true" ng-mouseleave="showTooltip = false" class="fa fa-info-circle"></i>
-                                                <span ng-show="showTooltip" class="culvert-tooltip">
-                                                    <span ng-bind="parameter.description"></span>
-                                                </span>
-                                            </td>
-                                            <td>{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
-                                            <td ng-bind="parameter.unit"></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                            <table id="roadCrossTable" class="roadCrossTable table table-condensed">
+                                <thead class="param-table">
+                                    <tr>
+                                        <th>Parameter Name</th>
+                                        <!-- Need this hidden column to add into csv -->
+                                        <th ng-hide="true">Parameter Description</th>
+                                        <th>Value</th>
+                                        <th>Unit</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList"  ng-if="parameter.code.substring(0, 12) ==='RoadCrossing'">
+                                        <td>{{parameter.name}}
+                                            <i ng-show="parameter.description !== ''" ng-mouseover="showTooltip = true" ng-mouseleave="showTooltip = false" class="fa fa-info-circle"></i>
+                                            <span ng-show="showTooltip" class="culvert-tooltip">
+                                                <span ng-bind="parameter.description"></span>
+                                            </span>
+                                        </td>
+                                        <!-- Need this hidden column to add into csv -->
+                                        <td ng-hide="true">{{parameter.description}}</td>
+                                        <td>{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
+                                        <td ng-bind="parameter.unit"></td>
+                                    </tr>
+                                </tbody>
                             </table>
 
                             <h4>Road Crossing Characteristics Citations</h4>
@@ -313,28 +321,30 @@
                         <!-- Peak-Flow Statistics Flow Report -->
                         <div class="well well-sm">
                             <h3>Peak-Flow Statistics Flow Report</h3>
-                            <table id="scsParamTable" class="mainParamTable table table-condensed">
-                                <table id="mainParamTable" class="mainParamTable table table-condensed">
-                                    <thead class="param-table">
-                                        <tr>
-                                            <th>Parameter Name</th>
-                                            <th>Value</th>
-                                            <th>Unit</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList"  ng-if="parameter.code.substring(0, 13) === 'PeakflowStats'">
-                                            <td>{{parameter.name}}
-                                                <i ng-mouseover="showTooltip = true" ng-mouseleave="showTooltip = false" class="fa fa-info-circle"></i>
-                                                <span ng-show="showTooltip" class="culvert-tooltip">
-                                                    <span ng-bind="parameter.description"></span>
-                                                </span>
-                                            </td>
-                                            <td>{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
-                                            <td ng-bind="parameter.unit"></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                            <table id="peakFlowTable" class="scenarioFlowTable table table-condensed">
+                                <thead class="flow-table">
+                                    <tr>
+                                        <th>Parameter Name</th>
+                                        <!-- Need this hidden column to add into csv -->
+                                        <th ng-hide="true">Parameter Description</th>
+                                        <th>Value</th>
+                                        <th>Unit</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList"  ng-if="parameter.code.substring(0, 13) === 'PeakflowStats'">
+                                        <td>{{parameter.name}}
+                                            <i ng-mouseover="showTooltip = true" ng-mouseleave="showTooltip = false" class="fa fa-info-circle"></i>
+                                            <span ng-show="showTooltip" class="culvert-tooltip">
+                                                <span ng-bind="parameter.description"></span>
+                                            </span>
+                                        </td>
+                                        <!-- Need this hidden column to add into csv -->
+                                        <td ng-hide="true">{{parameter.description}}</td>
+                                        <td>{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
+                                        <td ng-bind="parameter.unit"></td>
+                                    </tr>
+                                </tbody>
                             </table>
 
                             <h4>Peak-Flow Statistics Citations</h4>
@@ -346,28 +356,30 @@
                         <!-- Bankfull Statistics Flow Report -->
                         <div class="well well-sm">
                             <h3>Bankfull Statistics Flow Report</h3>
-                            <table id="scsParamTable" class="mainParamTable table table-condensed">
-                                <table id="mainParamTable" class="mainParamTable table table-condensed">
-                                    <thead class="param-table">
-                                        <tr>
-                                            <th>Parameter Name</th>
-                                            <th>Value</th>
-                                            <th>Unit</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList"  ng-if="parameter.code.substring(0, 13) === 'BankfullStats'">
-                                            <td>{{parameter.name}}
-                                                <i ng-mouseover="showTooltip = true" ng-mouseleave="showTooltip = false" class="fa fa-info-circle"></i>
-                                                <span ng-show="showTooltip" class="culvert-tooltip">
-                                                    <span ng-bind="parameter.description"></span>
-                                                </span>
-                                            </td>
-                                            <td>{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
-                                            <td ng-bind="parameter.unit"></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                            <table id="bankfullTable" class="scenarioFlowTable table table-condensed">
+                                <thead class="param-table">
+                                    <tr>
+                                        <th>Parameter Name</th>
+                                        <!-- Need this hidden column to add into csv -->
+                                        <th ng-hide="true">Parameter Description</th>
+                                        <th>Value</th>
+                                        <th>Unit</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList"  ng-if="parameter.code.substring(0, 13) === 'BankfullStats'">
+                                        <td>{{parameter.name}}
+                                            <i ng-mouseover="showTooltip = true" ng-mouseleave="showTooltip = false" class="fa fa-info-circle"></i>
+                                            <span ng-show="showTooltip" class="culvert-tooltip">
+                                                <span ng-bind="parameter.description"></span>
+                                            </span>
+                                        </td>
+                                        <!-- Need this hidden column to add into csv -->
+                                        <td ng-hide="true">{{parameter.description}}</td>
+                                        <td>{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
+                                        <td ng-bind="parameter.unit"></td>
+                                    </tr>
+                                </tbody>
                             </table>
 
                             <h4>Bankfull Statistics Citations</h4>
@@ -387,7 +399,7 @@
                         </ul> 
 
                         <!-- Box Culvert Table -->
-                        <div ng-if="vm.selectedTabName ==='Box'">
+                        <div ng-show="vm.selectedTabName ==='Box'">
                             
                             <h5>Preliminary 3-Sided Box Culvert Design meeting the 10- and 25-Year Flood Flows and Stream Crossing Standards</h5>
                             <div>
@@ -396,10 +408,12 @@
 
                             <div class="well well-sm">
                                 <!-- <h3>Hydraulic Model Report</h3> -->
-                                <table id="scsParamTable" class="mainParamTable table table-condensed">
-                                    <thead class="param-table">
+                                <table id="boxParamTable" class="scenarioParamTable table table-condensed">
+                                    <thead class="culvert-table">
                                         <tr>
                                             <th>Parameter Name</th>
+                                            <!-- Need this hidden column to add into csv -->
+                                            <th ng-hide="true">Parameter Description</th>
                                             <th>10-Yr Flow</th>
                                             <th>25-Yr Flow</th>
                                             <th>Meets SCS</th>
@@ -414,6 +428,8 @@
                                                             <span ng-bind="parameter.description"></span>
                                                         </span>
                                                     </td>
+                                                    <!-- Need this hidden column to add into csv -->
+                                                    <td ng-hide="true">{{parameter.description}}</td>
                                                     <td>{{parameter.value[0].value_10yr !== '' && parameter.value[0].value_10yr !== null ? parameter.value[0].value_10yr : ''}}</td>
                                                     <td>{{parameter.value[0].value_25yr !== '' && parameter.value[0].value_25yr !== null ? parameter.value[0].value_25yr : ''}}</td>
                                                     <td>{{parameter.value[0].value_scs !== '' && parameter.value[0].value_scs !== null ? parameter.value[0].value_scs : ''}}</td>
@@ -430,7 +446,7 @@
                         </div>
 
                         <!-- Arch Culvert Table -->
-                        <div ng-if="vm.selectedTabName ==='Arch'">
+                        <div ng-show="vm.selectedTabName ==='Arch'">
 
                             <h5>Preliminary 3-Sided Arch Culvert Design meeting the 10- and 25-Year Flood Flows and Stream Crossing Standards </h5>
                             <div>
@@ -439,10 +455,12 @@
 
                             <div class="well well-sm">
                                 <!-- <h3>Hydraulic Model Report</h3> -->
-                                <table id="scsParamTable" class="mainParamTable table table-condensed">
-                                    <thead class="param-table">
+                                <table id="archParamTable" class="scenarioParamTable table table-condensed">
+                                    <thead class="culvert-table">
                                         <tr>
                                             <th>Parameter Name</th>
+                                            <!-- Need this hidden column to add into csv -->
+                                            <th ng-hide="true">Parameter Description</th>
                                             <th>10-Yr Flow</th>
                                             <th>25-Yr Flow</th>
                                             <th>Meets SCS</th>
@@ -457,6 +475,8 @@
                                                     <span ng-bind="parameter.description"></span>
                                                 </span>
                                             </td>
+                                            <!-- Need this hidden column to add into csv -->
+                                            <td ng-hide="true">{{parameter.description}}</td>
                                             <td>{{parameter.value[0].value_10yr !== '' && parameter.value[0].value_10yr !== null ? parameter.value[0].value_10yr : ''}}</td>
                                             <td>{{parameter.value[0].value_25yr !== '' && parameter.value[0].value_25yr !== null ? parameter.value[0].value_25yr : ''}}</td>
                                             <td>{{parameter.value[0].value_scs !== '' && parameter.value[0].value_scs !== null ? parameter.value[0].value_scs : ''}}</td>
@@ -473,7 +493,7 @@
                         </div>
 
                         <!-- Pipe Culvert Table -->
-                        <div ng-if="vm.selectedTabName ==='Pipe'">
+                        <div ng-show="vm.selectedTabName ==='Pipe'">
 
                             <h5>Preliminary Pipe Culvert Design meeting the 10- and 25-Year Flood Flows and Stream Crossing Standards </h5>
                             <div>
@@ -482,10 +502,12 @@
 
                             <div class="well well-sm">
                                 <!-- <h3>Hydraulic Model Report</h3> -->
-                                <table id="scsParamTable" class="mainParamTable table table-condensed">
-                                    <thead class="param-table">
+                                <table id="pipeParamTable" class="scenarioParamTable table table-condensed">
+                                    <thead class="culvert-table">
                                         <tr>
                                             <th>Parameter Name</th>
+                                            <!-- Need this hidden column to add into csv -->
+                                            <th ng-hide="true">Parameter Description</th>
                                             <th>10-Yr Flow</th>
                                             <th>25-Yr Flow</th>
                                             <th>Meets SCS</th>
@@ -500,6 +522,8 @@
                                                     <span ng-bind="parameter.description"></span>
                                                 </span>
                                             </td>
+                                            <!-- Need this hidden column to add into csv -->
+                                            <td ng-hide="true">{{parameter.description}}</td>
                                             <td>{{parameter.value[0].value_10yr !== '' && parameter.value[0].value_10yr !== null ? parameter.value[0].value_10yr : ''}}</td>
                                             <td>{{parameter.value[0].value_25yr !== '' && parameter.value[0].value_25yr !== null ? parameter.value[0].value_25yr : ''}}</td>
                                             <td>{{parameter.value[0].value_scs !== '' && parameter.value[0].value_scs !== null ? parameter.value[0].value_scs : ''}}</td>
