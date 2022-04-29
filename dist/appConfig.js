@@ -77,6 +77,7 @@ configuration.queryparams =
         'GageStatsServicesNetwork': '/stations/Network?lat={0}&lon={1}&distance={2}&includeStats=true&geojson=false',
         'GageStatsServicesBounds': '/stations/Bounds?xmin={0}&xmax={1}&ymin={2}&ymax={3}&geojson=true',
         'CulvertWatersheds': '/query?where=SurveyID={0}&f=pgeojson',
+        'CulvertGeometryFiles': '/queryAttachments?DefinitionExpression=SurveyID={0}&returnUrl=true&f=pjson',
     };
 
 configuration.SupportTicketService = {
