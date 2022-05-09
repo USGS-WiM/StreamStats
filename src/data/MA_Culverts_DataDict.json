@@ -1,23 +1,9 @@
 [
       {
-        "Name": "Assessed",
-        "Code": "Assessed",
-        "Description": "NAACC Stream Crossing Assessment, 0=No and 1=Yes",
-        "Units": "",
-        "Accuracy": "",
-        "Field type": "",
-        "NAACC Field": "Yes",
-        "Maximum Extent Practicable Culvert Design ": "No",
-        "10%-AEP Design Flow Culvert Design": "No",
-        "25%-AEP Design Flow Culvert Design": "No",
-        "In Report": "No",
-        "Matchcode": "None",
-        "Citation": ""
-      },
-      {
         "Name": "NAACC Survey ID",
         "Code": "SurveyID",
         "Description": "NAACC Survey Identification",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "",
@@ -27,12 +13,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "SiteInfo",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "NAACC Code",
         "Code": "CrosCode",
         "Description": "NAACC Crossing Code (xy and decimal latitude and longitude)",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "",
@@ -42,12 +30,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "SiteInfo",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "NAACC Type",
         "Code": "CrosType",
         "Description": "NAACC Stream Crossing Type (ex. Culvert)",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "",
@@ -57,117 +47,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "SiteInfo",
-        "Citation": ""
-      },
-      {
-        "Name": "AopNaacc",
-        "Code": "AopNaacc",
-        "Description": "NAACC Stream Crossing Classification (No AOP = 1, Reduced AOP = 2, and Full AOP = 3)",
-        "Units": "",
-        "Accuracy": "",
-        "Field type": "",
-        "NAACC Field": "Yes",
-        "Maximum Extent Practicable Culvert Design ": "No",
-        "10%-AEP Design Flow Culvert Design": "No",
-        "25%-AEP Design Flow Culvert Design": "No",
-        "In Report": "No",
-        "Matchcode": "None",
-        "Citation": ""
-      },
-      {
-        "Name": "AqScNaac",
-        "Code": "AqScNaac",
-        "Description": "NAACC Aquatic Passability Score (0.00 - 1.00) ",
-        "Units": "",
-        "Accuracy": "",
-        "Field type": "",
-        "NAACC Field": "Yes",
-        "Maximum Extent Practicable Culvert Design ": "No",
-        "10%-AEP Design Flow Culvert Design": "No",
-        "25%-AEP Design Flow Culvert Design": "No",
-        "In Report": "No",
-        "Matchcode": "None",
-        "Citation": ""
-      },
-      {
-        "Name": "DateObsd",
-        "Code": "DateObsd",
-        "Description": "Date of Stream Crossing Assessment",
-        "Units": "",
-        "Accuracy": "",
-        "Field type": "",
-        "NAACC Field": "Yes",
-        "Maximum Extent Practicable Culvert Design ": "No",
-        "10%-AEP Design Flow Culvert Design": "No",
-        "25%-AEP Design Flow Culvert Design": "No",
-        "In Report": "No",
-        "Matchcode": "None",
-        "Citation": ""
-      },
-      {
-        "Name": "Eval",
-        "Code": "Eval",
-        "Description": "NAACC Aquatic Passability Evaluation (Severe barrier = 0-0.19, Significant barrier = 0.2-0.39, Moderate barrier = 0.4-0.59, Minor barrier = 0.6-0.79, Insignificant barrier = 0.8-0.99, No barrier = 1.0)",
-        "Units": "",
-        "Accuracy": "",
-        "Field type": "",
-        "NAACC Field": "Yes",
-        "Maximum Extent Practicable Culvert Design ": "No",
-        "10%-AEP Design Flow Culvert Design": "No",
-        "25%-AEP Design Flow Culvert Design": "No",
-        "In Report": "No",
-        "Matchcode": "None",
-        "Citation": ""
-      },
-      {
-        "Name": "GPSx",
-        "Code": "GPSx",
-        "Description": "NAACC GPS longitude",
-        "Units": "Decimal Degrees",
-        "Accuracy": "",
-        "Field type": "",
-        "NAACC Field": "Yes",
-        "Maximum Extent Practicable Culvert Design ": "No",
-        "10%-AEP Design Flow Culvert Design": "No",
-        "25%-AEP Design Flow Culvert Design": "No",
-        "In Report": "No",
-        "Matchcode": "None",
-        "Citation": ""
-      },
-      {
-        "Name": "GPSy",
-        "Code": "GPSy",
-        "Description": "NAACC GPS latitude",
-        "Units": "Decimal Degrees",
-        "Accuracy": "",
-        "Field type": "",
-        "NAACC Field": "Yes",
-        "Maximum Extent Practicable Culvert Design ": "No",
-        "10%-AEP Design Flow Culvert Design": "No",
-        "25%-AEP Design Flow Culvert Design": "No",
-        "In Report": "No",
-        "Matchcode": "None",
-        "Citation": ""
-      },
-      {
-        "Name": "LastUpdat",
-        "Code": "LastUpdat",
-        "Description": "Late date NAACC site file updated",
-        "Units": "",
-        "Accuracy": "",
-        "Field type": "",
-        "NAACC Field": "Yes",
-        "Maximum Extent Practicable Culvert Design ": "No",
-        "10%-AEP Design Flow Culvert Design": "No",
-        "25%-AEP Design Flow Culvert Design": "No",
-        "In Report": "No",
-        "Matchcode": "None",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Road",
         "Code": "Road",
         "Description": "NAACC Road name",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "",
@@ -177,27 +64,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "SiteInfo",
-        "Citation": ""
-      },
-      {
-        "Name": "CrState",
-        "Code": "CrState",
-        "Description": "NAACC State name",
-        "Units": "",
-        "Accuracy": "",
-        "Field type": "",
-        "NAACC Field": "Yes",
-        "Maximum Extent Practicable Culvert Design ": "No",
-        "10%-AEP Design Flow Culvert Design": "No",
-        "25%-AEP Design Flow Culvert Design": "No",
-        "In Report": "No",
-        "Matchcode": "None",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Stream Name",
         "Code": "StrmName",
         "Description": "NAACC Stream name from USGS topographic maps",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "",
@@ -207,57 +81,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "SiteInfo",
-        "Citation": ""
-      },
-      {
-        "Name": "CrTown",
-        "Code": "CrTown",
-        "Description": "NAACC Community name",
-        "Units": "",
-        "Accuracy": "",
-        "Field type": "",
-        "NAACC Field": "Yes",
-        "Maximum Extent Practicable Culvert Design ": "No",
-        "10%-AEP Design Flow Culvert Design": "No",
-        "25%-AEP Design Flow Culvert Design": "No",
-        "In Report": "No",
-        "Matchcode": "None",
-        "Citation": ""
-      },
-      {
-        "Name": "Latitude",
-        "Code": "Latitude",
-        "Description": "",
-        "Units": "",
-        "Accuracy": "",
-        "Field type": "",
-        "NAACC Field": "Yes",
-        "Maximum Extent Practicable Culvert Design ": "No",
-        "10%-AEP Design Flow Culvert Design": "No",
-        "25%-AEP Design Flow Culvert Design": "No",
-        "In Report": "No",
-        "Matchcode": "None",
-        "Citation": ""
-      },
-      {
-        "Name": "Longitud",
-        "Code": "Longitud",
-        "Description": "",
-        "Units": "",
-        "Accuracy": "",
-        "Field type": "",
-        "NAACC Field": "Yes",
-        "Maximum Extent Practicable Culvert Design ": "No",
-        "10%-AEP Design Flow Culvert Design": "No",
-        "25%-AEP Design Flow Culvert Design": "No",
-        "In Report": "No",
-        "Matchcode": "None",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Town",
         "Code": "gTown",
         "Description": "",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "",
@@ -267,72 +98,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "SiteInfo",
-        "Citation": ""
-      },
-      {
-        "Name": "NHD HUC8",
-        "Code": "gWshed",
-        "Description": "NHD HUC8 watershed name",
-        "Units": "",
-        "Accuracy": "",
-        "Field type": "",
-        "NAACC Field": "Yes",
-        "Maximum Extent Practicable Culvert Design ": "No",
-        "10%-AEP Design Flow Culvert Design": "No",
-        "25%-AEP Design Flow Culvert Design": "No",
-        "In Report": "No",
-        "Matchcode": "None",
-        "Citation": ""
-      },
-      {
-        "Name": "gState",
-        "Code": "gState",
-        "Description": "",
-        "Units": "",
-        "Accuracy": "",
-        "Field type": "",
-        "NAACC Field": "Yes",
-        "Maximum Extent Practicable Culvert Design ": "No",
-        "10%-AEP Design Flow Culvert Design": "No",
-        "25%-AEP Design Flow Culvert Design": "No",
-        "In Report": "No",
-        "Matchcode": "None",
-        "Citation": ""
-      },
-      {
-        "Name": "NoCross",
-        "Code": "NoCross",
-        "Description": "",
-        "Units": "",
-        "Accuracy": "",
-        "Field type": "",
-        "NAACC Field": "Yes",
-        "Maximum Extent Practicable Culvert Design ": "No",
-        "10%-AEP Design Flow Culvert Design": "No",
-        "25%-AEP Design Flow Culvert Design": "No",
-        "In Report": "No",
-        "Matchcode": "None",
-        "Citation": ""
-      },
-      {
-        "Name": "Approved",
-        "Code": "Approved",
-        "Description": "",
-        "Units": "",
-        "Accuracy": "",
-        "Field type": "",
-        "NAACC Field": "Yes",
-        "Maximum Extent Practicable Culvert Design ": "No",
-        "10%-AEP Design Flow Culvert Design": "No",
-        "25%-AEP Design Flow Culvert Design": "No",
-        "In Report": "No",
-        "Matchcode": "None",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Drainage Area",
         "Code": "DRNAREA",
         "Description": "Area that drains to a point on a stream",
+        "SCS Standard": "",
         "Units": "Square Miles",
         "Accuracy": "0.01",
         "Field type": "Double",
@@ -342,12 +115,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BasinChar",
-        "Citation": ""
+        "Citation": "Drainage area determine from digital elevation models derived from lidar data (Massachusetts Bureau of Geographic Information, 2022, MassGIS data: lidar terrain data, website accessed April 22, 2022 at https://www.mass.gov/info-details/massgis-data-lidar-terrain-data#:~:text=Project%20Areas%20%20%20%20Year%20%2F%20Project,%20184%20GB%20%205%20more%20rows%20).",
+        "CitationURL": ""
       },
       {
         "Name": "Mean Basin Elevation",
         "Code": "ELEV",
         "Description": "Mean basin elevation",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "1",
         "Field type": "Double",
@@ -357,12 +132,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BasinChar",
-        "Citation": "USGS Zarriello reports"
+        "Citation": "Zarriello, P.J., 2017, Magnitude of flood flows at selected annual exceedance probabilities for streams in Massachusetts: U.S. Geological Survey Scientific Investigations Report 2016–5156, 54 p., https://doi.org/10.3133/sir20165156.",
+        "CitationURL": ""
       },
       {
-        "Name": "Storage Area",
+        "Name": "Percent Storage from NLCD2006",
         "Code": "LC06STOR",
         "Description": "Percentage of water bodies and wetlands determined from the NLCD 2006",
+        "SCS Standard": "",
         "Units": "Percent",
         "Accuracy": "0.01",
         "Field type": "Double",
@@ -372,12 +149,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BasinChar",
-        "Citation": "USGS Zarriello reports"
+        "Citation": "Zarriello, P.J., 2017, Magnitude of flood flows at selected annual exceedance probabilities for streams in Massachusetts: U.S. Geological Survey Scientific Investigations Report 2016–5156, 54 p., https://doi.org/10.3133/sir20165156.",
+        "CitationURL": ""
       },
       {
-        "Name": "Mean Basin Slope",
+        "Name": "Mean Basin Slope from 10m DEM",
         "Code": "BSLDEM10M",
         "Description": "Mean basin slope computed from 10 m DEM",
+        "SCS Standard": "",
         "Units": "Percent",
         "Accuracy": "0.001",
         "Field type": "Double",
@@ -387,12 +166,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BasinChar",
-        "Citation": "USGS Zarriello reports"
+        "Citation": "Bent, G.C., and Waite, A.M., 2013, Equations for estimating bankfull channel geometry and discharge for streams in Massachusetts: U.S. Geological Survey Scientific Investigations Report 2013–5155, 62 p., http://dx.doi.org/10.3133/sir20135155.",
+        "CitationURL": ""
       },
       {
         "Name": "10-year Peakflow",
         "Code": "PK10AEP",
         "Description": "Maximum instantaneous flow that occurs with a 10% annual exceedance probability",
+        "SCS Standard": "",
         "Units": "Cubic Feet per second",
         "Accuracy": "1",
         "Field type": "Double",
@@ -402,12 +183,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "PeakflowStats",
-        "Citation": ""
+        "Citation": "Zarriello, P.J., 2017, Magnitude of flood flows at selected annual exceedance probabilities for streams in Massachusetts: U.S. Geological Survey Scientific Investigations Report 2016–5156, 54 p., https://doi.org/10.3133/sir20165156.",
+        "CitationURL": ""
       },
       {
         "Name": "25-year Peakflow",
         "Code": "PK4AEP",
         "Description": "Maximum instantaneous flow that occurs with a 4% annual exceedance probability",
+        "SCS Standard": "",
         "Units": "Cubic Feet per second",
         "Accuracy": "1",
         "Field type": "Double",
@@ -417,12 +200,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "PeakflowStats",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "50-year Peakflow",
         "Code": "PK2AEP",
         "Description": "Maximum instantaneous flow that occurs with a 2% annual exceedance probability",
+        "SCS Standard": "",
         "Units": "Cubic Feet per second",
         "Accuracy": "1",
         "Field type": "Double",
@@ -432,12 +217,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "PeakflowStats",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "100-year Peakflow",
         "Code": "PK1AEP",
         "Description": "Maximum instantaneous flow that occurs with a 1% annual exceedance probability",
+        "SCS Standard": "",
         "Units": "Cubic Feet per second",
         "Accuracy": "1",
         "Field type": "Double",
@@ -447,12 +234,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "PeakflowStats",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Bankfull Width",
         "Code": "BFWDTH",
         "Description": "Bankfull width",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -462,12 +251,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BankfullStats",
-        "Citation": "USGS Zarriello reports"
+        "Citation": "Bent, G.C., and Waite, A.M., 2013, Equations for estimating bankfull channel geometry and discharge for streams in Massachusetts: U.S. Geological Survey Scientific Investigations Report 2013–5155, 62 p., http://dx.doi.org/10.3133/sir20135155.",
+        "CitationURL": ""
       },
       {
         "Name": "Bankfull Mean Depth",
         "Code": "BFDPTH",
         "Description": "Bankfull depth",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.01",
         "Field type": "Double",
@@ -477,12 +268,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BankfullStats",
-        "Citation": "USGS Zarriello reports"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Bankfull XS Area",
         "Code": "BFAREA",
         "Description": "Bankfull area",
+        "SCS Standard": "",
         "Units": "Square Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -492,12 +285,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BankfullStats",
-        "Citation": "USGS Zarriello reports"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Coldwater Fisheries Resources ",
         "Code": "HQCOWFISH",
         "Description": "Stream is a coldwater fisheries. 0=no, 1=yes",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "short integer",
@@ -507,12 +302,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "StreamHabitat",
-        "Citation": ""
+        "Citation": "Massachusetts Division of Fisheries, 2022, Coldwater fish resources, website accessed April 30, 2022 at https://www.mass.gov/info-details/coldwater-fish-resources.",
+        "CitationURL": "https://www.mass.gov/info-details/coldwater-fish-resources"
       },
       {
         "Name": "Essential Fish Habitat",
         "Code": "HQESSFISH",
         "Description": "Stream is a essential fish habitat. 0=no, 1=yes",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "short integer",
@@ -522,12 +319,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "StreamHabitat",
-        "Citation": ""
+        "Citation": "National Oceanic and Atmospheric Administration, NOAA Fisheries, 2022, Essential fish habitat – data inventory: website accessed April 30, 2022 at https://www.habitat.noaa.gov/application/efhinventory/index.html.",
+        "CitationURL": "https://www.habitat.noaa.gov/application/efhinventory/index.html"
       },
       {
         "Name": "Anadromous Fish Run",
         "Code": "HQFISHRUN",
         "Description": "Stream is a Anadromous fish run. 0=no, 1=yes",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "short integer",
@@ -537,12 +336,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "StreamHabitat",
-        "Citation": ""
+        "Citation": "Massachusetts Bureau of Geographic Information, 2022b MassGIS data: anadromous fish, website accessed April 30, 2022 at https://www.mass.gov/info-details/massgis-data-anadromous-fish.",
+        "CitationURL": "https://www.mass.gov/info-details/massgis-data-anadromous-fish"
       },
       {
         "Name": "Areas of Critical Environmental Concerns ",
         "Code": "HQACEC",
         "Description": "Stream is an Area of Critical Environmental Concerns . Boolean value 0=no, 1=yes",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "short integer",
@@ -552,12 +353,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "StreamHabitat",
-        "Citation": ""
+        "Citation": "Massachusetts Department of Conversation and Recreation, Ecology and ACEC Program, 2022, ACEC program overview: website, accessed April 30, 2022 at https://www.mass.gov/service-details/acec-program-overview.",
+        "CitationURL": "https://www.mass.gov/service-details/acec-program-overview"
       },
       {
         "Name": "BioMap 2 Aquatic Core",
         "Code": "HQBIOMAP2",
         "Description": "Stream is a BioMap 2 Aquatic Core. Boolean value 0=no, 1=yes",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "short integer",
@@ -567,12 +370,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "StreamHabitat",
-        "Citation": ""
+        "Citation": "Massachusetts Department of Fish and Game, Natural Heritage Endangered Species Program, 2022, BioMap2 web site, accessed April 29, 2022 at http://maps.massgis.state.ma.us/dfg/biomap2.htm",
+        "CitationURL": "http://maps.massgis.state.ma.us/dfg/biomap2.htm"
       },
       {
         "Name": "Wild and Scenic Rivers",
         "Code": "HQWSRIVER",
         "Description": "Stream is a Wild and Scenic Rivers. Boolean value 0=no, 1=yes",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "short integer",
@@ -582,12 +387,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "StreamHabitat",
-        "Citation": ""
+        "Citation": "National Wild and Scenic Rivers System, 2022, Massachusetts: website, accessed April 30, 2022 at https://www.rivers.gov/massachusetts.php.",
+        "CitationURL": "https://www.rivers.gov/massachusetts.php"
       },
       {
         "Name": "Habitat Quality Score",
         "Code": "HQSCORE",
-        "Description": "Habitat quality score. Sum of yes's (1's) for coldwater fisheries, essential fish habitat, Anadromous fish run, Area of Critical Environmental Concern, Biomap2 aquatic core, and Wild and Scenic River (values can be from 0 to 6; 0 = General quality, 1 = high quality, >=2 = highest quality)",
+        "Description": "Habitat quality score. Sum of “yes's (1's) for coldwater fisheries, essential fish habitat, Anadromous fish run, Area of Critical Environmental Concern, Biomap2 aquatic core, and Wild and Scenic River (values can be from 0 – 6; 0 = General quality, 1 = high quality, >=2 = highest quality)",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "short integer",
@@ -597,12 +404,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "StreamHabitat",
-        "Citation": ""
+        "Citation": "Scott Jackson, University of Massachusetts at Amherst, written commun., 2022",
+        "CitationURL": ""
       },
       {
         "Name": "Critical Linkages",
         "Code": "RCPLINK",
         "Description": "Statewide Critical Linkages Percentile (0 = < top 20%, 1 = top 20%, 2 = top 10%, and 3 = top 5%): Derived from UMass DSL data",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "",
@@ -612,12 +421,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "StreamHabitat",
-        "Citation": ""
+        "Citation": "University of Massachusetts at Amherst, Conservation Assessment and Prioritization System, 2022, The critical linkage project: website, accessed April 30, 2022 at http://www.umasscaps.org/applications/critical-linkages.html.",
+        "CitationURL": "http://www.umasscaps.org/applications/critical-linkages.html"
       },
       {
         "Name": "Cold Water Critical Linkage ",
         "Code": "RCPCWLINK",
         "Description": "Coldwater Critical Linkages Percentile (0 = < top 30%, 1 = top 30%, 2 = top 20%, and 3 = top 10%): Derived from UMass DSL data",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "",
@@ -627,12 +438,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "StreamHabitat",
-        "Citation": ""
+        "Citation": "University of Massachusetts at Amherst, Conservation Assessment and Prioritization System, 2022, The critical linkage project: website, accessed April 30, 2022 at http://www.umasscaps.org/applications/critical-linkages.html.",
+        "CitationURL": "http://www.umasscaps.org/applications/critical-linkages.html"
       },
       {
         "Name": "Restoration Connectivity Potential Score",
         "Code": "RCPSCORE",
         "Description": "Connectivity Restoration Potential Score. Derived from Statewide Critical Linkages and Coldwater Critical Linkages values. Sum of CRPCLINK or CEPCWCLINK values. Scoring TBD.",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "",
@@ -642,12 +455,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "StreamHabitat",
-        "Citation": ""
+        "Citation": "Scott Jackson, University of Massachusetts at Amherst, written commun., 2022",
+        "CitationURL": ""
       },
       {
         "Name": "Maximum Extent Practicable (MEP) Cost Factor",
         "Code": "MEPCF",
         "Description": "Maximum Extent Practicable (MEP) Cost Factor. (HQSCORE and CRPSCORE)",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "",
@@ -657,12 +472,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "StreamHabitat",
-        "Citation": ""
+        "Citation": "Scott Jackson, University of Massachusetts at Amherst, written commun., 2022",
+        "CitationURL": ""
       },
       {
-        "Name": "Roadway Classification",
+        "Name": "Roadway Classification ",
         "Code": "HWYCLASS",
         "Description": "Roadway classification code values 0-7 classification codes TBD",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "short integer",
@@ -672,12 +489,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "RoadCrossing",
-        "Citation": ""
+        "Citation": "Massachusetts Department of Transportation, 2021, Roadway culverts, accessed October 20, 2021 at https://geo-massdot.opendata.arcgis.com/datasets/MassDOT::culverts-1/about.",
+        "CitationURL": "https://geo-massdot.opendata.arcgis.com/datasets/MassDOT::culverts-1/about"
       },
       {
-        "Name": "Hydraulic Design Flood",
+        "Name": "Hydraulic Design Flood ",
         "Code": "HWYHDF",
         "Description": "Hydraulic Design Flood Recurrence Interval, 10=10-yr, 25=25-yr, 50=50-yr, 100=100-yr",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "long integer",
@@ -687,12 +506,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "RoadCrossing",
-        "Citation": ""
+        "Citation": "Massachusetts Department of Transportation, 2020, Load and resistance factor design (LRFD) Bridge Manual – Part I, Chapter 1 bridge site exploration, January 2020 revision, 26 p, accessed October 1, 2021 at https://www.mass.gov/doc/chapter-1-bridge-site-exploration/download.",
+        "CitationURL": "https://www.mass.gov/doc/chapter-1-bridge-site-exploration/download"
       },
       {
         "Name": "Box Culvert Span",
         "Code": "BCSPN",
         "Description": "Span (s) of box culvert design",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -702,12 +523,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BCSPN",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Box Culvert Height",
         "Code": "BCHGT",
         "Description": "Height (h) of box culvert design",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -717,12 +540,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BCHGT",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Box Culvert Length",
         "Code": "BCLEN",
         "Description": "Length (l) of box culvert design",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -732,12 +557,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BCLEN",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Box Culvert Area",
         "Code": "BCAREA",
         "Description": "Area of box culvert design",
+        "SCS Standard": "",
         "Units": "Square Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -747,12 +574,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BCAREA",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Box Culvert Material",
         "Code": "BCMAT",
         "Description": "Box culvert material",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "string",
@@ -762,12 +591,82 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BCMAT",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Box Culvert Upstream Channel Invert Elevation",
+        "Code": "BCUSIE",
+        "Description": "Elevation (NAVD88) of channel invert at upstream face of box culvert",
+        "SCS Standard": "",
+        "Units": "Feet - NAVD88",
+        "Accuracy": "0.1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "BCUSIE",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Box Culvert Downstream Channel Invert Elevation",
+        "Code": "BCDSIE",
+        "Description": "Elevation (NAVD88) of channel invert at downstream face of box culvert",
+        "SCS Standard": "",
+        "Units": "Feet - NAVD88",
+        "Accuracy": "0.1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "BCDSIE",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Box Culvert Road Deck Elevation",
+        "Code": "BCRDE",
+        "Description": "Elevation (NAVD88) of road deck over box culvert",
+        "SCS Standard": "",
+        "Units": "Feet - NAVD88",
+        "Accuracy": "0.1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "BCRDE",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Box Culvert Maximum Flow to Pass Through",
+        "Code": "BCMAXQ",
+        "Description": "Maximum flood flow recurrence interval to pass through box culvert without backwater",
+        "SCS Standard": "",
+        "Units": "Year",
+        "Accuracy": "1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "BCMAXQ",
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Box SCS Culvert Type",
         "Code": "BCTYPE",
         "Description": "Culvert design (3-sided box culvert meets SCS) ",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "string",
@@ -777,12 +676,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BCTYPE",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2013"
+        "Citation": "Massachusetts Department of Fish and Game, Division of Ecological Restoration, 2012, Massachusetts stream crossing handbook, 2nd edition, accessed August 1, 2021 at https://www.mass.gov/doc/massachusetts-stream-crossing-handbook/download.",
+        "CitationURL": "https://www.mass.gov/doc/massachusetts-stream-crossing-handbook/download"
       },
       {
         "Name": "Box SCS Embedment",
         "Code": "BCEMBT",
         "Description": "Not applicable for 3-sided box culvert designs",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "string",
@@ -792,12 +693,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BCEMBT",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2014"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Box SCS Substrate",
         "Code": "BCSUBT",
         "Description": "Material at culvert bottom (Natural meets SCS)",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "string",
@@ -807,12 +710,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BCSUBT",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2015"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Box SCS Velocity Ratio ",
         "Code": "BCVELR",
         "Description": "Comparable velocity ratio: TBD - variety of flows or a low-flow such as the 90% flow duration",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -822,12 +727,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BCVELR",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2016"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Box SCS Span Ratio",
         "Code": "BCSPNR",
         "Description": "Ratio of box culvert span to bankfull width. (Meets SCS >= 1.2 )",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -837,12 +744,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BCSPNR",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2017"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Box SCS Openness Ratio",
         "Code": "BCOR",
         "Description": "Ratio of box culvert cross-sectional area to length. (Meets SCS >= 0.82)",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.01",
         "Field type": "Double",
@@ -852,12 +761,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BCOR",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2018"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Arch Culvert Span",
         "Code": "ACSPN",
         "Description": "Span (s) of arch culvert design",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -867,12 +778,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "ACSPN",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Arch Culvert Height",
         "Code": "ACHGT",
         "Description": "Height (h) of arch culvert design",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -882,12 +795,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "ACHGT",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Arch Culvert Length",
         "Code": "ACLEN",
         "Description": "Length (l) of arch culvert design",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -897,12 +812,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "ACLEN",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Arch Culvert Area",
         "Code": "ACAREA",
         "Description": "Area of arch culvert design",
+        "SCS Standard": "",
         "Units": "Square Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -912,12 +829,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "ACAREA",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Arch Culvert Material",
         "Code": "ACMAT",
         "Description": "Arch culvert material",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "string",
@@ -927,12 +846,82 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "ACMAT",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Arch Culvert Upstream Channel Invert Elevation",
+        "Code": "ACUSIE",
+        "Description": "Elevation (NAVD88) of channel invert at upstream face of arch culvert",
+        "SCS Standard": "",
+        "Units": "Feet - NAVD88",
+        "Accuracy": "0.1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "ACUSIE",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Arch Culvert Downstream Channel Invert Elevation",
+        "Code": "ACDSIE",
+        "Description": "Elevation (NAVD88) of channel invert at downstream face of arch culvert",
+        "SCS Standard": "",
+        "Units": "Feet - NAVD88",
+        "Accuracy": "0.1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "ACDSIE",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Arch Culvert Road Deck Elevation",
+        "Code": "ACRDE",
+        "Description": "Elevation (NAVD88) of road deck over arch culvert",
+        "SCS Standard": "",
+        "Units": "Feet - NAVD88",
+        "Accuracy": "0.1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "ACRDE",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Arch Culvert Maximum Flow to Pass Through",
+        "Code": "ACMAXQ",
+        "Description": "Maximum flood flow recurrence interval to pass through arch culvert without backwater",
+        "SCS Standard": "",
+        "Units": "Year",
+        "Accuracy": "1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "ACMAXQ",
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Arch SCS Culvert Type",
         "Code": "ACTYPE",
         "Description": "Culvert design (3-sided arch culvert meets SCS) ",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "string",
@@ -942,12 +931,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "ACTYPE",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2013"
+        "Citation": "Massachusetts Department of Fish and Game, Division of Ecological Restoration, 2012, Massachusetts stream crossing handbook, 2nd edition, accessed August 1, 2021 at https://www.mass.gov/doc/massachusetts-stream-crossing-handbook/download.",
+        "CitationURL": "https://www.mass.gov/doc/massachusetts-stream-crossing-handbook/download"
       },
       {
         "Name": "Arch SCS Embedment",
         "Code": "ACEMBT",
         "Description": "Not applicable for 3-sided arch culvert designs",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "string",
@@ -957,12 +948,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "ACEMBT",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2014"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Arch SCS Substrate",
         "Code": "ACSUBT",
         "Description": "Material at culvert bottom (Natural meets SCS)",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "string",
@@ -972,12 +965,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "ACSUBT",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2015"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Arch SCS Velocity Ratio ",
         "Code": "ACVELR",
         "Description": "Comparable velocity ratio: TBD - variety of flows or a low-flow such as the 90% flow duration",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -987,12 +982,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "ACVELR",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2016"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Arch SCS Span Ratio",
         "Code": "ACSPNR",
         "Description": "Ratio of arch culvert span to bankfull width. (Meets SCS >= 1.2 )",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -1002,12 +999,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "ACSPNR",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2017"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Arch SCS Openness Ratio",
         "Code": "ACOR",
         "Description": "Ratio of arch culvert cross-sectional area to length. (Meets SCS >= 0.82)",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.01",
         "Field type": "Double",
@@ -1017,12 +1016,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "ACOR",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2018"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Pipe Culvert Diameter",
         "Code": "PCDIAM",
         "Description": "Diameter (d) of pipe culvert design",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -1032,12 +1033,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "PCDIAM",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Pipe Culvert Length",
         "Code": "PCLEN",
         "Description": "Length (l) of pipe culvert design (l)",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -1047,12 +1050,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "PCLEN",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Pipe Culvert Area",
         "Code": "PCAREA",
         "Description": "Area of pipe culvert design",
+        "SCS Standard": "",
         "Units": "Square Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -1062,12 +1067,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "PCAREA",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Pipe Culvert Material",
         "Code": "PCMAT",
         "Description": "Pipe culvert material",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "string",
@@ -1077,12 +1084,82 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "PCMAT",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Pipe Culvert Upstream Channel Invert Elevation",
+        "Code": "PCUSIE",
+        "Description": "Elevation (NAVD88) of channel invert at upstream face of pipe culvert",
+        "SCS Standard": "",
+        "Units": "Feet - NAVD88",
+        "Accuracy": "0.1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "PCUSIE",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Pipe Culvert Downstream Channel Invert Elevation",
+        "Code": "PCDSIE",
+        "Description": "Elevation (NAVD88) of channel invert at downstream face of pipe culvert",
+        "SCS Standard": "",
+        "Units": "Feet - NAVD88",
+        "Accuracy": "0.1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "PCDSIE",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Pipe Culvert Road Deck Elevation",
+        "Code": "PCRDE",
+        "Description": "Elevation (NAVD88) of road deck over pipe culvert",
+        "SCS Standard": "",
+        "Units": "Feet - NAVD88",
+        "Accuracy": "0.1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "PCRDE",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Pipe Culvert Maximum Flow to Pass Through",
+        "Code": "PCMAXQ",
+        "Description": "Maximum flood flow recurrence interval to pass through pipe culvert without backwater",
+        "SCS Standard": "",
+        "Units": "Year",
+        "Accuracy": "1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "PCMAXQ",
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Pipe SCS Culvert Type",
         "Code": "PCTYPE",
         "Description": "Culvert design (pipe does not meets SCS) ",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "string",
@@ -1092,12 +1169,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "PCTYPE",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2013"
+        "Citation": "Massachusetts Department of Fish and Game, Division of Ecological Restoration, 2012, Massachusetts stream crossing handbook, 2nd edition, accessed August 1, 2021 at https://www.mass.gov/doc/massachusetts-stream-crossing-handbook/download.",
+        "CitationURL": "https://www.mass.gov/doc/massachusetts-stream-crossing-handbook/download"
       },
       {
         "Name": "Pipe SCS Embedment",
         "Code": "PCEMBT",
         "Description": "Depth of buried section of culvert. (2 ft meets SCS for diameters < 8ft) ",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "short integer",
@@ -1107,12 +1186,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "PCEMBT",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2014"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Pipe SCS Substrate",
         "Code": "PCSUBT",
         "Description": "Material at culvert bottom (Natural meets SCS)",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "string",
@@ -1122,12 +1203,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "PCSUBT",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2015"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Pipe SCS Velocity Ratio ",
         "Code": "PCVELR",
         "Description": "Comparable velocity ratio: TBD - variety of flows or a low-flow such as the 90% flow duration",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -1137,12 +1220,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "PCVELR",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2016"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Pipe SCS Span Ratio",
         "Code": "PCSPNR",
         "Description": "Ratio of pipe culvert span to bankfull width. (Meets SCS >= 1.2 )",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -1152,12 +1237,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "PCSPNR",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2017"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Pipe SCS Openness Ratio",
         "Code": "PCOR",
         "Description": "Ratio of pipe culvert cross-sectional area to length. (Meets SCS >= 0.82)",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.01",
         "Field type": "Double",
@@ -1167,12 +1254,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "PCOR",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2018"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Box Culvert Span",
         "Code": "BCSPN10YR",
         "Description": "Span (s) of box culvert design for 10-year recurrence interval flood flow",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -1182,12 +1271,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BCSPN",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Box Culvert Height",
         "Code": "BCHGT10YR",
         "Description": "Height (h) of box culvert design for 10-year recurrence interval flood flow",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -1197,12 +1288,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BCHGT",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Box Culvert Length",
         "Code": "BCLEN10YR",
         "Description": "Length (l) of box culvert design for 10-year recurrence interval flood flow",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -1212,12 +1305,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BCLEN",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Box Culvert Area",
         "Code": "BCAREA10YR",
         "Description": "Area of box culvert design for 10-year recurrence interval flood flow",
+        "SCS Standard": "",
         "Units": "Square Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -1227,12 +1322,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BCAREA",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Box Culvert Material",
         "Code": "BCMAT10YR",
         "Description": "Box culvert material for 10-year recurrence interval flood flow",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "string",
@@ -1242,12 +1339,82 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BCMAT",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
-        "Name": "Box SCS Culvert Type",
+        "Name": "Box Culvert Upstream Channel Invert Elevation",
+        "Code": "BCUSIE10YR",
+        "Description": "Elevation (NAVD88) of channel invert at upstream face of box culvert",
+        "SCS Standard": "",
+        "Units": "Feet - NAVD88",
+        "Accuracy": "0.1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "BCUSIE",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Box Culvert Downstream Channel Invert Elevation",
+        "Code": "BCDSIE10YR",
+        "Description": "Elevation (NAVD88) of channel invert at downstream face of box culvert",
+        "SCS Standard": "",
+        "Units": "Feet - NAVD88",
+        "Accuracy": "0.1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "BCDSIE",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Box Culvert Road Deck Elevation",
+        "Code": "BCRDE10YR",
+        "Description": "Elevation (NAVD88) of road deck over box culvert",
+        "SCS Standard": "",
+        "Units": "Feet - NAVD88",
+        "Accuracy": "0.1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "BCRDE",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Box Culvert Maximum Flow to Pass Through",
+        "Code": "BCMAXQ10YR",
+        "Description": "Maximum flood flow recurrence interval to pass through box culvert without backwater",
+        "SCS Standard": "",
+        "Units": "Year",
+        "Accuracy": "1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "BCMAXQ",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Box Culvert Type",
         "Code": "BCTYPE10YR",
         "Description": "Culvert design (3-sided box culvert meets SCS) ",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "string",
@@ -1257,12 +1424,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BCTYPE",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2013"
+        "Citation": "Massachusetts Department of Fish and Game, Division of Ecological Restoration, 2012, Massachusetts stream crossing handbook, 2nd edition, accessed August 1, 2021 at https://www.mass.gov/doc/massachusetts-stream-crossing-handbook/download.",
+        "CitationURL": "https://www.mass.gov/doc/massachusetts-stream-crossing-handbook/download"
       },
       {
-        "Name": "Box SCS Embedment",
+        "Name": "Box Embedment",
         "Code": "BCEMBT10YR",
         "Description": "Not applicable for 3-sided box culvert designs",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "string",
@@ -1272,12 +1441,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BCEMBT",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2014"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
-        "Name": "Box SCS Substrate",
+        "Name": "Box Substrate",
         "Code": "BCSUBT10YR",
         "Description": "Material at culvert bottom (Natural meets SCS)",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "string",
@@ -1287,12 +1458,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BCSUBT",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2015"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
-        "Name": "Box SCS Velocity Ratio ",
+        "Name": "Box Velocity Ratio ",
         "Code": "BCVELR10YR",
         "Description": "Comparable velocity ratio: TBD - variety of flows or a low-flow such as the 90% flow duration",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -1302,12 +1475,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BCVELR",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2016"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
-        "Name": "Box SCS Span Ratio",
+        "Name": "Box Span Ratio",
         "Code": "BCSPNR10YR",
         "Description": "Ratio of box culvert span to bankfull width. (Meets SCS >= 1.2 )",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -1317,12 +1492,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BCSPNR",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2017"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
-        "Name": "Box SCS Openness Ratio",
+        "Name": "Box Openness Ratio",
         "Code": "BCOR10YR",
         "Description": "Ratio of box culvert cross-sectional area to length. (Meets SCS >= 0.82)",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.01",
         "Field type": "Double",
@@ -1332,12 +1509,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BCOR",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2018"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Arch Culvert Span",
         "Code": "ACSPN10YR",
         "Description": "Span (s) of arch culvert design for 10-year recurrence interval flood flow",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -1347,12 +1526,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "ACSPN",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Arch Culvert Height",
         "Code": "ACHGT10YR",
         "Description": "Height (h) of arch culvert design for 10-year recurrence interval flood flow",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -1362,12 +1543,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "ACHGT",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Arch Culvert Length",
         "Code": "ACLEN10YR",
         "Description": "Length (l) of arch culvert design for 10-year recurrence interval flood flow",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -1377,12 +1560,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "ACLEN",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Arch Culvert Area",
         "Code": "ACAREA10YR",
         "Description": "Area of arch culvert design for 10-year recurrence interval flood flow",
+        "SCS Standard": "",
         "Units": "Square Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -1392,12 +1577,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "ACAREA",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Arch Culvert Material",
         "Code": "ACMAT10YR",
         "Description": "Arch culvert material for 10-year recurrence interval flood flow",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "string",
@@ -1407,12 +1594,82 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "ACMAT",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
-        "Name": "Arch SCS Culvert Type",
+        "Name": "Arch Culvert Upstream Channel Invert Elevation",
+        "Code": "ACUSIE10YR",
+        "Description": "Elevation (NAVD88) of channel invert at upstream face of arch culvert",
+        "SCS Standard": "",
+        "Units": "Feet - NAVD88",
+        "Accuracy": "0.1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "ACUSIE",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Arch Culvert Downstream Channel Invert Elevation",
+        "Code": "ACDSIE10YR",
+        "Description": "Elevation (NAVD88) of channel invert at downstream face of arch culvert",
+        "SCS Standard": "",
+        "Units": "Feet - NAVD88",
+        "Accuracy": "0.1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "ACDSIE",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Arch Culvert Road Deck Elevation",
+        "Code": "ACRDE10YR",
+        "Description": "Elevation (NAVD88) of road deck over arch culvert",
+        "SCS Standard": "",
+        "Units": "Feet - NAVD88",
+        "Accuracy": "0.1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "ACRDE",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Arch Culvert Maximum Flow to Pass Through",
+        "Code": "ACMAXQ10YR",
+        "Description": "Maximum flood flow recurrence interval to pass through arch culvert without backwater",
+        "SCS Standard": "",
+        "Units": "Year",
+        "Accuracy": "1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "ACMAXQ",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Arch Culvert Type",
         "Code": "ACTYPE10YR",
         "Description": "Culvert design (3-sided arch culvert meets SCS) ",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "string",
@@ -1422,12 +1679,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "ACTYPE",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2013"
+        "Citation": "Massachusetts Department of Fish and Game, Division of Ecological Restoration, 2012, Massachusetts stream crossing handbook, 2nd edition, accessed August 1, 2021 at https://www.mass.gov/doc/massachusetts-stream-crossing-handbook/download.",
+        "CitationURL": "https://www.mass.gov/doc/massachusetts-stream-crossing-handbook/download"
       },
       {
-        "Name": "Arch SCS Embedment",
+        "Name": "Arch Embedment",
         "Code": "ACEMBT10YR",
         "Description": "Not applicable for 3-sided arch culvert designs",
+        "SCS Standard": "NA",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "string",
@@ -1437,12 +1696,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "ACEMBT",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2014"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
-        "Name": "Arch SCS Substrate",
+        "Name": "Arch Substrate",
         "Code": "ACSUBT10YR",
         "Description": "Material at culvert bottom (Natural meets SCS)",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "string",
@@ -1452,12 +1713,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "ACSUBT",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2015"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
-        "Name": "Arch SCS Velocity Ratio ",
+        "Name": "Arch Velocity Ratio ",
         "Code": "ACVELR10YR",
         "Description": "Comparable velocity ratio: TBD - variety of flows or a low-flow such as the 90% flow duration",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -1467,12 +1730,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "ACVELR",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2016"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
-        "Name": "Arch SCS Span Ratio",
+        "Name": "Arch Span Ratio",
         "Code": "ACSPNR10YR",
         "Description": "Ratio of arch culvert span to bankfull width. (Meets SCS >= 1.2 )",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -1482,12 +1747,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "ACSPNR",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2017"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
-        "Name": "Arch SCS Openness Ratio",
+        "Name": "Arch Openness Ratio",
         "Code": "ACOR10YR",
         "Description": "Ratio of arch culvert cross-sectional area to length. (Meets SCS >= 0.82)",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.01",
         "Field type": "Double",
@@ -1497,12 +1764,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "ACOR",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2018"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Pipe Culvert Diameter",
         "Code": "PCDIAM10YR",
         "Description": "Diameter (d) of pipe culvert design for 10-year recurrence interval flood flow",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -1512,12 +1781,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "PCDIAM",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Pipe Culvert Length",
         "Code": "PCLEN10YR",
         "Description": "Length (l) of pipe culvert design for 10-year recurrence interval flood flow",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -1527,12 +1798,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "PCLEN",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Pipe Culvert Area",
         "Code": "PCAREA10YR",
         "Description": "Area of pipe culvert design for 10-year recurrence interval flood flow",
+        "SCS Standard": "",
         "Units": "Square Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -1542,12 +1815,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "PCAREA",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Pipe Culvert Material",
         "Code": "PCMAT10YR",
         "Description": "Pipe culvert material for 10-year recurrence interval flood flow",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "string",
@@ -1557,12 +1832,82 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "PCMAT",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
-        "Name": "Pipe SCS Culvert Type",
+        "Name": "Pipe Culvert Upstream Channel Invert Elevation",
+        "Code": "PCUSIE10YR",
+        "Description": "Elevation (NAVD88) of channel invert at upstream face of pipe culvert",
+        "SCS Standard": "",
+        "Units": "Feet - NAVD88",
+        "Accuracy": "0.1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "PCUSIE",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Pipe Culvert Downstream Channel Invert Elevation",
+        "Code": "PCDSIE10YR",
+        "Description": "Elevation (NAVD88) of channel invert at downstream face of pipe culvert",
+        "SCS Standard": "",
+        "Units": "Feet - NAVD88",
+        "Accuracy": "0.1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "PCDSIE",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Pipe Culvert Road Deck Elevation",
+        "Code": "PCRDE10YR",
+        "Description": "Elevation (NAVD88) of road deck over pipe culvert",
+        "SCS Standard": "",
+        "Units": "Feet - NAVD88",
+        "Accuracy": "0.1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "PCRDE",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Pipe Culvert Maximum Flow to Pass Through",
+        "Code": "PCMAXQ10YR",
+        "Description": "Maximum flood flow recurrence interval to pass through pipe culvert without backwater",
+        "SCS Standard": "",
+        "Units": "Year",
+        "Accuracy": "1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "PCMAXQ",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Pipe Culvert Type",
         "Code": "PCTYPE10YR",
         "Description": "Culvert design (pipe does not meet SCS) ",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "string",
@@ -1572,12 +1917,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "PCTYPE",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2013"
+        "Citation": "Massachusetts Department of Fish and Game, Division of Ecological Restoration, 2012, Massachusetts stream crossing handbook, 2nd edition, accessed August 1, 2021 at https://www.mass.gov/doc/massachusetts-stream-crossing-handbook/download.",
+        "CitationURL": "https://www.mass.gov/doc/massachusetts-stream-crossing-handbook/download"
       },
       {
-        "Name": "Pipe SCS Embedment",
+        "Name": "Pipe Embedment",
         "Code": "PCEMBT10YR",
         "Description": "Depth of buried section of culvert. (2 ft meets SCS for diameters < 8ft) ",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "short integer",
@@ -1587,12 +1934,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "PCEMBT",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2014"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
-        "Name": "Pipe SCS Substrate",
+        "Name": "Pipe Substrate",
         "Code": "PCSUBT10YR",
         "Description": "Material at culvert bottom (Natural meets SCS)",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "string",
@@ -1602,12 +1951,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "PCSUBT",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2015"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
-        "Name": "Pipe SCS Velocity Ratio ",
+        "Name": "Pipe Velocity Ratio ",
         "Code": "PCVELR10YR",
         "Description": "Comparable velocity ratio: TBD - variety of flows or a low-flow such as the 90% flow duration",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -1617,12 +1968,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "PCVELR",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2016"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
-        "Name": "Pipe SCS Span Ratio",
+        "Name": "Pipe Span Ratio",
         "Code": "PCSPNR10YR",
         "Description": "Ratio of pipe culvert span to bankfull width. (Meets SCS >= 1.2 )",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -1632,12 +1985,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "PCSPNR",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2017"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Pipe MA SCS Openness Ratio",
         "Code": "PCOR10YR",
         "Description": "Ratio of pipe culvert cross-sectional area to length. (Meets SCS >= 0.82)",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.01",
         "Field type": "Double",
@@ -1647,12 +2002,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "PCOR",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2018"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Box Culvert Span",
         "Code": "BCSPN25YR",
         "Description": "Span (s) of box culvert design for 25-year recurrence interval flood flow",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -1662,12 +2019,14 @@
         "25%-AEP Design Flow Culvert Design": "Yes",
         "In Report": "Yes",
         "Matchcode": "BCSPN",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Box Culvert Height",
         "Code": "BCHT25YR",
         "Description": "Height (h) of box culvert design for 25-year recurrence interval flood flow",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -1677,12 +2036,14 @@
         "25%-AEP Design Flow Culvert Design": "Yes",
         "In Report": "Yes",
         "Matchcode": "BCHGT",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Box Culvert Length",
         "Code": "BCLEN25YR",
         "Description": "Length (l) of box culvert design for 25-year recurrence interval flood flow",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -1692,12 +2053,14 @@
         "25%-AEP Design Flow Culvert Design": "Yes",
         "In Report": "Yes",
         "Matchcode": "BCLEN",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Box Culvert Area",
         "Code": "BCAREA25YR",
         "Description": "Area of box culvert design for 25-year recurrence interval flood flow",
+        "SCS Standard": "",
         "Units": "Square Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -1707,12 +2070,14 @@
         "25%-AEP Design Flow Culvert Design": "Yes",
         "In Report": "Yes",
         "Matchcode": "BCAREA",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Box Culvert Material",
         "Code": "BCMAT25YR",
         "Description": "Box culvert material for 25-year recurrence interval flood flow",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "string",
@@ -1722,12 +2087,82 @@
         "25%-AEP Design Flow Culvert Design": "Yes",
         "In Report": "Yes",
         "Matchcode": "BCMAT",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
-        "Name": "Box SCS Culvert Type",
+        "Name": "Box Culvert Upstream Channel Invert Elevation",
+        "Code": "BCUSIE25YR",
+        "Description": "Elevation (NAVD88) of channel invert at upstream face of box culvert",
+        "SCS Standard": "",
+        "Units": "Feet - NAVD88",
+        "Accuracy": "0.1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "BCUSIE",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Box Culvert Downstream Channel Invert Elevation",
+        "Code": "BCDSIE25YR",
+        "Description": "Elevation (NAVD88) of channel invert at downstream face of box culvert",
+        "SCS Standard": "",
+        "Units": "Feet - NAVD88",
+        "Accuracy": "0.1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "BCDSIE",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Box Culvert Road Deck Elevation",
+        "Code": "BCRDE25YR",
+        "Description": "Elevation (NAVD88) of road deck over box culvert",
+        "SCS Standard": "",
+        "Units": "Feet - NAVD88",
+        "Accuracy": "0.1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "BCRDE",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Box Culvert Maximum Flow to Pass Through",
+        "Code": "BCMAXQ25YR",
+        "Description": "Maximum flood flow recurrence interval to pass through box culvert without backwater",
+        "SCS Standard": "",
+        "Units": "Year",
+        "Accuracy": "1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "BCMAXQ",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Box Culvert Type",
         "Code": "BCTYPE25YR",
         "Description": "Culvert design (3-sided box culvert meets SCS) ",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "string",
@@ -1737,12 +2172,14 @@
         "25%-AEP Design Flow Culvert Design": "Yes",
         "In Report": "Yes",
         "Matchcode": "BCTYPE",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2013"
+        "Citation": "Massachusetts Department of Fish and Game, Division of Ecological Restoration, 2012, Massachusetts stream crossing handbook, 2nd edition, accessed August 1, 2021 at https://www.mass.gov/doc/massachusetts-stream-crossing-handbook/download.",
+        "CitationURL": "https://www.mass.gov/doc/massachusetts-stream-crossing-handbook/download"
       },
       {
-        "Name": "Box SCS Embedment",
+        "Name": "Box Embedment",
         "Code": "BCEMBT25YR",
         "Description": "Not applicable for 3-sided box culvert designs",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "string",
@@ -1752,12 +2189,14 @@
         "25%-AEP Design Flow Culvert Design": "Yes",
         "In Report": "Yes",
         "Matchcode": "BCEMBT",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2014"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
-        "Name": "Box SCS Substrate",
+        "Name": "Box Substrate",
         "Code": "BCSUBT25YR",
         "Description": "Material at culvert bottom (Natural meets SCS)",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "string",
@@ -1767,12 +2206,14 @@
         "25%-AEP Design Flow Culvert Design": "Yes",
         "In Report": "Yes",
         "Matchcode": "BCSUBT",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2015"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
-        "Name": "Box SCS Velocity Ratio ",
+        "Name": "Box  Velocity Ratio ",
         "Code": "BCVELR25YR",
         "Description": "Comparable velocity ratio: TBD - variety of flows or a low-flow such as the 90% flow duration",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -1782,12 +2223,14 @@
         "25%-AEP Design Flow Culvert Design": "Yes",
         "In Report": "Yes",
         "Matchcode": "BCVELR",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2016"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
-        "Name": "Box SCS Span Ratio",
+        "Name": "Box Span Ratio",
         "Code": "BCSPBW25YR",
         "Description": "Ratio of box culvert span to bankfull width. (Meets SCS >= 1.2 )",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -1797,12 +2240,14 @@
         "25%-AEP Design Flow Culvert Design": "Yes",
         "In Report": "Yes",
         "Matchcode": "BCSPNR",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2017"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
-        "Name": "Box SCS Openness Ratio",
+        "Name": "Box Openness Ratio",
         "Code": "BCOR25YR",
         "Description": "Ratio of box culvert cross-sectional area to length. (Meets SCS >= 0.82)",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.01",
         "Field type": "Double",
@@ -1812,12 +2257,14 @@
         "25%-AEP Design Flow Culvert Design": "Yes",
         "In Report": "Yes",
         "Matchcode": "BCOR",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2018"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Arch Culvert Span",
         "Code": "ACSPN25YR",
         "Description": "Span(s) of arch culvert design for 25-year recurrence interval flood flow",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -1827,12 +2274,14 @@
         "25%-AEP Design Flow Culvert Design": "Yes",
         "In Report": "Yes",
         "Matchcode": "ACSPN",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Arch Culvert Height",
         "Code": "ACHT25YR",
         "Description": "Height (h) of arch culvert design for 25-year recurrence interval flood flow",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -1842,12 +2291,14 @@
         "25%-AEP Design Flow Culvert Design": "Yes",
         "In Report": "Yes",
         "Matchcode": "ACHGT",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Arch Culvert Length",
         "Code": "ACLEN25YR",
         "Description": "Length (l) of arch culvert design for 25-year recurrence interval flood flow",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -1857,12 +2308,14 @@
         "25%-AEP Design Flow Culvert Design": "Yes",
         "In Report": "Yes",
         "Matchcode": "ACLEN",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Arch Culvert Area",
         "Code": "ACAREA25YR",
         "Description": "Area of arch culvert design for 25-year recurrence interval flood flow",
+        "SCS Standard": "",
         "Units": "Square Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -1872,12 +2325,14 @@
         "25%-AEP Design Flow Culvert Design": "Yes",
         "In Report": "Yes",
         "Matchcode": "ACAREA",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Arch Culvert Material",
         "Code": "ACMAT25YR",
         "Description": "Arch culvert material for 25-year recurrence interval flood flow",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "string",
@@ -1887,12 +2342,82 @@
         "25%-AEP Design Flow Culvert Design": "Yes",
         "In Report": "Yes",
         "Matchcode": "ACMAT",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Arch Culvert Upstream Channel Invert Elevation",
+        "Code": "ACUSIE25YR",
+        "Description": "Elevation (NAVD88) of channel invert at upstream face of arch culvert",
+        "SCS Standard": "",
+        "Units": "Feet - NAVD88",
+        "Accuracy": "0.1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "ACUSIE",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Arch Culvert Downstream Channel Invert Elevation",
+        "Code": "ACDSIE25YR",
+        "Description": "Elevation (NAVD88) of channel invert at downstream face of arch culvert",
+        "SCS Standard": "",
+        "Units": "Feet - NAVD88",
+        "Accuracy": "0.1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "ACDSIE",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Arch Culvert Road Deck Elevation",
+        "Code": "ACRDE25YR",
+        "Description": "Elevation (NAVD88) of road deck over arch culvert",
+        "SCS Standard": "",
+        "Units": "Feet - NAVD88",
+        "Accuracy": "0.1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "ACRDE",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Arch Culvert Maximum Flow to Pass Through",
+        "Code": "ACMAXQ25YR",
+        "Description": "Maximum flood flow recurrence interval to pass through arch culvert without backwater",
+        "SCS Standard": "",
+        "Units": "Year",
+        "Accuracy": "1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "ACMAXQ",
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Arch SCS Culvert Type",
         "Code": "ACTYPE25YR",
         "Description": "Culvert design (3-sided arch culvert meets SCS) ",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "string",
@@ -1902,12 +2427,14 @@
         "25%-AEP Design Flow Culvert Design": "Yes",
         "In Report": "Yes",
         "Matchcode": "ACTYPE",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2013"
+        "Citation": "Massachusetts Department of Fish and Game, Division of Ecological Restoration, 2012, Massachusetts stream crossing handbook, 2nd edition, accessed August 1, 2021 at https://www.mass.gov/doc/massachusetts-stream-crossing-handbook/download.",
+        "CitationURL": "https://www.mass.gov/doc/massachusetts-stream-crossing-handbook/download"
       },
       {
         "Name": "Arch SCS Embedment",
         "Code": "ACEMBT25YR",
         "Description": "Not applicable for 3-sided arch culvert designs",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "string",
@@ -1917,12 +2444,14 @@
         "25%-AEP Design Flow Culvert Design": "Yes",
         "In Report": "Yes",
         "Matchcode": "ACEMBT",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2014"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Arch SCS Substrate",
         "Code": "ACSUBT25YR",
         "Description": "Material at culvert bottom (Natural meets SCS)",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "string",
@@ -1932,12 +2461,14 @@
         "25%-AEP Design Flow Culvert Design": "Yes",
         "In Report": "Yes",
         "Matchcode": "ACSUBT",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2015"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Arch SCS Velocity Ratio ",
         "Code": "ACVELR25YR",
         "Description": "Comparable velocity ratio: TBD - variety of flows or a low-flow such as the 90% flow duration",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -1947,12 +2478,14 @@
         "25%-AEP Design Flow Culvert Design": "Yes",
         "In Report": "Yes",
         "Matchcode": "ACVELR",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2016"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Arch SCS Span Ratio",
         "Code": "ACSPBW25YR",
         "Description": "Ratio of arch culvert span to bankfull width. (Meets SCS >= 1.2 )",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -1962,12 +2495,14 @@
         "25%-AEP Design Flow Culvert Design": "Yes",
         "In Report": "Yes",
         "Matchcode": "ACSPNR",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2017"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Arch SCS Openness Ratio",
         "Code": "ACOR25YR",
         "Description": "Ratio of arch culvert cross-sectional area to length. (Meets SCS >= 0.82)",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.01",
         "Field type": "Double",
@@ -1977,12 +2512,14 @@
         "25%-AEP Design Flow Culvert Design": "Yes",
         "In Report": "Yes",
         "Matchcode": "ACOR",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2018"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Pipe Culvert Diameter",
         "Code": "PCDIAM25YR",
         "Description": "Diameter (d) of pipe culvert design for 25-year recurrence interval flood flow",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -1992,12 +2529,14 @@
         "25%-AEP Design Flow Culvert Design": "Yes",
         "In Report": "Yes",
         "Matchcode": "PCDIAM",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Pipe Culvert Length",
         "Code": "PCLEN25YR",
         "Description": "Length (l) of pipe culvert design for 25-year recurrence interval flood flow",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -2007,12 +2546,14 @@
         "25%-AEP Design Flow Culvert Design": "Yes",
         "In Report": "Yes",
         "Matchcode": "PCLEN",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Pipe Culvert Area",
         "Code": "PCAREA25YR",
         "Description": "Area of pipe culvert design for 25-year recurrence interval flood flow",
+        "SCS Standard": "",
         "Units": "Square Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -2022,12 +2563,14 @@
         "25%-AEP Design Flow Culvert Design": "Yes",
         "In Report": "Yes",
         "Matchcode": "PCAREA",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Pipe Culvert Material",
         "Code": "PCMAT25YR",
         "Description": "Pipe culvert material for 25-year recurrence interval flood flow",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "string",
@@ -2037,12 +2580,82 @@
         "25%-AEP Design Flow Culvert Design": "Yes",
         "In Report": "Yes",
         "Matchcode": "PCMAT",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Pipe Culvert Upstream Channel Invert Elevation",
+        "Code": "PCUSIE25YR",
+        "Description": "Elevation (NAVD88) of channel invert at upstream face of pipe culvert",
+        "SCS Standard": "",
+        "Units": "Feet - NAVD88",
+        "Accuracy": "0.1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "PCUSIE",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Pipe Culvert Downstream Channel Invert Elevation",
+        "Code": "PCDSIE25YR",
+        "Description": "Elevation (NAVD88) of channel invert at downstream face of pipe culvert",
+        "SCS Standard": "",
+        "Units": "Feet - NAVD88",
+        "Accuracy": "0.1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "PCDSIE",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Pipe Culvert Road Deck Elevation",
+        "Code": "PCRDE25YR",
+        "Description": "Elevation (NAVD88) of road deck over pipe culvert",
+        "SCS Standard": "",
+        "Units": "Feet - NAVD88",
+        "Accuracy": "0.1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "PCRDE",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Pipe Culvert Maximum Flow to Pass Through",
+        "Code": "PCMAXQ25YR",
+        "Description": "Maximum flood flow recurrence interval to pass through pipe culvert without backwater",
+        "SCS Standard": "",
+        "Units": "Year",
+        "Accuracy": "1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "PCMAXQ",
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Pipe Culvert Type",
         "Code": "PCTYPE25YR",
         "Description": "Culvert design (closed pipe does not meets SCS) ",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "string",
@@ -2052,12 +2665,14 @@
         "25%-AEP Design Flow Culvert Design": "Yes",
         "In Report": "Yes",
         "Matchcode": "PCTYPE",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2013"
+        "Citation": "Massachusetts Department of Fish and Game, Division of Ecological Restoration, 2012, Massachusetts stream crossing handbook, 2nd edition, accessed August 1, 2021 at https://www.mass.gov/doc/massachusetts-stream-crossing-handbook/download.",
+        "CitationURL": "https://www.mass.gov/doc/massachusetts-stream-crossing-handbook/download"
       },
       {
-        "Name": "Pipe SCS Embedment",
+        "Name": "Pipe Embedment",
         "Code": "PCEMBT25YR",
         "Description": "Depth of buried section of culvert. (2 ft Meets SCS for diameters < 8ft) ",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "short integer",
@@ -2067,12 +2682,14 @@
         "25%-AEP Design Flow Culvert Design": "Yes",
         "In Report": "Yes",
         "Matchcode": "PCEMBT",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2014"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
-        "Name": "Pipe SCS Substrate",
+        "Name": "Pipe Substrate",
         "Code": "PCSUBT25YR",
         "Description": "Material at culvert bottom (Natural meets SCS)",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "string",
@@ -2082,12 +2699,14 @@
         "25%-AEP Design Flow Culvert Design": "Yes",
         "In Report": "Yes",
         "Matchcode": "PCSUBT",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2015"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
-        "Name": "Pipe SCS Velocity Ratio ",
+        "Name": "Pipe Velocity Ratio ",
         "Code": "PCVELR25YR",
         "Description": "Comparable velocity ratio: TBD - variety of flows or a low-flow such as the 90% flow duration",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -2097,12 +2716,14 @@
         "25%-AEP Design Flow Culvert Design": "Yes",
         "In Report": "Yes",
         "Matchcode": "PCVELR",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2016"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
-        "Name": "Pipe SCS Span Ratio",
+        "Name": "Pipe Span Ratio",
         "Code": "PCSPBW25YR",
         "Description": "Ratio of pipe culvert span to bankfull width. (Meets SCS >= 1.2 )",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -2112,12 +2733,14 @@
         "25%-AEP Design Flow Culvert Design": "Yes",
         "In Report": "Yes",
         "Matchcode": "PCSPNR",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2017"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
-        "Name": "Pipe SCS Openness Ratio",
+        "Name": "Pipe Openness Ratio",
         "Code": "PCOR25YR",
         "Description": "Ratio of pipe culvert cross-sectional area to length. (Meets SCS >= 0.82)",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.01",
         "Field type": "Double",
@@ -2127,12 +2750,14 @@
         "25%-AEP Design Flow Culvert Design": "Yes",
         "In Report": "Yes",
         "Matchcode": "PCOR",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2018"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Box Culvert Span",
         "Code": "BCSPNSCS",
         "Description": "Span (s) of box culvert design",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -2142,12 +2767,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BCSPN",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Box Culvert Height",
         "Code": "BCHGTSCS",
         "Description": "Height (h) of box culvert design",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -2157,12 +2784,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BCHGT",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Box Culvert Length",
         "Code": "BCLENSCS",
         "Description": "Length (l) of box culvert design",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -2172,12 +2801,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BCLEN",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Box Culvert Area",
         "Code": "BCAREASCS",
         "Description": "Area of box culvert design",
+        "SCS Standard": "",
         "Units": "Square Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -2187,12 +2818,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BCAREA",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Box Culvert Material",
         "Code": "BCMATSCS",
         "Description": "Box culvert material",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "string",
@@ -2202,12 +2835,82 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BCMAT",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Box Culvert Upstream Channel Invert Elevation",
+        "Code": "BCUSIESCS",
+        "Description": "Elevation (NAVD88) of channel invert at upstream face of box culvert",
+        "SCS Standard": "",
+        "Units": "Feet - NAVD88",
+        "Accuracy": "0.1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "BCUSIE",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Box Culvert Downstream Channel Invert Elevation",
+        "Code": "BCDSIESCS",
+        "Description": "Elevation (NAVD88) of channel invert at downstream face of box culvert",
+        "SCS Standard": "",
+        "Units": "Feet - NAVD88",
+        "Accuracy": "0.1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "BCDSIE",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Box Culvert Road Deck Elevation",
+        "Code": "BCRDESCS",
+        "Description": "Elevation (NAVD88) of road deck over box culvert",
+        "SCS Standard": "",
+        "Units": "Feet - NAVD88",
+        "Accuracy": "0.1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "BCRDE",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Box Culvert Maximum Flow to Pass Through",
+        "Code": "BCMAXQSCS",
+        "Description": "Maximum flood flow recurrence interval to pass through box culvert without backwater",
+        "SCS Standard": "",
+        "Units": "Year",
+        "Accuracy": "1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "BCMAXQ",
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Box SCS Culvert Type",
         "Code": "BCTYPESCS",
         "Description": "Culvert design (3-sided box culvert meets SCS) ",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "string",
@@ -2217,12 +2920,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BCTYPE",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2013"
+        "Citation": "Massachusetts Department of Fish and Game, Division of Ecological Restoration, 2012, Massachusetts stream crossing handbook, 2nd edition, accessed August 1, 2021 at https://www.mass.gov/doc/massachusetts-stream-crossing-handbook/download.",
+        "CitationURL": "https://www.mass.gov/doc/massachusetts-stream-crossing-handbook/download"
       },
       {
         "Name": "Box SCS Embedment",
         "Code": "BCEMBTSCS",
         "Description": "Not applicable for 3-sided box culvert designs",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "string",
@@ -2232,12 +2937,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BCEMBT",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2014"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Box SCS Substrate",
         "Code": "BCSUBTSCS",
         "Description": "Material at culvert bottom (Natural meets SCS)",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "string",
@@ -2247,12 +2954,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BCSUBT",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2015"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Box SCS Velocity Ratio ",
         "Code": "BCVELRSCS",
         "Description": "Comparable velocity ratio: TBD - variety of flows or a low-flow such as the 90% flow duration",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -2262,12 +2971,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BCVELR",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2016"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Box SCS Span Ratio",
         "Code": "BCSPNRSCS",
         "Description": "Ratio of box culvert span to bankfull width. (Meets SCS >= 1.2 )",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -2277,12 +2988,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BCSPNR",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2017"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Box SCS Openness Ratio",
         "Code": "BCORSCS",
         "Description": "Ratio of box culvert cross-sectional area to length. (Meets SCS >= 0.82)",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.01",
         "Field type": "Double",
@@ -2292,12 +3005,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BCOR",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2018"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Arch Culvert Span",
         "Code": "ACSPNSCS",
         "Description": "Span (s) of arch culvert design",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -2307,12 +3022,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "ACSPN",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Arch Culvert Height",
         "Code": "ACHGTSCS",
         "Description": "Height (h) of arch culvert design",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -2322,12 +3039,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "ACHGT",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Arch Culvert Length",
         "Code": "ACLENSCS",
         "Description": "Length (l) of arch culvert design",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -2337,12 +3056,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "ACLEN",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Arch Culvert Area",
         "Code": "ACAREASCS",
         "Description": "Area of arch culvert design",
+        "SCS Standard": "",
         "Units": "Square Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -2352,12 +3073,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "ACAREA",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Arch Culvert Material",
         "Code": "ACMATSCS",
         "Description": "Arch culvert material",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "string",
@@ -2367,12 +3090,82 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "ACMAT",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Arch Culvert Upstream Channel Invert Elevation",
+        "Code": "ACUSIESCS",
+        "Description": "Elevation (NAVD88) of channel invert at upstream face of arch culvert",
+        "SCS Standard": "",
+        "Units": "Feet - NAVD88",
+        "Accuracy": "0.1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "ACUSIE",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Arch Culvert Downstream Channel Invert Elevation",
+        "Code": "ACDSIESCS",
+        "Description": "Elevation (NAVD88) of channel invert at downstream face of arch culvert",
+        "SCS Standard": "",
+        "Units": "Feet - NAVD88",
+        "Accuracy": "0.1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "ACDSIE",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Arch Culvert Road Deck Elevation",
+        "Code": "ACRDESCS",
+        "Description": "Elevation (NAVD88) of road deck over arch culvert",
+        "SCS Standard": "",
+        "Units": "Feet - NAVD88",
+        "Accuracy": "0.1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "ACRDE",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Arch Culvert Maximum Flow to Pass Through",
+        "Code": "ACMAXQSCS",
+        "Description": "Maximum flood flow recurrence interval to pass through arch culvert without backwater",
+        "SCS Standard": "",
+        "Units": "Year",
+        "Accuracy": "1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "ACMAXQ",
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Arch SCS Culvert Type",
         "Code": "ACTYPESCS",
         "Description": "Culvert design (3-sided arch culvert meets SCS) ",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "string",
@@ -2382,12 +3175,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "ACTYPE",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2013"
+        "Citation": "Massachusetts Department of Fish and Game, Division of Ecological Restoration, 2012, Massachusetts stream crossing handbook, 2nd edition, accessed August 1, 2021 at https://www.mass.gov/doc/massachusetts-stream-crossing-handbook/download.",
+        "CitationURL": "https://www.mass.gov/doc/massachusetts-stream-crossing-handbook/download"
       },
       {
         "Name": "Arch SCS Embedment",
         "Code": "ACEMBTSCS",
         "Description": "Not applicable for 3-sided arch culvert designs",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "string",
@@ -2397,12 +3192,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "ACEMBT",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2014"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Arch SCS Substrate",
         "Code": "ACSUBTSCS",
         "Description": "Material at culvert bottom (Natural meets SCS)",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "string",
@@ -2412,12 +3209,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "ACSUBT",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2015"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Arch SCS Velocity Ratio ",
         "Code": "ACVELRSCS",
         "Description": "Comparable velocity ratio: TBD - variety of flows or a low-flow such as the 90% flow duration",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -2427,12 +3226,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "ACVELR",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2016"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Arch SCS Span Ratio",
         "Code": "ACSPNRSCS",
         "Description": "Ratio of arch culvert span to bankfull width. (Meets SCS >= 1.2 )",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -2442,12 +3243,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "ACSPNR",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2017"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Arch SCS Openness Ratio",
         "Code": "ACORSCS",
         "Description": "Ratio of arch culvert cross-sectional area to length. (Meets SCS >= 0.82)",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.01",
         "Field type": "Double",
@@ -2457,12 +3260,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "ACOR",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2018"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Pipe Culvert Diameter",
         "Code": "PCDIAMSCS",
         "Description": "Diameter (d) of pipe culvert design",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -2472,12 +3277,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "PCDIAM",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Pipe Culvert Length",
         "Code": "PCLENSCS",
         "Description": "Length (l) of pipe culvert design",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -2487,12 +3294,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "PCLEN",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Pipe Culvert Area",
         "Code": "PCAREASCS",
         "Description": "Area of pipe culvert design",
+        "SCS Standard": "",
         "Units": "Square Feet",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -2502,12 +3311,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "PCAREA",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Pipe Culvert Material",
         "Code": "PCMATSCS",
         "Description": "Pipe culvert material",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "string",
@@ -2517,12 +3328,82 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "PCMAT",
-        "Citation": ""
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Pipe Culvert Upstream Channel Invert Elevation",
+        "Code": "PCUSIESCS",
+        "Description": "Elevation (NAVD88) of channel invert at upstream face of pipe culvert",
+        "SCS Standard": "",
+        "Units": "Feet - NAVD88",
+        "Accuracy": "0.1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "PCUSIE",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Pipe Culvert Downstream Channel Invert Elevation",
+        "Code": "PCDSIESCS",
+        "Description": "Elevation (NAVD88) of channel invert at downstream face of pipe culvert",
+        "SCS Standard": "",
+        "Units": "Feet - NAVD88",
+        "Accuracy": "0.1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "PCDSIE",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Pipe Culvert Road Deck Elevation",
+        "Code": "PCRDESCS",
+        "Description": "Elevation (NAVD88) of road deck over pipe culvert",
+        "SCS Standard": "",
+        "Units": "Feet - NAVD88",
+        "Accuracy": "0.1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "PCRDE",
+        "Citation": "",
+        "CitationURL": ""
+      },
+      {
+        "Name": "Pipe Culvert Maximum Flow to Pass Through",
+        "Code": "PCMAXQSCS",
+        "Description": "Maximum flood flow recurrence interval to pass through pipe culvert without backwater",
+        "SCS Standard": "",
+        "Units": "Year",
+        "Accuracy": "1",
+        "Field type": "Double",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "Yes",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "PCMAXQ",
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Pipe SCS Culvert Type",
         "Code": "PCTYPESCS",
         "Description": "Culvert design (pipe does not meet SCS) ",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "string",
@@ -2532,12 +3413,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "PCTYPE",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2013"
+        "Citation": "Massachusetts Department of Fish and Game, Division of Ecological Restoration, 2012, Massachusetts stream crossing handbook, 2nd edition, accessed August 1, 2021 at https://www.mass.gov/doc/massachusetts-stream-crossing-handbook/download.",
+        "CitationURL": "https://www.mass.gov/doc/massachusetts-stream-crossing-handbook/download"
       },
       {
         "Name": "Pipe SCS Embedment",
         "Code": "PCEMBTSCS",
         "Description": "Depth of buried section of culvert. (2 ft meets SCS for diameters < 8ft) ",
+        "SCS Standard": "",
         "Units": "Feet",
         "Accuracy": "0.1",
         "Field type": "short integer",
@@ -2547,12 +3430,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "PCEMBT",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2014"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Pipe SCS Substrate",
         "Code": "PCSUBTSCS",
         "Description": "Material at culvert bottom (Natural meets SCS)",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
         "Field type": "string",
@@ -2562,12 +3447,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "PCSUBT",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2015"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Pipe SCS Velocity Ratio ",
         "Code": "PCVELRSCS",
         "Description": "Comparable velocity ratio: TBD - variety of flows or a low-flow such as the 90% flow duration",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -2577,12 +3464,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "PCVELR",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2016"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Pipe SCS Span Ratio",
         "Code": "PCSPNRSCS",
         "Description": "Ratio of pipe culvert span to bankfull width. (Meets MRSCS >= 1.2 )",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.1",
         "Field type": "Double",
@@ -2592,12 +3481,14 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "PCSPNR",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2017"
+        "Citation": "",
+        "CitationURL": ""
       },
       {
         "Name": "Pipe SCS Openness Ratio",
         "Code": "PCORSCS",
         "Description": "Ratio of pipe culvert cross-sectional area to length. (Meets SCS >= 0.82)",
+        "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.01",
         "Field type": "Double",
@@ -2607,9 +3498,7 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "PCOR",
-        "Citation": "Singler et al MA Streams Crossing Handbook 2018"
-      },
-      {
-        "Name": ""
+        "Citation": "",
+        "CitationURL": ""
       }
     ]

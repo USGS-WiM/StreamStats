@@ -1408,6 +1408,11 @@ div.leaflet-top > .elevation {
     line-break: auto;
 }
 
+.culvert-citation {
+    margin: 10px;
+    font-size: 12px;
+}
+
 /*
     Extra Buttons
 */
