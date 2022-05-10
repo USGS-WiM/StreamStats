@@ -403,16 +403,16 @@ var StreamStats;
                                         }
                                         if (param.Citation !== '') {
                                             if ((code.substring(0, 2) === 'BC' || code.substring(0, 2) === 'PC' || code.substring(0, 2) === 'AC') && (citedCodeList.indexOf(code) === -1 || citationList.indexOf(param.Citation) === -1)) {
-                                                citations.push({ code: code, citation: param.Citation });
+                                                citations.push({ code: code, citation: param.Citation, citationURL: param.CitationURL });
                                                 citedCodeList.push(code);
                                                 citationList.push(param.Citation);
                                             }
                                             else if ((code.substring(0, 13) === 'BankfullStats' || code.substring(0, 13) === 'PeakflowStats') && (citationStatList.indexOf(param.Citation) === -1)) {
-                                                statCitations.push({ code: code, citation: param.Citation });
+                                                statCitations.push({ code: code, citation: param.Citation, citationURL: param.CitationURL });
                                                 citationStatList.push(param.Citation);
                                             }
                                             else if (citationList.indexOf(param.Citation) === -1) {
-                                                citations.push({ code: code, citation: param.Citation });
+                                                citations.push({ code: code, citation: param.Citation, citationURL: param.CitationURL });
                                                 citedCodeList.push(code);
                                                 citationList.push(param.Citation);
                                             }

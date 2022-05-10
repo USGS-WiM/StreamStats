@@ -208,8 +208,9 @@
                             </table>
 
                             <h4>Site Information Citations</h4>
-                            <div ng-repeat="citation in vm.studyAreaService.culvertCitations" ng-if="citation.code.substring(0, 8) === 'SiteInfo'">
-                                <span>{{citation.citation}}</span>
+                            <div class="culvert-citation" ng-repeat="citation in vm.studyAreaService.culvertCitations" ng-if="citation.code.substring(0, 8) === 'SiteInfo'">
+                                <a ng-if="citation.citationURL !== ''" href="{{citation.citationURL}}" target="_blank">{{citation.citation}}</a>
+                                <span ng-if="citation.citationURL === ''">{{citation.citation}}</span>
                             </div>
                         </div>
                         
@@ -243,8 +244,9 @@
                             </table>
 
                             <h4>Basin Characteristics Citations</h4>
-                            <div ng-repeat="citation in vm.studyAreaService.culvertCitations" ng-if="citation.code.substring(0, 9) ==='BasinChar'">
-                                <span>{{citation.citation}}</span>
+                            <div class="culvert-citation" ng-repeat="citation in vm.studyAreaService.culvertCitations" ng-if="citation.code.substring(0, 9) ==='BasinChar'">
+                                <a ng-if="citation.citationURL !== ''" href="{{citation.citationURL}}" target="_blank">{{citation.citation}}</a>
+                                <span ng-if="citation.citationURL === ''">{{citation.citation}}</span>
                             </div>
                         </div>
 
@@ -278,8 +280,9 @@
                             </table>
 
                             <h4>Stream Habitat and Connectivity Characteristics Citations</h4>
-                            <div ng-repeat="citation in vm.studyAreaService.culvertCitations" ng-if="citation.code.substring(0, 13) ==='StreamHabitat'">
-                                <span>{{citation.citation}}</span>
+                            <div class="culvert-citation" ng-repeat="citation in vm.studyAreaService.culvertCitations" ng-if="citation.code.substring(0, 13) ==='StreamHabitat'">
+                                <a ng-if="citation.citationURL !== ''" href="{{citation.citationURL}}" target="_blank">{{citation.citation}}</a>
+                                <span ng-if="citation.citationURL === ''">{{citation.citation}}</span>
                             </div>
                         </div>
 
@@ -313,8 +316,9 @@
                             </table>
 
                             <h4>Road Crossing Characteristics Citations</h4>
-                            <div ng-repeat="citation in vm.studyAreaService.culvertCitations" ng-if="citation.code.substring(0, 12) ==='RoadCrossing'">
-                                <span>{{citation.citation}}</span>
+                            <div class="culvert-citation" ng-repeat="citation in vm.studyAreaService.culvertCitations" ng-if="citation.code.substring(0, 12) ==='RoadCrossing'">
+                                <a ng-if="citation.citationURL !== ''" href="{{citation.citationURL}}" target="_blank">{{citation.citation}}</a>
+                                <span ng-if="citation.citationURL === ''">{{citation.citation}}</span>
                             </div>
                         </div>
 
@@ -348,8 +352,9 @@
                             </table>
 
                             <h4>Peak-Flow Statistics Citations</h4>
-                            <div ng-repeat="citation in vm.studyAreaService.culvertStatCitations" ng-if="citation.code.substring(0, 13) === 'PeakflowStats'">
-                                <span>{{citation.citation}}</span>
+                            <div class="culvert-citation" ng-repeat="citation in vm.studyAreaService.culvertStatCitations" ng-if="citation.code.substring(0, 13) === 'PeakflowStats'">
+                                <a ng-if="citation.citationURL !== ''" href="{{citation.citationURL}}" target="_blank">{{citation.citation}}</a>
+                                <span ng-if="citation.citationURL === ''">{{citation.citation}}</span>
                             </div>
                         </div>
 
@@ -383,8 +388,9 @@
                             </table>
 
                             <h4>Bankfull Statistics Citations</h4>
-                            <div ng-repeat="citation in vm.studyAreaService.culvertStatCitations" ng-if="citation.code.substring(0, 13) === 'BankfullStats'">
-                                <span>{{citation.citation}}</span>
+                            <div class="culvert-citation" ng-repeat="citation in vm.studyAreaService.culvertStatCitations" ng-if="citation.code.substring(0, 13) === 'BankfullStats'">
+                                <a ng-if="citation.citationURL !== ''" href="{{citation.citationURL}}" target="_blank">{{citation.citation}}</a>
+                                <span ng-if="citation.citationURL === ''">{{citation.citation}}</span>
                             </div>
                         </div>
 
@@ -439,8 +445,9 @@
                                 </table>
 
                                 <h4>Hydraulic Model Citations</h4>
-                                <div ng-repeat="citation in vm.studyAreaService.culvertCitations" ng-if="citation.code.substring(0, 2) ==='BC'">
-                                    <span>{{citation.citation}}</span>
+                                <div class="culvert-citation" ng-repeat="citation in vm.studyAreaService.culvertCitations" ng-if="citation.code.substring(0, 2) ==='BC'">
+                                    <a ng-if="citation.citationURL !== ''" href="{{citation.citationURL}}" target="_blank">{{citation.citation}}</a>
+                                    <span ng-if="citation.citationURL === ''">{{citation.citation}}</span>
                                 </div>
                             </div>
                         </div>
@@ -486,8 +493,9 @@
                                 </table>
 
                                 <h4>Hydraulic Model Citations</h4>
-                                <div ng-repeat="citation in vm.studyAreaService.culvertCitations" ng-if="citation.code.substring(0, 2) ==='AC'">
-                                    <span>{{citation.citation}}</span>
+                                <div class="culvert-citation" ng-repeat="citation in vm.studyAreaService.culvertCitations" ng-if="citation.code.substring(0, 2) ==='AC'">
+                                    <a ng-if="citation.citationURL !== ''" href="{{citation.citationURL}}" target="_blank">{{citation.citation}}</a>
+                                    <span ng-if="citation.citationURL === ''">{{citation.citation}}</span>
                                 </div>
                             </div>
                         </div>
@@ -533,8 +541,9 @@
                                 </table>
 
                                 <h4>Hydraulic Model Citations</h4>
-                                <div ng-repeat="citation in vm.studyAreaService.culvertCitations" ng-if="citation.code.substring(0, 2) ==='PC'">
-                                    <span>{{citation.citation}}</span>
+                                <div class="culvert-citation" ng-repeat="citation in vm.studyAreaService.culvertCitations" ng-if="citation.code.substring(0, 2) ==='PC'">
+                                    <a ng-if="citation.citationURL !== ''" href="{{citation.citationURL}}" target="_blank">{{citation.citation}}</a>
+                                    <span ng-if="citation.citationURL === ''">{{citation.citation}}</span>
                                 </div>
                             </div>
                         </div>
