@@ -116,7 +116,7 @@
         "In Report": "Yes",
         "Matchcode": "BasinChar",
         "Citation": "Drainage area determine from digital elevation models derived from lidar data (Massachusetts Bureau of Geographic Information, 2022, MassGIS data: lidar terrain data, website accessed April 22, 2022 at https://www.mass.gov/info-details/massgis-data-lidar-terrain-data#:~:text=Project%20Areas%20%20%20%20Year%20%2F%20Project,%20184%20GB%20%205%20more%20rows%20).",
-        "CitationURL": ""
+        "CitationURL": "https://www.mass.gov/info-details/massgis-data-lidar-terrain-data#:~:text=Project%20Areas%20%20%20%20Year%20%2F%20Project,%20184%20GB%20%205%20more%20rows%20"
       },
       {
         "Name": "Mean Basin Elevation",
@@ -133,7 +133,7 @@
         "In Report": "Yes",
         "Matchcode": "BasinChar",
         "Citation": "Zarriello, P.J., 2017, Magnitude of flood flows at selected annual exceedance probabilities for streams in Massachusetts: U.S. Geological Survey Scientific Investigations Report 2016–5156, 54 p., https://doi.org/10.3133/sir20165156.",
-        "CitationURL": ""
+        "CitationURL": "https://doi.org/10.3133/sir20165156"
       },
       {
         "Name": "Percent Storage from NLCD2006",
@@ -150,7 +150,7 @@
         "In Report": "Yes",
         "Matchcode": "BasinChar",
         "Citation": "Zarriello, P.J., 2017, Magnitude of flood flows at selected annual exceedance probabilities for streams in Massachusetts: U.S. Geological Survey Scientific Investigations Report 2016–5156, 54 p., https://doi.org/10.3133/sir20165156.",
-        "CitationURL": ""
+        "CitationURL": "https://doi.org/10.3133/sir20165156"
       },
       {
         "Name": "Mean Basin Slope from 10m DEM",
@@ -167,7 +167,7 @@
         "In Report": "Yes",
         "Matchcode": "BasinChar",
         "Citation": "Bent, G.C., and Waite, A.M., 2013, Equations for estimating bankfull channel geometry and discharge for streams in Massachusetts: U.S. Geological Survey Scientific Investigations Report 2013–5155, 62 p., http://dx.doi.org/10.3133/sir20135155.",
-        "CitationURL": ""
+        "CitationURL": "http://dx.doi.org/10.3133/sir20135155"
       },
       {
         "Name": "10-year Peakflow",
@@ -184,7 +184,7 @@
         "In Report": "Yes",
         "Matchcode": "PeakflowStats",
         "Citation": "Zarriello, P.J., 2017, Magnitude of flood flows at selected annual exceedance probabilities for streams in Massachusetts: U.S. Geological Survey Scientific Investigations Report 2016–5156, 54 p., https://doi.org/10.3133/sir20165156.",
-        "CitationURL": ""
+        "CitationURL": "https://doi.org/10.3133/sir20165156"
       },
       {
         "Name": "25-year Peakflow",
@@ -252,7 +252,7 @@
         "In Report": "Yes",
         "Matchcode": "BankfullStats",
         "Citation": "Bent, G.C., and Waite, A.M., 2013, Equations for estimating bankfull channel geometry and discharge for streams in Massachusetts: U.S. Geological Survey Scientific Investigations Report 2013–5155, 62 p., http://dx.doi.org/10.3133/sir20135155.",
-        "CitationURL": ""
+        "CitationURL": "http://dx.doi.org/10.3133/sir20135155"
       },
       {
         "Name": "Bankfull Mean Depth",
