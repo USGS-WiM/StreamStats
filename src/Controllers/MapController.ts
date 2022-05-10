@@ -1484,10 +1484,10 @@ module StreamStats.Controllers {
             } else if(LayerName == "MeanAugustBaseflow") { // Update MeanAugustBaseflow style
                 this.leafletData.getLayers("mainMap").then((maplayers: any) => { 
                     if (this.center.zoom == 12) {
-                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.76 - 1.33 cfs/mi^2"
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.76 - 1.34 cfs/mi^2"
                         this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[1].label = "0.55 - 0.76 cfs/mi^2"
                         this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[2].label = "0.40 - 0.55 cfs/mi^2"
-                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[3].label = "0.08 - 0.40 cfs/mi^2"
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[3].label = "0.09 - 0.40 cfs/mi^2"
                         maplayers.overlays["MeanAugustBaseflow_region"].setStyle(function (feature) {
                             var color = '#000000';
                             if (feature.properties.AUGAVGBF >= .76){ 
@@ -1504,10 +1504,10 @@ module StreamStats.Controllers {
                             }
                         })
                     } else if (this.center.zoom == 13 || this.center.zoom == 14) {
-                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.60 - 1.2 cfs/mi^2"
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.60 - 1.34 cfs/mi^2"
                         this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[1].label = "0.45 - 0.60 cfs/mi^2"
                         this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[2].label = "0.30 - 0.45 cfs/mi^2"
-                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[3].label = "0.10 - 0.30 cfs/mi^2"
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[3].label = "0.09 - 0.30 cfs/mi^2"
                         maplayers.overlays["MeanAugustBaseflow_region"].setStyle(function (feature) {
                             var color = '#000000';
                             if (feature.properties.AUGAVGBF >= .6) { 
@@ -1524,10 +1524,10 @@ module StreamStats.Controllers {
                             }
                         })
                     } else if (this.center.zoom == 15) {
-                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.50 - 0.81 cfs/mi^2"
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.50 - 1.34 cfs/mi^2"
                         this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[1].label = "0.40 - 0.50 cfs/mi^2"
                         this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[2].label = "0.20 - 0.40 cfs/mi^2"
-                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[3].label = "0.10 - 0.20 cfs/mi^2"
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[3].label = "0.09 - 0.20 cfs/mi^2"
                         maplayers.overlays["MeanAugustBaseflow_region"].setStyle(function (feature) {
                             var color = '#000000';
                             if (feature.properties.AUGAVGBF >= .5) { 
@@ -1544,10 +1544,10 @@ module StreamStats.Controllers {
                             }
                         })
                     } else if (this.center.zoom == 16) {
-                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.35 - 0.8 cfs/mi^2"
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.35 - 1.34 cfs/mi^2"
                         this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[1].label = "0.25 - 0.35 cfs/mi^2"
                         this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[2].label = "0.15 - 0.25 cfs/mi^2"
-                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[3].label = "0.1 - 0.15 cfs/mi^2"
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[3].label = "0.09 - 0.15 cfs/mi^2"
                         maplayers.overlays["MeanAugustBaseflow_region"].setStyle(function (feature) {
                             var color = '#000000';
                             if (feature.properties.AUGAVGBF >= .35){ 
