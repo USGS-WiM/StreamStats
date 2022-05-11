@@ -79,6 +79,7 @@ module StreamStats.Services {
         loadingDrainageArea: boolean;
         loadAllIndexGages();
         allIndexGages;
+        extensionResultsChanged;
     }
 
     interface IDateRange {
@@ -1284,13 +1285,14 @@ module StreamStats.Services {
         private onNSSExtensionResultsChanged(sender: any, e: NSSEventArgs) {
             
             e.results.forEach(ex => {
-
                 var item = this.selectedStudyArea.NSS_Extensions.filter(f => f.code == ex.code);
                 if (item.length < 1) return;
                 //should only be 1
                 item[0].parameters = angular.copy(ex.parameters);
                 if (item[0].result === undefined) item[0].result = [];
+                if (this.extensionResultsChanged == 0) item[0].result = [];
                 item[0].result[this.extensionResultsChanged] = angular.copy(ex.result);
+                item[0].result[this.extensionResultsChanged].name = "test"+this.extensionResultsChanged;
             });
             this.extensionResultsChanged++;
         }

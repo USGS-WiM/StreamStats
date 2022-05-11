@@ -45,6 +45,7 @@ var StreamStats;
                 this.sectionCollapsed = [];
                 this.basinCharCollapsed = false;
                 this.collapsed = false;
+                this.selectedFDCTMTabName = "test1";
                 this.initMap();
                 $scope.$on('leafletDirectiveMap.reportMap.load', function (event, args) {
                     _this.showFeatures();
@@ -108,6 +109,12 @@ var StreamStats;
                 enumerable: false,
                 configurable: true
             });
+            ReportController.prototype.selectFDCTMTab = function (tabname) {
+                if (this.selectedFDCTMTabName == tabname)
+                    return;
+                console.log(tabname);
+                this.selectedFDCTMTabName = tabname;
+            };
             ReportController.prototype.downloadCSV = function () {
                 var _this = this;
                 this.angulartics.eventTrack('Download', { category: 'Report', label: 'CSV' });

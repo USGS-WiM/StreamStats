@@ -101,6 +101,7 @@ module StreamStats.Controllers {
         private environment: string;
         public NSSServicesVersion: string;
         public SSServicesVersion = '1.2.22'; // TODO: This needs to pull from the services when ready
+        public selectedFDCTMTabName: string;
 
         public sectionCollapsed: Array<any>;
         public basinCharCollapsed;
@@ -155,6 +156,7 @@ module StreamStats.Controllers {
             this.sectionCollapsed = [];
             this.basinCharCollapsed = false;
             this.collapsed = false;
+            this.selectedFDCTMTabName = "test1";
             this.initMap();
             
 
@@ -176,6 +178,12 @@ module StreamStats.Controllers {
 
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
+        public selectFDCTMTab(tabname: string): void {
+            if (this.selectedFDCTMTabName == tabname) return;
+            console.log(tabname)
+            this.selectedFDCTMTabName = tabname;
+        }
+
         public downloadCSV() {
 
             //ga event

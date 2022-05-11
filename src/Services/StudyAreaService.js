@@ -903,7 +903,10 @@ var StreamStats;
                     item[0].parameters = angular.copy(ex.parameters);
                     if (item[0].result === undefined)
                         item[0].result = [];
+                    if (_this.extensionResultsChanged == 0)
+                        item[0].result = [];
                     item[0].result[_this.extensionResultsChanged] = angular.copy(ex.result);
+                    item[0].result[_this.extensionResultsChanged].name = "test" + _this.extensionResultsChanged;
                 });
                 this.extensionResultsChanged++;
             };
