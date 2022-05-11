@@ -185,7 +185,7 @@ module StreamStats.Services {
         public extensionsConfigured = false;
         public loadingDrainageArea = false;
         public allIndexGages;
-
+        public extensionResultsChanged = 0;
         // freshdesk
         private _freshdeskCreds: any;
         public get freshdeskCredentials(): any {
@@ -1275,7 +1275,7 @@ module StreamStats.Services {
             //this.queryRegressionRegions();
         }
         private onNSSExtensionChanged(sender: any, e: NSSEventArgs) {
-            console.log('onNSSExtensionChanged');
+            //console.log('onNSSExtensionChanged');
             e.extensions.forEach(f => {
                 if (this.checkArrayForObj(this.selectedStudyArea.NSS_Extensions, f) == -1)
                     this.selectedStudyArea.NSS_Extensions.push(f);
@@ -1289,8 +1289,10 @@ module StreamStats.Services {
                 if (item.length < 1) return;
                 //should only be 1
                 item[0].parameters = angular.copy(ex.parameters);
-                item[0].result = angular.copy(ex.result);
+                if (item[0].result === undefined) item[0].result = [];
+                item[0].result[this.extensionResultsChanged] = angular.copy(ex.result);
             });
+            this.extensionResultsChanged++;
         }
 
         private afterSelectedStatisticsGroupChanged() {

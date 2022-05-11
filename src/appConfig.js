@@ -5,7 +5,7 @@ configuration.environment = 'development';
 configuration.baseurls =
     {
         'NWISurl': 'https://waterservices.usgs.gov/nwis',
-        'StreamStatsServices': 'https://test.streamstats.usgs.gov',
+        'StreamStatsServices': 'https://dev.streamstats.usgs.gov',
         'StreamStatsMapServices': 'https://gis.streamstats.usgs.gov',
         'NSS': 'https://test.streamstats.usgs.gov/nssservices',
         'WaterUseServices': 'https://test.streamstats.usgs.gov/wateruseservices',
@@ -264,7 +264,7 @@ configuration.regions = [
         "ScenariosAvailable": true
     },
     { "RegionID": "ID", "Name": "Idaho", "Bounds": [[41.994599, -117.236921], [48.99995, -111.046771]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
-    { "RegionID": "IL", "Name": "Illinois", "Bounds": [[36.986822, -91.516284], [42.509363, -87.507909]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
+    { "RegionID": "IL", "Name": "Illinois", "Bounds": [[36.986822, -91.516284], [42.509363, -87.507909]], "Layers": {}, "Applications": ["FDCTM"], "regionEnabled": true, "ScenariosAvailable": true },
     { 
         "RegionID": "IN", "Name": "Indiana", "Bounds": [[37.776224, -88.10149], [41.76554, -84.787446]], "Layers": {
             "IN_Reaches": {
@@ -279,7 +279,7 @@ configuration.regions = [
                     "minZoom": 15,
                 }
             }
-        }, "Applications": ["CoordinatedReach"], "regionEnabled": true, "ScenariosAvailable": true 
+        }, "Applications": ["CoordinatedReach","FDCTM"], "regionEnabled": true, "ScenariosAvailable": true 
     },
     { "RegionID": "KS", "Name": "Kansas", "Bounds": [[36.988875, -102.051535], [40.002987, -94.601224]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     {

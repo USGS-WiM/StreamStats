@@ -40,6 +40,7 @@ var StreamStats;
                 this.reportComments = 'Some comments here';
                 this.AppVersion = configuration.version;
                 this.extensions = this.ActiveExtensions;
+                console.log(this.extensions);
                 this.environment = configuration.environment;
                 this.sectionCollapsed = [];
                 this.basinCharCollapsed = false;
