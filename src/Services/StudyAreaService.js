@@ -906,7 +906,7 @@ var StreamStats;
                     if (_this.extensionResultsChanged == 0)
                         item[0].result = [];
                     item[0].result[_this.extensionResultsChanged] = angular.copy(ex.result);
-                    item[0].result[_this.extensionResultsChanged].name = "test" + _this.extensionResultsChanged;
+                    item[0].result[_this.extensionResultsChanged].name = e.regressionRegionName;
                 });
                 this.extensionResultsChanged++;
             };

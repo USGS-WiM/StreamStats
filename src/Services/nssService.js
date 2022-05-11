@@ -28,12 +28,14 @@ var StreamStats;
         Services.onScenarioExtensionResultsChanged = "onScenarioExtensionResultsChanged";
         var NSSEventArgs = (function (_super) {
             __extends(NSSEventArgs, _super);
-            function NSSEventArgs(extensions, results) {
+            function NSSEventArgs(extensions, results, regressionRegionName) {
                 if (extensions === void 0) { extensions = null; }
                 if (results === void 0) { results = null; }
+                if (regressionRegionName === void 0) { regressionRegionName = null; }
                 var _this = _super.call(this) || this;
                 _this.extensions = extensions;
                 _this.results = results;
+                _this.regressionRegionName = regressionRegionName;
                 return _this;
             }
             return NSSEventArgs;
@@ -245,7 +247,7 @@ var StreamStats;
                                                 p.options = extension.parameters.filter(function (param) { return param.code == p.code; })[0].options;
                                             });
                                         });
-                                        _this.eventManager.RaiseEvent(Services.onScenarioExtensionResultsChanged, _this, new NSSEventArgs(null, rr.extensions));
+                                        _this.eventManager.RaiseEvent(Services.onScenarioExtensionResultsChanged, _this, new NSSEventArgs(null, rr.extensions, rr.name));
                                     }
                                 });
                                 statGroup.regressionRegions = [];
