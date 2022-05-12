@@ -183,7 +183,7 @@
                                 <div ng-repeat="p in sc.parameters" ng-if="['sdate','edate'].indexOf(p.code) >-1">
                                     <span>{{p.name}}: {{p.value | date:'yyyy/MM/dd'}}</span><br />
                                 </div>          
-                                <ul id="FDCTMTabs" class="nav nav-tabs">
+                                <ul ng-if="sc.result.length > 1" id="FDCTMTabs" class="nav nav-tabs">
                                     <span ng-repeat="r in sc.result">
                                         <li ng-class="{'active':vm.selectedFDCTMTabName===r.name}"><a ng-click="vm.selectFDCTMTab(r.name)">{{r.name}}</a></li>
                                     </span>
@@ -192,7 +192,7 @@
                                 
 
                                 <div ng-repeat="r in sc.result" >          
-                                    <div ng-if="vm.selectedFDCTMTabName ===r.name" ng-init=vm.ActivateGraphs(r)>
+                                    <div ng-if="vm.selectedFDCTMTabName === r.name || sc.result.length == 1" ng-init=vm.ActivateGraphs(r)>
 
                                         <!--FDCTM Exceedance Probablities-->
                                         <h3 class="reportChartHeader">Exceedance Probabilities of Clicked Point</h3>
