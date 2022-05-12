@@ -155,7 +155,14 @@ module StreamStats.Controllers {
             this.sectionCollapsed = [];
             this.basinCharCollapsed = false;
             this.collapsed = false;
-            this.selectedFDCTMTabName = "test1";
+            this.selectedFDCTMTabName = "";
+            if (this.extensions[0].result.length > 1) {
+                this.extensions[0].result.forEach( r => {
+                    if (r.name.toLowerCase().includes("multivar")) {
+                        this.selectedFDCTMTabName = r.name
+                    }
+                });
+            }
             this.initMap();
             
 

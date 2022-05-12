@@ -182,14 +182,13 @@
                                 <h3>{{sc.name}} (FDCTM)</h3>
                                 <div ng-repeat="p in sc.parameters" ng-if="['sdate','edate'].indexOf(p.code) >-1">
                                     <span>{{p.name}}: {{p.value | date:'yyyy/MM/dd'}}</span><br />
-                                </div>          
+                                </div> 
+
                                 <ul ng-if="sc.result.length > 1" id="FDCTMTabs" class="nav nav-tabs">
                                     <span ng-repeat="r in sc.result">
                                         <li ng-class="{'active':vm.selectedFDCTMTabName===r.name}"><a ng-click="vm.selectFDCTMTab(r.name)">{{r.name}}</a></li>
                                     </span>
                                 </ul> 
-
-                                
 
                                 <div ng-repeat="r in sc.result" >          
                                     <div ng-if="vm.selectedFDCTMTabName === r.name || sc.result.length == 1" ng-init=vm.ActivateGraphs(r)>
