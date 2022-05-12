@@ -118,7 +118,6 @@ var StreamStats;
             ReportController.prototype.selectFDCTMTab = function (tabname) {
                 if (this.selectedFDCTMTabName == tabname)
                     return;
-                console.log(tabname);
                 this.selectedFDCTMTabName = tabname;
             };
             ReportController.prototype.downloadCSV = function () {

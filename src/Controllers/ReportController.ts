@@ -186,7 +186,6 @@ module StreamStats.Controllers {
         //-+-+-+-+-+-+-+-+-+-+-+-
         public selectFDCTMTab(tabname: string): void {
             if (this.selectedFDCTMTabName == tabname) return;
-            console.log(tabname)
             this.selectedFDCTMTabName = tabname;
         }
 
