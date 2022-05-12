@@ -124,7 +124,7 @@ module StreamStats.Services {
             super();
             this.extensions = extensions;
             this.results = results;
-            this.regressionRegionName = regressionRegionName
+            this.regressionRegionName = regressionRegionName;
         }
 
     }

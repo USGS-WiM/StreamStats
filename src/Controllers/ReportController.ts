@@ -157,9 +157,9 @@ module StreamStats.Controllers {
             this.collapsed = false;
             this.selectedFDCTMTabName = "";
             if (this.extensions[0].result.length > 1) {
-                this.extensions[0].result.forEach( r => {
+                this.extensions[0].result.forEach(r => {
                     if (r.name.toLowerCase().includes("multivar")) {
-                        this.selectedFDCTMTabName = r.name
+                        this.selectedFDCTMTabName = r.name;
                     }
                 });
             }
