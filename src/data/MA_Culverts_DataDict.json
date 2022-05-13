@@ -391,23 +391,6 @@
         "CitationURL": "https://www.rivers.gov/massachusetts.php"
       },
       {
-        "Name": "Habitat Quality Score",
-        "Code": "HQSCORE",
-        "Description": "Habitat quality score. Sum of “yes's (1's) for coldwater fisheries, essential fish habitat, Anadromous fish run, Area of Critical Environmental Concern, Biomap2 aquatic core, and Wild and Scenic River (values can be from 0 – 6; 0 = General quality, 1 = high quality, >=2 = highest quality)",
-        "SCS Standard": "",
-        "Units": "",
-        "Accuracy": "",
-        "Field type": "short integer",
-        "NAACC Field": "No",
-        "Maximum Extent Practicable Culvert Design ": "No",
-        "10%-AEP Design Flow Culvert Design": "No",
-        "25%-AEP Design Flow Culvert Design": "No",
-        "In Report": "Yes",
-        "Matchcode": "StreamHabitat",
-        "Citation": "Scott Jackson, University of Massachusetts at Amherst, written commun., 2022",
-        "CitationURL": ""
-      },
-      {
         "Name": "Critical Linkages",
         "Code": "RCPLINK",
         "Description": "Statewide Critical Linkages Percentile (0 = < top 20%, 1 = top 20%, 2 = top 10%, and 3 = top 5%): Derived from UMass DSL data",
@@ -440,6 +423,23 @@
         "Matchcode": "StreamHabitat",
         "Citation": "University of Massachusetts at Amherst, Conservation Assessment and Prioritization System, 2022, The critical linkage project: website, accessed April 30, 2022 at http://www.umasscaps.org/applications/critical-linkages.html.",
         "CitationURL": "http://www.umasscaps.org/applications/critical-linkages.html"
+      },
+      {
+        "Name": "Habitat Quality Score",
+        "Code": "HQSCORE",
+        "Description": "Habitat quality score. Sum of “yes's (1's) for coldwater fisheries, essential fish habitat, Anadromous fish run, Area of Critical Environmental Concern, Biomap2 aquatic core, and Wild and Scenic River (values can be from 0 – 6; 0 = General quality, 1 = high quality, >=2 = highest quality)",
+        "SCS Standard": "",
+        "Units": "",
+        "Accuracy": "",
+        "Field type": "short integer",
+        "NAACC Field": "No",
+        "Maximum Extent Practicable Culvert Design ": "No",
+        "10%-AEP Design Flow Culvert Design": "No",
+        "25%-AEP Design Flow Culvert Design": "No",
+        "In Report": "Yes",
+        "Matchcode": "StreamHabitat",
+        "Citation": "Scott Jackson, University of Massachusetts at Amherst, written commun., 2022",
+        "CitationURL": ""
       },
       {
         "Name": "Restoration Connectivity Potential Score",
@@ -478,7 +478,7 @@
       {
         "Name": "Roadway Classification ",
         "Code": "HWYCLASS",
-        "Description": "Roadway classification code values 0-7 classification codes TBD",
+        "Description": "Roadway classification code values (0=Local, 1=Interstate, 2=Rural or urban principal arterial, 3=Rural minor arterial or urban principal, 4=Rural minor arterial or urban principal, 5=Urban minor arterial or rural major, and 6=Urban collector or rural minor )",
         "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
@@ -495,7 +495,7 @@
       {
         "Name": "Hydraulic Design Flood ",
         "Code": "HWYHDF",
-        "Description": "Hydraulic Design Flood Recurrence Interval, 10=10-yr, 25=25-yr, 50=50-yr, 100=100-yr",
+        "Description": "Hydraulic Design Flood Recurrence Interval. 10=10-yr, 25=25-yr, 50=50-yr, 100=100-yr",
         "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
