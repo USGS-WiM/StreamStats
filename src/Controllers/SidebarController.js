@@ -349,9 +349,9 @@ var StreamStats;
                         var citedCodeList = [];
                         var citationList = [];
                         var citationStatList = [];
-                        for (var k in properties) {
-                            if (k !== "OBJECTID") {
-                                culvertJSON.forEach(function (param) {
+                        culvertJSON.forEach(function (param) {
+                            for (var k in properties) {
+                                if (k !== "OBJECTID") {
                                     if (param.Code === k) {
                                         var code;
                                         if (param.Matchcode !== "None" && param.Matchcode !== "BankfullStats" && param.Matchcode !== "PeakflowStats" && param.Matchcode !== "SiteInfo" && param.Matchcode !== "BasinChar" && param.Matchcode !== "StreamHabitat" && param.Matchcode !== "RoadCrossing") {
@@ -418,10 +418,9 @@ var StreamStats;
                                             }
                                         }
                                     }
-                                });
+                                }
                             }
-                        }
-                        ;
+                        });
                         self.studyAreaService.studyAreaParameterList = paramList;
                         self.studyAreaService.culvertCitations = citations;
                         self.studyAreaService.culvertStatCitations = statCitations;

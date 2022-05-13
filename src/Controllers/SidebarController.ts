@@ -507,10 +507,10 @@ module StreamStats.Controllers {
                     var citedCodeList = [];
                     var citationList = [];
                     var citationStatList = [];
-                    for(var k in properties) {
-                        if(k !== "OBJECTID"){
-                            // Need to get description and name from data dictionary
-                            culvertJSON.forEach(function(param) {
+                    // Need to get description and name from data dictionary
+                    culvertJSON.forEach(function(param) {
+                        for(var k in properties) {
+                            if(k !== "OBJECTID"){
                                 if (param.Code === k) {
                                     var code;
                                     // If matching codes in data dict, need to rearrange json to get 10yr, 15yr, and scs column values in report
@@ -579,9 +579,9 @@ module StreamStats.Controllers {
                                         }
                                     }
                                 }
-                            })
+                            }
                         }
-                    };
+                    })
                     self.studyAreaService.studyAreaParameterList = paramList;
                     self.studyAreaService.culvertCitations = citations;
                     self.studyAreaService.culvertStatCitations = statCitations;

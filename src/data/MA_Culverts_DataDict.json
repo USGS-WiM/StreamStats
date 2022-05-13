@@ -497,7 +497,7 @@
         "Code": "HWYHDF",
         "Description": "Hydraulic Design Flood Recurrence Interval. 10=10-yr, 25=25-yr, 50=50-yr, 100=100-yr",
         "SCS Standard": "",
-        "Units": "",
+        "Units": "Year",
         "Accuracy": "",
         "Field type": "long integer",
         "NAACC Field": "No",
