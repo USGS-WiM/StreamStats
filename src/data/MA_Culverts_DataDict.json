@@ -714,9 +714,9 @@
         "CitationURL": ""
       },
       {
-        "Name": "Box SCS Velocity Ratio ",
+        "Name": "Box Water Depth and Velocity",
         "Code": "BCVELR",
-        "Description": "Comparable velocity ratio: TBD - variety of flows or a low-flow such as the 90% flow duration",
+        "Description": "Comparable water depth and velocity: TBD - variety of flows or a low-flow such as the 90% flow duration",
         "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.1",
@@ -969,9 +969,9 @@
         "CitationURL": ""
       },
       {
-        "Name": "Arch SCS Velocity Ratio ",
+        "Name": "Arch Water Depth and Velocity",
         "Code": "ACVELR",
-        "Description": "Comparable velocity ratio: TBD - variety of flows or a low-flow such as the 90% flow duration",
+        "Description": "Comparable water depth and velocity: TBD - variety of flows or a low-flow such as the 90% flow duration",
         "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.1",
@@ -1207,9 +1207,9 @@
         "CitationURL": ""
       },
       {
-        "Name": "Pipe SCS Velocity Ratio ",
+        "Name": "Pipe Water Depth and Velocity",
         "Code": "PCVELR",
-        "Description": "Comparable velocity ratio: TBD - variety of flows or a low-flow such as the 90% flow duration",
+        "Description": "Comparable water depth and velocity: TBD - variety of flows or a low-flow such as the 90% flow duration",
         "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.1",
@@ -1462,9 +1462,9 @@
         "CitationURL": ""
       },
       {
-        "Name": "Box Velocity Ratio ",
+        "Name": "Box Water Depth and Velocity",
         "Code": "BCVELR10YR",
-        "Description": "Comparable velocity ratio: TBD - variety of flows or a low-flow such as the 90% flow duration",
+        "Description": "Comparable water depth and velocity: TBD - variety of flows or a low-flow such as the 90% flow duration",
         "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.1",
@@ -1717,9 +1717,9 @@
         "CitationURL": ""
       },
       {
-        "Name": "Arch Velocity Ratio ",
+        "Name": "Arch Water Depth and Velocity",
         "Code": "ACVELR10YR",
-        "Description": "Comparable velocity ratio: TBD - variety of flows or a low-flow such as the 90% flow duration",
+        "Description": "Comparable water depth and velocity: TBD - variety of flows or a low-flow such as the 90% flow duration",
         "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.1",
@@ -1955,9 +1955,9 @@
         "CitationURL": ""
       },
       {
-        "Name": "Pipe Velocity Ratio ",
+        "Name": "Pipe Water Depth and Velocity",
         "Code": "PCVELR10YR",
-        "Description": "Comparable velocity ratio: TBD - variety of flows or a low-flow such as the 90% flow duration",
+        "Description": "Comparable water depth and velocity: TBD - variety of flows or a low-flow such as the 90% flow duration",
         "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.1",
@@ -2210,9 +2210,9 @@
         "CitationURL": ""
       },
       {
-        "Name": "Box  Velocity Ratio ",
+        "Name": "Box Water Depth and Velocity",
         "Code": "BCVELR25YR",
-        "Description": "Comparable velocity ratio: TBD - variety of flows or a low-flow such as the 90% flow duration",
+        "Description": "Comparable water depth and velocity: TBD - variety of flows or a low-flow such as the 90% flow duration",
         "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.1",
@@ -2465,9 +2465,9 @@
         "CitationURL": ""
       },
       {
-        "Name": "Arch SCS Velocity Ratio ",
+        "Name": "Arch Water Depth and Velocity",
         "Code": "ACVELR25YR",
-        "Description": "Comparable velocity ratio: TBD - variety of flows or a low-flow such as the 90% flow duration",
+        "Description": "Comparable water depth and velocity: TBD - variety of flows or a low-flow such as the 90% flow duration",
         "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.1",
@@ -2703,9 +2703,9 @@
         "CitationURL": ""
       },
       {
-        "Name": "Pipe Velocity Ratio ",
+        "Name": "Pipe Water Depth and Velocity",
         "Code": "PCVELR25YR",
-        "Description": "Comparable velocity ratio: TBD - variety of flows or a low-flow such as the 90% flow duration",
+        "Description": "Comparable water depth and velocity: TBD - variety of flows or a low-flow such as the 90% flow duration",
         "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.1",
@@ -2958,9 +2958,9 @@
         "CitationURL": ""
       },
       {
-        "Name": "Box SCS Velocity Ratio ",
+        "Name": "Box Water Depth and Velocity",
         "Code": "BCVELRSCS",
-        "Description": "Comparable velocity ratio: TBD - variety of flows or a low-flow such as the 90% flow duration",
+        "Description": "Comparable water depth and velocity: TBD - variety of flows or a low-flow such as the 90% flow duration",
         "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.1",
@@ -3213,9 +3213,9 @@
         "CitationURL": ""
       },
       {
-        "Name": "Arch SCS Velocity Ratio ",
+        "Name": "Arch Water Depth and Velocity",
         "Code": "ACVELRSCS",
-        "Description": "Comparable velocity ratio: TBD - variety of flows or a low-flow such as the 90% flow duration",
+        "Description": "Comparable water depth and velocity: TBD - variety of flows or a low-flow such as the 90% flow duration",
         "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.1",
@@ -3451,9 +3451,9 @@
         "CitationURL": ""
       },
       {
-        "Name": "Pipe SCS Velocity Ratio ",
+        "Name": "Pipe Water Depth and Velocity",
         "Code": "PCVELRSCS",
-        "Description": "Comparable velocity ratio: TBD - variety of flows or a low-flow such as the 90% flow duration",
+        "Description": "Comparable water depth and velocity: TBD - variety of flows or a low-flow such as the 90% flow duration",
         "SCS Standard": "",
         "Units": "",
         "Accuracy": "0.1",

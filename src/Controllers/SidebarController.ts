@@ -610,6 +610,7 @@ module StreamStats.Controllers {
                             "HQSCORE": "Habitat Quality Score",
                             "RCPSCORE": "Restoration Connectivity Potential Score",
                             "MEPCF": "Maximum Extent Practicable (MEP) Cost Factor",
+                            "HWYHDF": "Hydraulic Design Flood",
                         };
                         Object.keys(queryProperties).map(function (k) {
                             popupContent += '<strong>' + queryProperties[k] + ': </strong>' + feature.properties[k] + '</br></br>';
