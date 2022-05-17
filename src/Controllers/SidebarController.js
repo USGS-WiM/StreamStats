@@ -449,7 +449,6 @@ var StreamStats;
                                 "HWYHDF": "Hydraulic Design Flood",
                             };
                             Object.keys(queryProperties).map(function (k) {
-                                console.log(queryProperties[k]);
                                 if (queryProperties[k] === "Hydraulic Design Flood") {
                                     popupContent += '<strong>' + queryProperties[k] + ': </strong>' + feature.properties[k] + ' Year</br></br>';
                                 }
