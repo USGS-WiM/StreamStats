@@ -118,11 +118,13 @@ module StreamStats.Services {
         //properties
         public extensions: Array<string>
         public results :Array<any>
+        public regressionRegionName: string
 
-        constructor(extensions = null, results= null) {
+        constructor(extensions = null, results = null, regressionRegionName = null) {
             super();
             this.extensions = extensions;
             this.results = results;
+            this.regressionRegionName = regressionRegionName;
         }
 
     }
@@ -401,8 +403,7 @@ module StreamStats.Services {
                                                 p.options = extension.parameters.filter(param => param.code == p.code)[0].options;
                                             })
                                         })
-                                
-                                        this.eventManager.RaiseEvent(Services.onScenarioExtensionResultsChanged, this, new NSSEventArgs(null, rr.extensions));
+                                        this.eventManager.RaiseEvent(Services.onScenarioExtensionResultsChanged, this, new NSSEventArgs(null, rr.extensions, rr.name));
                                     }//end if
                                 });
                                 statGroup.regressionRegions = [];

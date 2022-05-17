@@ -101,6 +101,7 @@ module StreamStats.Controllers {
         private environment: string;
         public NSSServicesVersion: string;
         public SSServicesVersion = '1.2.22'; // TODO: This needs to pull from the services when ready
+        public selectedFDCTMTabName: string;
 
         public sectionCollapsed: Array<any>;
         public basinCharCollapsed;
@@ -154,6 +155,17 @@ module StreamStats.Controllers {
             this.sectionCollapsed = [];
             this.basinCharCollapsed = false;
             this.collapsed = false;
+            this.selectedFDCTMTabName = "";
+
+            // If we add QPPQ to additional states we might need to add and if statement here to limit to IN and IL
+            // Handles states where there is more than one regression region in the same place
+            if (this.extensions[0].result.length > 1) {
+                this.extensions[0].result.forEach(r => {
+                    if (r.name.toLowerCase().includes("multivar")) {
+                        this.selectedFDCTMTabName = r.name;
+                    }
+                });
+            }
             this.initMap();
             
 
@@ -175,6 +187,11 @@ module StreamStats.Controllers {
 
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
+        public selectFDCTMTab(tabname: string): void {
+            if (this.selectedFDCTMTabName == tabname) return;
+            this.selectedFDCTMTabName = tabname;
+        }
+
         public downloadCSV() {
 
             //ga event
