@@ -613,7 +613,11 @@ module StreamStats.Controllers {
                             "HWYHDF": "Hydraulic Design Flood",
                         };
                         Object.keys(queryProperties).map(function (k) {
-                            popupContent += '<strong>' + queryProperties[k] + ': </strong>' + feature.properties[k] + '</br></br>';
+                            if(queryProperties[k] === "Hydraulic Design Flood"){
+                                popupContent += '<strong>' + queryProperties[k] + ': </strong>' + feature.properties[k] + ' Year</br></br>';
+                            }else{
+                                popupContent += '<strong>' + queryProperties[k] + ': </strong>' + feature.properties[k] + '</br></br>';
+                            }
                         });
                         var latlng = layer.getLatLng();
                         var lat = latlng.lat;
