@@ -264,7 +264,25 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList"  ng-if="parameter.code.substring(0, 13) ==='StreamHabitat'">
+                                    <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList"  ng-if="parameter.code.substring(0, 13) ==='StreamHabitat' && !parameter.code.includes('HQSCORE') && !parameter.code.includes('RCPSCORE') && !parameter.code.includes('MEPCF')">
+                                        <td>{{parameter.name}}
+                                            <i ng-show="parameter.description !== ''" ng-mouseover="showTooltip = true" ng-mouseleave="showTooltip = false" class="fa fa-info-circle"></i>
+                                            <span ng-show="showTooltip" class="culvert-tooltip">
+                                                <span ng-bind="parameter.description"></span>
+                                            </span>
+                                        </td>
+                                        <!-- Need this hidden column to add into csv -->
+                                        <td ng-hide="true">{{parameter.description}}</td>
+                                        <td>{{parameter.value == -99999 ? 'undefined' : parameter.value}}</td>
+                                        <td ng-bind="parameter.unit"></td>
+                                    </tr>
+                                    <!-- blank line before scores -->
+                                    <tr class="blank-row">
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList"  ng-if="parameter.code.substring(0, 13) ==='StreamHabitat' && (parameter.code.includes('HQSCORE') || parameter.code.includes('RCPSCORE') || parameter.code.includes('MEPCF'))">
                                         <td>{{parameter.name}}
                                             <i ng-show="parameter.description !== ''" ng-mouseover="showTooltip = true" ng-mouseleave="showTooltip = false" class="fa fa-info-circle"></i>
                                             <span ng-show="showTooltip" class="culvert-tooltip">
@@ -403,6 +421,12 @@
                             <li ng-class="{'active':vm.selectedTabName==='Arch'}"><a ng-click="vm.selectCulvertTab('Arch')">Arch</a></li>
                             <li ng-class="{'active':vm.selectedTabName==='Pipe'}"><a ng-click="vm.selectCulvertTab('Pipe')">Pipe</a></li>
                         </ul> 
+
+                        <!-- Disclaimer for preliminary culvert designs -->
+                        <div class="well well-sm">
+                            <h3>Disclaimer for preliminary culvert designs:</h3>
+                            <span class="wim-alert-warning">The intent of this tool is to provide a preliminary design. Not all design consideration (i.e. specific bathymetric elevations, backwater effect, freeboard, adjacent structures, soil type, scour, channel migration, etc.) could be incorporated into this preliminary design tool. Field review and verification should be performed, and the final design should be reviewed by a licensed engineer.</span>
+                        </div>
 
                         <!-- Box Culvert Table -->
                         <div ng-show="vm.selectedTabName ==='Box'">
