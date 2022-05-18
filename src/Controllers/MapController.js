@@ -129,11 +129,6 @@ var StreamStats;
                 $scope.$on('leafletDirectiveMap.mainMap.dragend', function (event, args) {
                     _this.cursorStyle = 'pointer';
                 });
-                $scope.$on('leafletDirectiveMap.mainMap.zoomend', function (event, args) {
-                    if (_this.regionServices.selectedRegion && _this.center.zoom > 11 && _this.regionServices.selectedRegion.RegionID == "ME") {
-                        _this.addGeoJSON("MeanAugustBaseflow", null);
-                    }
-                });
                 $scope.$on('leafletDirectiveMap.mainMap.click', function (event, args) {
                     if (_this._prosperServices.CanQuery) {
                         _this._prosperServices.GetPredictionValues(args.leafletEvent, _this.bounds);
@@ -402,15 +397,6 @@ var StreamStats;
                                         var html = '<strong>NWIS page: </strong><a href="' + queryResult.properties[k] + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br><strong>New StreamStats Gage Modal: </strong><a ng-click="' + SSgagepageNew + '">link</a></br>';
                                         querylayers.append(html);
                                         _this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'streamgageQuery' });
-                                    }
-                                    else if (item.layerName == "Mean August Baseflow") {
-                                        if (queryProperties_1[k] == "Drainage Area out-of-bounds" || queryProperties_1[k] == "Mean July Precip out-of-bounds" || queryProperties_1[k] == "% Aquifer Area out-of-bounds" || queryProperties_1[k] == "Regulated stream/river") {
-                                            if (queryResult.properties[k] == 0)
-                                                queryResult.properties[k] = "No";
-                                            else if (queryResult.properties[k] == 1)
-                                                queryResult.properties[k] = "Yes";
-                                        }
-                                        querylayers.append('<strong>' + queryProperties_1[k] + ': </strong>' + queryResult.properties[k] + '</br>');
                                     }
                                     else {
                                         querylayers.append('<strong>' + queryProperties_1[k] + ': </strong>' + queryResult.properties[k] + '</br>');
@@ -862,7 +848,6 @@ var StreamStats;
                 }
             };
             MapController.prototype.addGeoJSON = function (LayerName, feature) {
-                var _this = this;
                 if (LayerName == 'globalwatershed') {
                     var verticies = feature.geometry.coordinates.reduce(function (count, row) { return count + row.length; }, 0);
                     var data = this.studyArea.simplify(angular.copy(feature));
@@ -1063,107 +1048,6 @@ var StreamStats;
                     this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs('streamgages', 'geojson', this.geojson['streamgages'].style));
                     this.updateLegend();
                 }
-                else if (LayerName == "MeanAugustBaseflow") {
-                    this.leafletData.getLayers("mainMap").then(function (maplayers) {
-                        if (_this.center.zoom == 12) {
-                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.76 - 1.33 cfs/mi^2";
-                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[1].label = "0.55 - 0.76 cfs/mi^2";
-                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[2].label = "0.40 - 0.55 cfs/mi^2";
-                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[3].label = "0.08 - 0.40 cfs/mi^2";
-                            maplayers.overlays["MeanAugustBaseflow_region"].setStyle(function (feature) {
-                                var color = '#000000';
-                                if (feature.properties.AUGAVGBF >= .76) {
-                                    color = '#fd4df7';
-                                }
-                                else if (feature.properties.AUGAVGBF >= .55 && feature.properties.AUGAVGBF < .76) {
-                                    color = '#b135f6';
-                                }
-                                else if (feature.properties.AUGAVGBF >= .4 && feature.properties.AUGAVGBF < .55) {
-                                    color = '#8689f9';
-                                }
-                                else if (feature.properties.AUGAVGBF < .4) {
-                                    color = '#39f7f9';
-                                }
-                                return {
-                                    color: color
-                                };
-                            });
-                        }
-                        else if (_this.center.zoom == 13 || _this.center.zoom == 14) {
-                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.60 - 1.2 cfs/mi^2";
-                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[1].label = "0.45 - 0.60 cfs/mi^2";
-                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[2].label = "0.30 - 0.45 cfs/mi^2";
-                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[3].label = "0.10 - 0.30 cfs/mi^2";
-                            maplayers.overlays["MeanAugustBaseflow_region"].setStyle(function (feature) {
-                                var color = '#000000';
-                                if (feature.properties.AUGAVGBF >= .6) {
-                                    color = '#fd4df7';
-                                }
-                                else if (feature.properties.AUGAVGBF >= .45 && feature.properties.AUGAVGBF < .6) {
-                                    color = '#b135f6';
-                                }
-                                else if (feature.properties.AUGAVGBF >= .3 && feature.properties.AUGAVGBF < .45) {
-                                    color = '#8689f9';
-                                }
-                                else if (feature.properties.AUGAVGBF < .3) {
-                                    color = '#39f7f9';
-                                }
-                                return {
-                                    color: color
-                                };
-                            });
-                        }
-                        else if (_this.center.zoom == 15) {
-                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.50 - 0.81 cfs/mi^2";
-                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[1].label = "0.40 - 0.50 cfs/mi^2";
-                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[2].label = "0.20 - 0.40 cfs/mi^2";
-                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[3].label = "0.10 - 0.20 cfs/mi^2";
-                            maplayers.overlays["MeanAugustBaseflow_region"].setStyle(function (feature) {
-                                var color = '#000000';
-                                if (feature.properties.AUGAVGBF >= .5) {
-                                    color = '#fd4df7';
-                                }
-                                else if (feature.properties.AUGAVGBF >= .4 && feature.properties.AUGAVGBF < .5) {
-                                    color = '#b135f6';
-                                }
-                                else if (feature.properties.AUGAVGBF >= .2 && feature.properties.AUGAVGBF < .4) {
-                                    color = '#8689f9';
-                                }
-                                else if (feature.properties.AUGAVGBF < .2) {
-                                    color = '#39f7f9';
-                                }
-                                return {
-                                    color: color
-                                };
-                            });
-                        }
-                        else if (_this.center.zoom == 16) {
-                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.35 - 0.8 cfs/mi^2";
-                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[1].label = "0.25 - 0.35 cfs/mi^2";
-                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[2].label = "0.15 - 0.25 cfs/mi^2";
-                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[3].label = "0.1 - 0.15 cfs/mi^2";
-                            maplayers.overlays["MeanAugustBaseflow_region"].setStyle(function (feature) {
-                                var color = '#000000';
-                                if (feature.properties.AUGAVGBF >= .35) {
-                                    color = '#fd4df7';
-                                }
-                                else if (feature.properties.AUGAVGBF >= .25 && feature.properties.AUGAVGBF < .35) {
-                                    color = '#b135f6';
-                                }
-                                else if (feature.properties.AUGAVGBF >= .15 && feature.properties.AUGAVGBF < .25) {
-                                    color = '#8689f9';
-                                }
-                                else if (feature.properties.AUGAVGBF < .15) {
-                                    color = '#39f7f9';
-                                }
-                                return {
-                                    color: color
-                                };
-                            });
-                        }
-                    });
-                    this.updateLegend();
-                }
                 else {
                     this.geojson[LayerName] =
                         {
@@ -1328,9 +1212,6 @@ var StreamStats;
                     return;
                 for (var layer in layers) {
                     this.layers.overlays[layer + "_region"] = layers[layer];
-                    if (this.layers.overlays[layer + "_region"].name == "Mean August Baseflow") {
-                        this.addGeoJSON("MeanAugustBaseflow", null);
-                    }
                 }
             };
             MapController.prototype.removeOverlayLayers = function (name, isPartial) {

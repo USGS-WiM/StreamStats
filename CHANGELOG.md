@@ -8,9 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
  -  Added ability to collapse report sections
- -  Added Maine Mean August Baseflow layer
  -  Added ability to switch between QPPQ results if there is more than one result
-
+ -  Added CHANGELOG.md
+ 
 ### Changed
  -  Updated Readme
  -  Separated the ExcludePolys and StreamGrid layers so they can be toggled separately
