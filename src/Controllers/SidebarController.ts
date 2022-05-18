@@ -507,10 +507,10 @@ module StreamStats.Controllers {
                     var citedCodeList = [];
                     var citationList = [];
                     var citationStatList = [];
-                    for(var k in properties) {
-                        if(k !== "OBJECTID"){
-                            // Need to get description and name from data dictionary
-                            culvertJSON.forEach(function(param) {
+                    // Need to get description and name from data dictionary
+                    culvertJSON.forEach(function(param) {
+                        for(var k in properties) {
+                            if(k !== "OBJECTID"){
                                 if (param.Code === k) {
                                     var code;
                                     // If matching codes in data dict, need to rearrange json to get 10yr, 15yr, and scs column values in report
@@ -579,9 +579,9 @@ module StreamStats.Controllers {
                                         }
                                     }
                                 }
-                            })
+                            }
                         }
-                    };
+                    })
                     self.studyAreaService.studyAreaParameterList = paramList;
                     self.studyAreaService.culvertCitations = citations;
                     self.studyAreaService.culvertStatCitations = statCitations;
@@ -610,9 +610,14 @@ module StreamStats.Controllers {
                             "HQSCORE": "Habitat Quality Score",
                             "RCPSCORE": "Restoration Connectivity Potential Score",
                             "MEPCF": "Maximum Extent Practicable (MEP) Cost Factor",
+                            "HWYHDF": "Hydraulic Design Flood",
                         };
                         Object.keys(queryProperties).map(function (k) {
-                            popupContent += '<strong>' + queryProperties[k] + ': </strong>' + feature.properties[k] + '</br></br>';
+                            if(queryProperties[k] === "Hydraulic Design Flood"){
+                                popupContent += '<strong>' + queryProperties[k] + ': </strong>' + feature.properties[k] + ' Year</br></br>';
+                            }else{
+                                popupContent += '<strong>' + queryProperties[k] + ': </strong>' + feature.properties[k] + '</br></br>';
+                            }
                         });
                         var latlng = layer.getLatLng();
                         var lat = latlng.lat;

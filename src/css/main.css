@@ -1413,6 +1413,9 @@ div.leaflet-top > .elevation {
     font-size: 12px;
 }
 
+.blank-row {
+    height: 30px;
+}
 /*
     Extra Buttons
 */
