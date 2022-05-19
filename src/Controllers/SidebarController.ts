@@ -537,7 +537,21 @@ module StreamStats.Controllers {
                                             }
                                         }else{
                                             // Code not yet in list
-                                            paramList.push({code: code, value: [{}], name: param.Name, description: param.Description, unit: param.Units});
+                                            let limit;
+                                            if(param["SCS Standard"] !== "NA" && param["SCS Standard"] !== "TBD" && param["SCS Standard"] !== ""){
+                                                limit = param['SCS Standard'];
+                                                if(param.Code.includes('10YR')){
+                                                    limit = limit.substring(0, "parameter.value").replace("parameter.value[0].value_10yr")
+                                                }else if(param.Code.includes('25YR')){
+                                                    limit = limit.substring(0, "parameter.value").replace("parameter.value[0].value_25yr")
+                                                }
+                                                else if(param.Code.substring(param.Code.length - 3) ==='SCS'){
+                                                    limit = limit.substring(0, "parameter.value").replace("parameter.value[0].value_scs")
+                                                }
+                                            }else{
+                                                limit = '';
+                                            }
+                                            paramList.push({code: code, value: [{}], name: param.Name, description: param.Description, unit: param.Units, limit: limit});
                                             var newIndex;
                                             for(var i = 0; i < paramList.length; i++) {
                                                 if (paramList[i].code === code) {
@@ -557,9 +571,23 @@ module StreamStats.Controllers {
                                         }
                                     // Stats tables, Basin char, Site Info, Stream Habitat and Road Crossing tables 
                                     }else{
+                                        let limit;
+                                        if(param["SCS Standard"] !== "NA" && param["SCS Standard"] !== "TBD" && param["SCS Standard"] !== ""){
+                                            limit = param['SCS Standard'];
+                                            if(param.Code.includes('10YR')){
+                                                limit = limit.substring(0, "parameter.value").replace("parameter.value[0].value_10yr")
+                                            }else if(param.Code.includes('25YR')){
+                                                limit = limit.substring(0, "parameter.value").replace("parameter.value[0].value_25yr")
+                                            }
+                                            else if(param.Code.substring(param.Code.length - 3) ==='SCS'){
+                                                limit = limit.substring(0, "parameter.value").replace("parameter.value[0].value_scs")
+                                            }
+                                        }else{
+                                            limit = '';
+                                        }
                                         code = param.Matchcode + param.Code;
                                         var roundedValue = self.getAccuracy(param, properties[k]);
-                                        paramList.push({code: code, value: roundedValue, name: param.Name, description: param.Description, unit: param.Units});
+                                        paramList.push({code: code, value: roundedValue, name: param.Name, description: param.Description, unit: param.Units, limit: limit});
                                     }
                                     // Add unique citations
                                     if(param.Citation !== ''){
