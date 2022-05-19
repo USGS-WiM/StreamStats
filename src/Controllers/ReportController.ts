@@ -159,7 +159,7 @@ module StreamStats.Controllers {
 
             // If we add QPPQ to additional states we might need to add and if statement here to limit to IN and IL
             // Handles states where there is more than one regression region in the same place
-            if (this.extensions[0].result.length > 1) {
+            if (this.extensions && this.extensions[0].result.length > 1) {
                 this.extensions[0].result.forEach(r => {
                     if (r.name.toLowerCase().includes("multivar")) {
                         this.selectedFDCTMTabName = r.name;
