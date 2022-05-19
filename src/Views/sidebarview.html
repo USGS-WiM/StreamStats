@@ -116,6 +116,7 @@
                                 <button ng-show="vm.regionService.selectedRegion.Applications.indexOf('Wateruse') != -1" ng-click="vm.OpenWateruse()" type="button" class="btn-black fullwidth"><i class="fa fa-empire" analytics-on analytics-event="Navigation" analytics-category="SideBar" analytics-label="WaterUse"></i>&nbsp;&nbsp;Check for Water Use</button>
                                 <div class="banner" ng-show="vm.regionService.selectedRegion.Applications.indexOf('KarstCheck') != -1">Check Delineated Basin for Karst Overlap (automatic)</div>
                                 <div class="banner" ng-show="vm.regionService.selectedRegion.Applications.indexOf('CoordinatedReach') != -1">Check for Coordinated Reach (automatic)</div>
+                                <div class="banner" ng-show="vm.regionService.selectedRegion.Applications.indexOf('ChannelWidthWeighting') != -1">Weight Peak-Flow Equations Based on Channel Width (automatic)</div>
                             </form>
 
                                     <div class="banner info" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated == true || vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated == false"><div>Regulation check has been completed.  There is <strong ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated">{{vm.studyAreaService.regulationCheckResults.percentarearegulated.toFixed(2)}} percent</strong><strong ng-show="!vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated">NO</strong> regulation in this watershed.</div></div>

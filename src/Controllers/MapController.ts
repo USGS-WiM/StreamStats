@@ -188,6 +188,7 @@ module StreamStats.Controllers {
         public measurestop: any;
         public selectedExplorationTool: any;
         public gageLegendFix = false;
+        public regionLegendFix = false;
         public nonsimplifiedBasin: any;
         public nonsimplifiedBasinStyle = {
             //https://www.base64-image.de/
@@ -586,12 +587,12 @@ module StreamStats.Controllers {
                             let queryProperties = this.layers.overlays[lyr].queryProperties[item.layerName];
                             Object.keys(queryProperties).map(k => {
                                 if (item.layerName == "Streamgages" && k == "FeatureURL") {
-    
+
                                     var siteNo = queryResult.properties[k].split('site_no=')[1];
                                     var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm'
                                     var SSgagepageNew = "vm.openGagePage('" + siteNo + "')";
                                     var html = '<strong>NWIS page: </strong><a href="' + queryResult.properties[k] + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br><strong>New StreamStats Gage Modal: </strong><a ng-click="' + SSgagepageNew + '">link</a></br>';
-    
+                                    
                                     querylayers.append(html);
                                     this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'streamgageQuery' });
                                 }
@@ -911,10 +912,17 @@ module StreamStats.Controllers {
                             this.cursorStyle = 'pointer';
                             return;
                         }
-
+                        // Get name of exclude poly layer
+                        var layerName;
+                        for(var layer in maplayers.overlays) {
+                            for(var llayer in this.layers.overlays){
+                                if(llayer === layer && this.layers.overlays[llayer].layerArray !== undefined && this.layers.overlays[llayer].layerArray[0].layerName === 'ExcludePolys'){
+                                    layerName = layer;
+                                }
+                            }
+                        };
                         //do point validation query
-                        maplayers.overlays[selectedRegionLayerName].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run((error: any, results: any) => {
-
+                        maplayers.overlays[layerName].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run((error: any, results: any) => {
                             //console.log('exclusion area check: ', queryString, results); 
                             this.toaster.clear();
 
@@ -1633,18 +1641,28 @@ module StreamStats.Controllers {
             });
             var visible = true;
             if (regionId == 'MRB') visible = false;
-
-            this.layers.overlays[regionId + "_region"] = new Layer(regionId + " Map layers", configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['SSStateLayers'],
-                "agsDynamic", visible, {
-                    "opacity": 1,
-                    "layers": layerList,
-                    "format": "png8",
-                    "f": "image"
-                });
+            layerList.forEach(layer => {
+                this.layers.overlays[regionId + "_region" + layer] = 
+                {
+                    name: String(layer),
+                    group: regionId + " Map layers",
+                    url: configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['SSStateLayers'],
+                    type: 'agsDynamic',
+                    visible: visible,
+                    layerOptions: {
+                        opacity: 1,
+                        layers: [layer],
+                        format: "png8",
+                        f: "image"
+                    },
+                }
+            });
 
             //bring streamgages (all national layers) to front
-            this.leafletData.getLayers("mainMap").then((maplayers: any) => { 
-                maplayers.overlays[regionId + "_region"].bringToBack();
+            this.leafletData.getLayers("mainMap").then((maplayers: any) => {
+                layerList.forEach(layer => {
+                    maplayers.overlays[regionId + "_region" + layer].bringToBack();
+                });
                 maplayers.overlays.SSLayer.bringToFront();
             });
             
