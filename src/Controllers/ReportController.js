@@ -45,7 +45,7 @@ var StreamStats;
                 this.basinCharCollapsed = false;
                 this.collapsed = false;
                 this.selectedFDCTMTabName = "";
-                if (this.extensions[0].result.length > 1) {
+                if (this.extensions && this.extensions[0].result.length > 1) {
                     this.extensions[0].result.forEach(function (r) {
                         if (r.name.toLowerCase().includes("multivar")) {
                             _this.selectedFDCTMTabName = r.name;
