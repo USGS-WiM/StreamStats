@@ -58,6 +58,7 @@ var StreamStats;
                 _this.extensionDateRange = null;
                 _this.extensionsConfigured = false;
                 _this.loadingDrainageArea = false;
+                _this.extensionResultsChanged = 0;
                 _this.modalservices = modal;
                 eventManager.AddEvent(Services.onSelectedStudyParametersLoaded);
                 eventManager.AddEvent(Services.onSelectedStudyAreaChanged);
@@ -888,7 +889,6 @@ var StreamStats;
             };
             StudyAreaService.prototype.onNSSExtensionChanged = function (sender, e) {
                 var _this = this;
-                console.log('onNSSExtensionChanged');
                 e.extensions.forEach(function (f) {
                     if (_this.checkArrayForObj(_this.selectedStudyArea.NSS_Extensions, f) == -1)
                         _this.selectedStudyArea.NSS_Extensions.push(f);
@@ -901,8 +901,14 @@ var StreamStats;
                     if (item.length < 1)
                         return;
                     item[0].parameters = angular.copy(ex.parameters);
-                    item[0].result = angular.copy(ex.result);
+                    if (item[0].result === undefined)
+                        item[0].result = [];
+                    if (_this.extensionResultsChanged == 0)
+                        item[0].result = [];
+                    item[0].result[_this.extensionResultsChanged] = angular.copy(ex.result);
+                    item[0].result[_this.extensionResultsChanged].name = e.regressionRegionName;
                 });
+                this.extensionResultsChanged++;
             };
             StudyAreaService.prototype.afterSelectedStatisticsGroupChanged = function () {
                 this.nssService.onSelectedStatisticsGroupChanged.unsubscribe(this.statisticgroupEventHandler);

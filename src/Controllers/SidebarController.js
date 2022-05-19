@@ -251,6 +251,7 @@ var StreamStats;
                 this.angulartics.eventTrack('CalculateFlows', {
                     category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.nssService.selectedStatisticsGroupList.map(function (elem) { return elem.name; }).join(",")
                 });
+                this.studyAreaService.extensionResultsChanged = 0;
                 if (this.nssService.selectedStatisticsGroupList.length > 0 && this.nssService.showFlowsTable) {
                     var strippedoutStatisticGroups = [];
                     if (this.studyAreaService.selectedStudyArea.CoordinatedReach != null) {

@@ -101,6 +101,11 @@ module StreamStats.Controllers {
         private environment: string;
         public NSSServicesVersion: string;
         public SSServicesVersion = '1.2.22'; // TODO: This needs to pull from the services when ready
+        public selectedFDCTMTabName: string;
+
+        public sectionCollapsed: Array<any>;
+        public basinCharCollapsed;
+        public collapsed;
 
         public get showReport(): boolean {
             if (!this.studyAreaService.studyAreaParameterList) return false;
@@ -131,6 +136,7 @@ module StreamStats.Controllers {
         public get GraphData():any {
             return this._graphData;
         }
+
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService', 'StreamStats.Services.ModalService'];
@@ -146,6 +152,20 @@ module StreamStats.Controllers {
             this.AppVersion = configuration.version;
             this.extensions = this.ActiveExtensions;
             this.environment = configuration.environment;
+            this.sectionCollapsed = [];
+            this.basinCharCollapsed = false;
+            this.collapsed = false;
+            this.selectedFDCTMTabName = "";
+
+            // If we add QPPQ to additional states we might need to add and if statement here to limit to IN and IL
+            // Handles states where there is more than one regression region in the same place
+            if (this.extensions[0].result.length > 1) {
+                this.extensions[0].result.forEach(r => {
+                    if (r.name.toLowerCase().includes("multivar")) {
+                        this.selectedFDCTMTabName = r.name;
+                    }
+                });
+            }
             this.initMap();
             
 
@@ -167,6 +187,11 @@ module StreamStats.Controllers {
 
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
+        public selectFDCTMTab(tabname: string): void {
+            if (this.selectedFDCTMTabName == tabname) return;
+            this.selectedFDCTMTabName = tabname;
+        }
+
         public downloadCSV() {
 
             //ga event
@@ -470,6 +495,42 @@ module StreamStats.Controllers {
                     //          this allow the insertion of new lines after html
                     pdf.save('Test.pdf');
                 }, margins);
+        }
+
+        public collapseSection(e, type, group: "") {
+            var content = e.currentTarget.nextElementSibling;
+            if (content.style.display === "none") {
+                content.style.display = "block";
+                if(type === "stats" || "ChannelWidthWeighting") this.sectionCollapsed[group] = false;
+                if(type === "basin") this.basinCharCollapsed = false;
+            } else {
+                content.style.display = "none";
+                if(type === "stats" || "ChannelWidthWeighting") this.sectionCollapsed[group] = true;
+                if(type === "basin") this.basinCharCollapsed = true;
+            }
+        }
+
+        public expandAll(expandOrCollapse) {
+            let content = document.querySelectorAll<HTMLElement>(".collapsible-content")
+            if(expandOrCollapse === "expand"){
+                content.forEach((element) => {
+                    element.style.display = "block";
+                });
+                this.basinCharCollapsed = false;
+                this.nssService.statisticsGroupList.forEach((group) => {
+                    this.sectionCollapsed[group.name] = false;
+                })
+                this.collapsed = false;
+            }else{
+                content.forEach((element) => {
+                    element.style.display = "none";
+                });
+                this.basinCharCollapsed = true;
+                this.nssService.statisticsGroupList.forEach((group) => {
+                    this.sectionCollapsed[group.name] = true;
+                })
+                this.collapsed = true;
+            }
         }
 
         public ActivateGraphs(result: any) {

@@ -1,5 +1,5 @@
 var configuration = {};
-configuration.version = "4.8.1";
+configuration.version = "4.9.0";
 configuration.environment = 'development';
 
 configuration.baseurls =
@@ -11,7 +11,8 @@ configuration.baseurls =
         'WaterUseServices': 'https://test.streamstats.usgs.gov/wateruseservices',
         'StormRunoffServices': 'https://test.streamstats.usgs.gov/runoffmodelingservices',
         'ScienceBase': 'https://gis.usgs.gov/sciencebase2',
-        'GageStatsServices': 'https://test.streamstats.usgs.gov/gagestatsservices'
+        'GageStatsServices': 'https://test.streamstats.usgs.gov/gagestatsservices',
+        'WeightingServices': 'https://ss-weightingservices.streamstats.usgs.gov'
     };
 
 //override streamstats arguments if on production, these get overriden again in MapController after load balancer assigns a server
@@ -374,7 +375,7 @@ configuration.regions = [
                     "queryProperties": { "Regulation Points": { "Descript": "Description" } }
                 }
             },
-        "Applications": ["Regulation"],
+        "Applications": ["Regulation", "ChannelWidthWeighting"],
         "regionEnabled": true,
         "ScenariosAvailable": true
     },

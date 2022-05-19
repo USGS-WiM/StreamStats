@@ -28,12 +28,14 @@ var StreamStats;
         Services.onScenarioExtensionResultsChanged = "onScenarioExtensionResultsChanged";
         var NSSEventArgs = (function (_super) {
             __extends(NSSEventArgs, _super);
-            function NSSEventArgs(extensions, results) {
+            function NSSEventArgs(extensions, results, regressionRegionName) {
                 if (extensions === void 0) { extensions = null; }
                 if (results === void 0) { results = null; }
+                if (regressionRegionName === void 0) { regressionRegionName = null; }
                 var _this = _super.call(this) || this;
                 _this.extensions = extensions;
                 _this.results = results;
+                _this.regressionRegionName = regressionRegionName;
                 return _this;
             }
             return NSSEventArgs;
@@ -46,6 +48,8 @@ var StreamStats;
                 _this.$q = $q;
                 _this.regionservice = regionservice;
                 _this.eventManager = eventManager;
+                _this.equationWeightingResults = [];
+                _this.equationWeightingDisclaimers = [];
                 _this.toaster = toaster;
                 _this.modalService = modal;
                 _this._onSelectedStatisticsGroupChanged = new WiM.Event.Delegate();
@@ -243,7 +247,7 @@ var StreamStats;
                                                 p.options = extension.parameters.filter(function (param) { return param.code == p.code; })[0].options;
                                             });
                                         });
-                                        _this.eventManager.RaiseEvent(Services.onScenarioExtensionResultsChanged, _this, new NSSEventArgs(null, rr.extensions));
+                                        _this.eventManager.RaiseEvent(Services.onScenarioExtensionResultsChanged, _this, new NSSEventArgs(null, rr.extensions, rr.name));
                                     }
                                 });
                                 statGroup.regressionRegions = [];
@@ -288,12 +292,24 @@ var StreamStats;
                         _this.toaster.clear();
                         _this.toaster.pop('error', "There was an error Estimating Flows", "HTTP request error", 0);
                     }).finally(function () {
+                        if (_this.regionservice.selectedRegion.Applications.indexOf('ChannelWidthWeighting') != -1) {
+                            if (statGroup.name == "Peak-Flow Statistics") {
+                                _this.queryEquationWeighting();
+                            }
+                        }
                         _this.estimateFlowsCounter--;
                         if (_this.estimateFlowsCounter < 1) {
                             _this.toaster.clear();
                             _this.estimateFlowsCounter = 0;
-                            _this.canUpdate = true;
-                            if (showReport) {
+                            if (showReport && _this.regionservice.selectedRegion.Applications.indexOf('ChannelWidthWeighting') != -1) {
+                                setTimeout(function () {
+                                    _this.canUpdate = true;
+                                    _this.modalService.openModal(Services.SSModalType.e_report);
+                                    _this.reportGenerated = true;
+                                }, 1000);
+                            }
+                            else if (showReport) {
+                                _this.canUpdate = true;
                                 _this.modalService.openModal(Services.SSModalType.e_report);
                                 _this.reportGenerated = true;
                             }
@@ -301,6 +317,253 @@ var StreamStats;
                         _this._onQ10Loaded.raise(null, WiM.Event.EventArgs.Empty);
                     });
                 });
+            };
+            nssService.prototype.queryEquationWeighting = function () {
+                var units = null;
+                var inputs = [];
+                this.equationWeightingResults = [];
+                this.equationWeightingDisclaimers = [];
+                this.selectedStatisticsGroupList.forEach(function (statGroup) {
+                    if (statGroup.name == "Peak-Flow Statistics") {
+                        statGroup.regressionRegions.forEach(function (regressionRegion, rindex) {
+                            if (regressionRegion.name != "Area-Averaged" && regressionRegion.results) {
+                                inputs[rindex] = { "name": null, "inUse": false, "percentWeight": null, "RegressionRegionName": null, "code": null, "values": [] };
+                                regressionRegion.results.forEach(function (result, index) {
+                                    if (result.code.includes("ACPK")) {
+                                        inputs[rindex].name = "ACPK";
+                                        inputs[rindex].RegressionRegionName = regressionRegion.name.substring(0, regressionRegion.name.indexOf('Region') + 'Region'.length);
+                                        inputs[rindex].percentWeight = regressionRegion.percentWeight;
+                                        if (result.value > 0) {
+                                            inputs[rindex].code = regressionRegion.code;
+                                            inputs[rindex].inUse = true;
+                                            inputs[rindex].values[index] = {
+                                                value: result.value,
+                                                SEP: (result.sep) ? result.sep : null,
+                                                code: result.code
+                                            };
+                                        }
+                                        else {
+                                            inputs[rindex].code = null;
+                                            inputs[rindex].inUse = false;
+                                            inputs[rindex].values[index] = {
+                                                value: null,
+                                                SEP: null,
+                                                code: result.code
+                                            };
+                                        }
+                                    }
+                                    else if (result.code.includes("BWPK")) {
+                                        inputs[rindex].name = "BFPK";
+                                        inputs[rindex].RegressionRegionName = regressionRegion.name.substring(0, regressionRegion.name.indexOf('Region') + 'Region'.length);
+                                        inputs[rindex].percentWeight = regressionRegion.percentWeight;
+                                        if (result.value > 0) {
+                                            inputs[rindex].code = regressionRegion.code;
+                                            inputs[rindex].inUse = true;
+                                            inputs[rindex].values[index] = {
+                                                value: result.value,
+                                                SEP: (result.sep) ? result.sep : null,
+                                                code: result.code
+                                            };
+                                        }
+                                        else {
+                                            inputs[rindex].code = null;
+                                            inputs[rindex].inUse = false;
+                                            inputs[rindex].values[index] = {
+                                                value: null,
+                                                SEP: null,
+                                                code: result.code
+                                            };
+                                        }
+                                    }
+                                    else if (result.code.includes("RSPK")) {
+                                        inputs[rindex].name = "RSPK";
+                                        inputs[rindex].RegressionRegionName = regressionRegion.name.substring(0, regressionRegion.name.indexOf('Region') + 'Region'.length);
+                                        inputs[rindex].percentWeight = regressionRegion.percentWeight;
+                                        if (result.value > 0) {
+                                            inputs[rindex].code = regressionRegion.code;
+                                            inputs[rindex].inUse = true;
+                                            inputs[rindex].values[index] = {
+                                                value: result.value,
+                                                SEP: (result.sep) ? result.sep : null,
+                                                code: result.code
+                                            };
+                                        }
+                                        else {
+                                            inputs[rindex].code = null;
+                                            inputs[rindex].inUse = false;
+                                            inputs[rindex].values[index] = {
+                                                value: null,
+                                                SEP: null,
+                                                code: result.code
+                                            };
+                                        }
+                                    }
+                                    else {
+                                        inputs[rindex].name = "BCPK";
+                                        inputs[rindex].RegressionRegionName = regressionRegion.name.substring(0, regressionRegion.name.indexOf('Region') + 'Region'.length);
+                                        inputs[rindex].percentWeight = regressionRegion.percentWeight;
+                                        if (result.value > 0) {
+                                            units = result.unit;
+                                            inputs[rindex].inUse = true;
+                                            inputs[rindex].values[index] = {
+                                                value: result.value,
+                                                SEP: (result.sep) ? result.sep : null,
+                                                code: result.code
+                                            };
+                                        }
+                                        else {
+                                            inputs[rindex].inUse = false;
+                                            inputs[rindex].values[index] = {
+                                                value: null,
+                                                SEP: null,
+                                                code: result.code
+                                            };
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+                var rrCount = inputs.filter(function (el) { return el.name == "BCPK"; });
+                var temp = inputs.filter(function (obj) { return obj.inUse == true; });
+                var weightCount = temp.length / rrCount.length;
+                inputs.sort(function (a, b) { return a.name.localeCompare(b.name); });
+                for (var i = 0; i < inputs.length; i++) {
+                    inputs[i].values.sort(function (a, b) { return a.code.localeCompare(b.code); });
+                }
+                if (weightCount >= 2) {
+                    var url = configuration.baseurls['WeightingServices'] + '/weightest/';
+                    var headers = {
+                        "accept": "application/json",
+                        "Content-Type": "application/json",
+                    };
+                    var rrCounter = 0;
+                    while (rrCounter < rrCount.length) {
+                        this.equationWeightingResults[rrCounter] = { "RR": inputs[rrCounter].RegressionRegionName, "Results": [] };
+                        var lastIndex = inputs[0].values.length - 1;
+                        this.recursiveAreaWeightSubscription(inputs[0].values, lastIndex, inputs, url, headers, units, rrCount, rrCounter);
+                        rrCounter++;
+                    }
+                }
+                else {
+                    this.toaster.pop('error', 'Cannot Weight Channel-width Methods, not enough values');
+                }
+            };
+            nssService.prototype.recursiveAreaWeightSubscription = function (parentLevelIdArray, lastIndex, inputs, url, headers, units, rrCount, rrCounter) {
+                var _this = this;
+                if (lastIndex >= 0) {
+                    var input = {};
+                    var code;
+                    if (inputs[0 * rrCount.length + rrCounter].code)
+                        code = inputs[0 * rrCount.length + rrCounter].code;
+                    if (inputs[1 * rrCount.length + rrCounter].code)
+                        code = inputs[1 * rrCount.length + rrCounter].code;
+                    if (inputs[2 * rrCount.length + rrCounter].code)
+                        code = inputs[2 * rrCount.length + rrCounter].code;
+                    if (inputs[3 * rrCount.length + rrCounter].code)
+                        code = inputs[3 * rrCount.length + rrCounter].code;
+                    input = {
+                        "x1": inputs[0 * rrCount.length + rrCounter].values[lastIndex].value,
+                        "x2": inputs[1 * rrCount.length + rrCounter].values[lastIndex].value,
+                        "x3": inputs[2 * rrCount.length + rrCounter].values[lastIndex].value,
+                        "x4": inputs[3 * rrCount.length + rrCounter].values[lastIndex].value,
+                        "sep1": inputs[0 * rrCount.length + rrCounter].values[lastIndex].SEP,
+                        "sep2": inputs[1 * rrCount.length + rrCounter].values[lastIndex].SEP,
+                        "sep3": inputs[2 * rrCount.length + rrCounter].values[lastIndex].SEP,
+                        "sep4": inputs[3 * rrCount.length + rrCounter].values[lastIndex].SEP,
+                        "regressionRegionCode": code,
+                        "code1": inputs[0 * rrCount.length + rrCounter].values[lastIndex].code,
+                        "code2": inputs[1 * rrCount.length + rrCounter].values[lastIndex].code,
+                        "code3": inputs[2 * rrCount.length + rrCounter].values[lastIndex].code,
+                        "code4": inputs[3 * rrCount.length + rrCounter].values[lastIndex].code
+                    };
+                    var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(input), headers);
+                    this.Execute(request).then(function (response) {
+                        _this.equationWeightingResults[rrCounter].Results[lastIndex] = {
+                            Name: inputs[1 * rrCount.length + rrCounter].values[lastIndex].code,
+                            Z: response.data.Z,
+                            Unit: units,
+                            PIl: response.data.PIL,
+                            PIu: response.data.PIU,
+                            SEPZ: response.data.SEPZ
+                        };
+                        if (response.headers('x-usgswim-messages')) {
+                            var headerMsgs = JSON.parse(response.headers()['x-usgswim-messages']);
+                            Object.keys(headerMsgs).forEach(function (key) {
+                                var arr = headerMsgs[key].split('. ');
+                                arr.forEach(function (i) {
+                                    _this.equationWeightingDisclaimers.push(i);
+                                });
+                            });
+                        }
+                        _this.equationWeightingDisclaimers = _this.equationWeightingDisclaimers.filter(function (c, index) {
+                            return _this.equationWeightingDisclaimers.indexOf(c) === index;
+                        });
+                        _this.equationWeightingDisclaimers = _this.equationWeightingDisclaimers.filter(Boolean);
+                    }, function (error) {
+                        _this.toaster.clear();
+                        if (error.data && error.data.detail) {
+                            _this.toaster.pop('error', "Cannot Weight Channel-width Methods: " + error.data.detail, "HTTP request error", 0);
+                        }
+                        else {
+                            _this.toaster.pop('error', 'Cannot Weight Channel-width Methods');
+                        }
+                    }).finally(function () {
+                        lastIndex = lastIndex - 1;
+                        _this.recursiveAreaWeightSubscription(parentLevelIdArray, lastIndex, inputs, url, headers, units, rrCount, rrCounter);
+                    });
+                }
+                else {
+                    if (rrCount.length == rrCounter + 1) {
+                        this.equationWeightingResults = this.equationWeightingResults.filter(function (obj) { return obj.Results.length > 0; });
+                        if (rrCount.length > 1 && this.equationWeightingResults.length > 0) {
+                            setTimeout(function () {
+                                _this.equationWeightingResults[rrCounter + 1] = { "RR": "Area-Averaged", "Results": [] };
+                                var PIltotal = new Array(inputs[0].values.length);
+                                var PIutotal = new Array(inputs[0].values.length);
+                                var SEPZtotal = new Array(inputs[0].values.length);
+                                var Ztotal = new Array(inputs[0].values.length);
+                                for (var i_1 = 0; i_1 < inputs[0].values.length; ++i_1) {
+                                    Ztotal[i_1] = 0;
+                                    SEPZtotal[i_1] = 0;
+                                    PIutotal[i_1] = 0;
+                                    PIltotal[i_1] = 0;
+                                }
+                                for (var i = 0; i < _this.equationWeightingResults.length - 1; i++) {
+                                    var Z = [];
+                                    var PIl = [];
+                                    var PIu = [];
+                                    var SEPZ = [];
+                                    for (var j = 0; j < _this.equationWeightingResults[i].Results.length; j++) {
+                                        Z.push(_this.equationWeightingResults[i].Results[j].Z);
+                                        PIl.push(_this.equationWeightingResults[i].Results[j].PIl);
+                                        PIu.push(_this.equationWeightingResults[i].Results[j].PIu);
+                                        SEPZ.push(_this.equationWeightingResults[i].Results[j].SEPZ);
+                                    }
+                                    Z = Z.map(function (item) { return item * (inputs[i].percentWeight / 100); });
+                                    PIl = PIl.map(function (item) { return item * (inputs[i].percentWeight / 100); });
+                                    PIu = PIu.map(function (item) { return item * (inputs[i].percentWeight / 100); });
+                                    SEPZ = SEPZ.map(function (item) { return item * (inputs[i].percentWeight / 100); });
+                                    Ztotal = Ztotal.map(function (num, idx) { return num + Z[idx]; });
+                                    PIltotal = PIltotal.map(function (num, idx) { return num + PIl[idx]; });
+                                    PIutotal = PIutotal.map(function (num, idx) { return num + PIu[idx]; });
+                                    SEPZtotal = SEPZtotal.map(function (num, idx) { return num + SEPZ[idx]; });
+                                }
+                                for (var i_2 = 0; i_2 < inputs[0].values.length; ++i_2) {
+                                    _this.equationWeightingResults[_this.equationWeightingResults.length - 1].Results[i_2] = {
+                                        Name: inputs[1 * rrCount.length + rrCounter].values[i_2].code,
+                                        Z: Ztotal[i_2],
+                                        Unit: units,
+                                        PIl: PIltotal[i_2],
+                                        PIu: PIutotal[i_2],
+                                        SEPZ: SEPZtotal[i_2]
+                                    };
+                                }
+                            }, 75);
+                        }
+                    }
+                }
             };
             nssService.prototype.getSelectedCitations = function (citationUrl, statGroup) {
                 var _this = this;
