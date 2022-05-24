@@ -513,6 +513,11 @@ module StreamStats.Controllers {
                             if(k !== "OBJECTID"){
                                 if (param.Code === k) {
                                     var code;
+                                    if(param["Field type"] === "Double"){
+                                        properties[k] = parseFloat(properties[k]);
+                                    }else if(param["Field type"] === "short integer"){
+                                        properties[k] = parseInt(properties[k]);
+                                    }
                                     // If matching codes in data dict, need to rearrange json to get 10yr, 15yr, and scs column values in report
                                     if(param.Matchcode !== "None" && param.Matchcode !== "BankfullStats" && param.Matchcode !== "PeakflowStats" && param.Matchcode !== "SiteInfo" && param.Matchcode !== "BasinChar" && param.Matchcode !== "StreamHabitat" && param.Matchcode !== "RoadCrossing"){
                                         code = param.Matchcode;
@@ -610,6 +615,7 @@ module StreamStats.Controllers {
                             }
                         }
                     })
+                    console.log(paramList)
                     self.studyAreaService.studyAreaParameterList = paramList;
                     self.studyAreaService.culvertCitations = citations;
                     self.studyAreaService.culvertStatCitations = statCitations;

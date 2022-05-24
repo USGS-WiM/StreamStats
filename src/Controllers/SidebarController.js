@@ -354,6 +354,15 @@ var StreamStats;
                                 if (k !== "OBJECTID") {
                                     if (param.Code === k) {
                                         var code;
+                                        console.log(param);
+                                        console.log(param["Field type"]);
+                                        if (param["Field type"] === "Double") {
+                                            properties[k] = parseFloat(properties[k]);
+                                        }
+                                        else if (param["Field type"] === "short integer") {
+                                            properties[k] = parseInt(properties[k]);
+                                        }
+                                        console.log(properties[k]);
                                         if (param.Matchcode !== "None" && param.Matchcode !== "BankfullStats" && param.Matchcode !== "PeakflowStats" && param.Matchcode !== "SiteInfo" && param.Matchcode !== "BasinChar" && param.Matchcode !== "StreamHabitat" && param.Matchcode !== "RoadCrossing") {
                                             code = param.Matchcode;
                                             var index = -1;
@@ -453,6 +462,7 @@ var StreamStats;
                                 }
                             }
                         });
+                        console.log(paramList);
                         self.studyAreaService.studyAreaParameterList = paramList;
                         self.studyAreaService.culvertCitations = citations;
                         self.studyAreaService.culvertStatCitations = statCitations;
