@@ -321,8 +321,6 @@ configuration.regions = [
                     "type": 'agsFeature',
                     "visible": true,
                     "layerOptions": {
-                        // Initially empty string until user signs in
-                        "token": "",
                         pointToLayer: function (geojson, latlng) {
                             return L.marker(latlng, {
                                 icon: L.icon({
