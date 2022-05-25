@@ -206,7 +206,7 @@ module StreamStats.Controllers {
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$compile', 'toaster', '$analytics', '$location', '$stateParams','leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack', '$http'];
         constructor(public $scope: IMapControllerScope, public $compile: IMapControllerCompile, toaster, $analytics, $location: ng.ILocationService, $stateParams, leafletBoundsHelper: any, leafletData: ILeafletData, search: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, exploration: Services.IExplorationService, private _prosperServices: Services.IProsperService, eventManager: WiM.Event.IEventManager, private modal: Services.IModalService, private modalStack: ng.ui.bootstrap.IModalStackService, $http: ng.IHttpService) {
-            super($http, configuration.baseurls.StreamStats)
+            super($http, configuration.baseurls.StreamStats);
             $scope.vm = this;
             
             this.toaster = toaster;
@@ -592,13 +592,13 @@ module StreamStats.Controllers {
                                     var SSgagepage = "vm.openGagePage('" + siteNo + "')";
                                     var urls = ['https://streamstatsags.cr.usgs.gov/NC_gagePages/Sta_' + siteNo + '_daily_discharge_percentiles_table_by-wateryears.txt',
                                     'https://streamstatsags.cr.usgs.gov/NC_gagePages/Sta_' + siteNo + '_daily_discharge_percentiles_table_by-day-month-seasonal.txt',
-                                    'https://streamstatsags.cr.usgs.gov/IA_gagePages/' + siteNo + '_stats.pdf']
+                                    'https://streamstatsags.cr.usgs.gov/IA_gagePages/' + siteNo + '_stats.pdf'];
                                     var text = ['Flow-Duration Statistics by Water Years:',
                                     'Flow-Duration Statistics by PoR, Calendar Day & Month, & Seasonal Periods:',
-                                    'Stream Flow Statistics:']
+                                    'Stream Flow Statistics:'];
                                     
                                     var html = '<strong>NWIS page: </strong><a href="' + queryResult.properties[k] + ' "target="_blank">link</a></br><strong>StreamStats Gage Modal: </strong><a ng-click="' + SSgagepage + '">link</a></br>';
-                                    this.additionalLinkCheck(urls.length-1, urls, '', text)
+                                    this.additionalLinkCheck(urls.length-1, urls, '', text);
                                     setTimeout(() => {
                                         html = html + this.additionalHTML;
                                         querylayers.append(html);
