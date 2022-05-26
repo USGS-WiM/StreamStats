@@ -672,7 +672,6 @@ module StreamStats.Controllers {
             if (!this.studyAreaService.selectedStudyArea) return;
             this.overlays = {};
             this.studyAreaService.selectedStudyArea.FeatureCollection.features.forEach((item) => {
-                console.log(item)
                 this.addGeoJSON(item.id, item);
             });
 
