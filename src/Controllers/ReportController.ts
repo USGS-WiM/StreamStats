@@ -89,6 +89,7 @@ module StreamStats.Controllers {
         public extensions;
 
         public geojson: Object = null;
+        private eventManager: WiM.Event.IEventManager;
 
         public defaults: any;
         private leafletData: ILeafletData;
@@ -139,8 +140,8 @@ module StreamStats.Controllers {
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService', 'StreamStats.Services.ModalService'];
-        constructor($scope: IReportControllerScope, $analytics, $modalInstance: ng.ui.bootstrap.IModalServiceInstance, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, leafletData: ILeafletData, private regionService:Services.IRegionService, private modal: Services.IModalService) {
+        static $inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService', 'StreamStats.Services.ModalService', 'WiM.Event.EventManager'];
+        constructor($scope: IReportControllerScope, $analytics, $modalInstance: ng.ui.bootstrap.IModalServiceInstance, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, leafletData: ILeafletData, private regionService:Services.IRegionService, private modal: Services.IModalService, eventManager: WiM.Event.IEventManager) {
             $scope.vm = this;
 
             this.angulartics = $analytics;
@@ -156,6 +157,7 @@ module StreamStats.Controllers {
             this.basinCharCollapsed = false;
             this.collapsed = false;
             this.selectedFDCTMTabName = "";
+            this.eventManager = eventManager;
 
             // If we add QPPQ to additional states we might need to add and if statement here to limit to IN and IL
             // Handles states where there is more than one regression region in the same place
@@ -168,6 +170,13 @@ module StreamStats.Controllers {
             }
             this.initMap();
             
+            //subscribe to Events
+            this.eventManager.SubscribeToEvent(Services.onAdditionalFeaturesLoaded, new WiM.Event.EventHandler<Services.StudyAreaEventArgs>(() => {
+                this.studyAreaService.selectedStudyArea.FeatureCollection.features = this.studyAreaService.selectedStudyArea.FeatureCollection.features.filter(object => {
+                    return object.id !== 'globalwatershed';
+                });
+                this.showFeatures();
+            }));
 
             $scope.$on('leafletDirectiveMap.reportMap.load',(event, args) => {
                 //console.log('report map load');
@@ -663,6 +672,7 @@ module StreamStats.Controllers {
             if (!this.studyAreaService.selectedStudyArea) return;
             this.overlays = {};
             this.studyAreaService.selectedStudyArea.FeatureCollection.features.forEach((item) => {
+                console.log(item)
                 this.addGeoJSON(item.id, item);
             });
 

@@ -1184,7 +1184,6 @@ module StreamStats.Controllers {
                 }
             });
             this.toaster.pop('success', "Additional features have been downloaded", "Please continue", 5000);
-
         }
        
         private onSelectedStudyAreaChanged() {
