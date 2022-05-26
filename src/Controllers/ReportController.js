@@ -55,13 +55,13 @@ var StreamStats;
                 }
                 this.initMap();
                 this.eventManager.SubscribeToEvent(StreamStats.Services.onAdditionalFeaturesLoaded, new WiM.Event.EventHandler(function () {
-                    _this.studyAreaService.selectedStudyArea.FeatureCollection.features = _this.studyAreaService.selectedStudyArea.FeatureCollection.features.filter(function (object) {
+                    var additionalFeatures = _this.studyAreaService.selectedStudyArea.FeatureCollection.features.filter(function (object) {
                         return object.id !== 'globalwatershed';
                     });
-                    _this.showFeatures();
+                    _this.showFeatures(additionalFeatures);
                 }));
                 $scope.$on('leafletDirectiveMap.reportMap.load', function (event, args) {
-                    _this.showFeatures();
+                    _this.showFeatures(_this.studyAreaService.selectedStudyArea.FeatureCollection.features);
                 });
                 this.close = function () {
                     $modalInstance.dismiss('cancel');
@@ -512,12 +512,12 @@ var StreamStats;
                 }
                 return '[' + header + ']';
             };
-            ReportController.prototype.showFeatures = function () {
+            ReportController.prototype.showFeatures = function (featureArray) {
                 var _this = this;
                 if (!this.studyAreaService.selectedStudyArea)
                     return;
                 this.overlays = {};
-                this.studyAreaService.selectedStudyArea.FeatureCollection.features.forEach(function (item) {
+                featureArray.forEach(function (item) {
                     _this.addGeoJSON(item.id, item);
                 });
                 if (this.studyAreaService.selectedGage && this.studyAreaService.selectedGage.hasOwnProperty('Latitude_DD') && this.studyAreaService.selectedGage.hasOwnProperty('Longitude_DD')) {

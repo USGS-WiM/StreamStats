@@ -172,15 +172,15 @@ module StreamStats.Controllers {
             
             //subscribe to Events
             this.eventManager.SubscribeToEvent(Services.onAdditionalFeaturesLoaded, new WiM.Event.EventHandler<Services.StudyAreaEventArgs>(() => {
-                this.studyAreaService.selectedStudyArea.FeatureCollection.features = this.studyAreaService.selectedStudyArea.FeatureCollection.features.filter(object => {
+                var additionalFeatures = this.studyAreaService.selectedStudyArea.FeatureCollection.features.filter(object => {
                     return object.id !== 'globalwatershed';
                 });
-                this.showFeatures();
+                this.showFeatures(additionalFeatures);
             }));
 
             $scope.$on('leafletDirectiveMap.reportMap.load',(event, args) => {
                 //console.log('report map load');
-                this.showFeatures();
+                this.showFeatures(this.studyAreaService.selectedStudyArea.FeatureCollection.features);
             });
 
             this.close = function () {
@@ -667,11 +667,11 @@ module StreamStats.Controllers {
             }
             return '['+header+']';                        
         }
-        private showFeatures(): void {
+        private showFeatures(featureArray): void {
 
             if (!this.studyAreaService.selectedStudyArea) return;
             this.overlays = {};
-            this.studyAreaService.selectedStudyArea.FeatureCollection.features.forEach((item) => {
+            featureArray.forEach((item) => {
                 this.addGeoJSON(item.id, item);
             });
 
