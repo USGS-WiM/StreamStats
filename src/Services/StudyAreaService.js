@@ -22,19 +22,18 @@ var StreamStats;
         Services.onSelectedStudyParametersLoaded = "onSelectedStudyParametersLoaded";
         Services.onStudyAreaReset = "onStudyAreaReset";
         Services.onEditClick = "onEditClick";
+        Services.onAdditionalFeaturesLoaded = "onAdditionalFeaturesLoaded";
         Services.onRegressionLoaded = "onRegressionLoaded";
         var StudyAreaEventArgs = (function (_super) {
             __extends(StudyAreaEventArgs, _super);
-            function StudyAreaEventArgs(studyArea, saVisible, paramState, additionalFeatures) {
+            function StudyAreaEventArgs(studyArea, saVisible, paramState) {
                 if (studyArea === void 0) { studyArea = null; }
                 if (saVisible === void 0) { saVisible = false; }
                 if (paramState === void 0) { paramState = false; }
-                if (additionalFeatures === void 0) { additionalFeatures = false; }
                 var _this = _super.call(this) || this;
                 _this.studyArea = studyArea;
                 _this.studyAreaVisible = saVisible;
                 _this.parameterLoaded = paramState;
-                _this.additionalFeaturesLoaded = additionalFeatures;
                 return _this;
             }
             return StudyAreaEventArgs;
@@ -55,6 +54,7 @@ var StreamStats;
                 _this.doSelectNearestGage = false;
                 _this.NSSServicesVersion = '';
                 _this.streamgagesVisible = true;
+                _this.additionalFeaturesLoaded = false;
                 _this.extensionDateRange = null;
                 _this.extensionsConfigured = false;
                 _this.loadingDrainageArea = false;
@@ -63,6 +63,7 @@ var StreamStats;
                 eventManager.AddEvent(Services.onSelectedStudyParametersLoaded);
                 eventManager.AddEvent(Services.onSelectedStudyAreaChanged);
                 eventManager.AddEvent(Services.onStudyAreaReset);
+                eventManager.AddEvent(Services.onAdditionalFeaturesLoaded);
                 eventManager.SubscribeToEvent(Services.onSelectedStudyAreaChanged, new WiM.Event.EventHandler(function (sender, e) {
                     _this.onStudyAreaChanged(sender, e);
                 }));
@@ -424,6 +425,7 @@ var StreamStats;
                 request.withCredentials = true;
                 this.Execute(request).then(function (response) {
                     if (response.data.featurecollection && response.data.featurecollection.length > 0) {
+                        _this.additionalFeaturesLoaded = false;
                         var features = [];
                         angular.forEach(response.data.featurecollection, function (feature, index) {
                             if (_this.selectedStudyArea.FeatureCollection.features.map(function (f) { return f.id; }).indexOf(feature.name) === -1) {
@@ -432,16 +434,23 @@ var StreamStats;
                         });
                         _this.getAdditionalFeatures(features.join(','));
                     }
+                    else {
+                        _this.additionalFeaturesLoaded = true;
+                    }
                 }, function (error) {
                     _this.toaster.clear();
+                    _this.additionalFeaturesLoaded = true;
                     _this.toaster.pop("error", "There was an HTTP error requesting additional feautres list", "Please retry", 0);
                 }).finally(function () {
                 });
             };
             StudyAreaService.prototype.getAdditionalFeatures = function (featureString) {
                 var _this = this;
-                if (!featureString)
+                if (!featureString) {
+                    this.additionalFeaturesLoaded = true;
                     return;
+                }
+                this.toaster.pop('wait', "Downloading additional features", "Please wait...", 0);
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSfeatures'].format(this.selectedStudyArea.WorkspaceID, 4326, featureString);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 request.withCredentials = true;
@@ -462,11 +471,14 @@ var StreamStats;
                                 _this.selectedStudyArea.FeatureCollection.features.push(feature);
                             }
                             _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(feature.id, "geojson", { displayName: feature.id, imagesrc: null }, false));
+                            _this.eventManager.RaiseEvent(Services.onAdditionalFeaturesLoaded, _this, '');
                         });
                     }
+                    _this.additionalFeaturesLoaded = true;
                 }, function (error) {
                     _this.toaster.clear();
                     _this.toaster.pop("error", "There was an HTTP error getting additional features", "Please retry", 0);
+                    _this.additionalFeaturesLoaded = true;
                 }).finally(function () {
                 });
             };

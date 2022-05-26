@@ -690,7 +690,6 @@ module StreamStats.Controllers {
             });
         }
         private addGeoJSON(LayerName: string|number, feature: any) {
-
             if (LayerName == 'globalwatershed') {
                 this.layers.overlays[LayerName] =
                     {
@@ -710,7 +709,6 @@ module StreamStats.Controllers {
                     };
             }
             else if (LayerName == 'globalwatershedpoint') {
-
                 this.layers.overlays[LayerName] = {
                     name: 'Basin Clicked Point',
                     type: 'geoJSONShape',
@@ -719,7 +717,6 @@ module StreamStats.Controllers {
                 }
             }
             else if (LayerName == 'referenceGage') {
-
                 this.geojson[LayerName] = {
                     data: feature,
                     style: {

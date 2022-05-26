@@ -80,6 +80,8 @@ module StreamStats.Services {
         loadAllIndexGages();
         allIndexGages;
         extensionResultsChanged;
+        additionalFeaturesLoaded: boolean;
+
     }
 
     interface IDateRange {
@@ -95,6 +97,7 @@ module StreamStats.Services {
     export var onSelectedStudyParametersLoaded: string = "onSelectedStudyParametersLoaded";
     export var onStudyAreaReset: string = "onStudyAreaReset";
     export var onEditClick: string = "onEditClick";
+    export var onAdditionalFeaturesLoaded: string = "onAdditionalFeaturesLoaded";
     //export var onQ10Loaded: string = "onQ10Loaded";
     export var onRegressionLoaded: string = "onRegressionLoaded";
     export class StudyAreaEventArgs extends WiM.Event.EventArgs {
@@ -102,13 +105,11 @@ module StreamStats.Services {
         public studyArea: StreamStats.Models.IStudyArea;
         public studyAreaVisible: boolean;
         public parameterLoaded: boolean;
-        public additionalFeaturesLoaded: boolean;
-        constructor(studyArea = null, saVisible = false, paramState = false, additionalFeatures = false) {
+        constructor(studyArea = null, saVisible = false, paramState = false) {
             super();
             this.studyArea = studyArea;
             this.studyAreaVisible = saVisible;
             this.parameterLoaded = paramState;
-            this.additionalFeaturesLoaded = additionalFeatures;
         }
 
     }
@@ -179,7 +180,7 @@ module StreamStats.Services {
         private q10EventHandler: WiM.Event.EventHandler<Services.NSSEventArgs>;
         private regtype: string;
         public angulartics: any;
-        
+        public additionalFeaturesLoaded : boolean = false;
         //QPPQ
         public extensionDateRange: IDateRange = null;
         public selectedGage: any;
@@ -205,6 +206,8 @@ module StreamStats.Services {
             eventManager.AddEvent<StudyAreaEventArgs>(onSelectedStudyParametersLoaded);
             eventManager.AddEvent<StudyAreaEventArgs>(onSelectedStudyAreaChanged);
             eventManager.AddEvent<StudyAreaEventArgs>(onStudyAreaReset);
+            eventManager.AddEvent<StudyAreaEventArgs>(onAdditionalFeaturesLoaded);
+
 
             eventManager.SubscribeToEvent(onSelectedStudyAreaChanged, new WiM.Event.EventHandler<StudyAreaEventArgs>((sender: any, e: StudyAreaEventArgs) => {
                 this.onStudyAreaChanged(sender, e);
@@ -620,10 +623,10 @@ module StreamStats.Services {
             var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSavailableFeatures'].format(this.selectedStudyArea.WorkspaceID);
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
             request.withCredentials = true;
-
             this.Execute(request).then(
                 (response: any) => {
                     if (response.data.featurecollection && response.data.featurecollection.length > 0) {
+                        this.additionalFeaturesLoaded = false;
                         var features = [];
                         angular.forEach(response.data.featurecollection, (feature, index) => {
                             if (this.selectedStudyArea.FeatureCollection.features.map(f => { return f.id }).indexOf(feature.name) === -1){
@@ -631,20 +634,26 @@ module StreamStats.Services {
                             }                            
                         });//next feature
                         this.getAdditionalFeatures(features.join(','));
+                    } else {
+                        this.additionalFeaturesLoaded = true;
                     }
-
                     //sm when complete
                 }, (error) => {
                     //sm when error
                     this.toaster.clear();
+                    this.additionalFeaturesLoaded = true;
                     this.toaster.pop("error", "There was an HTTP error requesting additional feautres list", "Please retry", 0);
                 }).finally(() => {
                 });
         }
 
         public getAdditionalFeatures(featureString: string) {
-            if (!featureString) return;
-            //console.log('downloading additional features...')
+            if (!featureString) {
+                this.additionalFeaturesLoaded = true;
+                return;
+            } 
+
+            this.toaster.pop('wait', "Downloading additional features", "Please wait...", 0);
             var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSfeatures'].format(this.selectedStudyArea.WorkspaceID, 4326, featureString);
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
             request.withCredentials = true;
@@ -655,11 +664,8 @@ module StreamStats.Services {
                         this.toaster.clear();
                         //this.toaster.pop('success', "Additional features found", "Please continue", 5000);
                         //console.log('additional features:', response);
-
                         var features = this.reconfigureWatershedResponse(response.data.featurecollection);
-
                         angular.forEach(features, (feature, index) => {
-                            //console.log('test', feature, index);
                             if (features.length < 1) {
                                 //remove from studyarea array                                
                                 for (var i = 0; i < this.selectedStudyArea.FeatureCollection.features.length; i++) {
@@ -670,18 +676,19 @@ module StreamStats.Services {
                                 }
                             }
                             else {
-                                this.selectedStudyArea.FeatureCollection.features.push(feature);                                
+                                this.selectedStudyArea.FeatureCollection.features.push(feature);               
                             }
-
                             this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(<string>feature.id, "geojson", { displayName: feature.id, imagesrc: null }, false));
+                            this.eventManager.RaiseEvent(Services.onAdditionalFeaturesLoaded, this, '');
                         });
                     }
-
+                    this.additionalFeaturesLoaded = true;
                     //sm when complete
                 }, (error) => {
                     //sm when error
                     this.toaster.clear();
                     this.toaster.pop("error", "There was an HTTP error getting additional features", "Please retry", 0);
+                    this.additionalFeaturesLoaded = true;
                 }).finally(() => {
                 });
         }

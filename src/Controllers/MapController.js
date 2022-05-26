@@ -89,6 +89,9 @@ var StreamStats;
                 this.environment = configuration.environment;
                 this.selectedExplorationTool = null;
                 this.init();
+                this.eventManager.SubscribeToEvent(StreamStats.Services.onAdditionalFeaturesLoaded, new WiM.Event.EventHandler(function () {
+                    _this.onAdditionalFeaturesLoaded();
+                }));
                 this.eventManager.SubscribeToEvent(StreamStats.Services.onSelectedStudyAreaChanged, new WiM.Event.EventHandler(function () {
                     _this.onSelectedStudyAreaChanged();
                 }));
@@ -795,6 +798,18 @@ var StreamStats;
                 if (this.studyArea.zoomLevel15 && !this.imageryToggled && this.regionServices.selectedRegion.Applications.some(function (a) { return ['StormDrain', 'Localres'].indexOf(a) > -1; }))
                     this.toggleImageryLayer();
                 this.regionServices.loadMapLayersByRegion(this.regionServices.selectedRegion.RegionID);
+            };
+            MapController.prototype.onAdditionalFeaturesLoaded = function () {
+                var _this = this;
+                if (!this.studyArea.selectedStudyArea || !this.studyArea.selectedStudyArea.FeatureCollection)
+                    return;
+                this.studyArea.selectedStudyArea.FeatureCollection.features.forEach(function (layer) {
+                    var item = angular.fromJson(angular.toJson(layer));
+                    if (item.id === 'longestflowpath3d') {
+                        _this.addGeoJSON(item.id, item.geometry);
+                    }
+                });
+                this.toaster.pop('success', "Additional features have been downloaded", "Please continue", 5000);
             };
             MapController.prototype.onSelectedStudyAreaChanged = function () {
                 var _this = this;
