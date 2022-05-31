@@ -1438,8 +1438,7 @@ module StreamStats.Controllers {
                         var gageButtonDiv = L.DomUtil.create('div', 'innerDiv');
                         var gageButtonLoaderDiv = L.DomUtil.create('div', 'innerDiv');
 
-                        gageButtonDiv.innerHTML = '<strong>Station ID: </strong>' + siteNo + '</br><strong>Station Name: </strong>' + feature.properties['Name'] + '</br><strong>Latitude: </strong>' + feature.geometry.coordinates[1] + '</br><strong>Longitude: </strong>' + feature.geometry.coordinates[0] + '</br><strong>Station Type</strong>: ' + feature.properties.StationType.name +
-                            '</br><strong>NWIS Page: </strong><a href="' + NWISpage + ' "target="_blank">link</a></br><strong>StreamStats Gage Page: </strong><a id="gagePageLink" class="' + siteNo + '">link</a><br>';
+                        
                         gageButtonLoaderDiv.innerHTML = '<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>';
 
                         layer.bindPopup(gageButtonLoaderDiv);
@@ -1472,6 +1471,8 @@ module StreamStats.Controllers {
                             if (self.studyArea.doSelectMapGage){
                                 self.additionalLinkCheck(urls.length-1, urls, '', text);
                                 setTimeout(() => {
+                                    gageButtonDiv.innerHTML = '<strong>Station ID: </strong>' + siteNo + '</br><strong>Station Name: </strong>' + feature.properties['Name'] + '</br><strong>Latitude: </strong>' + feature.geometry.coordinates[1] + '</br><strong>Longitude: </strong>' + feature.geometry.coordinates[0] + '</br><strong>Station Type</strong>: ' + feature.properties.StationType.name +
+                                    '</br><strong>NWIS Page: </strong><a href="' + NWISpage + ' "target="_blank">link</a></br><strong>StreamStats Gage Page: </strong><a id="gagePageLink" class="' + siteNo + '">link</a><br>';
                                     gageButtonDiv.innerHTML = gageButtonDiv.innerHTML + self.additionalHTML;
                                     layer.bindPopup(gageButtonDiv);
                                     this.openPopup();
@@ -1488,6 +1489,8 @@ module StreamStats.Controllers {
                             else {
                                 self.additionalLinkCheck(urls.length-1, urls, '', text);
                                 setTimeout(() => {
+                                    gageButtonDiv.innerHTML = '<strong>Station ID: </strong>' + siteNo + '</br><strong>Station Name: </strong>' + feature.properties['Name'] + '</br><strong>Latitude: </strong>' + feature.geometry.coordinates[1] + '</br><strong>Longitude: </strong>' + feature.geometry.coordinates[0] + '</br><strong>Station Type</strong>: ' + feature.properties.StationType.name +
+                                    '</br><strong>NWIS Page: </strong><a href="' + NWISpage + ' "target="_blank">link</a></br><strong>StreamStats Gage Page: </strong><a id="gagePageLink" class="' + siteNo + '">link</a><br>';
                                     gageButtonDiv.innerHTML = gageButtonDiv.innerHTML + self.additionalHTML;
                                     layer.bindPopup(gageButtonDiv);
                                     this.openPopup();

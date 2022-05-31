@@ -1040,8 +1040,6 @@ var StreamStats;
                             var NWISpage = 'http://nwis.waterdata.usgs.gov/nwis/inventory/?site_no=' + siteNo;
                             var gageButtonDiv = L.DomUtil.create('div', 'innerDiv');
                             var gageButtonLoaderDiv = L.DomUtil.create('div', 'innerDiv');
-                            gageButtonDiv.innerHTML = '<strong>Station ID: </strong>' + siteNo + '</br><strong>Station Name: </strong>' + feature.properties['Name'] + '</br><strong>Latitude: </strong>' + feature.geometry.coordinates[1] + '</br><strong>Longitude: </strong>' + feature.geometry.coordinates[0] + '</br><strong>Station Type</strong>: ' + feature.properties.StationType.name +
-                                '</br><strong>NWIS Page: </strong><a href="' + NWISpage + ' "target="_blank">link</a></br><strong>StreamStats Gage Page: </strong><a id="gagePageLink" class="' + siteNo + '">link</a><br>';
                             gageButtonLoaderDiv.innerHTML = '<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>';
                             layer.bindPopup(gageButtonLoaderDiv);
                             var styling = configuration.streamgageSymbology.filter(function (item) {
@@ -1070,6 +1068,8 @@ var StreamStats;
                                 if (self.studyArea.doSelectMapGage) {
                                     self.additionalLinkCheck(urls.length - 1, urls, '', text);
                                     setTimeout(function () {
+                                        gageButtonDiv.innerHTML = '<strong>Station ID: </strong>' + siteNo + '</br><strong>Station Name: </strong>' + feature.properties['Name'] + '</br><strong>Latitude: </strong>' + feature.geometry.coordinates[1] + '</br><strong>Longitude: </strong>' + feature.geometry.coordinates[0] + '</br><strong>Station Type</strong>: ' + feature.properties.StationType.name +
+                                            '</br><strong>NWIS Page: </strong><a href="' + NWISpage + ' "target="_blank">link</a></br><strong>StreamStats Gage Page: </strong><a id="gagePageLink" class="' + siteNo + '">link</a><br>';
                                         gageButtonDiv.innerHTML = gageButtonDiv.innerHTML + self.additionalHTML;
                                         layer.bindPopup(gageButtonDiv);
                                         _this.openPopup();
@@ -1085,6 +1085,8 @@ var StreamStats;
                                 else {
                                     self.additionalLinkCheck(urls.length - 1, urls, '', text);
                                     setTimeout(function () {
+                                        gageButtonDiv.innerHTML = '<strong>Station ID: </strong>' + siteNo + '</br><strong>Station Name: </strong>' + feature.properties['Name'] + '</br><strong>Latitude: </strong>' + feature.geometry.coordinates[1] + '</br><strong>Longitude: </strong>' + feature.geometry.coordinates[0] + '</br><strong>Station Type</strong>: ' + feature.properties.StationType.name +
+                                            '</br><strong>NWIS Page: </strong><a href="' + NWISpage + ' "target="_blank">link</a></br><strong>StreamStats Gage Page: </strong><a id="gagePageLink" class="' + siteNo + '">link</a><br>';
                                         gageButtonDiv.innerHTML = gageButtonDiv.innerHTML + self.additionalHTML;
                                         layer.bindPopup(gageButtonDiv);
                                         _this.openPopup();
