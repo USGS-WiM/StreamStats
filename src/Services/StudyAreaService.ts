@@ -678,7 +678,11 @@ module StreamStats.Services {
                             else {
                                 this.selectedStudyArea.FeatureCollection.features.push(feature);               
                             }
-                            this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(<string>feature.id, "geojson", { displayName: feature.id, imagesrc: null }, false));
+                            if (feature && feature.id == "longestflowpath3d") { // We want longest flow path to be checked automatically 
+                                this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(<string>feature.id, "geojson", { displayName: feature.id, imagesrc: null }, true));
+                            } else { // All other features should be turned on and off manually by user
+                                this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(<string>feature.id, "geojson", { displayName: feature.id, imagesrc: null }, false));
+                            }
                             this.eventManager.RaiseEvent(Services.onAdditionalFeaturesLoaded, this, '');
                         });
                     }

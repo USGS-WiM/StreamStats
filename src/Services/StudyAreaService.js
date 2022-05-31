@@ -470,7 +470,12 @@ var StreamStats;
                             else {
                                 _this.selectedStudyArea.FeatureCollection.features.push(feature);
                             }
-                            _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(feature.id, "geojson", { displayName: feature.id, imagesrc: null }, false));
+                            if (feature && feature.id == "longestflowpath3d") {
+                                _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(feature.id, "geojson", { displayName: feature.id, imagesrc: null }, true));
+                            }
+                            else {
+                                _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(feature.id, "geojson", { displayName: feature.id, imagesrc: null }, false));
+                            }
                             _this.eventManager.RaiseEvent(Services.onAdditionalFeaturesLoaded, _this, '');
                         });
                     }
