@@ -45,7 +45,7 @@ var StreamStats;
                 this.basinCharCollapsed = false;
                 this.collapsed = false;
                 this.selectedFDCTMTabName = "";
-                if (this.extensions && this.extensions[0].result.length > 1) {
+                if (this.extensions && this.extensions[0].result && this.extensions[0].result.length > 1) {
                     this.extensions[0].result.forEach(function (r) {
                         if (r.name.toLowerCase().includes("multivar")) {
                             _this.selectedFDCTMTabName = r.name;
@@ -352,14 +352,14 @@ var StreamStats;
                 var content = e.currentTarget.nextElementSibling;
                 if (content.style.display === "none") {
                     content.style.display = "block";
-                    if (type === "stats" || "ChannelWidthWeighting")
+                    if (type === "stats")
                         this.sectionCollapsed[group] = false;
                     if (type === "basin")
                         this.basinCharCollapsed = false;
                 }
                 else {
                     content.style.display = "none";
-                    if (type === "stats" || "ChannelWidthWeighting")
+                    if (type === "stats")
                         this.sectionCollapsed[group] = true;
                     if (type === "basin")
                         this.basinCharCollapsed = true;

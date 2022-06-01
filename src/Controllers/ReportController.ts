@@ -157,9 +157,9 @@ module StreamStats.Controllers {
             this.collapsed = false;
             this.selectedFDCTMTabName = "";
 
-            // If we add QPPQ to additional states we might need to add and if statement here to limit to IN and IL
+            // If we add QPPQ to additional states we might need to add an if statement here to limit to IN and IL
             // Handles states where there is more than one regression region in the same place
-            if (this.extensions && this.extensions[0].result.length > 1) {
+            if (this.extensions && this.extensions[0].result  && this.extensions[0].result.length > 1) {
                 this.extensions[0].result.forEach(r => {
                     if (r.name.toLowerCase().includes("multivar")) {
                         this.selectedFDCTMTabName = r.name;
@@ -501,11 +501,11 @@ module StreamStats.Controllers {
             var content = e.currentTarget.nextElementSibling;
             if (content.style.display === "none") {
                 content.style.display = "block";
-                if(type === "stats" || "ChannelWidthWeighting") this.sectionCollapsed[group] = false;
+                if(type === "stats") this.sectionCollapsed[group] = false;
                 if(type === "basin") this.basinCharCollapsed = false;
             } else {
                 content.style.display = "none";
-                if(type === "stats" || "ChannelWidthWeighting") this.sectionCollapsed[group] = true;
+                if(type === "stats") this.sectionCollapsed[group] = true;
                 if(type === "basin") this.basinCharCollapsed = true;
             }
         }

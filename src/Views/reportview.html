@@ -180,116 +180,115 @@
                         <div ng-repeat="sc in vm.extensions">          
                             <div ng-if="sc.code == 'QPPQ'">
                                 <div class ="well well-sm">
-                                    <h3>{{sc.name}} (FDCTM)</h3>
+                                    <h3 class="collapsible" ng-click="vm.collapseSection($event, 'stats', 'FDCTM')"><i ng-class="!vm.sectionCollapsed['FDCTM'] ? 'fa fa-chevron-right': 'fa fa-chevron-down'"></i>&nbsp;&nbsp;{{sc.name}} (FDCTM)</h3>
+                                    <div class="collapsible-content">
+                                        <ul ng-if="sc.result.length > 1" id="FDCTMTabs" class="nav nav-tabs" style="background-color:#f5f5f5 !important;">
+                                            <li ng-repeat="r in sc.result" ng-class="{'active':vm.selectedFDCTMTabName===r.name}">
+                                                <a ng-click="vm.selectFDCTMTab(r.name)">{{r.name}}</a>
+                                            </li>
+                                        </ul> 
+                                        
+                                        <div ng-repeat="p in sc.parameters" ng-if="['sdate','edate'].indexOf(p.code) >-1">
+                                            <span>{{p.name}}: {{p.value | date:'yyyy/MM/dd'}}</span><br />
+                                        </div> 
 
-                                    <ul ng-if="sc.result.length > 1" id="FDCTMTabs" class="nav nav-tabs" style="background-color:#f5f5f5 !important;">
-                                        <li ng-repeat="r in sc.result" ng-class="{'active':vm.selectedFDCTMTabName===r.name}">
-                                            <a ng-click="vm.selectFDCTMTab(r.name)">{{r.name}}</a>
-                                        </li>
-                                    </ul> 
-                                    
-                                    <div ng-repeat="p in sc.parameters" ng-if="['sdate','edate'].indexOf(p.code) >-1">
-                                        <span>{{p.name}}: {{p.value | date:'yyyy/MM/dd'}}</span><br />
-                                    </div> 
+                                        <div ng-repeat="r in sc.result" >          
+                                            <div ng-if="vm.selectedFDCTMTabName === r.name || sc.result.length == 1" ng-init=vm.ActivateGraphs(r)>
+                                                <!--FDCTM Exceedance Probablities-->
+                                                <h3 class="reportChartHeader">Exceedance Probabilities of Clicked Point</h3>
+                                                <button class="chartExportButton" ng-click="vm.downloadPNG('exceedancegraph')">Download PNG</button>
+                                                <nvd3 id="exceedancegraph" options=r.graphdata.exceedance.options data=r.graphdata.exceedance.data></nvd3>
+                                                <a ng-click="vm.isExceedanceTableOpen = !vm.isExceedanceTableOpen">
+                                                    <span ng-show="vm.isExceedanceTableOpen">Hide</span>
+                                                    <span ng-hide="vm.isExceedanceTableOpen">Show</span> table<br>
+                                                </a>
+                                                <div ng-if="vm.isExceedanceTableOpen" id="Exceedance Probabilities">
+                                                    <div class="well well-sm">
 
-                                    <div ng-repeat="r in sc.result" >          
-                                        <div ng-if="vm.selectedFDCTMTabName === r.name || sc.result.length == 1" ng-init=vm.ActivateGraphs(r)>
-                                            <!--FDCTM Exceedance Probablities-->
-                                            <h3 class="reportChartHeader">Exceedance Probabilities of Clicked Point</h3>
-                                            <button class="chartExportButton" ng-click="vm.downloadPNG('exceedancegraph')">Download PNG</button>
-                                            <nvd3 id="exceedancegraph" options=r.graphdata.exceedance.options data=r.graphdata.exceedance.data></nvd3>
-                                            <a ng-click="vm.isExceedanceTableOpen = !vm.isExceedanceTableOpen">
-                                                <span ng-show="vm.isExceedanceTableOpen">Hide</span>
-                                                <span ng-hide="vm.isExceedanceTableOpen">Show</span> table<br>
-                                            </a>
-                                            <div ng-if="vm.isExceedanceTableOpen" id="Exceedance Probabilities">
-                                                <div class="well well-sm">
+                                                        <table id="exceedanceTable" class="table table-condensed" title="Exceedance Probabilities">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Exceedance</th>
+                                                                    <th>Flow Exceeded (cfs)</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody ng-repeat="(key, value) in r.exceedanceProbabilities">
+                                                                <tr>
+                                                                    <td>{{key}}</td>
+                                                                    <td>{{value.toUSGSvalue()}}</td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
 
-                                                    <table id="exceedanceTable" class="table table-condensed" title="Exceedance Probabilities">
+                                                <!--Estimated Flow -->
+                                                <h3 class="reportChartHeader">Estimated Flows</h3>
+                                                <button class="chartExportButton" ng-click="vm.downloadPNG('flowgraph')">Download PNG</button>
+                                                <nvd3 id="flowgraph" options=r.graphdata.flow.options data=r.graphdata.flow.data></nvd3>
+                                                <a ng-click="vm.isFlowTableOpen = !vm.isFlowTableOpen">
+                                                    <span ng-show="vm.isFlowTableOpen">Hide</span>
+                                                    <span ng-hide="vm.isFlowTableOpen">Show</span> table
+                                                </a>
+                                                <div ng-if="vm.isFlowTableOpen" class="well well-sm">
+                                                    <!--Table-->
+                                                    <table id="flowTable" class="table table-condensed" title="Estimated Flows">
                                                         <thead>
                                                             <tr>
-                                                                <th>Exceedance</th>
-                                                                <th>Flow Exceeded (cfs)</th>
+                                                                <th></th>
+                                                                <th ng-attr-colspan="2">Discharge (cfs)</th>
+                                                            </tr>
+                                                            <tr>
+                                                                <th>Date</th>
+                                                                <th>Estimated</th>
+                                                                <th>{{r.referanceGage.name}}</th>
                                                             </tr>
                                                         </thead>
-                                                        <tbody ng-repeat="(key, value) in r.exceedanceProbabilities">
+
+                                                        <tbody ng-repeat="obs in r.referanceGage.discharge.observations track by $index">
                                                             <tr>
-                                                                <td>{{key}}</td>
-                                                                <td>{{value.toUSGSvalue()}}</td>
+                                                                <td>{{obs.date| date:'yyyy/MM/dd'}}</td>
+                                                                <td>{{vm.getEstimatedFlow(obs,r.estimatedFlow.observations)}}</td>
+                                                                <td>{{obs.hasOwnProperty('value') ? obs.value.toUSGSvalue() : obs.hasOwnProperty('dataCode') ? obs.dataCode : 'N/A'}}</td>
                                                             </tr>
                                                         </tbody>
                                                     </table>
                                                 </div>
-                                            </div>
 
-                                            <!--Estimated Flow -->
-                                            <h3 class="reportChartHeader">Estimated Flows</h3>
-                                            <button class="chartExportButton" ng-click="vm.downloadPNG('flowgraph')">Download PNG</button>
-                                            <div class="graph-wrapper">
-                                                <nvd3 id="flowgraph" options=r.graphdata.flow.options data=r.graphdata.flow.data></nvd3>
-                                            </div>
-                                            <a ng-click="vm.isFlowTableOpen = !vm.isFlowTableOpen">
-                                                <span ng-show="vm.isFlowTableOpen">Hide</span>
-                                                <span ng-hide="vm.isFlowTableOpen">Show</span> table
-                                            </a>
-                                            <div ng-if="vm.isFlowTableOpen" class="well well-sm">
-                                                <!--Table-->
-                                                <table id="flowTable" class="table table-condensed" title="Estimated Flows">
-                                                    <thead>
-                                                        <tr>
-                                                            <th></th>
-                                                            <th ng-attr-colspan="2">Discharge (cfs)</th>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Date</th>
-                                                            <th>Estimated</th>
-                                                            <th>{{r.referanceGage.name}}</th>
-                                                        </tr>
-                                                    </thead>
-
-                                                    <tbody ng-repeat="obs in r.referanceGage.discharge.observations track by $index">
-                                                        <tr>
-                                                            <td>{{obs.date| date:'yyyy/MM/dd'}}</td>
-                                                            <td>{{vm.getEstimatedFlow(obs,r.estimatedFlow.observations)}}</td>
-                                                            <td>{{obs.hasOwnProperty('value') ? obs.value.toUSGSvalue() : obs.hasOwnProperty('dataCode') ? obs.dataCode : 'N/A'}}</td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-
-                                            <!--Index gage-->
-                                            <div class="well well-sm">
-                                                <table id="ReferenceGage" class="table table-condensed">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Index Gage</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr>
-                                                            <td>Station ID:</td>
-                                                            <td><a ng-attr-title={{r.referanceGage.name}} ng-href={{r.referanceGage.url}} target="_blank">{{r.referanceGage.stationID}}</a>&nbsp;
-                                                                <a ng-click="vm.openGagePage(r.referanceGage.stationID)">Open Gage Page</a>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Name:</td>
-                                                            <td><span>{{r.referanceGage.name}}</span></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Latitude:</td>
-                                                            <td><span>{{r.referanceGage.latitude_DD}}</span><span> Decimal Degrees</span></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Longitude:</td>
-                                                            <td><span>{{r.referanceGage.longitude_DD}}</span><span> Decimal Degrees</span></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Drainage Area:</td>
-                                                            <td><span>{{r.referanceGage.drainageArea_sqMI}}</span><span> square miles</span></td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
+                                                <!--Index gage-->
+                                                <div class="well well-sm">
+                                                    <table id="ReferenceGage" class="table table-condensed">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Index Gage</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>Station ID:</td>
+                                                                <td><a ng-attr-title={{r.referanceGage.name}} ng-href={{r.referanceGage.url}} target="_blank">{{r.referanceGage.stationID}}</a>&nbsp;
+                                                                    <a ng-click="vm.openGagePage(r.referanceGage.stationID)">Open Gage Page</a>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Name:</td>
+                                                                <td><span>{{r.referanceGage.name}}</span></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Latitude:</td>
+                                                                <td><span>{{r.referanceGage.latitude_DD}}</span><span> Decimal Degrees</span></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Longitude:</td>
+                                                                <td><span>{{r.referanceGage.longitude_DD}}</span><span> Decimal Degrees</span></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Drainage Area:</td>
+                                                                <td><span>{{r.referanceGage.drainageArea_sqMI}}</span><span> square miles</span></td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
