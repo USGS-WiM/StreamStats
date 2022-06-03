@@ -255,6 +255,11 @@ module StreamStats.Controllers {
                 if (sender.selectedMethod.navigationID == 0) this.selectedExplorationTool = null;
             }));
             
+            $scope.$on('leafletDirectiveMap.mainMap.zoomend',(event, args) => {
+                if (this.regionServices.selectedRegion && this.center.zoom > 11 && this.regionServices.selectedRegion.RegionID == "ME") {
+                    this.addGeoJSON("MeanAugustBaseflow", null)
+                }
+            });
 
             $scope.$on('leafletDirectiveMap.mainMap.mousemove',(event, args) => {
                 var latlng = args.leafletEvent.latlng;
@@ -595,6 +600,13 @@ module StreamStats.Controllers {
                                     
                                     querylayers.append(html);
                                     this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'streamgageQuery' });
+                                }
+                                else if (item.layerName == "Mean August Baseflow") {
+                                    if (queryProperties[k] == "Drainage Area out-of-bounds" || queryProperties[k] == "Mean July Precip out-of-bounds" || queryProperties[k] == "% Aquifer Area out-of-bounds" || queryProperties[k] == "Regulated stream/river") {
+                                        if (queryResult.properties[k] == 0) queryResult.properties[k] = "No"
+                                        else if (queryResult.properties[k] == 1) queryResult.properties[k] = "Yes"
+                                    }
+                                    querylayers.append('<strong>' + queryProperties[k] + ': </strong>' + queryResult.properties[k] + '</br>');
                                 }
                                 else {
                                     querylayers.append('<strong>' + queryProperties[k] + ': </strong>' + queryResult.properties[k] + '</br>');
@@ -1468,7 +1480,26 @@ module StreamStats.Controllers {
                 }
                 this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs('streamgages', 'geojson', this.geojson['streamgages'].style));
                 this.updateLegend();
-            } 
+            }  else if(LayerName == "MeanAugustBaseflow") { // Update MeanAugustBaseflow legend
+                this.leafletData.getLayers("mainMap").then((maplayers: any) => { 
+                    if (this.center.zoom == 9 || this.center.zoom == 9 || this.center.zoom == 11) { // County Scale View
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.60 - 1.34 cfs/mi^2"
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[1].label = "0.45 - 0.60 cfs/mi^2"
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[2].label = "0.30 - 0.45 cfs/mi^2"
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[3].label = "0.09 - 0.30 cfs/mi^2"
+                    } else if (this.center.zoom == 12 || this.center.zoom == 13 || this.center.zoom == 14) { // Town Scale View
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.50 - 1.34 cfs/mi^2"
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[1].label = "0.40 - 0.50 cfs/mi^2"
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[2].label = "0.20 - 0.44 cfs/mi^2"
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[3].label = "0.09 - 0.20 cfs/mi^2"
+                    } else if (this.center.zoom == 15 || this.center.zoom == 16) { // Neighborhood Scale View 
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.35 - 1.34 cfs/mi^2"
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[1].label = "0.25 - 0.35 cfs/mi^2"
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[2].label = "0.15 - 0.25 cfs/mi^2"
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[3].label = "0.09 - 0.15 cfs/mi^2"
+                    }
+                });
+            }
             //additional features get generic styling for now
             else {
                 this.geojson[LayerName] =
