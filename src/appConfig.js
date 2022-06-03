@@ -317,59 +317,27 @@ configuration.regions = [
     {
         "MeanAugustBaseflow": {
             "name": "Mean August Baseflow",
-            "url": "https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/Maine_Mean_August_Baseflow_Zoom_Level_Map/FeatureServer/7",
-            "type": 'agsFeature',
+            "url": "https://gis.usgs.gov/sciencebase3/rest/services/Catalog/628bc405d34e4fef2ec3d50c/MapServer",
+            "type": 'agsDynamic',
             "visible": true,
             "layerOptions": {
-                onEachFeature: function (feature, layer) {
-                    var popupContent = '<h5>Mean August Baseflow</h5> ';
-                    var queryProperties = { 
-                        "GNIS_Name": "GNIS Name", 
-                        "DASQMI": "Drainage Area (mi2)",
-                        "SANDGRAVAF":"Aquifer Area (%)",
-                        "JULYAVPRE": "Mean July Precip (in)",
-                        "AUGAVGBF": "Mean August Baseflow (cfs/mi2",
-                        "OOB_DA": "Drainage Area out-of-bounds",
-                        "OOB_JULYAV":"Mean July Precip out-of-bounds",
-                        "OOB_WARNIN": "% Aquifer Area out-of-bounds",
-                        "REGULATED": "Regulated stream/river"
-                    };
-                    Object.keys(queryProperties).map(function (k) {
-                        if (queryProperties[k] == "Drainage Area out-of-bounds" || queryProperties[k] == "Mean July Precip out-of-bounds" || queryProperties[k] == "% Aquifer Area out-of-bounds" || queryProperties[k] == "Regulated stream/river") {
-                            if (feature.properties[k] == 0) feature.properties[k] = "No"
-                            else if (feature.properties[k] == 1) feature.properties[k] = "Yes"
-                        }
-                        popupContent += '<strong>' + queryProperties[k] + ': </strong>' + feature.properties[k] + '</br>';
-                    });
-                    layer.bindPopup(popupContent);                     
-                },
-                "minZoom":12,
-                "maxZoom":16
+                "zIndex": 1,
+                "format": "png",
+                "layers": [0,1,2,3,4],
+                "f": "image",
+                "minZoom": 9
             },
-            "layerArray": [{
-                "layerName": "Mean August Baseflow",
-                "legend": [{                        
-                    "contentType": "image/svg+xml;base64",
-                    "imageData": "PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/Pgo8IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMC8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9UUi8yMDAxL1JFQy1TVkctMjAwMTA5MDQvRFREL3N2ZzEwLmR0ZCI+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgaWQ9ImJvZHlfMSIgd2lkdGg9IjI1IiBoZWlnaHQ9IjUiPgoKPGcgdHJhbnNmb3JtPSJtYXRyaXgoMC4xOTY4NTAzOSAwIDAgMC4yMDAwMDAwMiAwIDApIj4KICAgIDxwYXRoIGQ9Ik0wIDBMMCAyNUwxMjcgMjVMMTI3IDBMMCAweiIgc3Ryb2tlPSJub25lIiBmaWxsPSIjRkZGRkZGIiBmaWxsLXJ1bGU9Im5vbnplcm8iIC8+CiAgICA8cGF0aCBkPSJNNC42MDMzOSA0LjAyNzc4QyAxLjQxNTI1IDYuNTUyODMgMS45Mzg3IDE3LjQzMjQgNi4xNDgxNSAxOC42ODIxQyAxMy44ODYxIDIwLjk3OTQgMjQuOTM0NyAxOSAzMyAxOUwzMyAxOUw5MyAxOUMgOTguMzgwNCAxOSAxMTYuNDQ4IDIxLjg0NTkgMTE5Ljk3MiAxNy4zOTY2QyAxMjIuMzM4IDE0LjQwOTYgMTIyLjAwOSA0LjU1MTk4IDExNy44NTIgMy4zMTc5QyAxMTAuMTE0IDEuMDIwNiA5OS4wNjUzIDMgOTEgM0w5MSAzTDMyIDNDIDI1Ljc3NzUgMyA5LjU3MDQyIDAuMDkzODI0NCA0LjYwMzM5IDQuMDI3Nzh6IiBzdHJva2U9Im5vbmUiIGZpbGw9IiNGRDRERjciIGZpbGwtcnVsZT0ibm9uemVybyIgLz4KPC9nPgo8L3N2Zz4=",
-                    "label": ""
-                },
-                {                        
-                    "contentType": "image/svg+xml;base64",
-                    "imageData": "PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/Pgo8IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMC8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9UUi8yMDAxL1JFQy1TVkctMjAwMTA5MDQvRFREL3N2ZzEwLmR0ZCI+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgaWQ9ImJvZHlfMSIgd2lkdGg9IjI1IiBoZWlnaHQ9IjUiPgoKPGcgdHJhbnNmb3JtPSJtYXRyaXgoMC4xOTY4NTAzOSAwIDAgMC4yMDAwMDAwMiAwIDApIj4KICAgIDxwYXRoIGQ9Ik0wIDBMMCAyNUwxMjcgMjVMMTI3IDBMMCAweiIgc3Ryb2tlPSJub25lIiBmaWxsPSIjRkZGRkZGIiBmaWxsLXJ1bGU9Im5vbnplcm8iIC8+CiAgICA8cGF0aCBkPSJNNC4zMTc5IDMuMDI3NzhDIC0wLjAwNjUzMzE1IDUuOTEzNDUgMC43Nzk2OSAxOC4yMzI0IDYuMDU4NjQgMTkuNjgyMUMgMTQuMjc0NSAyMS45MzgzIDI1LjQ4NjYgMjAgMzQgMjBMMzQgMjBMOTMgMjBDIDk5LjA5NjUgMjAgMTE1Ljg4MyAyMi45MTAzIDEyMC4zOTcgMTguMzk2NkMgMTIzLjgxOSAxNC45NzQ2IDEyMy4wNTQgMy43MjE4NiAxMTcuOTQxIDIuMzE3OUMgMTEwLjAxIDAuMTM5OTE0IDk5LjIxNjUgMiA5MSAyTDkxIDJMMzMgMkMgMjUuOTUxOSAyIDEwLjI3MTUgLTAuOTQ1MDA3IDQuMzE3OSAzLjAyNzc4eiIgc3Ryb2tlPSJub25lIiBmaWxsPSIjRERBN0ZCIiBmaWxsLXJ1bGU9Im5vbnplcm8iIC8+CiAgICA8cGF0aCBkPSJNNC42MDMzOSA0LjAyNzc4QyAxLjQxNTI1IDYuNTUyODMgMS45Mzg3IDE3LjQzMjQgNi4xNDgxNSAxOC42ODIxQyAxMy44ODYxIDIwLjk3OTQgMjQuOTM0NyAxOSAzMyAxOUwzMyAxOUw5MyAxOUMgOTguMzgwNCAxOSAxMTYuNDQ4IDIxLjg0NTkgMTE5Ljk3MiAxNy4zOTY2QyAxMjIuMzM4IDE0LjQwOTYgMTIyLjAwOSA0LjU1MTk4IDExNy44NTIgMy4zMTc5QyAxMTAuMTE0IDEuMDIwNiA5OS4wNjUzIDMgOTEgM0w5MSAzTDMyIDNDIDI1Ljc3NzUgMyA5LjU3MDQyIDAuMDkzODI0NCA0LjYwMzM5IDQuMDI3Nzh6IiBzdHJva2U9Im5vbmUiIGZpbGw9IiNCMTM1RjciIGZpbGwtcnVsZT0ibm9uemVybyIgLz4KPC9nPgo8L3N2Zz4=",
-                    "label": ""
-                },
-                {                        
-                    "contentType": "image/svg+xml;base64",
-                    "imageData": "PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/Pgo8IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMC8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9UUi8yMDAxL1JFQy1TVkctMjAwMTA5MDQvRFREL3N2ZzEwLmR0ZCI+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgaWQ9ImJvZHlfMSIgd2lkdGg9IjI1IiBoZWlnaHQ9IjUiPgoKPGcgdHJhbnNmb3JtPSJtYXRyaXgoMC4xOTY4NTAzOSAwIDAgMC4yMDAwMDAwMiAwIDApIj4KICAgIDxwYXRoIGQ9Ik0wIDBMMCAyNUwxMjcgMjVMMTI3IDBMMCAweiIgc3Ryb2tlPSJub25lIiBmaWxsPSIjRkZGRkZGIiBmaWxsLXJ1bGU9Im5vbnplcm8iIC8+CiAgICA8cGF0aCBkPSJNNC4zMTc5IDMuMDI3NzhDIC0wLjAwNjUzMzE1IDUuOTEzNDUgMC43Nzk2OSAxOC4yMzI0IDYuMDU4NjQgMTkuNjgyMUMgMTQuMjc0NSAyMS45MzgzIDI1LjQ4NjYgMjAgMzQgMjBMMzQgMjBMOTMgMjBDIDk5LjA5NjUgMjAgMTE1Ljg4MyAyMi45MTAzIDEyMC4zOTcgMTguMzk2NkMgMTIzLjgxOSAxNC45NzQ2IDEyMy4wNTQgMy43MjE4NiAxMTcuOTQxIDIuMzE3OUMgMTEwLjAxIDAuMTM5OTE0IDk5LjIxNjUgMiA5MSAyTDkxIDJMMzMgMkMgMjUuOTUxOSAyIDEwLjI3MTUgLTAuOTQ1MDA3IDQuMzE3OSAzLjAyNzc4eiIgc3Ryb2tlPSJub25lIiBmaWxsPSIjOTE4REY5IiBmaWxsLXJ1bGU9Im5vbnplcm8iIC8+CiAgICA8cGF0aCBkPSJNNC42MDMzOSA0LjAyNzc4QyAxLjQxNTI1IDYuNTUyODMgMS45Mzg3IDE3LjQzMjQgNi4xNDgxNSAxOC42ODIxQyAxMy44ODYxIDIwLjk3OTQgMjQuOTM0NyAxOSAzMyAxOUwzMyAxOUw5MyAxOUMgOTguMzgwNCAxOSAxMTYuNDQ4IDIxLjg0NTkgMTE5Ljk3MiAxNy4zOTY2QyAxMjIuMzM4IDE0LjQwOTYgMTIyLjAwOSA0LjU1MTk4IDExNy44NTIgMy4zMTc5QyAxMTAuMTE0IDEuMDIwNiA5OS4wNjUzIDMgOTEgM0w5MSAzTDMyIDNDIDI1Ljc3NzUgMyA5LjU3MDQyIDAuMDkzODI0NCA0LjYwMzM5IDQuMDI3Nzh6IiBzdHJva2U9Im5vbmUiIGZpbGw9IiM4Nzg5RjkiIGZpbGwtcnVsZT0ibm9uemVybyIgLz4KPC9nPgo8L3N2Zz4=",
-                    "label": ""
-                },
-                {                        
-                    "contentType": "image/svg+xml;base64",
-                    "imageData": "PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/Pgo8IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMC8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9UUi8yMDAxL1JFQy1TVkctMjAwMTA5MDQvRFREL3N2ZzEwLmR0ZCI+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgaWQ9ImJvZHlfMSIgd2lkdGg9IjI1IiBoZWlnaHQ9IjUiPgoKPGcgdHJhbnNmb3JtPSJtYXRyaXgoMC4xOTY4NTAzOSAwIDAgMC4yMDAwMDAwMiAwIDApIj4KICAgIDxwYXRoIGQ9Ik0wIDBMMCAyNUwxMjcgMjVMMTI3IDBMMCAweiIgc3Ryb2tlPSJub25lIiBmaWxsPSIjRkZGRkZGIiBmaWxsLXJ1bGU9Im5vbnplcm8iIC8+CiAgICA8cGF0aCBkPSJNNC4xNDgxNSAyLjAyNzc4QyAtMS4zNzYwOSA1LjI5ODY2IC0wLjQzODMzNSAxOC45ODk5IDYuMDE5MjkgMjAuNjgyMUMgMTQuMzQyMSAyMi44NjMxIDI1LjQwMzUgMjEgMzQgMjFMMzQgMjFMOTIgMjFDIDk4Ljg2NjMgMjEgMTE1LjIzNCAyMy45ODY5IDEyMC42ODIgMTkuMzk2NkMgMTI1LjI1NCAxNS41NDQ5IDEyNC4xNTkgMi45MzY5OSAxMTcuOTgxIDEuMzE3OUMgMTA5Ljk0NiAtMC43ODc0NDUgOTkuMjk2NyAxIDkxIDFMOTEgMUwzNCAxQyAyNi4yOTIxIDEgMTAuODY3OCAtMS45NTA4OCA0LjE0ODE1IDIuMDI3Nzh6IiBzdHJva2U9Im5vbmUiIGZpbGw9IiM5N0ZCRkQiIGZpbGwtcnVsZT0ibm9uemVybyIgLz4KICAgIDxwYXRoIGQ9Ik00LjMxNzkgMy4wMjc3OEMgLTAuMDA2NTMzMTUgNS45MTM0NSAwLjc3OTY5IDE4LjIzMjQgNi4wNTg2NCAxOS42ODIxQyAxNC4yNzQ1IDIxLjkzODMgMjUuNDg2NiAyMCAzNCAyMEwzNCAyMEw5MyAyMEMgOTkuMDk2NSAyMCAxMTUuODgzIDIyLjkxMDMgMTIwLjM5NyAxOC4zOTY2QyAxMjMuODE5IDE0Ljk3NDYgMTIzLjA1NCAzLjcyMTg2IDExNy45NDEgMi4zMTc5QyAxMTAuMDEgMC4xMzk5MTQgOTkuMjE2NSAyIDkxIDJMOTEgMkwzMyAyQyAyNS45NTE5IDIgMTAuMjcxNSAtMC45NDUwMDcgNC4zMTc5IDMuMDI3Nzh6IiBzdHJva2U9Im5vbmUiIGZpbGw9IiMzOUY3RjkiIGZpbGwtcnVsZT0ibm9uemVybyIgLz4KPC9nPgo8L3N2Zz4=",
-                    "label": ""
+            "layerArray": [
+                {
+                    "layerName": "Mean August Baseflow",
+                    "layerId": 1,
+                    "legend": [{                        
+                        "contentType": "image/svg+xml;base64",
+                        "imageData": "PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/Pgo8IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMC8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9UUi8yMDAxL1JFQy1TVkctMjAwMTA5MDQvRFREL3N2ZzEwLmR0ZCI+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgaWQ9ImJvZHlfMSIgd2lkdGg9IjI1IiBoZWlnaHQ9IjUiPgoKPGcgdHJhbnNmb3JtPSJtYXRyaXgoMC4xOTY4NTAzOSAwIDAgMC4yMDAwMDAwMiAwIDApIj4KICAgIDxwYXRoIGQ9Ik0wIDBMMCAyNUwxMjcgMjVMMTI3IDBMMCAweiIgc3Ryb2tlPSJub25lIiBmaWxsPSIjRkZGRkZGIiBmaWxsLXJ1bGU9Im5vbnplcm8iIC8+CiAgICA8cGF0aCBkPSJNNC42MDMzOSA0LjAyNzc4QyAxLjQxNTI1IDYuNTUyODMgMS45Mzg3IDE3LjQzMjQgNi4xNDgxNSAxOC42ODIxQyAxMy44ODYxIDIwLjk3OTQgMjQuOTM0NyAxOSAzMyAxOUwzMyAxOUw5MyAxOUMgOTguMzgwNCAxOSAxMTYuNDQ4IDIxLjg0NTkgMTE5Ljk3MiAxNy4zOTY2QyAxMjIuMzM4IDE0LjQwOTYgMTIyLjAwOSA0LjU1MTk4IDExNy44NTIgMy4zMTc5QyAxMTAuMTE0IDEuMDIwNiA5OS4wNjUzIDMgOTEgM0w5MSAzTDMyIDNDIDI1Ljc3NzUgMyA5LjU3MDQyIDAuMDkzODI0NCA0LjYwMzM5IDQuMDI3Nzh6IiBzdHJva2U9Im5vbmUiIGZpbGw9IiNGRDRERjciIGZpbGwtcnVsZT0ibm9uemVybyIgLz4KPC9nPgo8L3N2Zz4=",
+                        "label": ""
+                    }]
                 }
-            ],    
-            }],
+            ],
             "queryProperties": { 
                 "Mean August Baseflow": { 
                     "GNIS_Name": "GNIS Name", 
