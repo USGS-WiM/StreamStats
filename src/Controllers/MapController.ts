@@ -601,13 +601,6 @@ module StreamStats.Controllers {
                                     querylayers.append(html);
                                     this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'streamgageQuery' });
                                 }
-                                else if (item.layerName == "Mean August Baseflow") {
-                                    if (queryProperties[k] == "Drainage Area out-of-bounds" || queryProperties[k] == "Mean July Precip out-of-bounds" || queryProperties[k] == "% Aquifer Area out-of-bounds" || queryProperties[k] == "Regulated stream/river") {
-                                        if (queryResult.properties[k] == 0) queryResult.properties[k] = "No"
-                                        else if (queryResult.properties[k] == 1) queryResult.properties[k] = "Yes"
-                                    }
-                                    querylayers.append('<strong>' + queryProperties[k] + ': </strong>' + queryResult.properties[k] + '</br>');
-                                }
                                 else {
                                     querylayers.append('<strong>' + queryProperties[k] + ': </strong>' + queryResult.properties[k] + '</br>');
                                 }
