@@ -133,6 +133,11 @@ var StreamStats;
                     if (sender.selectedMethod.navigationID == 0)
                         _this.selectedExplorationTool = null;
                 }));
+                $scope.$on('leafletDirectiveMap.mainMap.zoomend', function (event, args) {
+                    if (_this.regionServices.selectedRegion && _this.center.zoom > 8 && _this.regionServices.selectedRegion.RegionID == "ME") {
+                        _this.updateLegendText("MeanAugustBaseflow");
+                    }
+                });
                 $scope.$on('leafletDirectiveMap.mainMap.mousemove', function (event, args) {
                     var latlng = args.leafletEvent.latlng;
                     _this.mapPoint.lat = latlng.lat;
@@ -1190,6 +1195,31 @@ var StreamStats;
                 }
                 else {
                     this.studyArea.zoomLevel15 = false;
+                }
+            };
+            MapController.prototype.updateLegendText = function (LayerName) {
+                var _this = this;
+                if (LayerName == "MeanAugustBaseflow") {
+                    this.leafletData.getLayers("mainMap").then(function (maplayers) {
+                        if (_this.center.zoom == 9 || _this.center.zoom == 10 || _this.center.zoom == 11) {
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.60 - 1.34 cfs/mi^2";
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[1].label = "0.45 - 0.60 cfs/mi^2";
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[2].label = "0.30 - 0.45 cfs/mi^2";
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[3].label = "0.09 - 0.30 cfs/mi^2";
+                        }
+                        else if (_this.center.zoom == 12 || _this.center.zoom == 13 || _this.center.zoom == 14) {
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.50 - 1.34 cfs/mi^2";
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[1].label = "0.40 - 0.50 cfs/mi^2";
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[2].label = "0.20 - 0.44 cfs/mi^2";
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[3].label = "0.09 - 0.20 cfs/mi^2";
+                        }
+                        else if (_this.center.zoom == 15 || _this.center.zoom == 16) {
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.35 - 1.34 cfs/mi^2";
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[1].label = "0.25 - 0.35 cfs/mi^2";
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[2].label = "0.15 - 0.25 cfs/mi^2";
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[3].label = "0.09 - 0.15 cfs/mi^2";
+                        }
+                    });
                 }
             };
             MapController.prototype.updateLegend = function () {
