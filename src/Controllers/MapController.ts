@@ -1473,7 +1473,7 @@ module StreamStats.Controllers {
                 }
                 this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs('streamgages', 'geojson', this.geojson['streamgages'].style));
                 this.updateLegend();
-            } 
+            }
             //additional features get generic styling for now
             else {
                 this.geojson[LayerName] =
@@ -1578,20 +1578,20 @@ module StreamStats.Controllers {
             if(LayerName == "MeanAugustBaseflow") { // Update MeanAugustBaseflow legend
                 this.leafletData.getLayers("mainMap").then((maplayers: any) => { 
                     if (this.center.zoom == 9 || this.center.zoom == 10 || this.center.zoom == 11) { // County Scale View
-                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.60 - 1.34 cfs/mi^2"
-                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[1].label = "0.45 - 0.60 cfs/mi^2"
-                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[2].label = "0.30 - 0.45 cfs/mi^2"
-                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[3].label = "0.09 - 0.30 cfs/mi^2"
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.60 - 1.34 cfs/mi^2";
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[1].label = "0.45 - 0.60 cfs/mi^2";
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[2].label = "0.30 - 0.45 cfs/mi^2";
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[3].label = "0.09 - 0.30 cfs/mi^2";
                     } else if (this.center.zoom == 12 || this.center.zoom == 13 || this.center.zoom == 14) { // Town Scale View
-                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.50 - 1.34 cfs/mi^2"
-                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[1].label = "0.40 - 0.50 cfs/mi^2"
-                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[2].label = "0.20 - 0.44 cfs/mi^2"
-                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[3].label = "0.09 - 0.20 cfs/mi^2"
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.50 - 1.34 cfs/mi^2";
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[1].label = "0.40 - 0.50 cfs/mi^2";
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[2].label = "0.20 - 0.44 cfs/mi^2";
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[3].label = "0.09 - 0.20 cfs/mi^2";
                     } else if (this.center.zoom == 15 || this.center.zoom == 16) { // Neighborhood Scale View 
-                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.35 - 1.34 cfs/mi^2"
-                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[1].label = "0.25 - 0.35 cfs/mi^2"
-                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[2].label = "0.15 - 0.25 cfs/mi^2"
-                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[3].label = "0.09 - 0.15 cfs/mi^2"
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.35 - 1.34 cfs/mi^2";
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[1].label = "0.25 - 0.35 cfs/mi^2";
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[2].label = "0.15 - 0.25 cfs/mi^2";
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[3].label = "0.09 - 0.15 cfs/mi^2";
                     }
                 });
             }
