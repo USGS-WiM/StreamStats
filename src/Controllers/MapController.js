@@ -106,6 +106,9 @@ var StreamStats;
                 _this.environment = configuration.environment;
                 _this.selectedExplorationTool = null;
                 _this.init();
+                _this.eventManager.SubscribeToEvent(StreamStats.Services.onAdditionalFeaturesLoaded, new WiM.Event.EventHandler(function () {
+                    _this.onAdditionalFeaturesLoaded();
+                }));
                 _this.eventManager.SubscribeToEvent(StreamStats.Services.onSelectedStudyAreaChanged, new WiM.Event.EventHandler(function () {
                     _this.onSelectedStudyAreaChanged();
                 }));
@@ -834,7 +837,7 @@ var StreamStats;
                     return;
                 this.studyArea.selectedStudyArea.FeatureCollection.features.forEach(function (layer) {
                     var item = angular.fromJson(angular.toJson(layer));
-                    if (item.id === 'longestflowpath3d') {
+                    if (item.id === 'longestflowpath3d' || item.id === 'longestflowpath') {
                         _this.addGeoJSON(item.id, item.geometry);
                     }
                 });

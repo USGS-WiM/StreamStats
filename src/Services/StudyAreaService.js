@@ -470,7 +470,7 @@ var StreamStats;
                             else {
                                 _this.selectedStudyArea.FeatureCollection.features.push(feature);
                             }
-                            if (feature && feature.id == "longestflowpath3d") {
+                            if (feature && (feature.id == "longestflowpath3d" || feature.id == "longestflowpath")) {
                                 _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(feature.id, "geojson", { displayName: feature.id, imagesrc: null }, true));
                             }
                             else {
