@@ -227,6 +227,9 @@ module StreamStats.Controllers {
             this.init();
 
             //subscribe to Events
+            this.eventManager.SubscribeToEvent(Services.onAdditionalFeaturesLoaded, new WiM.Event.EventHandler<Services.StudyAreaEventArgs>(() => {
+                this.onAdditionalFeaturesLoaded();
+            }));
             this.eventManager.SubscribeToEvent(Services.onSelectedStudyAreaChanged, new WiM.Event.EventHandler<Services.StudyAreaEventArgs>(() => {
                 this.onSelectedStudyAreaChanged();
             }));
@@ -1184,6 +1187,17 @@ module StreamStats.Controllers {
             if (this.studyArea.zoomLevel15 && !this.imageryToggled && this.regionServices.selectedRegion.Applications.some(a => ['StormDrain', 'Localres'].indexOf(a) > -1)) this.toggleImageryLayer();
 
             this.regionServices.loadMapLayersByRegion(this.regionServices.selectedRegion.RegionID)
+        }
+
+        private onAdditionalFeaturesLoaded() {
+            if (!this.studyArea.selectedStudyArea || !this.studyArea.selectedStudyArea.FeatureCollection) return;
+            this.studyArea.selectedStudyArea.FeatureCollection.features.forEach((layer) => {
+                var item = angular.fromJson(angular.toJson(layer));
+                if (item.id === 'longestflowpath3d' || item.id === 'longestflowpath') { 
+                    this.addGeoJSON(item.id, item.geometry);
+                }
+            });
+            this.toaster.pop('success', "Additional features have been downloaded", "Please continue", 5000);
         }
        
         private onSelectedStudyAreaChanged() {

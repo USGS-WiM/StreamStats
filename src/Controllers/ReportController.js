@@ -12,7 +12,7 @@ var StreamStats;
             return Center;
         }());
         var ReportController = (function () {
-            function ReportController($scope, $analytics, $modalInstance, studyArea, StatisticsGroup, leafletData, regionService, modal) {
+            function ReportController($scope, $analytics, $modalInstance, studyArea, StatisticsGroup, leafletData, regionService, modal, eventManager) {
                 var _this = this;
                 this.regionService = regionService;
                 this.modal = modal;
@@ -45,6 +45,7 @@ var StreamStats;
                 this.basinCharCollapsed = false;
                 this.collapsed = false;
                 this.selectedFDCTMTabName = "";
+                this.eventManager = eventManager;
                 if (this.extensions && this.extensions[0].result.length > 1) {
                     this.extensions[0].result.forEach(function (r) {
                         if (r.name.toLowerCase().includes("multivar")) {
@@ -53,8 +54,14 @@ var StreamStats;
                     });
                 }
                 this.initMap();
+                this.eventManager.SubscribeToEvent(StreamStats.Services.onAdditionalFeaturesLoaded, new WiM.Event.EventHandler(function () {
+                    var additionalFeatures = _this.studyAreaService.selectedStudyArea.FeatureCollection.features.filter(function (object) {
+                        return object.id !== 'globalwatershed';
+                    });
+                    _this.showFeatures(additionalFeatures);
+                }));
                 $scope.$on('leafletDirectiveMap.reportMap.load', function (event, args) {
-                    _this.showFeatures();
+                    _this.showFeatures(_this.studyAreaService.selectedStudyArea.FeatureCollection.features);
                 });
                 this.close = function () {
                     $modalInstance.dismiss('cancel');
@@ -505,12 +512,12 @@ var StreamStats;
                 }
                 return '[' + header + ']';
             };
-            ReportController.prototype.showFeatures = function () {
+            ReportController.prototype.showFeatures = function (featureArray) {
                 var _this = this;
                 if (!this.studyAreaService.selectedStudyArea)
                     return;
                 this.overlays = {};
-                this.studyAreaService.selectedStudyArea.FeatureCollection.features.forEach(function (item) {
+                featureArray.forEach(function (item) {
                     _this.addGeoJSON(item.id, item);
                 });
                 if (this.studyAreaService.selectedGage && this.studyAreaService.selectedGage.hasOwnProperty('Latitude_DD') && this.studyAreaService.selectedGage.hasOwnProperty('Longitude_DD')) {
@@ -674,7 +681,7 @@ var StreamStats;
                 }
                 return returnData;
             };
-            ReportController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService', 'StreamStats.Services.ModalService'];
+            ReportController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService', 'StreamStats.Services.ModalService', 'WiM.Event.EventManager'];
             return ReportController;
         }());
         angular.module('StreamStats.Controllers')
