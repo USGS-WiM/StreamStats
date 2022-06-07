@@ -183,6 +183,7 @@ var StreamStats;
                             var sc = _a[_i];
                             if (sc.code == 'QPPQ') {
                                 extVal += sc.name += ' (FDCTM)' + '\n';
+                                extVal += "Regression Region:, " + this.selectedFDCTMTabName + '\n';
                                 for (var _b = 0, _c = sc.parameters; _b < _c.length; _b++) {
                                     var p = _c[_b];
                                     if (['sdate', 'edate'].indexOf(p.code) > -1) {

@@ -279,7 +279,7 @@ configuration.regions = [
                     "minZoom": 15,
                 }
             }
-        }, "Applications": ["CoordinatedReach"], "regionEnabled": true, "ScenariosAvailable": true 
+        }, "Applications": ["CoordinatedReach", "FDCTM"], "regionEnabled": true, "ScenariosAvailable": true 
     },
     { "RegionID": "KS", "Name": "Kansas", "Bounds": [[36.988875, -102.051535], [40.002987, -94.601224]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     {
