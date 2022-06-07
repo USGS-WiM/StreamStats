@@ -433,6 +433,15 @@ var StreamStats;
                                         }, 700);
                                         _this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'streamgageQuery' });
                                     }
+                                    else if (item.layerName == "Mean August Baseflow") {
+                                        if (queryProperties_1[k] == "Drainage Area out-of-bounds" || queryProperties_1[k] == "Mean July Precip out-of-bounds" || queryProperties_1[k] == "% Aquifer Area out-of-bounds" || queryProperties_1[k] == "Regulated stream/river") {
+                                            if (queryResult.properties[k] == 0)
+                                                queryResult.properties[k] = "No";
+                                            else if (queryResult.properties[k] == 1)
+                                                queryResult.properties[k] = "Yes";
+                                        }
+                                        querylayers.append('<strong>' + queryProperties_1[k] + ': </strong>' + queryResult.properties[k] + '</br>');
+                                    }
                                     else {
                                         querylayers.append('<strong>' + queryProperties_1[k] + ': </strong>' + queryResult.properties[k] + '</br>');
                                     }
