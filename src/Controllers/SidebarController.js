@@ -142,24 +142,39 @@ var StreamStats;
             };
             SidebarController.prototype.setStatisticsGroup = function (statisticsGroup) {
                 var checkStatisticsGroup = this.checkArrayForObj(this.nssService.selectedStatisticsGroupList, statisticsGroup);
+                console.log('set stat group: ', statisticsGroup, checkStatisticsGroup);
+                console.log('statisticsGroup.id', statisticsGroup.id);
                 if (checkStatisticsGroup != -1) {
+                    var preventRemoval = false;
                     if (typeof statisticsGroup.id != 'number' && statisticsGroup.id.indexOf('fdctm')) {
                         var qppqExtension = this.studyAreaService.selectedStudyAreaExtensions.filter(function (e) { return e.code == 'QPPQ'; })[0];
                         var extensionIndex = this.studyAreaService.selectedStudyAreaExtensions.indexOf(qppqExtension);
                         this.studyAreaService.selectedStudyAreaExtensions.splice(extensionIndex, 1);
                         this.EventManager.RaiseEvent(StreamStats.Services.onScenarioExtensionChanged, this, new StreamStats.Services.NSSEventArgs(this.studyAreaService.selectedStudyAreaExtensions));
                     }
-                    this.nssService.selectedStatisticsGroupList.splice(checkStatisticsGroup, 1);
-                    if (this.nssService.selectedStatisticsGroupList.length == 0) {
-                        this.studyAreaService.studyAreaParameterList = [];
-                        this.regionService.parameterList.forEach(function (parameter) {
-                            parameter.checked = false;
-                            parameter.toggleable = true;
-                        });
+                    if (this.nssService.selectedStatisticsGroupList.filter(function (selectedStatisticsGroup) { return selectedStatisticsGroup.name == "Flow-Duration Curve Transfer Method"; }).length > 0 && statisticsGroup.name == "Flow-Duration Statistics") {
+                        preventRemoval = true;
+                    }
+                    if (!preventRemoval) {
+                        this.nssService.selectedStatisticsGroupList.splice(checkStatisticsGroup, 1);
+                        if (this.nssService.selectedStatisticsGroupList.length == 0) {
+                            this.studyAreaService.studyAreaParameterList = [];
+                            this.regionService.parameterList.forEach(function (parameter) {
+                                parameter.checked = false;
+                                parameter.toggleable = true;
+                            });
+                        }
                     }
                 }
                 else {
                     this.nssService.selectedStatisticsGroupList.push(statisticsGroup);
+                    if (statisticsGroup.id.indexOf('fdctm')) {
+                        var statisticsGroupFDS = this.nssService.statisticsGroupList.filter(function (statisticsGroup) { return statisticsGroup.name == "Flow-Duration Statistics"; })[0];
+                        var checkStatisticsGroupFDS = this.checkArrayForObj(this.nssService.selectedStatisticsGroupList, statisticsGroupFDS);
+                        if (checkStatisticsGroupFDS == -1) {
+                            this.nssService.selectedStatisticsGroupList.push(statisticsGroupFDS);
+                        }
+                    }
                     if (this.studyAreaService.selectedStudyArea.CoordinatedReach != null && statisticsGroup.code.toUpperCase() == "PFS") {
                         this.addParameterToStudyAreaList("DRNAREA");
                         this.nssService.showFlowsTable = true;
