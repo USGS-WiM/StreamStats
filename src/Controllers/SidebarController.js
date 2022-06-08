@@ -166,7 +166,7 @@ var StreamStats;
                 }
                 else {
                     this.nssService.selectedStatisticsGroupList.push(statisticsGroup);
-                    if (statisticsGroup.id.indexOf('fdctm')) {
+                    if (typeof statisticsGroup.id != 'number' && statisticsGroup.id.indexOf('fdctm')) {
                         var statisticsGroupFDS = this.nssService.statisticsGroupList.filter(function (statisticsGroup) { return statisticsGroup.name == "Flow-Duration Statistics"; })[0];
                         var checkStatisticsGroupFDS = this.checkArrayForObj(this.nssService.selectedStatisticsGroupList, statisticsGroupFDS);
                         if (checkStatisticsGroupFDS == -1) {

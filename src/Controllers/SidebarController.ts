@@ -268,7 +268,7 @@ module StreamStats.Controllers {
                 this.nssService.selectedStatisticsGroupList.push(statisticsGroup);
 
                 // if Flow Duration Curve Transfer Method (FDCTM) was selected, also select Flow-Duration Statistics
-                if (statisticsGroup.id.indexOf('fdctm')) {
+                if (typeof statisticsGroup.id != 'number' && statisticsGroup.id.indexOf('fdctm')) {
                     // see if the Flow-Duration Statistics group has been selected already and select it if not
                     var statisticsGroupFDS = this.nssService.statisticsGroupList.filter((statisticsGroup) => statisticsGroup.name == "Flow-Duration Statistics")[0];
                     var checkStatisticsGroupFDS = this.checkArrayForObj(this.nssService.selectedStatisticsGroupList, statisticsGroupFDS);
