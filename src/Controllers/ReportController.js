@@ -46,18 +46,14 @@ var StreamStats;
                 this.collapsed = false;
                 this.selectedFDCTMTabName = "";
                 if (this.extensions && this.extensions[0].result && this.extensions[0].result.length > 1) {
-                    var uniqueRegressionRegions = [];
-                    var uniqueRegressionRegionNames = [];
-                    this.extensions[0].result.forEach(function (r) {
-                        if (uniqueRegressionRegionNames.indexOf(r.name) == -1) {
-                            uniqueRegressionRegionNames.push(r.name);
-                            uniqueRegressionRegions.push(r);
-                        }
-                        if (r.name.toLowerCase().includes("multivar")) {
-                            _this.selectedFDCTMTabName = r.name;
-                        }
+                    var names = this.extensions[0].result.map(function (r) { return r.name; });
+                    this.extensions[0].result = this.extensions[0].result.filter(function (_a, index) {
+                        var name = _a.name;
+                        return !names.includes(name, index + 1);
                     });
-                    this.extensions[0].result = uniqueRegressionRegions;
+                    console.log(this.extensions[0].result);
+                    this.selectedFDCTMTabName = this.extensions[0].result.filter(function (r) { return r.name.toLowerCase().includes("multivar"); })[0]['name'];
+                    console.log(this.selectedFDCTMTabName);
                 }
                 this.initMap();
                 $scope.$on('leafletDirectiveMap.reportMap.load', function (event, args) {

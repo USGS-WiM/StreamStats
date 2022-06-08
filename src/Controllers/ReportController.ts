@@ -161,19 +161,11 @@ module StreamStats.Controllers {
             // Handles states where there is more than one regression region in the same place
             if (this.extensions && this.extensions[0].result  && this.extensions[0].result.length > 1) {
                 // Remove duplicate Regression Regions and select default tab
-                var uniqueRegressionRegions = [];
-                var uniqueRegressionRegionNames = [];
-                this.extensions[0].result.forEach(r => {
-                    if (uniqueRegressionRegionNames.indexOf(r.name) == -1) {
-                        uniqueRegressionRegionNames.push(r.name)
-                        uniqueRegressionRegions.push(r)
-                    }
-                    if (r.name.toLowerCase().includes("multivar")) {
-                        this.selectedFDCTMTabName = r.name;
-                    }
-                });
-                this.extensions[0].result = uniqueRegressionRegions;
-
+                var names = this.extensions[0].result.map(r => r.name)
+                this.extensions[0].result = this.extensions[0].result.filter(({name}, index) => !names.includes(name, index + 1));
+                console.log(this.extensions[0].result);
+                this.selectedFDCTMTabName = this.extensions[0].result.filter(r => r.name.toLowerCase().includes("multivar"))[0]['name'];
+                console.log(this.selectedFDCTMTabName);
             }
             this.initMap();
             
