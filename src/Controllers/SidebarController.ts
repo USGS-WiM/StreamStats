@@ -226,10 +226,7 @@ module StreamStats.Controllers {
 
             var checkStatisticsGroup = this.checkArrayForObj(this.nssService.selectedStatisticsGroupList, statisticsGroup);
 
-            console.log('set stat group: ', statisticsGroup, checkStatisticsGroup);
-            console.log('statisticsGroup.id', statisticsGroup.id)
-
-            // checkStatisticsGroup == -1 means it is being added
+            // console.log('set stat group: ', statisticsGroup, checkStatisticsGroup);
 
             //if toggled remove selected parameter set
             if (checkStatisticsGroup != -1) {

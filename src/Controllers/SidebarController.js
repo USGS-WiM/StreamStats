@@ -142,8 +142,6 @@ var StreamStats;
             };
             SidebarController.prototype.setStatisticsGroup = function (statisticsGroup) {
                 var checkStatisticsGroup = this.checkArrayForObj(this.nssService.selectedStatisticsGroupList, statisticsGroup);
-                console.log('set stat group: ', statisticsGroup, checkStatisticsGroup);
-                console.log('statisticsGroup.id', statisticsGroup.id);
                 if (checkStatisticsGroup != -1) {
                     var preventRemoval = false;
                     if (typeof statisticsGroup.id != 'number' && statisticsGroup.id.indexOf('fdctm')) {
