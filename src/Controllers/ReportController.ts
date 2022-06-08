@@ -286,7 +286,7 @@ module StreamStats.Controllers {
                     for (var sc of self.extensions) {
                         if (sc.code == 'QPPQ') {
                             extVal += sc.name += ' (FDCTM)' + '\n';
-                            extVal += "Regression Region:, " + this.selectedFDCTMTabName + '\n';
+                            extVal += "Regression Region:, " + self.selectedFDCTMTabName + '\n';
                             for (var p of sc.parameters) {
                                 if (['sdate','edate'].indexOf(p.code) >-1) {
                                     var date = new Date(p.value);
