@@ -46,11 +46,18 @@ var StreamStats;
                 this.collapsed = false;
                 this.selectedFDCTMTabName = "";
                 if (this.extensions && this.extensions[0].result && this.extensions[0].result.length > 1) {
+                    var uniqueRegressionRegions = [];
+                    var uniqueRegressionRegionNames = [];
                     this.extensions[0].result.forEach(function (r) {
+                        if (uniqueRegressionRegionNames.indexOf(r.name) == -1) {
+                            uniqueRegressionRegionNames.push(r.name);
+                            uniqueRegressionRegions.push(r);
+                        }
                         if (r.name.toLowerCase().includes("multivar")) {
                             _this.selectedFDCTMTabName = r.name;
                         }
                     });
+                    this.extensions[0].result = uniqueRegressionRegions;
                 }
                 this.initMap();
                 $scope.$on('leafletDirectiveMap.reportMap.load', function (event, args) {
