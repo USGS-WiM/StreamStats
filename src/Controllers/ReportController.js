@@ -476,6 +476,13 @@ var StreamStats;
                 for (var key in result.exceedanceProbabilities) {
                     result.graphdata.exceedance.data[0].values.push({ label: key, value: result.exceedanceProbabilities[key] });
                 }
+                result.exceedanceProbabilitiesArray = [];
+                angular.forEach(result.exceedanceProbabilities, function (value, key) {
+                    result.exceedanceProbabilitiesArray.push({
+                        exceedance: key,
+                        flowExceeded: value
+                    });
+                });
             };
             ReportController.prototype.initMap = function () {
                 this.center = new Center(39, -96, 4);

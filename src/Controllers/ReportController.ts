@@ -625,6 +625,15 @@ module StreamStats.Controllers {
             for (var key in result.exceedanceProbabilities) {
                 result.graphdata.exceedance.data[0].values.push({ label: key, value: result.exceedanceProbabilities[key] })
             }//next key
+
+            // Convert exceedance probabilities to an array so it can be sorted in the report
+            result.exceedanceProbabilitiesArray = [];
+            angular.forEach(result.exceedanceProbabilities, function(value, key) {
+                result.exceedanceProbabilitiesArray.push({
+                    exceedance: key,
+                    flowExceeded: value
+                });
+            });
             
         }
         //Helper Methods

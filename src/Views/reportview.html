@@ -212,10 +212,10 @@
                                                                     <th>Flow Exceeded (cfs)</th>
                                                                 </tr>
                                                             </thead>
-                                                            <tbody ng-repeat="(key, value) in r.exceedanceProbabilities">
+                                                            <tbody ng-repeat="exceedanceProbability in r.exceedanceProbabilitiesArray | orderBy:'exceedance':true">
                                                                 <tr>
-                                                                    <td>{{key}}</td>
-                                                                    <td>{{value.toUSGSvalue()}}</td>
+                                                                    <td>{{exceedanceProbability.exceedance}}</td>
+                                                                    <td>{{exceedanceProbability.flowExceeded}}</td>
                                                                 </tr>
                                                             </tbody>
                                                         </table>
