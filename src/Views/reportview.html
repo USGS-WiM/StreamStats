@@ -99,7 +99,7 @@
 
                     <!--Parameter Table for Flow Report-->
                     <div class="well well-sm" ng-show="vm.nssService.showFlowsTable" ng-repeat="statisticsGroup in vm.nssService.selectedStatisticsGroupList track by $index">
-                        <h3 class="collapsible" ng-click="vm.collapseSection($event, 'stats', statisticsGroup.name)"><i ng-class="!vm.sectionCollapsed[statisticsGroup.name] ? 'fa fa-chevron-right': 'fa fa-chevron-down'"></i>&nbsp;&nbsp;{{statisticsGroup.name == "Flow-Duration Curve Transfer Method" ? "Flow-Duration Statistics" : statisticsGroup.name}}</h3>
+                        <h3 class="collapsible" ng-click="vm.collapseSection($event, 'stats', statisticsGroup.name)"><i ng-class="!vm.sectionCollapsed[statisticsGroup.name] ? 'fa fa-chevron-right': 'fa fa-chevron-down'"></i>&nbsp;&nbsp;{{statisticsGroup.name}}</h3>
                         <div class="collapsible-content">
                             <div ng-repeat="regressionRegion in statisticsGroup.regressionRegions" ng-if="regressionRegion.parameters.length > 0">
                                 <h3>{{statisticsGroup.name}} Parameters&nbsp;&nbsp;<span ng-bind="vm.GetRegressionRegionHeader(regressionRegion)"></span></h3>
