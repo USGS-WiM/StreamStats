@@ -182,11 +182,11 @@
                                 <div class ="well well-sm">
                                     <h3 class="collapsible" ng-click="vm.collapseSection($event, 'stats', 'FDCTM')"><i ng-class="!vm.sectionCollapsed['FDCTM'] ? 'fa fa-chevron-right': 'fa fa-chevron-down'"></i>&nbsp;&nbsp;{{sc.name}} (FDCTM)</h3>
                                     <div class="collapsible-content">
-                                        <ul ng-if="sc.result.length > 1" id="FDCTMTabs" class="nav nav-tabs" style="background-color:#f5f5f5 !important;">
+                                        <ul ng-if="sc.result.length > 1" id="FDCTMTabs" class="nav nav-tabs" style="background-color:#e0e3e6 !important;">
                                             <li ng-repeat="r in sc.result" ng-class="{'active':vm.selectedFDCTMTabName===r.name}">
                                                 <a ng-click="vm.selectFDCTMTab(r.name)">{{r.name}}</a>
                                             </li>
-                                        </ul> 
+                                        </ul>
                                         
                                         <div ng-repeat="p in sc.parameters" ng-if="['sdate','edate'].indexOf(p.code) >-1">
                                             <span>{{p.name}}: {{p.value | date:'yyyy/MM/dd'}}</span><br />
