@@ -163,9 +163,7 @@ module StreamStats.Controllers {
                 // Remove duplicate Regression Regions and select default tab
                 var names = this.extensions[0].result.map(r => r.name)
                 this.extensions[0].result = this.extensions[0].result.filter(({name}, index) => !names.includes(name, index + 1));
-                console.log(this.extensions[0].result);
                 this.selectedFDCTMTabName = this.extensions[0].result.filter(r => r.name.toLowerCase().includes("multivar"))[0]['name'];
-                console.log(this.selectedFDCTMTabName);
             }
             this.initMap();
             

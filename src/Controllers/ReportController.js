@@ -51,9 +51,7 @@ var StreamStats;
                         var name = _a.name;
                         return !names.includes(name, index + 1);
                     });
-                    console.log(this.extensions[0].result);
                     this.selectedFDCTMTabName = this.extensions[0].result.filter(function (r) { return r.name.toLowerCase().includes("multivar"); })[0]['name'];
-                    console.log(this.selectedFDCTMTabName);
                 }
                 this.initMap();
                 $scope.$on('leafletDirectiveMap.reportMap.load', function (event, args) {
