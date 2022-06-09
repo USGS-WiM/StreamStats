@@ -317,7 +317,7 @@ configuration.regions = [
     {
         "MeanAugustBaseflow": {
             "name": "Mean August Baseflow",
-            "url": "https://gis.usgs.gov/sciencebase3/rest/services/Catalog/628bc405d34e4fef2ec3d50c/MapServer",
+            "url": "https://gis.usgs.gov/sciencebase3/rest/services/Catalog/620408c1d34e622189de5ad6/MapServer",
             "type": 'agsDynamic',
             "visible": true,
             "layerOptions": {
