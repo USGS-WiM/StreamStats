@@ -159,14 +159,20 @@ module StreamStats.Controllers {
             this.selectedFDCTMTabName = "";
             this.eventManager = eventManager;
 
-            // If we add QPPQ to additional states we might need to add and if statement here to limit to IN and IL
+            // If we add QPPQ to additional states we might need to add an if statement here to limit to IN and IL
             // Handles states where there is more than one regression region in the same place
-            if (this.extensions && this.extensions[0].result.length > 1) {
+            if (this.extensions && this.extensions[0].result  && this.extensions[0].result.length > 1) {
+
+                // Select default tab
                 this.extensions[0].result.forEach(r => {
                     if (r.name.toLowerCase().includes("multivar")) {
                         this.selectedFDCTMTabName = r.name;
                     }
                 });
+                
+                // Remove duplicate Regression Regions
+                var names = this.extensions[0].result.map(r => r.name)
+                this.extensions[0].result = this.extensions[0].result.filter(({name}, index) => !names.includes(name, index + 1));
             }
             this.initMap();
             
@@ -295,6 +301,7 @@ module StreamStats.Controllers {
                     for (var sc of self.extensions) {
                         if (sc.code == 'QPPQ') {
                             extVal += sc.name += ' (FDCTM)' + '\n';
+                            extVal += "Regression Region:, " + self.selectedFDCTMTabName + '\n';
                             for (var p of sc.parameters) {
                                 if (['sdate','edate'].indexOf(p.code) >-1) {
                                     var date = new Date(p.value);
@@ -510,11 +517,11 @@ module StreamStats.Controllers {
             var content = e.currentTarget.nextElementSibling;
             if (content.style.display === "none") {
                 content.style.display = "block";
-                if(type === "stats" || "ChannelWidthWeighting") this.sectionCollapsed[group] = false;
+                if(type === "stats") this.sectionCollapsed[group] = false;
                 if(type === "basin") this.basinCharCollapsed = false;
             } else {
                 content.style.display = "none";
-                if(type === "stats" || "ChannelWidthWeighting") this.sectionCollapsed[group] = true;
+                if(type === "stats") this.sectionCollapsed[group] = true;
                 if(type === "basin") this.basinCharCollapsed = true;
             }
         }
@@ -633,6 +640,15 @@ module StreamStats.Controllers {
             for (var key in result.exceedanceProbabilities) {
                 result.graphdata.exceedance.data[0].values.push({ label: key, value: result.exceedanceProbabilities[key] })
             }//next key
+
+            // Convert exceedance probabilities to an array so it can be sorted in the report
+            result.exceedanceProbabilitiesArray = [];
+            angular.forEach(result.exceedanceProbabilities, function(value, key) {
+                result.exceedanceProbabilitiesArray.push({
+                    exceedance: key,
+                    flowExceeded: value
+                });
+            });
             
         }
         //Helper Methods

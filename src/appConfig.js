@@ -471,7 +471,7 @@ configuration.regions = [
                             var popupContent = '<h5>SCDOT Bridges</h5> ';
                             var queryProperties = { 
                                 "STRUCTURE_": "Structure ID", 
-                                "ASSET_ID": "Asset ID",
+                                "ASSET_ID": "Asset ID",
                                 "CROSSING": "Crossing", 
                                 "COUNTY_ID": "County Identifier", 
                                 "RTE_TYPE": "Route Type", 
