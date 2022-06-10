@@ -45,13 +45,18 @@ var StreamStats;
                 this.basinCharCollapsed = false;
                 this.collapsed = false;
                 this.selectedFDCTMTabName = "";
+                this.eventManager = eventManager;
                 if (this.extensions && this.extensions[0].result && this.extensions[0].result.length > 1) {
+                    this.extensions[0].result.forEach(function (r) {
+                        if (r.name.toLowerCase().includes("multivar")) {
+                            _this.selectedFDCTMTabName = r.name;
+                        }
+                    });
                     var names = this.extensions[0].result.map(function (r) { return r.name; });
                     this.extensions[0].result = this.extensions[0].result.filter(function (_a, index) {
                         var name = _a.name;
                         return !names.includes(name, index + 1);
                     });
-                    this.selectedFDCTMTabName = this.extensions[0].result.filter(function (r) { return r.name.toLowerCase().includes("multivar"); })[0]['name'];
                 }
                 this.initMap();
                 this.eventManager.SubscribeToEvent(StreamStats.Services.onAdditionalFeaturesLoaded, new WiM.Event.EventHandler(function () {

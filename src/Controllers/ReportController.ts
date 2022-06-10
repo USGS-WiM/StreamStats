@@ -162,10 +162,17 @@ module StreamStats.Controllers {
             // If we add QPPQ to additional states we might need to add an if statement here to limit to IN and IL
             // Handles states where there is more than one regression region in the same place
             if (this.extensions && this.extensions[0].result  && this.extensions[0].result.length > 1) {
-                // Remove duplicate Regression Regions and select default tab
+
+                // Select default tab
+                this.extensions[0].result.forEach(r => {
+                    if (r.name.toLowerCase().includes("multivar")) {
+                        this.selectedFDCTMTabName = r.name;
+                    }
+                });
+                
+                // Remove duplicate Regression Regions
                 var names = this.extensions[0].result.map(r => r.name)
                 this.extensions[0].result = this.extensions[0].result.filter(({name}, index) => !names.includes(name, index + 1));
-                this.selectedFDCTMTabName = this.extensions[0].result.filter(r => r.name.toLowerCase().includes("multivar"))[0]['name'];
             }
             this.initMap();
             
