@@ -69,11 +69,52 @@ module StreamStats.Controllers {
         public showResults: boolean;
         public hideAlerts: boolean;
         public toaster: any;
-
         private studyAreaService: Services.IStudyAreaService;
         private nssService: Services.InssService;
+        public CanContinue: boolean;
 
 
+        public AEPOptions = [{
+            "name": "50%",
+            "value": 50
+          }, {
+            "name": "20%",
+            "value": 20
+          }, {
+            "name": "10%",
+            "value": 10
+        }, {
+            "name": "4%",
+            "value": 4
+        }, {
+            "name": "2%",
+            "value": 2
+        }, {
+            "name": "1%",
+            "value": 1
+        }, {
+            "name": ".5%",
+            "value": 0.5
+        }, {
+            "name": ".2%",
+            "value": 0.2
+        }];
+        
+
+        private _selectedAEP;
+
+        public get SelectedAEP() {
+            return this._selectedAEP;
+        }
+
+        public set SelectedAEP(val) {
+            this._selectedAEP = val;
+            console.log(this._selectedAEP);
+        }
+        public drainageArea: number;
+        public mainChannelLength: number;
+        public mainChannelSlope: number;
+        public totalImperviousArea: number;
 
         private _selectedTab: SCStormRunoffType;
         public get SelectedTab(): SCStormRunoffType {
@@ -115,15 +156,58 @@ module StreamStats.Controllers {
         //Methods  
         //-+-+-+-+-+-+-+-+-+-+-+-
         public GetStormRunoffResults() {
-            
+            console.log("calc results")
         }
 
+        public CalculateParameters() {
+            try {
+                this.CanContinue = false;
+                
+                var url: string = configuration.baseurls['ScienceBase'] + configuration.queryparams['SSURGOexCOMS'] + configuration.queryparams['SSURGOexCO'].format(this.studyAreaService.selectedStudyArea.FeatureCollection.bbox);
+                var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
+                
+                this.Execute(request).then(
+                    (response: any) => {
+                        console.log(response)
+                    }, (error) => {
+                        var x = error;
+                        //sm when error                    
+                    }).finally(() => {
+                        this.CanContinue = true;
+                        this.hideAlerts = true;
+                    }
+                );
+
+                
+            } catch (e) {
+                console.log("oops CalculateParams failed to load ",e)
+            }
+        }
+
+        
+
         public validateForm(mainForm) {
-            
+            if (mainForm.$valid) {
+                return true;
+            }
+            else {
+                this.showResults = false;
+                this.hideAlerts = false;
+                return false;
+            }
         }
 
         public ClearResults() {
-            
+            for (var i in this.studyAreaService.studyAreaParameterList) {
+                this.studyAreaService.studyAreaParameterList[i].value = null;
+                //this.SelectedParameterList[i].value = null;
+            }
+
+            this.SelectedAEP = this.AEPOptions[0];
+            this.SelectedAEP = null;
+            this.drainageArea = null;
+            //this.PIntensity = null;
+            this.showResults = false;
         }
 
         public Close(): void {
@@ -152,6 +236,8 @@ module StreamStats.Controllers {
             this.SelectedTab = SCStormRunoffType.BohmanRural1989;
             this.showResults = false;
             this.hideAlerts = false;
+            this.CanContinue = true;
+            this.SelectedAEP = {"name": "50%", "value": 50};
         }
 
         private loadParameters(): void{

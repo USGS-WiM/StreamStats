@@ -32,6 +32,31 @@ var StreamStats;
                 var _this = _super.call(this, $http, configuration.baseurls.StormRunoffServices) || this;
                 _this.$timeout = $timeout;
                 _this.EventManager = EventManager;
+                _this.AEPOptions = [{
+                        "name": "50%",
+                        "value": 50
+                    }, {
+                        "name": "20%",
+                        "value": 20
+                    }, {
+                        "name": "10%",
+                        "value": 10
+                    }, {
+                        "name": "4%",
+                        "value": 4
+                    }, {
+                        "name": "2%",
+                        "value": 2
+                    }, {
+                        "name": "1%",
+                        "value": 1
+                    }, {
+                        "name": ".5%",
+                        "value": 0.5
+                    }, {
+                        "name": ".2%",
+                        "value": 0.2
+                    }];
                 $scope.vm = _this;
                 _this.angulartics = $analytics;
                 _this.toaster = toaster;
@@ -45,6 +70,17 @@ var StreamStats;
                 };
                 return _this;
             }
+            Object.defineProperty(SCStormRunoffController.prototype, "SelectedAEP", {
+                get: function () {
+                    return this._selectedAEP;
+                },
+                set: function (val) {
+                    this._selectedAEP = val;
+                    console.log(this._selectedAEP);
+                },
+                enumerable: false,
+                configurable: true
+            });
             Object.defineProperty(SCStormRunoffController.prototype, "SelectedTab", {
                 get: function () {
                     return this._selectedTab;
@@ -59,10 +95,45 @@ var StreamStats;
                 configurable: true
             });
             SCStormRunoffController.prototype.GetStormRunoffResults = function () {
+                console.log("calc results");
+            };
+            SCStormRunoffController.prototype.CalculateParameters = function () {
+                var _this = this;
+                try {
+                    this.CanContinue = false;
+                    var url = configuration.baseurls['ScienceBase'] + configuration.queryparams['SSURGOexCOMS'] + configuration.queryparams['SSURGOexCO'].format(this.studyAreaService.selectedStudyArea.FeatureCollection.bbox);
+                    var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                    this.Execute(request).then(function (response) {
+                        console.log(response);
+                    }, function (error) {
+                        var x = error;
+                    }).finally(function () {
+                        _this.CanContinue = true;
+                        _this.hideAlerts = true;
+                    });
+                }
+                catch (e) {
+                    console.log("oops CalculateParams failed to load ", e);
+                }
             };
             SCStormRunoffController.prototype.validateForm = function (mainForm) {
+                if (mainForm.$valid) {
+                    return true;
+                }
+                else {
+                    this.showResults = false;
+                    this.hideAlerts = false;
+                    return false;
+                }
             };
             SCStormRunoffController.prototype.ClearResults = function () {
+                for (var i in this.studyAreaService.studyAreaParameterList) {
+                    this.studyAreaService.studyAreaParameterList[i].value = null;
+                }
+                this.SelectedAEP = this.AEPOptions[0];
+                this.SelectedAEP = null;
+                this.drainageArea = null;
+                this.showResults = false;
             };
             SCStormRunoffController.prototype.Close = function () {
                 this.modalInstance.dismiss('cancel');
@@ -80,6 +151,8 @@ var StreamStats;
                 this.SelectedTab = SCStormRunoffType.BohmanRural1989;
                 this.showResults = false;
                 this.hideAlerts = false;
+                this.CanContinue = true;
+                this.SelectedAEP = { "name": "50%", "value": 50 };
             };
             SCStormRunoffController.prototype.loadParameters = function () {
             };
