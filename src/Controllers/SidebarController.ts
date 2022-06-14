@@ -581,7 +581,9 @@ module StreamStats.Controllers {
         public OpenStormRunoff() {
             this.modalService.openModal(Services.SSModalType.e_stormrunnoff);
         }
-
+        public OpenSCStormRunoff() {
+            this.modalService.openModal(Services.SSModalType.e_scstormrunnoff);
+        }
         public OpenNearestGages() {
             this.modalService.openModal(Services.SSModalType.e_nearestgages);
         }

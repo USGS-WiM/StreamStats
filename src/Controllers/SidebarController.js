@@ -382,6 +382,9 @@ var StreamStats;
             SidebarController.prototype.OpenStormRunoff = function () {
                 this.modalService.openModal(StreamStats.Services.SSModalType.e_stormrunnoff);
             };
+            SidebarController.prototype.OpenSCStormRunoff = function () {
+                this.modalService.openModal(StreamStats.Services.SSModalType.e_scstormrunnoff);
+            };
             SidebarController.prototype.OpenNearestGages = function () {
                 this.modalService.openModal(StreamStats.Services.SSModalType.e_nearestgages);
             };

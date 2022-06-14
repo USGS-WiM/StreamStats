@@ -53,6 +53,15 @@ var StreamStats;
                                 backdrop: 'static',
                                 windowClass: 'windowZ'
                             };
+                        case SSModalType.e_scstormrunnoff:
+                            return {
+                                templateUrl: 'Views/scstormrunoff.html',
+                                controller: 'StreamStats.Controllers.SCStormRunoffController',
+                                size: 'lg',
+                                backdropClass: 'backdropZ',
+                                backdrop: 'static',
+                                windowClass: 'windowZ'
+                            };
                         case SSModalType.e_about:
                             return {
                                 templateUrl: 'Views/about.html',
@@ -139,6 +148,7 @@ var StreamStats;
             SSModalType[SSModalType["e_extensionsupport"] = 9] = "e_extensionsupport";
             SSModalType[SSModalType["e_gagepage"] = 10] = "e_gagepage";
             SSModalType[SSModalType["e_nearestgages"] = 11] = "e_nearestgages";
+            SSModalType[SSModalType["e_scstormrunnoff"] = 12] = "e_scstormrunnoff";
         })(SSModalType = Services.SSModalType || (Services.SSModalType = {}));
         factory.$inject = ['$modal'];
         function factory($modal) {

@@ -1,0 +1,46 @@
+    <!-- Modal -->
+    <div id="print-content">
+        <div class="modal-header">
+            <div class="visible-print identifier">
+                <img src="images/usgs-logo-black.png" alt="USGS Identifier" title="USGS Science for a Changing World" />
+            </div>
+            <button type="button" class="close hidden-print" ng-click="vm.Close()"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title hidden-print">Study Area Storm Event Runoff Summary</h4>
+        </div>
+        <div class="modal-body">
+            <!--<input ng-if="true" type="text" class="form-control" ng-model="vm.reportTitle" placeholder="Title">-->
+            <div ng-hide="vm.StudyArea">A study area is needed before viewing the report</div>
+            <div ng-show="vm.StudyArea">
+                <div class="form-group">
+                    <ul class="nav nav-tabs wateruseTabs hidden-print">
+                        <li ng-class="{'active': vm.SelectedTab == 3}"><a ng-click="vm.SelectedTab=3">Synthetic Urban Hydrograph</a></li>
+                        <li ng-class="{'active': vm.SelectedTab == 2}"><a ng-click="vm.SelectedTab=2">Bohman Urban (1992)</a></li>
+                        <li ng-class="{'active': vm.SelectedTab == 1}"><a ng-click="vm.SelectedTab=1">Bohman Rural (1989)</a></li>
+                    </ul>
+    
+                    <div id="printArea">
+                            <!-- Bohman Rural (1989) tab -->
+                            <div ng-if="vm.SelectedTab == 1" style="position:relative;">
+                                
+                            </div>
+                            <!-- Bohman Urban (1992) tab -->
+                            <div ng-if="vm.SelectedTab == 2" style="position:relative;">
+                                
+                            </div>
+                            <!-- Synthetic Urban Hydrograph tab -->
+                            <div ng-if="vm.SelectedTab == 3" style="position:relative;">
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>        
+        </div>
+    
+        <div class="modal-footer hidden-print">
+            <div class="btn-group">
+                <button class="btn-wim-default" ng-click="vm.Close()"><i class="fa fa-close"></i>&nbsp;&nbsp;Close</button>
+            </div>
+        </div>
+    
+    </div>
