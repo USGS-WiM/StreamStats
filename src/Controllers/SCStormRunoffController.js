@@ -147,6 +147,8 @@ var StreamStats;
                 }
             };
             SCStormRunoffController.prototype.validateForm = function (mainForm) {
+                console.log(mainForm);
+                console.log(mainForm.$valid);
                 if (mainForm.$valid) {
                     return true;
                 }
@@ -166,6 +168,7 @@ var StreamStats;
                 this.mainChannelLength = null;
                 this.mainChannelSlope = null;
                 this.totalImperviousArea = null;
+                this.SelectedAEP = { "name": "50%", "value": 50 };
                 this.showResults = false;
             };
             SCStormRunoffController.prototype.Close = function () {

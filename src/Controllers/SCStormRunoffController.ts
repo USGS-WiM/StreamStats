@@ -189,8 +189,8 @@ module StreamStats.Controllers {
                             results.forEach(param => {
                                 if (param.code.toLowerCase() == 'drnarea') this.drainageArea = param.value;
                                 if (param.code.toLowerCase() == 'csl10_85fm') this.mainChannelSlope = param.value;
-                                if (param.code.toLowerCase() ==  'lc06imp') this.totalImperviousArea = param.value;
-                                if (param.code.toLowerCase() ==  'lfplength') this.mainChannelLength = param.value;
+                                if (param.code.toLowerCase() == 'lc06imp') this.totalImperviousArea = param.value;
+                                if (param.code.toLowerCase() == 'lfplength') this.mainChannelLength = param.value;
                             });
                         }
                     },(error) => {
@@ -207,6 +207,8 @@ module StreamStats.Controllers {
         }
 
         public validateForm(mainForm) {
+            console.log(mainForm)
+            console.log(mainForm.$valid)
             if (mainForm.$valid) {
                 return true;
             }
@@ -229,7 +231,7 @@ module StreamStats.Controllers {
             this.mainChannelLength = null;
             this.mainChannelSlope = null;
             this.totalImperviousArea = null;
-
+            this.SelectedAEP = {"name": "50%", "value": 50};
             this.showResults = false;
         }
 
