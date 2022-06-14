@@ -32,7 +32,7 @@
                                 <label class="fullwidth alignc" ng-if="vm.validateForm(BohmanRuralForm) && !vm.hideAlerts"><span class="fa fa-check"></span>&nbsp;Parameters Have Been Calculated</label>
                                 <label class="fullwidth" ng-if="!vm.validateForm(BohmanRuralForm) || (vm.validateForm(BohmanRuralForm) && vm.hideAlerts)">&nbsp;&nbsp;</label>
                                 <div class="hidden-print">
-                                    <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.CalculateParameters()" ng-hide="vm.validateForm(BohmanRuralForm)"><span ng-class="vm.CanContinue ? 'fa fa-calculator' : 'fa fa-refresh fa-spin'"></span>&nbsp;&nbsp;Calculate Missing Parameters</button>
+                                    <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.CalculateParameters('DRNAREA')" ng-hide="vm.validateForm(BohmanRuralForm)"><span ng-class="vm.CanContinue ? 'fa fa-calculator' : 'fa fa-refresh fa-spin'"></span>&nbsp;&nbsp;Calculate Missing Parameters</button>
                                     <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-red" ng-click="vm.ClearResults()" ng-hide="!vm.validateForm(BohmanRuralForm)"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;Clear All</button>
                                     <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.GetStormRunoffResults()" ng-hide="!vm.validateForm(BohmanRuralForm)"><span ng-class="vm.CanContinue ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></span>{{ vm.showResults ? '&nbsp;&nbsp;Recalculate Results' : '&nbsp;&nbsp;Continue' }}</button>
                                 </div>
@@ -42,7 +42,7 @@
                         </div>
                         <!-- Bohman Urban (1992) tab -->
                         <div ng-if="vm.SelectedTab == 2" style="position:relative;">
-                            <form id="BohmanRuralForm" name="BohmanRuralForm" class="hidden-print" novalidate>
+                            <form id="BohmanUrbanForm" name="BohmanUrbanForm" class="hidden-print" novalidate>
                                 <label for="AEPOptions">Select an Annual Exceedance Probability (AEP):</label>
                                 <select name="AEPOptions" ng-model="vm.SelectedAEP" ng-options="precip.name for precip in vm.AEPOptions track by precip.value"></select>
 
@@ -55,15 +55,15 @@
                                 <label for="TotalImperviousArea">Total impervious area (%) :</label>
                                 <input type="number" ng-model="vm.totalImperviousArea" required/>
 
-                                <label class="fullwidth alignc" ng-if="vm.validateForm(BohmanRuralForm) && !vm.hideAlerts"><span class="fa fa-check"></span>&nbsp;Parameters Have Been Calculated</label>
-                                <label class="fullwidth" ng-if="!vm.validateForm(BohmanRuralForm) || (vm.validateForm(BohmanRuralForm) && vm.hideAlerts)">&nbsp;&nbsp;</label>
+                                <label class="fullwidth alignc" ng-if="vm.validateForm(BohmanUrbanForm) && !vm.hideAlerts"><span class="fa fa-check"></span>&nbsp;Parameters Have Been Calculated</label>
+                                <label class="fullwidth" ng-if="!vm.validateForm(BohmanUrbanForm) || (vm.validateForm(BohmanUrbanForm) && vm.hideAlerts)">&nbsp;&nbsp;</label>
                                 <div class="hidden-print">
-                                    <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.CalculateParameters()" ng-hide="vm.validateForm(BohmanRuralForm)"><span ng-class="vm.CanContinue ? 'fa fa-calculator' : 'fa fa-refresh fa-spin'"></span>&nbsp;&nbsp;Calculate Missing Parameters</button>
-                                    <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-red" ng-click="vm.ClearResults()" ng-hide="!vm.validateForm(BohmanRuralForm)"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;Clear All</button>
-                                    <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.GetStormRunoffResults()" ng-hide="!vm.validateForm(BohmanRuralForm)"><span ng-class="vm.CanContinue ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></span>{{ vm.showResults ? '&nbsp;&nbsp;Recalculate Results' : '&nbsp;&nbsp;Continue' }}</button>
+                                    <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.CalculateParameters('DRNAREA,LFPLENGTH,CSL10_85fm,LC06IMP')" ng-hide="vm.validateForm(BohmanUrbanForm)"><span ng-class="vm.CanContinue ? 'fa fa-calculator' : 'fa fa-refresh fa-spin'"></span>&nbsp;&nbsp;Calculate Missing Parameters</button>
+                                    <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-red" ng-click="vm.ClearResults()" ng-hide="!vm.validateForm(BohmanUrbanForm)"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;Clear All</button>
+                                    <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.GetStormRunoffResults()" ng-hide="!vm.validateForm(BohmanUrbanForm)"><span ng-class="vm.CanContinue ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></span>{{ vm.showResults ? '&nbsp;&nbsp;Recalculate Results' : '&nbsp;&nbsp;Continue' }}</button>
                                 </div>
-                                <label class="fullwidth alignc orange" ng-if="!vm.validateForm(BohmanRuralForm)"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Parameters Must Be Entered Before Results Can Be Calculated</label>
-                                <label ng-if="vm.validateForm(BohmanRuralForm)">&nbsp;&nbsp;</label> 
+                                <label class="fullwidth alignc orange" ng-if="!vm.validateForm(BohmanUrbanForm)"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Parameters Must Be Entered Before Results Can Be Calculated</label>
+                                <label ng-if="vm.validateForm(BohmanUrbanForm)">&nbsp;&nbsp;</label> 
                             </form> 
                         </div>
                         <!-- Synthetic Urban Hydrograph tab -->

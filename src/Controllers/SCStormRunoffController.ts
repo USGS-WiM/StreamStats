@@ -70,9 +70,7 @@ module StreamStats.Controllers {
         public hideAlerts: boolean;
         public toaster: any;
         private studyAreaService: Services.IStudyAreaService;
-        private nssService: Services.InssService;
         public CanContinue: boolean;
-
 
         public AEPOptions = [{
             "name": "50%",
@@ -109,7 +107,6 @@ module StreamStats.Controllers {
 
         public set SelectedAEP(val) {
             this._selectedAEP = val;
-            console.log(this._selectedAEP);
         }
         public drainageArea: number;
         public mainChannelLength: number;
@@ -135,15 +132,14 @@ module StreamStats.Controllers {
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$analytics', 'toaster', '$http', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.RegionService', '$modalInstance', '$timeout', 'WiM.Event.EventManager'];
-        constructor($scope: ISCStormRunoffControllerScope, $analytics, toaster, $http: ng.IHttpService, studyAreaService: StreamStats.Services.IStudyAreaService, StatisticsGroup: Services.InssService, region: StreamStats.Services.IRegionService, modal: ng.ui.bootstrap.IModalServiceInstance, public $timeout: ng.ITimeoutService, private EventManager: WiM.Event.IEventManager) {
+        static $inject = ['$scope', '$analytics', 'toaster', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance', '$timeout', 'WiM.Event.EventManager'];
+        constructor($scope: ISCStormRunoffControllerScope, $analytics, toaster, $http: ng.IHttpService, studyAreaService: StreamStats.Services.IStudyAreaService, modal: ng.ui.bootstrap.IModalServiceInstance, public $timeout: ng.ITimeoutService, private EventManager: WiM.Event.IEventManager) {
             super($http, configuration.baseurls.StormRunoffServices);
             $scope.vm = this;
             this.angulartics = $analytics;
             this.toaster = toaster;
             this.modalInstance = modal;
             this.StudyArea = studyAreaService.selectedStudyArea;
-            this.nssService = StatisticsGroup;
             this.studyAreaService = studyAreaService;
         
             this.init();  
@@ -159,32 +155,56 @@ module StreamStats.Controllers {
             console.log("calc results")
         }
 
-        public CalculateParameters() {
+        public CalculateParameters(parameters) {
             try {
+                this.toaster.pop("wait", "Calculating Missing Parameters", "Please wait...", 0);
                 this.CanContinue = false;
-                
-                var url: string = configuration.baseurls['ScienceBase'] + configuration.queryparams['SSURGOexCOMS'] + configuration.queryparams['SSURGOexCO'].format(this.studyAreaService.selectedStudyArea.FeatureCollection.bbox);
+                var workspaceID = this.studyAreaService.selectedStudyArea.WorkspaceID;
+                var regionID = this.studyAreaService.selectedStudyArea.RegionID
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSComputeParams'].format(regionID, workspaceID, parameters);
                 var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
+                request.withCredentials = true;
                 
                 this.Execute(request).then(
                     (response: any) => {
-                        console.log(response)
-                    }, (error) => {
-                        var x = error;
-                        //sm when error                    
+                        if (response.data.parameters && response.data.parameters.length > 0) {
+                            this.toaster.clear();
+                            //check each returned parameter for issues
+                            var paramErrors = false;
+                            angular.forEach(response.data.parameters, (parameter) => {
+                                if (!parameter.hasOwnProperty('value') || parameter.value == -999) {
+                                    paramErrors = true;
+                                    console.error('Parameter failed to compute: ', parameter.code);
+                                    parameter.loaded = false;
+                                }
+                                else {
+                                    parameter.loaded = true;
+                                }
+                            });
+                            //if there is an issue, pop open 
+                            if (paramErrors) {
+                                this.toaster.pop('error', "Error", "Parameter failed to compute", 0);
+                            }
+                            var results = response.data.parameters;
+                            results.forEach(param => {
+                                if (param.code.toLowerCase() == 'drnarea') this.drainageArea = param.value;
+                                if (param.code.toLowerCase() == 'csl10_85fm') this.mainChannelSlope = param.value;
+                                if (param.code.toLowerCase() ==  'lc06imp') this.totalImperviousArea = param.value;
+                                if (param.code.toLowerCase() ==  'lfplength') this.mainChannelLength = param.value;
+                            });
+                        }
+                    },(error) => {
+                        //sm when error
+                        this.toaster.clear();
+                        this.toaster.pop("error", "There was an HTTP error calculating drainage area", "Please retry", 0);
                     }).finally(() => {
                         this.CanContinue = true;
                         this.hideAlerts = true;
-                    }
-                );
-
-                
+                    });
             } catch (e) {
-                console.log("oops CalculateParams failed to load ",e)
+                this.toaster.pop('error', "There was an error calculating parameters", "", 0);                 
             }
         }
-
-        
 
         public validateForm(mainForm) {
             if (mainForm.$valid) {
@@ -206,7 +226,10 @@ module StreamStats.Controllers {
             this.SelectedAEP = this.AEPOptions[0];
             this.SelectedAEP = null;
             this.drainageArea = null;
-            //this.PIntensity = null;
+            this.mainChannelLength = null;
+            this.mainChannelSlope = null;
+            this.totalImperviousArea = null;
+
             this.showResults = false;
         }
 
@@ -240,10 +263,6 @@ module StreamStats.Controllers {
             this.SelectedAEP = {"name": "50%", "value": 50};
         }
 
-        private loadParameters(): void{
-
-        }
-
         private selectRunoffType() {
             switch (this._selectedTab) {
                 case SCStormRunoffType.BohmanRural1989:
@@ -261,7 +280,6 @@ module StreamStats.Controllers {
         private tableToCSV($table) {
             
         }
-
         
     } 
 

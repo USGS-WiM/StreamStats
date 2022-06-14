@@ -28,7 +28,7 @@ var StreamStats;
         }());
         var SCStormRunoffController = (function (_super) {
             __extends(SCStormRunoffController, _super);
-            function SCStormRunoffController($scope, $analytics, toaster, $http, studyAreaService, StatisticsGroup, region, modal, $timeout, EventManager) {
+            function SCStormRunoffController($scope, $analytics, toaster, $http, studyAreaService, modal, $timeout, EventManager) {
                 var _this = _super.call(this, $http, configuration.baseurls.StormRunoffServices) || this;
                 _this.$timeout = $timeout;
                 _this.EventManager = EventManager;
@@ -62,7 +62,6 @@ var StreamStats;
                 _this.toaster = toaster;
                 _this.modalInstance = modal;
                 _this.StudyArea = studyAreaService.selectedStudyArea;
-                _this.nssService = StatisticsGroup;
                 _this.studyAreaService = studyAreaService;
                 _this.init();
                 _this.print = function () {
@@ -76,7 +75,6 @@ var StreamStats;
                 },
                 set: function (val) {
                     this._selectedAEP = val;
-                    console.log(this._selectedAEP);
                 },
                 enumerable: false,
                 configurable: true
@@ -97,23 +95,55 @@ var StreamStats;
             SCStormRunoffController.prototype.GetStormRunoffResults = function () {
                 console.log("calc results");
             };
-            SCStormRunoffController.prototype.CalculateParameters = function () {
+            SCStormRunoffController.prototype.CalculateParameters = function (parameters) {
                 var _this = this;
                 try {
+                    this.toaster.pop("wait", "Calculating Missing Parameters", "Please wait...", 0);
                     this.CanContinue = false;
-                    var url = configuration.baseurls['ScienceBase'] + configuration.queryparams['SSURGOexCOMS'] + configuration.queryparams['SSURGOexCO'].format(this.studyAreaService.selectedStudyArea.FeatureCollection.bbox);
+                    var workspaceID = this.studyAreaService.selectedStudyArea.WorkspaceID;
+                    var regionID = this.studyAreaService.selectedStudyArea.RegionID;
+                    var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSComputeParams'].format(regionID, workspaceID, parameters);
                     var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                    request.withCredentials = true;
                     this.Execute(request).then(function (response) {
-                        console.log(response);
+                        if (response.data.parameters && response.data.parameters.length > 0) {
+                            _this.toaster.clear();
+                            var paramErrors = false;
+                            angular.forEach(response.data.parameters, function (parameter) {
+                                if (!parameter.hasOwnProperty('value') || parameter.value == -999) {
+                                    paramErrors = true;
+                                    console.error('Parameter failed to compute: ', parameter.code);
+                                    parameter.loaded = false;
+                                }
+                                else {
+                                    parameter.loaded = true;
+                                }
+                            });
+                            if (paramErrors) {
+                                _this.toaster.pop('error', "Error", "Parameter failed to compute", 0);
+                            }
+                            var results = response.data.parameters;
+                            results.forEach(function (param) {
+                                if (param.code.toLowerCase() == 'drnarea')
+                                    _this.drainageArea = param.value;
+                                if (param.code.toLowerCase() == 'csl10_85fm')
+                                    _this.mainChannelSlope = param.value;
+                                if (param.code.toLowerCase() == 'lc06imp')
+                                    _this.totalImperviousArea = param.value;
+                                if (param.code.toLowerCase() == 'lfplength')
+                                    _this.mainChannelLength = param.value;
+                            });
+                        }
                     }, function (error) {
-                        var x = error;
+                        _this.toaster.clear();
+                        _this.toaster.pop("error", "There was an HTTP error calculating drainage area", "Please retry", 0);
                     }).finally(function () {
                         _this.CanContinue = true;
                         _this.hideAlerts = true;
                     });
                 }
                 catch (e) {
-                    console.log("oops CalculateParams failed to load ", e);
+                    this.toaster.pop('error', "There was an error calculating parameters", "", 0);
                 }
             };
             SCStormRunoffController.prototype.validateForm = function (mainForm) {
@@ -133,6 +163,9 @@ var StreamStats;
                 this.SelectedAEP = this.AEPOptions[0];
                 this.SelectedAEP = null;
                 this.drainageArea = null;
+                this.mainChannelLength = null;
+                this.mainChannelSlope = null;
+                this.totalImperviousArea = null;
                 this.showResults = false;
             };
             SCStormRunoffController.prototype.Close = function () {
@@ -154,8 +187,6 @@ var StreamStats;
                 this.CanContinue = true;
                 this.SelectedAEP = { "name": "50%", "value": 50 };
             };
-            SCStormRunoffController.prototype.loadParameters = function () {
-            };
             SCStormRunoffController.prototype.selectRunoffType = function () {
                 switch (this._selectedTab) {
                     case SCStormRunoffType.BohmanRural1989:
@@ -168,7 +199,7 @@ var StreamStats;
             };
             SCStormRunoffController.prototype.tableToCSV = function ($table) {
             };
-            SCStormRunoffController.$inject = ['$scope', '$analytics', 'toaster', '$http', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.RegionService', '$modalInstance', '$timeout', 'WiM.Event.EventManager'];
+            SCStormRunoffController.$inject = ['$scope', '$analytics', 'toaster', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance', '$timeout', 'WiM.Event.EventManager'];
             return SCStormRunoffController;
         }(WiM.Services.HTTPServiceBase));
         var SCStormRunoffType;
