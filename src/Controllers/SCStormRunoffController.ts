@@ -125,6 +125,7 @@ module StreamStats.Controllers {
         }
 
         
+        public regressionRegions;
 
         public BrowserIE: boolean;
         public BrowserChrome: boolean;
@@ -146,13 +147,95 @@ module StreamStats.Controllers {
 
             this.print = function () {
                 window.print();
-            };
+            };            
         }  
         
         //Methods  
         //-+-+-+-+-+-+-+-+-+-+-+-
-        public GetStormRunoffResults() {
+        public  GetStormRunoffResults(regressionRegions) {
             console.log("calc results")
+            
+            console.log(regressionRegions)
+            var data = [{ // Need parameters
+                "id": 31,
+                "name": "Urban Peak-Flow Statistics",
+                "code": "UPFS",
+                "defType": "FS",
+                "statisticGroupName": "Urban Peak-Flow Statistics",
+                "statisticGroupID": "31",
+                "regressionRegions" : regressionRegions
+            }]
+            console.log(data)
+            // Bohman Urban (1992)
+            // Use parameters and above response to do this POST request: https://streamstats.usgs.gov/nssservices/scenarios/estimate?regions=SC using Urban Peak Flow Statistics
+            var url = configuration.baseurls['NSS'] + configuration.queryparams['estimateFlows'].format('SC');
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, 1, 'json', JSON.stringify(data));
+            this.Execute(request).then((response: any) => {
+                    console.log(response);
+                    //make sure there are some results
+                    if (response.data[0].regressionRegions.length > 0 && response.data[0].regressionRegions[0].results && response.data[0].regressionRegions[0].results.length > 0) {
+                        
+                    }
+                    else {
+                        this.toaster.clear();
+                        this.toaster.pop('error', "There was an error Estimating Flows", "No results were returned", 0);
+                    }
+                },(error) => {
+                    //sm when error
+                    this.toaster.clear();
+                    this.toaster.pop('error', "There was an error Estimating Flows", "HTTP request error", 0);
+                }).finally(() => {    
+            });
+
+            // Use the response to pull out the % Area from Region_3_Urban_2014_5030 (RG_Code: GC1585) and the % Area from Region_4_Urban_2014_5030 (RG_Code: GC1586)
+                // regressioneRegions.percentWeight 
+            // Also pull out the relevant AEP values for Region 3 and/or Region 4 (ex "UPK50AEP")
+                // regressionRegions.results
+            // Use the drainage point latitude, drainage point longitude, % Area in Region 3, Region 3 AEP statistic, % Area in Region 4, Region 4 AEP statistic, DRNAREA, LFPLENGTH, CSL10_85fm, and LC09IMP values and send them to the sc-runoffmodelingservice urbanhydrographbohman1992 endpoint
+            
+
+
+
+            
+            // Bohman Rural (1989)
+            // Use parameters and above response to do this POST request: https://streamstats.usgs.gov/nssservices/scenarios/estimate?regions=SC
+            // Use the response to pull out the % Area from all the relevant regions (awaiting info/updates from Kitty about the regions that correspond to the Bohman 1989 regions)
+            // Also pull out the relevant area-weighted AEP values for all the regions (this will be Qp) Urban or Peak?
+            // Use the % Area in each region, the weighted AEP value of interest, and the total drainage area send them to the sc-runoffmodelingservice urbanhydrographbohman1992 endpoint
+            
+            // The service returns the data used to generate tables and graphs.
+            this.CanContinue = true;
+
+        }
+
+        public queryRegressionRegions() {
+            this.CanContinue = false
+            console.log('in load query regression regions');
+            var headers = {
+                "Content-Type": "application/json",
+                "X-Is-StreamStats": true
+            };
+            var url = configuration.baseurls['NSS'] + configuration.queryparams['RegressionRegionQueryService'];
+            var studyArea = this.studyAreaService.simplify(angular.fromJson(angular.toJson(this.studyAreaService.selectedStudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).toLowerCase() == "globalwatershed" })[0])));
+            var studyAreaGeom = studyArea.geometry; 
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(studyAreaGeom), headers);     
+
+            this.Execute(request).then(
+                (response: any) => {
+                    if (response.data.error) {
+                        this.toaster.pop('error', "There was an error querying regression regions", response.data.error.message, 0);
+                    }
+                    if (response.data.length == 0) {
+                        this.toaster.pop('error', "No regression regions were returned", "Regression based scenario computation not allowed", 0);
+                    }
+                    if (response.data.length > 0) {
+                        response.data.forEach(p => { p.code = p.code.toUpperCase().split(",") });       
+                        this.GetStormRunoffResults(response.data);
+                    }
+                },(error) => {
+                    this.toaster.pop('error', "There was an HTTP error querying Regression regions", "Please retry", 0);
+                }).finally(() => {
+            });
         }
 
         public CalculateParameters(parameters) {
@@ -207,8 +290,6 @@ module StreamStats.Controllers {
         }
 
         public validateForm(mainForm) {
-            console.log(mainForm)
-            console.log(mainForm.$valid)
             if (mainForm.$valid) {
                 return true;
             }

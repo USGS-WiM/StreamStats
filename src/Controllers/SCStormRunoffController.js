@@ -92,8 +92,64 @@ var StreamStats;
                 enumerable: false,
                 configurable: true
             });
-            SCStormRunoffController.prototype.GetStormRunoffResults = function () {
+            SCStormRunoffController.prototype.GetStormRunoffResults = function (regressionRegions) {
+                var _this = this;
                 console.log("calc results");
+                console.log(regressionRegions);
+                var data = [{
+                        "id": 31,
+                        "name": "Urban Peak-Flow Statistics",
+                        "code": "UPFS",
+                        "defType": "FS",
+                        "statisticGroupName": "Urban Peak-Flow Statistics",
+                        "statisticGroupID": "31",
+                        "regressionRegions": regressionRegions
+                    }];
+                console.log(data);
+                var url = configuration.baseurls['NSS'] + configuration.queryparams['estimateFlows'].format('SC');
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, 1, 'json', JSON.stringify(data));
+                this.Execute(request).then(function (response) {
+                    console.log(response);
+                    if (response.data[0].regressionRegions.length > 0 && response.data[0].regressionRegions[0].results && response.data[0].regressionRegions[0].results.length > 0) {
+                    }
+                    else {
+                        _this.toaster.clear();
+                        _this.toaster.pop('error', "There was an error Estimating Flows", "No results were returned", 0);
+                    }
+                }, function (error) {
+                    _this.toaster.clear();
+                    _this.toaster.pop('error', "There was an error Estimating Flows", "HTTP request error", 0);
+                }).finally(function () {
+                });
+                this.CanContinue = true;
+            };
+            SCStormRunoffController.prototype.queryRegressionRegions = function () {
+                var _this = this;
+                this.CanContinue = false;
+                console.log('in load query regression regions');
+                var headers = {
+                    "Content-Type": "application/json",
+                    "X-Is-StreamStats": true
+                };
+                var url = configuration.baseurls['NSS'] + configuration.queryparams['RegressionRegionQueryService'];
+                var studyArea = this.studyAreaService.simplify(angular.fromJson(angular.toJson(this.studyAreaService.selectedStudyArea.FeatureCollection.features.filter(function (f) { return (f.id).toLowerCase() == "globalwatershed"; })[0])));
+                var studyAreaGeom = studyArea.geometry;
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(studyAreaGeom), headers);
+                this.Execute(request).then(function (response) {
+                    if (response.data.error) {
+                        _this.toaster.pop('error', "There was an error querying regression regions", response.data.error.message, 0);
+                    }
+                    if (response.data.length == 0) {
+                        _this.toaster.pop('error', "No regression regions were returned", "Regression based scenario computation not allowed", 0);
+                    }
+                    if (response.data.length > 0) {
+                        response.data.forEach(function (p) { p.code = p.code.toUpperCase().split(","); });
+                        _this.GetStormRunoffResults(response.data);
+                    }
+                }, function (error) {
+                    _this.toaster.pop('error', "There was an HTTP error querying Regression regions", "Please retry", 0);
+                }).finally(function () {
+                });
             };
             SCStormRunoffController.prototype.CalculateParameters = function (parameters) {
                 var _this = this;
@@ -147,8 +203,6 @@ var StreamStats;
                 }
             };
             SCStormRunoffController.prototype.validateForm = function (mainForm) {
-                console.log(mainForm);
-                console.log(mainForm.$valid);
                 if (mainForm.$valid) {
                     return true;
                 }
