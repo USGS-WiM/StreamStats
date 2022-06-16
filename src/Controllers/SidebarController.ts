@@ -226,10 +226,11 @@ module StreamStats.Controllers {
 
             var checkStatisticsGroup = this.checkArrayForObj(this.nssService.selectedStatisticsGroupList, statisticsGroup);
 
-            //console.log('set stat group: ', statisticsGroup, checkStatisticsGroup);
+            // console.log('set stat group: ', statisticsGroup, checkStatisticsGroup);
 
             //if toggled remove selected parameter set
             if (checkStatisticsGroup != -1) {
+                var preventRemoval = false;
                 // need to remove QPPQ when deselected
                 if (typeof statisticsGroup.id != 'number' && statisticsGroup.id.indexOf('fdctm')) {
                     var qppqExtension = this.studyAreaService.selectedStudyAreaExtensions.filter(e => e.code == 'QPPQ')[0];
@@ -237,25 +238,44 @@ module StreamStats.Controllers {
                     // splice and send new event
                     this.studyAreaService.selectedStudyAreaExtensions.splice(extensionIndex, 1);
                     this.EventManager.RaiseEvent(Services.onScenarioExtensionChanged, this, new Services.NSSEventArgs(this.studyAreaService.selectedStudyAreaExtensions) );
+                    // select the Flow-Duration Statistics group
                 }
 
-                //remove this statisticsGroup from the list
-                this.nssService.selectedStatisticsGroupList.splice(checkStatisticsGroup, 1);
+                // if Flow Duration Curve Transfer Method (FDCTM) is selected, prevent Flow-Duration Statistics from being de-selected
+                if (this.nssService.selectedStatisticsGroupList.filter((selectedStatisticsGroup) => selectedStatisticsGroup.name == "Flow-Duration Curve Transfer Method").length > 0 && statisticsGroup.name == "Flow-Duration Statistics") {
+                    preventRemoval = true;
+                } 
+                
+                if (!preventRemoval) {
+                    //remove this statisticsGroup from the list
+                    this.nssService.selectedStatisticsGroupList.splice(checkStatisticsGroup, 1);
 
-                //if no selected scenarios, clear studyareaparameter list
-                if (this.nssService.selectedStatisticsGroupList.length == 0) {
-                    this.studyAreaService.studyAreaParameterList = [];
+                    //if no selected scenarios, clear studyareaparameter list
+                    if (this.nssService.selectedStatisticsGroupList.length == 0) {
+                        this.studyAreaService.studyAreaParameterList = [];
 
-                    this.regionService.parameterList.forEach((parameter) => {
-                        parameter.checked = false;
-                        parameter.toggleable = true;
-                    });
+                        this.regionService.parameterList.forEach((parameter) => {
+                            parameter.checked = false;
+                            parameter.toggleable = true;
+                        });
+                    }
                 }
+                
             }
 
             //add it to the list and get its required parameters
             else {
                 this.nssService.selectedStatisticsGroupList.push(statisticsGroup);
+
+                // if Flow Duration Curve Transfer Method (FDCTM) was selected, also select Flow-Duration Statistics
+                if (typeof statisticsGroup.id != 'number' && statisticsGroup.id.indexOf('fdctm')) {
+                    // see if the Flow-Duration Statistics group has been selected already and select it if not
+                    var statisticsGroupFDS = this.nssService.statisticsGroupList.filter((statisticsGroup) => statisticsGroup.name == "Flow-Duration Statistics")[0];
+                    var checkStatisticsGroupFDS = this.checkArrayForObj(this.nssService.selectedStatisticsGroupList, statisticsGroupFDS);
+                    if (checkStatisticsGroupFDS == -1) {
+                        this.nssService.selectedStatisticsGroupList.push(statisticsGroupFDS);
+                    }
+                }
 
                 if (this.studyAreaService.selectedStudyArea.CoordinatedReach != null && statisticsGroup.code.toUpperCase() == "PFS") {
                     this.addParameterToStudyAreaList("DRNAREA");

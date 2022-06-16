@@ -134,7 +134,7 @@ module StreamStats.Controllers {
         }
     }
 
-    class MapController implements IMapController {
+    class MapController extends WiM.Services.HTTPServiceBase implements IMapController {
         //Events
         //-+-+-+-+-+-+-+-+-+-+-+-
         //Properties
@@ -201,11 +201,12 @@ module StreamStats.Controllers {
             fillOpacity: 0.5
         }
         public imageryToggled = false;
-
+        public additionalHTML: string = ''; 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$compile', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack'];
-        constructor(public $scope: IMapControllerScope, public $compile: IMapControllerCompile, toaster, $analytics, $location: ng.ILocationService, $stateParams, leafletBoundsHelper: any, leafletData: ILeafletData, search: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, exploration: Services.IExplorationService, private _prosperServices: Services.IProsperService, eventManager: WiM.Event.IEventManager, private modal: Services.IModalService, private modalStack: ng.ui.bootstrap.IModalStackService) {
+        static $inject = ['$scope', '$compile', 'toaster', '$analytics', '$location', '$stateParams','leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack', '$http'];
+        constructor(public $scope: IMapControllerScope, public $compile: IMapControllerCompile, toaster, $analytics, $location: ng.ILocationService, $stateParams, leafletBoundsHelper: any, leafletData: ILeafletData, search: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, exploration: Services.IExplorationService, private _prosperServices: Services.IProsperService, eventManager: WiM.Event.IEventManager, private modal: Services.IModalService, private modalStack: ng.ui.bootstrap.IModalStackService, $http: ng.IHttpService) {
+            super($http, configuration.baseurls.StreamStats);
             $scope.vm = this;
             
             this.toaster = toaster;
@@ -226,6 +227,9 @@ module StreamStats.Controllers {
             this.init();
 
             //subscribe to Events
+            this.eventManager.SubscribeToEvent(Services.onAdditionalFeaturesLoaded, new WiM.Event.EventHandler<Services.StudyAreaEventArgs>(() => {
+                this.onAdditionalFeaturesLoaded();
+            }));
             this.eventManager.SubscribeToEvent(Services.onSelectedStudyAreaChanged, new WiM.Event.EventHandler<Services.StudyAreaEventArgs>(() => {
                 this.onSelectedStudyAreaChanged();
             }));
@@ -255,6 +259,11 @@ module StreamStats.Controllers {
                 if (sender.selectedMethod.navigationID == 0) this.selectedExplorationTool = null;
             }));
             
+            $scope.$on('leafletDirectiveMap.mainMap.zoomend',(event, args) => {
+                if (this.regionServices.selectedRegion && this.center.zoom > 8 && this.regionServices.selectedRegion.RegionID == "ME") { // Updated legend text for MeanAugustBaseflow layer
+                    this.updateLegendText("MeanAugustBaseflow");
+                }
+            });
 
             $scope.$on('leafletDirectiveMap.mainMap.mousemove',(event, args) => {
                 var latlng = args.leafletEvent.latlng;
@@ -587,14 +596,29 @@ module StreamStats.Controllers {
                             let queryProperties = this.layers.overlays[lyr].queryProperties[item.layerName];
                             Object.keys(queryProperties).map(k => {
                                 if (item.layerName == "Streamgages" && k == "FeatureURL") {
-
                                     var siteNo = queryResult.properties[k].split('site_no=')[1];
-                                    var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm'
-                                    var SSgagepageNew = "vm.openGagePage('" + siteNo + "')";
-                                    var html = '<strong>NWIS page: </strong><a href="' + queryResult.properties[k] + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br><strong>New StreamStats Gage Modal: </strong><a ng-click="' + SSgagepageNew + '">link</a></br>';
+                                    var SSgagepage = "vm.openGagePage('" + siteNo + "')";
+                                    var urls = ['https://streamstats.usgs.gov/gagePages/NC/Sta_' + siteNo + '_daily_discharge_percentiles_table_by-wateryears.txt',
+                                    'https://streamstats.usgs.gov/gagePages/NC/Sta_' + siteNo + '_daily_discharge_percentiles_table_by-day-month-seasonal.txt',
+                                    'https://streamstats.usgs.gov/gagePages/IA/' + siteNo + '_stats.pdf'];
+                                    var text = ['Flow-Duration Statistics by Water Years:',
+                                    'Flow-Duration Statistics by Period of Record, Calendar Day & Month, & Seasonal Periods:',
+                                    'Stream Flow Statistics:'];
                                     
-                                    querylayers.append(html);
+                                    var html = '<strong>NWIS page: </strong><a href="' + queryResult.properties[k] + ' "target="_blank">link</a></br><strong>StreamStats Gage Page: </strong><a ng-click="' + SSgagepage + '">link</a></br>';
+                                    this.additionalLinkCheck(urls.length-1, urls, '', text);
+                                    setTimeout(() => {
+                                        html = html + this.additionalHTML;
+                                        querylayers.append(html);
+                                    },700)
                                     this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'streamgageQuery' });
+                                }
+                                else if (item.layerName == "Mean August Baseflow") {
+                                    if (queryProperties[k] == "Drainage Area out-of-bounds" || queryProperties[k] == "Mean July Precip out-of-bounds" || queryProperties[k] == "% Aquifer Area out-of-bounds" || queryProperties[k] == "Regulated stream/river") {
+                                        if (queryResult.properties[k] == 0) queryResult.properties[k] = "No"
+                                        else if (queryResult.properties[k] == 1) queryResult.properties[k] = "Yes"
+                                    }
+                                    querylayers.append('<strong>' + queryProperties[k] + ': </strong>' + queryResult.properties[k] + '</br>');
                                 }
                                 else {
                                     querylayers.append('<strong>' + queryProperties[k] + ': </strong>' + queryResult.properties[k] + '</br>');
@@ -1171,6 +1195,17 @@ module StreamStats.Controllers {
 
             this.regionServices.loadMapLayersByRegion(this.regionServices.selectedRegion.RegionID)
         }
+
+        private onAdditionalFeaturesLoaded() {
+            if (!this.studyArea.selectedStudyArea || !this.studyArea.selectedStudyArea.FeatureCollection) return;
+            this.studyArea.selectedStudyArea.FeatureCollection.features.forEach((layer) => {
+                var item = angular.fromJson(angular.toJson(layer));
+                if (item.id === 'longestflowpath3d' || item.id === 'longestflowpath') { 
+                    this.addGeoJSON(item.id, item.geometry);
+                }
+            });
+            this.toaster.pop('success', "Additional features have been downloaded", "Please continue", 5000);
+        }
        
         private onSelectedStudyAreaChanged() {
             var bbox: GeoJSON.BBox;
@@ -1419,14 +1454,21 @@ module StreamStats.Controllers {
                     },
                     onEachFeature: function (feature, layer) {
                         var siteNo = feature.properties['Code'];
-                        var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm';
+                        var urls = ['https://streamstats.usgs.gov/gagePages/NC/Sta_' + siteNo + '_daily_discharge_percentiles_table_by-wateryears.txt',
+                        'https://streamstats.usgs.gov/gagePages/NC/Sta_' + siteNo + '_daily_discharge_percentiles_table_by-day-month-seasonal.txt',
+                        'https://streamstats.usgs.gov/gagePages/IA/' + siteNo + '_stats.pdf'];
+                        var text = ['Flow-Duration Statistics by Water Years:',
+                        'Flow-Duration Statistics by Period of Record, Calendar Day & Month, & Seasonal Periods:',
+                        'Stream Flow Statistics:'];
                         var NWISpage = 'http://nwis.waterdata.usgs.gov/nwis/inventory/?site_no=' + siteNo;
                         var gageButtonDiv = L.DomUtil.create('div', 'innerDiv');
+                        var gageButtonLoaderDiv = L.DomUtil.create('div', 'innerDiv');
 
-                        gageButtonDiv.innerHTML = '<strong>Station ID: </strong>' + siteNo + '</br><strong>Station Name: </strong>' + feature.properties['Name'] + '</br><strong>Latitude: </strong>' + feature.geometry.coordinates[1] + '</br><strong>Longitude: </strong>' + feature.geometry.coordinates[0] + '</br><strong>Station Type</strong>: ' + feature.properties.StationType.name +
-                            '</br><strong>NWIS page: </strong><a href="' + NWISpage + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br><strong>New StreamStats Gage Modal: </strong><a id="gagePageLink" class="' + siteNo + '">link</a><br>';
+                        
+                        gageButtonLoaderDiv.innerHTML = '<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>';
 
-                        layer.bindPopup(gageButtonDiv);
+                        layer.bindPopup(gageButtonLoaderDiv);
+
                         var styling = configuration.streamgageSymbology.filter(function (item) {
                             return item.label.toLowerCase() == feature.properties.StationType.name.toLowerCase();
                         })[0];
@@ -1452,7 +1494,16 @@ module StreamStats.Controllers {
                         })
 
                         layer.on('mouseover', function(e) {
-                            if (self.studyArea.doSelectMapGage) this.openPopup();
+                            if (self.studyArea.doSelectMapGage){
+                                self.additionalLinkCheck(urls.length-1, urls, '', text);
+                                setTimeout(() => {
+                                    gageButtonDiv.innerHTML = '<strong>Station ID: </strong>' + siteNo + '</br><strong>Station Name: </strong>' + feature.properties['Name'] + '</br><strong>Latitude: </strong>' + feature.geometry.coordinates[1] + '</br><strong>Longitude: </strong>' + feature.geometry.coordinates[0] + '</br><strong>Station Type</strong>: ' + feature.properties.StationType.name +
+                                    '</br><strong>NWIS Page: </strong><a href="' + NWISpage + ' "target="_blank">link</a></br><strong>StreamStats Gage Page: </strong><a id="gagePageLink" class="' + siteNo + '">link</a><br>';
+                                    gageButtonDiv.innerHTML = gageButtonDiv.innerHTML + self.additionalHTML;
+                                    layer.bindPopup(gageButtonDiv);
+                                    this.openPopup();
+                                },700);
+                            } 
                         });
 
                         layer.on('click', function(e) {
@@ -1461,7 +1512,16 @@ module StreamStats.Controllers {
                                 self.studyArea.selectGage(feature);
                                 self.studyArea.doSelectMapGage = false;
                             }
-                            else this.openPopup();
+                            else {
+                                self.additionalLinkCheck(urls.length-1, urls, '', text);
+                                setTimeout(() => {
+                                    gageButtonDiv.innerHTML = '<strong>Station ID: </strong>' + siteNo + '</br><strong>Station Name: </strong>' + feature.properties['Name'] + '</br><strong>Latitude: </strong>' + feature.geometry.coordinates[1] + '</br><strong>Longitude: </strong>' + feature.geometry.coordinates[0] + '</br><strong>Station Type</strong>: ' + feature.properties.StationType.name +
+                                    '</br><strong>NWIS Page: </strong><a href="' + NWISpage + ' "target="_blank">link</a></br><strong>StreamStats Gage Page: </strong><a id="gagePageLink" class="' + siteNo + '">link</a><br>';
+                                    gageButtonDiv.innerHTML = gageButtonDiv.innerHTML + self.additionalHTML;
+                                    layer.bindPopup(gageButtonDiv);
+                                    this.openPopup();
+                                },700);
+                            } 
                         })
 
                     }
@@ -1483,6 +1543,24 @@ module StreamStats.Controllers {
                     }
             }
         }
+
+        public additionalLinkCheck(lastIndex, urls, additionalHTML, text)  {
+            if (lastIndex >= 0) {
+                var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(urls[lastIndex], true, WiM.Services.Helpers.methodType.GET, 'json');
+                this.Execute(request).then((response: any) => {
+                    if (response.status == 200) { // display ncGagePageWY link
+                        additionalHTML = additionalHTML + '<strong>'+ text[lastIndex] +' </strong><a href="' + urls[lastIndex] + ' "target="_blank">link</a></br>';
+                    }
+                },(error) => {
+                }).finally(() => {
+                    lastIndex = lastIndex - 1;
+                    this.additionalLinkCheck(lastIndex, urls, additionalHTML, text); // recursively call function 
+                });  
+            } else {
+                this.additionalHTML = additionalHTML;
+            }
+        }
+
         private onLayerChanged(sender: WiM.Directives.IwimLegendController, e: WiM.Directives.LegendLayerChangedEventArgs) {
 
             if (e.PropertyName === "visible") {
@@ -1568,6 +1646,30 @@ module StreamStats.Controllers {
             }
 
         }
+
+        private updateLegendText(LayerName){
+            if(LayerName == "MeanAugustBaseflow") { // Update MeanAugustBaseflow legend
+                this.leafletData.getLayers("mainMap").then((maplayers: any) => { 
+                    if (this.center.zoom == 9 || this.center.zoom == 10 || this.center.zoom == 11) { // County Scale View
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.60 - 1.34 cfs/mi^2";
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[1].label = "0.45 - 0.60 cfs/mi^2";
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[2].label = "0.30 - 0.45 cfs/mi^2";
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[3].label = "0.09 - 0.30 cfs/mi^2";
+                    } else if (this.center.zoom == 12 || this.center.zoom == 13 || this.center.zoom == 14) { // Town Scale View
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.50 - 1.34 cfs/mi^2";
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[1].label = "0.40 - 0.50 cfs/mi^2";
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[2].label = "0.20 - 0.44 cfs/mi^2";
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[3].label = "0.09 - 0.20 cfs/mi^2";
+                    } else if (this.center.zoom == 15 || this.center.zoom == 16) { // Neighborhood Scale View 
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.35 - 1.34 cfs/mi^2";
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[1].label = "0.25 - 0.35 cfs/mi^2";
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[2].label = "0.15 - 0.25 cfs/mi^2";
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[3].label = "0.09 - 0.15 cfs/mi^2";
+                    }
+                });
+            }
+        }
+
         private updateLegend() {
             // patch fix for streamgages legend
             if (!this.gageLegendFix) {
