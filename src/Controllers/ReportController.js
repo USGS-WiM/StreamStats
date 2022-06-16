@@ -12,7 +12,7 @@ var StreamStats;
             return Center;
         }());
         var ReportController = (function () {
-            function ReportController($scope, $analytics, $modalInstance, studyArea, StatisticsGroup, leafletData, regionService, modal) {
+            function ReportController($scope, $analytics, $modalInstance, studyArea, StatisticsGroup, leafletData, regionService, modal, eventManager) {
                 var _this = this;
                 this.regionService = regionService;
                 this.modal = modal;
@@ -45,16 +45,28 @@ var StreamStats;
                 this.basinCharCollapsed = false;
                 this.collapsed = false;
                 this.selectedFDCTMTabName = "";
-                if (this.extensions && this.extensions[0].result.length > 1) {
+                this.eventManager = eventManager;
+                if (this.extensions && this.extensions[0].result && this.extensions[0].result.length > 1) {
                     this.extensions[0].result.forEach(function (r) {
                         if (r.name.toLowerCase().includes("multivar")) {
                             _this.selectedFDCTMTabName = r.name;
                         }
                     });
+                    var names = this.extensions[0].result.map(function (r) { return r.name; });
+                    this.extensions[0].result = this.extensions[0].result.filter(function (_a, index) {
+                        var name = _a.name;
+                        return !names.includes(name, index + 1);
+                    });
                 }
                 this.initMap();
+                this.eventManager.SubscribeToEvent(StreamStats.Services.onAdditionalFeaturesLoaded, new WiM.Event.EventHandler(function () {
+                    var additionalFeatures = _this.studyAreaService.selectedStudyArea.FeatureCollection.features.filter(function (object) {
+                        return object.id !== 'globalwatershed';
+                    });
+                    _this.showFeatures(additionalFeatures);
+                }));
                 $scope.$on('leafletDirectiveMap.reportMap.load', function (event, args) {
-                    _this.showFeatures();
+                    _this.showFeatures(_this.studyAreaService.selectedStudyArea.FeatureCollection.features);
                 });
                 this.close = function () {
                     $modalInstance.dismiss('cancel');
@@ -183,6 +195,7 @@ var StreamStats;
                             var sc = _a[_i];
                             if (sc.code == 'QPPQ') {
                                 extVal += sc.name += ' (FDCTM)' + '\n';
+                                extVal += "Regression Region:, " + self.selectedFDCTMTabName + '\n';
                                 for (var _b = 0, _c = sc.parameters; _b < _c.length; _b++) {
                                     var p = _c[_b];
                                     if (['sdate', 'edate'].indexOf(p.code) > -1) {
@@ -352,14 +365,14 @@ var StreamStats;
                 var content = e.currentTarget.nextElementSibling;
                 if (content.style.display === "none") {
                     content.style.display = "block";
-                    if (type === "stats" || "ChannelWidthWeighting")
+                    if (type === "stats")
                         this.sectionCollapsed[group] = false;
                     if (type === "basin")
                         this.basinCharCollapsed = false;
                 }
                 else {
                     content.style.display = "none";
-                    if (type === "stats" || "ChannelWidthWeighting")
+                    if (type === "stats")
                         this.sectionCollapsed[group] = true;
                     if (type === "basin")
                         this.basinCharCollapsed = true;
@@ -475,6 +488,13 @@ var StreamStats;
                 for (var key in result.exceedanceProbabilities) {
                     result.graphdata.exceedance.data[0].values.push({ label: key, value: result.exceedanceProbabilities[key] });
                 }
+                result.exceedanceProbabilitiesArray = [];
+                angular.forEach(result.exceedanceProbabilities, function (value, key) {
+                    result.exceedanceProbabilitiesArray.push({
+                        exceedance: key,
+                        flowExceeded: value
+                    });
+                });
             };
             ReportController.prototype.initMap = function () {
                 this.center = new Center(39, -96, 4);
@@ -505,12 +525,12 @@ var StreamStats;
                 }
                 return '[' + header + ']';
             };
-            ReportController.prototype.showFeatures = function () {
+            ReportController.prototype.showFeatures = function (featureArray) {
                 var _this = this;
                 if (!this.studyAreaService.selectedStudyArea)
                     return;
                 this.overlays = {};
-                this.studyAreaService.selectedStudyArea.FeatureCollection.features.forEach(function (item) {
+                featureArray.forEach(function (item) {
                     _this.addGeoJSON(item.id, item);
                 });
                 if (this.studyAreaService.selectedGage && this.studyAreaService.selectedGage.hasOwnProperty('Latitude_DD') && this.studyAreaService.selectedGage.hasOwnProperty('Longitude_DD')) {
@@ -674,7 +694,7 @@ var StreamStats;
                 }
                 return returnData;
             };
-            ReportController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService', 'StreamStats.Services.ModalService'];
+            ReportController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService', 'StreamStats.Services.ModalService', 'WiM.Event.EventManager'];
             return ReportController;
         }());
         angular.module('StreamStats.Controllers')

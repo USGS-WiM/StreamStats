@@ -89,6 +89,7 @@ module StreamStats.Controllers {
         public extensions;
 
         public geojson: Object = null;
+        private eventManager: WiM.Event.IEventManager;
 
         public defaults: any;
         private leafletData: ILeafletData;
@@ -139,8 +140,8 @@ module StreamStats.Controllers {
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService', 'StreamStats.Services.ModalService'];
-        constructor($scope: IReportControllerScope, $analytics, $modalInstance: ng.ui.bootstrap.IModalServiceInstance, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, leafletData: ILeafletData, private regionService:Services.IRegionService, private modal: Services.IModalService) {
+        static $inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService', 'StreamStats.Services.ModalService', 'WiM.Event.EventManager'];
+        constructor($scope: IReportControllerScope, $analytics, $modalInstance: ng.ui.bootstrap.IModalServiceInstance, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, leafletData: ILeafletData, private regionService:Services.IRegionService, private modal: Services.IModalService, eventManager: WiM.Event.IEventManager) {
             $scope.vm = this;
 
             this.angulartics = $analytics;
@@ -156,22 +157,36 @@ module StreamStats.Controllers {
             this.basinCharCollapsed = false;
             this.collapsed = false;
             this.selectedFDCTMTabName = "";
+            this.eventManager = eventManager;
 
-            // If we add QPPQ to additional states we might need to add and if statement here to limit to IN and IL
+            // If we add QPPQ to additional states we might need to add an if statement here to limit to IN and IL
             // Handles states where there is more than one regression region in the same place
-            if (this.extensions && this.extensions[0].result.length > 1) {
+            if (this.extensions && this.extensions[0].result  && this.extensions[0].result.length > 1) {
+
+                // Select default tab
                 this.extensions[0].result.forEach(r => {
                     if (r.name.toLowerCase().includes("multivar")) {
                         this.selectedFDCTMTabName = r.name;
                     }
                 });
+                
+                // Remove duplicate Regression Regions
+                var names = this.extensions[0].result.map(r => r.name)
+                this.extensions[0].result = this.extensions[0].result.filter(({name}, index) => !names.includes(name, index + 1));
             }
             this.initMap();
             
+            //subscribe to Events
+            this.eventManager.SubscribeToEvent(Services.onAdditionalFeaturesLoaded, new WiM.Event.EventHandler<Services.StudyAreaEventArgs>(() => {
+                var additionalFeatures = this.studyAreaService.selectedStudyArea.FeatureCollection.features.filter(object => {
+                    return object.id !== 'globalwatershed';
+                });
+                this.showFeatures(additionalFeatures);
+            }));
 
             $scope.$on('leafletDirectiveMap.reportMap.load',(event, args) => {
                 //console.log('report map load');
-                this.showFeatures();
+                this.showFeatures(this.studyAreaService.selectedStudyArea.FeatureCollection.features);
             });
 
             this.close = function () {
@@ -286,6 +301,7 @@ module StreamStats.Controllers {
                     for (var sc of self.extensions) {
                         if (sc.code == 'QPPQ') {
                             extVal += sc.name += ' (FDCTM)' + '\n';
+                            extVal += "Regression Region:, " + self.selectedFDCTMTabName + '\n';
                             for (var p of sc.parameters) {
                                 if (['sdate','edate'].indexOf(p.code) >-1) {
                                     var date = new Date(p.value);
@@ -501,11 +517,11 @@ module StreamStats.Controllers {
             var content = e.currentTarget.nextElementSibling;
             if (content.style.display === "none") {
                 content.style.display = "block";
-                if(type === "stats" || "ChannelWidthWeighting") this.sectionCollapsed[group] = false;
+                if(type === "stats") this.sectionCollapsed[group] = false;
                 if(type === "basin") this.basinCharCollapsed = false;
             } else {
                 content.style.display = "none";
-                if(type === "stats" || "ChannelWidthWeighting") this.sectionCollapsed[group] = true;
+                if(type === "stats") this.sectionCollapsed[group] = true;
                 if(type === "basin") this.basinCharCollapsed = true;
             }
         }
@@ -624,6 +640,15 @@ module StreamStats.Controllers {
             for (var key in result.exceedanceProbabilities) {
                 result.graphdata.exceedance.data[0].values.push({ label: key, value: result.exceedanceProbabilities[key] })
             }//next key
+
+            // Convert exceedance probabilities to an array so it can be sorted in the report
+            result.exceedanceProbabilitiesArray = [];
+            angular.forEach(result.exceedanceProbabilities, function(value, key) {
+                result.exceedanceProbabilitiesArray.push({
+                    exceedance: key,
+                    flowExceeded: value
+                });
+            });
             
         }
         //Helper Methods
@@ -658,11 +683,11 @@ module StreamStats.Controllers {
             }
             return '['+header+']';                        
         }
-        private showFeatures(): void {
+        private showFeatures(featureArray): void {
 
             if (!this.studyAreaService.selectedStudyArea) return;
             this.overlays = {};
-            this.studyAreaService.selectedStudyArea.FeatureCollection.features.forEach((item) => {
+            featureArray.forEach((item) => {
                 this.addGeoJSON(item.id, item);
             });
 
@@ -690,7 +715,6 @@ module StreamStats.Controllers {
             });
         }
         private addGeoJSON(LayerName: string|number, feature: any) {
-
             if (LayerName == 'globalwatershed') {
                 this.layers.overlays[LayerName] =
                     {
@@ -710,7 +734,6 @@ module StreamStats.Controllers {
                     };
             }
             else if (LayerName == 'globalwatershedpoint') {
-
                 this.layers.overlays[LayerName] = {
                     name: 'Basin Clicked Point',
                     type: 'geoJSONShape',
@@ -719,7 +742,6 @@ module StreamStats.Controllers {
                 }
             }
             else if (LayerName == 'referenceGage') {
-
                 this.geojson[LayerName] = {
                     data: feature,
                     style: {

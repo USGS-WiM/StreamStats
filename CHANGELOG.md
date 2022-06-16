@@ -7,12 +7,34 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased](https://github.com/USGS-WiM/StreamStats/tree/dev)
   
   ### Added
-
+    
   ### Changed
 
   ### Fixed
 
   ### Removed
+
+## [v.4.10.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.10.0) - 2022-06-16
+  
+  ### Added
+  - Added loader and disabled download button until longest flow path is downloaded
+  - Added Maine August Baseflow layer
+  - QPPQ additions
+    - Added line to CSV download that states which Regression Region's results are shown
+    - Added collapsible functionality to section in report
+    - Added citation to report section
+    
+  ### Changed
+  - Changed URL for IA and NC supplemental gage pages to new location on S3
+  - Renamed "New Streamstats Gage Modal" to "Streamstats Gage Modal"
+  - Shows Longest Flow Path automatically on the main map if returned from the services
+  - Changes to QPPQ
+    - The exceedance probabilities table in report is now sorted from greatest to least exceedance
+    - If the "Flow-Duration Curve Transfer Method" scenario is selected, the "Flow-Duration Statistics" scenario button is now selected by default and cannot be unselected while the "Flow-Duration Curve Transfer Method" scenario button is selected.
+    - The "Flow-Duration Curve Transfer Method" statistics group does not show up in the Report anymore. Instead, the same information appears in the "Flow-Duration Statistics" statistics group.
+
+  ### Removed
+  - Removed "StreamStats Gage page" link
 
 ## [v4.9.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.9.0) - 2022-05-19
 
