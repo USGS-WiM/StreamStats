@@ -362,6 +362,7 @@ var StreamStats;
                 }, margins);
             };
             ReportController.prototype.collapseSection = function (e, type, group) {
+                var _this = this;
                 var content = e.currentTarget.nextElementSibling;
                 if (content.style.display === "none") {
                     content.style.display = "block";
@@ -376,6 +377,13 @@ var StreamStats;
                         this.sectionCollapsed[group] = true;
                     if (type === "basin")
                         this.basinCharCollapsed = true;
+                }
+                if (this.selectedFDCTMTabName != "") {
+                    this.extensions[0].result.forEach(function (r) {
+                        if (_this.selectedFDCTMTabName == r.name) {
+                            _this.ActivateGraphs(r);
+                        }
+                    });
                 }
             };
             ReportController.prototype.expandAll = function (expandOrCollapse) {

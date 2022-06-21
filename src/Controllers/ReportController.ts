@@ -524,6 +524,16 @@ module StreamStats.Controllers {
                 if(type === "stats") this.sectionCollapsed[group] = true;
                 if(type === "basin") this.basinCharCollapsed = true;
             }
+
+            // Reset FDCTM graphs
+            if (this.selectedFDCTMTabName != "") {
+                this.extensions[0].result.forEach(r => {
+                    if (this.selectedFDCTMTabName == r.name) {
+                        this.ActivateGraphs(r);
+                    }
+                });
+            }
+            
         }
 
         public expandAll(expandOrCollapse) {
@@ -551,7 +561,6 @@ module StreamStats.Controllers {
 
         public ActivateGraphs(result: any) {
             // TODO: fix flow graph yaxis label - gets overlapped with tick labels sometimes
-            
             result.graphdata = {
                 exceedance: {
                     data: [{ values: [], area: true, color: '#7777ff' }],
@@ -649,7 +658,6 @@ module StreamStats.Controllers {
                     flowExceeded: value
                 });
             });
-            
         }
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
