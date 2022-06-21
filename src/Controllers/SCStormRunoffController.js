@@ -92,10 +92,9 @@ var StreamStats;
                 enumerable: false,
                 configurable: true
             });
-            SCStormRunoffController.prototype.GetStormRunoffResults = function (regressionRegions) {
-                var _this = this;
-                console.log("calc results");
-                console.log(regressionRegions);
+            SCStormRunoffController.prototype.GetStormRunoffResults = function (statisticGroup) {
+                console.log('in GetStormRunoffResults');
+                console.log(statisticGroup);
                 var data = [{
                         "id": 31,
                         "name": "Urban Peak-Flow Statistics",
@@ -103,30 +102,97 @@ var StreamStats;
                         "defType": "FS",
                         "statisticGroupName": "Urban Peak-Flow Statistics",
                         "statisticGroupID": "31",
-                        "regressionRegions": regressionRegions
+                        "regressionRegions": statisticGroup[0].regressionRegions
                     }];
                 console.log(data);
-                var url = configuration.baseurls['NSS'] + configuration.queryparams['estimateFlows'].format('SC');
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, 1, 'json', JSON.stringify(data));
-                this.Execute(request).then(function (response) {
-                    console.log(response);
-                    if (response.data[0].regressionRegions.length > 0 && response.data[0].regressionRegions[0].results && response.data[0].regressionRegions[0].results.length > 0) {
-                    }
-                    else {
+                this.CanContinue = true;
+            };
+            SCStormRunoffController.prototype.addParameterValues = function (statisticGroup) {
+                var _this = this;
+                console.log('in calc additional parameters');
+                var parameterList = [];
+                statisticGroup[0].regressionRegions.forEach(function (regressionRegion) {
+                    regressionRegion.parameters.forEach(function (regressionParam) {
+                        parameterList.push(regressionParam.code);
+                    });
+                });
+                parameterList = parameterList.filter(function (element, i) { return i === parameterList.indexOf(element); });
+                try {
+                    var workspaceID = this.studyAreaService.selectedStudyArea.WorkspaceID;
+                    var regionID = this.studyAreaService.selectedStudyArea.RegionID;
+                    var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSComputeParams'].format(regionID, workspaceID, parameterList.join(','));
+                    var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                    request.withCredentials = true;
+                    this.Execute(request).then(function (response) {
+                        if (response.data.parameters && response.data.parameters.length > 0) {
+                            _this.toaster.clear();
+                            var paramErrors = false;
+                            angular.forEach(response.data.parameters, function (parameter) {
+                                if (!parameter.hasOwnProperty('value') || parameter.value == -999) {
+                                    paramErrors = true;
+                                    console.error('Parameter failed to compute: ', parameter.code);
+                                    parameter.loaded = false;
+                                }
+                                else {
+                                    parameter.loaded = true;
+                                }
+                            });
+                            if (paramErrors) {
+                                _this.toaster.pop('error', "Error", "Parameter failed to compute", 0);
+                            }
+                            statisticGroup[0].regressionRegions.forEach(function (regressionRegion) {
+                                regressionRegion.parameters.forEach(function (regressionParam) {
+                                    response.data.parameters.forEach(function (param) {
+                                        if (regressionParam.code.toLowerCase() == param.code.toLowerCase()) {
+                                            regressionParam.value = param['value'];
+                                        }
+                                    });
+                                });
+                            });
+                            _this.GetStormRunoffResults(statisticGroup);
+                        }
+                    }, function (error) {
                         _this.toaster.clear();
-                        _this.toaster.pop('error', "There was an error Estimating Flows", "No results were returned", 0);
+                        _this.toaster.pop("error", "There was an HTTP error calculating parameters", "Please retry", 0);
+                    }).finally(function () {
+                        _this.CanContinue = true;
+                        _this.hideAlerts = true;
+                        console.log('done calc additional parameters');
+                    });
+                }
+                catch (e) {
+                    this.toaster.pop('error', "There was an error calculating parameters", "", 0);
+                }
+            };
+            SCStormRunoffController.prototype.loadParametersByStatisticsGroup = function (regressionregions, percentWeights) {
+                var _this = this;
+                console.log('in loadParametersByStatisticsGroup');
+                var url = configuration.baseurls['NSS'] + configuration.queryparams['statisticsGroupParameterLookup'];
+                url = url.format('SC', 31, regressionregions);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                this.Execute(request).then(function (response) {
+                    if (response.data[0].regressionRegions[0].parameters && response.data[0].regressionRegions[0].parameters.length > 0) {
+                        response.data[0].regressionRegions.forEach(function (regressionRegion) {
+                            if (percentWeights.length > 0) {
+                                percentWeights.forEach(function (regressionRegionPercentWeight) {
+                                    if (regressionRegionPercentWeight.code.indexOf(regressionRegion.code.toUpperCase()) > -1) {
+                                        regressionRegion["percentWeight"] = regressionRegionPercentWeight.percentWeight;
+                                    }
+                                });
+                            }
+                        });
+                        _this.addParameterValues(response.data);
                     }
                 }, function (error) {
                     _this.toaster.clear();
-                    _this.toaster.pop('error', "There was an error Estimating Flows", "HTTP request error", 0);
+                    _this.toaster.pop('error', "There was an error Loading Parameters by Statistics Group", "Please retry", 0);
                 }).finally(function () {
                 });
-                this.CanContinue = true;
             };
             SCStormRunoffController.prototype.queryRegressionRegions = function () {
                 var _this = this;
                 this.CanContinue = false;
-                console.log('in load query regression regions');
+                console.log('in queryRegressionRegions');
                 var headers = {
                     "Content-Type": "application/json",
                     "X-Is-StreamStats": true
@@ -144,7 +210,9 @@ var StreamStats;
                     }
                     if (response.data.length > 0) {
                         response.data.forEach(function (p) { p.code = p.code.toUpperCase().split(","); });
-                        _this.GetStormRunoffResults(response.data);
+                        _this.loadParametersByStatisticsGroup(response.data.map(function (elem) {
+                            return elem.code;
+                        }).join(","), response.data);
                     }
                 }, function (error) {
                     _this.toaster.pop('error', "There was an HTTP error querying Regression regions", "Please retry", 0);
@@ -153,8 +221,10 @@ var StreamStats;
             };
             SCStormRunoffController.prototype.CalculateParameters = function (parameters) {
                 var _this = this;
+                console.log('in CalculateParameters');
                 try {
                     this.toaster.pop("wait", "Calculating Missing Parameters", "Please wait...", 0);
+                    this.parameters = parameters;
                     this.CanContinue = false;
                     var workspaceID = this.studyAreaService.selectedStudyArea.WorkspaceID;
                     var regionID = this.studyAreaService.selectedStudyArea.RegionID;
@@ -178,8 +248,7 @@ var StreamStats;
                             if (paramErrors) {
                                 _this.toaster.pop('error', "Error", "Parameter failed to compute", 0);
                             }
-                            var results = response.data.parameters;
-                            results.forEach(function (param) {
+                            response.data.parameters.forEach(function (param) {
                                 if (param.code.toLowerCase() == 'drnarea')
                                     _this.drainageArea = param.value;
                                 if (param.code.toLowerCase() == 'csl10_85fm')
@@ -189,10 +258,11 @@ var StreamStats;
                                 if (param.code.toLowerCase() == 'lfplength')
                                     _this.mainChannelLength = param.value;
                             });
+                            console.log('done calc parameters');
                         }
                     }, function (error) {
                         _this.toaster.clear();
-                        _this.toaster.pop("error", "There was an HTTP error calculating drainage area", "Please retry", 0);
+                        _this.toaster.pop("error", "There was an HTTP error calculating parameters", "Please retry", 0);
                     }).finally(function () {
                         _this.CanContinue = true;
                         _this.hideAlerts = true;
