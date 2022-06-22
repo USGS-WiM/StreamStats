@@ -20,9 +20,9 @@ var StreamStats;
         'use strict';
         var SCStormRunoffReportable = (function () {
             function SCStormRunoffReportable() {
-                this.SyntheticUrbanHydrograph = { Graph: {}, Table: {}, PeakQ: {}, Infiltration: {}, ExcessPrecip: {} };
-                this.BohmanRural1989 = { Graph: {}, Table: {}, PeakQ: {}, Infiltration: {}, ExcessPrecip: {} };
-                this.BohmanUrban1992 = { Graph: {}, Table: {}, PeakQ: {}, Infiltration: {}, ExcessPrecip: {} };
+                this.SyntheticUrbanHydrograph = { Graph: {}, WeightedRunoff: null };
+                this.BohmanRural1989 = { Graph: {}, WeightedRunoff: null };
+                this.BohmanUrban1992 = { Graph: {}, WeightedRunoff: null };
             }
             return SCStormRunoffReportable;
         }());
@@ -92,9 +92,8 @@ var StreamStats;
                 enumerable: false,
                 configurable: true
             });
-            SCStormRunoffController.prototype.GetStormRunoffResults = function (statisticGroup) {
-                console.log('in GetStormRunoffResults');
-                console.log(statisticGroup);
+            SCStormRunoffController.prototype.estimateFlows = function (statisticGroup) {
+                var _this = this;
                 var data = [{
                         "id": 31,
                         "name": "Urban Peak-Flow Statistics",
@@ -104,12 +103,73 @@ var StreamStats;
                         "statisticGroupID": "31",
                         "regressionRegions": statisticGroup[0].regressionRegions
                     }];
-                console.log(data);
-                this.CanContinue = true;
+                var url = configuration.baseurls['NSS'] + configuration.queryparams['estimateFlows'].format('SC');
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, 1, 'json', JSON.stringify(data));
+                this.Execute(request).then(function (response) {
+                    if (response.data[0].regressionRegions.length > 0 && response.data[0].regressionRegions[0].results && response.data[0].regressionRegions[0].results.length > 0) {
+                        var region3Percent = 0;
+                        var region4Percent = 0;
+                        var region3AEP = 0;
+                        var region4AEP = 0;
+                        response.data[0].regressionRegions.forEach(function (regressionregion) {
+                            if (regressionregion.code == 'GC1585') {
+                                region3Percent = regressionregion.percentWeight;
+                                regressionregion.results.forEach(function (result) {
+                                    if (result.name.indexOf(_this.SelectedAEP.value) !== -1) {
+                                        region3AEP = result.value;
+                                    }
+                                });
+                            }
+                            else if (regressionregion.code == 'GC1586') {
+                                region4Percent = regressionregion.percentWeight;
+                                regressionregion.results.forEach(function (result) {
+                                    if (result.name.indexOf(_this.SelectedAEP.value) !== -1) {
+                                        region4AEP = result.value;
+                                    }
+                                });
+                            }
+                        });
+                        var data = {
+                            "lat": _this.studyAreaService.selectedStudyArea.Pourpoint.Latitude,
+                            "lon": _this.studyAreaService.selectedStudyArea.Pourpoint.Longitude,
+                            "region3PercentArea": region3Percent,
+                            "region4PercentArea": region4Percent,
+                            "region3Qp": region3AEP,
+                            "region4Qp": region4AEP,
+                            "A": _this.drainageArea,
+                            "L": _this.mainChannelLength,
+                            "S": _this.mainChannelSlope,
+                            "TIA": _this.totalImperviousArea
+                        };
+                        _this.getStormRunoffResults(data);
+                    }
+                    else {
+                        _this.toaster.clear();
+                        _this.toaster.pop('error', "There was an error Estimating Flows", "No results were returned", 0);
+                    }
+                }, function (error) {
+                    _this.toaster.clear();
+                    _this.toaster.pop('error', "There was an error Estimating Flows", "HTTP request error", 0);
+                }).finally(function () {
+                });
+            };
+            SCStormRunoffController.prototype.getStormRunoffResults = function (data) {
+                var _this = this;
+                var url = configuration.baseurls['SCStormRunoffServices'] + configuration.queryparams['SCStormRunoffBohman1992'];
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(data));
+                this.Execute(request).then(function (response) {
+                    _this.reportData = response.data;
+                    _this.ReportData.BohmanUrban1992.Graph = _this.loadGraphData();
+                    _this.ReportData.BohmanUrban1992.WeightedRunoff = _this.reportData.weighted_runoff_volume;
+                    _this.setGraphOptions();
+                    _this.showResults = true;
+                }, function (error) {
+                }).finally(function () {
+                    _this.CanContinue = true;
+                });
             };
             SCStormRunoffController.prototype.addParameterValues = function (statisticGroup) {
                 var _this = this;
-                console.log('in calc additional parameters');
                 var parameterList = [];
                 statisticGroup[0].regressionRegions.forEach(function (regressionRegion) {
                     regressionRegion.parameters.forEach(function (regressionParam) {
@@ -149,7 +209,7 @@ var StreamStats;
                                     });
                                 });
                             });
-                            _this.GetStormRunoffResults(statisticGroup);
+                            _this.estimateFlows(statisticGroup);
                         }
                     }, function (error) {
                         _this.toaster.clear();
@@ -157,7 +217,6 @@ var StreamStats;
                     }).finally(function () {
                         _this.CanContinue = true;
                         _this.hideAlerts = true;
-                        console.log('done calc additional parameters');
                     });
                 }
                 catch (e) {
@@ -166,7 +225,6 @@ var StreamStats;
             };
             SCStormRunoffController.prototype.loadParametersByStatisticsGroup = function (regressionregions, percentWeights) {
                 var _this = this;
-                console.log('in loadParametersByStatisticsGroup');
                 var url = configuration.baseurls['NSS'] + configuration.queryparams['statisticsGroupParameterLookup'];
                 url = url.format('SC', 31, regressionregions);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
@@ -192,7 +250,6 @@ var StreamStats;
             SCStormRunoffController.prototype.queryRegressionRegions = function () {
                 var _this = this;
                 this.CanContinue = false;
-                console.log('in queryRegressionRegions');
                 var headers = {
                     "Content-Type": "application/json",
                     "X-Is-StreamStats": true
@@ -221,7 +278,6 @@ var StreamStats;
             };
             SCStormRunoffController.prototype.CalculateParameters = function (parameters) {
                 var _this = this;
-                console.log('in CalculateParameters');
                 try {
                     this.toaster.pop("wait", "Calculating Missing Parameters", "Please wait...", 0);
                     this.parameters = parameters;
@@ -258,7 +314,6 @@ var StreamStats;
                                 if (param.code.toLowerCase() == 'lfplength')
                                     _this.mainChannelLength = param.value;
                             });
-                            console.log('done calc parameters');
                         }
                     }, function (error) {
                         _this.toaster.clear();
@@ -272,6 +327,40 @@ var StreamStats;
                     this.toaster.pop('error', "There was an error calculating parameters", "", 0);
                 }
             };
+            SCStormRunoffController.prototype.loadGraphData = function () {
+                var _this = this;
+                var results = [];
+                var hydrograph = [];
+                hydrograph = this.reportData.time_coordinates.map(function (v, i) { return [v, _this.reportData.discharge_coordinates[i]]; }).map(function (_a) {
+                    var x = _a[0], y = _a[1];
+                    return ({ x: x, y: y });
+                });
+                results.push({ values: hydrograph, key: "Discharge (ft³/s)", color: " #009900", type: "line", yAxis: 1 });
+                return results;
+            };
+            SCStormRunoffController.prototype.setGraphOptions = function () {
+                this.ReportOptions = {
+                    chart: {
+                        type: 'multiChart',
+                        height: 275,
+                        width: 650,
+                        margin: {
+                            top: 10,
+                            right: 80,
+                            bottom: 80,
+                            left: 90
+                        }
+                    },
+                    title: {
+                        enable: true,
+                        text: 'Bohman Urban (1992) using ' + this.SelectedAEP.name + ' AEP',
+                        css: {
+                            'font-size': '10pt',
+                            'font-weight': 'bold'
+                        }
+                    }
+                };
+            };
             SCStormRunoffController.prototype.validateForm = function (mainForm) {
                 if (mainForm.$valid) {
                     return true;
@@ -283,11 +372,6 @@ var StreamStats;
                 }
             };
             SCStormRunoffController.prototype.ClearResults = function () {
-                for (var i in this.studyAreaService.studyAreaParameterList) {
-                    this.studyAreaService.studyAreaParameterList[i].value = null;
-                }
-                this.SelectedAEP = this.AEPOptions[0];
-                this.SelectedAEP = null;
                 this.drainageArea = null;
                 this.mainChannelLength = null;
                 this.mainChannelSlope = null;
@@ -301,13 +385,8 @@ var StreamStats;
             SCStormRunoffController.prototype.Reset = function () {
                 this.init();
             };
-            SCStormRunoffController.prototype.downloadCSV = function () {
-            };
-            SCStormRunoffController.prototype.loadGraphData = function () {
-            };
-            SCStormRunoffController.prototype.GetTableData = function () {
-            };
             SCStormRunoffController.prototype.init = function () {
+                this.ReportData = new SCStormRunoffReportable();
                 this.SelectedTab = SCStormRunoffType.BohmanRural1989;
                 this.showResults = false;
                 this.hideAlerts = false;

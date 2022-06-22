@@ -13,8 +13,7 @@ configuration.baseurls =
         'ScienceBase': 'https://gis.usgs.gov/sciencebase2',
         'GageStatsServices': 'https://test.streamstats.usgs.gov/gagestatsservices',
         'WeightingServices': 'https://ss-weightingservices.streamstats.usgs.gov',
-        'SCStormRunoffServices': 'https://sc-runoffmodelingservices.streamstats.usgs.gov',
-
+        'SCStormRunoffServices': 'https://sc-runoffmodelingservices.streamstats.usgs.gov'
     };
 
 //override streamstats arguments if on production, these get overriden again in MapController after load balancer assigns a server

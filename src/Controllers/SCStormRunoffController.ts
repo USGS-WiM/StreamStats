@@ -33,10 +33,7 @@ module StreamStats.Controllers {
 
     interface IReportable {
         Graph: any;
-        Table: any;
-        PeakQ: any;
-        Infiltration: any;
-        ExcessPrecip: any;
+        WeightedRunoff: any;
     }
 
     interface ISCStormRunoffReportable {
@@ -51,9 +48,9 @@ module StreamStats.Controllers {
         public BohmanUrban1992: IReportable;
 
         public constructor() {
-            this.SyntheticUrbanHydrograph = { Graph: {}, Table: {}, PeakQ: {}, Infiltration: {}, ExcessPrecip: {} };
-            this.BohmanRural1989 = { Graph: {}, Table: {}, PeakQ: {}, Infiltration: {}, ExcessPrecip: {} };
-            this.BohmanUrban1992 = { Graph: {}, Table: {}, PeakQ: {}, Infiltration: {}, ExcessPrecip: {} };
+            this.SyntheticUrbanHydrograph = { Graph: {}, WeightedRunoff : null  };
+            this.BohmanRural1989 = { Graph: {}, WeightedRunoff : null  };
+            this.BohmanUrban1992 = { Graph: {}, WeightedRunoff : null  };
         }
     }
 
@@ -100,6 +97,7 @@ module StreamStats.Controllers {
         
 
         private _selectedAEP;
+        public ReportData: ISCStormRunoffReportable;
 
         public get SelectedAEP() {
             return this._selectedAEP;
@@ -126,13 +124,14 @@ module StreamStats.Controllers {
 
         public parameters;
         public parameterResults;
-        
-        public regressionRegions;
+        public ReportOptions: any;
 
+        public regressionRegions;
+        public reportData;
         public BrowserIE: boolean;
         public BrowserChrome: boolean;
         public angulartics: any;
-
+        public test; 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$analytics', 'toaster', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance', '$timeout', 'WiM.Event.EventManager'];
@@ -154,11 +153,8 @@ module StreamStats.Controllers {
         
         //Methods  
         //-+-+-+-+-+-+-+-+-+-+-+-
-        public GetStormRunoffResults(statisticGroup) {
-            console.log('in GetStormRunoffResults');
-            console.log(statisticGroup);
-
-            // // Bohman Urban (1992)            
+        public estimateFlows(statisticGroup) {
+            // Bohman Urban (1992)            
             var data = [{  // Urban Peak Flow Statistics for Bohman Urban (1992)
                 "id": 31,
                 "name": "Urban Peak-Flow Statistics",
@@ -168,51 +164,87 @@ module StreamStats.Controllers {
                 "statisticGroupID": "31", 
                 "regressionRegions" : statisticGroup[0].regressionRegions
             }]
-            console.log(data)
             
-            // var url = configuration.baseurls['NSS'] + configuration.queryparams['estimateFlows'].format('SC');
-            // var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, 1, 'json', JSON.stringify(data));
-            // this.Execute(request).then((response: any) => {
-            //         console.log(response);
-            //         //make sure there are some results
-            //         if (response.data[0].regressionRegions.length > 0 && response.data[0].regressionRegions[0].results && response.data[0].regressionRegions[0].results.length > 0) {
-                        
-            //         }
-            //         else {
-            //             this.toaster.clear();
-            //             this.toaster.pop('error', "There was an error Estimating Flows", "No results were returned", 0);
-            //         }
-            //     },(error) => {
-            //         //sm when error
-            //         this.toaster.clear();
-            //         this.toaster.pop('error', "There was an error Estimating Flows", "HTTP request error", 0);
-            //     }).finally(() => {    
-            // });
+            var url = configuration.baseurls['NSS'] + configuration.queryparams['estimateFlows'].format('SC');
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, 1, 'json', JSON.stringify(data));
+            this.Execute(request).then((response: any) => {
+                    //make sure there are some results
+                    if (response.data[0].regressionRegions.length > 0 && response.data[0].regressionRegions[0].results && response.data[0].regressionRegions[0].results.length > 0) {
+                        var region3Percent = 0;
+                        var region4Percent = 0;
+                        var region3AEP = 0;
+                        var region4AEP = 0;
 
-            // Use the response to pull out the % Area from Region_3_Urban_2014_5030 (RG_Code: GC1585) and the % Area from Region_4_Urban_2014_5030 (RG_Code: GC1586)
-                // regressioneRegions.percentWeight 
-            // Also pull out the relevant AEP values for Region 3 and/or Region 4 (ex "UPK50AEP")
-                // regressionRegions.results
-            // Use the drainage point latitude, drainage point longitude, % Area in Region 3, Region 3 AEP statistic, % Area in Region 4, Region 4 AEP statistic, DRNAREA, LFPLENGTH, CSL10_85fm, and LC09IMP values and send them to the sc-runoffmodelingservice urbanhydrographbohman1992 endpoint
-            
+                        response.data[0].regressionRegions.forEach(regressionregion => {
+                            if (regressionregion.code == 'GC1585') {
+                                region3Percent = regressionregion.percentWeight;
+                                regressionregion.results.forEach(result => {
+                                    if (result.name.indexOf(this.SelectedAEP.value) !== -1){
+                                        region3AEP = result.value;
+                                    }
+                                })
+                            } else if (regressionregion.code == 'GC1586') {
+                                region4Percent = regressionregion.percentWeight;
+                                regressionregion.results.forEach(result => {
+                                    if (result.name.indexOf(this.SelectedAEP.value) !== -1){
+                                        region4AEP = result.value;
+                                    }
+                                })
+                            }
+                        });
 
+                        // set up data for request 
+                        var data = {
+                            "lat": this.studyAreaService.selectedStudyArea.Pourpoint.Latitude,
+                            "lon": this.studyAreaService.selectedStudyArea.Pourpoint.Longitude,
+                            "region3PercentArea": region3Percent,
+                            "region4PercentArea": region4Percent, 
+                            "region3Qp": region3AEP, 
+                            "region4Qp": region4AEP, 
+                            "A": this.drainageArea,
+                            "L": this.mainChannelLength, 
+                            "S": this.mainChannelSlope, 
+                            "TIA": this.totalImperviousArea
+                        }
 
-
+                        this.getStormRunoffResults(data)
+                    }
+                    else {
+                        this.toaster.clear();
+                        this.toaster.pop('error', "There was an error Estimating Flows", "No results were returned", 0);
+                    }
+                },(error) => {
+                    //sm when error
+                    this.toaster.clear();
+                    this.toaster.pop('error', "There was an error Estimating Flows", "HTTP request error", 0);
+                }).finally(() => {    
+            });
             
             // Bohman Rural (1989)
-            // Use parameters and above response to do this POST request: https://streamstats.usgs.gov/nssservices/scenarios/estimate?regions=SC
-            // Use the response to pull out the % Area from all the relevant regions (awaiting info/updates from Kitty about the regions that correspond to the Bohman 1989 regions)
-            // Also pull out the relevant area-weighted AEP values for all the regions (this will be Qp) Urban or Peak?
-            // Use the % Area in each region, the weighted AEP value of interest, and the total drainage area send them to the sc-runoffmodelingservice urbanhydrographbohman1992 endpoint
-            
-            // The service returns the data used to generate tables and graphs.
-            this.CanContinue = true;
+            // Synthetic Urban Hydrograph Method
 
         }
 
 
+        public getStormRunoffResults(data){
+            var url = configuration.baseurls['SCStormRunoffServices'] + configuration.queryparams['SCStormRunoffBohman1992']
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(data));
+            this.Execute(request).then((response: any) => {
+                    this.reportData = response.data;
+                    this.ReportData.BohmanUrban1992.Graph = this.loadGraphData();
+                    this.ReportData.BohmanUrban1992.WeightedRunoff = this.reportData.weighted_runoff_volume;
+
+                    this.setGraphOptions();
+                    this.showResults = true;
+                },(error) => {
+
+                }).finally(() => { 
+                    this.CanContinue = true;   
+            });
+
+        }
+
         public addParameterValues(statisticGroup) { // get other parameter values related to equations in estimate endpoint 
-            console.log('in calc additional parameters')
             var parameterList = [];
             statisticGroup[0].regressionRegions.forEach((regressionRegion) => {                    
                 regressionRegion.parameters.forEach((regressionParam) => {   
@@ -261,8 +293,7 @@ module StreamStats.Controllers {
                                     });
                                 });
                             });
-
-                            this.GetStormRunoffResults(statisticGroup)
+                            this.estimateFlows(statisticGroup)
                         }
                     },(error) => {
                         //sm when error
@@ -271,7 +302,6 @@ module StreamStats.Controllers {
                     }).finally(() => {
                         this.CanContinue = true;
                         this.hideAlerts = true;
-                        console.log('done calc additional parameters')
                     });
             } catch (e) {
                 this.toaster.pop('error', "There was an error calculating parameters", "", 0);                 
@@ -279,7 +309,6 @@ module StreamStats.Controllers {
         }
 
         public loadParametersByStatisticsGroup(regressionregions: string, percentWeights: any) {
-            console.log('in loadParametersByStatisticsGroup');
             var url = configuration.baseurls['NSS'] + configuration.queryparams['statisticsGroupParameterLookup'];
             url = url.format('SC', 31, regressionregions); // Urban Peak Flow Statistics for Bohman Urban (1992)
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
@@ -298,9 +327,7 @@ module StreamStats.Controllers {
                                 })
                             }
                         });
-
                         this.addParameterValues(response.data);
-
                     }
                     //this.toaster.clear();
                     //sm when complete
@@ -315,7 +342,6 @@ module StreamStats.Controllers {
 
         public queryRegressionRegions() {
             this.CanContinue = false;
-            console.log('in queryRegressionRegions');
             var headers = {
                 "Content-Type": "application/json",
                 "X-Is-StreamStats": true
@@ -346,7 +372,6 @@ module StreamStats.Controllers {
         }
 
         public CalculateParameters(parameters) {
-            console.log('in CalculateParameters');
             try {
                 this.toaster.pop("wait", "Calculating Missing Parameters", "Please wait...", 0);
                 this.parameters = parameters;
@@ -383,7 +408,6 @@ module StreamStats.Controllers {
                                 if (param.code.toLowerCase() == 'lc06imp') this.totalImperviousArea = param.value;
                                 if (param.code.toLowerCase() == 'lfplength') this.mainChannelLength = param.value;
                             });
-                            console.log('done calc parameters')
                         }
                     },(error) => {
                         //sm when error
@@ -398,6 +422,38 @@ module StreamStats.Controllers {
             }
         }
 
+        private loadGraphData(): any {
+            var results = []; 
+            var hydrograph = [];
+            hydrograph = this.reportData.time_coordinates.map((v, i) => [v, this.reportData.discharge_coordinates[i]]).map(([x, y]) => ({x, y}));
+            results.push({ values: hydrograph, key: "Discharge (ft³/s)", color: " #009900", type: "line", yAxis: 1 });   
+            return results;
+        }
+
+        private setGraphOptions(): void {
+            this.ReportOptions = {
+                chart: {
+                    type: 'multiChart',
+                    height: 275,
+                    width: 650,
+                    margin: {
+                        top: 10,
+                        right: 80,
+                        bottom: 80,
+                        left: 90
+                    }
+                },
+                title: {
+                    enable: true,
+                    text: 'Bohman Urban (1992) using ' + this.SelectedAEP.name + ' AEP',
+                    css: {
+                        'font-size': '10pt',
+                        'font-weight': 'bold'
+                    }
+                }
+            };
+        }
+
         public validateForm(mainForm) {
             if (mainForm.$valid) {
                 return true;
@@ -410,13 +466,6 @@ module StreamStats.Controllers {
         }
 
         public ClearResults() {
-            for (var i in this.studyAreaService.studyAreaParameterList) {
-                this.studyAreaService.studyAreaParameterList[i].value = null;
-                //this.SelectedParameterList[i].value = null;
-            }
-
-            this.SelectedAEP = this.AEPOptions[0];
-            this.SelectedAEP = null;
             this.drainageArea = null;
             this.mainChannelLength = null;
             this.mainChannelSlope = null;
@@ -426,28 +475,17 @@ module StreamStats.Controllers {
         }
 
         public Close(): void {
-            this.modalInstance.dismiss('cancel')
+            this.modalInstance.dismiss('cancel');
         }
 
         public Reset(): void {
             this.init();
         }
 
-        private downloadCSV() {
-            
-        }
-
-        private loadGraphData(): any {
-            
-        }
-
-        private GetTableData(): any {
-            
-        }
-
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-        
-        private init(): void {            
+        private init(): void { 
+            this.ReportData = new SCStormRunoffReportable();           
             this.SelectedTab = SCStormRunoffType.BohmanRural1989;
             this.showResults = false;
             this.hideAlerts = false;
@@ -476,7 +514,7 @@ module StreamStats.Controllers {
     } 
 
     enum SCStormRunoffType {
-        BohmanRural1989= 1,
+        BohmanRural1989 = 1,
         BohmanUrban1992 = 2,
         SyntheticUrbanHydrograph = 3
     }
