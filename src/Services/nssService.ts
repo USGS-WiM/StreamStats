@@ -240,7 +240,6 @@ module StreamStats.Services {
 
         public loadParametersByStatisticsGroup(rcode: string, statisticsGroupID: string, regressionregions: string, percentWeights: any, regressionTypes?: string) {
 
-            console.log(percentWeights)
             if (this.loadingParametersByStatisticsGroupCounter == 0) {
                 this.toaster.pop('wait', "Loading Parameters by Statistics Group", "Please wait...", 0); 
             }
@@ -340,7 +339,6 @@ module StreamStats.Services {
                 });
 
                 //Make a copy of the object and delete any existing results
-                console.log(statGroup)
                 var updatedScenarioObject = angular.fromJson(angular.toJson(statGroup));
                 updatedScenarioObject.regressionRegions.forEach((regressionRegion) => {
                     //delete results object if it exists
@@ -356,7 +354,6 @@ module StreamStats.Services {
                 });
                 updatedScenarioObject = angular.toJson([updatedScenarioObject], null);
 
-                console.log(updatedScenarioObject)
                 //do request
                 var url = configuration.baseurls['NSS'] + configuration.queryparams['estimateFlows'].format(rcode);
                 if (this.regionservice.selectedRegion.Applications.indexOf("FDCTM") > -1 && typeof statGroup.id == "string" && statGroup.id.indexOf("_fdctm") > -1) {

@@ -119,7 +119,6 @@ var StreamStats;
                         _this.result = response.data;
                         if (_this.SelectedTab == 1) {
                             _this.ReportData.TR55.Graph = _this.loadGraphData();
-                            console.log(_this.ReportData.TR55.Graph);
                             _this.ReportData.TR55.Table = _this.GetTableData();
                             _this.setGraphOptions();
                         }
@@ -345,7 +344,6 @@ var StreamStats;
                     this.loadDomainY2(hyetograph);
                     results.push({ values: hydrograph, key: "Discharge (ft³/s)", color: " #009900", type: "line", yAxis: 1 });
                     results.push({ values: hyetograph, key: "Cum. precipitation (in)", color: "#0033ff", type: "line", yAxis: 2 });
-                    console.log(results);
                     return results;
                 }
                 catch (e) {

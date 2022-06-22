@@ -165,7 +165,7 @@ var StreamStats;
                     _this.showResults = true;
                 }, function (error) {
                 }).finally(function () {
-                    _this.CanContinue = true;
+                    _this.canContinue = true;
                 });
             };
             SCStormRunoffController.prototype.addParameterValues = function (statisticGroup) {
@@ -215,7 +215,7 @@ var StreamStats;
                         _this.toaster.clear();
                         _this.toaster.pop("error", "There was an HTTP error calculating parameters", "Please retry", 0);
                     }).finally(function () {
-                        _this.CanContinue = true;
+                        _this.canContinue = true;
                         _this.hideAlerts = true;
                     });
                 }
@@ -249,7 +249,7 @@ var StreamStats;
             };
             SCStormRunoffController.prototype.queryRegressionRegions = function () {
                 var _this = this;
-                this.CanContinue = false;
+                this.canContinue = false;
                 var headers = {
                     "Content-Type": "application/json",
                     "X-Is-StreamStats": true
@@ -276,12 +276,12 @@ var StreamStats;
                 }).finally(function () {
                 });
             };
-            SCStormRunoffController.prototype.CalculateParameters = function (parameters) {
+            SCStormRunoffController.prototype.calculateParameters = function (parameters) {
                 var _this = this;
                 try {
                     this.toaster.pop("wait", "Calculating Missing Parameters", "Please wait...", 0);
                     this.parameters = parameters;
-                    this.CanContinue = false;
+                    this.canContinue = false;
                     var workspaceID = this.studyAreaService.selectedStudyArea.WorkspaceID;
                     var regionID = this.studyAreaService.selectedStudyArea.RegionID;
                     var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSComputeParams'].format(regionID, workspaceID, parameters);
@@ -319,7 +319,7 @@ var StreamStats;
                         _this.toaster.clear();
                         _this.toaster.pop("error", "There was an HTTP error calculating parameters", "Please retry", 0);
                     }).finally(function () {
-                        _this.CanContinue = true;
+                        _this.canContinue = true;
                         _this.hideAlerts = true;
                     });
                 }
@@ -371,7 +371,7 @@ var StreamStats;
                     return false;
                 }
             };
-            SCStormRunoffController.prototype.ClearResults = function () {
+            SCStormRunoffController.prototype.clearResults = function () {
                 this.drainageArea = null;
                 this.mainChannelLength = null;
                 this.mainChannelSlope = null;
@@ -390,7 +390,7 @@ var StreamStats;
                 this.SelectedTab = SCStormRunoffType.BohmanRural1989;
                 this.showResults = false;
                 this.hideAlerts = false;
-                this.CanContinue = true;
+                this.canContinue = true;
                 this.SelectedAEP = { "name": "50%", "value": 50 };
             };
             SCStormRunoffController.prototype.selectRunoffType = function () {

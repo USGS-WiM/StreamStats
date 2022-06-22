@@ -209,7 +209,6 @@ module StreamStats.Services {
         e_nearestgages = 11,
         e_scstormrunnoff = 12
 
-        
     }
 
     factory.$inject = ['$modal'];

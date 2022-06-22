@@ -122,7 +122,6 @@ var StreamStats;
             };
             nssService.prototype.loadParametersByStatisticsGroup = function (rcode, statisticsGroupID, regressionregions, percentWeights, regressionTypes) {
                 var _this = this;
-                console.log(percentWeights);
                 if (this.loadingParametersByStatisticsGroupCounter == 0) {
                     this.toaster.pop('wait', "Loading Parameters by Statistics Group", "Please wait...", 0);
                 }
@@ -199,7 +198,6 @@ var StreamStats;
                             });
                         });
                     });
-                    console.log(statGroup);
                     var updatedScenarioObject = angular.fromJson(angular.toJson(statGroup));
                     updatedScenarioObject.regressionRegions.forEach(function (regressionRegion) {
                         if (regressionRegion.results)
@@ -214,7 +212,6 @@ var StreamStats;
                             });
                     });
                     updatedScenarioObject = angular.toJson([updatedScenarioObject], null);
-                    console.log(updatedScenarioObject);
                     var url = configuration.baseurls['NSS'] + configuration.queryparams['estimateFlows'].format(rcode);
                     if (_this.regionservice.selectedRegion.Applications.indexOf("FDCTM") > -1 && typeof statGroup.id == "string" && statGroup.id.indexOf("_fdctm") > -1) {
                         url = url + "&extensions=QPPQ";

@@ -1,23 +1,6 @@
 //------------------------------------------------------------------------------
-//----- Storm runnoff controller------------------------------------------------
+//----- SC Storm runoff controller------------------------------------------------
 //------------------------------------------------------------------------------
-
-//-------1---------2---------3---------4---------5---------6---------7---------8
-//       01234567890123456789012345678901234567890123456789012345678901234567890
-//-------+---------+---------+---------+---------+---------+---------+---------+
-
-// copyright:   2016 WiM - USGS
-
-//    authors:  Jeremy K. Newson USGS Wisconsin Internet Mapping,
-//              Tara A. Gross USGS Colorado Water Science Center
-// 
-//   purpose:  
-//          
-//discussion:
-
-
-//Comments
-//02.17.2016 jkn - Created
 
 //Import
 declare var d3: any;
@@ -67,8 +50,17 @@ module StreamStats.Controllers {
         public hideAlerts: boolean;
         public toaster: any;
         private studyAreaService: Services.IStudyAreaService;
-        public CanContinue: boolean;
-
+        public canContinue: boolean;
+        public ReportData: ISCStormRunoffReportable;
+        public drainageArea: number;
+        public mainChannelLength: number;
+        public mainChannelSlope: number;
+        public totalImperviousArea: number;
+        public parameters;
+        public ReportOptions: any;
+        public regressionRegions;
+        public reportData;
+        public angulartics: any;
         public AEPOptions = [{
             "name": "50%",
             "value": 50
@@ -94,23 +86,13 @@ module StreamStats.Controllers {
             "name": ".2%",
             "value": 0.2
         }];
-        
-
         private _selectedAEP;
-        public ReportData: ISCStormRunoffReportable;
-
         public get SelectedAEP() {
             return this._selectedAEP;
         }
-
         public set SelectedAEP(val) {
             this._selectedAEP = val;
         }
-        public drainageArea: number;
-        public mainChannelLength: number;
-        public mainChannelSlope: number;
-        public totalImperviousArea: number;
-
         private _selectedTab: SCStormRunoffType;
         public get SelectedTab(): SCStormRunoffType {
             return this._selectedTab;
@@ -122,16 +104,6 @@ module StreamStats.Controllers {
             }//end if           
         }
 
-        public parameters;
-        public parameterResults;
-        public ReportOptions: any;
-
-        public regressionRegions;
-        public reportData;
-        public BrowserIE: boolean;
-        public BrowserChrome: boolean;
-        public angulartics: any;
-        public test; 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$analytics', 'toaster', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance', '$timeout', 'WiM.Event.EventManager'];
@@ -163,7 +135,7 @@ module StreamStats.Controllers {
                 "statisticGroupName": "Urban Peak-Flow Statistics",
                 "statisticGroupID": "31", 
                 "regressionRegions" : statisticGroup[0].regressionRegions
-            }]
+            }];
             
             var url = configuration.baseurls['NSS'] + configuration.queryparams['estimateFlows'].format('SC');
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, 1, 'json', JSON.stringify(data));
@@ -205,9 +177,9 @@ module StreamStats.Controllers {
                             "L": this.mainChannelLength, 
                             "S": this.mainChannelSlope, 
                             "TIA": this.totalImperviousArea
-                        }
+                        };
 
-                        this.getStormRunoffResults(data)
+                        this.getStormRunoffResults(data);
                     }
                     else {
                         this.toaster.clear();
@@ -233,13 +205,12 @@ module StreamStats.Controllers {
                     this.reportData = response.data;
                     this.ReportData.BohmanUrban1992.Graph = this.loadGraphData();
                     this.ReportData.BohmanUrban1992.WeightedRunoff = this.reportData.weighted_runoff_volume;
-
                     this.setGraphOptions();
                     this.showResults = true;
                 },(error) => {
 
                 }).finally(() => { 
-                    this.CanContinue = true;   
+                    this.canContinue = true;   
             });
 
         }
@@ -252,13 +223,11 @@ module StreamStats.Controllers {
                 });
             });
 
-            parameterList = parameterList.filter(
-                (element, i) => i === parameterList.indexOf(element)
-            );
+            parameterList = parameterList.filter((element, i) => i === parameterList.indexOf(element));
 
             try {
                 var workspaceID = this.studyAreaService.selectedStudyArea.WorkspaceID;
-                var regionID = this.studyAreaService.selectedStudyArea.RegionID
+                var regionID = this.studyAreaService.selectedStudyArea.RegionID;
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSComputeParams'].format(regionID, workspaceID, parameterList.join(','));
                 var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
                 request.withCredentials = true;
@@ -300,7 +269,7 @@ module StreamStats.Controllers {
                         this.toaster.clear();
                         this.toaster.pop("error", "There was an HTTP error calculating parameters", "Please retry", 0);
                     }).finally(() => {
-                        this.CanContinue = true;
+                        this.canContinue = true;
                         this.hideAlerts = true;
                     });
             } catch (e) {
@@ -341,7 +310,7 @@ module StreamStats.Controllers {
 
 
         public queryRegressionRegions() {
-            this.CanContinue = false;
+            this.canContinue = false;
             var headers = {
                 "Content-Type": "application/json",
                 "X-Is-StreamStats": true
@@ -371,11 +340,11 @@ module StreamStats.Controllers {
             });
         }
 
-        public CalculateParameters(parameters) {
+        public calculateParameters(parameters) {
             try {
                 this.toaster.pop("wait", "Calculating Missing Parameters", "Please wait...", 0);
                 this.parameters = parameters;
-                this.CanContinue = false;
+                this.canContinue = false;
                 var workspaceID = this.studyAreaService.selectedStudyArea.WorkspaceID;
                 var regionID = this.studyAreaService.selectedStudyArea.RegionID
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSComputeParams'].format(regionID, workspaceID, parameters);
@@ -414,7 +383,7 @@ module StreamStats.Controllers {
                         this.toaster.clear();
                         this.toaster.pop("error", "There was an HTTP error calculating parameters", "Please retry", 0);
                     }).finally(() => {
-                        this.CanContinue = true;
+                        this.canContinue = true;
                         this.hideAlerts = true;
                     });
             } catch (e) {
@@ -465,7 +434,7 @@ module StreamStats.Controllers {
             }
         }
 
-        public ClearResults() {
+        public clearResults() {
             this.drainageArea = null;
             this.mainChannelLength = null;
             this.mainChannelSlope = null;
@@ -489,7 +458,7 @@ module StreamStats.Controllers {
             this.SelectedTab = SCStormRunoffType.BohmanRural1989;
             this.showResults = false;
             this.hideAlerts = false;
-            this.CanContinue = true;
+            this.canContinue = true;
             this.SelectedAEP = {"name": "50%", "value": 50};
         }
 
