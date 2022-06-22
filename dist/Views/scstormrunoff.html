@@ -1,0 +1,141 @@
+    <!-- Modal -->
+    <div id="print-content">
+        <div class="modal-header">
+            <div class="visible-print identifier">
+                <img src="images/usgs-logo-black.png" alt="USGS Identifier" title="USGS Science for a Changing World" />
+            </div>
+            <button type="button" class="close hidden-print" ng-click="vm.Close()"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title hidden-print">Study Area Storm Event Runoff Summary</h4>
+        </div>
+        <div class="modal-body">
+            <div ng-hide="vm.StudyArea">A study area is needed before viewing the report</div>
+            <div ng-show="vm.StudyArea">
+                <div class="form-group">
+                    <ul class="nav nav-tabs wateruseTabs hidden-print">
+                        <li ng-class="{'active': vm.SelectedTab == 3}"><a ng-click="vm.SelectedTab=3">Synthetic Urban Hydrograph Method</a></li>
+                        <li ng-class="{'active': vm.SelectedTab == 2}"><a ng-click="vm.SelectedTab=2">Bohman Urban</a></li>
+                        <li ng-class="{'active': vm.SelectedTab == 1}"><a ng-click="vm.SelectedTab=1">Bohman Rural</a></li>
+                    </ul>
+    
+                    <div id="printArea">
+                        <!-- Bohman Rural (1989) tab -->
+                        <div ng-if="vm.SelectedTab == 1" style="position:relative;">
+                            <!-- <form id="BohmanRuralForm" name="BohmanRuralForm" class="hidden-print" novalidate>
+                                <label for="AEPOptions">Select an Annual Exceedance Probability (AEP):</label>
+                                <select name="AEPOptions" ng-model="vm.SelectedAEP" ng-options="precip.name for precip in vm.AEPOptions track by precip.value"></select>
+
+                                <label for="DrainageArea">Drainage Area (square miles):</label>
+                                <input type="number" ng-model="vm.drainageArea" required/>
+
+                                
+                                <label class="fullwidth alignc" ng-if="vm.validateForm(BohmanRuralForm) && !vm.hideAlerts"><span class="fa fa-check"></span>&nbsp;Parameters Have Been Calculated</label>
+                                <label class="fullwidth" ng-if="!vm.validateForm(BohmanRuralForm) || (vm.validateForm(BohmanRuralForm) && vm.hideAlerts)">&nbsp;&nbsp;</label>
+                                <div class="hidden-print">
+                                    <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.calculateParameters('DRNAREA')" ng-hide="vm.validateForm(BohmanRuralForm)"><span ng-class="vm.canContinue ? 'fa fa-calculator' : 'fa fa-refresh fa-spin'"></span>&nbsp;&nbsp;Calculate Missing Parameters</button>
+                                    <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-red" ng-click="vm.clearResults()" ng-hide="!vm.validateForm(BohmanRuralForm)"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;Clear All</button>
+                                    <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.queryRegressionRegions()" ng-hide="!vm.validateForm(BohmanRuralForm)"><span ng-class="vm.canContinue ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></span>{{ vm.showResults ? '&nbsp;&nbsp;Recalculate Results' : '&nbsp;&nbsp;Continue' }}</button>
+                                </div>
+                                <label class="fullwidth alignc orange" ng-if="!vm.validateForm(BohmanRuralForm)"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Parameters Must Be Entered Before Results Can Be Calculated</label>
+                                <label ng-if="vm.validateForm(BohmanRuralForm)">&nbsp;&nbsp;</label> 
+                            </form>  -->
+                            <div> Coming Soon. </div>
+                        </div>
+                        <!-- Bohman Urban (1992) tab -->
+                        <div ng-if="vm.SelectedTab == 2" style="position:relative;">
+                            <form id="BohmanUrbanForm" name="BohmanUrbanForm" class="hidden-print" novalidate>
+                                <label for="AEPOptions">Select an Annual Exceedance Probability (AEP):</label>
+                                <select name="AEPOptions" ng-model="vm.SelectedAEP" ng-options="precip.name for precip in vm.AEPOptions track by precip.value"></select>
+
+                                <label for="DrainageArea">Drainage Area (square miles):</label>
+                                <input type="number" ng-model="vm.drainageArea" required/>
+                                <label for="MainChannelLength">Main Channel Length (miles):</label>
+                                <input type="number" ng-model="vm.mainChannelLength" required/>
+                                <label for="MainChannelSlope">Main Channel Slope (feet per mile):</label>
+                                <input type="number" ng-model="vm.mainChannelSlope" required/>
+                                <label for="TotalImperviousArea">Total impervious area (%):</label>
+                                <input type="number" ng-model="vm.totalImperviousArea" required/>
+
+                                <label class="fullwidth alignc" ng-if="vm.validateForm(BohmanUrbanForm) && !vm.hideAlerts"><span class="fa fa-check"></span>&nbsp;Parameters Have Been Calculated</label>
+                                <label class="fullwidth" ng-if="!vm.validateForm(BohmanUrbanForm) || (vm.validateForm(BohmanUrbanForm) && vm.hideAlerts)">&nbsp;&nbsp;</label>
+                                <div class="hidden-print">
+                                    <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.calculateParameters('DRNAREA,LFPLENGTH,CSL10_85fm,LC06IMP')" ng-hide="vm.validateForm(BohmanUrbanForm)"><span ng-class="vm.canContinue ? 'fa fa-calculator' : 'fa fa-refresh fa-spin'"></span>&nbsp;&nbsp;Calculate Missing Parameters</button>
+                                    <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-red" ng-click="vm.clearResults()" ng-hide="!vm.validateForm(BohmanUrbanForm)"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;Clear All</button>
+                                    <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.queryRegressionRegions()" ng-hide="!vm.validateForm(BohmanUrbanForm)"><span ng-class="vm.canContinue ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></span>{{ vm.showResults ? '&nbsp;&nbsp;Recalculate Results' : '&nbsp;&nbsp;Continue' }}</button>
+                                </div>
+                                <label class="fullwidth alignc orange" ng-if="!vm.validateForm(BohmanUrbanForm)"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Parameters Must Be Entered Before Results Can Be Calculated</label>
+                                <label ng-if="vm.validateForm(BohmanUrbanForm)">&nbsp;&nbsp;</label> 
+                            </form> 
+                            <div ng-if="vm.showResults">
+                                <div style="position:relative;">
+                                    <p class="fullwidth alignc hidden-print" style="font-size: 16px;"><b>Bohman Urban (1992) using {{vm.SelectedAEP.name}} AEP</b></p>
+                                    <div class="well">
+                                        <h3>Parameters</h3>
+                                        <table id="BohmanUrbanParameterTable" class="table table-condensed smalltext">
+                                            <tbody>
+                                                <tr>
+                                                    <td>Drainage Area (square miles):</td>
+                                                    <td><b>{{vm.drainageArea}}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Main Channel Length (miles):</td>
+                                                    <td><b>{{vm.mainChannelLength}}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Main Channel Slope (feet per mile):</td>
+                                                    <td><b>{{vm.mainChannelSlope}}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Total impervious area (%):</td>
+                                                    <td><b>{{vm.totalImperviousArea}}</b></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <h3>Summary</h3>
+                                        <table id="BohmanUrbanSummaryTable" class="table table-condensed smalltext">
+                                            <tbody>
+                                                <tr>
+                                                    <td>Weighted Runoff Volume:</td>
+                                                    <td><b>{{vm.ReportData.BohmanUrban1992.WeightedRunoff}}</b></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+        
+                                        <div style='width:650px; margin:auto;' class="page_break" id="legend">
+                                            <nvd3 options='vm.ReportOptions' data='vm.ReportData.BohmanUrban1992.Graph'></nvd3>
+                                        </div>
+        
+                                        <h3>Tabular Hydrograph</h3>
+                                        <table id="BohmanUrbanHydrograph" class="table table-condensed" style="page-break-inside:avoid; font-size: 11px;">
+                                            <thead>
+                                                <tr>
+                                                    <th>Time</th>
+                                                    <th>Q</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="item in vm.reportData.time_coordinates">
+                                                    <td>{{item}}</td>
+                                                    <td>{{vm.reportData.discharge_coordinates[$index]}}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table> 
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Synthetic Urban Hydrograph tab -->
+                        <div ng-if="vm.SelectedTab == 3" style="position:relative;">
+                            <div> Coming Soon. </div>
+                        </div>
+                    </div>
+                </div>
+            </div>        
+        </div>
+    
+        <div class="modal-footer hidden-print">
+            <div class="btn-group">
+                <button class="btn-wim-default" ng-click="vm.Close()"><i class="fa fa-close"></i>&nbsp;&nbsp;Close</button>
+            </div>
+        </div>
+    
+    </div>
