@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased](https://github.com/USGS-WiM/StreamStats/tree/dev)
   
   ### Added
-    
+    -  Added SC Storm Runoff model
+    -  Added Urban Bohman Method functionaily to the SC Storm Runoff model
+
   ### Changed
 
   ### Fixed

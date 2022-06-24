@@ -43,6 +43,7 @@ module StreamStats.Controllers {
     class SCStormRunoffController extends WiM.Services.HTTPServiceBase implements ISCStormRunoffController {
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
+        public AppVersion: string;
         public print: any;
         public StudyArea: StreamStats.Models.IStudyArea;
         private modalInstance: ng.ui.bootstrap.IModalServiceInstance;
@@ -110,6 +111,7 @@ module StreamStats.Controllers {
         constructor($scope: ISCStormRunoffControllerScope, $analytics, toaster, $http: ng.IHttpService, studyAreaService: StreamStats.Services.IStudyAreaService, modal: ng.ui.bootstrap.IModalServiceInstance, public $timeout: ng.ITimeoutService, private EventManager: WiM.Event.IEventManager) {
             super($http, configuration.baseurls.StormRunoffServices);
             $scope.vm = this;
+            this.AppVersion = configuration.version;
             this.angulartics = $analytics;
             this.toaster = toaster;
             this.modalInstance = modal;
@@ -410,6 +412,15 @@ module StreamStats.Controllers {
                         right: 80,
                         bottom: 80,
                         left: 90
+                    },
+                    xAxis: {
+                        axisLabel: 'Time, in hours',
+                        tickFormat: function (d) {
+                            return d.toFixed(0)
+                        }
+                    },
+                    yAxis1: {
+                        axisLabel: 'Discharge (Q), in ft³/s'
                     }
                 },
                 title: {
@@ -420,6 +431,7 @@ module StreamStats.Controllers {
                         'font-weight': 'bold'
                     }
                 }
+                
             };
         }
 

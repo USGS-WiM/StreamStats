@@ -16,7 +16,8 @@
                         <li ng-class="{'active': vm.SelectedTab == 2}"><a ng-click="vm.SelectedTab=2">Bohman Urban</a></li>
                         <li ng-class="{'active': vm.SelectedTab == 1}"><a ng-click="vm.SelectedTab=1">Bohman Rural</a></li>
                     </ul>
-    
+                    <div ng-if="vm.SelectedTab == 2" class="wim-alert hidden-print">Enter custom values below or <b>Calculate Missing Parameters</b>. Click <b>Continue</b> to view peak discharge and hydrograph.</div>
+
                     <div id="printArea">
                         <!-- Bohman Rural (1989) tab -->
                         <div ng-if="vm.SelectedTab == 1" style="position:relative;">
@@ -39,6 +40,7 @@
                                 <label ng-if="vm.validateForm(BohmanRuralForm)">&nbsp;&nbsp;</label> 
                             </form>  -->
                             <div> Coming Soon. </div>
+                            <br>
                         </div>
                         <!-- Bohman Urban (1992) tab -->
                         <div ng-if="vm.SelectedTab == 2" style="position:relative;">
@@ -94,8 +96,8 @@
                                         <table id="BohmanUrbanSummaryTable" class="table table-condensed smalltext">
                                             <tbody>
                                                 <tr>
-                                                    <td>Weighted Runoff Volume:</td>
-                                                    <td><b>{{vm.ReportData.BohmanUrban1992.WeightedRunoff}}</b></td>
+                                                    <td>Weighted Runoff Volume (inches):</td>
+                                                    <td><b>{{vm.ReportData.BohmanUrban1992.WeightedRunoff.toFixed(5)}}</b></td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -108,17 +110,19 @@
                                         <table id="BohmanUrbanHydrograph" class="table table-condensed" style="page-break-inside:avoid; font-size: 11px;">
                                             <thead>
                                                 <tr>
-                                                    <th>Time</th>
-                                                    <th>Q</th>
+                                                    <th>Time (hours)</th>
+                                                    <th>Q (cubic feet per second)</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr ng-repeat="item in vm.reportData.time_coordinates">
-                                                    <td>{{item}}</td>
-                                                    <td>{{vm.reportData.discharge_coordinates[$index]}}</td>
+                                                    <td>{{item.toFixed(5)}}</td>
+                                                    <td>{{vm.reportData.discharge_coordinates[$index].toFixed(1)}}</td>
                                                 </tr>
                                             </tbody>
                                         </table> 
+                                        <h4>Citations</h4>
+                                        <a href="https://pubs.er.usgs.gov/publication/wri924040" target="_blank">Bohman, L.R., 1992, Determination of flood hydrographs for streams in South Carolina: Volume 2. Estimation of peak-discharge frequency, runoff volumes, and flood hydrographs for urban watersheds: U.S. Geological Survey Water-Resources Investigations Report 92-4040, 79 p.</a><br /><br />
                                     </div>
                                 </div>
                             </div>
@@ -126,7 +130,25 @@
                         <!-- Synthetic Urban Hydrograph tab -->
                         <div ng-if="vm.SelectedTab == 3" style="position:relative;">
                             <div> Coming Soon. </div>
+                            <br>
                         </div>
+
+                        <div class="disclaimerReport">
+                            <p>
+                                USGS Data Disclaimer:
+                                Unless otherwise stated, all data, metadata and related materials are considered to satisfy the quality standards relative to the purpose for which the data were collected. Although these data and associated metadata have been reviewed for accuracy and completeness and approved for release by the U.S. Geological Survey (USGS), no warranty expressed or implied is made regarding the display or utility of the data for other purposes, nor on all computer systems, nor shall the act of distribution constitute any such warranty.
+                            </p>
+                            <p>
+                                USGS Software Disclaimer:
+                                This software has been approved for release by the U.S. Geological Survey (USGS). Although the software has been subjected to rigorous review, the USGS reserves the right to update the software as needed pursuant to further analysis and review. No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty. Furthermore, the software is released on condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from its authorized or unauthorized use.
+                            </p>
+                            <p>
+                                USGS Product Names Disclaimer:
+                                Any use of trade, firm, or product names is for descriptive purposes only and does not imply endorsement by the U.S. Government.
+                            </p>
+                            <p>Application Version: {{vm.AppVersion}}</p>
+                        </div>
+
                     </div>
                 </div>
             </div>        

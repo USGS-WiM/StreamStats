@@ -58,6 +58,7 @@ var StreamStats;
                         "value": 0.2
                     }];
                 $scope.vm = _this;
+                _this.AppVersion = configuration.version;
                 _this.angulartics = $analytics;
                 _this.toaster = toaster;
                 _this.modalInstance = modal;
@@ -349,6 +350,15 @@ var StreamStats;
                             right: 80,
                             bottom: 80,
                             left: 90
+                        },
+                        xAxis: {
+                            axisLabel: 'Time, in hours',
+                            tickFormat: function (d) {
+                                return d.toFixed(0);
+                            }
+                        },
+                        yAxis1: {
+                            axisLabel: 'Discharge (Q), in ft³/s'
                         }
                     },
                     title: {
