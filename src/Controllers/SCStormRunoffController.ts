@@ -463,6 +463,63 @@ module StreamStats.Controllers {
             this.init();
         }
 
+        private downloadCSV() {
+            //ga event
+            this.angulartics.eventTrack('Download', { category: 'Report', label: 'CSV' });
+
+            var filename = 'data.csv';
+
+            var BohmanRural1989 = () => {
+
+            };
+
+            var BohmanUrban1992 = () => {
+                var finalVal = 'Bohman Urban using ' + this.SelectedAEP.name + ' AEP\n';
+                finalVal += this.tableToCSV($('#BohmanUrbanParameterTable'));
+                finalVal += '\n' + this.tableToCSV($('#BohmanUrbanSummaryTable'));
+                finalVal += '\n\n' + this.tableToCSV($('#BohmanUrbanHydrograph'));
+                return  finalVal + '\r\n';
+            };
+
+            var SyntheticUrbanHydrograph = () => {
+
+            };
+
+            //main file header with site information
+            var csvFile = 'StreamStats Output Report\n\n' + 'State/Region ID,' + this.studyAreaService.selectedStudyArea.RegionID.toUpperCase() + '\nWorkspace ID,' + this.studyAreaService.selectedStudyArea.WorkspaceID + '\nLatitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + '\nLongitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5) + '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n\n';
+
+            //first write main parameter table
+            if (this.SelectedTab == 1) {
+                csvFile += BohmanRural1989();
+            } else if (this.SelectedTab == 2) {
+                csvFile += BohmanUrban1992();
+            } else if (this.SelectedTab == 3) {
+                csvFile += SyntheticUrbanHydrograph();
+            }
+
+            //download
+            var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
+
+            if (navigator.msSaveBlob) { // IE 10+
+                navigator.msSaveBlob(blob, filename);
+            } else {
+                var link = <any>document.createElement("a");
+                var url = URL.createObjectURL(blob);
+                if (link.download !== undefined) { // feature detection
+                    // Browsers that support HTML5 download attribute
+                    link.setAttribute("href", url);
+                    link.setAttribute("download", filename);
+                    link.style.visibility = 'hidden';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+                else {
+                    window.open(url);
+                }
+            }
+        }
+
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-        
         private init(): void { 
@@ -489,7 +546,55 @@ module StreamStats.Controllers {
         }
 
         private tableToCSV($table) {
-            
+            var $headers = $table.find('tr:has(th)')
+                , $rows = $table.find('tr:has(td)')
+
+                // Temporary delimiter characters unlikely to be typed by keyboard
+                // This is to avoid accidentally splitting the actual contents
+                , tmpColDelim = String.fromCharCode(11) // vertical tab character
+                , tmpRowDelim = String.fromCharCode(0) // null character
+
+                // actual delimiter characters for CSV format
+                , colDelim = '","'
+                , rowDelim = '"\r\n"';
+
+            // Grab text from table into CSV formatted string
+            var csv = '"';
+            csv += formatRows($headers.map(grabRow));
+            csv += rowDelim;
+            csv += formatRows($rows.map(grabRow)) + '"';
+            return csv
+
+            //------------------------------------------------------------
+            // Helper Functions 
+            //------------------------------------------------------------
+            // Format the output so it has the appropriate delimiters
+            function formatRows(rows) {
+                return rows.get().join(tmpRowDelim)
+                    .split(tmpRowDelim).join(rowDelim)
+                    .split(tmpColDelim).join(colDelim);
+            }
+
+            // Grab and format a row from the table
+            function grabRow(i, row) {
+
+                var $row = $(row);
+                //for some reason $cols = $row.find('td') || $row.find('th') won't work...
+                var $cols = $row.find('td');
+                if (!$cols.length) $cols = $row.find('th');
+
+                return $cols.map(grabCol)
+                    .get().join(tmpColDelim);
+            }
+
+            // Grab and format a column from the table 
+            function grabCol(j, col) {
+                var $col = $(col),
+                    $text = $col.text();
+
+                return $text.replace('"', '""'); // escape double quotes
+
+            }
         }
         
     } 
