@@ -395,6 +395,51 @@ var StreamStats;
             SCStormRunoffController.prototype.Reset = function () {
                 this.init();
             };
+            SCStormRunoffController.prototype.downloadCSV = function () {
+                var _this = this;
+                this.angulartics.eventTrack('Download', { category: 'Report', label: 'CSV' });
+                var filename = 'data.csv';
+                var BohmanRural1989 = function () {
+                };
+                var BohmanUrban1992 = function () {
+                    var finalVal = 'Bohman Urban using ' + _this.SelectedAEP.name + ' AEP\n';
+                    finalVal += _this.tableToCSV($('#BohmanUrbanParameterTable'));
+                    finalVal += '\n' + _this.tableToCSV($('#BohmanUrbanSummaryTable'));
+                    finalVal += '\n\n' + _this.tableToCSV($('#BohmanUrbanHydrograph'));
+                    return finalVal + '\r\n';
+                };
+                var SyntheticUrbanHydrograph = function () {
+                };
+                var csvFile = 'StreamStats Output Report\n\n' + 'State/Region ID,' + this.studyAreaService.selectedStudyArea.RegionID.toUpperCase() + '\nWorkspace ID,' + this.studyAreaService.selectedStudyArea.WorkspaceID + '\nLatitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + '\nLongitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5) + '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n\n';
+                if (this.SelectedTab == 1) {
+                    csvFile += BohmanRural1989();
+                }
+                else if (this.SelectedTab == 2) {
+                    csvFile += BohmanUrban1992();
+                }
+                else if (this.SelectedTab == 3) {
+                    csvFile += SyntheticUrbanHydrograph();
+                }
+                var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
+                if (navigator.msSaveBlob) {
+                    navigator.msSaveBlob(blob, filename);
+                }
+                else {
+                    var link = document.createElement("a");
+                    var url = URL.createObjectURL(blob);
+                    if (link.download !== undefined) {
+                        link.setAttribute("href", url);
+                        link.setAttribute("download", filename);
+                        link.style.visibility = 'hidden';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }
+                    else {
+                        window.open(url);
+                    }
+                }
+            };
             SCStormRunoffController.prototype.init = function () {
                 this.ReportData = new SCStormRunoffReportable();
                 this.SelectedTab = SCStormRunoffType.BohmanRural1989;
@@ -414,6 +459,29 @@ var StreamStats;
                 }
             };
             SCStormRunoffController.prototype.tableToCSV = function ($table) {
+                var $headers = $table.find('tr:has(th)'), $rows = $table.find('tr:has(td)'), tmpColDelim = String.fromCharCode(11), tmpRowDelim = String.fromCharCode(0), colDelim = '","', rowDelim = '"\r\n"';
+                var csv = '"';
+                csv += formatRows($headers.map(grabRow));
+                csv += rowDelim;
+                csv += formatRows($rows.map(grabRow)) + '"';
+                return csv;
+                function formatRows(rows) {
+                    return rows.get().join(tmpRowDelim)
+                        .split(tmpRowDelim).join(rowDelim)
+                        .split(tmpColDelim).join(colDelim);
+                }
+                function grabRow(i, row) {
+                    var $row = $(row);
+                    var $cols = $row.find('td');
+                    if (!$cols.length)
+                        $cols = $row.find('th');
+                    return $cols.map(grabCol)
+                        .get().join(tmpColDelim);
+                }
+                function grabCol(j, col) {
+                    var $col = $(col), $text = $col.text();
+                    return $text.replace('"', '""');
+                }
             };
             SCStormRunoffController.$inject = ['$scope', '$analytics', 'toaster', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance', '$timeout', 'WiM.Event.EventManager'];
             return SCStormRunoffController;
