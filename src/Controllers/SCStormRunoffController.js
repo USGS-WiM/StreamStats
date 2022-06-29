@@ -165,6 +165,7 @@ var StreamStats;
                     _this.setGraphOptions();
                     _this.showResults = true;
                 }, function (error) {
+                    _this.toaster.pop('error', "Error", error["data"]["detail"], 0);
                 }).finally(function () {
                     _this.canContinue = true;
                 });

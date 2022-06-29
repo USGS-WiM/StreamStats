@@ -210,7 +210,7 @@ module StreamStats.Controllers {
                     this.setGraphOptions();
                     this.showResults = true;
                 },(error) => {
-
+                    this.toaster.pop('error', "Error", error["data"]["detail"], 0);
                 }).finally(() => { 
                     this.canContinue = true;   
             });
