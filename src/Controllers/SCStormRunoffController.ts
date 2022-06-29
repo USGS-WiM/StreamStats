@@ -57,6 +57,7 @@ module StreamStats.Controllers {
         public mainChannelLength: number;
         public mainChannelSlope: number;
         public totalImperviousArea: number;
+        public warningMessages: any;
         public parameters;
         public ReportOptions: any;
         public regressionRegions;
@@ -202,13 +203,22 @@ module StreamStats.Controllers {
 
         public getStormRunoffResults(data){
             var url = configuration.baseurls['SCStormRunoffServices'] + configuration.queryparams['SCStormRunoffBohman1992']
-            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(data));
+            
+            
+            var headers = {
+                "Content-Type": "application/json",
+                "X-warning": true
+            };
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(data), headers);
             this.Execute(request).then((response: any) => {
                     this.reportData = response.data;
                     this.ReportData.BohmanUrban1992.Graph = this.loadGraphData();
                     this.ReportData.BohmanUrban1992.WeightedRunoff = this.reportData.weighted_runoff_volume;
                     this.setGraphOptions();
                     this.showResults = true;
+                    if (response.headers()['x-warning']) {
+                        this.warningMessages = response.headers()['x-warning'];
+                    }
                 },(error) => {
                     this.toaster.pop('error', "Error", error["data"]["detail"], 0);
                 }).finally(() => { 
@@ -453,6 +463,7 @@ module StreamStats.Controllers {
             this.totalImperviousArea = null;
             this.SelectedAEP = {"name": "50%", "value": 50};
             this.showResults = false;
+            this.warningMessages = null;
         }
 
         public Close(): void {
