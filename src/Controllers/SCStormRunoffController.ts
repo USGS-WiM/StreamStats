@@ -486,6 +486,7 @@ module StreamStats.Controllers {
 
             var BohmanUrban1992 = () => {
                 var finalVal = 'Bohman Urban using ' + this.SelectedAEP.name + ' AEP\n';
+                finalVal += '\n' + "Warning Messages:," + this.warningMessages + '\n';
                 finalVal += this.tableToCSV($('#BohmanUrbanParameterTable'));
                 finalVal += '\n' + this.tableToCSV($('#BohmanUrbanSummaryTable'));
                 finalVal += '\n\n' + this.tableToCSV($('#BohmanUrbanHydrograph'));

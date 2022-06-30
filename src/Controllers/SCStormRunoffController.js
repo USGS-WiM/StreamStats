@@ -412,6 +412,7 @@ var StreamStats;
                 };
                 var BohmanUrban1992 = function () {
                     var finalVal = 'Bohman Urban using ' + _this.SelectedAEP.name + ' AEP\n';
+                    finalVal += '\n' + "Warning Messages:," + _this.warningMessages + '\n';
                     finalVal += _this.tableToCSV($('#BohmanUrbanParameterTable'));
                     finalVal += '\n' + _this.tableToCSV($('#BohmanUrbanSummaryTable'));
                     finalVal += '\n\n' + _this.tableToCSV($('#BohmanUrbanHydrograph'));
