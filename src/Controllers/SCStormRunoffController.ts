@@ -112,6 +112,8 @@ module StreamStats.Controllers {
         constructor($scope: ISCStormRunoffControllerScope, $analytics, toaster, $http: ng.IHttpService, studyAreaService: StreamStats.Services.IStudyAreaService, modal: ng.ui.bootstrap.IModalServiceInstance, public $timeout: ng.ITimeoutService, private EventManager: WiM.Event.IEventManager) {
             super($http, configuration.baseurls.StormRunoffServices);
             $scope.vm = this;
+            $scope.greaterThanZero = /^([0-9]*[1-9][0-9]*(\.[0-9]+)?|[0]+\.[0-9]*[1-9][0-9]*)$/;
+            $scope.betweenZeroOneHundred = /^(\d{0,2}(\.\d{1,2})?|100(\.00?)?)$/; 
             this.AppVersion = configuration.version;
             this.angulartics = $analytics;
             this.toaster = toaster;

@@ -58,6 +58,8 @@ var StreamStats;
                         "value": 0.2
                     }];
                 $scope.vm = _this;
+                $scope.greaterThanZero = /^([0-9]*[1-9][0-9]*(\.[0-9]+)?|[0]+\.[0-9]*[1-9][0-9]*)$/;
+                $scope.betweenZeroOneHundred = /^(\d{0,2}(\.\d{1,2})?|100(\.00?)?)$/;
                 _this.AppVersion = configuration.version;
                 _this.angulartics = $analytics;
                 _this.toaster = toaster;
