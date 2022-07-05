@@ -87,6 +87,7 @@ module StreamStats.Controllers {
         public bounds: any;
         public layers: IMapLayers = null;
         public extensions;
+        public applications;
 
         public geojson: Object = null;
         private eventManager: WiM.Event.IEventManager;
@@ -125,6 +126,11 @@ module StreamStats.Controllers {
             if (this.regionService.selectedRegion.Applications.indexOf("RegulationFlows") > -1) return true;
             else return false;                
         }
+        public get ActiveApplications(): Array<any> {
+            if (this.regionService.selectedRegion.Applications && this.regionService.selectedRegion.Applications.length > 0)
+                return this.regionService.selectedRegion.Applications
+            else return null;                
+        }
         public get ActiveExtensions(): Array<any> {
             if (this.studyAreaService.selectedStudyArea.NSS_Extensions && this.studyAreaService.selectedStudyArea.NSS_Extensions.length > 0)
                 return this.studyAreaService.selectedStudyArea.NSS_Extensions
@@ -152,6 +158,7 @@ module StreamStats.Controllers {
             this.reportComments = 'Some comments here';
             this.AppVersion = configuration.version;
             this.extensions = this.ActiveExtensions;
+            this.applications = this.ActiveApplications;
             this.environment = configuration.environment;
             this.sectionCollapsed = [];
             this.basinCharCollapsed = false;
@@ -322,8 +329,35 @@ module StreamStats.Controllers {
                             extVal += self.tableToCSV($('#flowTable'));
                         }
                     }
-
                     csvFile += extVal + '\n\n';
+                }
+
+                // add Channel-width Methods Weighting content to CSV
+                if (self.applications) {
+                    var isChannelWidthWeighting = self.applications.indexOf('ChannelWidthWeighting') != -1;
+                    var isPFS = false;
+                    self.nssService.selectedStatisticsGroupList.forEach(s => {
+                        if (s.name == "Peak-Flow Statistics") {
+                            isPFS = true
+                        }
+                    });
+                    if (isChannelWidthWeighting && isPFS) {
+                        extVal += 'Channel-width Methods Weighting\n';
+                        if (document.getElementById("channelWidthWeightingTable")){
+                            extVal += 'PIl: Prediction Interval-Lower, PIu: Prediction Interval-Upper, ASEp: Average Standard Error of Prediction\n';
+                            if (self.nssService.equationWeightingDisclaimers && self.nssService.equationWeightingDisclaimers.length > 0) {
+                                extVal += 'Warning messages:,';
+                                self.nssService.equationWeightingDisclaimers.forEach(message => {
+                                    extVal += message + ". ";
+                                });
+                                extVal += '\n';
+                            }
+                            extVal += self.tableToCSV($('#channelWidthWeightingTable'));
+                        } else {
+                            extVal += 'No method weighting results returned.'
+                        }
+                        csvFile += extVal + '\n\n';
+                    }
                 }
 
                 //disclaimer
