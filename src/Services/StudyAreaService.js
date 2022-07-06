@@ -547,6 +547,37 @@ var StreamStats;
                     _this.toaster.pop('error', "There was an HTTP error querying coordinated reach", "Please retry", 0);
                 });
             };
+            StudyAreaService.prototype.queryNHDStreamlines = function () {
+                var _this = this;
+                this.toaster.pop('wait', "Identifying NHD stream line.", "Please wait...", 0);
+                var ppt = this.snappedPourPoint;
+                var turfPoint = turf.point([ppt[0], ppt[1]]);
+                var distance = 0.05;
+                var bearings = [-90, 0, 90, 180];
+                var boundingBox = [];
+                bearings.forEach(function (bearing, index) {
+                    var destination = turf.destination(turfPoint, distance, bearing);
+                    boundingBox[index] = destination.geometry.coordinates[index % 2 == 0 ? 0 : 1];
+                });
+                var outFields = "GNIS_ID,GNIS_NAME";
+                var url = configuration.baseurls['NationalMapServices'] + configuration.queryparams['NHDQueryService']
+                    .format(this.selectedStudyArea.RegionID.toLowerCase(), boundingBox[0], boundingBox[1], boundingBox[2], boundingBox[3], this.selectedStudyArea.Pourpoint.crs, outFields);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                this.Execute(request).then(function (response) {
+                    if (response.data.error) {
+                        _this.toaster.pop('error', "There was an error querying NHD stream lines", response.data.error.message, 0);
+                        return;
+                    }
+                    if (response.data.features.length > 0) {
+                        var attributes = response.data.features[0].attributes;
+                        console.log(attributes);
+                        console.log('query success');
+                        _this.toaster.pop('success', "Identified NHD stream line", "Please continue", 5000);
+                    }
+                }, function (error) {
+                    _this.toaster.pop('error', "There was an error querying NHD stream lines", "Please retry", 0);
+                });
+            };
             StudyAreaService.prototype.queryRegressionRegions = function () {
                 var _this = this;
                 this.toaster.pop('wait', "Querying regression regions with your Basin", "Please wait...", 0);
