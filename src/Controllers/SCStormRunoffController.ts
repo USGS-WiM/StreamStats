@@ -57,6 +57,7 @@ module StreamStats.Controllers {
         public mainChannelLength: number;
         public mainChannelSlope: number;
         public totalImperviousArea: number;
+        public warningMessages: any;
         public parameters;
         public ReportOptions: any;
         public regressionRegions;
@@ -111,6 +112,8 @@ module StreamStats.Controllers {
         constructor($scope: ISCStormRunoffControllerScope, $analytics, toaster, $http: ng.IHttpService, studyAreaService: StreamStats.Services.IStudyAreaService, modal: ng.ui.bootstrap.IModalServiceInstance, public $timeout: ng.ITimeoutService, private EventManager: WiM.Event.IEventManager) {
             super($http, configuration.baseurls.StormRunoffServices);
             $scope.vm = this;
+            $scope.greaterThanZero = /^([0-9]*[1-9][0-9]*(\.[0-9]+)?|[0]+\.[0-9]*[1-9][0-9]*)$/;
+            $scope.betweenZeroOneHundred = /^(\d{0,2}(\.\d{1,2})?|100(\.00?)?)$/; 
             this.AppVersion = configuration.version;
             this.angulartics = $analytics;
             this.toaster = toaster;
@@ -202,15 +205,24 @@ module StreamStats.Controllers {
 
         public getStormRunoffResults(data){
             var url = configuration.baseurls['SCStormRunoffServices'] + configuration.queryparams['SCStormRunoffBohman1992']
-            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(data));
+            
+            
+            var headers = {
+                "Content-Type": "application/json",
+                "X-warning": true
+            };
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(data), headers);
             this.Execute(request).then((response: any) => {
                     this.reportData = response.data;
                     this.ReportData.BohmanUrban1992.Graph = this.loadGraphData();
                     this.ReportData.BohmanUrban1992.WeightedRunoff = this.reportData.weighted_runoff_volume;
                     this.setGraphOptions();
                     this.showResults = true;
+                    if (response.headers()['x-warning']) {
+                        this.warningMessages = response.headers()['x-warning'];
+                    }
                 },(error) => {
-
+                    this.toaster.pop('error', "Error", error["data"]["detail"], 0);
                 }).finally(() => { 
                     this.canContinue = true;   
             });
@@ -453,6 +465,7 @@ module StreamStats.Controllers {
             this.totalImperviousArea = null;
             this.SelectedAEP = {"name": "50%", "value": 50};
             this.showResults = false;
+            this.warningMessages = null;
         }
 
         public Close(): void {
@@ -475,6 +488,7 @@ module StreamStats.Controllers {
 
             var BohmanUrban1992 = () => {
                 var finalVal = 'Bohman Urban using ' + this.SelectedAEP.name + ' AEP\n';
+                finalVal += '\n' + "Warning Messages:," + this.warningMessages + '\n';
                 finalVal += this.tableToCSV($('#BohmanUrbanParameterTable'));
                 finalVal += '\n' + this.tableToCSV($('#BohmanUrbanSummaryTable'));
                 finalVal += '\n\n' + this.tableToCSV($('#BohmanUrbanHydrograph'));

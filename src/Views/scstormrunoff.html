@@ -18,7 +18,7 @@
                     </ul>
                     <div ng-if="vm.SelectedTab == 2" class="wim-alert hidden-print">Enter custom values below or <b>Calculate Missing Parameters</b>. Click <b>Continue</b> to view peak discharge and hydrograph.</div>
 
-                    <div id="printArea">
+                    <div id="printArea" class="SCStormRunoffInput">
                         <!-- Bohman Rural (1989) tab -->
                         <div ng-if="vm.SelectedTab == 1" style="position:relative;">
                             <!-- <form id="BohmanRuralForm" name="BohmanRuralForm" class="hidden-print" novalidate>
@@ -48,14 +48,14 @@
                                 <label for="AEPOptions">Select an Annual Exceedance Probability (AEP):</label>
                                 <select name="AEPOptions" ng-model="vm.SelectedAEP" ng-options="precip.name for precip in vm.AEPOptions track by precip.value"></select>
 
-                                <label for="DrainageArea">Drainage Area (square miles):</label>
-                                <input type="number" ng-model="vm.drainageArea" required/>
-                                <label for="MainChannelLength">Main Channel Length (miles):</label>
-                                <input type="number" ng-model="vm.mainChannelLength" required/>
-                                <label for="MainChannelSlope">Main Channel Slope (feet per mile):</label>
-                                <input type="number" ng-model="vm.mainChannelSlope" required/>
-                                <label for="TotalImperviousArea">Total impervious area (%):</label>
-                                <input type="number" ng-model="vm.totalImperviousArea" required/>
+                                <label for="DrainageArea">Drainage Area (square miles):</label> <span ng-if="BohmanUrbanForm.DrainageArea.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
+                                <input type="number" name="DrainageArea" ng-model="vm.drainageArea" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+                                <label for="MainChannelLength">Main Channel Length (miles):</label> <span ng-if="BohmanUrbanForm.MainChannelLength.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
+                                <input type="number" name="MainChannelLength" ng-model="vm.mainChannelLength" ng-pattern="greaterThanZero" required/>
+                                <label for="MainChannelSlope">Main Channel Slope (feet per mile):</label>  <span ng-if="BohmanUrbanForm.MainChannelSlope.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
+                                <input type="number" name="MainChannelSlope" ng-model="vm.mainChannelSlope" ng-pattern="greaterThanZero" required/>
+                                <label for="TotalImperviousArea">Total impervious area (%):</label>  <span ng-if="BohmanUrbanForm.TotalImperviousArea.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be between 0 and 100</span>
+                                <input type="number" name="TotalImperviousArea" ng-model="vm.totalImperviousArea" ng-pattern="betweenZeroOneHundred" required/>
 
                                 <label class="fullwidth alignc" ng-if="vm.validateForm(BohmanUrbanForm) && !vm.hideAlerts"><span class="fa fa-check"></span>&nbsp;Parameters Have Been Calculated</label>
                                 <label class="fullwidth" ng-if="!vm.validateForm(BohmanUrbanForm) || (vm.validateForm(BohmanUrbanForm) && vm.hideAlerts)">&nbsp;&nbsp;</label>
@@ -70,6 +70,7 @@
                             <div ng-if="vm.showResults">
                                 <div style="position:relative;">
                                     <p class="fullwidth alignc hidden-print" style="font-size: 16px;"><b>Bohman Urban (1992) using {{vm.SelectedAEP.name}} AEP</b></p>
+                                    <div class="wim-alert-warning">{{vm.warningMessages}}</div>
                                     <div class="well">
                                         <h3>Parameters</h3>
                                         <table id="BohmanUrbanParameterTable" class="table table-condensed smalltext">

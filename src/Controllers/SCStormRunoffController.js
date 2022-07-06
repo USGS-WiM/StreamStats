@@ -58,6 +58,8 @@ var StreamStats;
                         "value": 0.2
                     }];
                 $scope.vm = _this;
+                $scope.greaterThanZero = /^([0-9]*[1-9][0-9]*(\.[0-9]+)?|[0]+\.[0-9]*[1-9][0-9]*)$/;
+                $scope.betweenZeroOneHundred = /^(\d{0,2}(\.\d{1,2})?|100(\.00?)?)$/;
                 _this.AppVersion = configuration.version;
                 _this.angulartics = $analytics;
                 _this.toaster = toaster;
@@ -157,14 +159,22 @@ var StreamStats;
             SCStormRunoffController.prototype.getStormRunoffResults = function (data) {
                 var _this = this;
                 var url = configuration.baseurls['SCStormRunoffServices'] + configuration.queryparams['SCStormRunoffBohman1992'];
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(data));
+                var headers = {
+                    "Content-Type": "application/json",
+                    "X-warning": true
+                };
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(data), headers);
                 this.Execute(request).then(function (response) {
                     _this.reportData = response.data;
                     _this.ReportData.BohmanUrban1992.Graph = _this.loadGraphData();
                     _this.ReportData.BohmanUrban1992.WeightedRunoff = _this.reportData.weighted_runoff_volume;
                     _this.setGraphOptions();
                     _this.showResults = true;
+                    if (response.headers()['x-warning']) {
+                        _this.warningMessages = response.headers()['x-warning'];
+                    }
                 }, function (error) {
+                    _this.toaster.pop('error', "Error", error["data"]["detail"], 0);
                 }).finally(function () {
                     _this.canContinue = true;
                 });
@@ -388,6 +398,7 @@ var StreamStats;
                 this.totalImperviousArea = null;
                 this.SelectedAEP = { "name": "50%", "value": 50 };
                 this.showResults = false;
+                this.warningMessages = null;
             };
             SCStormRunoffController.prototype.Close = function () {
                 this.modalInstance.dismiss('cancel');
@@ -403,6 +414,7 @@ var StreamStats;
                 };
                 var BohmanUrban1992 = function () {
                     var finalVal = 'Bohman Urban using ' + _this.SelectedAEP.name + ' AEP\n';
+                    finalVal += '\n' + "Warning Messages:," + _this.warningMessages + '\n';
                     finalVal += _this.tableToCSV($('#BohmanUrbanParameterTable'));
                     finalVal += '\n' + _this.tableToCSV($('#BohmanUrbanSummaryTable'));
                     finalVal += '\n\n' + _this.tableToCSV($('#BohmanUrbanHydrograph'));
