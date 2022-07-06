@@ -349,20 +349,30 @@ var StreamStats;
                         var citedCodeList = [];
                         var citationList = [];
                         var citationStatList = [];
+                        var diameter = { "TenYR": "", "TwentyFiveYR": "", "SCS": "" };
                         culvertJSON.forEach(function (param) {
                             for (var k in properties) {
                                 if (k !== "OBJECTID") {
                                     if (param.Code === k) {
                                         var code;
-                                        console.log(param);
-                                        console.log(param["Field type"]);
-                                        if (param["Field type"] === "Double") {
+                                        if (param["Field type"] === "Double" && properties[k] !== null && typeof properties[k] === "string") {
                                             properties[k] = parseFloat(properties[k]);
                                         }
-                                        else if (param["Field type"] === "short integer") {
+                                        else if (param["Field type"] === "short integer" && properties[k] !== null && typeof properties[k] === "string") {
                                             properties[k] = parseInt(properties[k]);
                                         }
-                                        console.log(properties[k]);
+                                        if (param.Code.includes("DIAM")) {
+                                            var roundedValue = self.getAccuracy(param, properties[k]);
+                                            if (param.Code.includes('10YR')) {
+                                                diameter["TenYR"] = roundedValue;
+                                            }
+                                            else if (param.Code.includes('25YR')) {
+                                                diameter["TwentyFiveYR"] = roundedValue;
+                                            }
+                                            else if (param.Code.substring(param.Code.length - 3) === 'SCS') {
+                                                diameter["SCS"] = roundedValue;
+                                            }
+                                        }
                                         if (param.Matchcode !== "None" && param.Matchcode !== "BankfullStats" && param.Matchcode !== "PeakflowStats" && param.Matchcode !== "SiteInfo" && param.Matchcode !== "BasinChar" && param.Matchcode !== "StreamHabitat" && param.Matchcode !== "RoadCrossing") {
                                             code = param.Matchcode;
                                             var index = -1;
@@ -383,25 +393,56 @@ var StreamStats;
                                                 else if (param.Code.substring(param.Code.length - 3) === 'SCS') {
                                                     paramList[index].value[0].value_scs = properties[k];
                                                 }
-                                            }
-                                            else {
+                                                var limitObj = { "10YR": "", "25YR": "", "SCS": "" };
                                                 var limit = void 0;
                                                 if (param["SCS Standard"] !== "NA" && param["SCS Standard"] !== "TBD" && param["SCS Standard"] !== "") {
                                                     limit = param['SCS Standard'];
                                                     if (param.Code.includes('10YR')) {
-                                                        limit = limit.substring(0, "parameter.value").replace("parameter.value[0].value_10yr");
+                                                        if (limit.includes("parameter.value")) {
+                                                            limit = limit.replaceAll("parameter.value", "parameter.value[0].value_10yr");
+                                                            limit = limit.replaceAll("parameter.diameter", "parameter.diameter.TenYR");
+                                                            limitObj["10YR"] = limit;
+                                                        }
+                                                        if (!limit.includes("diameter")) {
+                                                            paramList[index].limit["TenYR"] = limitObj["10YR"] + " ? '' : 'wim-warning'";
+                                                        }
+                                                        else {
+                                                            paramList[index].limit["TenYR"] = limitObj["10YR"];
+                                                        }
                                                     }
                                                     else if (param.Code.includes('25YR')) {
-                                                        limit = limit.substring(0, "parameter.value").replace("parameter.value[0].value_25yr");
+                                                        if (limit.includes("parameter.value")) {
+                                                            limit = limit.replaceAll("parameter.value", "parameter.value[0].value_25yr");
+                                                            limit = limit.replaceAll("parameter.diameter", "parameter.diameter.TwentyFiveYR");
+                                                            limitObj["25YR"] = limit;
+                                                        }
+                                                        if (!limit.includes("diameter")) {
+                                                            paramList[index].limit["TwentyFiveYR"] = limitObj["25YR"] + " ? '' : 'wim-warning'";
+                                                        }
+                                                        else {
+                                                            paramList[index].limit["TwentyFiveYR"] = limitObj["25YR"];
+                                                        }
                                                     }
                                                     else if (param.Code.substring(param.Code.length - 3) === 'SCS') {
-                                                        limit = limit.substring(0, "parameter.value").replace("parameter.value[0].value_scs");
+                                                        if (limit.includes("parameter.value")) {
+                                                            limit = limit.replaceAll("parameter.value", "parameter.value[0].value_scs");
+                                                            limit = limit.replaceAll("parameter.diameter", "parameter.diameter.SCS");
+                                                            limitObj["SCS"] = limit;
+                                                        }
+                                                        if (!limit.includes("diameter")) {
+                                                            paramList[index].limit["SCS"] = limitObj["SCS"] + " ? '' : 'wim-warning'";
+                                                        }
+                                                        else {
+                                                            paramList[index].limit["SCS"] = limitObj["SCS"];
+                                                        }
                                                     }
                                                 }
                                                 else {
-                                                    limit = '';
+                                                    paramList[index].limit = { "TenYR": "", "TwentyFiveYR": "", "SCS": "" };
                                                 }
-                                                paramList.push({ code: code, value: [{}], name: param.Name, description: param.Description, unit: param.Units, limit: limit });
+                                            }
+                                            else {
+                                                paramList.push({ code: code, value: [{}], name: param.Name, description: param.Description, unit: param.Units, limit: { "TenYR": "", "TwentyFiveYR": "", "SCS": "" }, diameter: diameter });
                                                 var newIndex;
                                                 for (var i = 0; i < paramList.length; i++) {
                                                     if (paramList[i].code === code) {
@@ -422,25 +463,16 @@ var StreamStats;
                                             }
                                         }
                                         else {
-                                            var limit = void 0;
-                                            if (param["SCS Standard"] !== "NA" && param["SCS Standard"] !== "TBD" && param["SCS Standard"] !== "") {
-                                                limit = param['SCS Standard'];
-                                                if (param.Code.includes('10YR')) {
-                                                    limit = limit.substring(0, "parameter.value").replace("parameter.value[0].value_10yr");
-                                                }
-                                                else if (param.Code.includes('25YR')) {
-                                                    limit = limit.substring(0, "parameter.value").replace("parameter.value[0].value_25yr");
-                                                }
-                                                else if (param.Code.substring(param.Code.length - 3) === 'SCS') {
-                                                    limit = limit.substring(0, "parameter.value").replace("parameter.value[0].value_scs");
-                                                }
-                                            }
-                                            else {
-                                                limit = '';
-                                            }
                                             code = param.Matchcode + param.Code;
                                             var roundedValue = self.getAccuracy(param, properties[k]);
-                                            paramList.push({ code: code, value: roundedValue, name: param.Name, description: param.Description, unit: param.Units, limit: limit });
+                                            paramList.push({ code: code, value: roundedValue, name: param.Name, description: param.Description, unit: param.Units, limit: { "TenYR": "", "TwentyFiveYR": "", "SCS": "" }, diameter: diameter });
+                                            var newIndex;
+                                            for (var i = 0; i < paramList.length; i++) {
+                                                if (paramList[i].code === code) {
+                                                    newIndex = i;
+                                                    break;
+                                                }
+                                            }
                                         }
                                         if (param.Citation !== '') {
                                             if ((code.substring(0, 2) === 'BC' || code.substring(0, 2) === 'PC' || code.substring(0, 2) === 'AC') && (citedCodeList.indexOf(code) === -1 || citationList.indexOf(param.Citation) === -1)) {
@@ -462,7 +494,6 @@ var StreamStats;
                                 }
                             }
                         });
-                        console.log(paramList);
                         self.studyAreaService.studyAreaParameterList = paramList;
                         self.studyAreaService.culvertCitations = citations;
                         self.studyAreaService.culvertStatCitations = statCitations;
@@ -502,6 +533,7 @@ var StreamStats;
                             var lat = latlng.lat;
                             var lon = latlng.lng;
                             var properties = JSON.stringify(feature.properties);
+                            console.log(feature.properties);
                             popupContent += "<button type='button' id='displayCulvertReport' ng-click='vm.skipDelineateAndShowCulvertResults(" + lat + "," + lon + "," + properties + "," + i + ")' class='btn-black fullwidth'>&nbsp;&nbsp;Build Report</button></div>";
                             var compiledHtml = self.$compile(popupContent)(self.$scope);
                             layer.bindPopup(compiledHtml[0]);

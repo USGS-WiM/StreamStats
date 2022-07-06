@@ -460,9 +460,9 @@
                                                     </td>
                                                     <!-- Need this hidden column to add into csv -->
                                                     <td ng-hide="true">{{parameter.description}}</td>
-                                                    <td ng-class="parameter.limit || parameter.limit === '' ? '' : 'wim-warning'">{{parameter.value[0].value_10yr !== '' && parameter.value[0].value_10yr !== null ? parameter.value[0].value_10yr : ''}}</td>
-                                                    <td ng-class="parameter.limit || parameter.limit === '' ? '' : 'wim-warning'">{{parameter.value[0].value_25yr !== '' && parameter.value[0].value_25yr !== null ? parameter.value[0].value_25yr : ''}}</td>
-                                                    <td ng-class="parameter.limit || parameter.limit === '' ? '' : 'wim-warning'">{{parameter.value[0].value_scs !== '' && parameter.value[0].value_scs !== null ? parameter.value[0].value_scs : ''}}</td>
+                                                    <td ng-class={{parameter.limit.TenYR}}>{{parameter.value[0].value_10yr !== '' && parameter.value[0].value_10yr !== null ? parameter.value[0].value_10yr : ''}}</td>
+                                                    <td ng-class={{parameter.limit.TwentyFiveYR}}>{{parameter.value[0].value_25yr !== '' && parameter.value[0].value_25yr !== null ? parameter.value[0].value_25yr : ''}}</td>
+                                                    <td ng-class={{parameter.limit.SCS}}>{{parameter.value[0].value_scs !== '' && parameter.value[0].value_scs !== null ? parameter.value[0].value_scs : ''}}</td>
                                                     <td ng-bind="parameter.unit"></td>
                                             </tr>
                                     </tbody>
@@ -508,9 +508,9 @@
                                             </td>
                                             <!-- Need this hidden column to add into csv -->
                                             <td ng-hide="true">{{parameter.description}}</td>
-                                            <td ng-class="parameter.limit ? '' : 'wim-warning'">{{parameter.value[0].value_10yr !== '' && parameter.value[0].value_10yr !== null ? parameter.value[0].value_10yr : ''}}</td>
-                                            <td ng-class="parameter.limit ? '' : 'wim-warning'">{{parameter.value[0].value_25yr !== '' && parameter.value[0].value_25yr !== null ? parameter.value[0].value_25yr : ''}}</td>
-                                            <td ng-class="parameter.limit ? '' : 'wim-warning'">{{parameter.value[0].value_scs !== '' && parameter.value[0].value_scs !== null ? parameter.value[0].value_scs : ''}}</td>
+                                            <td ng-class={{parameter.limit.TenYR}}>{{parameter.value[0].value_10yr !== '' && parameter.value[0].value_10yr !== null ? parameter.value[0].value_10yr : ''}}</td>
+                                            <td ng-class={{parameter.limit.TwentyFiveYR}}>{{parameter.value[0].value_25yr !== '' && parameter.value[0].value_25yr !== null ? parameter.value[0].value_25yr : ''}}</td>
+                                            <td ng-class={{parameter.limit.SCS}}>{{parameter.value[0].value_scs !== '' && parameter.value[0].value_scs !== null ? parameter.value[0].value_scs : ''}}</td>
                                             <td ng-bind="parameter.unit"></td>
                                         </tr>
                                     </tbody>
@@ -556,9 +556,9 @@
                                             </td>
                                             <!-- Need this hidden column to add into csv -->
                                             <td ng-hide="true">{{parameter.description}}</td>
-                                            <td ng-class="parameter.limit ? '' : 'wim-warning'">{{parameter.value[0].value_10yr !== '' && parameter.value[0].value_10yr !== null ? parameter.value[0].value_10yr : ''}}</td>
-                                            <td ng-class="parameter.limit ? '' : 'wim-warning'">{{parameter.value[0].value_25yr !== '' && parameter.value[0].value_25yr !== null ? parameter.value[0].value_25yr : ''}}</td>
-                                            <td ng-class="parameter.limit ? '' : 'wim-warning'">{{parameter.value[0].value_scs !== '' && parameter.value[0].value_scs !== null ? parameter.value[0].value_scs : ''}}</td>
+                                            <td ng-class={{parameter.limit.TenYR}}>{{parameter.value[0].value_10yr !== '' && parameter.value[0].value_10yr !== null ? parameter.value[0].value_10yr : ''}}</td>
+                                            <td ng-class={{parameter.limit.TwentyFiveYR}}>{{parameter.value[0].value_25yr !== '' && parameter.value[0].value_25yr !== null ? parameter.value[0].value_25yr : ''}}</td>
+                                            <td ng-class={{parameter.limit.SCS}}>{{parameter.value[0].value_scs !== '' && parameter.value[0].value_scs !== null ? parameter.value[0].value_scs : ''}}</td>
                                             <td ng-bind="parameter.unit"></td>
                                         </tr>
                                     </tbody>
