@@ -397,7 +397,7 @@
         "SCS Standard": "",
         "Units": "",
         "Accuracy": "",
-        "Field type": "short integer",
+        "Field type": "string",
         "NAACC Field": "No",
         "Maximum Extent Practicable Culvert Design ": "No",
         "10%-AEP Design Flow Culvert Design": "No",
