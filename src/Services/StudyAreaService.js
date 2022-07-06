@@ -572,6 +572,7 @@ var StreamStats;
                         var attributes = response.data.features[0].attributes;
                         console.log(attributes);
                         console.log('query success');
+                        _this.selectedStudyArea.NHDStream = attributes;
                         _this.toaster.pop('success', "Identified NHD stream line", "Please continue", 5000);
                     }
                 }, function (error) {

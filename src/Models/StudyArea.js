@@ -7,6 +7,7 @@ var StreamStats;
                 this.RegionID = region;
                 this.Pourpoint = point;
                 this.CoordinatedReach = null;
+                this.NHDStream = null;
                 this.ActiveExtension = [];
                 this.NSS_Extensions = [];
             }

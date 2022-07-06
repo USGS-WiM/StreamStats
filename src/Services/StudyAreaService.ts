@@ -830,6 +830,8 @@ module StreamStats.Services {
                         console.log(attributes);
                         console.log('query success');
                         
+                        // TODO: deal with the case where more than 1 feature is returned
+                        this.selectedStudyArea.NHDStream = attributes;
 
                         // this.selectedStudyArea.CoordinatedReach = new Models.CoordinatedReach(attributes["eqWithStrID.BASIN_NAME"], attributes["eqWithStrID.DVA_EQ_ID"],attributes["eqWithStrID.Stream_Name"], attributes["eqWithStrID.StreamID_ID"]);
                         // //remove from arrays
