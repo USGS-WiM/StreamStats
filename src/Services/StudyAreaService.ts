@@ -51,7 +51,7 @@ module StreamStats.Services {
         queryRegressionRegions();
         queryKarst(regionID: string, regionMapLayerList:any);
         queryCoordinatedReach();
-        queryNHDStreamlines();
+        queryNHDWBD();
         regressionRegionQueryComplete: boolean;
         baseMap: Object;
         showModifyBasinCharacterstics: boolean;
@@ -797,9 +797,9 @@ module StreamStats.Services {
                     });
         }
 
-        public queryNHDStreamlines() {
+        public queryNHDWBD() {
 
-            this.toaster.pop('wait', "Identifying NHD stream line.", "Please wait...", 0);
+            this.toaster.pop('wait', "Identifying stream line and watershed", "Please wait...", 0);
 
             var ppt = this.snappedPourPoint;
             var turfPoint = turf.point([ppt[0], ppt[1]]);
@@ -811,13 +811,13 @@ module StreamStats.Services {
                 boundingBox[index] = destination.geometry.coordinates[index % 2 == 0 ? 0 : 1];
             });
 
-            var outFields = "GNIS_ID,GNIS_NAME";
-            var url = configuration.baseurls['NationalMapServices'] + configuration.queryparams['NHDQueryService']
-                .format(this.selectedStudyArea.RegionID.toLowerCase(), boundingBox[0], boundingBox[1], boundingBox[2], boundingBox[3], this.selectedStudyArea.Pourpoint.crs, outFields);
-            var request: WiM.Services.Helpers.RequestInfo =
-                new WiM.Services.Helpers.RequestInfo(url, true);
+            var outFieldsNHD = "GNIS_ID,GNIS_NAME";
+            var urlNHD = configuration.baseurls['NationalMapServices'] + configuration.queryparams['NHDQueryService']
+                .format(this.selectedStudyArea.RegionID.toLowerCase(), boundingBox[0], boundingBox[1], boundingBox[2], boundingBox[3], this.selectedStudyArea.Pourpoint.crs, outFieldsNHD);
+            var requestNHD: WiM.Services.Helpers.RequestInfo =
+                new WiM.Services.Helpers.RequestInfo(urlNHD, true);
 
-            this.Execute(request).then(
+            this.Execute(requestNHD).then(
                 (response: any) => {
                     if (response.data.error) {
                         //console.log('query error');
@@ -828,38 +828,43 @@ module StreamStats.Services {
                     if (response.data.features.length > 0) {
                         var attributes = response.data.features[0].attributes
                         console.log(attributes);
-                        console.log('query success');
                         
                         // TODO: deal with the case where more than 1 feature is returned
                         this.selectedStudyArea.NHDStream = attributes;
 
-                        // this.selectedStudyArea.CoordinatedReach = new Models.CoordinatedReach(attributes["eqWithStrID.BASIN_NAME"], attributes["eqWithStrID.DVA_EQ_ID"],attributes["eqWithStrID.Stream_Name"], attributes["eqWithStrID.StreamID_ID"]);
-                        // //remove from arrays
-                        // delete attributes["eqWithStrID.BASIN_NAME"];
-                        // delete attributes["eqWithStrID.DVA_EQ_ID"];
-
-                        // var feildprecursor = "eqWithStrID.";
-
-                        // var pkID = Object.keys(attributes).map((key, index) => {
-                        //     return key.substr(feildprecursor.length + 1);
-                        // }).filter((value, index, self) => { return self.indexOf(value) === index; })
-
-                        // for (var i = 0; i < pkID.length; i++) {
-                        //     var code = pkID[i];
-                        //     var acoeff = attributes[feildprecursor + "a" + code];
-                        //     var bcoeff = attributes[feildprecursor + "b" + code];
-
-                        //     if (acoeff != null && bcoeff != null)
-                        //         this.selectedStudyArea.CoordinatedReach.AddFlowCoefficient("PK" + code, acoeff, bcoeff);
-
-                        // }//next i
-                        this.toaster.pop('success', "Identified NHD stream line", "Please continue", 5000);
+                        this.toaster.pop('success', "Identified stream line", "Please continue", 5000);
                     }
 
                 }, (error) => {
-                    //sm when complete
-                    //console.log('Regression query failed, HTTP Error');
                     this.toaster.pop('error', "There was an error querying NHD stream lines", "Please retry", 0);
+                });
+
+            var outFieldsWBD = "huc8,name";
+            var urlWBD = configuration.baseurls['NationalMapServices'] + configuration.queryparams['WBDQueryService']
+                .format(this.selectedStudyArea.RegionID.toLowerCase(), boundingBox[0], boundingBox[1], boundingBox[2], boundingBox[3], this.selectedStudyArea.Pourpoint.crs, outFieldsWBD);
+            var requestWBD: WiM.Services.Helpers.RequestInfo =
+                new WiM.Services.Helpers.RequestInfo(urlWBD, true);
+
+            this.Execute(requestWBD).then(
+                (response: any) => {
+                    if (response.data.error) {
+                        //console.log('query error');
+                        this.toaster.pop('error', "There was an error querying WBD HUC8 watersheds", response.data.error.message, 0);
+                        return;
+                    }
+
+                    if (response.data.features.length > 0) {
+                        var attributes = response.data.features[0].attributes
+                        console.log(attributes);
+                        
+                        // TODO: deal with the case where more than 1 feature is returned
+                        this.selectedStudyArea.WBDHUC8 = attributes;
+
+                        this.toaster.pop('success', "Identified watershed", "Please continue", 5000);
+                    }
+
+                }, (error) => {
+                    this.toaster.pop('error', "There was an error querying WBD HUC8 watersheds", "Please retry", 0);
                 });
     }
 

@@ -326,7 +326,7 @@ var StreamStats;
                     this.studyAreaService.queryCoordinatedReach();
                 }
                 if (this.regionService.selectedRegion.Applications.indexOf("HydrologyAttributes") != -1) {
-                    this.studyAreaService.queryNHDStreamlines();
+                    this.studyAreaService.queryNHDWBD();
                 }
                 if (!this.studyAreaService.selectedStudyArea.RegressionRegions) {
                     this.studyAreaService.queryRegressionRegions();
