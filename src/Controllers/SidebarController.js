@@ -533,7 +533,6 @@ var StreamStats;
                             var lat = latlng.lat;
                             var lon = latlng.lng;
                             var properties = JSON.stringify(feature.properties);
-                            console.log(feature.properties);
                             popupContent += "<button type='button' id='displayCulvertReport' ng-click='vm.skipDelineateAndShowCulvertResults(" + lat + "," + lon + "," + properties + "," + i + ")' class='btn-black fullwidth'>&nbsp;&nbsp;Build Report</button></div>";
                             var compiledHtml = self.$compile(popupContent)(self.$scope);
                             layer.bindPopup(compiledHtml[0]);
