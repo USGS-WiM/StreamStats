@@ -87,6 +87,7 @@ module StreamStats.Controllers {
         public bounds: any;
         public layers: IMapLayers = null;
         public extensions;
+        public applications;
 
         public geojson: Object = null;
         private eventManager: WiM.Event.IEventManager;
@@ -125,6 +126,11 @@ module StreamStats.Controllers {
             if (this.regionService.selectedRegion.Applications.indexOf("RegulationFlows") > -1) return true;
             else return false;                
         }
+        public get ActiveApplications(): Array<any> {
+            if (this.regionService.selectedRegion.Applications && this.regionService.selectedRegion.Applications.length > 0)
+                return this.regionService.selectedRegion.Applications
+            else return null;                
+        }
         public get ActiveExtensions(): Array<any> {
             if (this.studyAreaService.selectedStudyArea.NSS_Extensions && this.studyAreaService.selectedStudyArea.NSS_Extensions.length > 0)
                 return this.studyAreaService.selectedStudyArea.NSS_Extensions
@@ -152,6 +158,7 @@ module StreamStats.Controllers {
             this.reportComments = 'Some comments here';
             this.AppVersion = configuration.version;
             this.extensions = this.ActiveExtensions;
+            this.applications = this.ActiveApplications;
             this.environment = configuration.environment;
             this.sectionCollapsed = [];
             this.basinCharCollapsed = false;
@@ -277,7 +284,16 @@ module StreamStats.Controllers {
             };
 
             //main file header with site information
-            var csvFile = 'StreamStats Output Report\n\n' + 'State/Region ID,' + this.studyAreaService.selectedStudyArea.RegionID.toUpperCase() + '\nWorkspace ID,' + this.studyAreaService.selectedStudyArea.WorkspaceID + '\nLatitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + '\nLongitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5) + '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n';
+            var csvFile = 'StreamStats Output Report\n\n' + 'State/Region ID,' + this.studyAreaService.selectedStudyArea.RegionID.toUpperCase() + '\nWorkspace ID,' + this.studyAreaService.selectedStudyArea.WorkspaceID + '\nLatitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + '\nLongitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5);
+            if (this.studyAreaService.selectedStudyArea.NHDStream) {
+                csvFile += '\nStream GNIS ID,' + this.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID;
+                csvFile += '\nStream GNIS Name,' + this.studyAreaService.selectedStudyArea.NHDStream.GNIS_NAME;
+            }
+            if (this.studyAreaService.selectedStudyArea.WBDHUC8) {
+                csvFile += '\nHUC8 ID,' + this.studyAreaService.selectedStudyArea.WBDHUC8.huc8;
+                csvFile += '\nHUC8 Name,' + this.studyAreaService.selectedStudyArea.WBDHUC8.name;
+            }
+            csvFile += '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n';
 
             //first write main parameter table
             csvFile += processMainParameterTable(this.studyAreaService.studyAreaParameterList);
@@ -322,8 +338,35 @@ module StreamStats.Controllers {
                             extVal += self.tableToCSV($('#flowTable'));
                         }
                     }
-
                     csvFile += extVal + '\n\n';
+                }
+
+                // add Channel-width Methods Weighting content to CSV
+                if (self.applications) {
+                    var isChannelWidthWeighting = self.applications.indexOf('ChannelWidthWeighting') != -1;
+                    var isPFS = false;
+                    self.nssService.selectedStatisticsGroupList.forEach(s => {
+                        if (s.name == "Peak-Flow Statistics") {
+                            isPFS = true
+                        }
+                    });
+                    if (isChannelWidthWeighting && isPFS) {
+                        extVal += 'Channel-width Methods Weighting\n';
+                        if (document.getElementById("channelWidthWeightingTable")){
+                            extVal += 'PIl: Prediction Interval-Lower, PIu: Prediction Interval-Upper, ASEp: Average Standard Error of Prediction\n';
+                            if (self.nssService.equationWeightingDisclaimers && self.nssService.equationWeightingDisclaimers.length > 0) {
+                                extVal += 'Warning messages:,';
+                                self.nssService.equationWeightingDisclaimers.forEach(message => {
+                                    extVal += message + ". ";
+                                });
+                                extVal += '\n';
+                            }
+                            extVal += self.tableToCSV($('#channelWidthWeightingTable'));
+                        } else {
+                            extVal += 'No method weighting results returned.'
+                        }
+                        csvFile += extVal + '\n\n';
+                    }
                 }
 
                 //disclaimer

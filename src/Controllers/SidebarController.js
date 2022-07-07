@@ -325,6 +325,9 @@ var StreamStats;
                 if (this.regionService.selectedRegion.Applications.indexOf("CoordinatedReach") != -1) {
                     this.studyAreaService.queryCoordinatedReach();
                 }
+                if (this.regionService.selectedRegion.Applications.indexOf("HydrologyAttributes") != -1) {
+                    this.studyAreaService.queryHydrologyAttributes();
+                }
                 if (!this.studyAreaService.selectedStudyArea.RegressionRegions) {
                     this.studyAreaService.queryRegressionRegions();
                 }
