@@ -109,6 +109,15 @@ module StreamStats.Services {
                             backdrop: 'static',
                             windowClass: 'windowZ'
                         };
+                    case SSModalType.e_scstormrunnoff:
+                        return {
+                            templateUrl: 'Views/scstormrunoff.html',
+                            controller: 'StreamStats.Controllers.SCStormRunoffController',
+                            size: 'lg',
+                            backdropClass: 'backdropZ',
+                            backdrop: 'static',
+                            windowClass: 'windowZ'
+                        };
                     case SSModalType.e_about:
                         return {
                             templateUrl: 'Views/about.html',
@@ -197,8 +206,9 @@ module StreamStats.Services {
         e_prosper = 8,
         e_extensionsupport = 9,
         e_gagepage = 10,
-        e_nearestgages = 11
-        
+        e_nearestgages = 11,
+        e_scstormrunnoff = 12
+
     }
 
     factory.$inject = ['$modal'];

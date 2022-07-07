@@ -13,6 +13,7 @@ configuration.baseurls =
         'ScienceBase': 'https://gis.usgs.gov/sciencebase2',
         'GageStatsServices': 'https://test.streamstats.usgs.gov/gagestatsservices',
         'WeightingServices': 'https://ss-weightingservices.streamstats.usgs.gov',
+        'SCStormRunoffServices': 'https://sc-runoffmodelingservices.streamstats.usgs.gov',
         'NationalMapServices': 'https://hydro.nationalmap.gov/arcgis/rest/services'
     };
 
@@ -79,7 +80,9 @@ configuration.queryparams =
         'GageStatsServicesStatGroups': '/statisticgroups/',
         'GageStatsServicesNearest': '/stations/Nearest?lat={0}&lon={1}&radius={2}&geojson=false&includeStats=true',
         'GageStatsServicesNetwork': '/stations/Network?lat={0}&lon={1}&distance={2}&includeStats=true&geojson=false',
-        'GageStatsServicesBounds': '/stations/Bounds?xmin={0}&xmax={1}&ymin={2}&ymax={3}&geojson=true'
+        'GageStatsServicesBounds': '/stations/Bounds?xmin={0}&xmax={1}&ymin={2}&ymax={3}&geojson=true',
+        'SCStormRunoffBohman1989' : '/ruralhydrographbohman1989',
+        'SCStormRunoffBohman1992' : '/urbanhydrographbohman1992'
     };
 
 configuration.SupportTicketService = {
@@ -576,7 +579,7 @@ configuration.regions = [
                     "queryProperties": { "Regulation Points": { "NAME": "NID ID Number" } }
                 }
             },
-        "Applications": ["Regulation", "HydrologyAttributes"], "regionEnabled": true, "ScenariosAvailable": true
+        "Applications": ["Regulation", "SCStormRunoff", "HydrologyAttributes"], "regionEnabled": true, "ScenariosAvailable": true
     },
     { "RegionID": "SD", "Name": "South Dakota", "Bounds": [[42.488459, -104.061036], [45.943547, -96.439394]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "TN", "Name": "Tennessee", "Bounds": [[34.988759, -90.305448], [36.679683, -81.652272]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },

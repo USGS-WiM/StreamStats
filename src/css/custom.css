@@ -89,6 +89,11 @@
 .orange {
     color: orange;
 }
+
+.red {
+    color: red
+}
+
 .daterangepicker {
     z-index: 30000 !important;
 }
@@ -155,4 +160,8 @@ text.nv-axislabel {
     width: unset;
     border: unset;
     border-bottom: 2px solid #e0e3e6;
+}
+
+.SCStormRunoffInput input.ng-dirty.ng-invalid-pattern {
+    border-color: red !important;
 }
