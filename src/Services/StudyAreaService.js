@@ -549,7 +549,6 @@ var StreamStats;
             };
             StudyAreaService.prototype.queryNHDWBD = function () {
                 var _this = this;
-                this.toaster.pop('wait', "Identifying stream line and watershed", "Please wait...", 0);
                 var ppt = this.snappedPourPoint;
                 var turfPoint = turf.point([ppt[0], ppt[1]]);
                 var distance = 0.05;
@@ -573,7 +572,6 @@ var StreamStats;
                         var attributes = response.data.features[0].attributes;
                         console.log(attributes);
                         self.selectedStudyArea.NHDStream = attributes;
-                        _this.toaster.pop('success', "Identified stream line", "Please continue", 5000);
                     }
                 }, function (error) {
                     _this.toaster.pop('error', "There was an error querying NHD stream lines", "Please retry", 0);
@@ -591,7 +589,6 @@ var StreamStats;
                         var attributes = response.data.features[0].attributes;
                         console.log(attributes);
                         self.selectedStudyArea.WBDHUC8 = attributes;
-                        _this.toaster.pop('success', "Identified watershed", "Please continue", 5000);
                     }
                 }, function (error) {
                     _this.toaster.pop('error', "There was an error querying WBD HUC8 watersheds", "Please retry", 0);

@@ -799,7 +799,7 @@ module StreamStats.Services {
 
         public queryNHDWBD() {
 
-            this.toaster.pop('wait', "Identifying stream line and watershed", "Please wait...", 0);
+            // this.toaster.pop('wait', "Identifying stream line and watershed", "Please wait...", 0);
 
             var ppt = this.snappedPourPoint;
             var turfPoint = turf.point([ppt[0], ppt[1]]);
@@ -833,7 +833,7 @@ module StreamStats.Services {
                         // TODO: deal with the case where more than 1 feature is returned
                         self.selectedStudyArea.NHDStream = attributes;
 
-                        this.toaster.pop('success', "Identified stream line", "Please continue", 5000);
+                        // this.toaster.pop('success', "Identified stream line", "Please continue", 5000);
                     }
 
                 }, (error) => {
@@ -861,7 +861,7 @@ module StreamStats.Services {
                         // TODO: deal with the case where more than 1 feature is returned
                         self.selectedStudyArea.WBDHUC8 = attributes;
 
-                        this.toaster.pop('success', "Identified watershed", "Please continue", 5000);
+                        // this.toaster.pop('success', "Identified watershed", "Please continue", 5000);
                     }
 
                 }, (error) => {
