@@ -189,12 +189,16 @@ var StreamStats;
                     return finalVal + '\n';
                 };
                 var csvFile = 'StreamStats Output Report\n\n' + 'State/Region ID,' + this.studyAreaService.selectedStudyArea.RegionID.toUpperCase() + '\nWorkspace ID,' + this.studyAreaService.selectedStudyArea.WorkspaceID + '\nLatitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + '\nLongitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5);
-                if (this.studyAreaService.selectedStudyArea.NHDStream) {
+                if (this.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID) {
                     csvFile += '\nStream GNIS ID,' + this.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID;
+                }
+                if (this.studyAreaService.selectedStudyArea.NHDStream.GNIS_NAME) {
                     csvFile += '\nStream GNIS Name,' + this.studyAreaService.selectedStudyArea.NHDStream.GNIS_NAME;
                 }
-                if (this.studyAreaService.selectedStudyArea.WBDHUC8) {
+                if (this.studyAreaService.selectedStudyArea.WBDHUC8.huc8) {
                     csvFile += '\nHUC8 ID,' + this.studyAreaService.selectedStudyArea.WBDHUC8.huc8;
+                }
+                if (this.studyAreaService.selectedStudyArea.WBDHUC8.name) {
                     csvFile += '\nHUC8 Name,' + this.studyAreaService.selectedStudyArea.WBDHUC8.name;
                 }
                 csvFile += '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n';
