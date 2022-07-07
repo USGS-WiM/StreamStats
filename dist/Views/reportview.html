@@ -428,6 +428,9 @@
                             <span class="wim-alert-warning">The intent of this tool is to provide a preliminary design. Not all design consideration (i.e. specific bathymetric elevations, backwater effect, freeboard, adjacent structures, soil type, scour, channel migration, etc.) could be incorporated into this preliminary design tool. Field review and verification should be performed, and the final design should be reviewed by a licensed engineer.</span>
                         </div>
 
+                        <!-- Disclaimer for preliminary culvert designs -->
+                        <div class="wim-alert-warning">Highlighted values do not meet the Stream Crossing Standards.</div>
+
                         <!-- Box Culvert Table -->
                         <div ng-show="vm.selectedTabName ==='Box'">
                             
@@ -460,9 +463,9 @@
                                                     </td>
                                                     <!-- Need this hidden column to add into csv -->
                                                     <td ng-hide="true">{{parameter.description}}</td>
-                                                    <td>{{parameter.value[0].value_10yr !== '' && parameter.value[0].value_10yr !== null ? parameter.value[0].value_10yr : ''}}</td>
-                                                    <td>{{parameter.value[0].value_25yr !== '' && parameter.value[0].value_25yr !== null ? parameter.value[0].value_25yr : ''}}</td>
-                                                    <td>{{parameter.value[0].value_scs !== '' && parameter.value[0].value_scs !== null ? parameter.value[0].value_scs : ''}}</td>
+                                                    <td ng-class={{parameter.limit.TenYR}}>{{parameter.value[0].value_10yr !== '' && parameter.value[0].value_10yr !== null ? parameter.value[0].value_10yr : ''}}</td>
+                                                    <td ng-class={{parameter.limit.TwentyFiveYR}}>{{parameter.value[0].value_25yr !== '' && parameter.value[0].value_25yr !== null ? parameter.value[0].value_25yr : ''}}</td>
+                                                    <td ng-class={{parameter.limit.SCS}}>{{parameter.value[0].value_scs !== '' && parameter.value[0].value_scs !== null ? parameter.value[0].value_scs : ''}}</td>
                                                     <td ng-bind="parameter.unit"></td>
                                             </tr>
                                     </tbody>
@@ -508,9 +511,9 @@
                                             </td>
                                             <!-- Need this hidden column to add into csv -->
                                             <td ng-hide="true">{{parameter.description}}</td>
-                                            <td>{{parameter.value[0].value_10yr !== '' && parameter.value[0].value_10yr !== null ? parameter.value[0].value_10yr : ''}}</td>
-                                            <td>{{parameter.value[0].value_25yr !== '' && parameter.value[0].value_25yr !== null ? parameter.value[0].value_25yr : ''}}</td>
-                                            <td>{{parameter.value[0].value_scs !== '' && parameter.value[0].value_scs !== null ? parameter.value[0].value_scs : ''}}</td>
+                                            <td ng-class={{parameter.limit.TenYR}}>{{parameter.value[0].value_10yr !== '' && parameter.value[0].value_10yr !== null ? parameter.value[0].value_10yr : ''}}</td>
+                                            <td ng-class={{parameter.limit.TwentyFiveYR}}>{{parameter.value[0].value_25yr !== '' && parameter.value[0].value_25yr !== null ? parameter.value[0].value_25yr : ''}}</td>
+                                            <td ng-class={{parameter.limit.SCS}}>{{parameter.value[0].value_scs !== '' && parameter.value[0].value_scs !== null ? parameter.value[0].value_scs : ''}}</td>
                                             <td ng-bind="parameter.unit"></td>
                                         </tr>
                                     </tbody>
@@ -556,9 +559,9 @@
                                             </td>
                                             <!-- Need this hidden column to add into csv -->
                                             <td ng-hide="true">{{parameter.description}}</td>
-                                            <td>{{parameter.value[0].value_10yr !== '' && parameter.value[0].value_10yr !== null ? parameter.value[0].value_10yr : ''}}</td>
-                                            <td>{{parameter.value[0].value_25yr !== '' && parameter.value[0].value_25yr !== null ? parameter.value[0].value_25yr : ''}}</td>
-                                            <td>{{parameter.value[0].value_scs !== '' && parameter.value[0].value_scs !== null ? parameter.value[0].value_scs : ''}}</td>
+                                            <td ng-class={{parameter.limit.TenYR}}>{{parameter.value[0].value_10yr !== '' && parameter.value[0].value_10yr !== null ? parameter.value[0].value_10yr : ''}}</td>
+                                            <td ng-class={{parameter.limit.TwentyFiveYR}}>{{parameter.value[0].value_25yr !== '' && parameter.value[0].value_25yr !== null ? parameter.value[0].value_25yr : ''}}</td>
+                                            <td ng-class={{parameter.limit.SCS}}>{{parameter.value[0].value_scs !== '' && parameter.value[0].value_scs !== null ? parameter.value[0].value_scs : ''}}</td>
                                             <td ng-bind="parameter.unit"></td>
                                         </tr>
                                     </tbody>
