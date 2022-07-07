@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   
   ### Added
     - Added Channel-width Methods Weighting results to downloaded CSV
+    - South Carolina application returns NHD stream info and HUC8 info
   ### Changed
 
   ### Fixed
