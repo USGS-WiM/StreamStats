@@ -364,11 +364,14 @@ var StreamStats;
                         xAxis: {
                             axisLabel: 'Time, in hours',
                             tickFormat: function (d) {
-                                return d.toFixed(0);
+                                return d.toUSGSvalue();
                             }
                         },
                         yAxis1: {
-                            axisLabel: 'Discharge (Q), in ft³/s'
+                            axisLabel: 'Discharge (Q), in ft³/s',
+                            tickFormat: function (d) {
+                                return d.toUSGSvalue();
+                            }
                         }
                     },
                     title: {

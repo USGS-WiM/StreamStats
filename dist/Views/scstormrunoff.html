@@ -98,7 +98,7 @@
                                             <tbody>
                                                 <tr>
                                                     <td>Weighted Runoff Volume (inches):</td>
-                                                    <td><b>{{vm.ReportData.BohmanUrban1992.WeightedRunoff.toFixed(5)}}</b></td>
+                                                    <td><b>{{vm.ReportData.BohmanUrban1992.WeightedRunoff.toUSGSvalue()}}</b></td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -117,8 +117,8 @@
                                             </thead>
                                             <tbody>
                                                 <tr ng-repeat="item in vm.reportData.time_coordinates">
-                                                    <td>{{item.toFixed(5)}}</td>
-                                                    <td>{{vm.reportData.discharge_coordinates[$index].toFixed(1)}}</td>
+                                                    <td>{{item.toUSGSvalue()}}</td>
+                                                    <td>{{vm.reportData.discharge_coordinates[$index].toUSGSvalue()}}</td>
                                                 </tr>
                                             </tbody>
                                         </table> 
