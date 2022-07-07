@@ -284,7 +284,16 @@ module StreamStats.Controllers {
             };
 
             //main file header with site information
-            var csvFile = 'StreamStats Output Report\n\n' + 'State/Region ID,' + this.studyAreaService.selectedStudyArea.RegionID.toUpperCase() + '\nWorkspace ID,' + this.studyAreaService.selectedStudyArea.WorkspaceID + '\nLatitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + '\nLongitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5) + '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n';
+            var csvFile = 'StreamStats Output Report\n\n' + 'State/Region ID,' + this.studyAreaService.selectedStudyArea.RegionID.toUpperCase() + '\nWorkspace ID,' + this.studyAreaService.selectedStudyArea.WorkspaceID + '\nLatitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + '\nLongitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5);
+            if (this.studyAreaService.selectedStudyArea.NHDStream) {
+                csvFile += '\nStream GNIS ID,' + this.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID;
+                csvFile += '\nStream GNIS Name,' + this.studyAreaService.selectedStudyArea.NHDStream.GNIS_NAME;
+            }
+            if (this.studyAreaService.selectedStudyArea.WBDHUC8) {
+                csvFile += '\nHUC8 ID,' + this.studyAreaService.selectedStudyArea.WBDHUC8.huc8;
+                csvFile += '\nHUC8 Name,' + this.studyAreaService.selectedStudyArea.WBDHUC8.name;
+            }
+            csvFile += '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n';
 
             //first write main parameter table
             csvFile += processMainParameterTable(this.studyAreaService.studyAreaParameterList);
