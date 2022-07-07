@@ -563,6 +563,7 @@ var StreamStats;
                 var urlNHD = configuration.baseurls['NationalMapServices'] + configuration.queryparams['NHDQueryService']
                     .format(this.selectedStudyArea.RegionID.toLowerCase(), boundingBox[0], boundingBox[1], boundingBox[2], boundingBox[3], this.selectedStudyArea.Pourpoint.crs, outFieldsNHD);
                 var requestNHD = new WiM.Services.Helpers.RequestInfo(urlNHD, true);
+                var self = this;
                 this.Execute(requestNHD).then(function (response) {
                     if (response.data.error) {
                         _this.toaster.pop('error', "There was an error querying NHD stream lines", response.data.error.message, 0);
@@ -571,7 +572,7 @@ var StreamStats;
                     if (response.data.features.length > 0) {
                         var attributes = response.data.features[0].attributes;
                         console.log(attributes);
-                        _this.selectedStudyArea.NHDStream = attributes;
+                        self.selectedStudyArea.NHDStream = attributes;
                         _this.toaster.pop('success', "Identified stream line", "Please continue", 5000);
                     }
                 }, function (error) {
@@ -589,7 +590,7 @@ var StreamStats;
                     if (response.data.features.length > 0) {
                         var attributes = response.data.features[0].attributes;
                         console.log(attributes);
-                        _this.selectedStudyArea.WBDHUC8 = attributes;
+                        self.selectedStudyArea.WBDHUC8 = attributes;
                         _this.toaster.pop('success', "Identified watershed", "Please continue", 5000);
                     }
                 }, function (error) {

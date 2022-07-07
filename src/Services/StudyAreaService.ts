@@ -817,6 +817,7 @@ module StreamStats.Services {
             var requestNHD: WiM.Services.Helpers.RequestInfo =
                 new WiM.Services.Helpers.RequestInfo(urlNHD, true);
 
+            var self = this;
             this.Execute(requestNHD).then(
                 (response: any) => {
                     if (response.data.error) {
@@ -830,7 +831,7 @@ module StreamStats.Services {
                         console.log(attributes);
                         
                         // TODO: deal with the case where more than 1 feature is returned
-                        this.selectedStudyArea.NHDStream = attributes;
+                        self.selectedStudyArea.NHDStream = attributes;
 
                         this.toaster.pop('success', "Identified stream line", "Please continue", 5000);
                     }
@@ -858,7 +859,7 @@ module StreamStats.Services {
                         console.log(attributes);
                         
                         // TODO: deal with the case where more than 1 feature is returned
-                        this.selectedStudyArea.WBDHUC8 = attributes;
+                        self.selectedStudyArea.WBDHUC8 = attributes;
 
                         this.toaster.pop('success', "Identified watershed", "Please continue", 5000);
                     }
