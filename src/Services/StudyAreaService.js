@@ -547,7 +547,7 @@ var StreamStats;
                     _this.toaster.pop('error', "There was an HTTP error querying coordinated reach", "Please retry", 0);
                 });
             };
-            StudyAreaService.prototype.queryNHDWBD = function () {
+            StudyAreaService.prototype.queryHydrologyAttributes = function () {
                 var _this = this;
                 var ppt = this.snappedPourPoint;
                 var turfPoint = turf.point([ppt[0], ppt[1]]);

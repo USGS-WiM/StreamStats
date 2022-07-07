@@ -51,7 +51,7 @@ module StreamStats.Services {
         queryRegressionRegions();
         queryKarst(regionID: string, regionMapLayerList:any);
         queryCoordinatedReach();
-        queryNHDWBD();
+        queryHydrologyAttributes();
         regressionRegionQueryComplete: boolean;
         baseMap: Object;
         showModifyBasinCharacterstics: boolean;
@@ -797,7 +797,7 @@ module StreamStats.Services {
                     });
         }
 
-        public queryNHDWBD() {
+        public queryHydrologyAttributes() {
 
             // this.toaster.pop('wait', "Identifying stream line and watershed", "Please wait...", 0);
 

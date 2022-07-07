@@ -500,7 +500,7 @@ module StreamStats.Controllers {
 
             //send delineation point to map service query that returns identifies the nearest NHD stream line
             if (this.regionService.selectedRegion.Applications.indexOf("HydrologyAttributes") != -1) {
-                this.studyAreaService.queryNHDWBD();
+                this.studyAreaService.queryHydrologyAttributes();
             }
 
             //only do this if we havent done it already and basin hasn't been edited
