@@ -516,9 +516,9 @@ var StreamStats;
                     var destination = turf.destination(turfPoint, distance, bearing);
                     boundingBox[index] = destination.geometry.coordinates[index % 2 == 0 ? 0 : 1];
                 });
-                var outFields = "eqWithStrID.Stream_Name,eqWithStrID.StreamID_ID,eqWithStrID.BASIN_NAME,eqWithStrID.DVA_EQ_ID,eqWithStrID.a10,eqWithStrID.b10,eqWithStrID.a25,eqWithStrID.b25,eqWithStrID.a50,eqWithStrID.b50,eqWithStrID.a100,eqWithStrID.b100,eqWithStrID.a500,eqWithStrID.b500";
-                var url = configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['coordinatedReachQueryService']
-                    .format(this.selectedStudyArea.RegionID.toLowerCase(), boundingBox[0], boundingBox[1], boundingBox[2], boundingBox[3], this.selectedStudyArea.Pourpoint.crs, outFields);
+                var outFields = "Stream_Name,StreamID_ID,BASIN_NAME,DVA_EQ_ID,a10,b10,a25,b25,a50,b50,a100,b100,a500,b500";
+                var url = 'https://services.arcgis.com/2Mcx1M1MORKfBNPM/' + configuration.queryparams['coordinatedReachQueryService']
+                    .format(boundingBox[0], boundingBox[1], boundingBox[2], boundingBox[3], this.selectedStudyArea.Pourpoint.crs, outFields);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     if (response.data.error) {
@@ -527,13 +527,14 @@ var StreamStats;
                     }
                     if (response.data.features.length > 0) {
                         var attributes = response.data.features[0].attributes;
-                        _this.selectedStudyArea.CoordinatedReach = new StreamStats.Models.CoordinatedReach(attributes["eqWithStrID.BASIN_NAME"], attributes["eqWithStrID.DVA_EQ_ID"], attributes["eqWithStrID.Stream_Name"], attributes["eqWithStrID.StreamID_ID"]);
-                        delete attributes["eqWithStrID.BASIN_NAME"];
-                        delete attributes["eqWithStrID.DVA_EQ_ID"];
-                        var feildprecursor = "eqWithStrID.";
+                        _this.selectedStudyArea.CoordinatedReach = new StreamStats.Models.CoordinatedReach(attributes["BASIN_NAME"], attributes["DVA_EQ_ID"], attributes["Stream_Name"], attributes["StreamID_ID"]);
+                        delete attributes["BASIN_NAME"];
+                        delete attributes["DVA_EQ_ID"];
+                        var feildprecursor = "";
                         var pkID = Object.keys(attributes).map(function (key, index) {
                             return key.substr(feildprecursor.length + 1);
                         }).filter(function (value, index, self) { return self.indexOf(value) === index; });
+                        console.log(pkID);
                         for (var i = 0; i < pkID.length; i++) {
                             var code = pkID[i];
                             var acoeff = attributes[feildprecursor + "a" + code];
