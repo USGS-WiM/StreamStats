@@ -269,8 +269,8 @@ configuration.regions = [
         "RegionID": "IN", "Name": "Indiana", "Bounds": [[37.776224, -88.10149], [41.76554, -84.787446]], "Layers": {
             "IN_Reaches": {
                 "name": "Coordinated Reaches",
-                "url": configuration.baseurls['StreamStatsMapServices'] + "/arcgis/rest/services/coordinatedreaches/in/MapServer",
-                "type": 'agsDynamic',
+                "url": "https://services.arcgis.com/2Mcx1M1MORKfBNPM/ArcGIS/rest/services/Indiana_Coordinated_Discharge_view/FeatureServer/2",
+                "type": 'agsFeature',
                 "visible": true,
                 "layerOptions": {
                     "zIndex": 1,
