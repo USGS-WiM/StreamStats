@@ -277,7 +277,16 @@ configuration.regions = [
                     "format": "png8",
                     "f": "image",
                     "minZoom": 15,
-                }
+                },
+                "layerArray": [{
+                    note: "This overrides the ESRI legend",
+                    "layerName": "Coordinated Reaches",
+                    "legend": [{
+                        "contentType": "image/svg+xml;base64",
+                        "imageData": "PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJ5ZXMiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNSIgaGVpZ2h0PSI1Ij4KPHBhdGggc3R5bGU9ImZpbGw6I2YwZmFmZjsgc3Ryb2tlOm5vbmU7IiBkPSJNMCAwTDEgMUwwIDB6Ii8+CjxwYXRoIHN0eWxlPSJmaWxsOiNjOWViZmQ7IHN0cm9rZTpub25lOyIgZD0iTTAgM0wxIDNDNi40NDE0NSAtMS4xMjI0NCAxNy4zNTI3IDEgMjQgMUMxOC43ODYgLTEuMTg3ODcgMy4yODExIC0yLjA2MTA1IDAgM3oiLz4KPHBhdGggc3R5bGU9ImZpbGw6I2ZmZmZmZjsgc3Ryb2tlOm5vbmU7IiBkPSJNMjQgMEwyNSAxTDI0IDB6Ii8+CjxwYXRoIHN0eWxlPSJmaWxsOiNhMmRkZmQ7IHN0cm9rZTpub25lOyIgZD0iTTEgMUwxIDRMMjQgNEwyNCAxTDEgMXoiLz4KPHBhdGggc3R5bGU9ImZpbGw6I2YwZmFmZjsgc3Ryb2tlOm5vbmU7IiBkPSJNMjQgMUwyNCA0TDI1IDRMMjQgMXoiLz4KPHBhdGggc3R5bGU9ImZpbGw6I2Q1ZWZmZDsgc3Ryb2tlOm5vbmU7IiBkPSJNMCAzTDEgNEwwIDN6Ii8+CjxwYXRoIHN0eWxlPSJmaWxsOiNmZmZmZmY7IHN0cm9rZTpub25lOyIgZD0iTTAgNEwwIDVMMjUgNUwwIDR6Ii8+Cjwvc3ZnPgo=",
+                        "label": "Reaches"
+                    }]
+                }]
             }
         }, "Applications": ["CoordinatedReach"], "regionEnabled": true, "ScenariosAvailable": true 
     },
