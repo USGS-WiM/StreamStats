@@ -24,6 +24,7 @@
 //Import
 module StreamStats.Services {
     declare var turf;
+    declare var L;
     'use strict'
     export interface IStudyAreaService {
         onStudyAreaServiceBusyChanged: WiM.Event.Delegate<WiM.Event.EventArgs>;
@@ -51,7 +52,7 @@ module StreamStats.Services {
         queryRegressionRegions();
         queryKarst(regionID: string, regionMapLayerList:any);
         queryCoordinatedReach();
-        queryHydrologyAttributes();
+        queryHydrologicFeatures();
         regressionRegionQueryComplete: boolean;
         baseMap: Object;
         showModifyBasinCharacterstics: boolean;
@@ -356,6 +357,9 @@ module StreamStats.Services {
                         this.toaster.clear();
                         this.eventManager.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);
                         this.canUpdate = true;
+                        if (this.regionService.selectedRegion.Applications.indexOf("HydrologicFeatures") != -1) {
+                            this.queryHydrologicFeatures();
+                        }
                     }
                     else {
                         this.clearStudyArea();
@@ -797,49 +801,71 @@ module StreamStats.Services {
                     });
         }
 
-        public queryHydrologyAttributes() {
-
-            // this.toaster.pop('wait', "Identifying stream line and watershed", "Please wait...", 0);
+        public queryHydrologicFeatures() {
 
             var ppt = this.snappedPourPoint;
             var turfPoint = turf.point([ppt[0], ppt[1]]);
-            var distance = 0.05; //kilometers
-            var bearings = [-90, 0, 90, 180]; 
+            var delineatedBasinGeometry = this.selectedStudyArea.FeatureCollection.features[1].geometry; 
+
+            var wbdLayerOptions = {
+                "url": configuration.baseurls['NationalMapServices'] + configuration.queryparams['NHDQueryService']
+            };
+
+            var NHDStreamIntersections = {};
+            var uniqueGNIS_IDs = {};
+            var self = this;
+            var wbdLayer = L.esri.dynamicMapLayer(wbdLayerOptions);
+            wbdLayer.query().intersects(delineatedBasinGeometry).where("1=1")
+            .run((error: any, results: any) => {
+                if (error) {
+                    this.toaster.pop('error', "There was an error querying NHD stream lines", error, 0);
+                    return;
+                } else if (results && results.features.length > 0) {
+                    // console.log(results)
+                    
+                    var minDistanceToPourPoint = 9999999;
+                    var minDistanceToPourPointFeature = null;
+                    results.features.forEach((feature) => {
+                        if (feature.properties.GNIS_ID) {
+                            // console.log(feature.properties.GNIS_NAME);
+                            var line = turf.lineString(feature.geometry.coordinates);
+                            var distance = turf.pointToLineDistance(turfPoint, line) * 1000 * 3.28084; // distance in feet
+                            feature.properties.distanceToPourPoint = distance;
+                            if (distance < minDistanceToPourPoint) {
+                                minDistanceToPourPointFeature = feature;
+                                minDistanceToPourPoint = distance;
+                            }
+                            
+                            if (!uniqueGNIS_IDs[feature.properties.GNIS_ID]) {
+                                NHDStreamIntersections[feature.properties.GNIS_ID] = {"GNIS_ID":feature.properties.GNIS_ID, "GNIS_NAME":feature.properties.GNIS_NAME, "distanceToPourPoint":distance};
+                                uniqueGNIS_IDs[feature.properties.GNIS_ID] = true;
+                            } else {
+                                if (distance < NHDStreamIntersections[feature.properties.GNIS_ID]["distanceToPourPoint"]) {
+                                    NHDStreamIntersections[feature.properties.GNIS_ID]["distanceToPourPoint"] = distance;
+                                }
+                            }
+                        }
+                    });
+                    // console.log(results);
+                    
+                    this.selectedStudyArea.NHDStreamIntersections = Object.keys(NHDStreamIntersections).map(key => NHDStreamIntersections[key]);
+                    console.log(this.selectedStudyArea.NHDStreamIntersections );
+                    console.log("NHD Stream", minDistanceToPourPointFeature);
+
+                    self.selectedStudyArea.NHDStream = minDistanceToPourPointFeature.properties;
+                    // this.modalservices.openModal(Services.SSModalType.e_selectHydrologicFeatures);
+                } else {
+                    this.toaster.pop('error', "There was an error querying NHD stream lines", "Please retry", 0);
+                }
+            });
+
+            var distance = 0.005; // 5 meters 
+            var bearings = [-90, 0, 90, 180];
             var boundingBox = [];
-            bearings.forEach((bearing, index) => {
+            bearings.forEach(function (bearing, index) {
                 var destination = turf.destination(turfPoint, distance, bearing);
                 boundingBox[index] = destination.geometry.coordinates[index % 2 == 0 ? 0 : 1];
             });
-
-            var outFieldsNHD = "GNIS_ID,GNIS_NAME";
-            var urlNHD = configuration.baseurls['NationalMapServices'] + configuration.queryparams['NHDQueryService']
-                .format(this.selectedStudyArea.RegionID.toLowerCase(), boundingBox[0], boundingBox[1], boundingBox[2], boundingBox[3], this.selectedStudyArea.Pourpoint.crs, outFieldsNHD);
-            var requestNHD: WiM.Services.Helpers.RequestInfo =
-                new WiM.Services.Helpers.RequestInfo(urlNHD, true);
-
-            var self = this;
-            this.Execute(requestNHD).then(
-                (response: any) => {
-                    if (response.data.error) {
-                        //console.log('query error');
-                        this.toaster.pop('error', "There was an error querying NHD stream lines", response.data.error.message, 0);
-                        return;
-                    }
-
-                    if (response.data.features.length > 0) {
-                        var attributes = response.data.features[0].attributes
-                        console.log(attributes);
-                        
-                        // TODO: deal with the case where more than 1 feature is returned
-                        self.selectedStudyArea.NHDStream = attributes;
-
-                        // this.toaster.pop('success', "Identified stream line", "Please continue", 5000);
-                    }
-
-                }, (error) => {
-                    this.toaster.pop('error', "There was an error querying NHD stream lines", "Please retry", 0);
-                });
-
             var outFieldsWBD = "huc8,name";
             var urlWBD = configuration.baseurls['NationalMapServices'] + configuration.queryparams['WBDQueryService']
                 .format(this.selectedStudyArea.RegionID.toLowerCase(), boundingBox[0], boundingBox[1], boundingBox[2], boundingBox[3], this.selectedStudyArea.Pourpoint.crs, outFieldsWBD);
@@ -852,18 +878,18 @@ module StreamStats.Services {
                         //console.log('query error');
                         this.toaster.pop('error', "There was an error querying WBD HUC8 watersheds", response.data.error.message, 0);
                         return;
-                    }
-
-                    if (response.data.features.length > 0) {
+                    } else if (response && response.data.features.length > 0) {
                         var attributes = response.data.features[0].attributes
-                        console.log(attributes);
+                        console.log("HUC 8", attributes);
                         
                         // TODO: deal with the case where more than 1 feature is returned
                         self.selectedStudyArea.WBDHUC8 = attributes;
 
                         // this.toaster.pop('success', "Identified watershed", "Please continue", 5000);
-                    }
 
+                    } else {
+                        this.toaster.pop('error', "There was an error querying WBD HUC8 watersheds", "Please retry", 0);
+                    }
                 }, (error) => {
                     this.toaster.pop('error', "There was an error querying WBD HUC8 watersheds", "Please retry", 0);
                 });

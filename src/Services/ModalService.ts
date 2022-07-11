@@ -118,6 +118,15 @@ module StreamStats.Services {
                             backdrop: 'static',
                             windowClass: 'windowZ'
                         };
+                    case SSModalType.e_selectHydrologicFeatures:
+                        return {
+                            templateUrl: 'Views/hydrologicfeatures.html',
+                            controller: 'StreamStats.Controllers.HydrologicFeaturesController',
+                            size: 'lg',
+                            backdropClass: 'backdropZ',
+                            backdrop: 'static',
+                            windowClass: 'windowZ'
+                        };
                     case SSModalType.e_about:
                         return {
                             templateUrl: 'Views/about.html',
@@ -207,7 +216,8 @@ module StreamStats.Services {
         e_extensionsupport = 9,
         e_gagepage = 10,
         e_nearestgages = 11,
-        e_scstormrunnoff = 12
+        e_scstormrunnoff = 12,
+        e_selectHydrologicFeatures = 13
 
     }
 

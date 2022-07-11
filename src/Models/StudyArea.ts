@@ -39,7 +39,9 @@ module StreamStats.Models {
         isGlobal: boolean;
         CoordinatedReach: Models.ICoordinatedReach;
         NHDStream: any;
+        NHDStreamIntersections: any;
         WBDHUC8: any;
+        WBDHUC8Intersections: any;
         NSS_StatisticGroups: Array<Services.IStatisticsGroup>;
         ActiveExtension: Array<any>;
         NSS_Extensions:Array<any>;
@@ -62,7 +64,9 @@ module StreamStats.Models {
         public isGlobal: boolean;
         public CoordinatedReach: Models.ICoordinatedReach;
         public NHDStream: any;
+        public NHDStreamIntersections: any;
         public WBDHUC8: any;
+        public WBDHUC8Intersections: any;
         public NSS_StatisticGroups: Array<Services.IStatisticsGroup>;
         public ActiveExtension: Array<any>;
         public NSS_Extensions: Array<any>;
@@ -73,7 +77,9 @@ module StreamStats.Models {
             this.Pourpoint = point;
             this.CoordinatedReach = null;
             this.NHDStream = null;
+            this.NHDStreamIntersections = null;
             this.WBDHUC8 = null;
+            this.WBDHUC8Intersections = null;
             this.ActiveExtension = [];
             this.NSS_Extensions = [];
         }

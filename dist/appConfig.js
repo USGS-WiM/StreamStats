@@ -579,7 +579,7 @@ configuration.regions = [
                     "queryProperties": { "Regulation Points": { "NAME": "NID ID Number" } }
                 }
             },
-        "Applications": ["Regulation", "SCStormRunoff", "HydrologyAttributes"], "regionEnabled": true, "ScenariosAvailable": true
+        "Applications": ["Regulation", "SCStormRunoff", "HydrologicFeatures"], "regionEnabled": true, "ScenariosAvailable": true
     },
     { "RegionID": "SD", "Name": "South Dakota", "Bounds": [[42.488459, -104.061036], [45.943547, -96.439394]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "TN", "Name": "Tennessee", "Bounds": [[34.988759, -90.305448], [36.679683, -81.652272]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },

@@ -8,7 +8,9 @@ var StreamStats;
                 this.Pourpoint = point;
                 this.CoordinatedReach = null;
                 this.NHDStream = null;
+                this.NHDStreamIntersections = null;
                 this.WBDHUC8 = null;
+                this.WBDHUC8Intersections = null;
                 this.ActiveExtension = [];
                 this.NSS_Extensions = [];
             }
