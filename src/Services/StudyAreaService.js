@@ -560,7 +560,7 @@ var StreamStats;
                     "url": configuration.baseurls['NationalMapServices'] + configuration.queryparams['NHDQueryService']
                 };
                 var nhdLayer = L.esri.dynamicMapLayer(nhdLayerOptions);
-                nhdLayer.query().intersects(delineatedBasinGeometry).where("1=1")
+                nhdLayer.query().intersects(delineatedBasinGeometry).where("GNIS_ID IS NOT NULL")
                     .run(function (error, results) {
                     if (error) {
                         _this.toaster.pop('error', "There was an error querying NHD streams", error, 0);
@@ -600,7 +600,7 @@ var StreamStats;
                     "url": configuration.baseurls['NationalMapServices'] + configuration.queryparams['WBDQueryService']
                 };
                 var wbdLayer = L.esri.dynamicMapLayer(wbdLayerOptions);
-                wbdLayer.query().intersects(delineatedBasinGeometry).where("1=1")
+                wbdLayer.query().intersects(delineatedBasinGeometry).where("huc8 IS NOT NULL")
                     .run(function (error, results) {
                     if (error) {
                         _this.toaster.pop('error', "There was an error querying WBD HUC 8 watersheds", error, 0);
