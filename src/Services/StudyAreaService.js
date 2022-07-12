@@ -603,7 +603,12 @@ var StreamStats;
                         results.features.forEach(function (feature) {
                             if (feature.properties.huc8) {
                                 var huc8 = turf.polygon(feature.geometry.coordinates);
-                                var distanceToPourPoint = turf.pointToLineDistance(snappedDelineationPoint, turf.polygonToLineString(huc8)) * 1000 * 3.28084;
+                                if (turf.booleanPointInPolygon(snappedDelineationPoint, huc8)) {
+                                    var distanceToPourPoint = 0;
+                                }
+                                else {
+                                    var distanceToPourPoint = turf.pointToLineDistance(snappedDelineationPoint, turf.polygonToLineString(huc8)) * 1000 * 3.28084;
+                                }
                                 if (Object.keys(WBDHUC8Intersections).indexOf(feature.properties.huc8) == -1) {
                                     WBDHUC8Intersections[feature.properties.huc8] = { "huc8": feature.properties.huc8, "name": feature.properties.name, "distanceToPourPoint": distanceToPourPoint };
                                 }
