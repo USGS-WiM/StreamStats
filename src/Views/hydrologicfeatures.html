@@ -43,6 +43,9 @@
                 </table>
             </div>
             <div ng-show="!vm.studyAreaService.selectedStudyArea.NHDStreamIntersections">
+                Loading...
+            </div>
+            <div ng-show="vm.studyAreaService.selectedStudyArea.NHDStreamIntersections.length == 0">
                 No NHD streams intersect the delineated basin.
             </div>
         </div>
@@ -76,6 +79,9 @@
                 </table>
             </div>
             <div ng-show="!vm.studyAreaService.selectedStudyArea.WBDHUC8Intersections">
+                Loading...
+            </div>
+            <div ng-show="vm.studyAreaService.selectedStudyArea.WBDHUC8Intersections && vm.studyAreaService.selectedStudyArea.WBDHUC8Intersections.length == 0">
                 No HUC 8 watersheds intersect the delineated basin.
             </div>
         </div>

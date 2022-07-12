@@ -564,6 +564,7 @@ var StreamStats;
                     .run(function (error, results) {
                     if (error) {
                         _this.toaster.pop('error', "There was an error querying NHD streams", error, 0);
+                        _this.selectedStudyArea.NHDStreamIntersections = [];
                     }
                     else if (results && results.features.length > 0) {
                         results.features.forEach(function (feature) {
@@ -586,8 +587,12 @@ var StreamStats;
                         });
                         _this.selectedStudyArea.NHDStream = minDistanceToPourPointFeature;
                     }
+                    else if (results && results.features.length == 0) {
+                        _this.selectedStudyArea.NHDStreamIntersections = [];
+                    }
                     else {
                         _this.toaster.pop('error', "There was an error querying NHD streams", "Please retry", 0);
+                        _this.selectedStudyArea.NHDStreamIntersections = [];
                     }
                 });
                 var WBDHUC8Intersections = {};
@@ -599,6 +604,7 @@ var StreamStats;
                     .run(function (error, results) {
                     if (error) {
                         _this.toaster.pop('error', "There was an error querying WBD HUC 8 watersheds", error, 0);
+                        _this.selectedStudyArea.WBDHUC8Intersections = [];
                     }
                     else if (results && results.features.length > 0) {
                         results.features.forEach(function (feature) {
@@ -626,8 +632,12 @@ var StreamStats;
                         });
                         _this.selectedStudyArea.WBDHUC8 = minDistanceToPourPointFeature;
                     }
+                    else if (results && results.features.length == 0) {
+                        _this.selectedStudyArea.WBDHUC8Intersections = [];
+                    }
                     else {
                         _this.toaster.pop('error', "There was an error querying WBD HUC 8 watersheds", "Please retry", 0);
+                        _this.selectedStudyArea.WBDHUC8Intersections = [];
                     }
                 });
             };

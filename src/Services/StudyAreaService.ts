@@ -819,6 +819,7 @@ module StreamStats.Services {
             .run((error: any, results: any) => {
                 if (error) {
                     this.toaster.pop('error', "There was an error querying NHD streams", error, 0);
+                    this.selectedStudyArea.NHDStreamIntersections = [];
                 } else if (results && results.features.length > 0) {
                     results.features.forEach((feature) => {
                         if (feature.properties.GNIS_ID) {
@@ -839,8 +840,12 @@ module StreamStats.Services {
                     });
                     this.selectedStudyArea.NHDStream = minDistanceToPourPointFeature;
                     // console.log("Hearest NHD Stream", minDistanceToPourPointFeature);
-                } else {
+                } else if (results && results.features.length == 0) {
+                    this.selectedStudyArea.NHDStreamIntersections = [];
+                }
+                else {
                     this.toaster.pop('error', "There was an error querying NHD streams", "Please retry", 0);
+                    this.selectedStudyArea.NHDStreamIntersections = [];
                 }
             });
 
@@ -854,6 +859,7 @@ module StreamStats.Services {
             .run((error: any, results: any) => {
                 if (error) {
                     this.toaster.pop('error', "There was an error querying WBD HUC 8 watersheds", error, 0);
+                    this.selectedStudyArea.WBDHUC8Intersections = [];
                 } else if (results && results.features.length > 0) {
                     results.features.forEach((feature) => {
                         if (feature.properties.huc8) {
@@ -878,8 +884,11 @@ module StreamStats.Services {
                     });
                     this.selectedStudyArea.WBDHUC8 = minDistanceToPourPointFeature;
                     // console.log("Nearest WBD HUC 8", minDistanceToPourPointFeature);
-                } else {
+                } else if (results && results.features.length == 0) {
+                    this.selectedStudyArea.WBDHUC8Intersections = [];
+                }else {
                     this.toaster.pop('error', "There was an error querying WBD HUC 8 watersheds", "Please retry", 0);
+                    this.selectedStudyArea.WBDHUC8Intersections = [];
                 }
             });
     }
