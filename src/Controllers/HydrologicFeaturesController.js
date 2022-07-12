@@ -33,11 +33,9 @@ var StreamStats;
                 return _this;
             }
             HydrologicFeaturesController.prototype.selectStream = function (stream) {
-                console.log("Stream selected: " + stream.GNIS_ID);
                 this.studyAreaService.selectedStudyArea.NHDStream = stream;
             };
             HydrologicFeaturesController.prototype.selectHUC8 = function (HUC8) {
-                console.log("HUC8 selected: " + HUC8.huc8);
                 this.studyAreaService.selectedStudyArea.WBDHUC8 = HUC8;
             };
             HydrologicFeaturesController.prototype.close = function () {

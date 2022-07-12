@@ -41,12 +41,12 @@ module StreamStats.Controllers {
         //-+-+-+-+-+-+-+-+-+-+-+-
 
         public selectStream(stream) {
-            console.log("Stream selected: " + stream.GNIS_ID);
+            // console.log("Stream selected: " + stream.GNIS_ID);
             this.studyAreaService.selectedStudyArea.NHDStream = stream;
         }
 
         public selectHUC8(HUC8) {
-            console.log("HUC8 selected: " + HUC8.huc8);
+            // console.log("HUC8 selected: " + HUC8.huc8);
             this.studyAreaService.selectedStudyArea.WBDHUC8 = HUC8;
         }
 
