@@ -552,6 +552,7 @@ var StreamStats;
             };
             StudyAreaService.prototype.queryHydrologicFeatures = function () {
                 var _this = this;
+                this.selectedStudyArea.Disclaimers['hydrologicFeatures'] = true;
                 var snappedDelineationPoint = turf.point([this.snappedPourPoint[0], this.snappedPourPoint[1]]);
                 var delineatedBasinGeometry = this.selectedStudyArea.FeatureCollection.features[1].geometry;
                 var NHDStreamIntersections = {};
