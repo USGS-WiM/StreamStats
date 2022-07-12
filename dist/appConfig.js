@@ -56,7 +56,7 @@ configuration.queryparams =
         'Wateruse': '/summary?year={0}&endyear={1}&includePermits={2}&computeReturns={3}&computeDomestic={4}',
         'WateruseSourceCSV': '/summary/bysource?year={0}&endyear={1}&includePermits={2}&computeReturns={3}&computeDomestic={4}',
         'WateruseConfig': '/regions/{0}/config',
-        'coordinatedReachQueryService': '/arcgis/rest/services/coordinatedreaches/{0}/MapServer/0/query?geometry={1},{2},{3},{4}&geometryType=esriGeometryEnvelope&inSR={5}&spatialRel=esriSpatialRelIntersects&outFields={6}&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
+        'coordinatedReachQueryService': 'ArcGIS/rest/services/Indiana_Coordinated_Discharge_view/FeatureServer/2/query?geometry={0},{1},{2},{3}&geometryType=esriGeometryEnvelope&inSR={4}&spatialRel=esriSpatialRelIntersects&outFields={5}&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&f=pjson',
         'StormRunoffTR55': '/TR55/GetResult?area={0}&precip={1}&crvnum={2}&pdur={3}',
         'StormRunoffRationalMethod': '/RationalMethod?area={0}&precipint={1}&rcoeff={2}&pdur={3}',
         'ProsperPredictions': '/rest/services/Catalog/5c5204e4e4b0708288fb42e2/MapServer',
@@ -269,15 +269,24 @@ configuration.regions = [
         "RegionID": "IN", "Name": "Indiana", "Bounds": [[37.776224, -88.10149], [41.76554, -84.787446]], "Layers": {
             "IN_Reaches": {
                 "name": "Coordinated Reaches",
-                "url": configuration.baseurls['StreamStatsMapServices'] + "/arcgis/rest/services/coordinatedreaches/in/MapServer",
-                "type": 'agsDynamic',
+                "url": "https://services.arcgis.com/2Mcx1M1MORKfBNPM/ArcGIS/rest/services/Indiana_Coordinated_Discharge_view/FeatureServer/2",
+                "type": 'agsFeature',
                 "visible": true,
                 "layerOptions": {
                     "zIndex": 1,
                     "format": "png8",
                     "f": "image",
                     "minZoom": 15,
-                }
+                },
+                "layerArray": [{
+                    note: "This overrides the ESRI legend",
+                    "layerName": "Coordinated Reaches",
+                    "legend": [{
+                        "contentType": "image/svg+xml;base64",
+                        "imageData": "PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJ5ZXMiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNSIgaGVpZ2h0PSI1Ij4KPHBhdGggc3R5bGU9ImZpbGw6I2YwZmFmZjsgc3Ryb2tlOm5vbmU7IiBkPSJNMCAwTDEgMUwwIDB6Ii8+CjxwYXRoIHN0eWxlPSJmaWxsOiNjOWViZmQ7IHN0cm9rZTpub25lOyIgZD0iTTAgM0wxIDNDNi40NDE0NSAtMS4xMjI0NCAxNy4zNTI3IDEgMjQgMUMxOC43ODYgLTEuMTg3ODcgMy4yODExIC0yLjA2MTA1IDAgM3oiLz4KPHBhdGggc3R5bGU9ImZpbGw6I2ZmZmZmZjsgc3Ryb2tlOm5vbmU7IiBkPSJNMjQgMEwyNSAxTDI0IDB6Ii8+CjxwYXRoIHN0eWxlPSJmaWxsOiNhMmRkZmQ7IHN0cm9rZTpub25lOyIgZD0iTTEgMUwxIDRMMjQgNEwyNCAxTDEgMXoiLz4KPHBhdGggc3R5bGU9ImZpbGw6I2YwZmFmZjsgc3Ryb2tlOm5vbmU7IiBkPSJNMjQgMUwyNCA0TDI1IDRMMjQgMXoiLz4KPHBhdGggc3R5bGU9ImZpbGw6I2Q1ZWZmZDsgc3Ryb2tlOm5vbmU7IiBkPSJNMCAzTDEgNEwwIDN6Ii8+CjxwYXRoIHN0eWxlPSJmaWxsOiNmZmZmZmY7IHN0cm9rZTpub25lOyIgZD0iTTAgNEwwIDVMMjUgNUwwIDR6Ii8+Cjwvc3ZnPgo=",
+                        "label": "Reaches"
+                    }]
+                }]
             }
         }, "Applications": ["CoordinatedReach"], "regionEnabled": true, "ScenariosAvailable": true 
     },
