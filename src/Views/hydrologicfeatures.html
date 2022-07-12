@@ -8,7 +8,7 @@
         <h4 class="modal-title">Select Hydrologic Features</h4>
         <small>The nearest intersecting National Hydrography Dataset (NHD) stream and Hydrologic Unit Code (HUC) 8 watershed 
             are selected by default. If you would like a different stream or watershed to appear in the report, please make 
-            a selection below. Only the 10 nearest intersecting features are displayed.
+            a selection below.
         </small>
     </div>
     <div class="modal-body">
@@ -26,7 +26,7 @@
                         <th></th>
                     </thead>
                     <tbody>
-                        <tr ng-repeat="stream in vm.studyAreaService.selectedStudyArea.NHDStreamIntersections | orderBy:'distanceToPourPoint' | limitTo:10" >
+                        <tr ng-repeat="stream in vm.studyAreaService.selectedStudyArea.NHDStreamIntersections | orderBy:'distanceToPourPoint'" >
                             <div>
                                 <td>{{stream.GNIS_ID}}</td>
                                 <td>{{stream.GNIS_NAME}}</td>
@@ -62,7 +62,7 @@
                         <th></th>
                     </thead>
                     <tbody>
-                        <tr ng-repeat="HUC8 in vm.studyAreaService.selectedStudyArea.WBDHUC8Intersections | orderBy:'distanceToPourPoint' | limitTo:10" >
+                        <tr ng-repeat="HUC8 in vm.studyAreaService.selectedStudyArea.WBDHUC8Intersections | orderBy:'distanceToPourPoint'" >
                             <div>
                                 <td>{{HUC8.huc8}}</td>
                                 <td>{{HUC8.name}}</td>
