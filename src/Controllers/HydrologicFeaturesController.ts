@@ -45,6 +45,11 @@ module StreamStats.Controllers {
             this.studyAreaService.selectedStudyArea.NHDStream = stream;
         }
 
+        public selectHUC8(HUC8) {
+            console.log("HUC8 selected: " + HUC8.huc8);
+            this.studyAreaService.selectedStudyArea.WBDHUC8 = HUC8;
+        }
+
         public close(): void {
             this.modalInstance.dismiss('cancel');
         }

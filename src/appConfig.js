@@ -60,7 +60,7 @@ configuration.queryparams =
         'WateruseConfig': '/regions/{0}/config',
         'coordinatedReachQueryService': '/arcgis/rest/services/coordinatedreaches/{0}/MapServer/0/query?geometry={1},{2},{3},{4}&geometryType=esriGeometryEnvelope&inSR={5}&spatialRel=esriSpatialRelIntersects&outFields={6}&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
         'NHDQueryService': '/nhd/MapServer/6',
-        'WBDQueryService': '/wbd/MapServer/4/query?geometry={1},{2},{3},{4}&geometryType=esriGeometryEnvelope&inSR={5}&spatialRel=esriSpatialRelIntersects&outFields={6}&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
+        'WBDQueryService': '/wbd/MapServer/4',
         'StormRunoffTR55': '/TR55/GetResult?area={0}&precip={1}&crvnum={2}&pdur={3}',
         'StormRunoffRationalMethod': '/RationalMethod?area={0}&precipint={1}&rcoeff={2}&pdur={3}',
         'ProsperPredictions': '/rest/services/Catalog/5c5204e4e4b0708288fb42e2/MapServer',

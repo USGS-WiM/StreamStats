@@ -6,19 +6,23 @@
             &times;
         </button>    
         <h4 class="modal-title">Select Hydrologic Features</h4>
+        <small>The nearest intersecting National Hydrography Dataset (NHD) stream and Hydrologic Unit Code (HUC) 8 watershed 
+            are selected by default. If you would like a different stream or watershed to appear in the report, please make 
+            a selection below. Only the 10 nearest intersecting features are displayed.
+        </small>
     </div>
     <div class="modal-body">
         <div class="panel">
 
-            <h3 class="panel-title">Select an NHD Stream </h3>
+            <h3 class="panel-title">Select an National Hydrography Dataset (NHD) Stream </h3>
                 
             <div ng-show="vm.studyAreaService.selectedStudyArea.NHDStreamIntersections.length > 0" class="hydrologicFeaturesTable">
-                <small>The nearest stream is selected by default. Only the 10 nearest stream segments are shown.</small>
+                <!-- <small>The nearest stream is selected by default. Only the 10 nearest intersecting stream segments are shown.</small> -->
                 <table class="table table-striped">
                     <thead>
                         <th>GNIS ID</th>
                         <th>GNIS Name</th>
-                        <th>Distance from Click Point (ft)</th>
+                        <th>Distance from Basin Clicked Point (ft)</th>
                         <th></th>
                     </thead>
                     <tbody>
@@ -44,14 +48,14 @@
         </div>
         <div class="panel">
 
-            <h3 class="panel-title">Select a HUC8</h3>
+            <h3 class="panel-title">Select a Hydrologic Unit Code (HUC) 8 Watershed</h3>
             <div ng-show="vm.studyAreaService.selectedStudyArea.WBDHUC8Intersections.length > 0" class="hydrologicFeaturesTable">
-                <small>The nearest HUC8 is selected by default. Only the 10 nearest HUC8s are shown.</small>
+                <!-- <small>The nearest HUC 8 watershed is selected by default. Only the 10 nearest intersecting HUC 8 watersheds are shown.</small> -->
                 <table class="table table-striped">
                     <thead>
-                        <th>HUC8 ID</th>
-                        <th>HUC8 Name</th>
-                        <th>Distance from Click Point (ft)</th>
+                        <th>HUC 8 ID</th>
+                        <th>HUC 8 Name</th>
+                        <th>Distance from Basin Clicked Point (ft)</th>
                         <th></th>
                     </thead>
                     <tbody>
@@ -61,8 +65,8 @@
                                 <td>{{HUC8.name}}</td>
                                 <td>{{HUC8.distanceToPourPoint.toUSGSvalue()}}</td>
                                 <td>
-                                    <a ng-class="{linkDisabled: HUC8.huc8 == vm.studyAreaService.selectedStudyArea.WBDHUC8.huc8}" ng-click="vm.selectHUC8(stream)">
-                                        Select Stream
+                                    <a ng-class="{linkDisabled: HUC8.huc8 == vm.studyAreaService.selectedStudyArea.WBDHUC8.huc8}" ng-click="vm.selectHUC8(HUC8)">
+                                        Select HUC 8
                                     </a>
                                     &nbsp;
                                 </td>
@@ -72,13 +76,9 @@
                 </table>
             </div>
             <div ng-show="!vm.studyAreaService.selectedStudyArea.WBDHUC8Intersections">
-                No HUC8s intersect the delineated basin.
+                No HUC 8 watersheds intersect the delineated basin.
             </div>
-                
-
         </div>
-
-
     </div>
     <div class="modal-footer  hidden-print">
         <div class="btn-group">
