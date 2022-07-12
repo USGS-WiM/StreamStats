@@ -14,7 +14,7 @@
     <div class="modal-body">
         <div class="panel">
 
-            <h3 class="panel-title">Select an National Hydrography Dataset (NHD) Stream </h3>
+            <h3 class="panel-title">Select a National Hydrography Dataset (NHD) Stream </h3>
                 
             <div ng-show="vm.studyAreaService.selectedStudyArea.NHDStreamIntersections.length > 0" class="hydrologicFeaturesTable">
                 <!-- <small>The nearest stream is selected by default. Only the 10 nearest intersecting stream segments are shown.</small> -->
@@ -63,7 +63,7 @@
                             <div>
                                 <td>{{HUC8.huc8}}</td>
                                 <td>{{HUC8.name}}</td>
-                                <td>{{HUC8.distanceToPourPoint.toUSGSvalue()}}</td>
+                                <td>{{HUC8.distanceToPourPoint}}</td>
                                 <td>
                                     <a ng-class="{linkDisabled: HUC8.huc8 == vm.studyAreaService.selectedStudyArea.WBDHUC8.huc8}" ng-click="vm.selectHUC8(HUC8)">
                                         Select HUC 8
