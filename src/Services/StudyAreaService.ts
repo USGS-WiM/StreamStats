@@ -804,7 +804,6 @@ module StreamStats.Services {
         // Identify NHD streams and WBD HUC8s that intersect with the delineated basin
         // Select the NHD Stream and WBD HUC8 that is closest to the clickpoint 
         public queryHydrologicFeatures() {
-            this.selectedStudyArea.Disclaimers['hydrologicFeatures'] = true;  
 
             var snappedDelineationPoint = turf.point([this.snappedPourPoint[0], this.snappedPourPoint[1]]);
             var delineatedBasinGeometry = this.selectedStudyArea.FeatureCollection.features[1].geometry; 
@@ -839,6 +838,7 @@ module StreamStats.Services {
                         return prev.distanceToPourPoint < curr.distanceToPourPoint ? prev : curr;
                     });
                     this.selectedStudyArea.NHDStream = minDistanceToPourPointFeature;
+                    this.selectedStudyArea.Disclaimers['hydrologicFeatures'] = true;
                     // console.log("Hearest NHD Stream", minDistanceToPourPointFeature);
                 } else if (results && results.features.length == 0) {
                     this.selectedStudyArea.NHDStreamIntersections = [];
