@@ -569,7 +569,7 @@ var StreamStats;
                             if (feature.properties.GNIS_ID) {
                                 var stream = turf.lineString(feature.geometry.coordinates);
                                 var distanceToPourPoint = turf.pointToLineDistance(snappedDelineationPoint, stream) * 1000 * 3.28084;
-                                if (Object.keys(NHDStreamIntersections).indexOf('GNIS_ID') == -1) {
+                                if (Object.keys(NHDStreamIntersections).indexOf(feature.properties.GNIS_ID) == -1) {
                                     NHDStreamIntersections[feature.properties.GNIS_ID] = { "GNIS_ID": feature.properties.GNIS_ID, "GNIS_NAME": feature.properties.GNIS_NAME, "distanceToPourPoint": distanceToPourPoint };
                                 }
                                 else {
@@ -604,7 +604,7 @@ var StreamStats;
                             if (feature.properties.huc8) {
                                 var huc8 = turf.polygon(feature.geometry.coordinates);
                                 var distanceToPourPoint = turf.pointToLineDistance(snappedDelineationPoint, turf.polygonToLineString(huc8)) * 1000 * 3.28084;
-                                if (Object.keys(WBDHUC8Intersections).indexOf('huc8') == -1) {
+                                if (Object.keys(WBDHUC8Intersections).indexOf(feature.properties.huc8) == -1) {
                                     WBDHUC8Intersections[feature.properties.huc8] = { "huc8": feature.properties.huc8, "name": feature.properties.name, "distanceToPourPoint": distanceToPourPoint };
                                 }
                                 else {
