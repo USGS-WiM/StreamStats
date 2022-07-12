@@ -498,10 +498,6 @@ module StreamStats.Controllers {
                 this.studyAreaService.queryCoordinatedReach();
             }
 
-            //send delineation point to map service query that returns identifies the nearest NHD stream line
-            // if (this.regionService.selectedRegion.Applications.indexOf("HydrologicFeatures") != -1) {
-            //     this.studyAreaService.queryHydrologicFeatures();
-            // }
 
             //only do this if we havent done it already and basin hasn't been edited
             //if (!this.studyAreaService.selectedStudyArea.RegressionRegions && !this.studyAreaService.selectedStudyArea.Disclaimers['isEdited']) {  //COMMENTED OUT 9/14/2017 BECAUSE EDIT NOT WORKING
