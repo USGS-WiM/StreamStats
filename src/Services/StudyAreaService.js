@@ -584,7 +584,6 @@ var StreamStats;
                             return prev.distanceToPourPoint < curr.distanceToPourPoint ? prev : curr;
                         });
                         _this.selectedStudyArea.NHDStream = minDistanceToPourPointFeature;
-                        console.log("NHD Stream", minDistanceToPourPointFeature);
                     }
                     else {
                         _this.toaster.pop('error', "There was an error querying NHD streams", "Please retry", 0);
@@ -598,7 +597,7 @@ var StreamStats;
                 wbdLayer.query().intersects(delineatedBasinGeometry).where("1=1")
                     .run(function (error, results) {
                     if (error) {
-                        _this.toaster.pop('error', "There was an error querying WBD HUC8s", error, 0);
+                        _this.toaster.pop('error', "There was an error querying WBD HUC 8 watersheds", error, 0);
                     }
                     else if (results && results.features.length > 0) {
                         results.features.forEach(function (feature) {
@@ -620,10 +619,9 @@ var StreamStats;
                             return prev.distanceToPourPoint < curr.distanceToPourPoint ? prev : curr;
                         });
                         _this.selectedStudyArea.WBDHUC8 = minDistanceToPourPointFeature;
-                        console.log("WBD HUC8", minDistanceToPourPointFeature);
                     }
                     else {
-                        _this.toaster.pop('error', "There was an error querying WBD HUC8s", "Please retry", 0);
+                        _this.toaster.pop('error', "There was an error querying WBD HUC 8 watersheds", "Please retry", 0);
                     }
                 });
             };
