@@ -162,7 +162,7 @@ text.nv-axislabel {
 }
 
 .hydrologicFeaturesTable .table th{
-	ine-height: 12px !important;
+	line-height: 12px !important;
     font-weight: 500;
 }
 .hydrologicFeaturesTable .table *{
