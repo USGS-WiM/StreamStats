@@ -59,8 +59,8 @@ configuration.queryparams =
         'WateruseSourceCSV': '/summary/bysource?year={0}&endyear={1}&includePermits={2}&computeReturns={3}&computeDomestic={4}',
         'WateruseConfig': '/regions/{0}/config',
         'coordinatedReachQueryService': '/arcgis/rest/services/coordinatedreaches/{0}/MapServer/0/query?geometry={1},{2},{3},{4}&geometryType=esriGeometryEnvelope&inSR={5}&spatialRel=esriSpatialRelIntersects&outFields={6}&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
-        'NHDQueryService': '/nhd/MapServer/6/query?geometry={1},{2},{3},{4}&geometryType=esriGeometryEnvelope&inSR={5}&spatialRel=esriSpatialRelIntersects&outFields={6}&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
-        'WBDQueryService': '/wbd/MapServer/4/query?geometry={1},{2},{3},{4}&geometryType=esriGeometryEnvelope&inSR={5}&spatialRel=esriSpatialRelIntersects&outFields={6}&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
+        'NHDQueryService': '/nhd/MapServer/6',
+        'WBDQueryService': '/wbd/MapServer/4',
         'StormRunoffTR55': '/TR55/GetResult?area={0}&precip={1}&crvnum={2}&pdur={3}',
         'StormRunoffRationalMethod': '/RationalMethod?area={0}&precipint={1}&rcoeff={2}&pdur={3}',
         'ProsperPredictions': '/rest/services/Catalog/5c5204e4e4b0708288fb42e2/MapServer',
@@ -579,7 +579,7 @@ configuration.regions = [
                     "queryProperties": { "Regulation Points": { "NAME": "NID ID Number" } }
                 }
             },
-        "Applications": ["Regulation", "SCStormRunoff", "HydrologyAttributes"], "regionEnabled": true, "ScenariosAvailable": true
+        "Applications": ["Regulation", "SCStormRunoff", "HydrologicFeatures"], "regionEnabled": true, "ScenariosAvailable": true
     },
     { "RegionID": "SD", "Name": "South Dakota", "Bounds": [[42.488459, -104.061036], [45.943547, -96.439394]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "TN", "Name": "Tennessee", "Bounds": [[34.988759, -90.305448], [36.679683, -81.652272]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },

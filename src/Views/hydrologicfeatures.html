@@ -1,0 +1,94 @@
+﻿<div>
+    <!-- Modal -->
+    <div class="modal-header">    
+        <button class="close"
+                ng-click="vm.close()">
+            &times;
+        </button>    
+        <h4 class="modal-title">Select Hydrologic Features</h4>
+        <small>The nearest intersecting National Hydrography Dataset (NHD) stream and Hydrologic Unit Code (HUC) 8 watershed 
+            are selected by default. If you would like a different stream or watershed to appear in the report, please make 
+            a selection below.
+        </small>
+    </div>
+    <div class="modal-body">
+        <div class="panel">
+
+            <h3 class="panel-title">Select a National Hydrography Dataset (NHD) Stream </h3>
+                
+            <div ng-show="vm.studyAreaService.selectedStudyArea.NHDStreamIntersections.length > 0" class="hydrologicFeaturesTable">
+                <!-- <small>The nearest stream is selected by default. Only the 10 nearest intersecting stream segments are shown.</small> -->
+                <table class="table table-striped">
+                    <thead>
+                        <th>GNIS ID</th>
+                        <th>GNIS Name</th>
+                        <th>Distance from Basin Clicked Point (ft)</th>
+                        <th></th>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="stream in vm.studyAreaService.selectedStudyArea.NHDStreamIntersections | orderBy:'distanceToPourPoint'" >
+                            <div>
+                                <td>{{stream.GNIS_ID}}</td>
+                                <td>{{stream.GNIS_NAME}}</td>
+                                <td>{{stream.distanceToPourPoint.toUSGSvalue()}}</td>
+                                <td>
+                                    <a ng-class="{linkDisabled: stream.GNIS_ID == vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID}" ng-click="vm.selectStream(stream)">
+                                        Select Stream
+                                    </a>
+                                    &nbsp;
+                                </td>
+                            </div>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div ng-show="!vm.studyAreaService.selectedStudyArea.NHDStreamIntersections">
+                <i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
+            </div>
+            <div ng-show="vm.studyAreaService.selectedStudyArea.NHDStreamIntersections.length == 0">
+                No NHD streams intersect the delineated basin.
+            </div>
+        </div>
+        <div class="panel">
+
+            <h3 class="panel-title">Select a Hydrologic Unit Code (HUC) 8 Watershed</h3>
+            <div ng-show="vm.studyAreaService.selectedStudyArea.WBDHUC8Intersections.length > 0" class="hydrologicFeaturesTable">
+                <!-- <small>The nearest HUC 8 watershed is selected by default. Only the 10 nearest intersecting HUC 8 watersheds are shown.</small> -->
+                <table class="table table-striped">
+                    <thead>
+                        <th>HUC 8 ID</th>
+                        <th>HUC 8 Name</th>
+                        <th>Distance from Basin Clicked Point (ft)</th>
+                        <th></th>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="HUC8 in vm.studyAreaService.selectedStudyArea.WBDHUC8Intersections | orderBy:'distanceToPourPoint'" >
+                            <div>
+                                <td>{{HUC8.huc8}}</td>
+                                <td>{{HUC8.name}}</td>
+                                <td>{{HUC8.distanceToPourPoint.toUSGSvalue()}}</td>
+                                <td>
+                                    <a ng-class="{linkDisabled: HUC8.huc8 == vm.studyAreaService.selectedStudyArea.WBDHUC8.huc8}" ng-click="vm.selectHUC8(HUC8)">
+                                        Select HUC 8
+                                    </a>
+                                    &nbsp;
+                                </td>
+                            </div>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div ng-show="!vm.studyAreaService.selectedStudyArea.WBDHUC8Intersections">
+                <i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
+            </div>
+            <div ng-show="vm.studyAreaService.selectedStudyArea.WBDHUC8Intersections && vm.studyAreaService.selectedStudyArea.WBDHUC8Intersections.length == 0">
+                No HUC 8 watersheds intersect the delineated basin.
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer  hidden-print">
+        <div class="btn-group">
+            <button ng-disabled="vm.isBusy" class="btn-wim-default" ng-click="vm.close()"><i class="fa fa-close"></i>&nbsp;&nbsp;Ok</button>
+        </div>
+    </div>
+</div>

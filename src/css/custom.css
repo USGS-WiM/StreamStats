@@ -116,6 +116,16 @@
     padding-left: 10px;
 }
 
+.panel {
+    background-color: #ebf0f5;
+    color: #10152C;
+    /* margin: 10px 0px 20px 0px; */
+    padding: 10px 5px 20px 5px;
+    margin: 10px 0px;
+    max-height: 400px;
+    overflow-y: scroll;
+}
+
 .selectedGage {
     background-color: #ebf0f5;
 }
@@ -146,6 +156,20 @@ text.nv-axislabel {
     letter-spacing: -0.2px;
 }
 
+.hydrologicFeaturesTable{
+	width: 100%;
+	overflow: auto;
+}
+
+.hydrologicFeaturesTable .table th{
+	line-height: 12px !important;
+    font-weight: 500;
+}
+.hydrologicFeaturesTable .table *{
+	line-height: 14px !important;
+    letter-spacing: -0.2px;
+}
+
 .overflow-auto{
 	overflow: auto !important;
 }
@@ -164,4 +188,8 @@ text.nv-axislabel {
 
 .SCStormRunoffInput input.ng-dirty.ng-invalid-pattern {
     border-color: red !important;
+}
+
+#applications .btn-black {
+    margin-bottom: 4px;
 }

@@ -325,9 +325,6 @@ var StreamStats;
                 if (this.regionService.selectedRegion.Applications.indexOf("CoordinatedReach") != -1) {
                     this.studyAreaService.queryCoordinatedReach();
                 }
-                if (this.regionService.selectedRegion.Applications.indexOf("HydrologyAttributes") != -1) {
-                    this.studyAreaService.queryHydrologyAttributes();
-                }
                 if (!this.studyAreaService.selectedStudyArea.RegressionRegions) {
                     this.studyAreaService.queryRegressionRegions();
                 }
@@ -390,6 +387,9 @@ var StreamStats;
             };
             SidebarController.prototype.OpenNearestGages = function () {
                 this.modalService.openModal(StreamStats.Services.SSModalType.e_nearestgages);
+            };
+            SidebarController.prototype.OpenSelectHydrologicFeatures = function () {
+                this.modalService.openModal(StreamStats.Services.SSModalType.e_selectHydrologicFeatures);
             };
             SidebarController.prototype.downloadGeoJSON = function () {
                 var GeoJSON = angular.toJson(this.studyAreaService.selectedStudyArea.FeatureCollection);

@@ -24,6 +24,7 @@
 //Import
 module StreamStats.Services {
     declare var turf;
+    declare var L;
     'use strict'
     export interface IStudyAreaService {
         onStudyAreaServiceBusyChanged: WiM.Event.Delegate<WiM.Event.EventArgs>;
@@ -51,7 +52,7 @@ module StreamStats.Services {
         queryRegressionRegions();
         queryKarst(regionID: string, regionMapLayerList:any);
         queryCoordinatedReach();
-        queryHydrologyAttributes();
+        queryHydrologicFeatures();
         regressionRegionQueryComplete: boolean;
         baseMap: Object;
         showModifyBasinCharacterstics: boolean;
@@ -356,6 +357,9 @@ module StreamStats.Services {
                         this.toaster.clear();
                         this.eventManager.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);
                         this.canUpdate = true;
+                        if (this.regionService.selectedRegion.Applications.indexOf("HydrologicFeatures") != -1) {
+                            this.queryHydrologicFeatures();
+                        }
                     }
                     else {
                         this.clearStudyArea();
@@ -797,76 +801,96 @@ module StreamStats.Services {
                     });
         }
 
-        public queryHydrologyAttributes() {
+        // Identify NHD streams and WBD HUC8s that intersect with the delineated basin
+        // Select the NHD Stream and WBD HUC8 that is closest to the clickpoint 
+        public queryHydrologicFeatures() {
 
-            // this.toaster.pop('wait', "Identifying stream line and watershed", "Please wait...", 0);
+            var snappedDelineationPoint = turf.point([this.snappedPourPoint[0], this.snappedPourPoint[1]]);
+            var delineatedBasinGeometry = this.selectedStudyArea.FeatureCollection.features[1].geometry; 
 
-            var ppt = this.snappedPourPoint;
-            var turfPoint = turf.point([ppt[0], ppt[1]]);
-            var distance = 0.05; //kilometers
-            var bearings = [-90, 0, 90, 180]; 
-            var boundingBox = [];
-            bearings.forEach((bearing, index) => {
-                var destination = turf.destination(turfPoint, distance, bearing);
-                boundingBox[index] = destination.geometry.coordinates[index % 2 == 0 ? 0 : 1];
+            // NHD Streams
+            var NHDStreamIntersections = {}; // all unique NHD streams (by GNIS_ID) that intersect with the delineated basin
+            var nhdLayerOptions = {
+                "url": configuration.baseurls['NationalMapServices'] + configuration.queryparams['NHDQueryService']
+            };
+            var nhdLayer = L.esri.dynamicMapLayer(nhdLayerOptions);
+            nhdLayer.query().intersects(delineatedBasinGeometry).where("GNIS_ID IS NOT NULL")
+            .run((error: any, results: any) => {
+                if (error) {
+                    this.toaster.pop('error', "There was an error querying NHD streams", error, 0);
+                    this.selectedStudyArea.NHDStreamIntersections = [];
+                } else if (results && results.features.length > 0) {
+                    results.features.forEach((feature) => {
+                        if (feature.properties.GNIS_ID) {
+                            var stream = turf.lineString(feature.geometry.coordinates);
+                            var distanceToPourPoint = turf.pointToLineDistance(snappedDelineationPoint, stream) * 1000 * 3.28084; // distance in feet
+                            if (Object.keys(NHDStreamIntersections).indexOf(feature.properties.GNIS_ID) == -1) {
+                                NHDStreamIntersections[feature.properties.GNIS_ID] = {"GNIS_ID":feature.properties.GNIS_ID, "GNIS_NAME":feature.properties.GNIS_NAME, "distanceToPourPoint":distanceToPourPoint};
+                            } else {
+                                if (distanceToPourPoint < NHDStreamIntersections[feature.properties.GNIS_ID]["distanceToPourPoint"]) {
+                                    NHDStreamIntersections[feature.properties.GNIS_ID]["distanceToPourPoint"] = distanceToPourPoint;
+                                }
+                            }
+                        }
+                    });
+                    this.selectedStudyArea.NHDStreamIntersections = Object.keys(NHDStreamIntersections).map(key => NHDStreamIntersections[key]);
+                    var minDistanceToPourPointFeature = this.selectedStudyArea.NHDStreamIntersections.reduce(function(prev, curr) {
+                        return prev.distanceToPourPoint < curr.distanceToPourPoint ? prev : curr;
+                    });
+                    this.selectedStudyArea.NHDStream = minDistanceToPourPointFeature;
+                    this.selectedStudyArea.Disclaimers['hydrologicFeatures'] = true;
+                    // console.log("Hearest NHD Stream", minDistanceToPourPointFeature);
+                } else if (results && results.features.length == 0) {
+                    this.selectedStudyArea.NHDStreamIntersections = [];
+                }
+                else {
+                    this.toaster.pop('error', "There was an error querying NHD streams", "Please retry", 0);
+                    this.selectedStudyArea.NHDStreamIntersections = [];
+                }
             });
 
-            var outFieldsNHD = "GNIS_ID,GNIS_NAME";
-            var urlNHD = configuration.baseurls['NationalMapServices'] + configuration.queryparams['NHDQueryService']
-                .format(this.selectedStudyArea.RegionID.toLowerCase(), boundingBox[0], boundingBox[1], boundingBox[2], boundingBox[3], this.selectedStudyArea.Pourpoint.crs, outFieldsNHD);
-            var requestNHD: WiM.Services.Helpers.RequestInfo =
-                new WiM.Services.Helpers.RequestInfo(urlNHD, true);
-
-            var self = this;
-            this.Execute(requestNHD).then(
-                (response: any) => {
-                    if (response.data.error) {
-                        //console.log('query error');
-                        this.toaster.pop('error', "There was an error querying NHD stream lines", response.data.error.message, 0);
-                        return;
-                    }
-
-                    if (response.data.features.length > 0) {
-                        var attributes = response.data.features[0].attributes
-                        console.log(attributes);
-                        
-                        // TODO: deal with the case where more than 1 feature is returned
-                        self.selectedStudyArea.NHDStream = attributes;
-
-                        // this.toaster.pop('success', "Identified stream line", "Please continue", 5000);
-                    }
-
-                }, (error) => {
-                    this.toaster.pop('error', "There was an error querying NHD stream lines", "Please retry", 0);
-                });
-
-            var outFieldsWBD = "huc8,name";
-            var urlWBD = configuration.baseurls['NationalMapServices'] + configuration.queryparams['WBDQueryService']
-                .format(this.selectedStudyArea.RegionID.toLowerCase(), boundingBox[0], boundingBox[1], boundingBox[2], boundingBox[3], this.selectedStudyArea.Pourpoint.crs, outFieldsWBD);
-            var requestWBD: WiM.Services.Helpers.RequestInfo =
-                new WiM.Services.Helpers.RequestInfo(urlWBD, true);
-
-            this.Execute(requestWBD).then(
-                (response: any) => {
-                    if (response.data.error) {
-                        //console.log('query error');
-                        this.toaster.pop('error', "There was an error querying WBD HUC8 watersheds", response.data.error.message, 0);
-                        return;
-                    }
-
-                    if (response.data.features.length > 0) {
-                        var attributes = response.data.features[0].attributes
-                        console.log(attributes);
-                        
-                        // TODO: deal with the case where more than 1 feature is returned
-                        self.selectedStudyArea.WBDHUC8 = attributes;
-
-                        // this.toaster.pop('success', "Identified watershed", "Please continue", 5000);
-                    }
-
-                }, (error) => {
-                    this.toaster.pop('error', "There was an error querying WBD HUC8 watersheds", "Please retry", 0);
-                });
+            // WBD HUC 8s
+            var WBDHUC8Intersections = {}; // all unique HUC 8s (by HUC8 ID) that intersect with the delineated basin
+            var wbdLayerOptions = {
+                "url": configuration.baseurls['NationalMapServices'] + configuration.queryparams['WBDQueryService']
+            };
+            var wbdLayer = L.esri.dynamicMapLayer(wbdLayerOptions);
+            wbdLayer.query().intersects(delineatedBasinGeometry).where("huc8 IS NOT NULL")
+            .run((error: any, results: any) => {
+                if (error) {
+                    this.toaster.pop('error', "There was an error querying WBD HUC 8 watersheds", error, 0);
+                    this.selectedStudyArea.WBDHUC8Intersections = [];
+                } else if (results && results.features.length > 0) {
+                    results.features.forEach((feature) => {
+                        if (feature.properties.huc8) {
+                            var huc8 = turf.polygon(feature.geometry.coordinates);
+                            if (turf.booleanPointInPolygon(snappedDelineationPoint, huc8)) {
+                                var distanceToPourPoint = 0;
+                            } else {
+                                var distanceToPourPoint = turf.pointToLineDistance(snappedDelineationPoint, turf.polygonToLineString(huc8)) * 1000 * 3.28084; // distance in feet
+                            }
+                            if (Object.keys(WBDHUC8Intersections).indexOf(feature.properties.huc8) == -1) {
+                                WBDHUC8Intersections[feature.properties.huc8] = {"huc8":feature.properties.huc8, "name":feature.properties.name, "distanceToPourPoint":distanceToPourPoint};
+                            } else {
+                                if (distanceToPourPoint < WBDHUC8Intersections[feature.properties.huc8]["distanceToPourPoint"]) {
+                                    WBDHUC8Intersections[feature.properties.huc8]["distanceToPourPoint"] = distanceToPourPoint;
+                                }
+                            }
+                        }
+                    });
+                    this.selectedStudyArea.WBDHUC8Intersections = Object.keys(WBDHUC8Intersections).map(key => WBDHUC8Intersections[key]);
+                    var minDistanceToPourPointFeature = this.selectedStudyArea.WBDHUC8Intersections.reduce(function(prev, curr) {
+                        return prev.distanceToPourPoint < curr.distanceToPourPoint ? prev : curr;
+                    });
+                    this.selectedStudyArea.WBDHUC8 = minDistanceToPourPointFeature;
+                    // console.log("Nearest WBD HUC 8", minDistanceToPourPointFeature);
+                } else if (results && results.features.length == 0) {
+                    this.selectedStudyArea.WBDHUC8Intersections = [];
+                }else {
+                    this.toaster.pop('error', "There was an error querying WBD HUC 8 watersheds", "Please retry", 0);
+                    this.selectedStudyArea.WBDHUC8Intersections = [];
+                }
+            });
     }
 
         public queryRegressionRegions() {
