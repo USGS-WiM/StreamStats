@@ -384,7 +384,11 @@ var StreamStats;
                                 return "continue";
                             switch (_this.layers.overlays[lyr].type) {
                                 case "agsFeature":
-                                    maplayers.overlays[lyr].query().nearby(evt.latlng, 4).returnGeometry(false).run(function (error, results) { return _this.handleQueryResult(lyr, error, results, map, evt.latlng); });
+                                    queryDistance = 4;
+                                    if (_this.layers.overlays[lyr].layerOptions.queryDistance != null) {
+                                        queryDistance = _this.layers.overlays[lyr].layerOptions.queryDistance;
+                                    }
+                                    maplayers.overlays[lyr].query().nearby(evt.latlng, queryDistance).returnGeometry(false).run(function (error, results) { return _this.handleQueryResult(lyr, error, results, map, evt.latlng); });
                                     break;
                                 default:
                                     saveLayerName = lyr;
@@ -392,7 +396,7 @@ var StreamStats;
                             }
                             _this.queryContent.requestCount++;
                         };
-                        var saveLayerName;
+                        var queryDistance, saveLayerName;
                         for (var lyr in maplayers.overlays) {
                             _loop_1(lyr);
                         }

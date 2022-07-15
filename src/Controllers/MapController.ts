@@ -555,7 +555,7 @@ module StreamStats.Controllers {
                         return;
                     }  
                     this.queryContent = { requestCount:0, Content:$("<div>").attr("id", 'popupContent'),responseCount:0}
-                                                                              
+
                     for (let lyr in maplayers.overlays) {
                         if (!maplayers.overlays.hasOwnProperty(lyr)) continue;
                         //skip these layers
@@ -566,7 +566,15 @@ module StreamStats.Controllers {
                         switch (this.layers.overlays[lyr].type) {
                             case "agsFeature":
                                 //query
-                                maplayers.overlays[lyr].query().nearby(evt.latlng, 4).returnGeometry(false).run((error: any, results: any) => this.handleQueryResult(lyr, error, results, map, evt.latlng))
+                                
+                                var queryDistance = 4
+
+                                if (this.layers.overlays[lyr].layerOptions.queryDistance != null) {
+                                    queryDistance = this.layers.overlays[lyr].layerOptions.queryDistance
+                                } 
+
+                                maplayers.overlays[lyr].query().nearby(evt.latlng, queryDistance).returnGeometry(false).run((error: any, results: any) => this.handleQueryResult(lyr, error, results, map, evt.latlng));
+                                
                                 break;
                             default://agsDynamic
                                 var saveLayerName = lyr; // need to save layer name, or it sometimes doesn't send the correct layer in the handleQueryResult function

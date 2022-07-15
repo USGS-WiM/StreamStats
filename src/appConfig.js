@@ -577,6 +577,30 @@ configuration.regions = [
                         "f": "image"
                     },
                     "queryProperties": { "Regulation Points": { "NAME": "NID ID Number" } }
+                },
+                "NHD_Streams": {
+                    "name": "NHD Streams",
+                    "url": "https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/6",
+                    "type": 'agsFeature',
+                    "visible": true,
+                    "layerOptions": {
+                        style: { color: '#cbc4c0', opacity: 0, weight: 3 },
+                        "minZoom": 50,
+                        "queryDistance": 100
+                    },
+                    "layerArray": [{
+                        note: "This overrides the ESRI legend",
+                        "layerName": "NHD Streams",
+                        "legend": [{
+                            "contentType": "image/png",
+                            "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAC9JREFUOI1jYaAyYBk1cNTAYWtgenr6f2oYNnPmTEYWGIMaBjIwDJkwHDVwmBsIADDsBh2b0c5hAAAAAElFTkSuQmCC",
+                            "label": ""
+                        }]
+                    }],
+                    "queryProperties": { "NHD Streams": { 
+                        "GNIS_ID": "GNIS ID",
+                        "GNIS_NAME": "GNIS Name"
+                    }}
                 }
             },
         "Applications": ["Regulation", "SCStormRunoff", "HydrologicFeatures"], "regionEnabled": true, "ScenariosAvailable": true
