@@ -599,16 +599,17 @@ module StreamStats.Controllers {
                             if (queryResult.properties["GNIS_ID"] && queryResult.properties["GNIS_NAME"]) {
                                 if (uniqueNHDStreamGNISIDs.indexOf(queryResult.properties["GNIS_ID"]) == -1) {
                                     uniqueNHDStreamGNISIDs.push(queryResult.properties["GNIS_ID"]);
-                                    querylayers.append('<h5> NHD Streams </h5>');
+                                    querylayers.append('<h5> NHD Streams <i ng-mouseover="showTooltip = true" ng-mouseleave="showTooltip = false" class="fa fa-info-circle"></i><span ng-show="showTooltip" class="popup-tooltip">NHD streams within 100 meters of clicked point.</span></h5>');
                                     querylayers.append('<strong> GNIS ID: </strong>' + queryResult.properties["GNIS_ID"] + '</br>');
                                     querylayers.append('<strong> GNIS Name: </strong>' + queryResult.properties["GNIS_NAME"] + '</br>');
+                                    this.queryContent.responseCount++;
                                 } 
                             }
                         } else {
                             querylayers.append('<h5>' + item.layerName + '</h5>');
+                            this.queryContent.responseCount++;
                         }
                         
-                        this.queryContent.responseCount++;
                         //report ga event
                         this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'queryPoints' });
     

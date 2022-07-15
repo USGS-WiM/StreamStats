@@ -419,16 +419,17 @@ var StreamStats;
                                 if (queryResult.properties["GNIS_ID"] && queryResult.properties["GNIS_NAME"]) {
                                     if (uniqueNHDStreamGNISIDs.indexOf(queryResult.properties["GNIS_ID"]) == -1) {
                                         uniqueNHDStreamGNISIDs.push(queryResult.properties["GNIS_ID"]);
-                                        querylayers.append('<h5> NHD Streams </h5>');
+                                        querylayers.append('<h5> NHD Streams <i ng-mouseover="showTooltip = true" ng-mouseleave="showTooltip = false" class="fa fa-info-circle"></i><span ng-show="showTooltip" class="popup-tooltip">NHD streams within 100 meters of clicked point.</span></h5>');
                                         querylayers.append('<strong> GNIS ID: </strong>' + queryResult.properties["GNIS_ID"] + '</br>');
                                         querylayers.append('<strong> GNIS Name: </strong>' + queryResult.properties["GNIS_NAME"] + '</br>');
+                                        _this.queryContent.responseCount++;
                                     }
                                 }
                             }
                             else {
                                 querylayers.append('<h5>' + item.layerName + '</h5>');
+                                _this.queryContent.responseCount++;
                             }
-                            _this.queryContent.responseCount++;
                             _this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'queryPoints' });
                             if (_this.layers.overlays[lyr].hasOwnProperty("queryProperties") && _this.layers.overlays[lyr].queryProperties.hasOwnProperty(item.layerName)) {
                                 var queryProperties_1 = _this.layers.overlays[lyr].queryProperties[item.layerName];
