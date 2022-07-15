@@ -12,9 +12,9 @@
             <div ng-show="vm.StudyArea">
                 <div class="form-group">
                     <ul class="nav nav-tabs wateruseTabs hidden-print">
-                        <li ng-class="{'active': vm.SelectedTab == 3}"><a ng-click="vm.SelectedTab=3">Synthetic Urban Hydrograph Method</a></li>
-                        <li ng-class="{'active': vm.SelectedTab == 2}"><a ng-click="vm.SelectedTab=2">Bohman Urban</a></li>
-                        <li ng-class="{'active': vm.SelectedTab == 1}"><a ng-click="vm.SelectedTab=1">Bohman Rural</a></li>
+                        <li ng-class="{'active': vm.SelectedTab == 3}"><a ng-click="vm.SelectedTab=3">SC Synthetic Unit Hydrograph</a></li>
+                        <li ng-class="{'active': vm.SelectedTab == 2}"><a ng-click="vm.SelectedTab=2">USGS SC Flood Hydrograph for Urban Watersheds</a></li>
+                        <li ng-class="{'active': vm.SelectedTab == 1}"><a ng-click="vm.SelectedTab=1">USGS SC Flood Hydrograph for Rural Watersheds</a></li>
                     </ul>
                     <div ng-if="vm.SelectedTab == 2" class="wim-alert hidden-print">Enter custom values below or <b>Calculate Missing Parameters</b>. Click <b>Continue</b> to view peak discharge and hydrograph.</div>
 
