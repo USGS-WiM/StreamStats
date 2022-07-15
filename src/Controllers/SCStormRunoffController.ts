@@ -440,7 +440,7 @@ module StreamStats.Controllers {
                 },
                 title: {
                     enable: true,
-                    text: 'Bohman Urban (1992) using ' + this.SelectedAEP.name + ' AEP',
+                    text: 'USGS SC Flood Hydrograph for Urban Watersheds using ' + this.SelectedAEP.name + ' AEP',
                     css: {
                         'font-size': '10pt',
                         'font-weight': 'bold'
@@ -490,7 +490,7 @@ module StreamStats.Controllers {
             };
 
             var BohmanUrban1992 = () => {
-                var finalVal = 'Bohman Urban using ' + this.SelectedAEP.name + ' AEP\n';
+                var finalVal = 'USGS SC Flood Hydrograph for Urban Watersheds using ' + this.SelectedAEP.name + ' AEP\n';
                 finalVal += '\n' + "Warning Messages:," + this.warningMessages + '\n';
                 finalVal += this.tableToCSV($('#BohmanUrbanParameterTable'));
                 finalVal += '\n' + this.tableToCSV($('#BohmanUrbanSummaryTable'));
