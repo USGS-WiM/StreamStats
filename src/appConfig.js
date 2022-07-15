@@ -583,9 +583,10 @@ configuration.regions = [
                     "url": "https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/6",
                     "type": 'agsFeature',
                     "visible": true,
+                    "hidden": true, // do not show in legend
                     "layerOptions": {
-                        style: { color: '#cbc4c0', opacity: 0, weight: 3 },
-                        "minZoom": 50,
+                        style: { color: '#50b4c4', opacity: 0, weight: 3 },
+                        "minZoom": 15,
                         "queryDistance": 100
                     },
                     "layerArray": [{
@@ -593,7 +594,7 @@ configuration.regions = [
                         "layerName": "NHD Streams",
                         "legend": [{
                             "contentType": "image/png",
-                            "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAC9JREFUOI1jYaAyYBk1cNTAYWtgenr6f2oYNnPmTEYWGIMaBjIwDJkwHDVwmBsIADDsBh2b0c5hAAAAAElFTkSuQmCC",
+                            "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAADFJREFUOI1jYaAyYBk1cNTAwWKg57Zj/6lh2HYvK0bauHC7lxUjVQ2kJhg1cNRAMgAABzkFjcbj6G8AAAAASUVORK5CYII=",
                             "label": ""
                         }]
                     }],
