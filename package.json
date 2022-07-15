@@ -43,7 +43,7 @@
     "tokml": "^0.4.0",
     "usgs-search-api": "github:usgs/search_api#a9537dd5549fd1149737dd2815b1146aa0a2bc01",
     "wim-styles": "github:usgs-wim/wim-styles#master",
-    "wim_angular": "github:usgs-wim/wim_angular#AM_SS-1365"
+    "wim_angular": "github:usgs-wim/wim_angular#master_streamstats"
   },
   "devDependencies": {
     "concurrently": "^5.1.0",
