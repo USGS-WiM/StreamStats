@@ -12,9 +12,9 @@
             <div ng-show="vm.StudyArea">
                 <div class="form-group">
                     <ul class="nav nav-tabs wateruseTabs hidden-print">
-                        <li ng-class="{'active': vm.SelectedTab == 3}"><a ng-click="vm.SelectedTab=3">Synthetic Urban Hydrograph Method</a></li>
-                        <li ng-class="{'active': vm.SelectedTab == 2}"><a ng-click="vm.SelectedTab=2">Bohman Urban</a></li>
-                        <li ng-class="{'active': vm.SelectedTab == 1}"><a ng-click="vm.SelectedTab=1">Bohman Rural</a></li>
+                        <li ng-class="{'active': vm.SelectedTab == 3}"><a ng-click="vm.SelectedTab=3">SC Synthetic Unit Hydrograph</a></li>
+                        <li ng-class="{'active': vm.SelectedTab == 2}"><a ng-click="vm.SelectedTab=2">USGS SC Flood Hydrograph for Urban Watersheds</a></li>
+                        <li ng-class="{'active': vm.SelectedTab == 1}"><a ng-click="vm.SelectedTab=1">USGS SC Flood Hydrograph for Rural Watersheds</a></li>
                     </ul>
                     <div ng-if="vm.SelectedTab == 2" class="wim-alert hidden-print">Enter custom values below or <b>Calculate Missing Parameters</b>. Click <b>Continue</b> to view peak discharge and hydrograph.</div>
 
@@ -69,12 +69,16 @@
                             </form> 
                             <div ng-if="vm.showResults">
                                 <div style="position:relative;">
-                                    <p class="fullwidth alignc hidden-print" style="font-size: 16px;"><b>Bohman Urban (1992) using {{vm.SelectedAEP.name}} AEP</b></p>
+                                    <p class="fullwidth alignc hidden-print" style="font-size: 16px;"><b>USGS SC Flood Hydrograph for Urban Watersheds using {{vm.SelectedAEP.name}} AEP</b></p>
                                     <div class="wim-alert-warning">{{vm.warningMessages}}</div>
                                     <div class="well">
                                         <h3>Parameters</h3>
                                         <table id="BohmanUrbanParameterTable" class="table table-condensed smalltext">
                                             <tbody>
+                                                <tr>
+                                                    <td>Clicked Point (Latitude, Longitude):</td>
+                                                    <td><b>{{vm.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toUSGSvalue()}}, {{vm.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toUSGSvalue()}}</b></td>
+                                                </tr>
                                                 <tr>
                                                     <td>Drainage Area (square miles):</td>
                                                     <td><b>{{vm.drainageArea}}</b></td>
@@ -122,7 +126,7 @@
                                                 </tr>
                                             </tbody>
                                         </table> 
-                                        <h4>Citations</h4>
+                                        <h4>Citation</h4>
                                         <a href="https://pubs.er.usgs.gov/publication/wri924040" target="_blank">Bohman, L.R., 1992, Determination of flood hydrographs for streams in South Carolina: Volume 2. Estimation of peak-discharge frequency, runoff volumes, and flood hydrographs for urban watersheds: U.S. Geological Survey Water-Resources Investigations Report 92-4040, 79 p.</a><br /><br />
                                     </div>
                                 </div>
