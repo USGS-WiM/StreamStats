@@ -384,7 +384,11 @@ var StreamStats;
                                 return "continue";
                             switch (_this.layers.overlays[lyr].type) {
                                 case "agsFeature":
-                                    maplayers.overlays[lyr].query().nearby(evt.latlng, 4).returnGeometry(false).run(function (error, results) { return _this.handleQueryResult(lyr, error, results, map, evt.latlng); });
+                                    queryDistance = 4;
+                                    if (_this.layers.overlays[lyr].layerOptions.queryDistance != null) {
+                                        queryDistance = _this.layers.overlays[lyr].layerOptions.queryDistance;
+                                    }
+                                    maplayers.overlays[lyr].query().nearby(evt.latlng, queryDistance).returnGeometry(false).run(function (error, results) { return _this.handleQueryResult(lyr, error, results, map, evt.latlng); });
                                     break;
                                 default:
                                     saveLayerName = lyr;
@@ -392,7 +396,7 @@ var StreamStats;
                             }
                             _this.queryContent.requestCount++;
                         };
-                        var saveLayerName;
+                        var queryDistance, saveLayerName;
                         for (var lyr in maplayers.overlays) {
                             _loop_1(lyr);
                         }
@@ -403,6 +407,7 @@ var StreamStats;
                 var _this = this;
                 var querylayers = $("<div>").attr("id", lyr).appendTo(this.queryContent.Content);
                 this.queryContent.requestCount--;
+                var uniqueNHDStreamGNISIDs = [];
                 results.features.forEach(function (queryResult) {
                     if (_this.layers.overlays[lyr].hasOwnProperty('layerArray')) {
                         _this.layers.overlays[lyr].layerArray.forEach(function (item) {
@@ -410,8 +415,21 @@ var StreamStats;
                                 return;
                             if (["StreamGrid", "ExcludePolys", "Region", "Subregion", "Basin", "Subbasin", "Watershed", "Subwatershed"].indexOf(item.layerName) > -1)
                                 return;
-                            querylayers.append('<h5>' + item.layerName + '</h5>');
-                            _this.queryContent.responseCount++;
+                            if (item.layerName == "NHD Streams") {
+                                if (queryResult.properties["GNIS_ID"] && queryResult.properties["GNIS_NAME"]) {
+                                    if (uniqueNHDStreamGNISIDs.indexOf(queryResult.properties["GNIS_ID"]) == -1) {
+                                        uniqueNHDStreamGNISIDs.push(queryResult.properties["GNIS_ID"]);
+                                        querylayers.append('<h5> NHD Streams <i ng-mouseover="showTooltip = true" ng-mouseleave="showTooltip = false" class="fa fa-info-circle"></i><span ng-show="showTooltip" class="popup-tooltip">NHD streams within 100 meters of clicked point.</span></h5>');
+                                        querylayers.append('<strong> GNIS ID: </strong>' + queryResult.properties["GNIS_ID"] + '</br>');
+                                        querylayers.append('<strong> GNIS Name: </strong>' + queryResult.properties["GNIS_NAME"] + '</br>');
+                                        _this.queryContent.responseCount++;
+                                    }
+                                }
+                            }
+                            else {
+                                querylayers.append('<h5>' + item.layerName + '</h5>');
+                                _this.queryContent.responseCount++;
+                            }
                             _this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'queryPoints' });
                             if (_this.layers.overlays[lyr].hasOwnProperty("queryProperties") && _this.layers.overlays[lyr].queryProperties.hasOwnProperty(item.layerName)) {
                                 var queryProperties_1 = _this.layers.overlays[lyr].queryProperties[item.layerName];
@@ -441,6 +459,8 @@ var StreamStats;
                                                 queryResult.properties[k] = "Yes";
                                         }
                                         querylayers.append('<strong>' + queryProperties_1[k] + ': </strong>' + queryResult.properties[k] + '</br>');
+                                    }
+                                    else if (item.layerName == "NHD Streams") {
                                     }
                                     else {
                                         querylayers.append('<strong>' + queryProperties_1[k] + ': </strong>' + queryResult.properties[k] + '</br>');

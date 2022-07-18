@@ -555,7 +555,7 @@ module StreamStats.Controllers {
                         return;
                     }  
                     this.queryContent = { requestCount:0, Content:$("<div>").attr("id", 'popupContent'),responseCount:0}
-                                                                              
+
                     for (let lyr in maplayers.overlays) {
                         if (!maplayers.overlays.hasOwnProperty(lyr)) continue;
                         //skip these layers
@@ -566,7 +566,15 @@ module StreamStats.Controllers {
                         switch (this.layers.overlays[lyr].type) {
                             case "agsFeature":
                                 //query
-                                maplayers.overlays[lyr].query().nearby(evt.latlng, 4).returnGeometry(false).run((error: any, results: any) => this.handleQueryResult(lyr, error, results, map, evt.latlng))
+                                
+                                var queryDistance = 4
+
+                                if (this.layers.overlays[lyr].layerOptions.queryDistance != null) {
+                                    queryDistance = this.layers.overlays[lyr].layerOptions.queryDistance
+                                } 
+
+                                maplayers.overlays[lyr].query().nearby(evt.latlng, queryDistance).returnGeometry(false).run((error: any, results: any) => this.handleQueryResult(lyr, error, results, map, evt.latlng));
+                                
                                 break;
                             default://agsDynamic
                                 var saveLayerName = lyr; // need to save layer name, or it sometimes doesn't send the correct layer in the handleQueryResult function
@@ -581,19 +589,35 @@ module StreamStats.Controllers {
         private handleQueryResult(lyr: string, error: any, results: any, map:any, latlng:any) {
             var querylayers = $("<div>").attr("id", lyr).appendTo(this.queryContent.Content);
             this.queryContent.requestCount--;
+            var uniqueNHDStreamGNISIDs = [];
             results.features.forEach((queryResult) => {
                 if (this.layers.overlays[lyr].hasOwnProperty('layerArray')) {
                     this.layers.overlays[lyr].layerArray.forEach((item) => {
                         if (item.layerId !== queryResult.layerId) return;
                         if (["StreamGrid", "ExcludePolys", "Region", "Subregion", "Basin", "Subbasin", "Watershed", "Subwatershed"].indexOf(item.layerName) > -1) return;                
-                        querylayers.append('<h5>' + item.layerName + '</h5>');
-                        this.queryContent.responseCount++;
+                        if (item.layerName == "NHD Streams") {
+                            if (queryResult.properties["GNIS_ID"] && queryResult.properties["GNIS_NAME"]) {
+                                if (uniqueNHDStreamGNISIDs.indexOf(queryResult.properties["GNIS_ID"]) == -1) {
+                                    uniqueNHDStreamGNISIDs.push(queryResult.properties["GNIS_ID"]);
+                                    querylayers.append('<h5> NHD Streams <i ng-mouseover="showTooltip = true" ng-mouseleave="showTooltip = false" class="fa fa-info-circle"></i><span ng-show="showTooltip" class="popup-tooltip">NHD streams within 100 meters of clicked point.</span></h5>');
+                                    querylayers.append('<strong> GNIS ID: </strong>' + queryResult.properties["GNIS_ID"] + '</br>');
+                                    querylayers.append('<strong> GNIS Name: </strong>' + queryResult.properties["GNIS_NAME"] + '</br>');
+                                    this.queryContent.responseCount++;
+                                } 
+                            }
+                        } else {
+                            querylayers.append('<h5>' + item.layerName + '</h5>');
+                            this.queryContent.responseCount++;
+                        }
+                        
                         //report ga event
                         this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'queryPoints' });
     
                         //show only specified fields (if applicable)
                         if (this.layers.overlays[lyr].hasOwnProperty("queryProperties") && this.layers.overlays[lyr].queryProperties.hasOwnProperty(item.layerName)) {      
                             let queryProperties = this.layers.overlays[lyr].queryProperties[item.layerName];
+                            // console.log(queryProperties);
+                            // console.log(queryResult.properties);
                             Object.keys(queryProperties).map(k => {
                                 if (item.layerName == "Streamgages" && k == "FeatureURL") {
                                     var siteNo = queryResult.properties[k].split('site_no=')[1];
@@ -619,7 +643,10 @@ module StreamStats.Controllers {
                                         else if (queryResult.properties[k] == 1) queryResult.properties[k] = "Yes"
                                     }
                                     querylayers.append('<strong>' + queryProperties[k] + ': </strong>' + queryResult.properties[k] + '</br>');
-                                }
+                                } 
+                                else if (item.layerName == "NHD Streams") {
+                                    // Do nothing
+                                } 
                                 else {
                                     querylayers.append('<strong>' + queryProperties[k] + ': </strong>' + queryResult.properties[k] + '</br>');
                                 }
