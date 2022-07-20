@@ -40,6 +40,7 @@ var StreamStats;
                 this.reportComments = 'Some comments here';
                 this.AppVersion = configuration.version;
                 this.extensions = this.ActiveExtensions;
+                this.applications = this.ActiveApplications;
                 this.environment = configuration.environment;
                 this.sectionCollapsed = [];
                 this.basinCharCollapsed = false;
@@ -106,6 +107,16 @@ var StreamStats;
                         return true;
                     else
                         return false;
+                },
+                enumerable: false,
+                configurable: true
+            });
+            Object.defineProperty(ReportController.prototype, "ActiveApplications", {
+                get: function () {
+                    if (this.regionService.selectedRegion.Applications && this.regionService.selectedRegion.Applications.length > 0)
+                        return this.regionService.selectedRegion.Applications;
+                    else
+                        return null;
                 },
                 enumerable: false,
                 configurable: true
@@ -212,6 +223,33 @@ var StreamStats;
                             }
                         }
                         csvFile += extVal + '\n\n';
+                    }
+                    if (self.applications) {
+                        var isChannelWidthWeighting = self.applications.indexOf('ChannelWidthWeighting') != -1;
+                        var isPFS = false;
+                        self.nssService.selectedStatisticsGroupList.forEach(function (s) {
+                            if (s.name == "Peak-Flow Statistics") {
+                                isPFS = true;
+                            }
+                        });
+                        if (isChannelWidthWeighting && isPFS) {
+                            extVal += 'Channel-width Methods Weighting\n';
+                            if (document.getElementById("channelWidthWeightingTable")) {
+                                extVal += 'PIl: Prediction Interval-Lower, PIu: Prediction Interval-Upper, ASEp: Average Standard Error of Prediction\n';
+                                if (self.nssService.equationWeightingDisclaimers && self.nssService.equationWeightingDisclaimers.length > 0) {
+                                    extVal += 'Warning messages:,';
+                                    self.nssService.equationWeightingDisclaimers.forEach(function (message) {
+                                        extVal += message + ". ";
+                                    });
+                                    extVal += '\n';
+                                }
+                                extVal += self.tableToCSV($('#channelWidthWeightingTable'));
+                            }
+                            else {
+                                extVal += 'No method weighting results returned.';
+                            }
+                            csvFile += extVal + '\n\n';
+                        }
                     }
                     csvFile += self.disclaimer + 'Application Version: ' + self.AppVersion;
                     if (self.SSServicesVersion)
