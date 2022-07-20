@@ -7,12 +7,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased](https://github.com/USGS-WiM/StreamStats/tree/dev)
   
   ### Added
-    
+
   ### Changed
 
   ### Fixed
 
   ### Removed
+
+## [v.4.10.1](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.10.1) - 2022-07-20
+  
+  ### Added
+  - Added Channel-width Methods Weighting results to downloaded CSV
 
 ## [v.4.10.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.10.0) - 2022-06-16
   
