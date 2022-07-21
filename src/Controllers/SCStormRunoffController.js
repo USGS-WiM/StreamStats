@@ -376,7 +376,7 @@ var StreamStats;
                     },
                     title: {
                         enable: true,
-                        text: 'Bohman Urban (1992) using ' + this.SelectedAEP.name + ' AEP',
+                        text: 'USGS SC Flood Hydrograph for Urban Watersheds using ' + this.SelectedAEP.name + ' AEP',
                         css: {
                             'font-size': '10pt',
                             'font-weight': 'bold'
@@ -416,7 +416,7 @@ var StreamStats;
                 var BohmanRural1989 = function () {
                 };
                 var BohmanUrban1992 = function () {
-                    var finalVal = 'Bohman Urban using ' + _this.SelectedAEP.name + ' AEP\n';
+                    var finalVal = 'USGS SC Flood Hydrograph for Urban Watersheds using ' + _this.SelectedAEP.name + ' AEP\n';
                     finalVal += '\n' + "Warning Messages:," + _this.warningMessages + '\n';
                     finalVal += _this.tableToCSV($('#BohmanUrbanParameterTable'));
                     finalVal += '\n' + _this.tableToCSV($('#BohmanUrbanSummaryTable'));
