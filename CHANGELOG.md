@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
     -  Added Urban Bohman Method functionality to the SC Storm Runoff model
     -  South Carolina application selects nearest NHD stream and HUC 8 watershed and adds to report
     -  South Carolina application allows user to select a different NHD stream and HUC 8 watershed
-    -  Query NHD streams in South Carolina
+    -  Query NHD streams in South Carolina and add new section to report
 
   ### Changed
 
