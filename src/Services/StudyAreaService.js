@@ -585,7 +585,6 @@ var StreamStats;
                             return prev.distanceToPourPoint < curr.distanceToPourPoint ? prev : curr;
                         });
                         _this.selectedStudyArea.NHDStream = minDistanceToPourPointFeature;
-                        _this.selectedStudyArea.Disclaimers['hydrologicFeatures'] = true;
                     }
                     else if (results && results.features.length == 0) {
                         _this.selectedStudyArea.NHDStreamIntersections = [];
