@@ -178,8 +178,8 @@
                     <div class="well well-sm"  ng-if="vm.regionService.selectedRegion.Applications.indexOf('HydrologicFeatures') != -1 && (vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID || vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_NAME || vm.studyAreaService.selectedStudyArea.WBDHUC8.huc8 || vm.studyAreaService.selectedStudyArea.WBDHUC8.name)">
                         <h3 class="collapsible" ng-click="vm.collapseSection($event, 'stats', 'HydrologicFeatures')"><i ng-class="!vm.sectionCollapsed['HydrologicFeatures'] ? 'fa fa-chevron-right': 'fa fa-chevron-down'"></i>&nbsp;&nbsp;Hydrologic Features</h3>
                             <div class="collapsible-content">
-                                <div ng-if="(vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID || vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_NAME) && vm.studyAreaService.selectedStudyArea.NHDStream != vm.studyAreaService.selectedStudyArea.defaultNHDStream" class="wim-alert-warning">NHD Stream was selected by the user.</div>
-                                <div ng-if="(vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID || vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_NAME) && vm.studyAreaService.selectedStudyArea.NHDStream == vm.studyAreaService.selectedStudyArea.defaultNHDStream" class="wim-alert-warning">NHD streams do not correspond to stream grid. The nearest intersecting NHD Stream was selected by default and may not be accurate.</div>
+                                <div ng-if="(vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID || vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_NAME) && vm.studyAreaService.selectedStudyArea.NHDStream != vm.studyAreaService.selectedStudyArea.defaultNHDStream" class="wim-alert-warning">NHD Stream was selected by the user. NHD streams do not correspond to stream grid and may not be accurate.</div>
+                                <div ng-if="(vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID || vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_NAME) && vm.studyAreaService.selectedStudyArea.NHDStream == vm.studyAreaService.selectedStudyArea.defaultNHDStream" class="wim-alert-warning">NHD streams do not correspond to stream grid. The nearest intersecting NHD stream was selected by default and may not be accurate.</div>
                                 <table class="hydrologicFeaturesTable table table-condensed">
                                     <thead ng-if="vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID || vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_NAME" class="flow-table">
                                         <tr>
@@ -197,7 +197,7 @@
                                     </tbody>
                                     <tbody ng-if="vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID || vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_NAME">
                                         <td class="col-md-7">Selection Method</td>
-                                        <td class="col-md-5">{{vm.studyAreaService.selectedStudyArea.NHDStream != vm.studyAreaService.selectedStudyArea.defaultNHDStream ? "User-selected" : "Default"}}</td> 
+                                        <td class="col-md-5">{{vm.studyAreaService.selectedStudyArea.NHDStream != vm.studyAreaService.selectedStudyArea.defaultNHDStream ? "User selection" : "Default"}}</td> 
                                     </tbody>
                                 </table>
                                 <table class="hydrologicFeaturesTable table table-condensed">
@@ -217,7 +217,7 @@
                                     </tbody>
                                     <tbody ng-if="vm.studyAreaService.selectedStudyArea.WBDHUC8.huc8 || vm.studyAreaService.selectedStudyArea.WBDHUC8.name">
                                         <td class="col-md-7">Selection Method</td>
-                                        <td class="col-md-5">{{vm.studyAreaService.selectedStudyArea.WBDHUC8 != vm.studyAreaService.selectedStudyArea.defaultWBDHUC8 ? "User-selected" : "Default"}}</td> 
+                                        <td class="col-md-5">{{vm.studyAreaService.selectedStudyArea.WBDHUC8 != vm.studyAreaService.selectedStudyArea.defaultWBDHUC8 ? "User selection" : "Default"}}</td> 
                                     </tbody>
                                 </table>
                                 <div>
