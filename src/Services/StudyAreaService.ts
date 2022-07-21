@@ -838,7 +838,6 @@ module StreamStats.Services {
                         return prev.distanceToPourPoint < curr.distanceToPourPoint ? prev : curr;
                     });
                     this.selectedStudyArea.NHDStream = minDistanceToPourPointFeature;
-                    // this.selectedStudyArea.Disclaimers['hydrologicFeatures'] = true;
                     // console.log("Hearest NHD Stream", minDistanceToPourPointFeature);
                 } else if (results && results.features.length == 0) {
                     this.selectedStudyArea.NHDStreamIntersections = [];

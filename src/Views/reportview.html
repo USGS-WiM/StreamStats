@@ -87,7 +87,6 @@
                     <!--Study Area Disclaimers-->
                     <div class="well well-sm" ng-show="vm.canShowDisclaimers">
                         <h3>General Disclaimers</h3>
-                        <!-- <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.hydrologicFeatures">NHD streams do not correspond with stream grid. NHD Stream information may not be accurate.</div> -->
                         <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.parametersEdited">Parameter values have been edited, computed flows may not apply.</div>
                         <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.regulationChecked">Upstream regulation was checked for this watershed.</div>
                         <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated">This watershed is {{vm.studyAreaService.regulationCheckResults.percentarearegulated.toFixed(2)}} percent regulated, computed flows may not apply.</div>
