@@ -585,6 +585,7 @@ var StreamStats;
                             return prev.distanceToPourPoint < curr.distanceToPourPoint ? prev : curr;
                         });
                         _this.selectedStudyArea.NHDStream = minDistanceToPourPointFeature;
+                        _this.selectedStudyArea.defaultNHDStream = minDistanceToPourPointFeature;
                     }
                     else if (results && results.features.length == 0) {
                         _this.selectedStudyArea.NHDStreamIntersections = [];
@@ -630,6 +631,7 @@ var StreamStats;
                             return prev.distanceToPourPoint < curr.distanceToPourPoint ? prev : curr;
                         });
                         _this.selectedStudyArea.WBDHUC8 = minDistanceToPourPointFeature;
+                        _this.selectedStudyArea.defaultWBDHUC8 = minDistanceToPourPointFeature;
                     }
                     else if (results && results.features.length == 0) {
                         _this.selectedStudyArea.WBDHUC8Intersections = [];

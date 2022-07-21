@@ -838,6 +838,7 @@ module StreamStats.Services {
                         return prev.distanceToPourPoint < curr.distanceToPourPoint ? prev : curr;
                     });
                     this.selectedStudyArea.NHDStream = minDistanceToPourPointFeature;
+                    this.selectedStudyArea.defaultNHDStream = minDistanceToPourPointFeature;
                     // console.log("Hearest NHD Stream", minDistanceToPourPointFeature);
                 } else if (results && results.features.length == 0) {
                     this.selectedStudyArea.NHDStreamIntersections = [];
@@ -882,7 +883,7 @@ module StreamStats.Services {
                         return prev.distanceToPourPoint < curr.distanceToPourPoint ? prev : curr;
                     });
                     this.selectedStudyArea.WBDHUC8 = minDistanceToPourPointFeature;
-                    // console.log("Nearest WBD HUC 8", minDistanceToPourPointFeature);
+                    this.selectedStudyArea.defaultWBDHUC8 = minDistanceToPourPointFeature;
                 } else if (results && results.features.length == 0) {
                     this.selectedStudyArea.WBDHUC8Intersections = [];
                 }else {
