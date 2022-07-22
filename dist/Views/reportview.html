@@ -32,22 +32,6 @@
                         <div class="col-md-7"><strong>Clicked Point (Latitude, Longitude):</strong></div>
                         <div class="col-md-5">{{vm.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5)}}, {{vm.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5)}}</div>
                     </div>
-                    <div ng-if="vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID" class="row">
-                        <div class="col-md-7"><strong>NHD Stream GNIS ID:</strong></div>
-                        <div class="col-md-5">{{vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID}}</div>
-                    </div>
-                    <div ng-if="vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_NAME" class="row">
-                        <div class="col-md-7"><strong>NHD Stream GNIS Name:</strong></div>
-                        <div class="col-md-5">{{vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_NAME}}</div>
-                    </div>
-                    <div ng-if="vm.studyAreaService.selectedStudyArea.WBDHUC8.huc8" class="row">
-                        <div class="col-md-7"><strong>HUC 8 ID:</strong></div>
-                        <div class="col-md-5">{{vm.studyAreaService.selectedStudyArea.WBDHUC8.huc8}}</div>
-                    </div>
-                    <div ng-if="vm.studyAreaService.selectedStudyArea.WBDHUC8.name" class="row">
-                        <div class="col-md-7"><strong>HUC 8 Name:</strong></div>
-                        <div class="col-md-5">{{vm.studyAreaService.selectedStudyArea.WBDHUC8.name}}</div>
-                    </div>
                     <div class="row">
                         <div class="col-md-7"><strong>Time:</strong></div>
                         <div class="col-md-5">{{vm.studyAreaService.selectedStudyArea.Date | date:'yyyy-MM-dd HH:mm:ss Z'}}</div>
@@ -103,7 +87,6 @@
                     <!--Study Area Disclaimers-->
                     <div class="well well-sm" ng-show="vm.canShowDisclaimers">
                         <h3>General Disclaimers</h3>
-                        <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.hydrologicFeatures">NHD streams do not correspond with stream grid. NHD Stream information may not be accurate.</div>
                         <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.parametersEdited">Parameter values have been edited, computed flows may not apply.</div>
                         <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.regulationChecked">Upstream regulation was checked for this watershed.</div>
                         <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated">This watershed is {{vm.studyAreaService.regulationCheckResults.percentarearegulated.toFixed(2)}} percent regulated, computed flows may not apply.</div>
@@ -189,7 +172,61 @@
                                 <a href="{{citation.citationURL.replace('#','')}}" target="_blank">{{citation.author}}{{citation.title}}</a>
                             </div>
                         </div>
+                    </div>
 
+                    <!-- Hydrologic Features Application -->
+                    <div class="well well-sm"  ng-if="vm.regionService.selectedRegion.Applications.indexOf('HydrologicFeatures') != -1 && (vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID || vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_NAME || vm.studyAreaService.selectedStudyArea.WBDHUC8.huc8 || vm.studyAreaService.selectedStudyArea.WBDHUC8.name)">
+                        <h3 class="collapsible" ng-click="vm.collapseSection($event, 'stats', 'HydrologicFeatures')"><i ng-class="!vm.sectionCollapsed['HydrologicFeatures'] ? 'fa fa-chevron-right': 'fa fa-chevron-down'"></i>&nbsp;&nbsp;Hydrologic Features</h3>
+                            <div class="collapsible-content">
+                                <div ng-if="(vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID || vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_NAME) && vm.studyAreaService.selectedStudyArea.NHDStream != vm.studyAreaService.selectedStudyArea.defaultNHDStream" class="wim-alert-warning">NHD Stream was selected by the user. NHD streams do not correspond to stream grid and may not be accurate.</div>
+                                <div ng-if="(vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID || vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_NAME) && vm.studyAreaService.selectedStudyArea.NHDStream == vm.studyAreaService.selectedStudyArea.defaultNHDStream" class="wim-alert-warning">NHD streams do not correspond to stream grid. The nearest intersecting NHD stream was selected by default and may not be accurate.</div>
+                                <table class="hydrologicFeaturesTable table table-condensed">
+                                    <thead ng-if="vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID || vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_NAME" class="flow-table">
+                                        <tr>
+                                            <th class="col-md-7">NHD Stream Attribute</th>
+                                            <th class="col-md-5">Value</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody ng-if="vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID">
+                                        <td class="col-md-7">GNIS ID</td>
+                                        <td class="col-md-5">{{vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID}}</td> 
+                                    </tbody>
+                                    <tbody ng-if="vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_NAME">
+                                        <td class="col-md-7">GNIS Name</td>
+                                        <td class="col-md-5">{{vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_NAME}}</td> 
+                                    </tbody>
+                                    <tbody ng-if="vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID || vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_NAME">
+                                        <td class="col-md-7">Selection Method</td>
+                                        <td class="col-md-5">{{vm.studyAreaService.selectedStudyArea.NHDStream != vm.studyAreaService.selectedStudyArea.defaultNHDStream ? "User selection" : "Default"}}</td> 
+                                    </tbody>
+                                </table>
+                                <table class="hydrologicFeaturesTable table table-condensed">
+                                    <thead ng-if="vm.studyAreaService.selectedStudyArea.WBDHUC8.WBDHUC8 || vm.studyAreaService.selectedStudyArea.WBDHUC8.name" class="flow-table">
+                                        <tr>
+                                            <th class="col-md-7">HUC 8 Attribute</th>
+                                            <th class="col-md-5">Value</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody ng-if="vm.studyAreaService.selectedStudyArea.WBDHUC8.huc8">
+                                        <td class="col-md-7">ID</td>
+                                        <td class="col-md-5">{{vm.studyAreaService.selectedStudyArea.WBDHUC8.huc8}}</td> 
+                                    </tbody>
+                                    <tbody ng-if="vm.studyAreaService.selectedStudyArea.WBDHUC8.name">
+                                        <td class="col-md-7">Name</td>
+                                        <td class="col-md-5">{{vm.studyAreaService.selectedStudyArea.WBDHUC8.name}}</td> 
+                                    </tbody>
+                                    <tbody ng-if="vm.studyAreaService.selectedStudyArea.WBDHUC8.huc8 || vm.studyAreaService.selectedStudyArea.WBDHUC8.name">
+                                        <td class="col-md-7">Selection Method</td>
+                                        <td class="col-md-5">{{vm.studyAreaService.selectedStudyArea.WBDHUC8 != vm.studyAreaService.selectedStudyArea.defaultWBDHUC8 ? "User selection" : "Default"}}</td> 
+                                    </tbody>
+                                </table>
+                                <div>
+                                    <h4>Hydrologic Features Citations</h4>
+                                    <div ng-if="vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID || vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_NAME"><a href="https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/6" target="_blank">U.S. Geological Survey, 2022, USGS TNM - National Hydrography Dataset, accessed July 21, 2022 at URL https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/6.</a></div>
+                                    <div ng-if="vm.studyAreaService.selectedStudyArea.WBDHUC8.huc8 || vm.studyAreaService.selectedStudyArea.WBDHUC8.name"><a href="https://hydro.nationalmap.gov/arcgis/rest/services/wbd/MapServer/4" target="_blank">U.S. Geological Survey, 2022, USGS WBD - Watershed Boundary Dataset, accessed July 21, 2022 at URL https://hydro.nationalmap.gov/arcgis/rest/services/wbd/MapServer/4.</a></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!--Extensions results-->
@@ -316,6 +353,7 @@
                         </div><!--end sc-->
                     </div><!--end extension-->
 
+                <!-- Channel Width Weighting Application -->
                 <div class="well well-sm"  ng-if="vm.regionService.selectedRegion.Applications.indexOf('ChannelWidthWeighting') != -1 && vm.nssService.selectedStatisticsGroupList.name.indexOf('Peak-Flow Statistics') != -1">
                     <h3 class="collapsible" ng-click="vm.collapseSection($event, 'stats', 'ChannelWidthWeighting')"><i ng-class="!vm.sectionCollapsed['ChannelWidthWeighting'] ? 'fa fa-chevron-right': 'fa fa-chevron-down'"></i>&nbsp;&nbsp;Channel-width Methods Weighting</h3>
                         <div class="collapsible-content">
