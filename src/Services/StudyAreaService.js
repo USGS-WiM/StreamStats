@@ -517,7 +517,7 @@ var StreamStats;
                     boundingBox[index] = destination.geometry.coordinates[index % 2 == 0 ? 0 : 1];
                 });
                 var outFields = "Stream_Name,StreamID_ID,BASIN_NAME,DVA_EQ_ID,a10,b10,a25,b25,a50,b50,a100,b100,a500,b500";
-                var url = 'https://services.arcgis.com/2Mcx1M1MORKfBNPM/' + configuration.queryparams['coordinatedReachQueryService']
+                var url = configuration.queryparams['coordinatedReachQueryService']
                     .format(boundingBox[0], boundingBox[1], boundingBox[2], boundingBox[3], this.selectedStudyArea.Pourpoint.crs, outFields);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
@@ -534,7 +534,6 @@ var StreamStats;
                         var pkID = Object.keys(attributes).map(function (key, index) {
                             return key.substr(feildprecursor.length + 1);
                         }).filter(function (value, index, self) { return self.indexOf(value) === index; });
-                        console.log(pkID);
                         for (var i = 0; i < pkID.length; i++) {
                             var code = pkID[i];
                             var acoeff = attributes[feildprecursor + "a" + code];

@@ -56,7 +56,7 @@ configuration.queryparams =
         'Wateruse': '/summary?year={0}&endyear={1}&includePermits={2}&computeReturns={3}&computeDomestic={4}',
         'WateruseSourceCSV': '/summary/bysource?year={0}&endyear={1}&includePermits={2}&computeReturns={3}&computeDomestic={4}',
         'WateruseConfig': '/regions/{0}/config',
-        'coordinatedReachQueryService': 'ArcGIS/rest/services/Indiana_Coordinated_Discharge_view/FeatureServer/2/query?geometry={0},{1},{2},{3}&geometryType=esriGeometryEnvelope&inSR={4}&spatialRel=esriSpatialRelIntersects&outFields={5}&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&f=pjson',
+        'coordinatedReachQueryService': 'https://services.arcgis.com/2Mcx1M1MORKfBNPM/ArcGIS/rest/services/Indiana_Coordinated_Discharge_view/FeatureServer/2/query?geometry={0},{1},{2},{3}&geometryType=esriGeometryEnvelope&inSR={4}&spatialRel=esriSpatialRelIntersects&outFields={5}&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&f=pjson',
         'StormRunoffTR55': '/TR55/GetResult?area={0}&precip={1}&crvnum={2}&pdur={3}',
         'StormRunoffRationalMethod': '/RationalMethod?area={0}&precipint={1}&rcoeff={2}&pdur={3}',
         'ProsperPredictions': '/rest/services/Catalog/5c5204e4e4b0708288fb42e2/MapServer',
