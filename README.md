@@ -7,7 +7,7 @@ StreamStats client application
 ### Prerequisites
 
 ##### required software
-[node.js](http://nodejs.org)  
+[node.js](http://nodejs.org) version 10.15.0
 [git](https://git-scm.com/)  
 
 Install global dependencies
