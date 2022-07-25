@@ -7,13 +7,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased](https://github.com/USGS-WiM/StreamStats/tree/dev)
   
   ### Added
-  - Added Channel-width Methods Weighting results to downloaded CSV
+
   ### Changed
   - Changed Coordinated Reach to new layer, [https://services.arcgis.com/2Mcx1M1MORKfBNPM/arcgis/rest/services/Indiana_Coordinated_Discharge_view/FeatureServer](https://gcc02.safelinks.protection.outlook.com/?url=https%3A%2F%2Fservices.arcgis.com%2F2Mcx1M1MORKfBNPM%2Farcgis%2Frest%2Fservices%2FIndiana_Coordinated_Discharge_view%2FFeatureServer&data=05%7C01%7Chwavra%40usgs.gov%7C60f5174bf5c246f7280d08da6356b722%7C0693b5ba4b184d7b9341f32f400a5494%7C0%7C0%7C637931521329388958%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&sdata=kZZdIdAyDuinLy4JsOlM%2FFh4ev9KTSpHQoo4mn7TA%2F0%3D&reserved=0). 
 
   ### Fixed
 
   ### Removed
+
+## [v.4.10.1](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.10.1) - 2022-07-20
+  
+  ### Added
+  - Added Channel-width Methods Weighting results to downloaded CSV
 
 ## [v.4.10.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.10.0) - 2022-06-16
   
