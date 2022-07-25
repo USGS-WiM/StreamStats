@@ -748,9 +748,9 @@ module StreamStats.Services {
                     boundingBox[index] = destination.geometry.coordinates[index % 2 == 0 ? 0 : 1];
                 });
 
-                var outFields = "eqWithStrID.Stream_Name,eqWithStrID.StreamID_ID,eqWithStrID.BASIN_NAME,eqWithStrID.DVA_EQ_ID,eqWithStrID.a10,eqWithStrID.b10,eqWithStrID.a25,eqWithStrID.b25,eqWithStrID.a50,eqWithStrID.b50,eqWithStrID.a100,eqWithStrID.b100,eqWithStrID.a500,eqWithStrID.b500";
-                var url = configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['coordinatedReachQueryService']
-                    .format(this.selectedStudyArea.RegionID.toLowerCase(), boundingBox[0], boundingBox[1], boundingBox[2], boundingBox[3], this.selectedStudyArea.Pourpoint.crs, outFields);
+                var outFields = "Stream_Name,StreamID_ID,BASIN_NAME,DVA_EQ_ID,a10,b10,a25,b25,a50,b50,a100,b100,a500,b500";
+                var url = configuration.queryparams['coordinatedReachQueryService']
+                    .format(boundingBox[0], boundingBox[1], boundingBox[2], boundingBox[3], this.selectedStudyArea.Pourpoint.crs, outFields);
                 var request: WiM.Services.Helpers.RequestInfo =
                     new WiM.Services.Helpers.RequestInfo(url, true);
 
@@ -766,17 +766,17 @@ module StreamStats.Services {
                             var attributes = response.data.features[0].attributes
                             //console.log('query success');
 
-                            this.selectedStudyArea.CoordinatedReach = new Models.CoordinatedReach(attributes["eqWithStrID.BASIN_NAME"], attributes["eqWithStrID.DVA_EQ_ID"],attributes["eqWithStrID.Stream_Name"], attributes["eqWithStrID.StreamID_ID"]);
+                            this.selectedStudyArea.CoordinatedReach = new Models.CoordinatedReach(attributes["BASIN_NAME"], attributes["DVA_EQ_ID"],attributes["Stream_Name"], attributes["StreamID_ID"]);
                             //remove from arrays
-                            delete attributes["eqWithStrID.BASIN_NAME"];
-                            delete attributes["eqWithStrID.DVA_EQ_ID"];
+                            delete attributes["BASIN_NAME"];
+                            delete attributes["DVA_EQ_ID"];
 
-                            var feildprecursor = "eqWithStrID.";
+                            var feildprecursor = "";
 
                             var pkID = Object.keys(attributes).map((key, index) => {
                                 return key.substr(feildprecursor.length + 1);
                             }).filter((value, index, self) => { return self.indexOf(value) === index; })
-
+                            
                             for (var i = 0; i < pkID.length; i++) {
                                 var code = pkID[i];
                                 var acoeff = attributes[feildprecursor + "a" + code];

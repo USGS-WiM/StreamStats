@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   ### Added
 
   ### Changed
+  - Changed Coordinated Reach to new layer, [https://services.arcgis.com/2Mcx1M1MORKfBNPM/arcgis/rest/services/Indiana_Coordinated_Discharge_view/FeatureServer](https://services.arcgis.com/2Mcx1M1MORKfBNPM/ArcGIS/rest/services/Indiana_Coordinated_Discharge_view/FeatureServer). 
 
   ### Fixed
 
