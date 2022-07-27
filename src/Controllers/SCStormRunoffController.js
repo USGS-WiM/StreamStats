@@ -57,8 +57,62 @@ var StreamStats;
                         "name": ".2%",
                         "value": 0.2
                     }];
+                _this.AEPOptionsSynthetic = [{
+                        "name": "10%",
+                        "value": 10
+                    }, {
+                        "name": "4%",
+                        "value": 4
+                    }, {
+                        "name": "2%",
+                        "value": 2
+                    }, {
+                        "name": "1%",
+                        "value": 1
+                    }];
+                _this.StandardCurveOptions = [{
+                        "name": "Area Weighted CN",
+                        "value": 1
+                    }, {
+                        "name": "Runoff Weighted CN",
+                        "value": 2
+                    }];
+                _this.CNModificationOptions = [{
+                        "name": "McCuen",
+                        "value": 1
+                    }, {
+                        "name": "Merkel",
+                        "value": 2
+                    }];
+                _this.TimeOfConcentrationOptions = [{
+                        "name": "Travel Time Method",
+                        "value": 1
+                    }, {
+                        "name": "Lag Time Equation",
+                        "value": 2
+                    }];
+                _this.RainfallDistributionOptions = [{
+                        "name": "Type II",
+                        "value": 2,
+                    }, {
+                        "name": "Type III",
+                        "value": 3,
+                    }, {
+                        "name": "NOAA A",
+                        "value": 4,
+                    }, {
+                        "name": "NOAA B",
+                        "value": 5,
+                    }, {
+                        "name": "NOAA C",
+                        "value": 6,
+                    }, {
+                        "name": "NOAA D",
+                        "value": 7,
+                    }];
                 $scope.vm = _this;
                 $scope.greaterThanZero = /^([0-9]*[1-9][0-9]*(\.[0-9]+)?|[0]+\.[0-9]*[1-9][0-9]*)$/;
+                $scope.greaterThanOrEqualToZero = /0+|^([0-9]*[1-9][0-9]*(\.[0-9]+)?|[0]+\.[0-9]*[1-9][0-9]*)$/;
                 $scope.betweenZeroOneHundred = /^(\d{0,2}(\.\d{1,2})?|100(\.00?)?)$/;
                 _this.AppVersion = configuration.version;
                 _this.angulartics = $analytics;
@@ -72,6 +126,19 @@ var StreamStats;
                 };
                 return _this;
             }
+            Object.defineProperty(SCStormRunoffController.prototype, "SelectedTab", {
+                get: function () {
+                    return this._selectedTab;
+                },
+                set: function (val) {
+                    if (this._selectedTab != val) {
+                        this._selectedTab = val;
+                        this.selectRunoffType();
+                    }
+                },
+                enumerable: false,
+                configurable: true
+            });
             Object.defineProperty(SCStormRunoffController.prototype, "SelectedAEP", {
                 get: function () {
                     return this._selectedAEP;
@@ -82,15 +149,52 @@ var StreamStats;
                 enumerable: false,
                 configurable: true
             });
-            Object.defineProperty(SCStormRunoffController.prototype, "SelectedTab", {
+            Object.defineProperty(SCStormRunoffController.prototype, "SelectedAEPSynthetic", {
                 get: function () {
-                    return this._selectedTab;
+                    return this._selectedAEPSynthetic;
                 },
                 set: function (val) {
-                    if (this._selectedTab != val) {
-                        this._selectedTab = val;
-                        this.selectRunoffType();
-                    }
+                    this._selectedAEPSynthetic = val;
+                },
+                enumerable: false,
+                configurable: true
+            });
+            Object.defineProperty(SCStormRunoffController.prototype, "SelectedStandardCurve", {
+                get: function () {
+                    return this._selectedStandardCurve;
+                },
+                set: function (val) {
+                    this._selectedStandardCurve = val;
+                },
+                enumerable: false,
+                configurable: true
+            });
+            Object.defineProperty(SCStormRunoffController.prototype, "SelectedCNModification", {
+                get: function () {
+                    return this._selectedCNModification;
+                },
+                set: function (val) {
+                    this._selectedCNModification = val;
+                },
+                enumerable: false,
+                configurable: true
+            });
+            Object.defineProperty(SCStormRunoffController.prototype, "SelectedTimeOfConcentration", {
+                get: function () {
+                    return this._selectedTimeOfConcentration;
+                },
+                set: function (val) {
+                    this._selectedTimeOfConcentration = val;
+                },
+                enumerable: false,
+                configurable: true
+            });
+            Object.defineProperty(SCStormRunoffController.prototype, "SelectedRainfallDistribution", {
+                get: function () {
+                    return this._selectedRainfallDistribution;
+                },
+                set: function (val) {
+                    this._selectedRainfallDistribution = val;
                 },
                 enumerable: false,
                 configurable: true
@@ -396,10 +500,19 @@ var StreamStats;
             };
             SCStormRunoffController.prototype.clearResults = function () {
                 this.drainageArea = null;
+                this.drainageAreaSynthetic = null;
+                this.timeOfConcentrationMin = null;
+                this.peakRateFactor = null;
+                this.standardCurveNumber = null;
+                this.watershedRetention = null;
+                this.initialAbstraction = null;
+                this.lagTimeLength = null;
+                this.lagTimeSlope = null;
                 this.mainChannelLength = null;
                 this.mainChannelSlope = null;
                 this.totalImperviousArea = null;
                 this.SelectedAEP = { "name": "50%", "value": 50 };
+                this.SelectedAEPSynthetic = { "name": "10%", "value": 10 };
                 this.showResults = false;
                 this.warningMessages = null;
             };
@@ -462,6 +575,11 @@ var StreamStats;
                 this.hideAlerts = false;
                 this.canContinue = true;
                 this.SelectedAEP = { "name": "50%", "value": 50 };
+                this.SelectedAEPSynthetic = { "name": "10%", "value": 10 };
+                this.SelectedStandardCurve = { "name": "Area Weighted CN", "value": 1 };
+                this.SelectedCNModification = { "name": "McCuen", "value": 1 };
+                this.SelectedTimeOfConcentration = { "name": "Travel Time Method", "value": 1 };
+                this.SelectedRainfallDistribution = { "name": "Type II", "value": 2 };
             };
             SCStormRunoffController.prototype.selectRunoffType = function () {
                 switch (this._selectedTab) {

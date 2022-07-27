@@ -54,6 +54,14 @@ module StreamStats.Controllers {
         public canContinue: boolean;
         public ReportData: ISCStormRunoffReportable;
         public drainageArea: number;
+        public drainageAreaSynthetic: number;
+        public timeOfConcentrationMin: number;
+        public peakRateFactor: number;
+        public standardCurveNumber: number;
+        public watershedRetention: number;
+        public initialAbstraction: number;
+        public lagTimeLength: number;
+        public lagTimeSlope: number;
         public mainChannelLength: number;
         public mainChannelSlope: number;
         public totalImperviousArea: number;
@@ -63,6 +71,19 @@ module StreamStats.Controllers {
         public regressionRegions;
         public reportData;
         public angulartics: any;
+
+        private _selectedTab: SCStormRunoffType;
+        public get SelectedTab(): SCStormRunoffType {
+            return this._selectedTab;
+        }
+        public set SelectedTab(val: SCStormRunoffType) {
+            if (this._selectedTab != val) {
+                this._selectedTab = val;
+                this.selectRunoffType();
+            }//end if           
+        }
+
+        // 
         public AEPOptions = [{
             "name": "50%",
             "value": 50
@@ -95,16 +116,98 @@ module StreamStats.Controllers {
         public set SelectedAEP(val) {
             this._selectedAEP = val;
         }
-        private _selectedTab: SCStormRunoffType;
-        public get SelectedTab(): SCStormRunoffType {
-            return this._selectedTab;
+
+        // Synthetic UH
+        private _selectedAEPSynthetic;
+        private _selectedStandardCurve;
+        private _selectedCNModification;
+        private _selectedTimeOfConcentration;
+        private _selectedRainfallDistribution;
+        public AEPOptionsSynthetic = [{
+            "name": "10%",
+            "value": 10
+        }, {
+            "name": "4%",
+            "value": 4
+        }, {
+            "name": "2%",
+            "value": 2
+        }, {
+            "name": "1%",
+            "value": 1
+        }]
+        public StandardCurveOptions = [{
+            "name": "Area Weighted CN",
+            "value": 1
+        }, {
+            "name": "Runoff Weighted CN",
+            "value": 2
+        }]
+        public CNModificationOptions = [{
+            "name": "McCuen",
+            "value": 1
+        }, {
+            "name": "Merkel",
+            "value": 2
+        }]
+        public TimeOfConcentrationOptions = [{
+            "name": "Travel Time Method",
+            "value": 1
+        }, {
+            "name": "Lag Time Equation",
+            "value": 2
+        }]
+        public RainfallDistributionOptions = [{
+            "name": "Type II",
+            "value": 2,
+        }, {
+            "name": "Type III",
+            "value": 3,
+        }, {
+            "name": "NOAA A",
+            "value": 4,
+        }, {
+            "name": "NOAA B",
+            "value": 5,
+        }, {
+            "name": "NOAA C",
+            "value": 6,
+        }, {
+            "name": "NOAA D",
+            "value": 7,
+        }]
+        public get SelectedAEPSynthetic() {
+            return this._selectedAEPSynthetic;
         }
-        public set SelectedTab(val: SCStormRunoffType) {
-            if (this._selectedTab != val) {
-                this._selectedTab = val;
-                this.selectRunoffType();
-            }//end if           
+        public set SelectedAEPSynthetic(val) {
+            this._selectedAEPSynthetic = val;
         }
+        public get SelectedStandardCurve() {
+            return this._selectedStandardCurve;
+        }
+        public set SelectedStandardCurve(val) {
+            this._selectedStandardCurve = val;
+        }
+        public get SelectedCNModification() {
+            return this._selectedCNModification;
+        } 
+        public set SelectedCNModification(val) {
+            this._selectedCNModification = val;
+        }
+        public get SelectedTimeOfConcentration() {
+            return this._selectedTimeOfConcentration
+        }
+        public set SelectedTimeOfConcentration(val) {
+            this._selectedTimeOfConcentration = val;
+        }
+        public get SelectedRainfallDistribution() {
+            return this._selectedRainfallDistribution;
+        }
+        public set SelectedRainfallDistribution(val) {
+            this._selectedRainfallDistribution = val;
+        }
+
+
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -113,6 +216,7 @@ module StreamStats.Controllers {
             super($http, configuration.baseurls.StormRunoffServices);
             $scope.vm = this;
             $scope.greaterThanZero = /^([0-9]*[1-9][0-9]*(\.[0-9]+)?|[0]+\.[0-9]*[1-9][0-9]*)$/;
+            $scope.greaterThanOrEqualToZero = /0+|^([0-9]*[1-9][0-9]*(\.[0-9]+)?|[0]+\.[0-9]*[1-9][0-9]*)$/;
             $scope.betweenZeroOneHundred = /^(\d{0,2}(\.\d{1,2})?|100(\.00?)?)$/; 
             this.AppVersion = configuration.version;
             this.angulartics = $analytics;
@@ -463,10 +567,19 @@ module StreamStats.Controllers {
 
         public clearResults() {
             this.drainageArea = null;
+            this.drainageAreaSynthetic = null;
+            this.timeOfConcentrationMin = null;
+            this.peakRateFactor = null;
+            this.standardCurveNumber = null;
+            this.watershedRetention = null;
+            this.initialAbstraction = null;
+            this.lagTimeLength = null;
+            this.lagTimeSlope = null;
             this.mainChannelLength = null;
             this.mainChannelSlope = null;
             this.totalImperviousArea = null;
             this.SelectedAEP = {"name": "50%", "value": 50};
+            this.SelectedAEPSynthetic = {"name": "10%", "value": 10};
             this.showResults = false;
             this.warningMessages = null;
         }
@@ -546,6 +659,11 @@ module StreamStats.Controllers {
             this.hideAlerts = false;
             this.canContinue = true;
             this.SelectedAEP = {"name": "50%", "value": 50};
+            this.SelectedAEPSynthetic = {"name": "10%", "value": 10};
+            this.SelectedStandardCurve = { "name": "Area Weighted CN", "value": 1 }
+            this.SelectedCNModification = { "name": "McCuen", "value": 1 }
+            this.SelectedTimeOfConcentration = { "name": "Travel Time Method", "value": 1 }
+            this.SelectedRainfallDistribution = { "name": "Type II", "value": 2 }
         }
 
         private selectRunoffType() {
