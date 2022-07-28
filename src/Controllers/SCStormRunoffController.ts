@@ -207,6 +207,128 @@ module StreamStats.Controllers {
             this._selectedRainfallDistribution = val;
         }
 
+        private greaterThanZero = /^([0-9]*[1-9][0-9]*(\.[0-9]+)?|[0]+\.[0-9]*[1-9][0-9]*)$/;
+        private gTZInvalidMessage = "Value must be greater than 0"
+        private greaterThanOrEqualToZero = /0+|^([0-9]*[1-9][0-9]*(\.[0-9]+)?|[0]+\.[0-9]*[1-9][0-9]*)$/;
+        private gTOETZInvalidMessage = "Value must be greater than or equal to 0"
+        private betweenZeroOneHundred = /^(\d{0,2}(\.\d{1,2})?|100(\.00?)?)$/;
+
+        private _defaultFlowTypes = [
+            {
+                id: "sheetFlow",
+                displayName: "Sheet Flow",
+                accordionOpen: false,
+                questions: [
+                    {
+                        id: "surface",
+                        label: "Surface",
+                        type: "select",
+                        value: null,
+                        options: {
+                            "Smooth asphalt": 0.011,
+                            "Smooth concrete": 0.012,
+                            "Fallow (no residue)": 0.050,
+                            "Short grass prairie": 0.150,
+                            "Dense grasses": 0.240,
+                            "Bermuda grass": 0.410,
+                            "Light underbrush": 0.400,
+                            "Dense underbrush": 0.800,
+                            "Cultivated Soil with Residue cover <=20%": 0.060,
+                            "Cultivated Soil with Residue cover >=20%": 0.170,
+                            "Natural Range": 0.130
+                        }
+                    },
+                    {
+                        id: "length",
+                        label: "Length (ft)",
+                        type: "number",
+                        value: null,
+                        pattern: "greaterThanZero",
+                        invalidMessage: this.gTZInvalidMessage
+                    },
+                    {
+                        id: "overland",
+                        label: "Overland Slope (%)",
+                        type: "number",
+                        value: null,
+                        pattern: "greaterThanOrEqualToZero",
+                        invalidMessage: this.gTOETZInvalidMessage
+                    }
+                ],
+            },
+            {
+                id: "excessSheetFlow",
+                displayName: "Excess Sheet Flow",
+                accordionOpen: false,
+                questions: [
+
+                ]
+            },
+            {
+                id: "shallowConcentratedFlow",
+                displayName: "Shallow Concentrated Flow",
+                accordionOpen: false,
+                questions: [
+
+                ]
+            },
+            {
+                id: "channelizedFlowOpen",
+                displayName: "Channelized Flow - Open Channel",
+                accordionOpen: false,
+                questions: [
+
+                ]
+            },
+            {
+                id: "channelizedFlowStorm",
+                displayName: "Channelized Flow - Storm Sewer",
+                accordionOpen: false,
+                questions: [
+
+                ]
+            },
+            {
+                id: "channelizedFlowUserInput",
+                displayName: "Channelized Flow - User Input",
+                accordionOpen: false,
+                questions: [
+
+                ]
+            },
+        ]
+
+        // base keys match with ids from the object above ^^^^
+        private _defaultFlowSegments = {
+            sheetFlow: [
+
+            ],
+            excessSheetFlow: [
+
+            ],
+            shallowConcentratedFlow: [
+
+            ],
+            channelizedFlowOpen: [
+
+            ],
+            channelizedFlowStorm: [
+
+            ],
+            channelizedFlowUserInput: [
+
+            ]
+
+        }
+
+        public TravelTimeFlowTypes = this._defaultFlowTypes;
+        public TravelTimeFlowSegments = this._defaultFlowSegments;
+
+        public addFlowModalOpen = false;
+        private _chosenFlowTypeIndex : number;
+        public get chosenFlowTypeIndex() {
+            return this._chosenFlowTypeIndex;
+        } 
 
 
         //Constructor
@@ -215,9 +337,9 @@ module StreamStats.Controllers {
         constructor($scope: ISCStormRunoffControllerScope, $analytics, toaster, $http: ng.IHttpService, studyAreaService: StreamStats.Services.IStudyAreaService, modal: ng.ui.bootstrap.IModalServiceInstance, public $timeout: ng.ITimeoutService, private EventManager: WiM.Event.IEventManager) {
             super($http, configuration.baseurls.StormRunoffServices);
             $scope.vm = this;
-            $scope.greaterThanZero = /^([0-9]*[1-9][0-9]*(\.[0-9]+)?|[0]+\.[0-9]*[1-9][0-9]*)$/;
-            $scope.greaterThanOrEqualToZero = /0+|^([0-9]*[1-9][0-9]*(\.[0-9]+)?|[0]+\.[0-9]*[1-9][0-9]*)$/;
-            $scope.betweenZeroOneHundred = /^(\d{0,2}(\.\d{1,2})?|100(\.00?)?)$/; 
+            $scope.greaterThanZero = this.greaterThanZero;
+            $scope.greaterThanOrEqualToZero = this.greaterThanOrEqualToZero;
+            $scope.betweenZeroOneHundred = this.betweenZeroOneHundred; 
             this.AppVersion = configuration.version;
             this.angulartics = $analytics;
             this.toaster = toaster;
@@ -554,6 +676,28 @@ module StreamStats.Controllers {
             };
         }
 
+        public openAddFlowModal(indexOfFlow : number) {
+            this.addFlowModalOpen = true;
+            this._chosenFlowTypeIndex = indexOfFlow;
+        }
+
+        public closeAddFlowModal() {
+            this.addFlowModalOpen = false;
+        }
+
+        public addFlowSegment() {
+            let questionSet = this.TravelTimeFlowTypes[this._chosenFlowTypeIndex].questions;
+            let newSegment = [];
+            for(let question of questionSet) {
+                newSegment.push(JSON.parse(JSON.stringify(question)));
+                question.value = null;
+            }
+
+            this.TravelTimeFlowSegments[this.TravelTimeFlowTypes[this._chosenFlowTypeIndex].id].push(newSegment);
+            this._chosenFlowTypeIndex = null;
+            this.addFlowModalOpen = false;
+        }
+
         public validateForm(mainForm) {
             if (mainForm.$valid) {
                 return true;
@@ -575,6 +719,7 @@ module StreamStats.Controllers {
             this.initialAbstraction = null;
             this.lagTimeLength = null;
             this.lagTimeSlope = null;
+            this._chosenFlowTypeIndex = null;
             this.mainChannelLength = null;
             this.mainChannelSlope = null;
             this.totalImperviousArea = null;
@@ -662,8 +807,10 @@ module StreamStats.Controllers {
             this.SelectedAEPSynthetic = {"name": "10%", "value": 10};
             this.SelectedStandardCurve = { "name": "Area Weighted CN", "value": 1 }
             this.SelectedCNModification = { "name": "McCuen", "value": 1 }
-            this.SelectedTimeOfConcentration = { "name": "Travel Time Method", "value": 1 }
+            //this.SelectedTimeOfConcentration = { "name": "Travel Time Method", "value": 1 }
             this.SelectedRainfallDistribution = { "name": "Type II", "value": 2 }
+
+            this._chosenFlowTypeIndex = null;
         }
 
         private selectRunoffType() {

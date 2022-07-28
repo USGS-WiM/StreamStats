@@ -186,17 +186,64 @@
                                 </div>
                                 
                                 <!-- if Lag Time Equation is selected -->
-                                <!-- <div ng-if="vm.SelectedTimeOfConcentration.value == 1">
-                                    <div class="form-row">
-                                        <div class="form-group">
-                                            <accordion id="sheetFlowAccordion">
-                                                <accordion-group is-open="true">
-                                                    <accordion-heading><i ng-class="vm.pastNewsArticles[$index].open ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i> Sheet Flow Segments</accordion-heading>
-                                                </accordion-group>
-                                            </accordion>
+                                <div ng-if="vm.SelectedTimeOfConcentration.value == 1">
+                                    <div ng-repeat="flowType in vm.TravelTimeFlowTypes">
+                                        <div class="flow-form-row">
+                                            <div class="flow-form-accordion">
+                                                <accordion id="flowType.id">
+                                                    <accordion-group is-open="flowType.accordionOpen">
+                                                        <accordion-heading><i ng-class="flowType.accordionOpen ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i> {{flowType.displayName}} Segments</accordion-heading>
+                                                        <div ng-repeat="(key, segments) in vm.TravelTimeFlowSegments">
+                                                            <ng-form ng-repeat="segment in segments" name="{{flowType.id + 'key' + $index}}" class="hidden-print">
+                                                                <div ng-repeat="question in flowType.questions">
+                                                                    <label for="{{question.label}}">{{question.label}}</label><span data-ng-show="{{flowType.id + question.id + '.$error.pattern'}}" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;{{question.invalidMessage}}</span>
+                                                                    <input ng-if="question.type != 'select' && question.pattern == 'greaterThanZero'" type="{{ question.type }}" name="{{ question.id }}" ng-model="question.value" ng-pattern="greaterThanZero" required/>
+                                                                    <input ng-if="question.type != 'select' && question.pattern == 'greaterThanOrEqualToZero'" type="{{ question.type }}" name="{{ question.id }}" ng-model="question.value" ng-pattern="greaterThanOrEqualToZero" required/>
+                                                                    <input ng-if="question.type != 'select' && question.pattern == null" type="{{ question.type }}" name="{{ question.id }}" ng-model="question.value" required/>
+                                                                    <select ng-if="question.type == 'select'" name="question.label" ng-model="question.value" ng-options="key as value for (key, value) in question.options"></select>                                                                              
+                                                                </div>
+                                                            </ng-form>
+                                                        </div>
+                                                    </accordion-group>
+                                                </accordion>
+                                            </div>
+                                            <div class="flow-form-button">
+                                                <button ng-click="vm.openAddFlowModal($index)"><i class="fa fa-arrow-left"></i> Add Flow Segment</button>
+                                            </div>
                                         </div>
-                                        <div class="form-group">
-                                            <button>Add Sheet Flow Segment</button>
+                                        <div ng-if="vm.chosenFlowTypeIndex == $index">
+                                            <h4 class="modal-title">New {{flowType.displayName}} Segment</h4>
+                                            <ng-form name="{{flowType.id}}" class="hidden-print">
+                                                <div ng-repeat="question in flowType.questions">
+                                                    <label for="{{question.label}}">{{question.label}}</label><span data-ng-show="{{flowType.id + question.id + '.$error.pattern'}}" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;{{question.invalidMessage}}</span>
+                                                    <input ng-if="question.type != 'select' && question.pattern == 'greaterThanZero'" type="{{ question.type }}" name="{{ question.id }}" ng-model="question.value" ng-pattern="greaterThanZero" required/>
+                                                    <input ng-if="question.type != 'select' && question.pattern == 'greaterThanOrEqualToZero'" type="{{ question.type }}" name="{{ question.id }}" ng-model="question.value" ng-pattern="greaterThanOrEqualToZero" required/>
+                                                    <input ng-if="question.type != 'select' && question.pattern == null" type="{{ question.type }}" name="{{ question.id }}" ng-model="question.value" required/>
+                                                    <select ng-if="question.type == 'select'" name="question.label" ng-model="question.value" ng-options="key as value for (key, value) in question.options"></select>                                                                              
+                                                </div>
+
+                                                <div class="form-row">
+                                                    <div class="form-group-left" style="float:right">
+                                                        <button>Cancel</button>
+                                                    </div>
+                                                    <div class="form-group-right" style="float:left">
+                                                        <button ng-click="vm.addFlowSegment()">Add Flow Segment</button>
+                                                    </div>
+                                                </div>
+                                            </ng-form>
+                                        </div>
+                                        <div style="clear:both"></div>
+                                    </div>
+                                </div>
+
+                                <!-- <div ng-if="vm.addFlowModalOpen == true" class="modal-wrapper">
+                                    <div class="modal">
+                                        <div class="modal-header">
+                                            <button type="button" class="close hidden-print" ng-click="vm.closeAddFlowModal()"><span aria-hidden="true">&times;</span></button>
+                                            <h5 class="modal-title hidden-print">Add {{vm.TravelTimeFlowTypes[vm.chosenFlowTypeIndex].displayName}} Segment</h4>
+                                        </div>
+                                        <div class="modal-body">
+
                                         </div>
                                     </div>
                                 </div> -->

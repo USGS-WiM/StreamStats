@@ -81,13 +81,45 @@ button:hover{
     padding-right:5px;
     padding-bottom: 0;
 }
-.form-group-small {
+.form-group-left {
+    flex:1;
+    float: left;
+    padding-left:5px;
+    padding-right:5px;
+    padding-bottom: 0; 
+}
+.form-group-right {
+    flex:1;
+    float: right;
+    padding-left:5px;
+    padding-right:5px;
+    padding-bottom: 0; 
+}
+.form-group-center {
     flex:1;
     padding-left:5px;
     padding-right:5px;
     padding-bottom: 0;
-    width:"50%"
 }
+
+.flow-form-row {
+    display: flex;
+    align-items:baseline;
+}
+
+.flow-form-accordion {
+   width:78%;
+   padding-right:2%;
+   float: left;
+}
+.flow-form-accordion accordion-group {
+   width:100%;
+}
+.flow-form-button {
+    float: left;
+}
+
+
 
 /*
     ===========================

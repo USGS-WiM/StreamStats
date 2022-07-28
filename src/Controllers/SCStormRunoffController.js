@@ -110,10 +110,100 @@ var StreamStats;
                         "name": "NOAA D",
                         "value": 7,
                     }];
+                _this.greaterThanZero = /^([0-9]*[1-9][0-9]*(\.[0-9]+)?|[0]+\.[0-9]*[1-9][0-9]*)$/;
+                _this.gTZInvalidMessage = "Value must be greater than 0";
+                _this.greaterThanOrEqualToZero = /0+|^([0-9]*[1-9][0-9]*(\.[0-9]+)?|[0]+\.[0-9]*[1-9][0-9]*)$/;
+                _this.gTOETZInvalidMessage = "Value must be greater than or equal to 0";
+                _this.betweenZeroOneHundred = /^(\d{0,2}(\.\d{1,2})?|100(\.00?)?)$/;
+                _this._defaultFlowTypes = [
+                    {
+                        id: "sheetFlow",
+                        displayName: "Sheet Flow",
+                        accordionOpen: false,
+                        questions: [
+                            {
+                                id: "surface",
+                                label: "Surface",
+                                type: "select",
+                                value: null,
+                                options: {
+                                    "Smooth asphalt": 0.011,
+                                    "Smooth concrete": 0.012,
+                                    "Fallow (no residue)": 0.050,
+                                    "Short grass prairie": 0.150,
+                                    "Dense grasses": 0.240,
+                                    "Bermuda grass": 0.410,
+                                    "Light underbrush": 0.400,
+                                    "Dense underbrush": 0.800,
+                                    "Cultivated Soil with Residue cover <=20%": 0.060,
+                                    "Cultivated Soil with Residue cover >=20%": 0.170,
+                                    "Natural Range": 0.130
+                                }
+                            },
+                            {
+                                id: "length",
+                                label: "Length (ft)",
+                                type: "number",
+                                value: null,
+                                pattern: "greaterThanZero",
+                                invalidMessage: _this.gTZInvalidMessage
+                            },
+                            {
+                                id: "overland",
+                                label: "Overland Slope (%)",
+                                type: "number",
+                                value: null,
+                                pattern: "greaterThanOrEqualToZero",
+                                invalidMessage: _this.gTOETZInvalidMessage
+                            }
+                        ],
+                    },
+                    {
+                        id: "excessSheetFlow",
+                        displayName: "Excess Sheet Flow",
+                        accordionOpen: false,
+                        questions: []
+                    },
+                    {
+                        id: "shallowConcentratedFlow",
+                        displayName: "Shallow Concentrated Flow",
+                        accordionOpen: false,
+                        questions: []
+                    },
+                    {
+                        id: "channelizedFlowOpen",
+                        displayName: "Channelized Flow - Open Channel",
+                        accordionOpen: false,
+                        questions: []
+                    },
+                    {
+                        id: "channelizedFlowStorm",
+                        displayName: "Channelized Flow - Storm Sewer",
+                        accordionOpen: false,
+                        questions: []
+                    },
+                    {
+                        id: "channelizedFlowUserInput",
+                        displayName: "Channelized Flow - User Input",
+                        accordionOpen: false,
+                        questions: []
+                    },
+                ];
+                _this._defaultFlowSegments = {
+                    sheetFlow: [],
+                    excessSheetFlow: [],
+                    shallowConcentratedFlow: [],
+                    channelizedFlowOpen: [],
+                    channelizedFlowStorm: [],
+                    channelizedFlowUserInput: []
+                };
+                _this.TravelTimeFlowTypes = _this._defaultFlowTypes;
+                _this.TravelTimeFlowSegments = _this._defaultFlowSegments;
+                _this.addFlowModalOpen = false;
                 $scope.vm = _this;
-                $scope.greaterThanZero = /^([0-9]*[1-9][0-9]*(\.[0-9]+)?|[0]+\.[0-9]*[1-9][0-9]*)$/;
-                $scope.greaterThanOrEqualToZero = /0+|^([0-9]*[1-9][0-9]*(\.[0-9]+)?|[0]+\.[0-9]*[1-9][0-9]*)$/;
-                $scope.betweenZeroOneHundred = /^(\d{0,2}(\.\d{1,2})?|100(\.00?)?)$/;
+                $scope.greaterThanZero = _this.greaterThanZero;
+                $scope.greaterThanOrEqualToZero = _this.greaterThanOrEqualToZero;
+                $scope.betweenZeroOneHundred = _this.betweenZeroOneHundred;
                 _this.AppVersion = configuration.version;
                 _this.angulartics = $analytics;
                 _this.toaster = toaster;
@@ -195,6 +285,13 @@ var StreamStats;
                 },
                 set: function (val) {
                     this._selectedRainfallDistribution = val;
+                },
+                enumerable: false,
+                configurable: true
+            });
+            Object.defineProperty(SCStormRunoffController.prototype, "chosenFlowTypeIndex", {
+                get: function () {
+                    return this._chosenFlowTypeIndex;
                 },
                 enumerable: false,
                 configurable: true
@@ -488,6 +585,25 @@ var StreamStats;
                     }
                 };
             };
+            SCStormRunoffController.prototype.openAddFlowModal = function (indexOfFlow) {
+                this.addFlowModalOpen = true;
+                this._chosenFlowTypeIndex = indexOfFlow;
+            };
+            SCStormRunoffController.prototype.closeAddFlowModal = function () {
+                this.addFlowModalOpen = false;
+            };
+            SCStormRunoffController.prototype.addFlowSegment = function () {
+                var questionSet = this.TravelTimeFlowTypes[this._chosenFlowTypeIndex].questions;
+                var newSegment = [];
+                for (var _i = 0, questionSet_1 = questionSet; _i < questionSet_1.length; _i++) {
+                    var question = questionSet_1[_i];
+                    newSegment.push(JSON.parse(JSON.stringify(question)));
+                    question.value = null;
+                }
+                this.TravelTimeFlowSegments[this.TravelTimeFlowTypes[this._chosenFlowTypeIndex].id].push(newSegment);
+                this._chosenFlowTypeIndex = null;
+                this.addFlowModalOpen = false;
+            };
             SCStormRunoffController.prototype.validateForm = function (mainForm) {
                 if (mainForm.$valid) {
                     return true;
@@ -508,6 +624,7 @@ var StreamStats;
                 this.initialAbstraction = null;
                 this.lagTimeLength = null;
                 this.lagTimeSlope = null;
+                this._chosenFlowTypeIndex = null;
                 this.mainChannelLength = null;
                 this.mainChannelSlope = null;
                 this.totalImperviousArea = null;
@@ -578,8 +695,8 @@ var StreamStats;
                 this.SelectedAEPSynthetic = { "name": "10%", "value": 10 };
                 this.SelectedStandardCurve = { "name": "Area Weighted CN", "value": 1 };
                 this.SelectedCNModification = { "name": "McCuen", "value": 1 };
-                this.SelectedTimeOfConcentration = { "name": "Travel Time Method", "value": 1 };
                 this.SelectedRainfallDistribution = { "name": "Type II", "value": 2 };
+                this._chosenFlowTypeIndex = null;
             };
             SCStormRunoffController.prototype.selectRunoffType = function () {
                 switch (this._selectedTab) {
