@@ -261,7 +261,30 @@ module StreamStats.Controllers {
                 displayName: "Excess Sheet Flow",
                 accordionOpen: false,
                 questions: [
-
+                    {
+                        id: "surface",
+                        label: "Surface",
+                        type: "select",
+                        value: null,
+                        /// place holder value of "1, 2, 3..." because the actual values are JSON objects. Link the two when building the hydrograph
+                        options: {
+                            "Pavement and small upland gullies": 1,
+                            "Grassed waterways": 2,
+                            "Nearly bare and untilled (overland flow)": 3,
+                            "Cultivated straight row crops": 4,
+                            "Short-grass pasture": 5,
+                            "Minimum cultivation, contour or strip-cropped, and woodlands": 6,
+                            "Forest with heavy ground litter and hay meadows": 7
+                        }
+                    },
+                    {
+                        id: "slope",
+                        label: "Slope (%)",
+                        type:"number",
+                        value: null,
+                        pattern: "greaterThanOrEqualToZero",
+                        invalidMessage: this.gTOETZInvalidMessage
+                    }
                 ]
             },
             {
@@ -269,7 +292,38 @@ module StreamStats.Controllers {
                 displayName: "Shallow Concentrated Flow",
                 accordionOpen: false,
                 questions: [
-
+                    {
+                        id: "shallowFlowType",
+                        label: "Shallow Flow Type",
+                        type: "select",
+                        value: null,
+                        /// place holder value of "1, 2, 3..." because the actual values are JSON objects. Link the two when building the hydrograph
+                        options: {
+                            "Pavement and small upland gullies": 1,
+                            "Grassed waterways": 2,
+                            "Nearly bare and untilled (overland flow)": 3,
+                            "Cultivated straight row crops": 4,
+                            "Short-grass pasture": 5,
+                            "Minimum cultivation, contour or strip-cropped, and woodlands": 6,
+                            "Forest with heavy ground litter and hay meadows": 7
+                        }
+                    },
+                    {
+                        id: "length",
+                        label: "Length (ft)",
+                        type: "number",
+                        value: null,
+                        pattern: "greaterThanZero",
+                        invalidMessage: this.gTZInvalidMessage
+                    },
+                    {
+                        id: "slope",
+                        label: "Slope (%)",
+                        type:"number",
+                        value: null,
+                        pattern: "greaterThanOrEqualToZero",
+                        invalidMessage: this.gTOETZInvalidMessage
+                    },
                 ]
             },
             {
@@ -277,7 +331,62 @@ module StreamStats.Controllers {
                 displayName: "Channelized Flow - Open Channel",
                 accordionOpen: false,
                 questions: [
-
+                    {
+                        id: "baseWidth",
+                        label: "Base Width",
+                        type: "number",
+                        value: null,
+                        pattern: "greaterThanZero",
+                        invalidMessage: this.gTZInvalidMessage
+                    },
+                    {
+                        id: "frontSlope",
+                        label: "Front Slope (Z hor:1 vert)",
+                        type: "number",
+                        value: null,
+                        pattern: "greaterThanZero",
+                        invalidMessage: this.gTZInvalidMessage
+                    },
+                    {
+                        id: "backSlope",
+                        label: "Back Slope (Z hor:1 vert)",
+                        type: "number",
+                        value: null,
+                        pattern: "greaterThanZero",
+                        invalidMessage: this.gTZInvalidMessage
+                    },
+                    {
+                        id: "channelDepth",
+                        label: "Channel Depth (ft)",
+                        type: "number",
+                        value: null,
+                        pattern: "greaterThanZero",
+                        invalidMessage: this.gTZInvalidMessage
+                    },
+                    {
+                        id: "length",
+                        label: "Length (ft)",
+                        type: "number",
+                        value: null,
+                        pattern: "greaterThanZero",
+                        invalidMessage: this.gTZInvalidMessage
+                    },
+                    {
+                        id: "channelBedSlope",
+                        label: "Channel Bed Slope (%)",
+                        type: "number",
+                        value: null,
+                        pattern: "greaterThanZero",
+                        invalidMessage: this.gTZInvalidMessage
+                    },
+                    {
+                        id: "manningNValue",
+                        label: "Manning n-value",
+                        type: "number",
+                        value: null,
+                        pattern: "greaterThanZero",
+                        invalidMessage: this.gTZInvalidMessage
+                    },
                 ]
             },
             {
@@ -285,7 +394,44 @@ module StreamStats.Controllers {
                 displayName: "Channelized Flow - Storm Sewer",
                 accordionOpen: false,
                 questions: [
-
+                    {
+                        id: "pipeMaterial",
+                        label: "Pipe Material",
+                        type: "select",
+                        value: null,
+                        options: {
+                            "Aluminum": 0.024,
+                            "CMP": 0.024,
+                            "Concrete": 0.013,
+                            "Corrugated HDPE": 0.02,
+                            "PVC": 0.01,
+                            "Steel": 0.013
+                        }
+                    },
+                    {
+                        id: "diameter",
+                        label: "Diameter (in)",
+                        type: "number",
+                        value: null,
+                        pattern: "greaterThanZero",
+                        invalidMessage: this.gTZInvalidMessage
+                    },
+                    {
+                        id: "length",
+                        label: "Length (ft)",
+                        type: "number",
+                        value: null,
+                        pattern: "greaterThanZero",
+                        invalidMessage: this.gTZInvalidMessage
+                    },
+                    {
+                        id: "slope",
+                        label: "Slope (%)",
+                        type:"number",
+                        value: null,
+                        pattern: "greaterThanOrEqualToZero",
+                        invalidMessage: this.gTOETZInvalidMessage
+                    }
                 ]
             },
             {
@@ -293,10 +439,117 @@ module StreamStats.Controllers {
                 displayName: "Channelized Flow - User Input",
                 accordionOpen: false,
                 questions: [
-
+                    {
+                        id: "length",
+                        label: "Length (ft)",
+                        type: "number",
+                        value: null,
+                        pattern: "greaterThanZero",
+                        invalidMessage: this.gTZInvalidMessage
+                    },
+                    {
+                        id: "velocity",
+                        label: "Velocity (fps)",
+                        type: "number",
+                        value: null,
+                        pattern: "greaterThanZero",
+                        invalidMessage: this.gTZInvalidMessage
+                    },
                 ]
             },
         ]
+
+        // for the flow segments that have json objects as values of the drop down options, use this table to link when building the hydrograph
+        private linkableFlowSegmentOptions: {
+            excessSheetFlow: {
+                "Pavement and small upland gullies": 
+                    {
+                        "Depth": 0.2,
+                        "Manning's N": 0.025,
+                        "Velocity Constant": 20.328
+                    },
+                "Grassed waterways": 
+                    {
+                        "Depth": 0.4,
+                        "Manning's N": 0.05,
+                        "Velocity Constant": 16.135 
+                    },
+                "Nearly bare and untilled (overland flow)": 
+                    {
+                        "Depth": 0.2,
+                        "Manning's N": 0.051,
+                        "Velocity Constant": 9.965 
+                    },
+                "Cultivated straight row crops": 
+                    {
+                        "Depth": 0.2,
+                        "Manning's N": 0.058,
+                        "Velocity Constant": 8.762
+                    },
+                "Short-grass pasture": 
+                    {
+                        "Depth": 0.2,
+                        "Manning's N": 0.073,
+                        "Velocity Constant": 6.962
+                    },
+                "Minimum cultivation, contour or strip-cropped, and woodlands": 
+                    {
+                        "Depth": 0.2,
+                        "Manning's N": 0.101,
+                        "Velocity Constant": 5.032 
+                    },
+                "Forest with heavy ground litter and hay meadows": 
+                    {
+                        "Depth": 0.2,
+                        "Manning's N": 0.202,
+                        "Velocity Constant": 2.516
+                    }
+            },
+            shallowConcentratedFlow: {
+                "Pavement and small upland gullies": 
+                    {
+                        "Depth": 0.2,
+                        "Manning's N": 0.025,
+                        "Velocity Constant": 20.328
+                    },
+                "Grassed waterways": 
+                    {
+                        "Depth": 0.4,
+                        "Manning's N": 0.05,
+                        "Velocity Constant": 16.135 
+                    },
+                "Nearly bare and untilled (overland flow)": 
+                    {
+                        "Depth": 0.2,
+                        "Manning's N": 0.051,
+                        "Velocity Constant": 9.965 
+                    },
+                "Cultivated straight row crops": 
+                    {
+                        "Depth": 0.2,
+                        "Manning's N": 0.058,
+                        "Velocity Constant": 8.762
+                    },
+                "Short-grass pasture": 
+                    {
+                        "Depth": 0.2,
+                        "Manning's N": 0.073,
+                        "Velocity Constant": 6.962
+                    },
+                "Minimum cultivation, contour or strip-cropped, and woodlands": 
+                    {
+                        "Depth": 0.2,
+                        "Manning's N": 0.101,
+                        "Velocity Constant": 5.032 
+                    },
+                "Forest with heavy ground litter and hay meadows": 
+                    {
+                        "Depth": 0.2,
+                        "Manning's N": 0.202,
+                        "Velocity Constant": 2.516
+                    }
+            }
+        }
 
         // base keys match with ids from the object above ^^^^
         private _defaultFlowSegments = {
@@ -321,10 +574,10 @@ module StreamStats.Controllers {
 
         }
 
-        public TravelTimeFlowTypes = this._defaultFlowTypes;
+        public TravelTimeFlowTypes = this._defaultFlowTypes.slice();
         public TravelTimeFlowSegments = this._defaultFlowSegments;
 
-        public addFlowModalOpen = false;
+        public addFlowSegmentOpen = false;
         private _chosenFlowTypeIndex : number;
         public get chosenFlowTypeIndex() {
             return this._chosenFlowTypeIndex;
@@ -676,13 +929,16 @@ module StreamStats.Controllers {
             };
         }
 
-        public openAddFlowModal(indexOfFlow : number) {
-            this.addFlowModalOpen = true;
+        public openAddFlowSegment(indexOfFlow : number) {
+            this.addFlowSegmentOpen = true;
             this._chosenFlowTypeIndex = indexOfFlow;
         }
 
-        public closeAddFlowModal() {
-            this.addFlowModalOpen = false;
+        public closeAddFlowSegment() {
+            this.addFlowSegmentOpen = false;
+            this._chosenFlowTypeIndex = null;
+            /// reset the options
+            this.TravelTimeFlowTypes = this._defaultFlowTypes.slice();
         }
 
         public addFlowSegment() {
@@ -695,7 +951,17 @@ module StreamStats.Controllers {
 
             this.TravelTimeFlowSegments[this.TravelTimeFlowTypes[this._chosenFlowTypeIndex].id].push(newSegment);
             this._chosenFlowTypeIndex = null;
-            this.addFlowModalOpen = false;
+            this.addFlowSegmentOpen = false;
+        }
+
+        public removeFlowSegment(flowTypeID, indexOfRemoval : number) {
+            let flowType = this.TravelTimeFlowSegments[flowTypeID];
+            if(!flowType) {
+                console.error("Unable to remove flow segment: improper flow type ID. This is a bug!");
+                return;
+            }
+            // remove the element from the array
+            flowType.splice(indexOfRemoval, 1);
         }
 
         public validateForm(mainForm) {

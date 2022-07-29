@@ -162,31 +162,200 @@ var StreamStats;
                         id: "excessSheetFlow",
                         displayName: "Excess Sheet Flow",
                         accordionOpen: false,
-                        questions: []
+                        questions: [
+                            {
+                                id: "surface",
+                                label: "Surface",
+                                type: "select",
+                                value: null,
+                                options: {
+                                    "Pavement and small upland gullies": 1,
+                                    "Grassed waterways": 2,
+                                    "Nearly bare and untilled (overland flow)": 3,
+                                    "Cultivated straight row crops": 4,
+                                    "Short-grass pasture": 5,
+                                    "Minimum cultivation, contour or strip-cropped, and woodlands": 6,
+                                    "Forest with heavy ground litter and hay meadows": 7
+                                }
+                            },
+                            {
+                                id: "slope",
+                                label: "Slope (%)",
+                                type: "number",
+                                value: null,
+                                pattern: "greaterThanOrEqualToZero",
+                                invalidMessage: _this.gTOETZInvalidMessage
+                            }
+                        ]
                     },
                     {
                         id: "shallowConcentratedFlow",
                         displayName: "Shallow Concentrated Flow",
                         accordionOpen: false,
-                        questions: []
+                        questions: [
+                            {
+                                id: "shallowFlowType",
+                                label: "Shallow Flow Type",
+                                type: "select",
+                                value: null,
+                                options: {
+                                    "Pavement and small upland gullies": 1,
+                                    "Grassed waterways": 2,
+                                    "Nearly bare and untilled (overland flow)": 3,
+                                    "Cultivated straight row crops": 4,
+                                    "Short-grass pasture": 5,
+                                    "Minimum cultivation, contour or strip-cropped, and woodlands": 6,
+                                    "Forest with heavy ground litter and hay meadows": 7
+                                }
+                            },
+                            {
+                                id: "length",
+                                label: "Length (ft)",
+                                type: "number",
+                                value: null,
+                                pattern: "greaterThanZero",
+                                invalidMessage: _this.gTZInvalidMessage
+                            },
+                            {
+                                id: "slope",
+                                label: "Slope (%)",
+                                type: "number",
+                                value: null,
+                                pattern: "greaterThanOrEqualToZero",
+                                invalidMessage: _this.gTOETZInvalidMessage
+                            },
+                        ]
                     },
                     {
                         id: "channelizedFlowOpen",
                         displayName: "Channelized Flow - Open Channel",
                         accordionOpen: false,
-                        questions: []
+                        questions: [
+                            {
+                                id: "baseWidth",
+                                label: "Base Width",
+                                type: "number",
+                                value: null,
+                                pattern: "greaterThanZero",
+                                invalidMessage: _this.gTZInvalidMessage
+                            },
+                            {
+                                id: "frontSlope",
+                                label: "Front Slope (Z hor:1 vert)",
+                                type: "number",
+                                value: null,
+                                pattern: "greaterThanZero",
+                                invalidMessage: _this.gTZInvalidMessage
+                            },
+                            {
+                                id: "backSlope",
+                                label: "Back Slope (Z hor:1 vert)",
+                                type: "number",
+                                value: null,
+                                pattern: "greaterThanZero",
+                                invalidMessage: _this.gTZInvalidMessage
+                            },
+                            {
+                                id: "channelDepth",
+                                label: "Channel Depth (ft)",
+                                type: "number",
+                                value: null,
+                                pattern: "greaterThanZero",
+                                invalidMessage: _this.gTZInvalidMessage
+                            },
+                            {
+                                id: "length",
+                                label: "Length (ft)",
+                                type: "number",
+                                value: null,
+                                pattern: "greaterThanZero",
+                                invalidMessage: _this.gTZInvalidMessage
+                            },
+                            {
+                                id: "channelBedSlope",
+                                label: "Channel Bed Slope (%)",
+                                type: "number",
+                                value: null,
+                                pattern: "greaterThanZero",
+                                invalidMessage: _this.gTZInvalidMessage
+                            },
+                            {
+                                id: "manningNValue",
+                                label: "Manning n-value",
+                                type: "number",
+                                value: null,
+                                pattern: "greaterThanZero",
+                                invalidMessage: _this.gTZInvalidMessage
+                            },
+                        ]
                     },
                     {
                         id: "channelizedFlowStorm",
                         displayName: "Channelized Flow - Storm Sewer",
                         accordionOpen: false,
-                        questions: []
+                        questions: [
+                            {
+                                id: "pipeMaterial",
+                                label: "Pipe Material",
+                                type: "select",
+                                value: null,
+                                options: {
+                                    "Aluminum": 0.024,
+                                    "CMP": 0.024,
+                                    "Concrete": 0.013,
+                                    "Corrugated HDPE": 0.02,
+                                    "PVC": 0.01,
+                                    "Steel": 0.013
+                                }
+                            },
+                            {
+                                id: "diameter",
+                                label: "Diameter (in)",
+                                type: "number",
+                                value: null,
+                                pattern: "greaterThanZero",
+                                invalidMessage: _this.gTZInvalidMessage
+                            },
+                            {
+                                id: "length",
+                                label: "Length (ft)",
+                                type: "number",
+                                value: null,
+                                pattern: "greaterThanZero",
+                                invalidMessage: _this.gTZInvalidMessage
+                            },
+                            {
+                                id: "slope",
+                                label: "Slope (%)",
+                                type: "number",
+                                value: null,
+                                pattern: "greaterThanOrEqualToZero",
+                                invalidMessage: _this.gTOETZInvalidMessage
+                            }
+                        ]
                     },
                     {
                         id: "channelizedFlowUserInput",
                         displayName: "Channelized Flow - User Input",
                         accordionOpen: false,
-                        questions: []
+                        questions: [
+                            {
+                                id: "length",
+                                label: "Length (ft)",
+                                type: "number",
+                                value: null,
+                                pattern: "greaterThanZero",
+                                invalidMessage: _this.gTZInvalidMessage
+                            },
+                            {
+                                id: "velocity",
+                                label: "Velocity (fps)",
+                                type: "number",
+                                value: null,
+                                pattern: "greaterThanZero",
+                                invalidMessage: _this.gTZInvalidMessage
+                            },
+                        ]
                     },
                 ];
                 _this._defaultFlowSegments = {
@@ -197,9 +366,9 @@ var StreamStats;
                     channelizedFlowStorm: [],
                     channelizedFlowUserInput: []
                 };
-                _this.TravelTimeFlowTypes = _this._defaultFlowTypes;
+                _this.TravelTimeFlowTypes = _this._defaultFlowTypes.slice();
                 _this.TravelTimeFlowSegments = _this._defaultFlowSegments;
-                _this.addFlowModalOpen = false;
+                _this.addFlowSegmentOpen = false;
                 $scope.vm = _this;
                 $scope.greaterThanZero = _this.greaterThanZero;
                 $scope.greaterThanOrEqualToZero = _this.greaterThanOrEqualToZero;
@@ -585,12 +754,14 @@ var StreamStats;
                     }
                 };
             };
-            SCStormRunoffController.prototype.openAddFlowModal = function (indexOfFlow) {
-                this.addFlowModalOpen = true;
+            SCStormRunoffController.prototype.openAddFlowSegment = function (indexOfFlow) {
+                this.addFlowSegmentOpen = true;
                 this._chosenFlowTypeIndex = indexOfFlow;
             };
-            SCStormRunoffController.prototype.closeAddFlowModal = function () {
-                this.addFlowModalOpen = false;
+            SCStormRunoffController.prototype.closeAddFlowSegment = function () {
+                this.addFlowSegmentOpen = false;
+                this._chosenFlowTypeIndex = null;
+                this.TravelTimeFlowTypes = this._defaultFlowTypes.slice();
             };
             SCStormRunoffController.prototype.addFlowSegment = function () {
                 var questionSet = this.TravelTimeFlowTypes[this._chosenFlowTypeIndex].questions;
@@ -602,7 +773,15 @@ var StreamStats;
                 }
                 this.TravelTimeFlowSegments[this.TravelTimeFlowTypes[this._chosenFlowTypeIndex].id].push(newSegment);
                 this._chosenFlowTypeIndex = null;
-                this.addFlowModalOpen = false;
+                this.addFlowSegmentOpen = false;
+            };
+            SCStormRunoffController.prototype.removeFlowSegment = function (flowTypeID, indexOfRemoval) {
+                var flowType = this.TravelTimeFlowSegments[flowTypeID];
+                if (!flowType) {
+                    console.error("Unable to remove flow segment: improper flow type ID. This is a bug!");
+                    return;
+                }
+                flowType.splice(indexOfRemoval, 1);
             };
             SCStormRunoffController.prototype.validateForm = function (mainForm) {
                 if (mainForm.$valid) {
