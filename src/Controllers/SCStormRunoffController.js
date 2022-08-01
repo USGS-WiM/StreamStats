@@ -872,9 +872,6 @@ var StreamStats;
                 this.canContinue = true;
                 this.SelectedAEP = { "name": "50%", "value": 50 };
                 this.SelectedAEPSynthetic = { "name": "10%", "value": 10 };
-                this.SelectedStandardCurve = { "name": "Area Weighted CN", "value": 1 };
-                this.SelectedCNModification = { "name": "McCuen", "value": 1 };
-                this.SelectedRainfallDistribution = { "name": "Type II", "value": 2 };
                 this._chosenFlowTypeIndex = null;
             };
             SCStormRunoffController.prototype.selectRunoffType = function () {

@@ -10,7 +10,7 @@
         <div class="modal-body">
             <div ng-hide="vm.StudyArea">A study area is needed before viewing the report</div>
             <div ng-show="vm.StudyArea">
-                <div class="form-group">
+                <div class="form-column">
                     <ul class="nav nav-tabs wateruseTabs hidden-print">
                         <li ng-class="{'active': vm.SelectedTab == 3}"><a ng-click="vm.SelectedTab=3">SC Synthetic Unit Hydrograph</a></li>
                         <li ng-class="{'active': vm.SelectedTab == 2}"><a ng-click="vm.SelectedTab=2">USGS SC Flood Hydrograph for Urban Watersheds</a></li>
@@ -148,21 +148,21 @@
                                 <input type="number" name="DrainageAreaSynthetic" ng-model="vm.drainageAreaSynthetic" ng-minlength="1" ng-pattern="greaterThanZero" required/>
                                 
                                 <span class="form-row">
-                                    <div class="form-group">
+                                    <div class="form-column">
                                         <label for="PeakRateFactor">Peak Rate Factor, PRF</label> <span ng-if="SyntheticUrbanHydrograph.PeakRateFactor.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
                                         <input type="number" name="PeakRateFactor" ng-model="vm.peakRateFactor" ng-minlength="0" ng-pattern="greaterThanOrEqualToZero" required/>
                                     </div>
-                                    <div class="form-group">
+                                    <div class="form-column">
                                         <label for="StandardCurveNumber">Standard Curve Number, CN</label> <span ng-if="SyntheticUrbanHydrograph.StandardCurveNumber.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
                                     <input type="number" name="StandardCurveNumber" ng-model="vm.standardCurveNumber" ng-minlength="0" ng-pattern="greaterThanOrEqualToZero" required/>
                                     </div>
                                 </span>
                                 <span class="form-row">
-                                    <div class="form-group">
+                                    <div class="form-column">
                                         <label for="WatershedRetention">Watershed Retention, S</label> <span ng-if="SyntheticUrbanHydrograph.WatershedRetention.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
                                         <input type="number" name="WatershedRetention" ng-model="vm.watershedRetention" ng-minlength="0" ng-pattern="greaterThanOrEqualToZero" required/>
                                     </div>
-                                    <div class="form-group">
+                                    <div class="form-column">
                                         <label for="InitialAbstraction">Initial Abstraction</label> <span ng-if="SyntheticUrbanHydrograph.InitialAbstraction.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
                                         <input type="number" name="InitialAbstraction" ng-model="vm.initialAbstraction" ng-minlength="0" ng-pattern="greaterThanOrEqualToZero" required/>
                                     </div>
@@ -175,11 +175,11 @@
                                 
                                 <!-- if Lag Time Equation is selected -->
                                 <div ng-if="vm.SelectedTimeOfConcentration.value == 2" class="form-row">
-                                    <div class="form-group">
+                                    <div class="form-column">
                                         <label for="LagTimeLength">Length (feet)</label> <span ng-if="SyntheticUrbanHydrograph.LagTimeLength.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
                                         <input type="number" name="LagTimeLength" ng-model="vm.lagTimeLength" ng-minlength="0" ng-pattern="greaterThanOrEqualToZero" required/>
                                     </div>
-                                    <div class="form-group">
+                                    <div class="form-column">
                                         <label for="LagTimeSlope">Slope (%)</label> <span ng-if="SyntheticUrbanHydrograph.LagTimeSlope.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
                                         <input type="number" name="LagTimeSlope" ng-model="vm.lagTimeSlope" ng-minlength="0" ng-pattern="greaterThanOrEqualToZero" required/>
                                     </div>
@@ -191,12 +191,15 @@
                                         <div class="flow-form-row">
                                             <div class="flow-form-accordion">
                                                 <accordion id="flowType.id">
-                                                    <accordion-group is-open="flowType.accordionOpen">
+                                                    <accordion-group is-open="flowType.accordionOpen" style="overflow:auto">
                                                         <accordion-heading><i ng-class="flowType.accordionOpen ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i> {{flowType.displayName}} Segments ({{vm.TravelTimeFlowSegments[flowType.id].length}})</accordion-heading>
                                                             <ng-form ng-repeat="segment in vm.TravelTimeFlowSegments[flowType.id]" name="{{flowType.id + 'key' + $index}}" class="hidden-print">
                                                                 <h4>Segment {{$index + 1}}</h4>
                                                                 <div ng-repeat="question in segment">
-                                                                    <label for="{{question.label}}">{{question.label}}</label><span ng-show="{{flowType.id + 'key' + $parent.$index + question.id + '.$error.pattern'}}" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;{{question.invalidMessage}}</span>
+                                                                    <label for="{{question.label}}">{{question.label}}</label>
+                                                                    <span ng-show="{{flowType.id + 'key' + $parent.$index}}.{{question.id}}.$error.pattern" class="red label">
+                                                                        <span class="fa fa-exclamation-triangle"></span>&nbsp;{{question.invalidMessage}}
+                                                                    </span>
                                                                     <input ng-if="question.type != 'select' && question.pattern == 'greaterThanZero'" type="{{ question.type }}" name="{{ question.id }}" ng-model="question.value" ng-pattern="greaterThanZero" required/>
                                                                     <input ng-if="question.type != 'select' && question.pattern == 'greaterThanOrEqualToZero'" type="{{ question.type }}" name="{{ question.id }}" ng-model="question.value" ng-pattern="greaterThanOrEqualToZero" required/>
                                                                     <input ng-if="question.type != 'select' && question.pattern == null" type="{{ question.type }}" name="{{ question.id }}" ng-model="question.value" required/>
@@ -217,18 +220,21 @@
                                             <h4 class="modal-title">New {{flowType.displayName}} Segment</h4>
                                             <ng-form name="{{flowType.id}}" class="hidden-print">
                                                 <div ng-repeat="question in flowType.questions">
-                                                    <label for="{{question.label}}">{{question.label}}</label><span ng-show="{{flowType.id + question.id + '.$error.pattern'}}" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;{{question.invalidMessage}}</span>
-                                                    <input ng-if="question.type != 'select' && question.pattern == 'greaterThanZero'" type="{{ question.type }}" name="{{ question.id }}" ng-model="question.value" ng-pattern="greaterThanZero" required/>
-                                                    <input ng-if="question.type != 'select' && question.pattern == 'greaterThanOrEqualToZero'" type="{{ question.type }}" name="{{ question.id }}" ng-model="question.value" ng-pattern="greaterThanOrEqualToZero" required/>
-                                                    <input ng-if="question.type != 'select' && question.pattern == null" type="{{ question.type }}" name="{{ question.id }}" ng-model="question.value" required/>
-                                                    <select ng-if="question.type == 'select'" name="question.label" ng-model="question.value" ng-options="key for (key, value) in question.options track by value"></select>                                                                              
+                                                    <label for="{{question.label}}">{{question.label}}</label>
+                                                    <span ng-show="{{flowType.id}}.{{question.id}}.$error.pattern" class="red label">
+                                                        <span class="fa fa-exclamation-triangle"></span>&nbsp;{{question.invalidMessage}}
+                                                    </span>
+                                                    <input ng-if="question.type != 'select' && question.pattern == 'greaterThanZero'" type="{{ question.type }}" name="{{question.id}}" ng-model="question.value" ng-pattern="greaterThanZero" required/>
+                                                    <input ng-if="question.type != 'select' && question.pattern == 'greaterThanOrEqualToZero'" type="{{ question.type }}" name="{{question.id}}" ng-model="question.value" ng-pattern="greaterThanOrEqualToZero" required/>
+                                                    <input ng-if="question.type != 'select' && question.pattern == null" type="{{ question.type }}" name="{{question.id}}" ng-model="question.value" required/>
+                                                    <select ng-if="question.type == 'select'" name="{{question.id}}" ng-model="question.value" ng-options="key for (key, value) in question.options track by value"></select>                                                                              
                                                 </div>
                                                 <div>&nbsp;</div>
                                                 <div class="form-row-extremes">
-                                                    <div class="form-group-left">
+                                                    <div class="form-column-left">
                                                         <button ng-click="vm.closeAddFlowSegment()"><i class="fa fa-times"></i> Cancel</button>
                                                     </div>
-                                                    <div class="form-group-right">
+                                                    <div class="form-column-right">
                                                         <button ng-click="vm.addFlowSegment()"><i class="fa fa-plus"></i> Add</button>
                                                     </div>
                                                 </div>

@@ -81,29 +81,23 @@ button:hover{
     width: 100%;
 }
 
-.form-group { 
+.form-column { 
     flex:1;
     padding-left:5px;
     padding-right:5px;
     padding-bottom: 0;
 }
-.form-group-left {
+.form-column-left {
     float: left;
     padding-left:5px;
     padding-right:5px;
     padding-bottom: 0; 
 }
-.form-group-right {
+.form-column-right {
     float: right;
     padding-left:5px;
     padding-right:5px;
     padding-bottom: 0; 
-}
-.form-group-center {
-    flex:1;
-    padding-left:5px;
-    padding-right:5px;
-    padding-bottom: 0;
 }
 
 .flow-form-row {
@@ -114,7 +108,7 @@ button:hover{
 .flow-form-accordion {
    width:78%;
    padding-right:2%;
-   float: left;
+   float:none;
 }
 .flow-form-accordion accordion-group {
    width:100%;
