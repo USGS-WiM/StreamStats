@@ -73,23 +73,6 @@ module StreamStats.Controllers {
             this.init();
             this.load();
 
-            // $scope.$watch(() => this.dateRange.dates,(newval, oldval) => {
-            //     this.studyAreaService.selectedStudyAreaExtensions.forEach(ext => {
-            //         ext.parameters.forEach(p => {
-            //             if (p.code == "sdate") {p.value = this.dateRange.dates.startDate; }
-            //             if (p.code == "edate") {p.value = this.dateRange.dates.endDate; }
-            //         })
-            //     });
-            //     if (newval != oldval) this.getNWISDailyValues();
-            // });
-            // $scope.$watch(() => this.studyAreaService.allIndexGages, (newval) => {
-            //     if (newval == undefined) {
-            //         this.isBusy = true;
-            //     } else {
-            //         this.referenceGageListAll = newval;
-            //         this.isBusy = false;
-            //     }
-            // });
         }
         //Methods  
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -98,8 +81,8 @@ module StreamStats.Controllers {
         }
         public ok(): void {
             //validate info
-            var errorMessage = this.verifyExtensionCanContinue()
-            if (errorMessage == "") {
+            var errorMessage = this.verifyExtensionCanContinue();
+            if (!errorMessage) {
                 this.close();
                 this.studyAreaService.flowAnywhereData = {};
                 this.studyAreaService.flowAnywhereData["dateRange"] = this.dateRange;
@@ -164,10 +147,9 @@ module StreamStats.Controllers {
             
         }
 
-        private verifyExtensionCanContinue(): string {
+        private verifyExtensionCanContinue() {
 
             // Check that a reference gage was selected
-            // console.log(!this.selectedReferenceGage);
             if (!this.selectedReferenceGage) {
                 return "A reference gage must be selected.";
             }
@@ -191,7 +173,7 @@ module StreamStats.Controllers {
                 return "The selected end date is not valid for the selected reference gage."
             }
 
-            return "";
+            return null;
         }
         private addDay(d: Date, days: number): Date {
             try {

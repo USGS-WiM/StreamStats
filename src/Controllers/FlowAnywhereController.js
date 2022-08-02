@@ -40,7 +40,7 @@ var StreamStats;
             };
             FlowAnywhereController.prototype.ok = function () {
                 var errorMessage = this.verifyExtensionCanContinue();
-                if (errorMessage == "") {
+                if (!errorMessage) {
                     this.close();
                     this.studyAreaService.flowAnywhereData = {};
                     this.studyAreaService.flowAnywhereData["dateRange"] = this.dateRange;
@@ -108,7 +108,7 @@ var StreamStats;
                 if (this.selectedReferenceGage["EndDate"] < this.dateRange.dates.endDate) {
                     return "The selected end date is not valid for the selected reference gage.";
                 }
-                return "";
+                return null;
             };
             FlowAnywhereController.prototype.addDay = function (d, days) {
                 try {
