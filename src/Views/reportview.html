@@ -317,7 +317,7 @@
                                 <div ng-if="vm.isEstimatedFlowFLATableOpen">
                                     <div class="well well-sm">
 
-                                        <table id="estimatedFlowFLAable" class="table table-condensed" title="Estimated Flow">
+                                        <table id="estimatedFlowFLATable" class="table table-condensed" title="Estimated Flow">
                                             <thead>
                                                 <tr>
                                                     <th>Date</th>
@@ -337,7 +337,7 @@
                                 </div>
                                 <h3 class="reportChartHeader">Model Inputs</h3>
                                 <div class="well well-sm">
-                                    <table id="referenceGage" class="table table-condensed">
+                                    <table id="flowAnywhereReferenceGage" class="table table-condensed">
                                         <thead>
                                             <tr>
                                                 <th>Reference Gage</th>
@@ -346,9 +346,7 @@
                                         <tbody>
                                             <tr>
                                                 <td class="col-md-5">Station ID:</td>
-                                                <td><a ng-attr-title={{vm.studyAreaService.flowAnywhereData["selectedGage"].StationID}} ng-href="https://waterdata.usgs.gov/monitoring-location/{{vm.studyAreaService.flowAnywhereData["selectedGage"].StationID}}" target="_blank">{{vm.studyAreaService.flowAnywhereData["selectedGage"].StationID}}</a>&nbsp;
-                                                    <a ng-click="vm.openGagePage(vm.studyAreaService.selectedGageFlowAnywhere.StationID)">Open Gage Page</a>
-                                                </td>
+                                                <td><a ng-click="vm.openGagePage(vm.studyAreaService.flowAnywhereData['selectedGage'].StationID)">{{vm.studyAreaService.flowAnywhereData["selectedGage"].StationID}}</a></td>
                                             </tr>
                                             <tr>
                                                 <td class="col-md-5">Name:</td>
@@ -372,7 +370,7 @@
                                             </tr>
                                         </tbody>
                                     </table>
-                                    <table id="modelParameters" class="table table-condensed">
+                                    <table id="flowAnywhereModelParameters" class="table table-condensed">
                                         <thead>
                                             <tr>
                                                 <th>Model Parameters</th>
@@ -381,24 +379,18 @@
                                         <tbody>
                                             <tr>
                                                 <td class="col-md-5">Start Date:</td>
-                                                <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData["dateRange"].dates.startDate | date:'yyyy-MM-dd'}}</span></td>
+                                                <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData['graphData']['data'][0]['values'][0]['x'] | date:'yyyy/MM/dd'}}</span></td>
                                             </tr>
                                             <tr>
                                                 <td class="col-md-5">End Date:</td>
-                                                <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData["dateRange"].dates.endDate | date:'yyyy-MM-dd'}}</span></td>
+                                                <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData['graphData']['data'][0]['values'][vm.studyAreaService.flowAnywhereData['graphData']['data'][0]['values'].length-1]['x'] | date:'yyyy/MM/dd'}}</span></td>
                                             </tr>
                                             <tr>
-                                                <td class="col-md-5">Drainage Area:</td>
-                                                <td  class="col-md-7" ng-if="parameter.code == 'DRNAREA'" ng-repeat="parameter in vm.studyAreaService.studyAreaParameterList">
-                                                    <span>{{parameter.value}}</span><span> square miles</span>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="col-md-5">Area Ratio:</td>
+                                                <td class="col-md-5">Drainage Area Ratio:</td>
                                                 <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData["results"].AreaRato.toUSGSvalue()}}</span></td>
                                             </tr>
                                             <tr>
-                                                <td class="col-md-5">Constant 1:</td>
+                                                <td class="col-md-5">Constant 1</td>
                                                 <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData["results"].Const1}}</span></td>
                                             </tr>
                                             <tr>
