@@ -58,16 +58,16 @@ var StreamStats;
                         "value": 0.2
                     }];
                 _this.AEPOptionsSynthetic = [{
-                        "name": "10%",
+                        "name": "10% / 10 Year Return Period",
                         "value": 10
                     }, {
-                        "name": "4%",
+                        "name": "4% / 25 Year Return Period",
                         "value": 4
                     }, {
-                        "name": "2%",
+                        "name": "2% / 50 Year Return Period",
                         "value": 2
                     }, {
-                        "name": "1%",
+                        "name": "1% / 100 Year Return Period",
                         "value": 1
                     }];
                 _this.StandardCurveOptions = [{
@@ -807,8 +807,8 @@ var StreamStats;
                 this.mainChannelLength = null;
                 this.mainChannelSlope = null;
                 this.totalImperviousArea = null;
-                this.SelectedAEP = { "name": "50%", "value": 50 };
-                this.SelectedAEPSynthetic = { "name": "10%", "value": 10 };
+                this.SelectedAEP = null;
+                this.SelectedAEPSynthetic = null;
                 this.showResults = false;
                 this.warningMessages = null;
             };
@@ -870,8 +870,6 @@ var StreamStats;
                 this.showResults = false;
                 this.hideAlerts = false;
                 this.canContinue = true;
-                this.SelectedAEP = { "name": "50%", "value": 50 };
-                this.SelectedAEPSynthetic = { "name": "10%", "value": 10 };
                 this._chosenFlowTypeIndex = null;
             };
             SCStormRunoffController.prototype.selectRunoffType = function () {

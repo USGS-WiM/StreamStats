@@ -124,16 +124,16 @@ module StreamStats.Controllers {
         private _selectedTimeOfConcentration;
         private _selectedRainfallDistribution;
         public AEPOptionsSynthetic = [{
-            "name": "10%",
+            "name": "10% / 10 Year Return Period",
             "value": 10
         }, {
-            "name": "4%",
+            "name": "4% / 25 Year Return Period",
             "value": 4
         }, {
-            "name": "2%",
+            "name": "2% / 50 Year Return Period",
             "value": 2
         }, {
-            "name": "1%",
+            "name": "1% / 100 Year Return Period",
             "value": 1
         }]
         public StandardCurveOptions = [{
@@ -989,8 +989,8 @@ module StreamStats.Controllers {
             this.mainChannelLength = null;
             this.mainChannelSlope = null;
             this.totalImperviousArea = null;
-            this.SelectedAEP = {"name": "50%", "value": 50};
-            this.SelectedAEPSynthetic = {"name": "10%", "value": 10};
+            this.SelectedAEP = null;
+            this.SelectedAEPSynthetic = null;
             this.showResults = false;
             this.warningMessages = null;
         }
@@ -1069,8 +1069,6 @@ module StreamStats.Controllers {
             this.showResults = false;
             this.hideAlerts = false;
             this.canContinue = true;
-            this.SelectedAEP = {"name": "50%", "value": 50};
-            this.SelectedAEPSynthetic = {"name": "10%", "value": 10};
 
             this._chosenFlowTypeIndex = null;
         }
