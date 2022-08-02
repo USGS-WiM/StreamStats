@@ -440,7 +440,7 @@ var StreamStats;
                     this.collapsed = true;
                 }
             };
-            ReportController.prototype.ActivateGraphs = function (result) {
+            ReportController.prototype.ActivateGraphs = function (extensionCode, result) {
                 result.graphdata = {
                     exceedance: {
                         data: [{ values: [], area: true, color: '#7777ff' }],

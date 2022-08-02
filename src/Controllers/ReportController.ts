@@ -583,7 +583,7 @@ module StreamStats.Controllers {
             }
         }
 
-        public ActivateGraphs(result: any) {
+        public ActivateGraphs(extensionCode: string, result: any) {
             // TODO: fix flow graph yaxis label - gets overlapped with tick labels sometimes
             
             result.graphdata = {

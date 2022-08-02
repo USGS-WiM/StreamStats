@@ -59,6 +59,7 @@ var StreamStats;
                 _this.extensionsConfigured = false;
                 _this.loadingDrainageArea = false;
                 _this.extensionResultsChanged = 0;
+                _this.flowAnywhereData = null;
                 _this.modalservices = modal;
                 eventManager.AddEvent(Services.onSelectedStudyParametersLoaded);
                 eventManager.AddEvent(Services.onSelectedStudyAreaChanged);
@@ -899,6 +900,102 @@ var StreamStats;
                         }
                     });
                 });
+            };
+            StudyAreaService.prototype.computeFlowAnywhereResults = function () {
+                var _this = this;
+                var drainageArea;
+                this.studyAreaParameterList.forEach(function (parameter) {
+                    if (parameter.code == 'DRNAREA') {
+                        drainageArea = parameter.value;
+                    }
+                });
+                var dataFLA = {
+                    "startdate": this.flowAnywhereData["dateRange"].dates.startDate,
+                    "enddate": this.flowAnywhereData["dateRange"].dates.endDate,
+                    "nwis_station_id": this.flowAnywhereData["selectedGage"].StationID,
+                    "parameters": [
+                        {
+                            "code": "drnarea",
+                            "value": drainageArea
+                        }
+                    ],
+                    "region": Number(this.flowAnywhereData["selectedGage"].AggregatedRegion)
+                };
+                var url = configuration.baseurls.FlowAnywhereRegressionServices + configuration.queryparams.FlowAnywhereEstimates;
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', angular.toJson(dataFLA));
+                this.Execute(request).then(function (response) {
+                    _this.flowAnywhereData["results"] = response["data"];
+                    _this.flowAnywhereData["estimatedFlowsArray"] = [];
+                    _this.flowAnywhereData["results"]["EstimatedFlow"]["Observations"].forEach(function (observation, index) {
+                        _this.flowAnywhereData["estimatedFlowsArray"].push({
+                            "date": observation["Date"],
+                            "estimatedFlow": observation["Value"],
+                            "observedFlow": _this.flowAnywhereData["results"]["ReferanceGage"]["Discharge"]["Observations"][index]["Value"]
+                        });
+                    });
+                    _this.flowAnywhereData["graphData"] = {
+                        data: [
+                            { key: "Observed", values: _this.processData(_this.flowAnywhereData["results"]["ReferanceGage"]["Discharge"]["Observations"], 0) },
+                            { key: "Estimated", values: _this.processData(_this.flowAnywhereData["results"]["EstimatedFlow"]["Observations"], 1) }
+                        ],
+                        options: {
+                            chart: {
+                                type: 'lineChart',
+                                height: 450,
+                                margin: {
+                                    top: 20,
+                                    right: 20,
+                                    bottom: 50,
+                                    left: 80
+                                },
+                                x: function (d) {
+                                    return new Date(d.x).getTime();
+                                },
+                                y: function (d) {
+                                    return d.y;
+                                },
+                                useInteractiveGuideline: false,
+                                interactive: true,
+                                tooltips: true,
+                                xAxis: {
+                                    tickFormat: function (d) {
+                                        return d3.time.format('%x')(new Date(d));
+                                    },
+                                    rotateLabels: -30,
+                                    showMaxMin: true
+                                },
+                                yAxis: {
+                                    axisLabel: 'Discharge (cfs)',
+                                    tickFormat: function (d) {
+                                        return d != null ? d.toUSGSvalue() : d;
+                                    }
+                                },
+                                zoom: {
+                                    enabled: false
+                                },
+                                forceY: 0
+                            }
+                        }
+                    };
+                    console.log(_this.flowAnywhereData);
+                }, function (error) {
+                    _this.toaster.clear();
+                    console.log(error);
+                }).finally(function () {
+                });
+            };
+            StudyAreaService.prototype.processData = function (data, seriesNumber) {
+                var returnData = [];
+                var startDate = new Date(Math.min.apply(null, data.map(function (e) { return new Date(e["Date"]); })));
+                var endDate = new Date(Math.max.apply(null, data.map(function (e) { return new Date(e["Date"]); })));
+                for (var d = startDate; d <= endDate; d.setDate(d.getDate() + 1)) {
+                    var obs = data.filter(function (item) { return new Date(item["Date"]).getTime() == d.getTime(); })[0];
+                    if (obs == undefined)
+                        returnData.push({ x: d.getTime(), y: null });
+                    else
+                        returnData.push({ x: d.getTime(), y: obs.hasOwnProperty('Value') ? typeof obs["Value"] == 'number' ? obs["Value"].toUSGSvalue() : obs["Value"] : null });
+                }
+                return returnData;
             };
             StudyAreaService.prototype.onStudyAreaChanged = function (sender, e) {
                 if (!this.selectedStudyArea || !this.selectedStudyArea.FeatureCollection || this.regressionRegionQueryComplete)

@@ -12,7 +12,9 @@ configuration.baseurls =
         'StormRunoffServices': 'https://test.streamstats.usgs.gov/runoffmodelingservices',
         'ScienceBase': 'https://gis.usgs.gov/sciencebase2',
         'GageStatsServices': 'https://test.streamstats.usgs.gov/gagestatsservices',
-        'WeightingServices': 'https://ss-weightingservices.streamstats.usgs.gov'
+        'WeightingServices': 'https://ss-weightingservices.streamstats.usgs.gov',        
+        'FlowAnywhereRegressionServices': 'https://streamstats.usgs.gov/regressionservices',
+        'FlowAnywhereMapServices': 'https://gis.wim.usgs.gov',
     };
 
 //override streamstats arguments if on production, these get overriden again in MapController after load balancer assigns a server
@@ -22,7 +24,8 @@ if (window.location.host === 'streamstats.usgs.gov') {
         configuration.baseurls.NSS = 'https://streamstats.usgs.gov/nssservices',
         configuration.baseurls.WaterUseServices = 'https://streamstats.usgs.gov/wateruseservices',
         configuration.baseurls.StormRunoffServices = 'https://streamstats.usgs.gov/runoffmodelingservices',
-        configuration.baseurls.GageStatsServices = 'https://streamstats.usgs.gov/gagestatsservices',
+        configuration.baseurls.GageStatsServices = 'https://streamstats.usgs.gov/gagestatsservices',        
+        configuration.baseurls.FlowAnywhereRegressionServices = 'https://streamstats.usgs.gov/regressionservices',
         configuration.environment = 'production';
 }
 
@@ -76,7 +79,9 @@ configuration.queryparams =
         'GageStatsServicesStatGroups': '/statisticgroups/',
         'GageStatsServicesNearest': '/stations/Nearest?lat={0}&lon={1}&radius={2}&geojson=false&includeStats=true',
         'GageStatsServicesNetwork': '/stations/Network?lat={0}&lon={1}&distance={2}&includeStats=true&geojson=false',
-        'GageStatsServicesBounds': '/stations/Bounds?xmin={0}&xmax={1}&ymin={2}&ymax={3}&geojson=true'
+        'GageStatsServicesBounds': '/stations/Bounds?xmin={0}&xmax={1}&ymin={2}&ymax={3}&geojson=true',
+        'FlowAnywhereEstimates': '/models/FLA/estimate?state=IA',
+        'FlowAnywhereGages': '/arcgis/rest/services/IowaStreamEst/FlowAnywhere/MapServer/1/query?geometry={0},{1}&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson'
     };
 
 configuration.SupportTicketService = {
@@ -259,7 +264,7 @@ configuration.regions = [
     { "RegionID": "HI", "Name": "Hawaii", "Bounds": [[18.921786, -160.242406], [22.22912, -154.791096]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     {
         "RegionID": "IA", "Name": "Iowa", "Bounds": [[40.371946, -96.640709], [43.501457, -90.142796]], "Layers":{},
-        "Applications": ["FDCTM"],
+        "Applications": ["FDCTM", "FLA"],
         "regionEnabled": true,
         "ScenariosAvailable": true
     },

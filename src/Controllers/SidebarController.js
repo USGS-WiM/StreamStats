@@ -240,8 +240,14 @@ var StreamStats;
                     this.nssService.showBasinCharacteristicsTable = false;
                 }
             };
-            SidebarController.prototype.configureExtensions = function () {
-                this.modalService.openModal(StreamStats.Services.SSModalType.e_extensionsupport);
+            SidebarController.prototype.configureExtensions = function (extensionName) {
+                if (extensionName == "FDCTM") {
+                    this.modalService.openModal(StreamStats.Services.SSModalType.e_extensionsupport);
+                }
+                else if (extensionName == "FLA") {
+                    this.modalService.openModal(StreamStats.Services.SSModalType.e_flowanywhere);
+                    this.addParameterToStudyAreaList("DRNAREA");
+                }
             };
             SidebarController.prototype.submitBasinEdits = function () {
                 this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'sumbitEdits' });
@@ -265,6 +271,9 @@ var StreamStats;
                     category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.nssService.selectedStatisticsGroupList.map(function (elem) { return elem.name; }).join(",")
                 });
                 this.studyAreaService.extensionResultsChanged = 0;
+                if (this.regionService.selectedRegion.Applications.indexOf('FLA') != -1 && this.studyAreaService.flowAnywhereData && this.studyAreaService.flowAnywhereData["selectedGage"] && this.studyAreaService.flowAnywhereData["dateRange"]) {
+                    this.studyAreaService.computeFlowAnywhereResults();
+                }
                 if (this.nssService.selectedStatisticsGroupList.length > 0 && this.nssService.showFlowsTable) {
                     var strippedoutStatisticGroups = [];
                     if (this.studyAreaService.selectedStudyArea.CoordinatedReach != null) {

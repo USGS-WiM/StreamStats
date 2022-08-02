@@ -375,9 +375,14 @@ module StreamStats.Controllers {
             }
         }
 
-        public configureExtensions() {
+        public configureExtensions(extensionName) {
             //open modal for extensions
-            this.modalService.openModal(Services.SSModalType.e_extensionsupport);
+            if (extensionName == "FDCTM") {
+                this.modalService.openModal(Services.SSModalType.e_extensionsupport);
+            } else if (extensionName == "FLA") {
+                this.modalService.openModal(Services.SSModalType.e_flowanywhere);
+                this.addParameterToStudyAreaList("DRNAREA");
+            }
         }
 
         public submitBasinEdits() {
@@ -420,6 +425,11 @@ module StreamStats.Controllers {
                 category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.nssService.selectedStatisticsGroupList.map(function (elem) { return elem.name; }).join(",") });
 
             this.studyAreaService.extensionResultsChanged = 0; //reset FDCTM results
+
+            // Compute FlowAnywhereResults
+            if (this.regionService.selectedRegion.Applications.indexOf('FLA') != -1 && this.studyAreaService.flowAnywhereData && this.studyAreaService.flowAnywhereData["selectedGage"] && this.studyAreaService.flowAnywhereData["dateRange"]) {
+                this.studyAreaService.computeFlowAnywhereResults();
+            }
 
             if (this.nssService.selectedStatisticsGroupList.length > 0 && this.nssService.showFlowsTable) {
                 var strippedoutStatisticGroups = []; 
