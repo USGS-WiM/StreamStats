@@ -22,10 +22,6 @@
 //Import
 
 module StreamStats.Controllers {
-
-    declare var turf;
-
-    'use string';
     interface IFlowAnywhereControllerScope extends ng.IScope {
         vm: IFlowAnywhereController;
     }
@@ -151,6 +147,21 @@ module StreamStats.Controllers {
         private load(): void {
             // Get drainage area if not already retrieved/retrieving
             if (this.getDrainageArea() == 'N/A' && !this.studyAreaService.loadingDrainageArea) this.studyAreaService.loadDrainageArea();
+
+            if (this.studyAreaService.flowAnywhereData) {
+
+                // Get selected reference gage if it was already selected
+                if (this.studyAreaService.flowAnywhereData["selectedGage"]) {
+                    this.selectedReferenceGage = this.studyAreaService.flowAnywhereData["selectedGage"];
+                }
+                            
+                // Set date range if it was already selected
+                if (this.studyAreaService.flowAnywhereData["dateRange"]) {
+                    this.dateRange = this.studyAreaService.flowAnywhereData["dateRange"];
+                }
+            }
+
+            
         }
 
         private verifyExtensionCanContinue(): string {
@@ -203,7 +214,7 @@ module StreamStats.Controllers {
 
         public getStyling(gage) {
             if (this.selectedReferenceGage && gage.StationID == this.selectedReferenceGage.StationID) 
-                return {'background-color': '#ebf0f5' }
+                return {'background-color': '#FFF' }
             else
                 return {'background-color': 'unset'}
         }

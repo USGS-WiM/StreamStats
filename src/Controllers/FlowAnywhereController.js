@@ -17,7 +17,6 @@ var StreamStats;
 (function (StreamStats) {
     var Controllers;
     (function (Controllers) {
-        'use string';
         var FlowAnywhereController = (function (_super) {
             __extends(FlowAnywhereController, _super);
             function FlowAnywhereController($scope, $analytics, modal, modalservice, studyArea, events, $http, toaster) {
@@ -80,6 +79,14 @@ var StreamStats;
             FlowAnywhereController.prototype.load = function () {
                 if (this.getDrainageArea() == 'N/A' && !this.studyAreaService.loadingDrainageArea)
                     this.studyAreaService.loadDrainageArea();
+                if (this.studyAreaService.flowAnywhereData) {
+                    if (this.studyAreaService.flowAnywhereData["selectedGage"]) {
+                        this.selectedReferenceGage = this.studyAreaService.flowAnywhereData["selectedGage"];
+                    }
+                    if (this.studyAreaService.flowAnywhereData["dateRange"]) {
+                        this.dateRange = this.studyAreaService.flowAnywhereData["dateRange"];
+                    }
+                }
             };
             FlowAnywhereController.prototype.verifyExtensionCanContinue = function () {
                 if (!this.selectedReferenceGage) {
@@ -121,7 +128,7 @@ var StreamStats;
             };
             FlowAnywhereController.prototype.getStyling = function (gage) {
                 if (this.selectedReferenceGage && gage.StationID == this.selectedReferenceGage.StationID)
-                    return { 'background-color': '#ebf0f5' };
+                    return { 'background-color': '#FFF' };
                 else
                     return { 'background-color': 'unset' };
             };
