@@ -53,25 +53,31 @@ var StreamStats;
             };
             FlowAnywhereController.prototype.init = function () {
                 var _this = this;
-                this.referenceGageList = [];
+                this.referenceGageList = null;
                 var lat = this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toString();
                 var lon = this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toString();
                 var url = configuration.baseurls.FlowAnywhereMapServices + configuration.queryparams.FlowAnywhereGages.format(lon, lat);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
-                    response.data.features.forEach(function (gage) {
-                        _this.gage = new StreamStats.Models.ReferenceGage(gage.attributes["reference_gages.site_id"], gage.attributes["reference_gages.site_name"]);
-                        _this.gage.DrainageArea_sqMI = gage.attributes["reference_gages.da_gis_mi2"];
-                        _this.gage.Latitude_DD = gage.attributes["reference_gages.lat_dd_nad"];
-                        _this.gage.Longitude_DD = gage.attributes["reference_gages.long_dd_na"];
-                        _this.gage.AggregatedRegion = gage.attributes["regions_local.Region_Agg"];
-                        _this.getNWISPeriodOfRecord(_this.gage);
-                        _this.referenceGageList.push(_this.gage);
-                    });
+                    if (response.data.features) {
+                        _this.referenceGageList = [];
+                        response.data.features.forEach(function (gage) {
+                            _this.gage = new StreamStats.Models.ReferenceGage(gage.attributes["reference_gages.site_id"], gage.attributes["reference_gages.site_name"]);
+                            _this.gage.DrainageArea_sqMI = gage.attributes["reference_gages.da_gis_mi2"];
+                            _this.gage.Latitude_DD = gage.attributes["reference_gages.lat_dd_nad"];
+                            _this.gage.Longitude_DD = gage.attributes["reference_gages.long_dd_na"];
+                            _this.gage.AggregatedRegion = gage.attributes["regions_local.Region_Agg"];
+                            _this.getNWISPeriodOfRecord(_this.gage);
+                            _this.referenceGageList.push(_this.gage);
+                        });
+                    }
+                    else if (response.error.code == 400) {
+                        _this.referenceGageList = null;
+                    }
                 }, function (error) {
                     _this.toaster.clear();
                     _this.isBusy = false;
-                    console.log(error);
+                    _this.toaster.pop('error', "Error", "Error accessing Flow Anywhere gages", 0);
                 }).finally(function () {
                 });
                 this.dateRange = { dates: { startDate: this.addDay(new Date(), -32), endDate: this.addDay(new Date(), -2) }, minDate: new Date(1900, 1, 1), maxDate: this.addDay(new Date(), -1) };

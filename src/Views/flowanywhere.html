@@ -19,7 +19,7 @@
         <div class="panel">
             <h4 class="panel-title">Select a Reference Gage<small style="color:red">&nbsp;&nbsp;(Required)</small></h4>
             <span>
-                <div ng-show="vm.referenceGageList.length > 0" id="qppqTable">
+                <div ng-show="vm.referenceGageList && vm.referenceGageList.length > 0" id="qppqTable">
                     <table class="table table-striped">
                         <thead>
                             <th>Station Number</th>
@@ -52,6 +52,9 @@
                 </div>
                 <div ng-if="vm.referenceGageList.length == 0">
                     No reference gages exist for this location.
+                </div>
+                <div ng-if="!vm.referenceGageList">
+                    Error: could not retrieve reference gages.
                 </div>
             </span>
         </div>

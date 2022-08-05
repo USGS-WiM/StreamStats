@@ -99,7 +99,7 @@ module StreamStats.Controllers {
             //default
 
             // Load list of reference gages from Flow Anywhere Gages service
-            this.referenceGageList = []
+            this.referenceGageList = null;
             var lat = this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toString();
             var lon = this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toString();
             var url = configuration.baseurls.FlowAnywhereMapServices + configuration.queryparams.FlowAnywhereGages.format(lon, lat)
@@ -107,20 +107,26 @@ module StreamStats.Controllers {
 
             this.Execute(request).then(
                 (response: any) => {
-                    response.data.features.forEach(gage => {
-                        this.gage = new Models.ReferenceGage(gage.attributes["reference_gages.site_id"], gage.attributes["reference_gages.site_name"])
-                        this.gage.DrainageArea_sqMI = gage.attributes["reference_gages.da_gis_mi2"];
-                        this.gage.Latitude_DD = gage.attributes["reference_gages.lat_dd_nad"];
-                        this.gage.Longitude_DD = gage.attributes["reference_gages.long_dd_na"];
-                        this.gage.AggregatedRegion = gage.attributes["regions_local.Region_Agg"];
-                        this.getNWISPeriodOfRecord(this.gage);
-                        this.referenceGageList.push(this.gage);
-                    });
+                    if (response.data.features) {
+                        this.referenceGageList = [];
+                        response.data.features.forEach(gage => {
+                            this.gage = new Models.ReferenceGage(gage.attributes["reference_gages.site_id"], gage.attributes["reference_gages.site_name"])
+                            this.gage.DrainageArea_sqMI = gage.attributes["reference_gages.da_gis_mi2"];
+                            this.gage.Latitude_DD = gage.attributes["reference_gages.lat_dd_nad"];
+                            this.gage.Longitude_DD = gage.attributes["reference_gages.long_dd_na"];
+                            this.gage.AggregatedRegion = gage.attributes["regions_local.Region_Agg"];
+                            this.getNWISPeriodOfRecord(this.gage);
+                            this.referenceGageList.push(this.gage);
+                        });
+                    } else if (response.error.code == 400) {
+                        this.referenceGageList = null;
+                    }
+                    
                 }, (error) => {
                     //sm when error
                     this.toaster.clear();
                     this.isBusy = false;
-                    console.log(error);
+                    this.toaster.pop('error', "Error", "Error accessing Flow Anywhere gages", 0);
                 }).finally(() => {
             });
 
