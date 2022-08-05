@@ -136,7 +136,7 @@
                         <div ng-if="vm.SelectedTab == 3" style="position:relative;">
                             <div>&nbsp;</div>
                             <form id="SyntheticUrbanHydrograph" name="SyntheticUrbanHydrograph" class="hidden-print" novalidate>
-                                <label for="AEPOptionsSynthetic">Select an Annual Exceedance Probability (AEP):</label>
+                                <label for="AEPOptionsSynthetic">Select an Annual Exceedance Probability (AEP) / Design Storm Return Period:</label>
                                 <select name="AEPOptionsSynthetic" ng-model="vm.SelectedAEPSynthetic" ng-options="precip.name for precip in vm.AEPOptionsSynthetic track by precip.value"></select>
                                 <label for="StandardCurve">Select a Standard Curve Number Value:</label>
                                 <select name="StandardCurve" ng-model="vm.SelectedStandardCurve" ng-options="curve.name for curve in vm.StandardCurveOptions track by curve.value"></select>
