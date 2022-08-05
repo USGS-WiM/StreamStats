@@ -72,10 +72,12 @@ var StreamStats;
                     }];
                 _this.StandardCurveOptions = [{
                         "name": "Area Weighted CN",
-                        "value": 1
+                        "value": 1,
+                        "endpointValue": "area"
                     }, {
                         "name": "Runoff Weighted CN",
-                        "value": 2
+                        "value": 2,
+                        "endpointValue": "runoff"
                     }];
                 _this.CNModificationOptions = [{
                         "name": "McCuen",
@@ -86,10 +88,12 @@ var StreamStats;
                     }];
                 _this.TimeOfConcentrationOptions = [{
                         "name": "Travel Time Method",
-                        "value": 1
+                        "value": 1,
+                        "endpointValue": "traveltime"
                     }, {
                         "name": "Lag Time Equation",
-                        "value": 2
+                        "value": 2,
+                        "endpointValue": "lagtime"
                     }];
                 _this.RainfallDistributionOptions = [{
                         "name": "Type II",
@@ -367,7 +371,7 @@ var StreamStats;
                     channelizedFlowUserInput: []
                 };
                 _this.TravelTimeFlowTypes = _this._defaultFlowTypes.slice();
-                _this.TravelTimeFlowSegments = _this._defaultFlowSegments;
+                _this.TravelTimeFlowSegments = JSON.parse(JSON.stringify(_this._defaultFlowSegments));
                 _this.addFlowSegmentOpen = false;
                 $scope.vm = _this;
                 $scope.greaterThanZero = _this.greaterThanZero;
@@ -708,6 +712,147 @@ var StreamStats;
                     this.toaster.pop('error', "There was an error calculating parameters", "", 0);
                 }
             };
+            SCStormRunoffController.prototype.getFormattedFlowSegments = function () {
+                var formattedSegments = {
+                    sheetFlow: null,
+                    excessSheetFlow: null,
+                    shallowConcentratedFlow: null,
+                    channelizedFlowOpen: null,
+                    channelizedFlowStorm: null,
+                    channelizedFlowUserInput: null
+                };
+                var flowKeys = Object.keys(this.TravelTimeFlowSegments);
+                for (var _i = 0, flowKeys_1 = flowKeys; _i < flowKeys_1.length; _i++) {
+                    var flowSegment = flowKeys_1[_i];
+                    var allSegmentsOfType = [];
+                    for (var _a = 0, _b = this.TravelTimeFlowSegments[flowSegment]; _a < _b.length; _a++) {
+                        var segment = _b[_a];
+                        var segmentData = {};
+                        for (var _c = 0, segment_1 = segment; _c < segment_1.length; _c++) {
+                            var question = segment_1[_c];
+                            var value = question.value;
+                            if (question.options) {
+                                var optionKeys = Object.keys(question.options);
+                                for (var _d = 0, optionKeys_1 = optionKeys; _d < optionKeys_1.length; _d++) {
+                                    var key = optionKeys_1[_d];
+                                    if (value == question.options[key]) {
+                                        value = key;
+                                        break;
+                                    }
+                                }
+                            }
+                            segmentData[question.label] = value;
+                        }
+                        allSegmentsOfType.push(segmentData);
+                    }
+                    formattedSegments[flowSegment] = allSegmentsOfType;
+                }
+                return formattedSegments;
+            };
+            SCStormRunoffController.prototype.calculateSyntheticParameters = function (parameters) {
+                var _this = this;
+                try {
+                    this.toaster.pop("wait", "Calculating Missing Parameters", "Please wait...", 0);
+                    this.parameters = parameters;
+                    var workspaceID = this.studyAreaService.selectedStudyArea.WorkspaceID;
+                    var regionID = this.studyAreaService.selectedStudyArea.RegionID;
+                    var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSComputeParams'].format(regionID, workspaceID, parameters);
+                    var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                    request.withCredentials = true;
+                    this.Execute(request).then(function (response) {
+                        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+                        if (response.data.parameters && response.data.parameters.length > 0) {
+                            var paramErrors = false;
+                            angular.forEach(response.data.parameters, function (parameter) {
+                                if (!parameter.hasOwnProperty('value') || parameter.value == -999) {
+                                    paramErrors = true;
+                                    console.error('Parameter failed to compute: ', parameter.code);
+                                    parameter.loaded = false;
+                                }
+                                else {
+                                    parameter.loaded = true;
+                                }
+                            });
+                            if (paramErrors) {
+                                _this.toaster.pop('error', "Error", "Parameter failed to compute", 0);
+                            }
+                            response.data.parameters.forEach(function (param) {
+                                var _a, _b;
+                                if (param.code.toLowerCase() == 'drnarea')
+                                    _this.drainageAreaSynthetic = param.value;
+                                if (param.code.toLowerCase() == 'csl10_85fm' && ((_a = _this._selectedTimeOfConcentration) === null || _a === void 0 ? void 0 : _a.value) == 2)
+                                    _this.lagTimeLength = param.value;
+                                if (param.code.toLowerCase() == 'lfplength' && ((_b = _this._selectedTimeOfConcentration) === null || _b === void 0 ? void 0 : _b.value) == 2)
+                                    _this.lagTimeSlope = param.value;
+                            });
+                            var data = {};
+                            var url = "";
+                            var headers = {
+                                "Content-Type": "application/json",
+                                "X-warning": true
+                            };
+                            var formmatedSegments = _this.getFormattedFlowSegments();
+                            data = {
+                                "lat": _this.studyAreaService.selectedStudyArea.Pourpoint.Latitude,
+                                "lon": _this.studyAreaService.selectedStudyArea.Pourpoint.Longitude,
+                                "AEP": (_a = _this._selectedAEPSynthetic) === null || _a === void 0 ? void 0 : _a.value,
+                                "curveNumberMethod": (_b = _this._selectedStandardCurve) === null || _b === void 0 ? void 0 : _b.endpointValue,
+                                "TcMethod": _this._selectedTimeOfConcentration.endpointValue,
+                                "length": ((_c = _this._selectedTimeOfConcentration) === null || _c === void 0 ? void 0 : _c.value) == 2 ? _this.lagTimeLength : null,
+                                "slope": ((_d = _this._selectedTimeOfConcentration) === null || _d === void 0 ? void 0 : _d.value) == 2 ? _this.lagTimeSlope : null,
+                                "dataSheetFlow": ((_e = _this._selectedTimeOfConcentration) === null || _e === void 0 ? void 0 : _e.value) == 1 ? formmatedSegments.sheetFlow : null,
+                                "dataExcessSheetFlow": ((_f = _this._selectedTimeOfConcentration) === null || _f === void 0 ? void 0 : _f.value) == 1 ? formmatedSegments.excessSheetFlow : null,
+                                "dataShallowConcentratedFlow": ((_g = _this._selectedTimeOfConcentration) === null || _g === void 0 ? void 0 : _g.value) == 1 ? formmatedSegments.shallowConcentratedFlow : null,
+                                "dataChannelizedFlowOpenChannel": ((_h = _this._selectedTimeOfConcentration) === null || _h === void 0 ? void 0 : _h.value) == 1 ? formmatedSegments.channelizedFlowOpen : null,
+                                "dataChannelizedFlowStormSewer": ((_j = _this._selectedTimeOfConcentration) === null || _j === void 0 ? void 0 : _j.value) == 1 ? formmatedSegments.channelizedFlowStorm : null,
+                                "dataChannelizedFlowStormSewerOrOpenChannelUserInputVelocity": ((_k = _this._selectedTimeOfConcentration) === null || _k === void 0 ? void 0 : _k.value) == 1 ? formmatedSegments.channelizedFlowUserInput : null
+                            };
+                            console.log(data);
+                            url = configuration.baseurls['SCStormRunoffServices'] + configuration.queryparams['SCStormRunoffSyntheticUnitHydrograph'];
+                            var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(data), headers);
+                            _this.Execute(request).then(function (response) {
+                                var data = response.data;
+                                var keys = Object.keys(data);
+                                for (var _i = 0, keys_1 = keys; _i < keys_1.length; _i++) {
+                                    var key = keys_1[_i];
+                                    if (key == "Ia")
+                                        _this.initialAbstraction = response.data.Ia;
+                                    if (key == "S")
+                                        _this.watershedRetention = response.data.S;
+                                    if (key == "curve_number")
+                                        _this.standardCurveNumber = response.data.curve_number;
+                                    if (key == "peak_rate_factor")
+                                        _this.peakRateFactor = response.data.peak_rate_factor;
+                                    if (key == "rainfall_distribution_curve_letter") {
+                                        for (var _a = 0, _b = _this.RainfallDistributionOptions; _a < _b.length; _a++) {
+                                            var option = _b[_a];
+                                            if (option.name.indexOf(response.data.rainfall_distribution_curve_letter) == -1) {
+                                                _this._selectedRainfallDistribution = option;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    if (key == "time_of_concentration")
+                                        _this.timeOfConcentrationMin = response.data.time_of_concentration.value;
+                                }
+                                _this.toaster.clear();
+                            }).catch(function (error) {
+                                _this.toaster.clear();
+                                _this.toaster.pop("error", "There was an HTTP error calculating parameters", "Please retry", 0);
+                            });
+                        }
+                    }, function (error) {
+                        _this.toaster.clear();
+                        _this.toaster.pop("error", "There was an HTTP error calculating parameters", "Please retry", 0);
+                    }).finally(function () {
+                        _this.canContinue = true;
+                        _this.hideAlerts = true;
+                    });
+                }
+                catch (e) {
+                    this.toaster.pop('error', "There was an error calculating parameters", "", 0);
+                }
+            };
             SCStormRunoffController.prototype.loadGraphData = function () {
                 var _this = this;
                 var results = [];
@@ -783,7 +928,32 @@ var StreamStats;
                 }
                 flowType.splice(indexOfRemoval, 1);
             };
+            SCStormRunoffController.prototype.calculateSyntheticParamsDisabled = function () {
+                if (!this._selectedAEPSynthetic || !this._selectedStandardCurve || !this._selectedTimeOfConcentration) {
+                    return true;
+                }
+                return false;
+            };
             SCStormRunoffController.prototype.validateForm = function (mainForm) {
+                var _a;
+                if (mainForm.$name == "SyntheticUrbanHydrograph") {
+                    if (((_a = this._selectedTimeOfConcentration) === null || _a === void 0 ? void 0 : _a.value) == 1) {
+                        var atLeastOneSegment = false;
+                        var keys = Object.keys(this.TravelTimeFlowSegments);
+                        for (var _i = 0, keys_2 = keys; _i < keys_2.length; _i++) {
+                            var key = keys_2[_i];
+                            if (this.TravelTimeFlowSegments[key].length) {
+                                atLeastOneSegment = true;
+                                break;
+                            }
+                        }
+                        if (!atLeastOneSegment) {
+                            this.showResults = false;
+                            this.hideAlerts = false;
+                            return false;
+                        }
+                    }
+                }
                 if (mainForm.$valid) {
                     return true;
                 }
@@ -811,6 +981,23 @@ var StreamStats;
                 this.SelectedAEPSynthetic = null;
                 this.showResults = false;
                 this.warningMessages = null;
+            };
+            SCStormRunoffController.prototype.clearSyntheticResults = function () {
+                this._selectedAEPSynthetic = null;
+                this._selectedStandardCurve = null;
+                this._selectedCNModification = null;
+                this._selectedTimeOfConcentration = null;
+                this._selectedRainfallDistribution = null;
+                this.TravelTimeFlowTypes = this._defaultFlowTypes.slice();
+                this.TravelTimeFlowSegments = JSON.parse(JSON.stringify(this._defaultFlowSegments));
+                this.drainageAreaSynthetic = null;
+                this.timeOfConcentrationMin = null;
+                this.peakRateFactor = null;
+                this.standardCurveNumber = null;
+                this.watershedRetention = null;
+                this.initialAbstraction = null;
+                this.lagTimeLength = null;
+                this.lagTimeSlope = null;
             };
             SCStormRunoffController.prototype.Close = function () {
                 this.modalInstance.dismiss('cancel');
