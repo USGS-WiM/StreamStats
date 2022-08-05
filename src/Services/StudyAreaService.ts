@@ -1306,71 +1306,69 @@ module StreamStats.Services {
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', angular.toJson(dataFLA));
             this.Execute(request).then(
                 (response: any) => {
-                    // console.log(response);
-                    // console.log(response.data);
-                    this.flowAnywhereData.results = response["data"];
-                    this.flowAnywhereData["estimatedFlowsArray"] = [];
-                    this.flowAnywhereData.results["EstimatedFlow"]["Observations"].forEach((observation,index) =>{
-                        this.flowAnywhereData["estimatedFlowsArray"].push({
-                            "date": observation["Date"],
-                            "estimatedFlow": observation["Value"],
-                            "observedFlow": this.flowAnywhereData.results["ReferanceGage"]["Discharge"]["Observations"][index]["Value"]
+                    if (response.data) {
+                        this.flowAnywhereData.results = response.data;
+                        this.flowAnywhereData.estimatedFlowsArray = [];
+                        this.flowAnywhereData.results.EstimatedFlow.Observations.forEach((observation,index) =>{
+                            this.flowAnywhereData.estimatedFlowsArray.push({
+                                "date": observation.Date,
+                                "estimatedFlow": observation.Value,
+                                "observedFlow": this.flowAnywhereData.results.ReferanceGage.Discharge.Observations[index].Value
+                            });
                         });
-                    });
-                    this.flowAnywhereData["graphData"] = {
-                        data: [
-                            { key: "Observed", values: this.processData(this.flowAnywhereData.results["ReferanceGage"]["Discharge"]["Observations"], 0)},
-                            { key: "Estimated", values: this.processData(this.flowAnywhereData.results["EstimatedFlow"]["Observations"], 1) }
-                        ],
-                        options: {
-                            chart: {
-                                type: 'lineChart',
-                                height: 450,
-                                margin: {
-                                    top: 20,
-                                    right: 20,
-                                    bottom: 50,
-                                    left: 80
-                                },
-                                x: function (d) {
-                                    return new Date(d.x).getTime();
-                                },
-                                y: function (d) {
-                                    return d.y;
-                                },
-                                useInteractiveGuideline: false,
-                                interactive: true,
-                                tooltips: true,
-                                xAxis: {
-                                    tickFormat: function (d) {
-                                        return d3.time.format('%x')(new Date(d));
+                        this.flowAnywhereData["graphData"] = {
+                            data: [
+                                { key: "Observed", values: this.processData(this.flowAnywhereData.results.ReferanceGage.Discharge.Observations, 0)},
+                                { key: "Estimated", values: this.processData(this.flowAnywhereData.results.EstimatedFlow.Observations, 1) }
+                            ],
+                            options: {
+                                chart: {
+                                    type: 'lineChart',
+                                    height: 450,
+                                    margin: {
+                                        top: 20,
+                                        right: 20,
+                                        bottom: 50,
+                                        left: 80
                                     },
-                                    rotateLabels: -30,
-                                    showMaxMin: true
-                                },
-                                yAxis: {
-                                    axisLabel: 'Discharge (cfs)',
-                                    tickFormat: function (d) {
-                                        return d != null ? d.toUSGSvalue() : d;
-                                    }
-                                    // showMaxMin: true
-
-                                },
-                                zoom: {
-                                    enabled: false
-                                },
-                                forceY: 0
+                                    x: function (d) {
+                                        return new Date(d.x).getTime();
+                                    },
+                                    y: function (d) {
+                                        return d.y;
+                                    },
+                                    useInteractiveGuideline: false,
+                                    interactive: true,
+                                    tooltips: true,
+                                    xAxis: {
+                                        tickFormat: function (d) {
+                                            return d3.time.format('%x')(new Date(d));
+                                        },
+                                        rotateLabels: -30,
+                                        showMaxMin: true
+                                    },
+                                    yAxis: {
+                                        axisLabel: 'Discharge (cfs)',
+                                        tickFormat: function (d) {
+                                            return d != null ? d.toUSGSvalue() : d;
+                                        }
+                                    },
+                                    zoom: {
+                                        enabled: false
+                                    },
+                                    forceY: 0
+                                }
                             }
-                        }
-                    };
-
-
-                    // console.log(this.flowAnywhereData["estimatedFlowsArray"]);
-                    console.log(this.flowAnywhereData);
+                        };
+                    } else {
+                        this.toaster.clear();
+                        this.toaster.pop('error', "Error", "Error computing Flow Anywhere results", 0);
+                    }
+                    
                 }, (error) => {
                     //sm when error
                     this.toaster.clear();
-                    console.log(error);
+                    this.toaster.pop('error', "Error", "Error computing Flow Anywhere results", 0);
                 }).finally(() => {
             });
         }
