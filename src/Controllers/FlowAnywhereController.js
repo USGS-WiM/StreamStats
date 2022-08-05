@@ -43,8 +43,8 @@ var StreamStats;
                 if (!errorMessage) {
                     this.close();
                     this.studyAreaService.flowAnywhereData = {};
-                    this.studyAreaService.flowAnywhereData["dateRange"] = this.dateRange;
-                    this.studyAreaService.flowAnywhereData["selectedGage"] = this.selectedReferenceGage;
+                    this.studyAreaService.flowAnywhereData.dateRange = this.dateRange;
+                    this.studyAreaService.flowAnywhereData.selectedGage = this.selectedReferenceGage;
                     this.toaster.pop('success', "Flow Anywhere Method was successfully configured", "Please continue", 5000);
                 }
                 else {
@@ -80,11 +80,11 @@ var StreamStats;
                 if (this.getDrainageArea() == 'N/A' && !this.studyAreaService.loadingDrainageArea)
                     this.studyAreaService.loadDrainageArea();
                 if (this.studyAreaService.flowAnywhereData) {
-                    if (this.studyAreaService.flowAnywhereData["selectedGage"]) {
-                        this.selectedReferenceGage = this.studyAreaService.flowAnywhereData["selectedGage"];
+                    if (this.studyAreaService.flowAnywhereData.selectedGage) {
+                        this.selectedReferenceGage = this.studyAreaService.flowAnywhereData.selectedGage;
                     }
-                    if (this.studyAreaService.flowAnywhereData["dateRange"]) {
-                        this.dateRange = this.studyAreaService.flowAnywhereData["dateRange"];
+                    if (this.studyAreaService.flowAnywhereData.dateRange) {
+                        this.dateRange = this.studyAreaService.flowAnywhereData.dateRange;
                     }
                 }
             };
@@ -102,10 +102,10 @@ var StreamStats;
                         return "Date range is not valid.";
                     }
                 }
-                if (this.selectedReferenceGage["StartDate"] > this.dateRange.dates.startDate) {
+                if (this.selectedReferenceGage.StartDate > this.dateRange.dates.startDate) {
                     return "The selected start date is not valid for the selected reference gage.";
                 }
-                if (this.selectedReferenceGage["EndDate"] < this.dateRange.dates.endDate) {
+                if (this.selectedReferenceGage.EndDate < this.dateRange.dates.endDate) {
                     return "The selected end date is not valid for the selected reference gage.";
                 }
                 return null;

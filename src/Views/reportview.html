@@ -305,12 +305,12 @@
                         <div class ="well well-sm">
                             <h3 class="collapsible" ng-click="vm.collapseSection($event, 'stats', 'FLA')"><i ng-class="!vm.sectionCollapsed['FLA'] ? 'fa fa-chevron-right': 'fa fa-chevron-down'"></i>&nbsp;&nbsp;Flow Anywhere Method</h3>
                             <div class="collapsible-content">
-                                <div class="wim-alert-warning" ng-if="vm.studyAreaService.flowAnywhereData['results']['Warnings'].length > 0">{{vm.studyAreaService.flowAnywhereData["results"]["Warnings"]}}</div>
+                                <div class="wim-alert-warning" ng-if="vm.studyAreaService.flowAnywhereData.results.Warnings.length > 0">{{vm.studyAreaService.flowAnywhereData.results.Warnings}}</div>
 
                                 <!--Flow Anywhere Estimated Flow-->
                                 <h3 class="reportChartHeader">Estimated Flow</h3>
                                 <button class="chartExportButton" ng-click="vm.downloadPNG('estimatedFlowFLAGraph')">Download PNG</button>
-                                <nvd3 id="estimatedFlowFLAGraph" options="vm.studyAreaService.flowAnywhereData['graphData']['options']" data="vm.studyAreaService.flowAnywhereData['graphData']['data']"></nvd3>
+                                <nvd3 id="estimatedFlowFLAGraph" options="vm.studyAreaService.flowAnywhereData.graphData.options" data="vm.studyAreaService.flowAnywhereData.graphData.data"></nvd3>
                                 <a ng-click="vm.isEstimatedFlowFLATableOpen = !vm.isEstimatedFlowFLATableOpen">
                                     <span ng-show="vm.isEstimatedFlowFLATableOpen">Hide</span>
                                     <span ng-hide="vm.isEstimatedFlowFLATableOpen">Show</span> table<br>
@@ -323,14 +323,14 @@
                                                 <tr>
                                                     <th>Date</th>
                                                     <th>Estimated Flow (cfs)</th>
-                                                    <th>Observed Flow ({{vm.studyAreaService.flowAnywhereData["selectedGage"].StationID}}) (cfs)</th>
+                                                    <th>Observed Flow ({{vm.studyAreaService.flowAnywhereData.selectedGage.StationID}}) (cfs)</th>
                                                 </tr>
                                             </thead>
-                                            <tbody ng-repeat="estimatedFlow in vm.studyAreaService.flowAnywhereData['estimatedFlowsArray']">
+                                            <tbody ng-repeat="estimatedFlow in vm.studyAreaService.flowAnywhereData.estimatedFlowsArray">
                                                 <tr>
-                                                    <td>{{estimatedFlow["date"] | date:'yyyy/MM/dd'}}</td>
-                                                    <td>{{estimatedFlow["estimatedFlow"].toUSGSvalue()}}</td>
-                                                    <td>{{estimatedFlow["observedFlow"].toUSGSvalue()}}</td>
+                                                    <td>{{estimatedFlow.date | date:'yyyy/MM/dd'}}</td>
+                                                    <td>{{estimatedFlow.estimatedFlow.toUSGSvalue()}}</td>
+                                                    <td>{{estimatedFlow.observedFlow.toUSGSvalue()}}</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -347,27 +347,27 @@
                                         <tbody>
                                             <tr>
                                                 <td class="col-md-5">Station ID:</td>
-                                                <td><a ng-click="vm.openGagePage(vm.studyAreaService.flowAnywhereData['selectedGage'].StationID)">{{vm.studyAreaService.flowAnywhereData["selectedGage"].StationID}}</a></td>
+                                                <td><a ng-click="vm.openGagePage(vm.studyAreaService.flowAnywhereData.selectedGage.StationID)">{{vm.studyAreaService.flowAnywhereData.selectedGage.StationID}}</a></td>
                                             </tr>
                                             <tr>
                                                 <td class="col-md-5">Name:</td>
-                                                <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData["selectedGage"].Name}}</span></td>
+                                                <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData.selectedGage.Name}}</span></td>
                                             </tr>
                                             <tr>
                                                 <td class="col-md-5">Latitude:</td>
-                                                <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData["selectedGage"].Latitude_DD}}</span><span> Decimal Degrees</span></td>
+                                                <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData.selectedGage.Latitude_DD}}</span><span> Decimal Degrees</span></td>
                                             </tr>
                                             <tr>
                                                 <td class="col-md-5">Longitude:</td>
-                                                <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData["selectedGage"].Longitude_DD}}</span><span> Decimal Degrees</span></td>
+                                                <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData.selectedGage.Longitude_DD}}</span><span> Decimal Degrees</span></td>
                                             </tr>
                                             <tr>
                                                 <td class="col-md-5">Drainage Area:</td>
-                                                <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData["selectedGage"].DrainageArea_sqMI}}</span><span> square miles</span></td>
+                                                <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData.selectedGage.DrainageArea_sqMI}}</span><span> square miles</span></td>
                                             </tr>
                                             <tr>
                                                 <td class="col-md-5">Aggregated Region:</td>
-                                                <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData["selectedGage"].AggregatedRegion}}</span></td>
+                                                <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData.selectedGage.AggregatedRegion}}</span></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -380,27 +380,27 @@
                                         <tbody>
                                             <tr>
                                                 <td class="col-md-5">Start Date:</td>
-                                                <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData['graphData']['data'][0]['values'][0]['x'] | date:'yyyy/MM/dd'}}</span></td>
+                                                <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData.graphData.data[0].values[0].x | date:'yyyy/MM/dd'}}</span></td>
                                             </tr>
                                             <tr>
                                                 <td class="col-md-5">End Date:</td>
-                                                <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData['graphData']['data'][0]['values'][vm.studyAreaService.flowAnywhereData['graphData']['data'][0]['values'].length-1]['x'] | date:'yyyy/MM/dd'}}</span></td>
+                                                <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData.graphData.data[0].values[vm.studyAreaService.flowAnywhereData.graphData.data[0].values.length-1].x | date:'yyyy/MM/dd'}}</span></td>
                                             </tr>
                                             <tr>
                                                 <td class="col-md-5">Drainage Area Ratio:</td>
-                                                <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData["results"].AreaRato.toUSGSvalue()}}</span></td>
+                                                <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData.results.AreaRato.toUSGSvalue()}}</span></td>
                                             </tr>
                                             <tr>
                                                 <td class="col-md-5">Constant 1</td>
-                                                <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData["results"].Const1}}</span></td>
+                                                <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData.results.Const1}}</span></td>
                                             </tr>
                                             <tr>
                                                 <td class="col-md-5">Constant 2:</td>
-                                                <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData["results"].Const2}}</span></td>
+                                                <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData.results.Const2}}</span></td>
                                             </tr>
                                             <tr>
                                                 <td class="col-md-5">Constant 3:</td>
-                                                <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData["results"].Const3}}</span></td>
+                                                <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData.results.Const3}}</span></td>
                                             </tr>
                                         </tbody>
                                     </table>

@@ -1291,16 +1291,16 @@ module StreamStats.Services {
                 }
             });
             var dataFLA = {
-                "startdate": this.flowAnywhereData["dateRange"].dates.startDate,
-                "enddate": this.flowAnywhereData["dateRange"].dates.endDate,
-                "nwis_station_id": this.flowAnywhereData["selectedGage"].StationID,
+                "startdate": this.flowAnywhereData.dateRange.dates.startDate,
+                "enddate": this.flowAnywhereData.dateRange.dates.endDate,
+                "nwis_station_id": this.flowAnywhereData.selectedGage.StationID,
                 "parameters": [
                     {
                         "code": "drnarea",
                         "value": drainageArea
                     }
                 ],
-                "region": Number(this.flowAnywhereData["selectedGage"].AggregatedRegion)
+                "region": Number(this.flowAnywhereData.selectedGage.AggregatedRegion)
             }
             var url = configuration.baseurls.FlowAnywhereRegressionServices + configuration.queryparams.FlowAnywhereEstimates
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', angular.toJson(dataFLA));
@@ -1308,19 +1308,19 @@ module StreamStats.Services {
                 (response: any) => {
                     // console.log(response);
                     // console.log(response.data);
-                    this.flowAnywhereData["results"] = response["data"];
+                    this.flowAnywhereData.results = response["data"];
                     this.flowAnywhereData["estimatedFlowsArray"] = [];
-                    this.flowAnywhereData["results"]["EstimatedFlow"]["Observations"].forEach((observation,index) =>{
+                    this.flowAnywhereData.results["EstimatedFlow"]["Observations"].forEach((observation,index) =>{
                         this.flowAnywhereData["estimatedFlowsArray"].push({
                             "date": observation["Date"],
                             "estimatedFlow": observation["Value"],
-                            "observedFlow": this.flowAnywhereData["results"]["ReferanceGage"]["Discharge"]["Observations"][index]["Value"]
+                            "observedFlow": this.flowAnywhereData.results["ReferanceGage"]["Discharge"]["Observations"][index]["Value"]
                         });
                     });
                     this.flowAnywhereData["graphData"] = {
                         data: [
-                            { key: "Observed", values: this.processData(this.flowAnywhereData["results"]["ReferanceGage"]["Discharge"]["Observations"], 0)},
-                            { key: "Estimated", values: this.processData(this.flowAnywhereData["results"]["EstimatedFlow"]["Observations"], 1) }
+                            { key: "Observed", values: this.processData(this.flowAnywhereData.results["ReferanceGage"]["Discharge"]["Observations"], 0)},
+                            { key: "Estimated", values: this.processData(this.flowAnywhereData.results["EstimatedFlow"]["Observations"], 1) }
                         ],
                         options: {
                             chart: {

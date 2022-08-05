@@ -85,8 +85,8 @@ module StreamStats.Controllers {
             if (!errorMessage) {
                 this.close();
                 this.studyAreaService.flowAnywhereData = {};
-                this.studyAreaService.flowAnywhereData["dateRange"] = this.dateRange;
-                this.studyAreaService.flowAnywhereData["selectedGage"] = this.selectedReferenceGage;
+                this.studyAreaService.flowAnywhereData.dateRange = this.dateRange;
+                this.studyAreaService.flowAnywhereData.selectedGage = this.selectedReferenceGage;
                 this.toaster.pop('success', "Flow Anywhere Method was successfully configured", "Please continue", 5000);
             } else {
                 this.toaster.pop('error', "Error", errorMessage, 0);
@@ -134,13 +134,13 @@ module StreamStats.Controllers {
             if (this.studyAreaService.flowAnywhereData) {
 
                 // Get selected reference gage if it was already selected
-                if (this.studyAreaService.flowAnywhereData["selectedGage"]) {
-                    this.selectedReferenceGage = this.studyAreaService.flowAnywhereData["selectedGage"];
+                if (this.studyAreaService.flowAnywhereData.selectedGage) {
+                    this.selectedReferenceGage = this.studyAreaService.flowAnywhereData.selectedGage;
                 }
                             
                 // Set date range if it was already selected
-                if (this.studyAreaService.flowAnywhereData["dateRange"]) {
-                    this.dateRange = this.studyAreaService.flowAnywhereData["dateRange"];
+                if (this.studyAreaService.flowAnywhereData.dateRange) {
+                    this.dateRange = this.studyAreaService.flowAnywhereData.dateRange;
                 }
             }
 
@@ -166,10 +166,10 @@ module StreamStats.Controllers {
                     return "Date range is not valid.";
                 }
             }
-            if (this.selectedReferenceGage["StartDate"] > this.dateRange.dates.startDate) {
+            if (this.selectedReferenceGage.StartDate > this.dateRange.dates.startDate) {
                 return "The selected start date is not valid for the selected reference gage."
             } 
-            if (this.selectedReferenceGage["EndDate"] < this.dateRange.dates.endDate) {
+            if (this.selectedReferenceGage.EndDate < this.dateRange.dates.endDate) {
                 return "The selected end date is not valid for the selected reference gage."
             }
 

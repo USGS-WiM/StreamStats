@@ -761,8 +761,8 @@ module StreamStats.Controllers {
                     type: "Feature",
                     geometry: {
                         coordinates: [
-                            this.studyAreaService.selectedGage["Latitude_DD"],
-                            this.studyAreaService.selectedGage["Longitude_DD"]
+                            this.studyAreaService.selectedGage.Latitude_DD,
+                            this.studyAreaService.selectedGage.Longitude_DD
                         ],
                         type: "Point"
                     }

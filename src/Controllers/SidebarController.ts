@@ -427,7 +427,7 @@ module StreamStats.Controllers {
             this.studyAreaService.extensionResultsChanged = 0; //reset FDCTM results
 
             // Compute FlowAnywhereResults
-            if (this.regionService.selectedRegion.Applications.indexOf('FLA') != -1 && this.studyAreaService.flowAnywhereData && this.studyAreaService.flowAnywhereData["selectedGage"] && this.studyAreaService.flowAnywhereData["dateRange"]) {
+            if (this.regionService.selectedRegion.Applications.indexOf('FLA') != -1 && this.studyAreaService.flowAnywhereData && this.studyAreaService.flowAnywhereData.selectedGage && this.studyAreaService.flowAnywhereData.dateRange) {
                 this.studyAreaService.computeFlowAnywhereResults();
             }
 
