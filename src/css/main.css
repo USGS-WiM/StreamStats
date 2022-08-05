@@ -67,9 +67,68 @@ button:hover{
     margin-bottom:4px;
 }
 
+.center-div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.center-title {
+    font-weight: bold;
+    padding-bottom: 2px;
+}
+
 .form-control.notloaded {
     border:1px solid #f00;
 }
+
+.form-row {
+    display: flex;
+    width: "50%";
+}
+.form-row-extremes {
+    display: inline-block; 
+    width: 100%;
+}
+
+.form-column-left {
+    flex:1;
+    padding-right: 5px;
+    padding-bottom: 0;
+}
+.form-column-right {
+    flex:1;
+    padding-left: 5px;
+    padding-bottom: 0;
+}
+
+.button-column-left {
+    float: left;
+    padding-right:5px;
+    padding-bottom: 0; 
+}
+.button-column-right {
+    float: right;
+    padding-left:5px;
+    padding-bottom: 0; 
+}
+
+.flow-form-row {
+    display: flex;
+    align-items:baseline;
+}
+.flow-form-accordion {
+   width:78%;
+   padding-right:2%;
+   float:none;
+}
+.flow-form-accordion accordion-group {
+   width:100%;
+}
+.flow-form-button {
+    float: left;
+}
+
+
 
 /*
     ===========================

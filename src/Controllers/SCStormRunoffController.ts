@@ -54,6 +54,14 @@ module StreamStats.Controllers {
         public canContinue: boolean;
         public ReportData: ISCStormRunoffReportable;
         public drainageArea: number;
+        public drainageAreaSynthetic: number;
+        public timeOfConcentrationMin: number;
+        public peakRateFactor: number;
+        public standardCurveNumber: number;
+        public watershedRetention: number;
+        public initialAbstraction: number;
+        public lagTimeLength: number;
+        public lagTimeSlope: number;
         public mainChannelLength: number;
         public mainChannelSlope: number;
         public totalImperviousArea: number;
@@ -63,6 +71,19 @@ module StreamStats.Controllers {
         public regressionRegions;
         public reportData;
         public angulartics: any;
+
+        private _selectedTab: SCStormRunoffType;
+        public get SelectedTab(): SCStormRunoffType {
+            return this._selectedTab;
+        }
+        public set SelectedTab(val: SCStormRunoffType) {
+            if (this._selectedTab != val) {
+                this._selectedTab = val;
+                this.selectRunoffType();
+            }//end if           
+        }
+
+        // 
         public AEPOptions = [{
             "name": "50%",
             "value": 50
@@ -95,16 +116,473 @@ module StreamStats.Controllers {
         public set SelectedAEP(val) {
             this._selectedAEP = val;
         }
-        private _selectedTab: SCStormRunoffType;
-        public get SelectedTab(): SCStormRunoffType {
-            return this._selectedTab;
+
+        // Synthetic UH
+        private _selectedAEPSynthetic;
+        private _selectedStandardCurve;
+        private _selectedCNModification;
+        private _selectedTimeOfConcentration;
+        private _selectedRainfallDistribution;
+        public AEPOptionsSynthetic = [{
+            "name": "10% / 10 Year Return Period",
+            "value": 10
+        }, {
+            "name": "4% / 25 Year Return Period",
+            "value": 4
+        }, {
+            "name": "2% / 50 Year Return Period",
+            "value": 2
+        }, {
+            "name": "1% / 100 Year Return Period",
+            "value": 1
+        }]
+        public StandardCurveOptions = [{
+            "name": "Area-Weighted Curve Number",
+            "value": 1
+        }, {
+            "name": "Runoff-Weighted Curve Number",
+            "value": 2
+        }]
+        public CNModificationOptions = [{
+            "name": "McCuen",
+            "value": 1
+        }, {
+            "name": "Merkel",
+            "value": 2
+        }]
+        public TimeOfConcentrationOptions = [{
+            "name": "Travel Time Method",
+            "value": 1
+        }, {
+            "name": "Lag Time Equation",
+            "value": 2
+        }]
+        public RainfallDistributionOptions = [{
+            "name": "Type II",
+            "value": 2,
+        }, {
+            "name": "Type III",
+            "value": 3,
+        }, {
+            "name": "NOAA A",
+            "value": 4,
+        }, {
+            "name": "NOAA B",
+            "value": 5,
+        }, {
+            "name": "NOAA C",
+            "value": 6,
+        }, {
+            "name": "NOAA D",
+            "value": 7,
+        }]
+        public get SelectedAEPSynthetic() {
+            return this._selectedAEPSynthetic;
         }
-        public set SelectedTab(val: SCStormRunoffType) {
-            if (this._selectedTab != val) {
-                this._selectedTab = val;
-                this.selectRunoffType();
-            }//end if           
+        public set SelectedAEPSynthetic(val) {
+            this._selectedAEPSynthetic = val;
         }
+        public get SelectedStandardCurve() {
+            return this._selectedStandardCurve;
+        }
+        public set SelectedStandardCurve(val) {
+            this._selectedStandardCurve = val;
+        }
+        public get SelectedCNModification() {
+            return this._selectedCNModification;
+        } 
+        public set SelectedCNModification(val) {
+            this._selectedCNModification = val;
+        }
+        public get SelectedTimeOfConcentration() {
+            return this._selectedTimeOfConcentration
+        }
+        public set SelectedTimeOfConcentration(val) {
+            this._selectedTimeOfConcentration = val;
+        }
+        public get SelectedRainfallDistribution() {
+            return this._selectedRainfallDistribution;
+        }
+        public set SelectedRainfallDistribution(val) {
+            this._selectedRainfallDistribution = val;
+        }
+
+        private greaterThanZero = /^([0-9]*[1-9][0-9]*(\.[0-9]+)?|[0]+\.[0-9]*[1-9][0-9]*)$/;
+        private gTZInvalidMessage = "Value must be greater than 0"
+        private greaterThanOrEqualToZero = /0+|^([0-9]*[1-9][0-9]*(\.[0-9]+)?|[0]+\.[0-9]*[1-9][0-9]*)$/;
+        private gTOETZInvalidMessage = "Value must be greater than or equal to 0"
+        private betweenZeroOneHundred = /^(\d{0,2}(\.\d{1,2})?|100(\.00?)?)$/;
+
+        private _defaultFlowTypes = [
+            {
+                id: "sheetFlow",
+                displayName: "Sheet Flow",
+                accordionOpen: false,
+                questions: [
+                    {
+                        id: "surface",
+                        label: "Surface",
+                        type: "select",
+                        value: null,
+                        options: {
+                            "Smooth asphalt": 0.011,
+                            "Smooth concrete": 0.012,
+                            "Fallow (no residue)": 0.050,
+                            "Short grass prairie": 0.150,
+                            "Dense grasses": 0.240,
+                            "Bermuda grass": 0.410,
+                            "Light underbrush": 0.400,
+                            "Dense underbrush": 0.800,
+                            "Cultivated Soil with Residue cover <=20%": 0.060,
+                            "Cultivated Soil with Residue cover >=20%": 0.170,
+                            "Natural Range": 0.130
+                        }
+                    },
+                    {
+                        id: "length",
+                        label: "Length (ft)",
+                        type: "number",
+                        value: null,
+                        pattern: "greaterThanZero",
+                        invalidMessage: this.gTZInvalidMessage
+                    },
+                    {
+                        id: "overland",
+                        label: "Overland Slope (%)",
+                        type: "number",
+                        value: null,
+                        pattern: "greaterThanOrEqualToZero",
+                        invalidMessage: this.gTOETZInvalidMessage
+                    }
+                ],
+            },
+            {
+                id: "excessSheetFlow",
+                displayName: "Excess Sheet Flow",
+                accordionOpen: false,
+                questions: [
+                    {
+                        id: "surface",
+                        label: "Surface",
+                        type: "select",
+                        value: null,
+                        /// place holder value of "1, 2, 3..." because the actual values are JSON objects. Link the two when building the hydrograph
+                        options: {
+                            "Pavement and small upland gullies": 1,
+                            "Grassed waterways": 2,
+                            "Nearly bare and untilled (overland flow)": 3,
+                            "Cultivated straight row crops": 4,
+                            "Short-grass pasture": 5,
+                            "Minimum cultivation, contour or strip-cropped, and woodlands": 6,
+                            "Forest with heavy ground litter and hay meadows": 7
+                        }
+                    },
+                    {
+                        id: "slope",
+                        label: "Slope (%)",
+                        type:"number",
+                        value: null,
+                        pattern: "greaterThanOrEqualToZero",
+                        invalidMessage: this.gTOETZInvalidMessage
+                    }
+                ]
+            },
+            {
+                id: "shallowConcentratedFlow",
+                displayName: "Shallow Concentrated Flow",
+                accordionOpen: false,
+                questions: [
+                    {
+                        id: "shallowFlowType",
+                        label: "Shallow Flow Type",
+                        type: "select",
+                        value: null,
+                        /// place holder value of "1, 2, 3..." because the actual values are JSON objects. Link the two when building the hydrograph
+                        options: {
+                            "Pavement and small upland gullies": 1,
+                            "Grassed waterways": 2,
+                            "Nearly bare and untilled (overland flow)": 3,
+                            "Cultivated straight row crops": 4,
+                            "Short-grass pasture": 5,
+                            "Minimum cultivation, contour or strip-cropped, and woodlands": 6,
+                            "Forest with heavy ground litter and hay meadows": 7
+                        }
+                    },
+                    {
+                        id: "length",
+                        label: "Length (ft)",
+                        type: "number",
+                        value: null,
+                        pattern: "greaterThanZero",
+                        invalidMessage: this.gTZInvalidMessage
+                    },
+                    {
+                        id: "slope",
+                        label: "Slope (%)",
+                        type:"number",
+                        value: null,
+                        pattern: "greaterThanOrEqualToZero",
+                        invalidMessage: this.gTOETZInvalidMessage
+                    },
+                ]
+            },
+            {
+                id: "channelizedFlowOpen",
+                displayName: "Channelized Flow - Open Channel",
+                accordionOpen: false,
+                questions: [
+                    {
+                        id: "baseWidth",
+                        label: "Base Width",
+                        type: "number",
+                        value: null,
+                        pattern: "greaterThanZero",
+                        invalidMessage: this.gTZInvalidMessage
+                    },
+                    {
+                        id: "frontSlope",
+                        label: "Front Slope (Z hor:1 vert)",
+                        type: "number",
+                        value: null,
+                        pattern: "greaterThanZero",
+                        invalidMessage: this.gTZInvalidMessage
+                    },
+                    {
+                        id: "backSlope",
+                        label: "Back Slope (Z hor:1 vert)",
+                        type: "number",
+                        value: null,
+                        pattern: "greaterThanZero",
+                        invalidMessage: this.gTZInvalidMessage
+                    },
+                    {
+                        id: "channelDepth",
+                        label: "Channel Depth (ft)",
+                        type: "number",
+                        value: null,
+                        pattern: "greaterThanZero",
+                        invalidMessage: this.gTZInvalidMessage
+                    },
+                    {
+                        id: "length",
+                        label: "Length (ft)",
+                        type: "number",
+                        value: null,
+                        pattern: "greaterThanZero",
+                        invalidMessage: this.gTZInvalidMessage
+                    },
+                    {
+                        id: "channelBedSlope",
+                        label: "Channel Bed Slope (%)",
+                        type: "number",
+                        value: null,
+                        pattern: "greaterThanZero",
+                        invalidMessage: this.gTZInvalidMessage
+                    },
+                    {
+                        id: "manningNValue",
+                        label: "Manning n-value",
+                        type: "number",
+                        value: null,
+                        pattern: "greaterThanZero",
+                        invalidMessage: this.gTZInvalidMessage
+                    },
+                ]
+            },
+            {
+                id: "channelizedFlowStorm",
+                displayName: "Channelized Flow - Storm Sewer",
+                accordionOpen: false,
+                questions: [
+                    {
+                        id: "pipeMaterial",
+                        label: "Pipe Material",
+                        type: "select",
+                        value: null,
+                        options: {
+                            "Aluminum": 0.024,
+                            "CMP": 0.024,
+                            "Concrete": 0.013,
+                            "Corrugated HDPE": 0.02,
+                            "PVC": 0.01,
+                            "Steel": 0.013
+                        }
+                    },
+                    {
+                        id: "diameter",
+                        label: "Diameter (in)",
+                        type: "number",
+                        value: null,
+                        pattern: "greaterThanZero",
+                        invalidMessage: this.gTZInvalidMessage
+                    },
+                    {
+                        id: "length",
+                        label: "Length (ft)",
+                        type: "number",
+                        value: null,
+                        pattern: "greaterThanZero",
+                        invalidMessage: this.gTZInvalidMessage
+                    },
+                    {
+                        id: "slope",
+                        label: "Slope (%)",
+                        type:"number",
+                        value: null,
+                        pattern: "greaterThanOrEqualToZero",
+                        invalidMessage: this.gTOETZInvalidMessage
+                    }
+                ]
+            },
+            {
+                id: "channelizedFlowUserInput",
+                displayName: "Channelized Flow - User Input",
+                accordionOpen: false,
+                questions: [
+                    {
+                        id: "length",
+                        label: "Length (ft)",
+                        type: "number",
+                        value: null,
+                        pattern: "greaterThanZero",
+                        invalidMessage: this.gTZInvalidMessage
+                    },
+                    {
+                        id: "velocity",
+                        label: "Velocity (fps)",
+                        type: "number",
+                        value: null,
+                        pattern: "greaterThanZero",
+                        invalidMessage: this.gTZInvalidMessage
+                    },
+                ]
+            },
+        ]
+
+        // for the flow segments that have json objects as values of the drop down options, use this table to link when building the hydrograph
+        private linkableFlowSegmentOptions: {
+            excessSheetFlow: {
+                "Pavement and small upland gullies": 
+                    {
+                        "Depth": 0.2,
+                        "Manning's N": 0.025,
+                        "Velocity Constant": 20.328
+                    },
+                "Grassed waterways": 
+                    {
+                        "Depth": 0.4,
+                        "Manning's N": 0.05,
+                        "Velocity Constant": 16.135 
+                    },
+                "Nearly bare and untilled (overland flow)": 
+                    {
+                        "Depth": 0.2,
+                        "Manning's N": 0.051,
+                        "Velocity Constant": 9.965 
+                    },
+                "Cultivated straight row crops": 
+                    {
+                        "Depth": 0.2,
+                        "Manning's N": 0.058,
+                        "Velocity Constant": 8.762
+                    },
+                "Short-grass pasture": 
+                    {
+                        "Depth": 0.2,
+                        "Manning's N": 0.073,
+                        "Velocity Constant": 6.962
+                    },
+                "Minimum cultivation, contour or strip-cropped, and woodlands": 
+                    {
+                        "Depth": 0.2,
+                        "Manning's N": 0.101,
+                        "Velocity Constant": 5.032 
+                    },
+                "Forest with heavy ground litter and hay meadows": 
+                    {
+                        "Depth": 0.2,
+                        "Manning's N": 0.202,
+                        "Velocity Constant": 2.516
+                    }
+            },
+            shallowConcentratedFlow: {
+                "Pavement and small upland gullies": 
+                    {
+                        "Depth": 0.2,
+                        "Manning's N": 0.025,
+                        "Velocity Constant": 20.328
+                    },
+                "Grassed waterways": 
+                    {
+                        "Depth": 0.4,
+                        "Manning's N": 0.05,
+                        "Velocity Constant": 16.135 
+                    },
+                "Nearly bare and untilled (overland flow)": 
+                    {
+                        "Depth": 0.2,
+                        "Manning's N": 0.051,
+                        "Velocity Constant": 9.965 
+                    },
+                "Cultivated straight row crops": 
+                    {
+                        "Depth": 0.2,
+                        "Manning's N": 0.058,
+                        "Velocity Constant": 8.762
+                    },
+                "Short-grass pasture": 
+                    {
+                        "Depth": 0.2,
+                        "Manning's N": 0.073,
+                        "Velocity Constant": 6.962
+                    },
+                "Minimum cultivation, contour or strip-cropped, and woodlands": 
+                    {
+                        "Depth": 0.2,
+                        "Manning's N": 0.101,
+                        "Velocity Constant": 5.032 
+                    },
+                "Forest with heavy ground litter and hay meadows": 
+                    {
+                        "Depth": 0.2,
+                        "Manning's N": 0.202,
+                        "Velocity Constant": 2.516
+                    }
+            }
+        }
+
+        // base keys match with ids from the object above ^^^^
+        private _defaultFlowSegments = {
+            sheetFlow: [
+
+            ],
+            excessSheetFlow: [
+
+            ],
+            shallowConcentratedFlow: [
+
+            ],
+            channelizedFlowOpen: [
+
+            ],
+            channelizedFlowStorm: [
+
+            ],
+            channelizedFlowUserInput: [
+
+            ]
+
+        }
+
+        public TravelTimeFlowTypes = this._defaultFlowTypes.slice();
+        public TravelTimeFlowSegments = this._defaultFlowSegments;
+
+        public addFlowSegmentOpen = false;
+        private _chosenFlowTypeIndex : number;
+        public get chosenFlowTypeIndex() {
+            return this._chosenFlowTypeIndex;
+        } 
+
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -112,8 +590,9 @@ module StreamStats.Controllers {
         constructor($scope: ISCStormRunoffControllerScope, $analytics, toaster, $http: ng.IHttpService, studyAreaService: StreamStats.Services.IStudyAreaService, modal: ng.ui.bootstrap.IModalServiceInstance, public $timeout: ng.ITimeoutService, private EventManager: WiM.Event.IEventManager) {
             super($http, configuration.baseurls.StormRunoffServices);
             $scope.vm = this;
-            $scope.greaterThanZero = /^([0-9]*[1-9][0-9]*(\.[0-9]+)?|[0]+\.[0-9]*[1-9][0-9]*)$/;
-            $scope.betweenZeroOneHundred = /^(\d{0,2}(\.\d{1,2})?|100(\.00?)?)$/; 
+            $scope.greaterThanZero = this.greaterThanZero;
+            $scope.greaterThanOrEqualToZero = this.greaterThanOrEqualToZero;
+            $scope.betweenZeroOneHundred = this.betweenZeroOneHundred; 
             this.AppVersion = configuration.version;
             this.angulartics = $analytics;
             this.toaster = toaster;
@@ -450,6 +929,41 @@ module StreamStats.Controllers {
             };
         }
 
+        public openAddFlowSegment(indexOfFlow : number) {
+            this.addFlowSegmentOpen = true;
+            this._chosenFlowTypeIndex = indexOfFlow;
+        }
+
+        public closeAddFlowSegment() {
+            this.addFlowSegmentOpen = false;
+            this._chosenFlowTypeIndex = null;
+            /// reset the options
+            this.TravelTimeFlowTypes = this._defaultFlowTypes.slice();
+        }
+
+        public addFlowSegment() {
+            let questionSet = this.TravelTimeFlowTypes[this._chosenFlowTypeIndex].questions;
+            let newSegment = [];
+            for(let question of questionSet) {
+                newSegment.push(JSON.parse(JSON.stringify(question)));
+                question.value = null;
+            }
+
+            this.TravelTimeFlowSegments[this.TravelTimeFlowTypes[this._chosenFlowTypeIndex].id].push(newSegment);
+            this._chosenFlowTypeIndex = null;
+            this.addFlowSegmentOpen = false;
+        }
+
+        public removeFlowSegment(flowTypeID, indexOfRemoval : number) {
+            let flowType = this.TravelTimeFlowSegments[flowTypeID];
+            if(!flowType) {
+                console.error("Unable to remove flow segment: improper flow type ID. This is a bug!");
+                return;
+            }
+            // remove the element from the array
+            flowType.splice(indexOfRemoval, 1);
+        }
+
         public validateForm(mainForm) {
             if (mainForm.$valid) {
                 return true;
@@ -463,10 +977,20 @@ module StreamStats.Controllers {
 
         public clearResults() {
             this.drainageArea = null;
+            this.drainageAreaSynthetic = null;
+            this.timeOfConcentrationMin = null;
+            this.peakRateFactor = null;
+            this.standardCurveNumber = null;
+            this.watershedRetention = null;
+            this.initialAbstraction = null;
+            this.lagTimeLength = null;
+            this.lagTimeSlope = null;
+            this._chosenFlowTypeIndex = null;
             this.mainChannelLength = null;
             this.mainChannelSlope = null;
             this.totalImperviousArea = null;
-            this.SelectedAEP = {"name": "50%", "value": 50};
+            this.SelectedAEP = null;
+            this.SelectedAEPSynthetic = null;
             this.showResults = false;
             this.warningMessages = null;
         }
@@ -545,7 +1069,8 @@ module StreamStats.Controllers {
             this.showResults = false;
             this.hideAlerts = false;
             this.canContinue = true;
-            this.SelectedAEP = {"name": "50%", "value": 50};
+
+            this._chosenFlowTypeIndex = null;
         }
 
         private selectRunoffType() {
