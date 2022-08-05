@@ -144,7 +144,7 @@
                                 <select name="CNModification" ng-model="vm.SelectedCNModification" ng-options="cnmod.name for cnmod in vm.CNModificationOptions track by cnmod.value"></select>
                                 <label for="RainfallDistribution">Select a Rainfall Distribution Curve:</label>
                                 <select name="RainfallDistribution" ng-model="vm.SelectedRainfallDistribution" ng-options="distr.name for distr in vm.RainfallDistributionOptions track by distr.value"></select>
-                                <label for="DrainageAreaSynthetic">Drainage Area (square miles):</label> <span ng-if="SyntheticUrbanHydrograph.DrainageAreaSynthetic.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
+                                <label for="DrainageAreaSynthetic">Drainage Area (acres):</label> <span ng-if="SyntheticUrbanHydrograph.DrainageAreaSynthetic.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
                                 <input type="number" name="DrainageAreaSynthetic" ng-model="vm.drainageAreaSynthetic" ng-minlength="1" ng-pattern="greaterThanZero" required/>
                                 
                                 <div class="form-row">
@@ -163,7 +163,7 @@
                                         <input type="number" name="WatershedRetention" ng-model="vm.watershedRetention" ng-minlength="0" ng-pattern="greaterThanOrEqualToZero" required/>
                                     </div>
                                     <div class="form-column-right">
-                                        <label for="InitialAbstraction">Initial Abstraction:</label> <span ng-if="SyntheticUrbanHydrograph.InitialAbstraction.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
+                                        <label for="InitialAbstraction">Initial Abstraction, Ia:</label> <span ng-if="SyntheticUrbanHydrograph.InitialAbstraction.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
                                         <input type="number" name="InitialAbstraction" ng-model="vm.initialAbstraction" ng-minlength="0" ng-pattern="greaterThanOrEqualToZero" required/>
                                     </div>
                                 </div>

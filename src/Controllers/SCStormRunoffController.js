@@ -71,10 +71,10 @@ var StreamStats;
                         "value": 1
                     }];
                 _this.StandardCurveOptions = [{
-                        "name": "Area Weighted CN",
+                        "name": "Area-Weighted Curve Number",
                         "value": 1
                     }, {
-                        "name": "Runoff Weighted CN",
+                        "name": "Runoff-Weighted Curve Number",
                         "value": 2
                     }];
                 _this.CNModificationOptions = [{
