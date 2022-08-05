@@ -97,6 +97,8 @@ module StreamStats.Controllers {
         //-+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {
             //default
+            
+            this.isBusy = true;
 
             // Load list of reference gages from Flow Anywhere Gages service
             this.referenceGageList = null;
@@ -121,6 +123,7 @@ module StreamStats.Controllers {
                     } else if (response.error.code == 400) {
                         this.referenceGageList = null;
                     }
+                    this.isBusy = false;
                     
                 }, (error) => {
                     //sm when error
@@ -128,6 +131,7 @@ module StreamStats.Controllers {
                     this.isBusy = false;
                     this.toaster.pop('error', "Error", "Error accessing Flow Anywhere gages", 0);
                 }).finally(() => {
+                    
             });
 
             // Set initial date range for date selector
@@ -208,6 +212,7 @@ module StreamStats.Controllers {
         }
 
         public getNWISPeriodOfRecord(gage) {
+            this.isBusy = true;
             if (!gage.StationID) return;
             var nwis_url = configuration.baseurls.NWISurl + configuration.queryparams.NWISperiodOfRecord + gage.StationID;
             var nwis_request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(nwis_url, true, WiM.Services.Helpers.methodType.GET, 'TEXT');

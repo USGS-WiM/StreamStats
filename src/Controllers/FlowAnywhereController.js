@@ -53,6 +53,7 @@ var StreamStats;
             };
             FlowAnywhereController.prototype.init = function () {
                 var _this = this;
+                this.isBusy = true;
                 this.referenceGageList = null;
                 var lat = this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toString();
                 var lon = this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toString();
@@ -74,6 +75,7 @@ var StreamStats;
                     else if (response.error.code == 400) {
                         _this.referenceGageList = null;
                     }
+                    _this.isBusy = false;
                 }, function (error) {
                     _this.toaster.clear();
                     _this.isBusy = false;
@@ -140,6 +142,7 @@ var StreamStats;
             };
             FlowAnywhereController.prototype.getNWISPeriodOfRecord = function (gage) {
                 var _this = this;
+                this.isBusy = true;
                 if (!gage.StationID)
                     return;
                 var nwis_url = configuration.baseurls.NWISurl + configuration.queryparams.NWISperiodOfRecord + gage.StationID;
