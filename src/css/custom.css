@@ -175,10 +175,6 @@ text.nv-axislabel {
     font-style: normal;
 }
 
-.SCStormRunoffInput input.ng-dirty.ng-invalid-pattern {
-    border-color: red !important;
-}
-
 #applications button {
     margin-bottom: 4px;
 }
