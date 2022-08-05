@@ -96,8 +96,6 @@ module StreamStats.Controllers {
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {
-            //default
-            
             this.isBusy = true;
 
             // Load list of reference gages from Flow Anywhere Gages service
@@ -126,7 +124,6 @@ module StreamStats.Controllers {
                     this.isBusy = false;
                     
                 }, (error) => {
-                    //sm when error
                     this.toaster.clear();
                     this.isBusy = false;
                     this.toaster.pop('error', "Error", "Error accessing Flow Anywhere gages", 0);
@@ -142,19 +139,15 @@ module StreamStats.Controllers {
             if (this.getDrainageArea() == 'N/A' && !this.studyAreaService.loadingDrainageArea) this.studyAreaService.loadDrainageArea();
 
             if (this.studyAreaService.flowAnywhereData) {
-
                 // Get selected reference gage if it was already selected
                 if (this.studyAreaService.flowAnywhereData.selectedGage) {
                     this.selectedReferenceGage = this.studyAreaService.flowAnywhereData.selectedGage;
                 }
-                            
                 // Set date range if it was already selected
                 if (this.studyAreaService.flowAnywhereData.dateRange) {
                     this.dateRange = this.studyAreaService.flowAnywhereData.dateRange;
                 }
             }
-
-            
         }
 
         private verifyExtensionCanContinue() {
@@ -163,7 +156,6 @@ module StreamStats.Controllers {
             if (!this.selectedReferenceGage) {
                 return "A reference gage must be selected.";
             }
-            
             if (this.selectedReferenceGage.StationID == "") {
                 return "A reference gage must be selected.";
             }
