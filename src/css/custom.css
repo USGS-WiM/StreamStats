@@ -188,3 +188,7 @@ text.nv-axislabel {
     display: inline-block;
     text-align: center;
 }
+
+.reportSpinner .loadingSpinner{
+    margin-bottom: 15px;
+}
