@@ -156,3 +156,39 @@ text.nv-axislabel {
     border: unset;
     border-bottom: 2px solid #e0e3e6;
 }
+
+.panel {
+    background-color: #ebf0f5;
+    color: #10152C;
+    /* margin: 10px 0px 20px 0px; */
+    padding: 10px 5px 20px 5px;
+    margin: 10px 0px;
+    max-height: 400px;
+    overflow-y: scroll;
+}
+
+#flowAnywhereModal .panel {
+    overflow-y: visible;
+}
+
+#flowAnywhereModal .modal-body h4 {
+    font-style: normal;
+}
+
+#applications button {
+    margin-bottom: 4px;
+}
+
+.loadingSpinner {
+    display: block;
+    text-align: center;
+}
+
+.tableSpinner .loadingSpinner {
+    display: inline-block;
+    text-align: center;
+}
+
+.reportSpinner .loadingSpinner{
+    margin-bottom: 15px;
+}

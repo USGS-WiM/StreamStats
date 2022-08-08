@@ -100,6 +100,7 @@ module StreamStats.Controllers {
         public AppVersion: string;
         public isExceedanceTableOpen = false;
         public isFlowTableOpen = false;
+        public isEstimatedFlowFLATableOpen = false;
         private environment: string;
         public NSSServicesVersion: string;
         public SSServicesVersion = '1.2.22'; // TODO: This needs to pull from the services when ready
@@ -299,6 +300,9 @@ module StreamStats.Controllers {
 
             // add in QPPQ section, need tables open to add to csv
             this.isExceedanceTableOpen = true; this.isFlowTableOpen = true;
+
+            // add in Flow Anywhere section, need table open to add to csv
+            this.isEstimatedFlowFLATableOpen = true;
             
             var self = this;
             // timeout here to give the tables time to open in view
@@ -327,13 +331,34 @@ module StreamStats.Controllers {
                             // add flow table
                             extVal += '\n\nEstimated Flows\n';
                             extVal += self.tableToCSV($('#flowTable'));
+                            extVal += '\n\n';
                         }
                     }
-                    csvFile += extVal + '\n\n';
                 }
 
-                // add Channel-width Methods Weighting content to CSV
                 if (self.applications) {
+                    // add Flow Anywhere content to CSV
+                    if (self.applications.indexOf('FLA') != -1) {
+                        extVal += 'Flow Anywhere Method';
+
+                        // add reference gage table
+                        extVal += '\n\n';
+                        extVal += self.tableToCSV($('#flowAnywhereReferenceGage'))
+
+                        
+                        // add reference gage table
+                        extVal += '\n\n';
+                        extVal += self.tableToCSV($('#flowAnywhereModelParameters'))
+                        
+                        // add flow table
+                        extVal += '\n\nEstimated Flows\n';
+                        extVal += self.tableToCSV($('#estimatedFlowFLATable'));
+                            
+                        extVal += '\n\n';
+
+                    }
+
+                    // add Channel-width Methods Weighting content to CSV
                     var isChannelWidthWeighting = self.applications.indexOf('ChannelWidthWeighting') != -1;
                     var isPFS = false;
                     self.nssService.selectedStatisticsGroupList.forEach(s => {
@@ -356,9 +381,13 @@ module StreamStats.Controllers {
                         } else {
                             extVal += 'No method weighting results returned.'
                         }
-                        csvFile += extVal + '\n\n';
+                        extVal += '\n\n';
                     }
+
+
                 }
+                
+                csvFile += extVal;
 
                 //disclaimer
                 csvFile += self.disclaimer + 'Application Version: ' + self.AppVersion;
@@ -387,6 +416,7 @@ module StreamStats.Controllers {
                     }
                 }
                 this.isExceedanceTableOpen = false; this.isFlowTableOpen = false; // TODO: not working
+                this.isEstimatedFlowFLATableOpen = false;
             }, 300);
 
         }
@@ -731,8 +761,8 @@ module StreamStats.Controllers {
                     type: "Feature",
                     geometry: {
                         coordinates: [
-                            this.studyAreaService.selectedGage["Latitude_DD"],
-                            this.studyAreaService.selectedGage["Longitude_DD"]
+                            this.studyAreaService.selectedGage.Latitude_DD,
+                            this.studyAreaService.selectedGage.Longitude_DD
                         ],
                         type: "Point"
                     }
