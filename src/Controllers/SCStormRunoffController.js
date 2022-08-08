@@ -71,11 +71,11 @@ var StreamStats;
                         "value": 1
                     }];
                 _this.StandardCurveOptions = [{
-                        "name": "Area Weighted CN",
+                        "name": "Area-Weighted Curve Number",
                         "value": 1,
                         "endpointValue": "area"
                     }, {
-                        "name": "Runoff Weighted CN",
+                        "name": "Runoff-Weighted Curve Number",
                         "value": 2,
                         "endpointValue": "runoff"
                     }];
@@ -714,12 +714,12 @@ var StreamStats;
             };
             SCStormRunoffController.prototype.getFormattedFlowSegments = function () {
                 var formattedSegments = {
-                    sheetFlow: null,
-                    excessSheetFlow: null,
-                    shallowConcentratedFlow: null,
-                    channelizedFlowOpen: null,
-                    channelizedFlowStorm: null,
-                    channelizedFlowUserInput: null
+                    sheetFlow: [],
+                    excessSheetFlow: [],
+                    shallowConcentratedFlow: [],
+                    channelizedFlowOpen: [],
+                    channelizedFlowStorm: [],
+                    channelizedFlowUserInput: []
                 };
                 var flowKeys = Object.keys(this.TravelTimeFlowSegments);
                 for (var _i = 0, flowKeys_1 = flowKeys; _i < flowKeys_1.length; _i++) {
@@ -741,7 +741,8 @@ var StreamStats;
                                     }
                                 }
                             }
-                            segmentData[question.label] = value;
+                            var label = question.label.split(" (")[0];
+                            segmentData[label] = value;
                         }
                         allSegmentsOfType.push(segmentData);
                     }
@@ -807,7 +808,6 @@ var StreamStats;
                                 "dataChannelizedFlowStormSewer": ((_j = _this._selectedTimeOfConcentration) === null || _j === void 0 ? void 0 : _j.value) == 1 ? formmatedSegments.channelizedFlowStorm : null,
                                 "dataChannelizedFlowStormSewerOrOpenChannelUserInputVelocity": ((_k = _this._selectedTimeOfConcentration) === null || _k === void 0 ? void 0 : _k.value) == 1 ? formmatedSegments.channelizedFlowUserInput : null
                             };
-                            console.log(data);
                             url = configuration.baseurls['SCStormRunoffServices'] + configuration.queryparams['SCStormRunoffSyntheticUnitHydrograph'];
                             var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(data), headers);
                             _this.Execute(request).then(function (response) {
@@ -929,10 +929,36 @@ var StreamStats;
                 flowType.splice(indexOfRemoval, 1);
             };
             SCStormRunoffController.prototype.calculateSyntheticParamsDisabled = function () {
-                if (!this._selectedAEPSynthetic || !this._selectedStandardCurve || !this._selectedTimeOfConcentration) {
-                    return true;
+                var _a;
+                if (((_a = this._selectedTimeOfConcentration) === null || _a === void 0 ? void 0 : _a.value) == 1) {
+                    var completedAllFlowSegments = this.completedFlowSegments();
+                    if (!this._selectedAEPSynthetic || !this._selectedStandardCurve) {
+                        if (completedAllFlowSegments) {
+                            return 2;
+                        }
+                        return 3;
+                    }
+                    if (!completedAllFlowSegments) {
+                        return 4;
+                    }
                 }
-                return false;
+                if (!this._selectedAEPSynthetic || !this._selectedStandardCurve || !this._selectedTimeOfConcentration) {
+                    return 1;
+                }
+                return 0;
+            };
+            SCStormRunoffController.prototype.completedFlowSegments = function () {
+                var _a;
+                if (((_a = this._selectedTimeOfConcentration) === null || _a === void 0 ? void 0 : _a.value) == 1) {
+                    var keys = Object.keys(this.TravelTimeFlowSegments);
+                    for (var _i = 0, keys_2 = keys; _i < keys_2.length; _i++) {
+                        var segmentName = keys_2[_i];
+                        if (!this.TravelTimeFlowSegments[segmentName].length) {
+                            return false;
+                        }
+                    }
+                }
+                return true;
             };
             SCStormRunoffController.prototype.validateForm = function (mainForm) {
                 var _a;
@@ -940,8 +966,8 @@ var StreamStats;
                     if (((_a = this._selectedTimeOfConcentration) === null || _a === void 0 ? void 0 : _a.value) == 1) {
                         var atLeastOneSegment = false;
                         var keys = Object.keys(this.TravelTimeFlowSegments);
-                        for (var _i = 0, keys_2 = keys; _i < keys_2.length; _i++) {
-                            var key = keys_2[_i];
+                        for (var _i = 0, keys_3 = keys; _i < keys_3.length; _i++) {
+                            var key = keys_3[_i];
                             if (this.TravelTimeFlowSegments[key].length) {
                                 atLeastOneSegment = true;
                                 break;

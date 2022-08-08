@@ -83,12 +83,7 @@ configuration.queryparams =
         'GageStatsServicesBounds': '/stations/Bounds?xmin={0}&xmax={1}&ymin={2}&ymax={3}&geojson=true',
         'SCStormRunoffBohman1989' : '/ruralhydrographbohman1989',
         'SCStormRunoffBohman1992' : '/urbanhydrographbohman1992',
-        'SCStormRunoffSyntheticUnitHydrograph': '/calculatemissingparametersSCSUH /',
-        'SCStormRunoffRainfallDist' : '/rainfalldistributioncurve',
-        'SCStormRunoffLagTime': '/lagtimetc',
-        'SCStormRunoffTravelTime': '/traveltimetc',
-        'SCStormRunoffPRF': '/prf',
-        'SCStormRunoffWeightedCurve': '/weightedcurvenumber',
+        'SCStormRunoffSyntheticUnitHydrograph': '/calculatemissingparametersSCSUH',
     };
 
 configuration.SupportTicketService = {

@@ -141,11 +141,11 @@ module StreamStats.Controllers {
             "value": 1
         }]
         public StandardCurveOptions = [{
-            "name": "Area Weighted CN",
+            "name": "Area-Weighted Curve Number",
             "value": 1,
             "endpointValue": "area"
         }, {
-            "name": "Runoff Weighted CN",
+            "name": "Runoff-Weighted Curve Number",
             "value": 2,
             "endpointValue": "runoff"
         }]
@@ -896,12 +896,12 @@ module StreamStats.Controllers {
          */ 
         public getFormattedFlowSegments() {
             let formattedSegments = {
-                sheetFlow: null,
-                excessSheetFlow: null,
-                shallowConcentratedFlow: null,
-                channelizedFlowOpen: null,
-                channelizedFlowStorm: null,
-                channelizedFlowUserInput:null
+                sheetFlow: [],
+                excessSheetFlow: [],
+                shallowConcentratedFlow: [],
+                channelizedFlowOpen: [],
+                channelizedFlowStorm: [],
+                channelizedFlowUserInput: []
             };
             let flowKeys = Object.keys(this.TravelTimeFlowSegments);
             for(let flowSegment of flowKeys) {
@@ -921,7 +921,8 @@ module StreamStats.Controllers {
                                 }
                             }
                         }
-                        segmentData[question.label] = value;
+                        let label = question.label.split(" (")[0];
+                        segmentData[label] = value;
                     }
                     allSegmentsOfType.push(segmentData);
                 }
@@ -991,7 +992,6 @@ module StreamStats.Controllers {
                                 "dataChannelizedFlowStormSewerOrOpenChannelUserInputVelocity": this._selectedTimeOfConcentration?.value == 1 ? formmatedSegments.channelizedFlowUserInput : null
                             };
 
-                            console.log(data);
                             url = configuration.baseurls['SCStormRunoffServices'] + configuration.queryparams['SCStormRunoffSyntheticUnitHydrograph']
                             
                             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(data), headers);
@@ -1112,11 +1112,45 @@ module StreamStats.Controllers {
             flowType.splice(indexOfRemoval, 1);
         }
 
+        /**
+         * 
+         * @returns 1 if missing fields, 2 if travel time and missing fields, 3 if travel
+         * time and missing fields and flow segments, 4 if travel time and missing flow segments
+         */
         public calculateSyntheticParamsDisabled() {
-            if(!this._selectedAEPSynthetic || !this._selectedStandardCurve || !this._selectedTimeOfConcentration) {
-                return true;
+            // travel time selected
+            if(this._selectedTimeOfConcentration?.value == 1) {
+                let completedAllFlowSegments = this.completedFlowSegments();
+                if(!this._selectedAEPSynthetic || !this._selectedStandardCurve) {
+                    // just missing fields
+                    if(completedAllFlowSegments) {
+                        return 2;
+                    }
+                    // missing fields and flow segments
+                    return 3;
+                }
+                if(!completedAllFlowSegments) {
+                    // missing just flow segments
+                    return 4;
+                }
             }
-            return false;
+            // if there's missing params altogether
+            if(!this._selectedAEPSynthetic || !this._selectedStandardCurve || !this._selectedTimeOfConcentration) {
+                return 1;
+            }
+            return 0;
+        }
+
+        private completedFlowSegments() {
+            if(this._selectedTimeOfConcentration?.value == 1) {
+                let keys = Object.keys(this.TravelTimeFlowSegments);
+                for(let segmentName of keys) {
+                    if(!this.TravelTimeFlowSegments[segmentName].length) {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
 
         public validateForm(mainForm) {
