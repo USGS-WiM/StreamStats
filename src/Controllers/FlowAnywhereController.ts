@@ -2,25 +2,6 @@
 //----- FlowAnywhereController ----------------------------------------
 //------------------------------------------------------------------------------
 
-//-------1---------2---------3---------4---------5---------6---------7---------8
-//       01234567890123456789012345678901234567890123456789012345678901234567890
-//-------+---------+---------+---------+---------+---------+---------+---------+
-
-// copyright:   2019 WiM - USGS
-
-//    authors:  Jeremy K. Newson USGS Web Informatics and Mapping
-//             
-// 
-//   purpose:  Flow Anywhere Controller
-//          
-//discussion:
-
-
-//Comments
-//07.24.2019 jkn - Created
-
-//Import
-
 module StreamStats.Controllers {
     interface IFlowAnywhereControllerScope extends ng.IScope {
         vm: IFlowAnywhereController;
