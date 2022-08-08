@@ -921,7 +921,7 @@ var StreamStats;
                     ],
                     "region": Number(this.flowAnywhereData.selectedGage.AggregatedRegion)
                 };
-                var url = configuration.baseurls.FlowAnywhereRegressionServices + configuration.queryparams.FlowAnywhereEstimates;
+                var url = configuration.baseurls.FlowAnywhereRegressionServices + configuration.queryparams.FlowAnywhereEstimates.format(this.regionService.selectedRegion.RegionID);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', angular.toJson(dataFLA));
                 this.Execute(request).then(function (response) {
                     if (response.data) {

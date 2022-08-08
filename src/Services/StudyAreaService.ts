@@ -1302,7 +1302,7 @@ module StreamStats.Services {
                 ],
                 "region": Number(this.flowAnywhereData.selectedGage.AggregatedRegion)
             }
-            var url = configuration.baseurls.FlowAnywhereRegressionServices + configuration.queryparams.FlowAnywhereEstimates
+            var url = configuration.baseurls.FlowAnywhereRegressionServices + configuration.queryparams.FlowAnywhereEstimates.format(this.regionService.selectedRegion.RegionID);
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', angular.toJson(dataFLA));
             this.Execute(request).then(
                 (response: any) => {
