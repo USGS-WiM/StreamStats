@@ -54,6 +54,7 @@ module StreamStats.Controllers {
         public canContinue: boolean;
         public ReportData: ISCStormRunoffReportable;
         public drainageArea: number;
+
         // SYNTHETIC TAB
         public drainageAreaSynthetic: number;
         public timeOfConcentrationMin: number;
@@ -63,8 +64,6 @@ module StreamStats.Controllers {
         public initialAbstraction: number;
         public lagTimeLength: number;
         public lagTimeSlope: number;
-        public syntheticParameters;
-        //
 
         public mainChannelLength: number;
         public mainChannelSlope: number;
@@ -87,7 +86,6 @@ module StreamStats.Controllers {
             }//end if           
         }
 
-        // 
         public AEPOptions = [{
             "name": "50%",
             "value": 50
@@ -954,7 +952,7 @@ module StreamStats.Controllers {
                 this.Execute(request).then(
                     (response: any) => {
                         if (response.data.parameters && response.data.parameters.length > 0) {
-                            //check each returned parameter for issues
+                            // check each returned parameter for issues
                             var paramErrors = false;
                             angular.forEach(response.data.parameters, (parameter) => {
                                 if (!parameter.hasOwnProperty('value') || parameter.value == -999) {
@@ -966,7 +964,7 @@ module StreamStats.Controllers {
                                     parameter.loaded = true;
                                 }
                             });
-                            //if there is an issue, pop open 
+                            // if there is an issue, pop open 
                             if (paramErrors) {
                                 this.toaster.pop('error', "Error", "Parameter failed to compute", 0);
                             }
@@ -976,14 +974,14 @@ module StreamStats.Controllers {
                                 if (param.code.toLowerCase() == 'lfplength' && this._selectedTimeOfConcentration?.value == 2 && !this.lagTimeSlope) this.lagTimeSlope =  param.value;
                             });
 
-                            //** */ Other SCStormModelingServices data
+                            // Other SCStormModelingServices data
                             var data = {};
                             var url = ""; 
                             var headers = {
                                 "Content-Type": "application/json",
                                 "X-warning": true
                             };
-                            let formmatedSegments = this.getFormattedFlowSegments();
+                            let formattedSegments = this.getFormattedFlowSegments();
                             // master data endpoing
                             data = {
                                 "lat": this.studyAreaService.selectedStudyArea.Pourpoint.Latitude,
@@ -993,12 +991,12 @@ module StreamStats.Controllers {
                                 "TcMethod": this._selectedTimeOfConcentration.endpointValue,
                                 "length": this._selectedTimeOfConcentration?.value == 2 ? this.lagTimeLength : null,
                                 "slope": this._selectedTimeOfConcentration?.value == 2 ? this.lagTimeSlope : null,
-                                "dataSheetFlow": this._selectedTimeOfConcentration?.value == 1 ? formmatedSegments.sheetFlow : null,
-                                "dataExcessSheetFlow": this._selectedTimeOfConcentration?.value == 1 ? formmatedSegments.excessSheetFlow : null, 
-                                "dataShallowConcentratedFlow": this._selectedTimeOfConcentration?.value == 1 ? formmatedSegments.shallowConcentratedFlow : null,
-                                "dataChannelizedFlowOpenChannel": this._selectedTimeOfConcentration?.value == 1 ? formmatedSegments.channelizedFlowOpen : null,
-                                "dataChannelizedFlowStormSewer": this._selectedTimeOfConcentration?.value == 1 ? formmatedSegments.channelizedFlowStorm : null, 
-                                "dataChannelizedFlowStormSewerOrOpenChannelUserInputVelocity": this._selectedTimeOfConcentration?.value == 1 ? formmatedSegments.channelizedFlowUserInput : null
+                                "dataSheetFlow": this._selectedTimeOfConcentration?.value == 1 ? formattedSegments.sheetFlow : null,
+                                "dataExcessSheetFlow": this._selectedTimeOfConcentration?.value == 1 ? formattedSegments.excessSheetFlow : null, 
+                                "dataShallowConcentratedFlow": this._selectedTimeOfConcentration?.value == 1 ? formattedSegments.shallowConcentratedFlow : null,
+                                "dataChannelizedFlowOpenChannel": this._selectedTimeOfConcentration?.value == 1 ? formattedSegments.channelizedFlowOpen : null,
+                                "dataChannelizedFlowStormSewer": this._selectedTimeOfConcentration?.value == 1 ? formattedSegments.channelizedFlowStorm : null, 
+                                "dataChannelizedFlowStormSewerOrOpenChannelUserInputVelocity": this._selectedTimeOfConcentration?.value == 1 ? formattedSegments.channelizedFlowUserInput : null
                             };
 
                             url = configuration.baseurls['SCStormRunoffServices'] + configuration.queryparams['SCStormRunoffSyntheticUnitHydrograph']

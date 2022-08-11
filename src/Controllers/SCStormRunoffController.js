@@ -792,7 +792,7 @@ var StreamStats;
                                 "Content-Type": "application/json",
                                 "X-warning": true
                             };
-                            var formmatedSegments = _this.getFormattedFlowSegments();
+                            var formattedSegments = _this.getFormattedFlowSegments();
                             data = {
                                 "lat": _this.studyAreaService.selectedStudyArea.Pourpoint.Latitude,
                                 "lon": _this.studyAreaService.selectedStudyArea.Pourpoint.Longitude,
@@ -801,12 +801,12 @@ var StreamStats;
                                 "TcMethod": _this._selectedTimeOfConcentration.endpointValue,
                                 "length": ((_c = _this._selectedTimeOfConcentration) === null || _c === void 0 ? void 0 : _c.value) == 2 ? _this.lagTimeLength : null,
                                 "slope": ((_d = _this._selectedTimeOfConcentration) === null || _d === void 0 ? void 0 : _d.value) == 2 ? _this.lagTimeSlope : null,
-                                "dataSheetFlow": ((_e = _this._selectedTimeOfConcentration) === null || _e === void 0 ? void 0 : _e.value) == 1 ? formmatedSegments.sheetFlow : null,
-                                "dataExcessSheetFlow": ((_f = _this._selectedTimeOfConcentration) === null || _f === void 0 ? void 0 : _f.value) == 1 ? formmatedSegments.excessSheetFlow : null,
-                                "dataShallowConcentratedFlow": ((_g = _this._selectedTimeOfConcentration) === null || _g === void 0 ? void 0 : _g.value) == 1 ? formmatedSegments.shallowConcentratedFlow : null,
-                                "dataChannelizedFlowOpenChannel": ((_h = _this._selectedTimeOfConcentration) === null || _h === void 0 ? void 0 : _h.value) == 1 ? formmatedSegments.channelizedFlowOpen : null,
-                                "dataChannelizedFlowStormSewer": ((_j = _this._selectedTimeOfConcentration) === null || _j === void 0 ? void 0 : _j.value) == 1 ? formmatedSegments.channelizedFlowStorm : null,
-                                "dataChannelizedFlowStormSewerOrOpenChannelUserInputVelocity": ((_k = _this._selectedTimeOfConcentration) === null || _k === void 0 ? void 0 : _k.value) == 1 ? formmatedSegments.channelizedFlowUserInput : null
+                                "dataSheetFlow": ((_e = _this._selectedTimeOfConcentration) === null || _e === void 0 ? void 0 : _e.value) == 1 ? formattedSegments.sheetFlow : null,
+                                "dataExcessSheetFlow": ((_f = _this._selectedTimeOfConcentration) === null || _f === void 0 ? void 0 : _f.value) == 1 ? formattedSegments.excessSheetFlow : null,
+                                "dataShallowConcentratedFlow": ((_g = _this._selectedTimeOfConcentration) === null || _g === void 0 ? void 0 : _g.value) == 1 ? formattedSegments.shallowConcentratedFlow : null,
+                                "dataChannelizedFlowOpenChannel": ((_h = _this._selectedTimeOfConcentration) === null || _h === void 0 ? void 0 : _h.value) == 1 ? formattedSegments.channelizedFlowOpen : null,
+                                "dataChannelizedFlowStormSewer": ((_j = _this._selectedTimeOfConcentration) === null || _j === void 0 ? void 0 : _j.value) == 1 ? formattedSegments.channelizedFlowStorm : null,
+                                "dataChannelizedFlowStormSewerOrOpenChannelUserInputVelocity": ((_k = _this._selectedTimeOfConcentration) === null || _k === void 0 ? void 0 : _k.value) == 1 ? formattedSegments.channelizedFlowUserInput : null
                             };
                             url = configuration.baseurls['SCStormRunoffServices'] + configuration.queryparams['SCStormRunoffSyntheticUnitHydrograph'];
                             var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(data), headers);
