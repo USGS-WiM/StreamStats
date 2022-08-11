@@ -304,12 +304,12 @@ var StreamStats;
                                 type: "select",
                                 value: null,
                                 options: {
-                                    "Aluminum": 0.024,
-                                    "CMP": 0.024,
-                                    "Concrete": 0.013,
-                                    "Corrugated HDPE": 0.02,
-                                    "PVC": 0.01,
-                                    "Steel": 0.013
+                                    "Aluminum": 1,
+                                    "CMP": 2,
+                                    "Concrete": 3,
+                                    "Corrugated HDPE": 4,
+                                    "PVC": 5,
+                                    "Steel": 6
                                 }
                             },
                             {
@@ -779,11 +779,11 @@ var StreamStats;
                             }
                             response.data.parameters.forEach(function (param) {
                                 var _a, _b;
-                                if (param.code.toLowerCase() == 'drnarea')
+                                if (param.code.toLowerCase() == 'drnarea' && !_this.drainageAreaSynthetic)
                                     _this.drainageAreaSynthetic = param.value;
-                                if (param.code.toLowerCase() == 'csl10_85fm' && ((_a = _this._selectedTimeOfConcentration) === null || _a === void 0 ? void 0 : _a.value) == 2)
+                                if (param.code.toLowerCase() == 'csl10_85fm' && ((_a = _this._selectedTimeOfConcentration) === null || _a === void 0 ? void 0 : _a.value) == 2 && !_this.lagTimeLength)
                                     _this.lagTimeLength = param.value;
-                                if (param.code.toLowerCase() == 'lfplength' && ((_b = _this._selectedTimeOfConcentration) === null || _b === void 0 ? void 0 : _b.value) == 2)
+                                if (param.code.toLowerCase() == 'lfplength' && ((_b = _this._selectedTimeOfConcentration) === null || _b === void 0 ? void 0 : _b.value) == 2 && !_this.lagTimeSlope)
                                     _this.lagTimeSlope = param.value;
                             });
                             var data = {};
@@ -815,27 +815,59 @@ var StreamStats;
                                 var keys = Object.keys(data);
                                 for (var _i = 0, keys_1 = keys; _i < keys_1.length; _i++) {
                                     var key = keys_1[_i];
-                                    if (key == "Ia")
-                                        _this.initialAbstraction = response.data.Ia;
-                                    if (key == "S")
-                                        _this.watershedRetention = response.data.S;
-                                    if (key == "curve_number")
-                                        _this.standardCurveNumber = response.data.curve_number;
-                                    if (key == "peak_rate_factor")
-                                        _this.peakRateFactor = response.data.peak_rate_factor;
-                                    if (key == "rainfall_distribution_curve_letter") {
+                                    if (key == "Ia" && !_this.initialAbstraction)
+                                        _this.initialAbstraction = response.data.Ia.toUSGSvalue();
+                                    if (key == "S" && !_this.watershedRetention)
+                                        _this.watershedRetention = response.data.S.toUSGSvalue();
+                                    if (key == "curve_number" && !_this.standardCurveNumber)
+                                        _this.standardCurveNumber = response.data.curve_number.toUSGSvalue();
+                                    if (key == "peak_rate_factor" && !_this.peakRateFactor)
+                                        _this.peakRateFactor = response.data.peak_rate_factor.toUSGSvalue();
+                                    if (key == "rainfall_distribution_curve_letter" && !_this._selectedRainfallDistribution) {
                                         for (var _a = 0, _b = _this.RainfallDistributionOptions; _a < _b.length; _a++) {
                                             var option = _b[_a];
-                                            if (option.name.indexOf(response.data.rainfall_distribution_curve_letter) == -1) {
+                                            if (option.name.indexOf(response.data.rainfall_distribution_curve_letter) != -1) {
                                                 _this._selectedRainfallDistribution = option;
                                                 break;
                                             }
                                         }
                                     }
-                                    if (key == "time_of_concentration")
-                                        _this.timeOfConcentrationMin = response.data.time_of_concentration.value;
+                                    if (key == "time_of_concentration" && !_this.timeOfConcentrationMin)
+                                        _this.timeOfConcentrationMin = response.data.time_of_concentration.value.toUSGSvalue();
                                 }
-                                _this.toaster.clear();
+                                var paramErrors = false;
+                                var failedToCompute = [];
+                                if (!_this.initialAbstraction) {
+                                    paramErrors = true;
+                                    failedToCompute.push("Initial Abstraction");
+                                }
+                                if (!_this.watershedRetention) {
+                                    paramErrors = true;
+                                    failedToCompute.push("Watershed Retention");
+                                }
+                                if (!_this.standardCurveNumber) {
+                                    paramErrors = true;
+                                    failedToCompute.push("Standard Curve Number");
+                                }
+                                if (!_this.peakRateFactor) {
+                                    paramErrors = true;
+                                    failedToCompute.push("Peak Rate Factor");
+                                }
+                                if (!_this._selectedRainfallDistribution) {
+                                    paramErrors = true;
+                                    failedToCompute.push("Rainfall Distribution");
+                                }
+                                if (!_this.timeOfConcentrationMin) {
+                                    paramErrors = true;
+                                    failedToCompute.push("Time of Concentration");
+                                }
+                                if (paramErrors) {
+                                    _this.toaster.clear();
+                                    _this.toaster.pop('error', "Error", "Parameter(s) failed to compute: " + failedToCompute.join(", "), 0);
+                                }
+                                else {
+                                    _this.toaster.clear();
+                                }
                             }).catch(function (error) {
                                 _this.toaster.clear();
                                 _this.toaster.pop("error", "There was an HTTP error calculating parameters", "Please retry", 0);

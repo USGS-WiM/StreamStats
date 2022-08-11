@@ -407,13 +407,14 @@ module StreamStats.Controllers {
                         label: "Pipe Material",
                         type: "select",
                         value: null,
+                        /// place holder value of "1, 2, 3..." because the actual values are JSON objects. Link the two when building the hydrograph
                         options: {
-                            "Aluminum": 0.024,
-                            "CMP": 0.024,
-                            "Concrete": 0.013,
-                            "Corrugated HDPE": 0.02,
-                            "PVC": 0.01,
-                            "Steel": 0.013
+                            "Aluminum": 1,
+                            "CMP": 2,
+                            "Concrete": 3,
+                            "Corrugated HDPE": 4,
+                            "PVC": 5,
+                            "Steel": 6
                         }
                     },
                     {
@@ -556,6 +557,14 @@ module StreamStats.Controllers {
                         "Manning's N": 0.202,
                         "Velocity Constant": 2.516
                     }
+            },
+            channelizedFlowStorm: {
+                "Aluminum": 0.024,
+                "CMP": 0.024,
+                "Concrete": 0.013,
+                "Corrugated HDPE": 0.02,
+                "PVC": 0.01,
+                "Steel": 0.013
             }
         }
 
@@ -962,9 +971,9 @@ module StreamStats.Controllers {
                                 this.toaster.pop('error', "Error", "Parameter failed to compute", 0);
                             }
                             response.data.parameters.forEach(param => {
-                                if (param.code.toLowerCase() == 'drnarea') this.drainageAreaSynthetic = param.value;
-                                if (param.code.toLowerCase() == 'csl10_85fm' && this._selectedTimeOfConcentration?.value == 2) this.lagTimeLength = param.value;
-                                if (param.code.toLowerCase() == 'lfplength' && this._selectedTimeOfConcentration?.value == 2) this.lagTimeSlope = param.value;
+                                if (param.code.toLowerCase() == 'drnarea' && !this.drainageAreaSynthetic) this.drainageAreaSynthetic = param.value;
+                                if (param.code.toLowerCase() == 'csl10_85fm' && this._selectedTimeOfConcentration?.value == 2 && !this.lagTimeLength) this.lagTimeLength = param.value;
+                                if (param.code.toLowerCase() == 'lfplength' && this._selectedTimeOfConcentration?.value == 2 && !this.lagTimeSlope) this.lagTimeSlope =  param.value;
                             });
 
                             //** */ Other SCStormModelingServices data
@@ -995,25 +1004,57 @@ module StreamStats.Controllers {
                             url = configuration.baseurls['SCStormRunoffServices'] + configuration.queryparams['SCStormRunoffSyntheticUnitHydrograph']
                             
                             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(data), headers);
-                            this.Execute(request).then((response: any) => {
+                            this.Execute(request).then((response: any) => {                     
                                 let data = response.data;
                                 let keys = Object.keys(data);
                                 for(let key of keys) {
-                                    if(key == "Ia") this.initialAbstraction = response.data.Ia;
-                                    if(key == "S") this.watershedRetention = response.data.S;
-                                    if(key == "curve_number") this.standardCurveNumber = response.data.curve_number;
-                                    if(key == "peak_rate_factor") this.peakRateFactor = response.data.peak_rate_factor;
-                                    if(key == "rainfall_distribution_curve_letter") {
+                                    if(key == "Ia" && !this.initialAbstraction) this.initialAbstraction = response.data.Ia.toUSGSvalue()
+                                    if(key == "S" && !this.watershedRetention) this.watershedRetention = response.data.S.toUSGSvalue()
+                                    if(key == "curve_number" && !this.standardCurveNumber) this.standardCurveNumber = response.data.curve_number.toUSGSvalue()
+                                    if(key == "peak_rate_factor" && !this.peakRateFactor) this.peakRateFactor = response.data.peak_rate_factor.toUSGSvalue()
+                                    if(key == "rainfall_distribution_curve_letter" && !this._selectedRainfallDistribution) {
                                         for(let option of this.RainfallDistributionOptions) {
-                                            if(option.name.indexOf(response.data.rainfall_distribution_curve_letter) == -1) { // same as includes
+                                            if(option.name.indexOf(response.data.rainfall_distribution_curve_letter) != -1) { // same as includes
                                                 this._selectedRainfallDistribution = option;
                                                 break;
                                             }
                                         }
                                     }
-                                    if(key == "time_of_concentration") this.timeOfConcentrationMin = response.data.time_of_concentration.value
+                                    if(key == "time_of_concentration" && !this.timeOfConcentrationMin) this.timeOfConcentrationMin = response.data.time_of_concentration.value.toUSGSvalue()
                                 }
-                                this.toaster.clear();
+                                var paramErrors = false;
+                                var failedToCompute = [];
+                                if(!this.initialAbstraction) {
+                                    paramErrors = true;
+                                    failedToCompute.push("Initial Abstraction")
+                                }
+                                if(!this.watershedRetention) {
+                                    paramErrors = true;
+                                    failedToCompute.push("Watershed Retention")
+                                }
+                                if(!this.standardCurveNumber) {
+                                    paramErrors = true;
+                                    failedToCompute.push("Standard Curve Number")
+                                }
+                                if(!this.peakRateFactor) {
+                                    paramErrors = true;
+                                    failedToCompute.push("Peak Rate Factor")
+                                }
+                                if(!this._selectedRainfallDistribution) {
+                                    paramErrors = true;
+                                    failedToCompute.push("Rainfall Distribution")
+                                }
+                                if(!this.timeOfConcentrationMin) {
+                                    paramErrors = true;
+                                    failedToCompute.push("Time of Concentration")
+                                }
+                                if (paramErrors) {
+                                    this.toaster.clear();
+                                    this.toaster.pop('error', "Error", "Parameter(s) failed to compute: " + failedToCompute.join(", "), 0);
+                                }
+                                else {
+                                    this.toaster.clear();
+                                }
                             }).catch(error => {
                                 this.toaster.clear();
                                 this.toaster.pop("error", "There was an HTTP error calculating parameters", "Please retry", 0);
