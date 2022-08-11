@@ -588,9 +588,6 @@ module StreamStats.Controllers {
         public OpenNearestGages() {
             this.modalService.openModal(Services.SSModalType.e_nearestgages);
         }
-        public OpenSelectHydrologicFeatures() {
-            this.modalService.openModal(Services.SSModalType.e_selectHydrologicFeatures);
-        }
 
         public downloadGeoJSON() {
 
