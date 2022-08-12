@@ -235,6 +235,7 @@ var StreamStats;
                         _this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, _this, StudyAreaEventArgs.Empty);
                         _this.canUpdate = true;
                         if (_this.regionService.selectedRegion.Applications.indexOf("HydrologicFeatures") != -1) {
+                            _this.nssService.showHydrologicFeatures = true;
                             _this.queryHydrologicFeatures();
                         }
                     }
