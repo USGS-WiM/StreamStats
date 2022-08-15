@@ -196,10 +196,10 @@ var StreamStats;
                     csvFile += '\nNHD Stream GNIS Name,' + this.studyAreaService.selectedStudyArea.NHDStream.GNIS_NAME;
                 }
                 if (this.studyAreaService.selectedStudyArea.WBDHUC8.huc8) {
-                    csvFile += '\nHUC 8 ID,' + this.studyAreaService.selectedStudyArea.WBDHUC8.huc8;
+                    csvFile += '\nHUC 8,' + this.studyAreaService.selectedStudyArea.WBDHUC8.huc8;
                 }
                 if (this.studyAreaService.selectedStudyArea.WBDHUC8.name) {
-                    csvFile += '\nHUC 8 Name,' + this.studyAreaService.selectedStudyArea.WBDHUC8.name;
+                    csvFile += ' (' + this.studyAreaService.selectedStudyArea.WBDHUC8.name + ')';
                 }
                 csvFile += '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n';
                 csvFile += processMainParameterTable(this.studyAreaService.studyAreaParameterList);
@@ -260,6 +260,23 @@ var StreamStats;
                             }
                             else {
                                 extVal += 'No method weighting results returned.';
+                            }
+                            csvFile += extVal + '\n\n';
+                        }
+                    }
+                    if (self.applications) {
+                        var isHydrologicFeatures = self.applications.indexOf('HydrologicFeatures') != -1;
+                        if (isHydrologicFeatures) {
+                            extVal += 'National Hydrography Dataset (NHD) Hydrologic Features\n';
+                            extVal += 'Intersecting NHD Streams\n';
+                            if (self.studyAreaService.selectedStudyArea.NHDStreamIntersections.length > 0) {
+                                extVal += self.tableToCSV($('#hydrologicFeaturesTable'));
+                            }
+                            else if (!self.studyAreaService.selectedStudyArea.NHDStreamIntersections) {
+                                extVal += 'No NHD streams were loaded.';
+                            }
+                            else if (self.studyAreaService.selectedStudyArea.NHDStreamIntersections.length == 0) {
+                                extVal += 'No NHD streams intersect the delineated basin.';
                             }
                             csvFile += extVal + '\n\n';
                         }
