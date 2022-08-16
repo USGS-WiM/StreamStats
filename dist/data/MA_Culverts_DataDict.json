@@ -115,8 +115,8 @@
         "25%-AEP Design Flow Culvert Design": "No",
         "In Report": "Yes",
         "Matchcode": "BasinChar",
-        "Citation": "Drainage area determine from digital elevation models derived from lidar data (Massachusetts Bureau of Geographic Information, 2022, MassGIS data: lidar terrain data, website accessed April 22, 2022 at https://www.mass.gov/info-details/massgis-data-lidar-terrain-data#:~:text=Project%20Areas%20%20%20%20Year%20%2F%20Project,%20184%20GB%20%205%20more%20rows%20).",
-        "CitationURL": "https://www.mass.gov/info-details/massgis-data-lidar-terrain-data#:~:text=Project%20Areas%20%20%20%20Year%20%2F%20Project,%20184%20GB%20%205%20more%20rows%20"
+        "Citation": "Drainage area determine from digital elevation models derived from lidar data (Massachusetts Bureau of Geographic Information, 2022, MassGIS data: lidar terrain data, website accessed April 22, 2022 at https://www.mass.gov/info-details/massgis-data-lidar-terrain-data).",
+        "CitationURL": "https://www.mass.gov/info-details/massgis-data-lidar-terrain-data"
       },
       {
         "Name": "Mean Basin Elevation",
