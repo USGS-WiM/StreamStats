@@ -64,6 +64,12 @@ module StreamStats.Controllers {
         public initialAbstraction: number;
         public lagTimeLength: number;
         public lagTimeSlope: number;
+        public showResultsSynthetic: boolean;
+        public warningMessagesSynthetic: any;
+        public syntheticResponseData: any;
+        public ReportOptionsSynthetic: any;
+        public canContinueSynthetic: boolean;
+        public stormHydrographOrdinatesAccordionOpen: boolean;
 
         public mainChannelLength: number;
         public mainChannelSlope: number;
@@ -598,6 +604,48 @@ module StreamStats.Controllers {
             return this._chosenFlowTypeIndex;
         } 
 
+        // for synthetic graph options 
+        public DHourStormOptions = [{
+            "name": "1-Hour",
+            "value": 1,
+            "maxTimeMinutes": 500
+        },
+        {
+            "name": "2-Hour",
+            "value": 2,
+            "maxTimeMinutes": 500
+        },
+        {
+            "name": "3-Hour",
+            "value": 3,
+            "maxTimeMinutes": 600
+        },
+        {
+            "name": "6-Hour",
+            "value": 6,
+            "maxTimeMinutes": 800
+        },
+        {
+            "name": "12-Hour",
+            "value": 12,
+            "maxTimeMinutes": 1000
+        },
+        {
+            "name": "24-Hour",
+            "value": 24,
+            "maxTimeMinutes": 1800
+        }]
+        private _selectedDHourStorm = {
+            "name": "1-Hour",
+            "value": 1,
+            "maxTimeMinutes": 500
+        }
+        public get SelectedDHourStorm() {
+            return this._selectedDHourStorm;
+        }
+        public set SelectedDHourStorm(val) {
+            this._selectedDHourStorm = val;
+        }
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -816,6 +864,50 @@ module StreamStats.Controllers {
                 });
         }
 
+        private loadGraphData(): any {
+            var results = []; 
+            var hydrograph = [];
+            hydrograph = this.reportData.time_coordinates.map((v, i) => [v, this.reportData.discharge_coordinates[i]]).map(([x, y]) => ({x, y}));
+            results.push({ values: hydrograph, key: "Discharge (ft³/s)", color: " #009900", type: "line", yAxis: 1 });   
+            return results;
+        }
+
+        private setGraphOptions(): void {
+            this.ReportOptions = {
+                chart: {
+                    type: 'multiChart',
+                    height: 275,
+                    width: 650,
+                    margin: {
+                        top: 10,
+                        right: 80,
+                        bottom: 80,
+                        left: 90
+                    },
+                    xAxis: {
+                        axisLabel: 'Time, in hours',
+                        tickFormat: function (d) {
+                            return d.toUSGSvalue();
+                        }
+                    },
+                    yAxis1: {
+                        axisLabel: 'Discharge (Q), in ft³/s',
+                        tickFormat: function (d) {
+                            return d.toUSGSvalue();
+                        }
+                    }
+                },
+                title: {
+                    enable: true,
+                    text: 'USGS SC Flood Hydrograph for Urban Watersheds using ' + this.SelectedAEP.name + ' AEP',
+                    css: {
+                        'font-size': '10pt',
+                        'font-weight': 'bold'
+                    }
+                }
+                
+            };
+        }
 
         public queryRegressionRegions() {
             this.canContinue = false;
@@ -938,12 +1030,137 @@ module StreamStats.Controllers {
             return formattedSegments;
         }
 
+        public queryRegressionRegionsSynthetic() {
+            this.canContinueSynthetic = false;
+            var headers = {
+                "Content-Type": "application/json",
+                "X-Is-StreamStats": true
+            };
+            var url = configuration.baseurls['SCStormRunoffServices'] + configuration.queryparams['SCStormRunoffSyntheticUnitComputerGraphResults'];
+            // var studyArea = this.studyAreaService.simplify(angular.fromJson(angular.toJson(this.studyAreaService.selectedStudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).toLowerCase() == "globalwatershed" })[0])));
+            // var studyAreaGeom = studyArea.geometry; 
+            let data = {
+                "lat": this.studyAreaService.selectedStudyArea.Pourpoint.Latitude,
+                "lon": this.studyAreaService.selectedStudyArea.Pourpoint.Longitude,
+                "AEP": this._selectedAEPSynthetic.value,
+                "CNModificationMethod": this._selectedCNModification.name,
+                "Area": this.drainageAreaSynthetic,
+                "Tc": this.timeOfConcentrationMin,
+                "RainfallDistributionCurve": this._selectedRainfallDistribution.name.split(" ")[1],
+                "PRF": this.peakRateFactor,
+                "CN": this.standardCurveNumber,
+                "S": this.watershedRetention,
+                "Ia": this.initialAbstraction
+            };
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(data), headers);     
+
+            this.Execute(request).then(
+                (response: any) => {
+                    if(!response.data) {
+                        this.toaster.pop('error', "There was an HTTP error querying Regression regions", "Please retry", 0);
+                        return;
+                    }
+                        // hydrograph_ordinates_table:
+                        // runoff_results_table:
+                        // unit_hydrograph_data:
+                        // watershed_data:
+                    if(!response.data.hydrograph_ordinates_table || !response.data.runoff_results_table || !response.data.unit_hydrograph_data || !response.data.watershed_data) {
+                        this.toaster.pop('error', "One or more of the expected data responses came back null.", "Please retry", 0);
+                        return;
+                    }
+                    this.syntheticResponseData = response.data;
+                    // basically initializes a bunch of stuff
+                    this.DHourStormChange();
+                    this.showResultsSynthetic = true;
+                    this.canContinueSynthetic = true;
+                },(error) => {
+                    this.toaster.pop('error', "There was an HTTP error querying Regression regions", "Please retry", 0);
+                }).finally(() => {
+            });
+        }
+
+        private loadSyntheticGraphData(): any {
+            var results = []; 
+            var hydrograph = [];
+            var flowHour = "flow_" + this._selectedDHourStorm.value + "_hour";  
+            var timeArray = [];
+            for(let time of this.syntheticResponseData.hydrograph_ordinates_table.time) {
+                timeArray.push(time);
+                // at the boundary for the time limit
+                if(Math.abs(time - this._selectedDHourStorm.maxTimeMinutes) < 6) {
+                    break;
+                }
+            }
+            hydrograph = timeArray.map((v, i) => [v, this.syntheticResponseData.hydrograph_ordinates_table[flowHour][i]]).map(([x, y]) => ({x, y}));
+            results.push({ values: hydrograph, key: "Flow (cfs)", color: " #009900", type: "line", yAxis: 1 });   
+            return results;
+        }
+
+        private setSyntheticGraphOptions(): void {
+            this.ReportOptionsSynthetic = {
+                chart: {
+                    type: 'multiChart',
+                    height: 275,
+                    width: 650,
+                    margin: {
+                        top: 10,
+                        right: 80,
+                        bottom: 80,
+                        left: 90
+                    },
+                    xAxis: {
+                        axisLabel: 'Time, in minutes',
+                        tickFormat: function (d) {
+                            return d.toUSGSvalue();
+                        }
+                    },
+                    yAxis1: {
+                        axisLabel: 'Flow, cfs',
+                        tickFormat: function (d) {
+                            return d.toUSGSvalue();
+                        }
+                    }
+                },
+                title: {
+                    enable: true,
+                    text: '' + this._selectedDHourStorm.value + " Hour Storm Hydrograph",
+                    css: {
+                        'font-size': '10pt',
+                        'font-weight': 'bold'
+                    }
+                }
+                
+            };
+        }
+
+        public DHourStormChange() {
+            this.ReportData.SyntheticUrbanHydrograph.Graph = this.loadSyntheticGraphData();
+            this.ReportData.SyntheticUrbanHydrograph.WeightedRunoff = this.syntheticResponseData.runoff_results_table;
+            this.setSyntheticGraphOptions();
+        }
+
+        public isMaxRunoffVolume(index: number) {
+            let max_runoff_volume_storm_duration = this.syntheticResponseData.runoff_results_table.max_runoff_volume_storm_duration;
+            if(this.DHourStormOptions[index].value == max_runoff_volume_storm_duration) {
+                return true;
+            }
+            return false;
+        }
+
+        public isMaxPeakRunoff(index: number) {
+            let max_peak_runoff_storm_duration = this.syntheticResponseData.runoff_results_table.max_peak_runoff_storm_duration;
+            if(this.DHourStormOptions[index].value == max_peak_runoff_storm_duration) {
+                return true;
+            }
+            return false;
+        }
+
         // similar to 'calculateParameters', but need to use SC-Runoff api endpoints as well
         public calculateSyntheticParameters(parameters) {
             try {
                 this.toaster.pop("wait", "Calculating Missing Parameters", "Please wait...", 0);
                 this.parameters = parameters;
-                //this.canContinue = false;
+                this.canContinueSynthetic = false;
                 var workspaceID = this.studyAreaService.selectedStudyArea.WorkspaceID;
                 var regionID = this.studyAreaService.selectedStudyArea.RegionID
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSComputeParams'].format(regionID, workspaceID, parameters);
@@ -1063,57 +1280,12 @@ module StreamStats.Controllers {
                         this.toaster.clear();
                         this.toaster.pop("error", "There was an HTTP error calculating parameters", "Please retry", 0);
                     }).finally(() => {
-                        this.canContinue = true;
+                        this.canContinueSynthetic = true;
                         this.hideAlerts = true;
                     });
             } catch (e) {
                 this.toaster.pop('error', "There was an error calculating parameters", "", 0);                 
             }          
-        }
-
-        private loadGraphData(): any {
-            var results = []; 
-            var hydrograph = [];
-            hydrograph = this.reportData.time_coordinates.map((v, i) => [v, this.reportData.discharge_coordinates[i]]).map(([x, y]) => ({x, y}));
-            results.push({ values: hydrograph, key: "Discharge (ft³/s)", color: " #009900", type: "line", yAxis: 1 });   
-            return results;
-        }
-
-        private setGraphOptions(): void {
-            this.ReportOptions = {
-                chart: {
-                    type: 'multiChart',
-                    height: 275,
-                    width: 650,
-                    margin: {
-                        top: 10,
-                        right: 80,
-                        bottom: 80,
-                        left: 90
-                    },
-                    xAxis: {
-                        axisLabel: 'Time, in hours',
-                        tickFormat: function (d) {
-                            return d.toUSGSvalue();
-                        }
-                    },
-                    yAxis1: {
-                        axisLabel: 'Discharge (Q), in ft³/s',
-                        tickFormat: function (d) {
-                            return d.toUSGSvalue();
-                        }
-                    }
-                },
-                title: {
-                    enable: true,
-                    text: 'USGS SC Flood Hydrograph for Urban Watersheds using ' + this.SelectedAEP.name + ' AEP',
-                    css: {
-                        'font-size': '10pt',
-                        'font-weight': 'bold'
-                    }
-                }
-                
-            };
         }
 
         public openAddFlowSegment(indexOfFlow : number) {
@@ -1257,6 +1429,14 @@ module StreamStats.Controllers {
             this.initialAbstraction = null;
             this.lagTimeLength = null;
             this.lagTimeSlope = null;
+            this._selectedCNModification = null;
+            this.showResultsSynthetic = false;
+            this.stormHydrographOrdinatesAccordionOpen = false;
+            this._selectedDHourStorm = {
+                "name": "1-Hour",
+                "value": 1,
+                "maxTimeMinutes": 500
+            }
         }
 
         public Close(): void {
@@ -1333,8 +1513,9 @@ module StreamStats.Controllers {
             this.showResults = false;
             this.hideAlerts = false;
             this.canContinue = true;
-
+            this.canContinueSynthetic = true;
             this._chosenFlowTypeIndex = null;
+            this.stormHydrographOrdinatesAccordionOpen = false;
         }
 
         private selectRunoffType() {

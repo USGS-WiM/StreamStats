@@ -373,6 +373,41 @@ var StreamStats;
                 _this.TravelTimeFlowTypes = _this._defaultFlowTypes.slice();
                 _this.TravelTimeFlowSegments = JSON.parse(JSON.stringify(_this._defaultFlowSegments));
                 _this.addFlowSegmentOpen = false;
+                _this.DHourStormOptions = [{
+                        "name": "1-Hour",
+                        "value": 1,
+                        "maxTimeMinutes": 500
+                    },
+                    {
+                        "name": "2-Hour",
+                        "value": 2,
+                        "maxTimeMinutes": 500
+                    },
+                    {
+                        "name": "3-Hour",
+                        "value": 3,
+                        "maxTimeMinutes": 600
+                    },
+                    {
+                        "name": "6-Hour",
+                        "value": 6,
+                        "maxTimeMinutes": 800
+                    },
+                    {
+                        "name": "12-Hour",
+                        "value": 12,
+                        "maxTimeMinutes": 1000
+                    },
+                    {
+                        "name": "24-Hour",
+                        "value": 24,
+                        "maxTimeMinutes": 1800
+                    }];
+                _this._selectedDHourStorm = {
+                    "name": "1-Hour",
+                    "value": 1,
+                    "maxTimeMinutes": 500
+                };
                 $scope.vm = _this;
                 $scope.greaterThanZero = _this.greaterThanZero;
                 $scope.greaterThanOrEqualToZero = _this.greaterThanOrEqualToZero;
@@ -465,6 +500,16 @@ var StreamStats;
             Object.defineProperty(SCStormRunoffController.prototype, "chosenFlowTypeIndex", {
                 get: function () {
                     return this._chosenFlowTypeIndex;
+                },
+                enumerable: false,
+                configurable: true
+            });
+            Object.defineProperty(SCStormRunoffController.prototype, "SelectedDHourStorm", {
+                get: function () {
+                    return this._selectedDHourStorm;
+                },
+                set: function (val) {
+                    this._selectedDHourStorm = val;
                 },
                 enumerable: false,
                 configurable: true
@@ -632,6 +677,52 @@ var StreamStats;
                 }).finally(function () {
                 });
             };
+            SCStormRunoffController.prototype.loadGraphData = function () {
+                var _this = this;
+                var results = [];
+                var hydrograph = [];
+                hydrograph = this.reportData.time_coordinates.map(function (v, i) { return [v, _this.reportData.discharge_coordinates[i]]; }).map(function (_a) {
+                    var x = _a[0], y = _a[1];
+                    return ({ x: x, y: y });
+                });
+                results.push({ values: hydrograph, key: "Discharge (ft³/s)", color: " #009900", type: "line", yAxis: 1 });
+                return results;
+            };
+            SCStormRunoffController.prototype.setGraphOptions = function () {
+                this.ReportOptions = {
+                    chart: {
+                        type: 'multiChart',
+                        height: 275,
+                        width: 650,
+                        margin: {
+                            top: 10,
+                            right: 80,
+                            bottom: 80,
+                            left: 90
+                        },
+                        xAxis: {
+                            axisLabel: 'Time, in hours',
+                            tickFormat: function (d) {
+                                return d.toUSGSvalue();
+                            }
+                        },
+                        yAxis1: {
+                            axisLabel: 'Discharge (Q), in ft³/s',
+                            tickFormat: function (d) {
+                                return d.toUSGSvalue();
+                            }
+                        }
+                    },
+                    title: {
+                        enable: true,
+                        text: 'USGS SC Flood Hydrograph for Urban Watersheds using ' + this.SelectedAEP.name + ' AEP',
+                        css: {
+                            'font-size': '10pt',
+                            'font-weight': 'bold'
+                        }
+                    }
+                };
+            };
             SCStormRunoffController.prototype.queryRegressionRegions = function () {
                 var _this = this;
                 this.canContinue = false;
@@ -750,11 +841,126 @@ var StreamStats;
                 }
                 return formattedSegments;
             };
+            SCStormRunoffController.prototype.queryRegressionRegionsSynthetic = function () {
+                var _this = this;
+                this.canContinueSynthetic = false;
+                var headers = {
+                    "Content-Type": "application/json",
+                    "X-Is-StreamStats": true
+                };
+                var url = configuration.baseurls['SCStormRunoffServices'] + configuration.queryparams['SCStormRunoffSyntheticUnitComputerGraphResults'];
+                var data = {
+                    "lat": this.studyAreaService.selectedStudyArea.Pourpoint.Latitude,
+                    "lon": this.studyAreaService.selectedStudyArea.Pourpoint.Longitude,
+                    "AEP": this._selectedAEPSynthetic.value,
+                    "CNModificationMethod": this._selectedCNModification.name,
+                    "Area": this.drainageAreaSynthetic,
+                    "Tc": this.timeOfConcentrationMin,
+                    "RainfallDistributionCurve": this._selectedRainfallDistribution.name.split(" ")[1],
+                    "PRF": this.peakRateFactor,
+                    "CN": this.standardCurveNumber,
+                    "S": this.watershedRetention,
+                    "Ia": this.initialAbstraction
+                };
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(data), headers);
+                this.Execute(request).then(function (response) {
+                    if (!response.data) {
+                        _this.toaster.pop('error', "There was an HTTP error querying Regression regions", "Please retry", 0);
+                        return;
+                    }
+                    if (!response.data.hydrograph_ordinates_table || !response.data.runoff_results_table || !response.data.unit_hydrograph_data || !response.data.watershed_data) {
+                        _this.toaster.pop('error', "One or more of the expected data responses came back null.", "Please retry", 0);
+                        return;
+                    }
+                    _this.syntheticResponseData = response.data;
+                    _this.DHourStormChange();
+                    _this.showResultsSynthetic = true;
+                    _this.canContinueSynthetic = true;
+                }, function (error) {
+                    _this.toaster.pop('error', "There was an HTTP error querying Regression regions", "Please retry", 0);
+                }).finally(function () {
+                });
+            };
+            SCStormRunoffController.prototype.loadSyntheticGraphData = function () {
+                var _this = this;
+                var results = [];
+                var hydrograph = [];
+                var flowHour = "flow_" + this._selectedDHourStorm.value + "_hour";
+                var timeArray = [];
+                for (var _i = 0, _a = this.syntheticResponseData.hydrograph_ordinates_table.time; _i < _a.length; _i++) {
+                    var time = _a[_i];
+                    timeArray.push(time);
+                    if (Math.abs(time - this._selectedDHourStorm.maxTimeMinutes) < 6) {
+                        break;
+                    }
+                }
+                hydrograph = timeArray.map(function (v, i) { return [v, _this.syntheticResponseData.hydrograph_ordinates_table[flowHour][i]]; }).map(function (_a) {
+                    var x = _a[0], y = _a[1];
+                    return ({ x: x, y: y });
+                });
+                results.push({ values: hydrograph, key: "Flow (cfs)", color: " #009900", type: "line", yAxis: 1 });
+                return results;
+            };
+            SCStormRunoffController.prototype.setSyntheticGraphOptions = function () {
+                this.ReportOptionsSynthetic = {
+                    chart: {
+                        type: 'multiChart',
+                        height: 275,
+                        width: 650,
+                        margin: {
+                            top: 10,
+                            right: 80,
+                            bottom: 80,
+                            left: 90
+                        },
+                        xAxis: {
+                            axisLabel: 'Time, in minutes',
+                            tickFormat: function (d) {
+                                return d.toUSGSvalue();
+                            }
+                        },
+                        yAxis1: {
+                            axisLabel: 'Flow, cfs',
+                            tickFormat: function (d) {
+                                return d.toUSGSvalue();
+                            }
+                        }
+                    },
+                    title: {
+                        enable: true,
+                        text: '' + this._selectedDHourStorm.value + " Hour Storm Hydrograph",
+                        css: {
+                            'font-size': '10pt',
+                            'font-weight': 'bold'
+                        }
+                    }
+                };
+            };
+            SCStormRunoffController.prototype.DHourStormChange = function () {
+                this.ReportData.SyntheticUrbanHydrograph.Graph = this.loadSyntheticGraphData();
+                this.ReportData.SyntheticUrbanHydrograph.WeightedRunoff = this.syntheticResponseData.runoff_results_table;
+                this.setSyntheticGraphOptions();
+            };
+            SCStormRunoffController.prototype.isMaxRunoffVolume = function (index) {
+                var max_runoff_volume_storm_duration = this.syntheticResponseData.runoff_results_table.max_runoff_volume_storm_duration;
+                if (this.DHourStormOptions[index].value == max_runoff_volume_storm_duration) {
+                    return true;
+                }
+                return false;
+            };
+            SCStormRunoffController.prototype.isMaxPeakRunoff = function (index) {
+                var max_peak_runoff_storm_duration = this.syntheticResponseData.runoff_results_table.max_peak_runoff_storm_duration;
+                if (this.DHourStormOptions[index].value == max_peak_runoff_storm_duration) {
+                    return true;
+                }
+                return false;
+            };
             SCStormRunoffController.prototype.calculateSyntheticParameters = function (parameters) {
                 var _this = this;
                 try {
                     this.toaster.pop("wait", "Calculating Missing Parameters", "Please wait...", 0);
                     this.parameters = parameters;
+                    this.canContinueSynthetic = false;
                     var workspaceID = this.studyAreaService.selectedStudyArea.WorkspaceID;
                     var regionID = this.studyAreaService.selectedStudyArea.RegionID;
                     var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSComputeParams'].format(regionID, workspaceID, parameters);
@@ -877,59 +1083,13 @@ var StreamStats;
                         _this.toaster.clear();
                         _this.toaster.pop("error", "There was an HTTP error calculating parameters", "Please retry", 0);
                     }).finally(function () {
-                        _this.canContinue = true;
+                        _this.canContinueSynthetic = true;
                         _this.hideAlerts = true;
                     });
                 }
                 catch (e) {
                     this.toaster.pop('error', "There was an error calculating parameters", "", 0);
                 }
-            };
-            SCStormRunoffController.prototype.loadGraphData = function () {
-                var _this = this;
-                var results = [];
-                var hydrograph = [];
-                hydrograph = this.reportData.time_coordinates.map(function (v, i) { return [v, _this.reportData.discharge_coordinates[i]]; }).map(function (_a) {
-                    var x = _a[0], y = _a[1];
-                    return ({ x: x, y: y });
-                });
-                results.push({ values: hydrograph, key: "Discharge (ft³/s)", color: " #009900", type: "line", yAxis: 1 });
-                return results;
-            };
-            SCStormRunoffController.prototype.setGraphOptions = function () {
-                this.ReportOptions = {
-                    chart: {
-                        type: 'multiChart',
-                        height: 275,
-                        width: 650,
-                        margin: {
-                            top: 10,
-                            right: 80,
-                            bottom: 80,
-                            left: 90
-                        },
-                        xAxis: {
-                            axisLabel: 'Time, in hours',
-                            tickFormat: function (d) {
-                                return d.toUSGSvalue();
-                            }
-                        },
-                        yAxis1: {
-                            axisLabel: 'Discharge (Q), in ft³/s',
-                            tickFormat: function (d) {
-                                return d.toUSGSvalue();
-                            }
-                        }
-                    },
-                    title: {
-                        enable: true,
-                        text: 'USGS SC Flood Hydrograph for Urban Watersheds using ' + this.SelectedAEP.name + ' AEP',
-                        css: {
-                            'font-size': '10pt',
-                            'font-weight': 'bold'
-                        }
-                    }
-                };
             };
             SCStormRunoffController.prototype.openAddFlowSegment = function (indexOfFlow) {
                 this.addFlowSegmentOpen = true;
@@ -1056,6 +1216,14 @@ var StreamStats;
                 this.initialAbstraction = null;
                 this.lagTimeLength = null;
                 this.lagTimeSlope = null;
+                this._selectedCNModification = null;
+                this.showResultsSynthetic = false;
+                this.stormHydrographOrdinatesAccordionOpen = false;
+                this._selectedDHourStorm = {
+                    "name": "1-Hour",
+                    "value": 1,
+                    "maxTimeMinutes": 500
+                };
             };
             SCStormRunoffController.prototype.Close = function () {
                 this.modalInstance.dismiss('cancel');
@@ -1115,7 +1283,9 @@ var StreamStats;
                 this.showResults = false;
                 this.hideAlerts = false;
                 this.canContinue = true;
+                this.canContinueSynthetic = true;
                 this._chosenFlowTypeIndex = null;
+                this.stormHydrographOrdinatesAccordionOpen = false;
             };
             SCStormRunoffController.prototype.selectRunoffType = function () {
                 switch (this._selectedTab) {

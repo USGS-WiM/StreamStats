@@ -257,9 +257,9 @@
                                 <label class="fullwidth alignc" ng-if="vm.validateForm(SyntheticUrbanHydrograph) && !vm.hideAlerts"><span class="fa fa-check"></span>&nbsp;Parameters Have Been Calculated</label>
                                 <label class="fullwidth" ng-if="!vm.validateForm(SyntheticUrbanHydrograph) || (vm.validateForm(SyntheticUrbanHydrograph) && vm.hideAlerts)">&nbsp;&nbsp;</label>
                                 <div class="hidden-print">
-                                    <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-disabled="vm.calculateSyntheticParamsDisabled()" ng-click="vm.calculateSyntheticParameters('DRNAREA,LFPLENGTH,CSL10_85fm')" ng-hide="vm.validateForm(SyntheticUrbanHydrograph)"><span ng-class="vm.canContinue ? 'fa fa-calculator' : 'fa fa-refresh fa-spin'"></span>&nbsp;&nbsp;Calculate Missing Parameters</button>
+                                    <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-disabled="vm.calculateSyntheticParamsDisabled()" ng-click="vm.calculateSyntheticParameters('DRNAREA,LFPLENGTH,CSL10_85fm')" ng-hide="vm.validateForm(SyntheticUrbanHydrograph)"><span ng-class="vm.canContinueSynthetic ? 'fa fa-calculator' : 'fa fa-refresh fa-spin'"></span>&nbsp;&nbsp;Calculate Missing Parameters</button>
                                     <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-red" ng-click="vm.clearSyntheticResults()" ng-hide="!vm.validateForm(SyntheticUrbanHydrograph)"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;Clear All</button>
-                                    <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.queryRegressionRegions()" ng-hide="!vm.validateForm(SyntheticUrbanHydrograph)"><span ng-class="vm.canContinue ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></span>{{ vm.showResults ? '&nbsp;&nbsp;Recalculate Results' : '&nbsp;&nbsp;Continue' }}</button>
+                                    <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.queryRegressionRegionsSynthetic()" ng-hide="!vm.validateForm(SyntheticUrbanHydrograph)"><span ng-class="vm.canContinueSynthetic ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></span>{{ vm.showResults ? '&nbsp;&nbsp;Recalculate Results' : '&nbsp;&nbsp;Continue' }}</button>
                                 </div>
                                 <label class="fullwidth alignc orange" ng-if="vm.calculateSyntheticParamsDisabled() == 1"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Must select 'AEP', 'Standard Curve Number Value', and 'Time of Concentration' Before Calculating Missing Parameters</label>
                                 <label class="fullwidth alignc orange" ng-if="vm.calculateSyntheticParamsDisabled() == 2"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Must select 'AEP' and 'Standard Curve Number Value' Before Calculating Missing Parameters</label>
@@ -268,8 +268,157 @@
                                 <label class="fullwidth alignc orange" ng-if="!vm.validateForm(SyntheticUrbanHydrograph) && !vm.calculateSyntheticParamsDisabled()"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Parameters Must Be Entered Before Results Can Be Computed</label>
                                 <label ng-if="vm.validateForm(SyntheticUrbanHydrograph)">&nbsp;&nbsp;</label> 
                             </form>
-                        </div>
+                            <div ng-if="vm.showResultsSynthetic">
+                                <div style="position:relative;">
+                                    <p class="fullwidth alignc hidden-print" style="font-size: 16px;"><b>USGS SC Flood Hydrograph for Synthetic Units using {{vm.SelectedAEPSynthetic.name}} AEP</b></p>
+                                    <div class="well">
+                                        <!-- <div class="wim-alert-warning">{{vm.warningMessagesSynthetic}}</div> -->
+                                        <h3>Watershed Data</h3>
+                                        <!-- <h4>Parameters</h4> -->
+                                        <table id="WatershedData" class="table table-condensed smalltext">
+                                            <tbody>
+                                                <tr>
+                                                    <td>Clicked Point (Latitude, Longitude)</td>
+                                                    <td><b>{{vm.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toUSGSvalue()}}, {{vm.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toUSGSvalue()}}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Area (acres)</td>
+                                                    <td><b>{{vm.syntheticResponseData.watershed_data.Area}}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Time of Concentration, Tc (minutes)</td>
+                                                    <td><b>{{vm.syntheticResponseData.watershed_data.Tc}}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Peak Rate Factor, PRF</td>
+                                                    <td><b>{{vm.syntheticResponseData.watershed_data.PRF}}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Standard Curve Number, CN</td>
+                                                    <td><b>{{vm.syntheticResponseData.watershed_data["Standard CN"]}}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Watershed Retention, S</td>
+                                                    <td><b>{{vm.syntheticResponseData.watershed_data["Watershed Retention S"]}}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Initial Abstraction, Ia</td>
+                                                    <td><b>{{vm.syntheticResponseData.watershed_data["Initial Abstraction Ia"]}}</b></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <h3>Unit Hydrograph Data</h3>
+                                        <table id="WatershedData" class="table table-condensed smalltext">
+                                            <tbody>
+                                                <tr>
+                                                    <td>Annual Exceedance Probability, AEP (%)</td>
+                                                    <td><b>{{vm.syntheticResponseData.unit_hydrograph_data["Annual Exceedance Probability (AEP)"]}}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Design Storm Return Period (years)</td>
+                                                    <td><b>{{vm.syntheticResponseData.unit_hydrograph_data["Design Storm Return Period"]}}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Curve Number Modification Method</td>
+                                                    <td><b>{{vm.syntheticResponseData.unit_hydrograph_data["Curve Number Modification Method"]}}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Burst Duration (minutes)</td>
+                                                    <td><b>{{vm.syntheticResponseData.unit_hydrograph_data["Burst Duration"]}} minutes</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Gamma function shapre parameter, Γ-fn n</td>
+                                                    <td><b>{{vm.syntheticResponseData.unit_hydrograph_data["Gamma_n"].toUSGSvalue()}}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Lag time (minutes)</td>
+                                                    <td><b>{{vm.syntheticResponseData.unit_hydrograph_data["Lag time"].toUSGSvalue()}}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Adjusted Time of Concentration, Adj Tc (minutes)</td>
+                                                    <td><b>{{vm.syntheticResponseData.unit_hydrograph_data["Adjusted Tc"].toUSGSvalue()}}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Unit Hydrograph Time to Peak, UH_Tp (minutes)</td>
+                                                    <td><b>{{vm.syntheticResponseData.unit_hydrograph_data["UH_Tp"].toUSGSvalue()}}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Unit Hydrograph Peak Flow Rate, UH_Qp (cubic feet per second)</td>
+                                                    <td><b>{{vm.syntheticResponseData.unit_hydrograph_data["UH_Qp"].toUSGSvalue()}}</b></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
 
+                                        <h3>Runoff Results</h3>
+                                        <table id="SyntheticUnitHydrographRunoff" class="table table-condensed smalltext">
+                                            <thead>
+                                                <tr>
+                                                    <th>Storm Duration (hrs) &ensp;</th>
+                                                    <th>Rainfall Depth (in) &ensp;</th>
+                                                    <th>CN Adjusted for Rainfall Duration {{"<"}} 24-hr &ensp;</th>
+                                                    <th>Runoff Volume Qcn (WS-in) &ensp;</th>
+                                                    <th>Peak Runoff, Qp (cfs) &ensp;</th>
+                                                    <th>Time of Peak Runoff (min) &ensp;</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="option in vm.DHourStormOptions" ng-class="{ 'max-peak-runoff': vm.isMaxPeakRunoff($index) && !vm.isMaxRunoffVolume($index),
+                                                    'max-runoff-volume': vm.isMaxRunoffVolume($index) && !vm.vm.isMaxPeakRunoff($index) }">
+                                                    <td>{{option.value}}</td>
+                                                    <td>{{vm.syntheticResponseData.runoff_results_table.rainfall_depth[$index]}}</td>
+                                                    <td>{{vm.syntheticResponseData.runoff_results_table.CN_adjusted_for_rainfall_duration[$index]}}</td>
+                                                    <td>{{vm.syntheticResponseData.runoff_results_table.runoff_volume_Q_CN[$index]}}</td>
+                                                    <td>{{vm.syntheticResponseData.runoff_results_table.peak_runoff_Qp[$index]}}</td>
+                                                    <td>{{vm.syntheticResponseData.runoff_results_table.time_of_peak_runoff[$index]}}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+
+                                        <h3>Hydrograph</h3>
+                                        <table id="SyntheticUnitHydrograph" class="table table-condensed" style="page-break-inside:avoid; font-size: 11px;">
+                                            <div style='width:650px; margin:auto;' class="page_break" id="legend">
+                                                <label for="DHourStorm">D-Hour Storm:</label>
+                                                <select name="DHourStorm" ng-model="vm.SelectedDHourStorm" ng-change="vm.DHourStormChange()" ng-options="hour.name for hour in vm.DHourStormOptions track by hour.value"></select>
+                                                <nvd3 options='vm.ReportOptionsSynthetic' data='vm.ReportData.SyntheticUrbanHydrograph.Graph'></nvd3>
+                                            </div>
+                                        </table> 
+
+                                        <accordion id="HydrographDataAccordion">
+                                            <accordion-group is-open="vm.stormHydrographOrdinatesAccordionOpen" style="overflow:auto">
+                                                <accordion-heading><i ng-class="vm.stormHydrographOrdinatesAccordionOpen ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i> Storm Hydrograph Ordinates</accordion-heading>
+                                                <table id="SyntheticUnitHydrographData" class="table table-condensed" style="page-break-inside:avoid; font-size: 11px;">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Time (minutes)</th>
+                                                            <th>1 Hr</th>
+                                                            <th>2 Hr</th>
+                                                            <th>3 Hr</th>
+                                                            <th>6 Hr</th>
+                                                            <th>12 Hr</th>
+                                                            <th>24 Hr</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr ng-repeat="item in vm.syntheticResponseData.hydrograph_ordinates_table.time">
+                                                            <td>{{item.toUSGSvalue()}}</td>
+                                                            <td>{{vm.syntheticResponseData.hydrograph_ordinates_table.flow_1_hour[$index].toUSGSvalue()}}</td>
+                                                            <td>{{vm.syntheticResponseData.hydrograph_ordinates_table.flow_2_hour[$index].toUSGSvalue()}}</td>
+                                                            <td>{{vm.syntheticResponseData.hydrograph_ordinates_table.flow_3_hour[$index].toUSGSvalue()}}</td>
+                                                            <td>{{vm.syntheticResponseData.hydrograph_ordinates_table.flow_6_hour[$index].toUSGSvalue()}}</td>
+                                                            <td>{{vm.syntheticResponseData.hydrograph_ordinates_table.flow_12_hour[$index].toUSGSvalue()}}</td>
+                                                            <td>{{vm.syntheticResponseData.hydrograph_ordinates_table.flow_24_hour[$index].toUSGSvalue()}}</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>         
+                                            </accordion-group>
+                                        </accordion>
+                        
+                                        <h4>Citation</h4>
+                                        <a href="https://www.scdot.org/business/technicalPDFs/hydraulic/SPR-738-SC-UH-Method-Application-Manual-May-2020.pdf" target="_blank">Meadows, M.E., 2020, South Carolina Unit Hydrograph Method Applications Manual, FHWA-SC-20-02, 139 p.</a><br /><br />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="disclaimerReport">
                             <p>

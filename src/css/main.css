@@ -128,6 +128,15 @@ button:hover{
     float: left;
 }
 
+.max-runoff-volume {
+    background-color: #5bb4fc;
+}
+.max-peak-runoff {
+    background-color: #ff8a8a;
+}
+.max-runoff-both {
+    background-color: #de70fa;
+}
 
 
 /*
