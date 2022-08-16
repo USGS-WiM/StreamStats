@@ -365,11 +365,11 @@
                                                 <tr ng-repeat="option in vm.DHourStormOptions" ng-class="{ 'max-peak-runoff': vm.isMaxPeakRunoff($index) && !vm.isMaxRunoffVolume($index),
                                                     'max-runoff-volume': vm.isMaxRunoffVolume($index) && !vm.vm.isMaxPeakRunoff($index) }">
                                                     <td>{{option.value}}</td>
-                                                    <td>{{vm.syntheticResponseData.runoff_results_table.rainfall_depth[$index]}}</td>
-                                                    <td>{{vm.syntheticResponseData.runoff_results_table.CN_adjusted_for_rainfall_duration[$index]}}</td>
-                                                    <td>{{vm.syntheticResponseData.runoff_results_table.runoff_volume_Q_CN[$index]}}</td>
-                                                    <td>{{vm.syntheticResponseData.runoff_results_table.peak_runoff_Qp[$index]}}</td>
-                                                    <td>{{vm.syntheticResponseData.runoff_results_table.time_of_peak_runoff[$index]}}</td>
+                                                    <td>{{vm.syntheticResponseData.runoff_results_table.rainfall_depth[$index].toUSGSvalue()}}</td>
+                                                    <td>{{vm.syntheticResponseData.runoff_results_table.CN_adjusted_for_rainfall_duration[$index].toUSGSvalue()}}</td>
+                                                    <td>{{vm.syntheticResponseData.runoff_results_table.runoff_volume_Q_CN[$index].toUSGSvalue()}}</td>
+                                                    <td>{{vm.syntheticResponseData.runoff_results_table.peak_runoff_Qp[$index].toUSGSvalue()}}</td>
+                                                    <td>{{vm.syntheticResponseData.runoff_results_table.time_of_peak_runoff[$index].toUSGSvalue()}}</td>
                                                 </tr>
                                             </tbody>
                                         </table>
