@@ -270,7 +270,7 @@
                             </form>
                             <div ng-if="vm.showResultsSynthetic">
                                 <div style="position:relative;">
-                                    <p class="fullwidth alignc hidden-print" style="font-size: 16px;"><b>USGS SC Flood Hydrograph for Synthetic Units using {{vm.SelectedAEPSynthetic.name}} AEP</b></p>
+                                    <p class="fullwidth alignc hidden-print" style="font-size: 16px;"><b>USGS SC Flood Hydrograph for Synthetic Units using {{vm.SelectedAEPSynthetic.name}}</b></p>
                                     <div class="well">
                                         <!-- <div class="wim-alert-warning">{{vm.warningMessagesSynthetic}}</div> -->
                                         <h3>Watershed Data</h3>
@@ -279,7 +279,7 @@
                                             <tbody>
                                                 <tr>
                                                     <td>Clicked Point (Latitude, Longitude)</td>
-                                                    <td><b>{{vm.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toUSGSvalue()}}, {{vm.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toUSGSvalue()}}</b></td>
+                                                    <td><b>{{vm.studyAreaService.selectedStudyArea.Pourpoint.Latitude}}, {{vm.studyAreaService.selectedStudyArea.Pourpoint.Longitude}}</b></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Area (acres)</td>
@@ -324,7 +324,7 @@
                                                 </tr>
                                                 <tr>
                                                     <td>Burst Duration (minutes)</td>
-                                                    <td><b>{{vm.syntheticResponseData.unit_hydrograph_data["Burst Duration"]}} minutes</b></td>
+                                                    <td><b>{{vm.syntheticResponseData.unit_hydrograph_data["Burst Duration"]}}</b></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Gamma function shapre parameter, Γ-fn n</td>
@@ -355,15 +355,14 @@
                                                 <tr>
                                                     <th>Storm Duration (hrs) &ensp;</th>
                                                     <th>Rainfall Depth (in) &ensp;</th>
-                                                    <th>CN Adjusted for Rainfall Duration {{"<"}} 24-hr &ensp;</th>
-                                                    <th>Runoff Volume Qcn (WS-in) &ensp;</th>
-                                                    <th>Peak Runoff, Qp (cfs) &ensp;</th>
+                                                    <th>CN Adjusted for Rainfall Duration {{"<"}}24-hr &ensp;</th>
+                                                    <th>Runoff Volume Q<sub>CN</sub> (WS-in) &ensp;</th>
+                                                    <th>Peak Runoff, Q<sub>P</sub> (ft³/s) &ensp;</th>
                                                     <th>Time of Peak Runoff (min) &ensp;</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr ng-repeat="option in vm.DHourStormOptions" ng-class="{ 'max-peak-runoff': vm.isMaxPeakRunoff($index) && !vm.isMaxRunoffVolume($index),
-                                                    'max-runoff-volume': vm.isMaxRunoffVolume($index) && !vm.vm.isMaxPeakRunoff($index) }">
+                                                <tr ng-repeat="option in vm.DHourStormOptions">
                                                     <td>{{option.value}}</td>
                                                     <td>{{vm.syntheticResponseData.runoff_results_table.rainfall_depth[$index].toUSGSvalue()}}</td>
                                                     <td>{{vm.syntheticResponseData.runoff_results_table.CN_adjusted_for_rainfall_duration[$index].toUSGSvalue()}}</td>
@@ -374,18 +373,42 @@
                                             </tbody>
                                         </table>
 
+                                        <h3>Critical Durations</h3>
+                                        <table id="SyntheticUnitHydrographCriticalDurations" class="table table-condensed smalltext">
+                                            <thead>
+                                                <tr>
+                                                    <th>Maximum Runoff Value</th>
+                                                    <th>Storm Duration (hrs)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Maximum Runoff Volume</td>
+                                                    <td>{{vm.syntheticResponseData.runoff_results_table.max_runoff_volume_storm_duration}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Maximum Peak Runoff</td>
+                                                    <td>{{vm.syntheticResponseData.runoff_results_table.max_peak_runoff_storm_duration}}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+
                                         <h3>Hydrograph</h3>
-                                        <table id="SyntheticUnitHydrograph" class="table table-condensed" style="page-break-inside:avoid; font-size: 11px;">
-                                            <div style='width:650px; margin:auto;' class="page_break" id="legend">
+                                        <div id="SyntheticUnitHydrograph" class="form-row-centered">
+                                            <div class="form-column-center">
                                                 <label for="DHourStorm">D-Hour Storm:</label>
-                                                <select name="DHourStorm" ng-model="vm.SelectedDHourStorm" ng-change="vm.DHourStormChange()" ng-options="hour.name for hour in vm.DHourStormOptions track by hour.value"></select>
-                                                <nvd3 options='vm.ReportOptionsSynthetic' data='vm.ReportData.SyntheticUrbanHydrograph.Graph'></nvd3>
                                             </div>
-                                        </table> 
+                                            <div class="form-column-center" style="width:50%">
+                                                <select name="DHourStorm" ng-model="vm.SelectedDHourStorm" ng-change="vm.DHourStormChange()" ng-options="hour.name for hour in vm.DHourStormOptions track by hour.value"></select>
+                                            </div>
+                                        </div> 
+                                        <div style='width:650px; margin:auto;' class="page_break" id="legend">
+                                            <nvd3 options='vm.ReportOptionsSynthetic' data='vm.ReportData.SyntheticUrbanHydrograph.Graph'></nvd3>
+                                        </div>
 
                                         <accordion id="HydrographDataAccordion">
                                             <accordion-group is-open="vm.stormHydrographOrdinatesAccordionOpen" style="overflow:auto">
-                                                <accordion-heading><i ng-class="vm.stormHydrographOrdinatesAccordionOpen ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i> Storm Hydrograph Ordinates</accordion-heading>
+                                                <accordion-heading><i ng-class="vm.stormHydrographOrdinatesAccordionOpen ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i> D-Hour Storm Hydrograph Ordinates</accordion-heading>
                                                 <table id="SyntheticUnitHydrographData" class="table table-condensed" style="page-break-inside:avoid; font-size: 11px;">
                                                     <thead>
                                                         <tr>
@@ -414,7 +437,7 @@
                                         </accordion>
                         
                                         <h4>Citation</h4>
-                                        <a href="https://www.scdot.org/business/technicalPDFs/hydraulic/SPR-738-SC-UH-Method-Application-Manual-May-2020.pdf" target="_blank">Meadows, M.E., 2020, South Carolina Unit Hydrograph Method Applications Manual, FHWA-SC-20-02, 139 p.</a><br /><br />
+                                        <a href="https://www.scdot.org/business/hydraulic-calculations.aspx" target="_blank">Meadows, M.E., 2020, South Carolina Unit Hydrograph Method Applications Manual, FHWA-SC-20-02, 139 p.</a><br /><br />
                                     </div>
                                 </div>
                             </div>

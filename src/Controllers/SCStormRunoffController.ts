@@ -132,16 +132,16 @@ module StreamStats.Controllers {
         private _selectedTimeOfConcentration;
         private _selectedRainfallDistribution;
         public AEPOptionsSynthetic = [{
-            "name": "10% / 10 Year Return Period",
+            "name": "10% AEP / 10 Year Return Period",
             "value": 10
         }, {
-            "name": "4% / 25 Year Return Period",
+            "name": "4% AEP / 25 Year Return Period",
             "value": 4
         }, {
-            "name": "2% / 50 Year Return Period",
+            "name": "2% AEP / 50 Year Return Period",
             "value": 2
         }, {
-            "name": "1% / 100 Year Return Period",
+            "name": "1% AEP / 100 Year Return Period",
             "value": 1
         }]
         public StandardCurveOptions = [{
@@ -1092,7 +1092,7 @@ module StreamStats.Controllers {
                 }
             }
             hydrograph = timeArray.map((v, i) => [v, this.syntheticResponseData.hydrograph_ordinates_table[flowHour][i]]).map(([x, y]) => ({x, y}));
-            results.push({ values: hydrograph, key: "Flow (cfs)", color: " #009900", type: "line", yAxis: 1 });   
+            results.push({ values: hydrograph, key: "Flow (ft³/s)", color: " #009900", type: "line", yAxis: 1 });   
             return results;
         }
 
