@@ -920,7 +920,7 @@ var StreamStats;
                             }
                         },
                         yAxis1: {
-                            axisLabel: 'Flow, cfs',
+                            axisLabel: 'Flow, ft³/s',
                             tickFormat: function (d) {
                                 return d.toUSGSvalue();
                             }
