@@ -275,7 +275,7 @@
                                         <!-- <div class="wim-alert-warning">{{vm.warningMessagesSynthetic}}</div> -->
                                         <h3>Watershed Data</h3>
                                         <!-- <h4>Parameters</h4> -->
-                                        <table id="WatershedData" class="table table-condensed smalltext">
+                                        <table id="WatershedDataTable" class="table table-condensed smalltext">
                                             <tbody>
                                                 <tr>
                                                     <td>Clicked Point (Latitude, Longitude)</td>
@@ -308,7 +308,7 @@
                                             </tbody>
                                         </table>
                                         <h3>Unit Hydrograph Data</h3>
-                                        <table id="WatershedData" class="table table-condensed smalltext">
+                                        <table id="UnitHydrographTable" class="table table-condensed smalltext">
                                             <tbody>
                                                 <tr>
                                                     <td>Annual Exceedance Probability, AEP (%)</td>
@@ -350,7 +350,7 @@
                                         </table>
 
                                         <h3>Runoff Results</h3>
-                                        <table id="SyntheticUnitHydrographRunoff" class="table table-condensed smalltext">
+                                        <table id="SyntheticUnitHydrographRunoffTable" class="table table-condensed smalltext">
                                             <thead>
                                                 <tr>
                                                     <th>Storm Duration (hrs) &ensp;</th>
@@ -374,7 +374,7 @@
                                         </table>
 
                                         <h3>Critical Durations</h3>
-                                        <table id="SyntheticUnitHydrographCriticalDurations" class="table table-condensed smalltext">
+                                        <table id="SyntheticUnitHydrographCriticalDurationsTable" class="table table-condensed smalltext">
                                             <thead>
                                                 <tr>
                                                     <th>Maximum Runoff Value</th>
@@ -409,7 +409,7 @@
                                         <accordion id="HydrographDataAccordion">
                                             <accordion-group is-open="vm.stormHydrographOrdinatesAccordionOpen" style="overflow:auto">
                                                 <accordion-heading><i ng-class="vm.stormHydrographOrdinatesAccordionOpen ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i> D-Hour Storm Hydrograph Ordinates</accordion-heading>
-                                                <table id="SyntheticUnitHydrographData" class="table table-condensed" style="page-break-inside:avoid; font-size: 11px;">
+                                                <table id="SyntheticUnitHydrographDataTable" class="table table-condensed" style="page-break-inside:avoid; font-size: 11px;">
                                                     <thead>
                                                         <tr>
                                                             <th>Time (minutes)</th>
@@ -466,8 +466,8 @@
     
         <div class="modal-footer hidden-print">
             <div class="btn-group">
-                <button ng-if="vm.showResults" type="button" class="btn-black" ng-click="vm.downloadCSV()"><span><i class="fa fa-download"></i>&nbsp;&nbsp;Download CSV</span></button>
-                <button ng-if="vm.showResults" class="btn-blue" ng-click="vm.print()" analytics-on analytics-event="Print" analytics-category="Report" analytics-label="Print"><i class="fa fa-print"></i>&nbsp;&nbsp;Print</button>
+                <button ng-if="(vm.showResults && vm.SelectedTab == 2) || (vm.showResultsSynthetic && vm.SelectedTab == 3)" type="button" class="btn-black" ng-click="vm.downloadCSV()"><span><i class="fa fa-download"></i>&nbsp;&nbsp;Download CSV</span></button>
+                <button ng-if="(vm.showResults && vm.SelectedTab == 2) || (vm.showResultsSynthetic && vm.SelectedTab == 3)" class="btn-blue" ng-click="vm.print()" analytics-on analytics-event="Print" analytics-category="Report" analytics-label="Print"><i class="fa fa-print"></i>&nbsp;&nbsp;Print</button>
                 <button class="btn-wim-default" ng-click="vm.Close()"><i class="fa fa-close"></i>&nbsp;&nbsp;Close</button>
             </div>
         </div>

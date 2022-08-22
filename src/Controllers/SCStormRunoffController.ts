@@ -1060,6 +1060,7 @@ module StreamStats.Controllers {
                         this.toaster.pop('error', "There was an HTTP error querying Regression regions", "Please retry", 0);
                         return;
                     }
+                    console.log(response);
                         // hydrograph_ordinates_table:
                         // runoff_results_table:
                         // unit_hydrograph_data:
@@ -1432,6 +1433,7 @@ module StreamStats.Controllers {
             this._selectedCNModification = null;
             this.showResultsSynthetic = false;
             this.stormHydrographOrdinatesAccordionOpen = false;
+            this.warningMessagesSynthetic = null;
             this._selectedDHourStorm = {
                 "name": "1-Hour",
                 "value": 1,
@@ -1467,7 +1469,15 @@ module StreamStats.Controllers {
             };
 
             var SyntheticUrbanHydrograph = () => {
-
+                let warning = this.warningMessagesSynthetic ? this.warningMessagesSynthetic : "None!,"
+                var finalVal = 'USGS SC Synthetic Unit Hydrograph using ' + this.SelectedAEPSynthetic.name + ' AEP\n';
+                finalVal += '\n' + "Warning Messages:," + warning + '\n';
+                finalVal += this.tableToCSV($('#WatershedDataTable'));
+                finalVal += '\n' + this.tableToCSV($('#UnitHydrographTable'));
+                finalVal += '\n\n' + this.tableToCSV($('#SyntheticUnitHydrographRunoffTable'));
+                finalVal += '\n\n' + this.tableToCSV($('#SyntheticUnitHydrographCriticalDurationsTable'));
+                finalVal += '\n\n' + this.tableToCSV($('#SyntheticUnitHydrographDataTable'));
+                return finalVal + '\r\n';
             };
 
             //main file header with site information

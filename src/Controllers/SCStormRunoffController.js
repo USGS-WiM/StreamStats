@@ -868,6 +868,7 @@ var StreamStats;
                         _this.toaster.pop('error', "There was an HTTP error querying Regression regions", "Please retry", 0);
                         return;
                     }
+                    console.log(response);
                     if (!response.data.hydrograph_ordinates_table || !response.data.runoff_results_table || !response.data.unit_hydrograph_data || !response.data.watershed_data) {
                         _this.toaster.pop('error', "One or more of the expected data responses came back null.", "Please retry", 0);
                         return;
@@ -1219,6 +1220,7 @@ var StreamStats;
                 this._selectedCNModification = null;
                 this.showResultsSynthetic = false;
                 this.stormHydrographOrdinatesAccordionOpen = false;
+                this.warningMessagesSynthetic = null;
                 this._selectedDHourStorm = {
                     "name": "1-Hour",
                     "value": 1,
@@ -1246,6 +1248,15 @@ var StreamStats;
                     return finalVal + '\r\n';
                 };
                 var SyntheticUrbanHydrograph = function () {
+                    var warning = _this.warningMessagesSynthetic ? _this.warningMessagesSynthetic : "None!,";
+                    var finalVal = 'USGS SC Synthetic Unit Hydrograph using ' + _this.SelectedAEPSynthetic.name + ' AEP\n';
+                    finalVal += '\n' + "Warning Messages:," + warning + '\n';
+                    finalVal += _this.tableToCSV($('#WatershedDataTable'));
+                    finalVal += '\n' + _this.tableToCSV($('#UnitHydrographTable'));
+                    finalVal += '\n\n' + _this.tableToCSV($('#SyntheticUnitHydrographRunoffTable'));
+                    finalVal += '\n\n' + _this.tableToCSV($('#SyntheticUnitHydrographCriticalDurationsTable'));
+                    finalVal += '\n\n' + _this.tableToCSV($('#SyntheticUnitHydrographDataTable'));
+                    return finalVal + '\r\n';
                 };
                 var csvFile = 'StreamStats Output Report\n\n' + 'State/Region ID,' + this.studyAreaService.selectedStudyArea.RegionID.toUpperCase() + '\nWorkspace ID,' + this.studyAreaService.selectedStudyArea.WorkspaceID + '\nLatitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + '\nLongitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5) + '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n\n';
                 if (this.SelectedTab == 1) {
