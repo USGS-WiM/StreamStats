@@ -84,6 +84,7 @@ configuration.queryparams =
         'SCStormRunoffBohman1989' : '/ruralhydrographbohman1989',
         'SCStormRunoffBohman1992' : '/urbanhydrographbohman1992',
         'SCStormRunoffSyntheticUnitHydrograph': '/calculatemissingparametersSCSUH',
+        'SCStormRunoffSyntheticUnitComputerGraphResults': '/scsyntheticunithydrograph'
     };
 
 configuration.SupportTicketService = {

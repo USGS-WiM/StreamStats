@@ -89,6 +89,10 @@ button:hover{
     display: inline-block; 
     width: 100%;
 }
+.form-row-centered {
+    width: 100%;
+    text-align:center;
+}
 
 .form-column-left {
     flex:1;
@@ -99,6 +103,10 @@ button:hover{
     flex:1;
     padding-left: 5px;
     padding-bottom: 0;
+}
+.form-column-center {
+    display: inline-block;
+    margin: 0 auto;
 }
 
 .button-column-left {
@@ -127,7 +135,6 @@ button:hover{
 .flow-form-button {
     float: left;
 }
-
 
 
 /*
