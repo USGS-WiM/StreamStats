@@ -1470,7 +1470,7 @@ module StreamStats.Controllers {
 
             var SyntheticUrbanHydrograph = () => {
                 let warning = this.warningMessagesSynthetic ? this.warningMessagesSynthetic : "None!,"
-                var finalVal = 'USGS SC Synthetic Unit Hydrograph using ' + this.SelectedAEPSynthetic.name + ' AEP\n';
+                var finalVal = 'USGS SC Synthetic Unit Hydrograph using ' + this.SelectedAEPSynthetic.name + '\n';
                 finalVal += '\n' + "Warning Messages:," + warning + '\n';
                 finalVal += this.tableToCSV($('#WatershedDataTable'));
                 finalVal += '\n' + this.tableToCSV($('#UnitHydrographTable'));
