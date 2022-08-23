@@ -868,7 +868,6 @@ var StreamStats;
                         _this.toaster.pop('error', "There was an HTTP error querying Regression regions", "Please retry", 0);
                         return;
                     }
-                    console.log(response);
                     if (!response.data.hydrograph_ordinates_table || !response.data.runoff_results_table || !response.data.unit_hydrograph_data || !response.data.watershed_data) {
                         _this.toaster.pop('error', "One or more of the expected data responses came back null.", "Please retry", 0);
                         return;
@@ -1249,7 +1248,7 @@ var StreamStats;
                 };
                 var SyntheticUrbanHydrograph = function () {
                     var warning = _this.warningMessagesSynthetic ? _this.warningMessagesSynthetic : "None!,";
-                    var finalVal = 'USGS SC Synthetic Unit Hydrograph using ' + _this.SelectedAEPSynthetic.name + ' AEP\n';
+                    var finalVal = 'USGS SC Synthetic Unit Hydrograph using ' + _this.SelectedAEPSynthetic.name + '\n';
                     finalVal += '\n' + "Warning Messages:," + warning + '\n';
                     finalVal += _this.tableToCSV($('#WatershedDataTable'));
                     finalVal += '\n' + _this.tableToCSV($('#UnitHydrographTable'));

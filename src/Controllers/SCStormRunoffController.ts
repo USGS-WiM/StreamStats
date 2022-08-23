@@ -1060,7 +1060,6 @@ module StreamStats.Controllers {
                         this.toaster.pop('error', "There was an HTTP error querying Regression regions", "Please retry", 0);
                         return;
                     }
-                    console.log(response);
                         // hydrograph_ordinates_table:
                         // runoff_results_table:
                         // unit_hydrograph_data:
