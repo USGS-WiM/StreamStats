@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
   ### Changed
 
+  - NWIS Page link from legacy real-time page to Next Generation Monitoring Location page
+
   ### Fixed
 
   ### Removed

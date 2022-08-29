@@ -425,7 +425,8 @@ var StreamStats;
                                         var text = ['Flow-Duration Statistics by Water Years:',
                                             'Flow-Duration Statistics by Period of Record, Calendar Day & Month, & Seasonal Periods:',
                                             'Stream Flow Statistics:'];
-                                        var html = '<strong>NWIS page: </strong><a href="' + queryResult.properties[k] + ' "target="_blank">link</a></br><strong>StreamStats Gage Page: </strong><a ng-click="' + SSgagepage + '">link</a></br>';
+                                        var NWISpage = 'https://waterdata.usgs.gov/monitoring-location/' + siteNo;
+                                        var html = '<strong>NWIS page: </strong><a href="' + NWISpage + ' "target="_blank">link</a></br><strong>StreamStats Gage Page: </strong><a ng-click="' + SSgagepage + '">link</a></br>';
                                         _this.additionalLinkCheck(urls.length - 1, urls, '', text);
                                         setTimeout(function () {
                                             html = html + _this.additionalHTML;
@@ -1066,7 +1067,7 @@ var StreamStats;
                             var text = ['Flow-Duration Statistics by Water Years:',
                                 'Flow-Duration Statistics by Period of Record, Calendar Day & Month, & Seasonal Periods:',
                                 'Stream Flow Statistics:'];
-                            var NWISpage = 'http://nwis.waterdata.usgs.gov/nwis/inventory/?site_no=' + siteNo;
+                            var NWISpage = 'https://waterdata.usgs.gov/monitoring-location/' + siteNo;
                             var gageButtonDiv = L.DomUtil.create('div', 'innerDiv');
                             var gageButtonLoaderDiv = L.DomUtil.create('div', 'innerDiv');
                             gageButtonLoaderDiv.innerHTML = '<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>';
