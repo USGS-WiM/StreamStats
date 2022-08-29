@@ -12,7 +12,7 @@ configuration.baseurls =
         'StormRunoffServices': 'https://test.streamstats.usgs.gov/runoffmodelingservices',
         'ScienceBase': 'https://gis.usgs.gov/sciencebase2',
         'GageStatsServices': 'https://test.streamstats.usgs.gov/gagestatsservices',
-        'WeightingServices': 'https://ss-weightingservices.streamstats.usgs.gov',        
+        'WeightingServices': 'https://streamstats.usgs.gov/channelweightingservices',        
         'FlowAnywhereRegressionServices': 'https://streamstats.usgs.gov/regressionservices',
         'FlowAnywhereMapServices': 'https://gis.wim.usgs.gov',
     };
