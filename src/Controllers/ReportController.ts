@@ -207,6 +207,9 @@ module StreamStats.Controllers {
             this.NSSServicesVersion = this.studyAreaService.NSSServicesVersion;
         }
 
+        public changeStreamName(idk){
+            console.log(idk)
+        }
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         public selectFDCTMTab(tabname: string): void {

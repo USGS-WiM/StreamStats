@@ -138,6 +138,9 @@ var StreamStats;
                 enumerable: false,
                 configurable: true
             });
+            ReportController.prototype.changeStreamName = function (idk) {
+                console.log(idk);
+            };
             ReportController.prototype.selectFDCTMTab = function (tabname) {
                 if (this.selectedFDCTMTabName == tabname)
                     return;
