@@ -204,23 +204,17 @@ module StreamStats.Controllers {
                 window.print();
             };
 
-            
-            
-
             this.NSSServicesVersion = this.studyAreaService.NSSServicesVersion;
         }
 
         public setStream(stream) {
-            console.log(this.studyAreaService.selectedStudyArea.NHDStream)
             this.studyAreaService.selectedStudyArea.NHDStream = stream;
-            console.log(this.studyAreaService.selectedStudyArea.NHDStream)
             const input = document.getElementById(stream.GNIS_NAME) as HTMLInputElement;
             if (input != null) {
                 input.checked = true;
             } else { // for first selection, need to wait for report to be created
                 setTimeout(() => {
                     const input = document.getElementById(stream.GNIS_NAME) as HTMLInputElement;
-                    console.log(input)
                     if (input != null) {
                         input.checked = true;
                     }

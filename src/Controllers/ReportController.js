@@ -139,9 +139,7 @@ var StreamStats;
                 configurable: true
             });
             ReportController.prototype.setStream = function (stream) {
-                console.log(this.studyAreaService.selectedStudyArea.NHDStream);
                 this.studyAreaService.selectedStudyArea.NHDStream = stream;
-                console.log(this.studyAreaService.selectedStudyArea.NHDStream);
                 var input = document.getElementById(stream.GNIS_NAME);
                 if (input != null) {
                     input.checked = true;
@@ -149,7 +147,6 @@ var StreamStats;
                 else {
                     setTimeout(function () {
                         var input = document.getElementById(stream.GNIS_NAME);
-                        console.log(input);
                         if (input != null) {
                             input.checked = true;
                         }
