@@ -32,10 +32,6 @@
                         <div class="col-md-7"><strong>Clicked Point (Latitude, Longitude):</strong></div>
                         <div class="col-md-5">{{vm.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5)}}, {{vm.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5)}}</div>
                     </div>
-                    <!-- <div ng-if="vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID" class="row">
-                        <div class="col-md-7"><strong>NHD Stream GNIS ID:</strong></div>
-                        <div class="col-md-5">{{vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID}}</div>
-                    </div> -->
                     <div ng-if="vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_NAME" class="row">
                         <div class="col-md-7"><strong>NHD Stream GNIS Name:</strong></div>
                         <div class="col-md-5">{{vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_NAME}} 
@@ -49,10 +45,6 @@
                         <div class="col-md-7"><strong>HUC 8:</strong></div>
                         <div class="col-md-5">{{vm.studyAreaService.selectedStudyArea.WBDHUC8.huc8}} <span ng-if="vm.studyAreaService.selectedStudyArea.WBDHUC8.name">({{vm.studyAreaService.selectedStudyArea.WBDHUC8.name}})</span></div>
                     </div>
-                    <!-- <div ng-if="vm.studyAreaService.selectedStudyArea.WBDHUC8.name" class="row">
-                        <div class="col-md-7"><strong>HUC 8 Name:</strong></div>
-                        <div class="col-md-5">{{vm.studyAreaService.selectedStudyArea.WBDHUC8.name}}</div>
-                    </div> -->
                     <div class="row">
                         <div class="col-md-7"><strong>Time:</strong></div>
                         <div class="col-md-5">{{vm.studyAreaService.selectedStudyArea.Date | date:'yyyy-MM-dd HH:mm:ss Z'}}</div>
@@ -196,7 +188,7 @@
                     </div>
 
                     <!-- Hydrologic Features Application -->
-                    <div class="well well-sm"  ng-if="vm.regionService.selectedRegion.Applications.indexOf('HydrologicFeatures') != -1 && (vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID || vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_NAME || vm.studyAreaService.selectedStudyArea.WBDHUC8.huc8 || vm.studyAreaService.selectedStudyArea.WBDHUC8.name)">
+                    <div class="well well-sm"  ng-if="vm.regionService.selectedRegion.Applications.indexOf('HydrologicFeatures') != -1 && (vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID || vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_NAME || vm.studyAreaService.selectedStudyArea.WBDHUC8.huc8 || vm.studyAreaService.selectedStudyArea.WBDHUC8.name)" ng-init=vm.setStream(vm.studyAreaService.selectedStudyArea.NHDStream)>
                         <h3 class="collapsible" ng-click="vm.collapseSection($event, 'stats', 'HydrologicFeatures')"><i ng-class="!vm.sectionCollapsed['HydrologicFeatures'] ? 'fa fa-chevron-right': 'fa fa-chevron-down'"></i>&nbsp;&nbsp;NHD Features of Delineation Basin</h3>
                             <div class="collapsible-content">
                                 <h3>NHD Streams Intersecting Basin Delineation Boundary</h3>
@@ -217,7 +209,7 @@
                                                 <td>{{stream.GNIS_ID}}</td>
                                                 <td>{{stream.GNIS_NAME}}</td>
                                                 <td>{{stream.distanceToPourPoint.toUSGSvalue()}}</td>
-                                                <td><input type="radio" id='test' name="streamName"><label for="{{stream.GNIS_NAME}}">{{stream.GNIS_NAME}}</label></td>
+                                                <td><input type="radio" id='{{stream.GNIS_NAME}}' name="streamName" ng-click="vm.setStream(stream)"><label for="{{stream.GNIS_NAME}}">{{stream.GNIS_NAME}}</label></td>
                                             </tr>
                                         </tbody>
                                     </table>

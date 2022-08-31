@@ -138,8 +138,23 @@ var StreamStats;
                 enumerable: false,
                 configurable: true
             });
-            ReportController.prototype.changeStreamName = function (idk) {
-                console.log(idk);
+            ReportController.prototype.setStream = function (stream) {
+                console.log(this.studyAreaService.selectedStudyArea.NHDStream);
+                this.studyAreaService.selectedStudyArea.NHDStream = stream;
+                console.log(this.studyAreaService.selectedStudyArea.NHDStream);
+                var input = document.getElementById(stream.GNIS_NAME);
+                if (input != null) {
+                    input.checked = true;
+                }
+                else {
+                    setTimeout(function () {
+                        var input = document.getElementById(stream.GNIS_NAME);
+                        console.log(input);
+                        if (input != null) {
+                            input.checked = true;
+                        }
+                    }, 1000);
+                }
             };
             ReportController.prototype.selectFDCTMTab = function (tabname) {
                 if (this.selectedFDCTMTabName == tabname)
