@@ -1468,14 +1468,19 @@ module StreamStats.Controllers {
             };
 
             var SyntheticUrbanHydrograph = () => {
-                let warning = this.warningMessagesSynthetic ? this.warningMessagesSynthetic : "None!,"
+                let warning = this.warningMessagesSynthetic ? this.warningMessagesSynthetic : null
                 var finalVal = 'USGS SC Synthetic Unit Hydrograph using ' + this.SelectedAEPSynthetic.name + '\n';
-                finalVal += '\n' + "Warning Messages:," + warning + '\n';
-                finalVal += this.tableToCSV($('#WatershedDataTable'));
-                finalVal += '\n' + this.tableToCSV($('#UnitHydrographTable'));
-                finalVal += '\n\n' + this.tableToCSV($('#SyntheticUnitHydrographRunoffTable'));
-                finalVal += '\n\n' + this.tableToCSV($('#SyntheticUnitHydrographCriticalDurationsTable'));
-                finalVal += '\n\n' + this.tableToCSV($('#SyntheticUnitHydrographDataTable'));
+                if (warning) {
+                    finalVal += '\n' + "Warning Messages:," + warning + '\n';
+                }
+                let WatershedDataTable = (this.tableToCSV($('#WatershedDataTable')).slice(3)) // Needed to splice because there are no table headers
+                let UnitHydrographTable = (this.tableToCSV($('#UnitHydrographTable')).slice(3)) // Needed to splice because there are no table headers
+
+                finalVal += '\n' + "Watershed Data" + WatershedDataTable;
+                finalVal += '\n\n' + "Unit Hydrograph Data" + UnitHydrographTable;
+                finalVal += '\n\n' + "Runoff Results" + '\n' + this.tableToCSV($('#SyntheticUnitHydrographRunoffTable'));
+                finalVal += '\n\n' + "Critical Durations" + '\n' + this.tableToCSV($('#SyntheticUnitHydrographCriticalDurationsTable'));
+                finalVal += '\n\n' + "D-Hour Storm Hydrograph Ordinates" + '\n' + this.tableToCSV($('#SyntheticUnitHydrographDataTable'));
                 return finalVal + '\r\n';
             };
 
