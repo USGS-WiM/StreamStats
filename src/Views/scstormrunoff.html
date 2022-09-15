@@ -467,7 +467,7 @@
         <div class="modal-footer hidden-print">
             <div class="btn-group">
                 <button ng-if="(vm.showResults && vm.SelectedTab == 2) || (vm.showResultsSynthetic && vm.SelectedTab == 3)" type="button" class="btn-black" ng-click="vm.downloadCSV()"><span><i class="fa fa-download"></i>&nbsp;&nbsp;Download CSV</span></button>
-                <button ng-if="(vm.showResults && vm.SelectedTab == 2)" class="btn-blue" ng-click="vm.print()" analytics-on analytics-event="Print" analytics-category="Report" analytics-label="Print"><i class="fa fa-print"></i>&nbsp;&nbsp;Print</button>
+                <button ng-if="(vm.showResults && vm.SelectedTab == 2) || (vm.showResultsSynthetic && vm.SelectedTab == 3)" class="btn-blue" ng-click="vm.print()" analytics-on analytics-event="Print" analytics-category="Report" analytics-label="Print"><i class="fa fa-print"></i>&nbsp;&nbsp;Print</button>
                 <button class="btn-wim-default" ng-click="vm.Close()"><i class="fa fa-close"></i>&nbsp;&nbsp;Close</button>
             </div>
         </div>
