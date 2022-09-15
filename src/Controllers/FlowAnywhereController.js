@@ -57,7 +57,7 @@ var StreamStats;
                 this.referenceGageList = null;
                 var lat = this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toString();
                 var lon = this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toString();
-                var url = configuration.baseurls.FlowAnywhereMapServices + configuration.queryparams.FlowAnywhereGages.format(lon, lat);
+                var url = configuration.baseurls.StreamStatsMapServices + configuration.queryparams.FlowAnywhereGages.format(lon, lat);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
                     if (response.data.features) {
