@@ -49,6 +49,7 @@ configuration.queryparams =
         'SSfeatures': '/streamstatsservices/features.geojson?workspaceID={0}&crs={1}&includefeatures={2}&simplify=true',
         'SSStateLayers': '/arcgis/rest/services/StreamStats/stateServices_test/MapServer',
         'SSNationalLayers': '/arcgis/rest/services/StreamStats/nationalLayers_test/MapServer',
+        'FARefGage': '/2/query?geometry={0}&geometryType=esriGeometryPoint&inSR={1}&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
         'regionService': '/arcgis/rest/services/ss_studyAreas_prod/MapServer/identify',
         'NLCDQueryService': '/LandCover/USGS_EROS_LandCover_NLCD/MapServer/4',
         'regulationService': '/arcgis/rest/services/regulations/{0}/MapServer/exts/RegulationRESTSOE/Regulation',
@@ -79,7 +80,7 @@ configuration.queryparams =
         'GageStatsServicesNetwork': '/stations/Network?lat={0}&lon={1}&distance={2}&includeStats=true&geojson=false',
         'GageStatsServicesBounds': '/stations/Bounds?xmin={0}&xmax={1}&ymin={2}&ymax={3}&geojson=true',
         'FlowAnywhereEstimates': '/models/FLA/estimate?state={0}',
-        'FlowAnywhereGages': '/arcgis/rest/services/IowaStreamEst/FlowAnywhere/MapServer/1/query?geometry={0},{1}&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.da_pub_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson'
+        'FlowAnywhereGages': '/arcgis/rest/services/IowaStreamEst/FlowAnywhere/MapServer/1/query?geometry={0},{1}&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson'
     };
 
 configuration.SupportTicketService = {

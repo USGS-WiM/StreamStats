@@ -64,7 +64,7 @@ var StreamStats;
                         _this.referenceGageList = [];
                         response.data.features.forEach(function (gage) {
                             _this.gage = new StreamStats.Models.ReferenceGage(gage.attributes["reference_gages.site_id"], gage.attributes["reference_gages.site_name"]);
-                            _this.gage.DrainageArea_sqMI = gage.attributes["reference_gages.da_pub_mi2"];
+                            _this.gage.DrainageArea_sqMI = gage.attributes["reference_gages.da_gis_mi2"];
                             _this.gage.Latitude_DD = gage.attributes["reference_gages.lat_dd_nad"];
                             _this.gage.Longitude_DD = gage.attributes["reference_gages.long_dd_na"];
                             _this.gage.AggregatedRegion = gage.attributes["regions_local.Region_Agg"];
