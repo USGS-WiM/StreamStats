@@ -1219,6 +1219,7 @@ var StreamStats;
                 this._selectedCNModification = null;
                 this.showResultsSynthetic = false;
                 this.stormHydrographOrdinatesAccordionOpen = false;
+                this.warningMessagesSynthetic = null;
                 this._selectedDHourStorm = {
                     "name": "1-Hour",
                     "value": 1,
@@ -1246,6 +1247,19 @@ var StreamStats;
                     return finalVal + '\r\n';
                 };
                 var SyntheticUrbanHydrograph = function () {
+                    var warning = _this.warningMessagesSynthetic ? _this.warningMessagesSynthetic : null;
+                    var finalVal = 'USGS SC Synthetic Unit Hydrograph using ' + _this.SelectedAEPSynthetic.name + '\n';
+                    if (warning) {
+                        finalVal += '\n' + "Warning Messages:," + warning + '\n';
+                    }
+                    var WatershedDataTable = (_this.tableToCSV($('#WatershedDataTable')).slice(3));
+                    var UnitHydrographTable = (_this.tableToCSV($('#UnitHydrographTable')).slice(3));
+                    finalVal += '\n' + "Watershed Data" + WatershedDataTable;
+                    finalVal += '\n\n' + "Unit Hydrograph Data" + UnitHydrographTable;
+                    finalVal += '\n\n' + "Runoff Results" + '\n' + _this.tableToCSV($('#SyntheticUnitHydrographRunoffTable'));
+                    finalVal += '\n\n' + "Critical Durations" + '\n' + _this.tableToCSV($('#SyntheticUnitHydrographCriticalDurationsTable'));
+                    finalVal += '\n\n' + "D-Hour Storm Hydrograph Ordinates" + '\n' + _this.tableToCSV($('#SyntheticUnitHydrographDataTable'));
+                    return finalVal + '\r\n';
                 };
                 var csvFile = 'StreamStats Output Report\n\n' + 'State/Region ID,' + this.studyAreaService.selectedStudyArea.RegionID.toUpperCase() + '\nWorkspace ID,' + this.studyAreaService.selectedStudyArea.WorkspaceID + '\nLatitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + '\nLongitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5) + '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n\n';
                 if (this.SelectedTab == 1) {
