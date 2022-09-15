@@ -358,7 +358,6 @@ module StreamStats.Services {
                         this.eventManager.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);
                         this.canUpdate = true;
                         if (this.regionService.selectedRegion.Applications.indexOf("HydrologicFeatures") != -1) {
-                            this.nssService.showHydrologicFeatures = true;
                             this.queryHydrologicFeatures();
                         }
                     }
