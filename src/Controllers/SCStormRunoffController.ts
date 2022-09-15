@@ -70,6 +70,7 @@ module StreamStats.Controllers {
         public ReportOptionsSynthetic: any;
         public canContinueSynthetic: boolean;
         public stormHydrographOrdinatesAccordionOpen: boolean;
+        public isSyntheticUHOpen = false;
 
         public mainChannelLength: number;
         public mainChannelSlope: number;
@@ -666,7 +667,10 @@ module StreamStats.Controllers {
             this.init();  
 
             this.print = function () {
-                window.print();
+                if (this.SelectedTab == 3) this.isSyntheticUHOpen = true;
+                setTimeout(function() {
+                    window.print();
+                }, 300);
             };            
         }  
         

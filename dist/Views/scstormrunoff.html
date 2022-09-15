@@ -406,35 +406,36 @@
                                             <nvd3 options='vm.ReportOptionsSynthetic' data='vm.ReportData.SyntheticUrbanHydrograph.Graph'></nvd3>
                                         </div>
 
-                                        <accordion id="HydrographDataAccordion">
-                                            <accordion-group is-open="vm.stormHydrographOrdinatesAccordionOpen" style="overflow:auto">
-                                                <accordion-heading><i ng-class="vm.stormHydrographOrdinatesAccordionOpen ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i> D-Hour Storm Hydrograph Ordinates</accordion-heading>
-                                                <table id="SyntheticUnitHydrographDataTable" class="table table-condensed" style="page-break-inside:avoid; font-size: 11px;">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Time (minutes)</th>
-                                                            <th>1 Hr</th>
-                                                            <th>2 Hr</th>
-                                                            <th>3 Hr</th>
-                                                            <th>6 Hr</th>
-                                                            <th>12 Hr</th>
-                                                            <th>24 Hr</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr ng-repeat="item in vm.syntheticResponseData.hydrograph_ordinates_table.time">
-                                                            <td>{{item.toUSGSvalue()}}</td>
-                                                            <td>{{vm.syntheticResponseData.hydrograph_ordinates_table.flow_1_hour[$index].toUSGSvalue()}}</td>
-                                                            <td>{{vm.syntheticResponseData.hydrograph_ordinates_table.flow_2_hour[$index].toUSGSvalue()}}</td>
-                                                            <td>{{vm.syntheticResponseData.hydrograph_ordinates_table.flow_3_hour[$index].toUSGSvalue()}}</td>
-                                                            <td>{{vm.syntheticResponseData.hydrograph_ordinates_table.flow_6_hour[$index].toUSGSvalue()}}</td>
-                                                            <td>{{vm.syntheticResponseData.hydrograph_ordinates_table.flow_12_hour[$index].toUSGSvalue()}}</td>
-                                                            <td>{{vm.syntheticResponseData.hydrograph_ordinates_table.flow_24_hour[$index].toUSGSvalue()}}</td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>         
-                                            </accordion-group>
-                                        </accordion>
+                                        <a ng-click="vm.isSyntheticUHOpen = !vm.isSyntheticUHOpen">
+                                            <span ng-show="vm.isSyntheticUHOpen">Hide</span>
+                                            <span ng-hide="vm.isSyntheticUHOpen">Show</span> D-Hour Strom Hydrograph Ordinates
+                                        </a>
+                                        <div ng-if="vm.isSyntheticUHOpen" class="well well-sm">
+                                            <table id="SyntheticUnitHydrographDataTable" class="table" style="font-size: 11px;">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Time (minutes)</th>
+                                                        <th>1 Hr</th>
+                                                        <th>2 Hr</th>
+                                                        <th>3 Hr</th>
+                                                        <th>6 Hr</th>
+                                                        <th>12 Hr</th>
+                                                        <th>24 Hr</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr ng-repeat="item in vm.syntheticResponseData.hydrograph_ordinates_table.time">
+                                                        <td>{{item.toUSGSvalue()}}</td>
+                                                        <td>{{vm.syntheticResponseData.hydrograph_ordinates_table.flow_1_hour[$index].toUSGSvalue()}}</td>
+                                                        <td>{{vm.syntheticResponseData.hydrograph_ordinates_table.flow_2_hour[$index].toUSGSvalue()}}</td>
+                                                        <td>{{vm.syntheticResponseData.hydrograph_ordinates_table.flow_3_hour[$index].toUSGSvalue()}}</td>
+                                                        <td>{{vm.syntheticResponseData.hydrograph_ordinates_table.flow_6_hour[$index].toUSGSvalue()}}</td>
+                                                        <td>{{vm.syntheticResponseData.hydrograph_ordinates_table.flow_12_hour[$index].toUSGSvalue()}}</td>
+                                                        <td>{{vm.syntheticResponseData.hydrograph_ordinates_table.flow_24_hour[$index].toUSGSvalue()}}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>         
+                                        </div>
                         
                                         <h4>Citation</h4>
                                         <a href="https://www.scdot.org/business/hydraulic-calculations.aspx" target="_blank">Meadows, M.E., 2020, South Carolina Unit Hydrograph Method Applications Manual, FHWA-SC-20-02, 139 p.</a><br /><br />
