@@ -207,6 +207,21 @@ module StreamStats.Controllers {
             this.NSSServicesVersion = this.studyAreaService.NSSServicesVersion;
         }
 
+        public setStream(stream) {
+            this.studyAreaService.selectedStudyArea.NHDStream = stream;
+            const input = document.getElementById(stream.GNIS_NAME) as HTMLInputElement;
+            if (input != null) {
+                input.checked = true;
+            } else { // for first selection, need to wait for report to be created
+                setTimeout(() => {
+                    const input = document.getElementById(stream.GNIS_NAME) as HTMLInputElement;
+                    if (input != null) {
+                        input.checked = true;
+                    }
+                  }, 1000)
+            }
+        }
+
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         public selectFDCTMTab(tabname: string): void {

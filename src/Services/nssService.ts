@@ -37,7 +37,6 @@ module StreamStats.Services {
         estimateFlows(studyAreaParameterList: Array<IParameter>, paramValueField: string, rcode: string, append?: boolean, regressionTypes?:string, showReport?:boolean)
         showBasinCharacteristicsTable: boolean;
         showFlowsTable: boolean;
-        showHydrologicFeatures: boolean;
         clearNSSdata();
         queriedRegions: boolean;
         getflattenNSSTable(name: string): Array<INSSResultTable>
@@ -153,7 +152,6 @@ module StreamStats.Services {
         public toaster: any;
         public showBasinCharacteristicsTable: boolean;
         public showFlowsTable: boolean;
-        public showHydrologicFeatures: boolean;
         public queriedRegions: boolean;
         public loadingParametersByStatisticsGroupCounter: number;
         public estimateFlowsCounter: number;

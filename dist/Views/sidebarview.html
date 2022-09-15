@@ -275,10 +275,6 @@
                         <form style="padding: 5px 0;" ng-show="vm.nssService.selectedStatisticsGroupList.length > 0">
                             <checkbox large ng-model="vm.nssService.showFlowsTable"></checkbox><span>&nbsp;&nbsp;Scenario Flow Reports</span>
                         </form>
-                        <form style="padding: 5px 0;" ng-show="vm.regionService.selectedRegion.Applications.indexOf('HydrologicFeatures') != -1">
-                            <checkbox large ng-model="vm.nssService.showHydrologicFeatures"></checkbox><span>&nbsp;&nbsp;NHD Hydrologic Features</span>
-                        </form>
-
                         <form style="padding: 5px 0;" ng-show="vm.nssService.showBasinCharacteristicsTable || vm.nssService.showFlowsTable">
                             <button  ng-disabled="vm.studyAreaService.requestParameterList.length > 0 || vm.studyAreaService.doSelectMapGage" ng-click="vm.generateReport()" type="button" class="btn-blue fullwidth"><i ng-class="vm.nssService.canUpdate ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Open Report</button>
                         </form>
