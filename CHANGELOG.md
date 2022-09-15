@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   - Channel Weighting services URL 
   - NWIS Page link from legacy real-time page to Next Generation Monitoring Location page
   - FlowAnywhereMapServices to StreamStatsMapServices because IowaStreamEst map services were moved from gis.wim.usgs.gov to gis.streamstats.usgs.gov
-  - Flow Anywhere application now shows the published NWIS Drainage Area instead of GIS-calculated drainage area
+  - Flow Anywhere application shows published NWIS Drainage Area instead of GIS-calculated drainage area
 
   ### Fixed
 
