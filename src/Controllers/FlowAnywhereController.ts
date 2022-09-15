@@ -92,7 +92,7 @@ module StreamStats.Controllers {
                         this.referenceGageList = [];
                         response.data.features.forEach(gage => {
                             this.gage = new Models.ReferenceGage(gage.attributes["reference_gages.site_id"], gage.attributes["reference_gages.site_name"])
-                            this.gage.DrainageArea_sqMI = gage.attributes["reference_gages.da_pub_mi2"];
+                            this.gage.DrainageArea_sqMI = gage.attributes["reference_gages.da_gis_mi2"];
                             this.gage.Latitude_DD = gage.attributes["reference_gages.lat_dd_nad"];
                             this.gage.Longitude_DD = gage.attributes["reference_gages.long_dd_na"];
                             this.gage.AggregatedRegion = gage.attributes["regions_local.Region_Agg"];
