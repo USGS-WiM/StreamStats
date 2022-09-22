@@ -26,6 +26,7 @@ var StreamStats;
                 this.geojson = null;
                 this.isExceedanceTableOpen = false;
                 this.isFlowTableOpen = false;
+                this.isEstimatedFlowFLATableOpen = false;
                 this.SSServicesVersion = '1.2.22';
                 this._graphData = {
                     data: {},
@@ -198,6 +199,7 @@ var StreamStats;
                 });
                 this.isExceedanceTableOpen = true;
                 this.isFlowTableOpen = true;
+                this.isEstimatedFlowFLATableOpen = true;
                 var self = this;
                 setTimeout(function () {
                     var extVal = '';
@@ -220,11 +222,21 @@ var StreamStats;
                                 extVal += self.tableToCSV($('#exceedanceTable'));
                                 extVal += '\n\nEstimated Flows\n';
                                 extVal += self.tableToCSV($('#flowTable'));
+                                extVal += '\n\n';
                             }
                         }
-                        csvFile += extVal + '\n\n';
                     }
                     if (self.applications) {
+                        if (self.applications.indexOf('FLA') != -1) {
+                            extVal += 'Flow Anywhere Method';
+                            extVal += '\n\n';
+                            extVal += self.tableToCSV($('#flowAnywhereReferenceGage'));
+                            extVal += '\n\n';
+                            extVal += self.tableToCSV($('#flowAnywhereModelParameters'));
+                            extVal += '\n\nEstimated Flows\n';
+                            extVal += self.tableToCSV($('#estimatedFlowFLATable'));
+                            extVal += '\n\n';
+                        }
                         var isChannelWidthWeighting = self.applications.indexOf('ChannelWidthWeighting') != -1;
                         var isPFS = false;
                         self.nssService.selectedStatisticsGroupList.forEach(function (s) {
@@ -248,9 +260,10 @@ var StreamStats;
                             else {
                                 extVal += 'No method weighting results returned.';
                             }
-                            csvFile += extVal + '\n\n';
+                            extVal += '\n\n';
                         }
                     }
+                    csvFile += extVal;
                     csvFile += self.disclaimer + 'Application Version: ' + self.AppVersion;
                     if (self.SSServicesVersion)
                         csvFile += '\nStreamStats Services Version: ' + self.SSServicesVersion;
@@ -277,6 +290,7 @@ var StreamStats;
                     }
                     this.isExceedanceTableOpen = false;
                     this.isFlowTableOpen = false;
+                    this.isEstimatedFlowFLATableOpen = false;
                 }, 300);
             };
             ReportController.prototype.downloadGeoJSON = function () {
@@ -576,8 +590,8 @@ var StreamStats;
                         type: "Feature",
                         geometry: {
                             coordinates: [
-                                this.studyAreaService.selectedGage["Latitude_DD"],
-                                this.studyAreaService.selectedGage["Longitude_DD"]
+                                this.studyAreaService.selectedGage.Latitude_DD,
+                                this.studyAreaService.selectedGage.Longitude_DD
                             ],
                             type: "Point"
                         }
