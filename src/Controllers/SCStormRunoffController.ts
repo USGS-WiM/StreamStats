@@ -1498,11 +1498,11 @@ module StreamStats.Controllers {
                 finalVal += '\n\n' + "Critical Durations" + '\n' + this.tableToCSV($('#SyntheticUnitHydrographCriticalDurationsTable'));
                 finalVal += '\n\n' + "D-Hour Storm Hydrograph Ordinates" + '\n' + this.tableToCSV($('#SyntheticUnitHydrographDataTable'));
                 finalVal += '\n\n' + this.tableToCSV($('#SyntheticUnitHydrographDisclaimerReport'));
-                var node = document.getElementById('SyntheticUnitHydrographDisclaimerReport')
+                var node = document.getElementById('SyntheticUnitHydrographDisclaimerReport');
                 var string = node.textContent.replace(/\s+/g, ' ').trim();
                 string = string.replace(/,/g, ' ');
                 string = string.replace(/(?=\(\d\))/g, '\n');
-                finalVal += '\n\n' + string
+                finalVal += '\n\n' + string;
                 return finalVal + '\r\n';
             };
 
