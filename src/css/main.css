@@ -1487,6 +1487,18 @@ div.leaflet-top > .elevation {
     margin-right: 0px;
 }
 
+.report-tooltip {
+    opacity: 0.75;
+    background-color: #000;
+    border-radius: 3px;
+    border: 5px solid #000;
+    color: #FFF;
+    position: absolute;
+    z-index: 1070;
+    font-size: 14px;
+    line-break: auto;
+}
+
 /*
     Extra Buttons
 */

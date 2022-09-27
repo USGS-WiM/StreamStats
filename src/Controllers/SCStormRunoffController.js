@@ -32,6 +32,7 @@ var StreamStats;
                 var _this = _super.call(this, $http, configuration.baseurls.StormRunoffServices) || this;
                 _this.$timeout = $timeout;
                 _this.EventManager = EventManager;
+                _this.isSyntheticUHOpen = false;
                 _this.AEPOptions = [{
                         "name": "50%",
                         "value": 50
@@ -420,7 +421,11 @@ var StreamStats;
                 _this.studyAreaService = studyAreaService;
                 _this.init();
                 _this.print = function () {
-                    window.print();
+                    if (this.SelectedTab == 3)
+                        this.isSyntheticUHOpen = true;
+                    setTimeout(function () {
+                        window.print();
+                    }, 300);
                 };
                 return _this;
             }
