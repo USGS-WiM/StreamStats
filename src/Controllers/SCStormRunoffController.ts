@@ -1452,7 +1452,19 @@ module StreamStats.Controllers {
             this.init();
         }
 
+
         private downloadCSV() {
+            if (this.SelectedTab == 3){
+                this.isSyntheticUHOpen = true;
+                setTimeout(() => {
+                    this.formatCSV();
+                }, 300);
+            } else {
+                this.formatCSV();
+            }
+        }
+
+        private formatCSV() {
             //ga event
             this.angulartics.eventTrack('Download', { category: 'Report', label: 'CSV' });
 

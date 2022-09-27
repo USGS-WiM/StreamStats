@@ -11,15 +11,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
     -  Added SC Storm Runoff model
     -  Added Urban Bohman Method functionality to the SC Storm Runoff model
     -  South Carolina application selects nearest NHD stream and HUC 8 watershed and adds to report
-    -  South Carolina application allows user to select a different NHD stream via radio buttons in report
+    -  South Carolina application allows user to select a different NHD stream and HUC 8 watershed
     -  Query NHD streams in South Carolina and add new section to report
-    -  Added Synthetic Unit Hydrograph functionality to the SC Storm Runoff model
-
+    -  Notes on Time of Concentration to bottom of SC Unit Hydrograph results
 
   ### Changed
 
     - Remove Hydrologic Features sidebar button and modal; show all intersecting NHD streams to report
-    - Changed some text related to the NHD streams section in report
 
   ### Fixed
 

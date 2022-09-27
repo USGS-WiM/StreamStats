@@ -1239,6 +1239,18 @@ var StreamStats;
             };
             SCStormRunoffController.prototype.downloadCSV = function () {
                 var _this = this;
+                if (this.SelectedTab == 3) {
+                    this.isSyntheticUHOpen = true;
+                    setTimeout(function () {
+                        _this.formatCSV();
+                    }, 300);
+                }
+                else {
+                    this.formatCSV();
+                }
+            };
+            SCStormRunoffController.prototype.formatCSV = function () {
+                var _this = this;
                 this.angulartics.eventTrack('Download', { category: 'Report', label: 'CSV' });
                 var filename = 'data.csv';
                 var BohmanRural1989 = function () {
