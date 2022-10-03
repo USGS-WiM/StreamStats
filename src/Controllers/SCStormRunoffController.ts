@@ -127,6 +127,12 @@ module StreamStats.Controllers {
         }
 
         // Synthetic UH
+        private _prfForm = {
+            landUse: null,
+            prfValue: null,
+            area: null
+        }
+          
         private _selectedAEPSynthetic;
         private _selectedStandardCurve;
         private _selectedCNModification;
@@ -599,8 +605,10 @@ module StreamStats.Controllers {
         public TravelTimeFlowTypes = this._defaultFlowTypes.slice();
         public TravelTimeFlowSegments = JSON.parse(JSON.stringify(this._defaultFlowSegments));
 
+        public prfSegments = {}
+
         public addFlowSegmentOpen = false;
-        private _chosenFlowTypeIndex : number;
+        private _chosenFlowTypeIndex : string;
         public get chosenFlowTypeIndex() {
             return this._chosenFlowTypeIndex;
         } 
@@ -1292,7 +1300,9 @@ module StreamStats.Controllers {
             }          
         }
 
-        public openAddFlowSegment(indexOfFlow : number) {
+        public openAddFlowSegment(indexOfFlow : string) {
+            console.log('open add flow segment')
+            console.log(indexOfFlow)
             this.addFlowSegmentOpen = true;
             this._chosenFlowTypeIndex = indexOfFlow;
         }
@@ -1305,6 +1315,7 @@ module StreamStats.Controllers {
         }
 
         public addFlowSegment() {
+            console.log('addFlowSegment')
             let questionSet = this.TravelTimeFlowTypes[this._chosenFlowTypeIndex].questions;
             let newSegment = [];
             for(let question of questionSet) {
@@ -1318,6 +1329,8 @@ module StreamStats.Controllers {
         }
 
         public removeFlowSegment(flowTypeID, indexOfRemoval : number) {
+            console.log('remove flow segment')
+            console.log(flowTypeID, indexOfRemoval)
             let flowType = this.TravelTimeFlowSegments[flowTypeID];
             if(!flowType) {
                 console.error("Unable to remove flow segment: improper flow type ID. This is a bug!");

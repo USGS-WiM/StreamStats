@@ -58,6 +58,11 @@ var StreamStats;
                         "name": ".2%",
                         "value": 0.2
                     }];
+                _this._prfForm = {
+                    landUse: null,
+                    prfValue: null,
+                    area: null
+                };
                 _this.AEPOptionsSynthetic = [{
                         "name": "10% AEP / 10 Year Return Period",
                         "value": 10
@@ -373,6 +378,7 @@ var StreamStats;
                 };
                 _this.TravelTimeFlowTypes = _this._defaultFlowTypes.slice();
                 _this.TravelTimeFlowSegments = JSON.parse(JSON.stringify(_this._defaultFlowSegments));
+                _this.prfSegments = {};
                 _this.addFlowSegmentOpen = false;
                 _this.DHourStormOptions = [{
                         "name": "1-Hour",
@@ -1097,6 +1103,8 @@ var StreamStats;
                 }
             };
             SCStormRunoffController.prototype.openAddFlowSegment = function (indexOfFlow) {
+                console.log('open add flow segment');
+                console.log(indexOfFlow);
                 this.addFlowSegmentOpen = true;
                 this._chosenFlowTypeIndex = indexOfFlow;
             };
@@ -1106,6 +1114,7 @@ var StreamStats;
                 this.TravelTimeFlowTypes = this._defaultFlowTypes.slice();
             };
             SCStormRunoffController.prototype.addFlowSegment = function () {
+                console.log('addFlowSegment');
                 var questionSet = this.TravelTimeFlowTypes[this._chosenFlowTypeIndex].questions;
                 var newSegment = [];
                 for (var _i = 0, questionSet_1 = questionSet; _i < questionSet_1.length; _i++) {
@@ -1118,6 +1127,8 @@ var StreamStats;
                 this.addFlowSegmentOpen = false;
             };
             SCStormRunoffController.prototype.removeFlowSegment = function (flowTypeID, indexOfRemoval) {
+                console.log('remove flow segment');
+                console.log(flowTypeID, indexOfRemoval);
                 var flowType = this.TravelTimeFlowSegments[flowTypeID];
                 if (!flowType) {
                     console.error("Unable to remove flow segment: improper flow type ID. This is a bug!");
