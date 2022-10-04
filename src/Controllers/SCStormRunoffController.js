@@ -1239,6 +1239,18 @@ var StreamStats;
             };
             SCStormRunoffController.prototype.downloadCSV = function () {
                 var _this = this;
+                if (this.SelectedTab == 3) {
+                    this.isSyntheticUHOpen = true;
+                    setTimeout(function () {
+                        _this.formatCSV();
+                    }, 300);
+                }
+                else {
+                    this.formatCSV();
+                }
+            };
+            SCStormRunoffController.prototype.formatCSV = function () {
+                var _this = this;
                 this.angulartics.eventTrack('Download', { category: 'Report', label: 'CSV' });
                 var filename = 'data.csv';
                 var BohmanRural1989 = function () {
@@ -1264,6 +1276,12 @@ var StreamStats;
                     finalVal += '\n\n' + "Runoff Results" + '\n' + _this.tableToCSV($('#SyntheticUnitHydrographRunoffTable'));
                     finalVal += '\n\n' + "Critical Durations" + '\n' + _this.tableToCSV($('#SyntheticUnitHydrographCriticalDurationsTable'));
                     finalVal += '\n\n' + "D-Hour Storm Hydrograph Ordinates" + '\n' + _this.tableToCSV($('#SyntheticUnitHydrographDataTable'));
+                    finalVal += '\n\n' + _this.tableToCSV($('#SyntheticUnitHydrographDisclaimerReport'));
+                    var node = document.getElementById('SyntheticUnitHydrographDisclaimerReport');
+                    var string = node.textContent.replace(/\s+/g, ' ').trim();
+                    string = string.replace(/,/g, ' ');
+                    string = string.replace(/(?=\(\d\))/g, '\n');
+                    finalVal += '\n\n' + string;
                     return finalVal + '\r\n';
                 };
                 var csvFile = 'StreamStats Output Report\n\n' + 'State/Region ID,' + this.studyAreaService.selectedStudyArea.RegionID.toUpperCase() + '\nWorkspace ID,' + this.studyAreaService.selectedStudyArea.WorkspaceID + '\nLatitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + '\nLongitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5) + '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n\n';
