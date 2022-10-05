@@ -83,6 +83,7 @@ module StreamStats.Controllers {
         public angulartics: any;
 
         private _selectedTab: SCStormRunoffType;
+        prfValue = {};
         public get SelectedTab(): SCStormRunoffType {
             return this._selectedTab;
         }
@@ -127,7 +128,7 @@ module StreamStats.Controllers {
         }
 
         // Synthetic UH
-        private _prfForm = {
+        public prfForm = {
             landUse: null,
             prfValue: null,
             area: null
@@ -232,7 +233,37 @@ module StreamStats.Controllers {
         private gTOETZInvalidMessage = "Value must be greater than or equal to 0"
         private betweenZeroOneHundred = /^(\d{0,2}(\.\d{1,2})?|100(\.00?)?)$/;
 
+        public prfTypes = [
+            { name: "Open Space - Poor Condition (grass cover < 50%)", value: 250 },
+            { name: "Open Space - Fair Condition (grass cover 50-75%)", value: 250 },
+            { name: "Open Space - Good Condition (grass cover > 75%)", value: 250 },
+            { name: "Impervious Areas (paved parking lots, roofs, etc.)	", value: 550 },
+            { name: "Streets and Roads - Paved with curbs and storm sewers", value: 550 },
+            { name: "Streets and Roads - Paved with open ditches", value: 500 },
+            { name: "Streets and Roads - Gravel", value: 450 },
+            { name: "Streets and Roads - Dirt", value: 350 },
+            { name: "Urban Land Use - Commercial and Business", value: 550 },
+            { name: "Urban Land Use - Industrial", value: 550 },
+            { name: "Urban Land Use - 1/8 Acre", value: 400 },
+            { name: "Urban Land Use - 1/4 Acre", value: 375 }, 
+            { name: "Urban Land Use - 1/3 Acre", value: 350 },
+            { name: "Urban Land Use - 1/2 Acre", value: 350 },
+            { name: "Urban Land Use - 1 Acre", value: 325 },
+            { name: "Urban Land Use - 2 Acre", value: 300 },
+            { name: "Developing urban areas, newly graded, no grass cover", value: 400 },
+            { name: "Pasture - Poor", value: 200 },
+            { name: "Pasture - Fair", value: 190 },
+            { name: "Pasture - Good", value: 180 },
+            { name: "Woods - Poor", value: 200 },
+            { name: "Woods - Fair", value: 190 },
+            { name: "Woods - Good", value: 180 },
+            { name: "Row Crop - Straight Row", value: 300 },
+            { name: "Row Crop - Contoured", value: 275 },
+            { name: "Row Crop - Contoured and Terraced", value: 250 }    
+        ]
+
         private _defaultFlowTypes = [
+           
             {
                 id: "sheetFlow",
                 displayName: "Sheet Flow",
@@ -605,12 +636,12 @@ module StreamStats.Controllers {
         public TravelTimeFlowTypes = this._defaultFlowTypes.slice();
         public TravelTimeFlowSegments = JSON.parse(JSON.stringify(this._defaultFlowSegments));
 
-        public prfSegments = {}
+        public prfSegments = [];
 
         public addFlowSegmentOpen = false;
-        private _chosenFlowTypeIndex : string;
+        private _chosenFlowType : string;
         public get chosenFlowTypeIndex() {
-            return this._chosenFlowTypeIndex;
+            return this._chosenFlowType;
         } 
 
         // for synthetic graph options 
@@ -1300,44 +1331,74 @@ module StreamStats.Controllers {
             }          
         }
 
-        public openAddFlowSegment(indexOfFlow : string) {
+        public openAddFlowSegment(chosenFlow : any) {
             console.log('open add flow segment')
-            console.log(indexOfFlow)
+            console.log(chosenFlow)
             this.addFlowSegmentOpen = true;
-            this._chosenFlowTypeIndex = indexOfFlow;
+            this._chosenFlowType = chosenFlow;
         }
 
         public closeAddFlowSegment() {
             this.addFlowSegmentOpen = false;
-            this._chosenFlowTypeIndex = null;
+            this._chosenFlowType = null;
             /// reset the options
             this.TravelTimeFlowTypes = this._defaultFlowTypes.slice();
         }
 
-        public addFlowSegment() {
+        public addFlowSegment(index) {
             console.log('addFlowSegment')
-            let questionSet = this.TravelTimeFlowTypes[this._chosenFlowTypeIndex].questions;
-            let newSegment = [];
-            for(let question of questionSet) {
-                newSegment.push(JSON.parse(JSON.stringify(question)));
-                question.value = null;
+            console.log(this._chosenFlowType)
+            if (this._chosenFlowType == 'PRF') { 
+                let newSegment = {}
+                newSegment = {
+                    landUse: this.prfForm.landUse.name,
+                    prf: this.prfForm.prfValue,
+                    area: this.prfForm.area
+                }
+                this.prfSegments.push(newSegment)
+            } else {
+                let newSegment = [];
+                let questionSet = this.TravelTimeFlowTypes[index].questions;
+                for(let question of questionSet) {
+                    newSegment.push(JSON.parse(JSON.stringify(question)));
+                    question.value = null;
+                }
+                this.TravelTimeFlowSegments[this.TravelTimeFlowTypes[index].id].push(newSegment);
             }
 
-            this.TravelTimeFlowSegments[this.TravelTimeFlowTypes[this._chosenFlowTypeIndex].id].push(newSegment);
-            this._chosenFlowTypeIndex = null;
+            this._chosenFlowType = null;
             this.addFlowSegmentOpen = false;
         }
 
         public removeFlowSegment(flowTypeID, indexOfRemoval : number) {
             console.log('remove flow segment')
-            console.log(flowTypeID, indexOfRemoval)
-            let flowType = this.TravelTimeFlowSegments[flowTypeID];
+            console.log(flowTypeID)
+            console.log(indexOfRemoval)
+            var flowType = null;
+            if (flowTypeID == "PRF") {
+                flowType = this.prfSegments;
+            } else {
+                flowType = this.TravelTimeFlowSegments[flowTypeID];
+            }
             if(!flowType) {
                 console.error("Unable to remove flow segment: improper flow type ID. This is a bug!");
                 return;
             }
             // remove the element from the array
             flowType.splice(indexOfRemoval, 1);
+        }
+
+        public calculatePRF(){
+            console.log(this.prfSegments);
+            if (this.prfSegments.length == 0) {
+                this.toaster.pop('error', "No PRF information was added, cannot calculate.", "", 0);
+                this.peakRateFactor = 0;                 
+            }
+        }
+
+        public setPRF(test) {
+            console.log(test)
+            this.prfForm.prfValue = test.value
         }
 
         /**
@@ -1420,7 +1481,7 @@ module StreamStats.Controllers {
             this.initialAbstraction = null;
             this.lagTimeLength = null;
             this.lagTimeSlope = null;
-            this._chosenFlowTypeIndex = null;
+            this._chosenFlowType = null;
             this.mainChannelLength = null;
             this.mainChannelSlope = null;
             this.totalImperviousArea = null;
@@ -1545,7 +1606,7 @@ module StreamStats.Controllers {
             this.hideAlerts = false;
             this.canContinue = true;
             this.canContinueSynthetic = true;
-            this._chosenFlowTypeIndex = null;
+            this._chosenFlowType = null;
             this.stormHydrographOrdinatesAccordionOpen = false;
         }
 

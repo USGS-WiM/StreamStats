@@ -185,16 +185,20 @@
                                                     <accordion-heading><i ng-class="PRF.accordionOpen ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i> PRF Segments ({{vm.prfSegments.length}})</accordion-heading>
                                                         <ng-form ng-repeat="segment in vm.prfSegments" name="{{'PRF' + 'key' + $index}}" class="hidden-print">
                                                             <h4>Segment {{$index + 1}}</h4>
-                                                                <label for="landUse">Land Use</label>
-                                                                <input type="text" name="landUse"  required/>
-                                                                <label for="prfValue">PRF</label>
-                                                                <input type="number" name="prfValue"  required/>
-                                                                <label for="area">Area</label>
-                                                                <input type="number" name="area"  required/>
+                                                                <label>Land Use: {{vm.prfSegments[$index].landUse}}</label><br>
+                                                                <label>PRF:  {{vm.prfSegments[$index].prf}}</label><br>
+                                                                <label>Area:  {{vm.prfSegments[$index].area}}</label><br>
                                                             <div>&nbsp;</div>
-                                                            <button ng-click="vm.removeFlowSegment(PRF, $index)"><i class="fa fa-trash"></i> Remove Segment </button>
+                                                            <button ng-click="vm.removeFlowSegment('PRF', $index)"><i class="fa fa-trash"></i> Remove Segment </button>
                                                             <div>&nbsp;</div>
                                                         </ng-form>
+                                                        <div class="flow-form-row">                                    
+                                                            <label for="PeakRateFactor">Peak Rate Factor, PRF:</label> <span ng-if="SyntheticUrbanHydrograph.PeakRateFactor.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
+                                                            <input type="number" name="PeakRateFactor" ng-model="vm.peakRateFactor" ng-minlength="0" ng-pattern="greaterThanOrEqualToZero" required/>&nbsp;&nbsp;
+                                                            <div class="flow-form-button">
+                                                                <button ng-click="vm.calculatePRF()"><i class="fa fa-calculator"></i> Calculate PRF</button>
+                                                            </div>
+                                                        </div>
                                                 </accordion-group>
                                             </accordion>
                                         </div>
@@ -207,11 +211,12 @@
                                         <h4 class="modal-title">New PRF Segment</h4>
                                         <ng-form name="PRF" class="hidden-print">
                                             <label for="landUse">Land Use</label>
-                                            <input type="text" name="landUse"  required/>
+                                            <select name="landUse" ng-model="vm.prfForm.landUse" ng-options="item.name for item in vm.prfTypes" ng-change="vm.setPRF(vm.prfForm.landUse)" required></select>                                                                          
+
                                             <label for="prfValue">PRF</label>
-                                            <input type="number" name="prfValue"  required/>
+                                            <input type="number" name="prfValue" ng-model="vm.prfForm.prfValue" required/>
                                             <label for="area">Area</label>
-                                            <input type="number" name="area"  required/>
+                                            <input type="number" name="area" ng-model="vm.prfForm.area" required/>
                                             <div>&nbsp;</div>
                                             <div class="form-row-extremes">
                                                 <div class="button-column-left">
@@ -224,13 +229,7 @@
                                             <div>&nbsp;</div>
                                         </ng-form>
                                     </div>
-                                    <div class="flow-form-row">                                    
-                                        <label for="PeakRateFactor">Peak Rate Factor, PRF:</label> <span ng-if="SyntheticUrbanHydrograph.PeakRateFactor.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
-                                        <input type="number" name="PeakRateFactor" ng-model="vm.peakRateFactor" ng-minlength="0" ng-pattern="greaterThanOrEqualToZero" required/>&nbsp;&nbsp;
-                                        <div class="flow-form-button">
-                                            <button ng-click="vm.calculatePRF()"><i class="fa fa-calculator"></i> Calculate PRF</button>
-                                        </div>
-                                    </div>
+                                    
                                 </div>
 
                                 <div ng-if="vm.SelectedTimeOfConcentration.value == 1 || vm.SelectedTimeOfConcentration.value == 2" class="center-div">
@@ -299,7 +298,7 @@
                                                         <button ng-click="vm.closeAddFlowSegment()"><i class="fa fa-times"></i> Cancel</button>
                                                     </div>
                                                     <div class="button-column-right">
-                                                        <button ng-disabled="{{flowType.id}}.$invalid" ng-click="vm.addFlowSegment()"><i class="fa fa-plus"></i> Add</button>
+                                                        <button ng-disabled="{{flowType.id}}.$invalid" ng-click="vm.addFlowSegment($index)"><i class="fa fa-plus"></i> Add</button>
                                                     </div>
                                                 </div>
                                                 <div>&nbsp;</div>

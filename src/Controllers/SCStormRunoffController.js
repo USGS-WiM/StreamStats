@@ -33,6 +33,7 @@ var StreamStats;
                 _this.$timeout = $timeout;
                 _this.EventManager = EventManager;
                 _this.isSyntheticUHOpen = false;
+                _this.prfValue = {};
                 _this.AEPOptions = [{
                         "name": "50%",
                         "value": 50
@@ -58,7 +59,7 @@ var StreamStats;
                         "name": ".2%",
                         "value": 0.2
                     }];
-                _this._prfForm = {
+                _this.prfForm = {
                     landUse: null,
                     prfValue: null,
                     area: null
@@ -125,6 +126,34 @@ var StreamStats;
                 _this.greaterThanOrEqualToZero = /0+|^([0-9]*[1-9][0-9]*(\.[0-9]+)?|[0]+\.[0-9]*[1-9][0-9]*)$/;
                 _this.gTOETZInvalidMessage = "Value must be greater than or equal to 0";
                 _this.betweenZeroOneHundred = /^(\d{0,2}(\.\d{1,2})?|100(\.00?)?)$/;
+                _this.prfTypes = [
+                    { name: "Open Space - Poor Condition (grass cover < 50%)", value: 250 },
+                    { name: "Open Space - Fair Condition (grass cover 50-75%)", value: 250 },
+                    { name: "Open Space - Good Condition (grass cover > 75%)", value: 250 },
+                    { name: "Impervious Areas (paved parking lots, roofs, etc.)	", value: 550 },
+                    { name: "Streets and Roads - Paved with curbs and storm sewers", value: 550 },
+                    { name: "Streets and Roads - Paved with open ditches", value: 500 },
+                    { name: "Streets and Roads - Gravel", value: 450 },
+                    { name: "Streets and Roads - Dirt", value: 350 },
+                    { name: "Urban Land Use - Commercial and Business", value: 550 },
+                    { name: "Urban Land Use - Industrial", value: 550 },
+                    { name: "Urban Land Use - 1/8 Acre", value: 400 },
+                    { name: "Urban Land Use - 1/4 Acre", value: 375 },
+                    { name: "Urban Land Use - 1/3 Acre", value: 350 },
+                    { name: "Urban Land Use - 1/2 Acre", value: 350 },
+                    { name: "Urban Land Use - 1 Acre", value: 325 },
+                    { name: "Urban Land Use - 2 Acre", value: 300 },
+                    { name: "Developing urban areas, newly graded, no grass cover", value: 400 },
+                    { name: "Pasture - Poor", value: 200 },
+                    { name: "Pasture - Fair", value: 190 },
+                    { name: "Pasture - Good", value: 180 },
+                    { name: "Woods - Poor", value: 200 },
+                    { name: "Woods - Fair", value: 190 },
+                    { name: "Woods - Good", value: 180 },
+                    { name: "Row Crop - Straight Row", value: 300 },
+                    { name: "Row Crop - Contoured", value: 275 },
+                    { name: "Row Crop - Contoured and Terraced", value: 250 }
+                ];
                 _this._defaultFlowTypes = [
                     {
                         id: "sheetFlow",
@@ -378,7 +407,7 @@ var StreamStats;
                 };
                 _this.TravelTimeFlowTypes = _this._defaultFlowTypes.slice();
                 _this.TravelTimeFlowSegments = JSON.parse(JSON.stringify(_this._defaultFlowSegments));
-                _this.prfSegments = {};
+                _this.prfSegments = [];
                 _this.addFlowSegmentOpen = false;
                 _this.DHourStormOptions = [{
                         "name": "1-Hour",
@@ -510,7 +539,7 @@ var StreamStats;
             });
             Object.defineProperty(SCStormRunoffController.prototype, "chosenFlowTypeIndex", {
                 get: function () {
-                    return this._chosenFlowTypeIndex;
+                    return this._chosenFlowType;
                 },
                 enumerable: false,
                 configurable: true
@@ -1102,39 +1131,69 @@ var StreamStats;
                     this.toaster.pop('error', "There was an error calculating parameters", "", 0);
                 }
             };
-            SCStormRunoffController.prototype.openAddFlowSegment = function (indexOfFlow) {
+            SCStormRunoffController.prototype.openAddFlowSegment = function (chosenFlow) {
                 console.log('open add flow segment');
-                console.log(indexOfFlow);
+                console.log(chosenFlow);
                 this.addFlowSegmentOpen = true;
-                this._chosenFlowTypeIndex = indexOfFlow;
+                this._chosenFlowType = chosenFlow;
             };
             SCStormRunoffController.prototype.closeAddFlowSegment = function () {
                 this.addFlowSegmentOpen = false;
-                this._chosenFlowTypeIndex = null;
+                this._chosenFlowType = null;
                 this.TravelTimeFlowTypes = this._defaultFlowTypes.slice();
             };
-            SCStormRunoffController.prototype.addFlowSegment = function () {
+            SCStormRunoffController.prototype.addFlowSegment = function (index) {
                 console.log('addFlowSegment');
-                var questionSet = this.TravelTimeFlowTypes[this._chosenFlowTypeIndex].questions;
-                var newSegment = [];
-                for (var _i = 0, questionSet_1 = questionSet; _i < questionSet_1.length; _i++) {
-                    var question = questionSet_1[_i];
-                    newSegment.push(JSON.parse(JSON.stringify(question)));
-                    question.value = null;
+                console.log(this._chosenFlowType);
+                if (this._chosenFlowType == 'PRF') {
+                    var newSegment = {};
+                    newSegment = {
+                        landUse: this.prfForm.landUse.name,
+                        prf: this.prfForm.prfValue,
+                        area: this.prfForm.area
+                    };
+                    this.prfSegments.push(newSegment);
                 }
-                this.TravelTimeFlowSegments[this.TravelTimeFlowTypes[this._chosenFlowTypeIndex].id].push(newSegment);
-                this._chosenFlowTypeIndex = null;
+                else {
+                    var newSegment = [];
+                    var questionSet = this.TravelTimeFlowTypes[index].questions;
+                    for (var _i = 0, questionSet_1 = questionSet; _i < questionSet_1.length; _i++) {
+                        var question = questionSet_1[_i];
+                        newSegment.push(JSON.parse(JSON.stringify(question)));
+                        question.value = null;
+                    }
+                    this.TravelTimeFlowSegments[this.TravelTimeFlowTypes[index].id].push(newSegment);
+                }
+                this._chosenFlowType = null;
                 this.addFlowSegmentOpen = false;
             };
             SCStormRunoffController.prototype.removeFlowSegment = function (flowTypeID, indexOfRemoval) {
                 console.log('remove flow segment');
-                console.log(flowTypeID, indexOfRemoval);
-                var flowType = this.TravelTimeFlowSegments[flowTypeID];
+                console.log(flowTypeID);
+                console.log(indexOfRemoval);
+                var flowType = null;
+                if (flowTypeID == "PRF") {
+                    flowType = this.prfSegments;
+                }
+                else {
+                    flowType = this.TravelTimeFlowSegments[flowTypeID];
+                }
                 if (!flowType) {
                     console.error("Unable to remove flow segment: improper flow type ID. This is a bug!");
                     return;
                 }
                 flowType.splice(indexOfRemoval, 1);
+            };
+            SCStormRunoffController.prototype.calculatePRF = function () {
+                console.log(this.prfSegments);
+                if (this.prfSegments.length == 0) {
+                    this.toaster.pop('error', "No PRF information was added, cannot calculate.", "", 0);
+                    this.peakRateFactor = 0;
+                }
+            };
+            SCStormRunoffController.prototype.setPRF = function (test) {
+                console.log(test);
+                this.prfForm.prfValue = test.value;
             };
             SCStormRunoffController.prototype.calculateSyntheticParamsDisabled = function () {
                 var _a;
@@ -1207,7 +1266,7 @@ var StreamStats;
                 this.initialAbstraction = null;
                 this.lagTimeLength = null;
                 this.lagTimeSlope = null;
-                this._chosenFlowTypeIndex = null;
+                this._chosenFlowType = null;
                 this.mainChannelLength = null;
                 this.mainChannelSlope = null;
                 this.totalImperviousArea = null;
@@ -1314,7 +1373,7 @@ var StreamStats;
                 this.hideAlerts = false;
                 this.canContinue = true;
                 this.canContinueSynthetic = true;
-                this._chosenFlowTypeIndex = null;
+                this._chosenFlowType = null;
                 this.stormHydrographOrdinatesAccordionOpen = false;
             };
             SCStormRunoffController.prototype.selectRunoffType = function () {
