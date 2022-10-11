@@ -1041,6 +1041,7 @@ var StreamStats;
                             data = {
                                 "lat": _this.studyAreaService.selectedStudyArea.Pourpoint.Latitude,
                                 "lon": _this.studyAreaService.selectedStudyArea.Pourpoint.Longitude,
+                                "prfData": _this.prfSegments,
                                 "AEP": (_a = _this._selectedAEPSynthetic) === null || _a === void 0 ? void 0 : _a.value,
                                 "curveNumberMethod": (_b = _this._selectedStandardCurve) === null || _b === void 0 ? void 0 : _b.endpointValue,
                                 "TcMethod": _this._selectedTimeOfConcentration.endpointValue,
@@ -1182,7 +1183,6 @@ var StreamStats;
             };
             SCStormRunoffController.prototype.calculatePRF = function () {
                 var _this = this;
-                console.log(this.prfSegments);
                 if (this.prfSegments.length == 0) {
                     this.toaster.pop('error', "No PRF information was added, cannot calculate.", "", 500);
                     this.peakRateFactor = 0;
@@ -1191,12 +1191,9 @@ var StreamStats;
                     var data = {
                         "prfData": this.prfSegments
                     };
-                    console.log(data);
                     var url = configuration.baseurls['SCStormRunoffServices'] + configuration.queryparams['SCStormRunoffPRF'];
                     var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(data));
-                    console.log(request);
                     this.Execute(request).then(function (response) {
-                        console.log(response);
                         _this.peakRateFactor = response.data.PRF;
                     }, function (error) {
                         _this.toaster.clear();

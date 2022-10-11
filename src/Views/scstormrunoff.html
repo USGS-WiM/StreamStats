@@ -138,12 +138,6 @@
                             <form id="SyntheticUrbanHydrograph" name="SyntheticUrbanHydrograph" class="hidden-print" novalidate>
                                 <label for="AEPOptionsSynthetic">Select an Annual Exceedance Probability (AEP) / Design Storm Return Period:</label>
                                 <select name="AEPOptionsSynthetic" ng-model="vm.SelectedAEPSynthetic" ng-options="precip.name for precip in vm.AEPOptionsSynthetic track by precip.value" required></select>
-                                <label for="StandardCurve">Select a Standard Curve Number Value:</label>
-                                <select name="StandardCurve" ng-model="vm.SelectedStandardCurve" ng-options="curve.name for curve in vm.StandardCurveOptions track by curve.value" required></select>
-                                <label for="TimeOfConcentration">Select Time of Concentration:</label>
-                                <select name="TimeOfConcentration" ng-model="vm.SelectedTimeOfConcentration" ng-options="time.name for time in vm.TimeOfConcentrationOptions track by time.value" required></select>
-                                <label for="CNModification">Select a CN Modification Method:</label>
-                                <select name="CNModification" ng-model="vm.SelectedCNModification" ng-options="cnmod.name for cnmod in vm.CNModificationOptions track by cnmod.value" required></select>
                                 <label for="RainfallDistribution">Select a Rainfall Distribution Curve:</label>
                                 <select name="RainfallDistribution" ng-model="vm.SelectedRainfallDistribution" ng-options="distr.name for distr in vm.RainfallDistributionOptions track by distr.value" required></select>
                                 
@@ -153,8 +147,8 @@
                                         <input type="number" name="DrainageAreaSynthetic" ng-model="vm.drainageAreaSynthetic" ng-minlength="1" ng-pattern="greaterThanZero" required/>
                                     </div>
                                     <div class="form-column-right">
-                                        <label for="TimeOfConcentrationMin">Time of Concentration, Tc (minutes):</label> <span ng-if="SyntheticUrbanHydrograph.TimeOfConcentrationMin.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
-                                        <input type="number" name="TimeOfConcentrationMin" ng-model="vm.timeOfConcentrationMin" ng-minlength="0" ng-pattern="greaterThanOrEqualToZero" required/>
+                                        <label for="InitialAbstraction">Initial Abstraction, Ia:</label> <span ng-if="SyntheticUrbanHydrograph.InitialAbstraction.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
+                                        <input type="number" name="InitialAbstraction" ng-model="vm.initialAbstraction" ng-minlength="0" ng-pattern="greaterThanOrEqualToZero" required/>
                                     </div>
                                 </div>
                                 <div class="form-row">
@@ -163,47 +157,43 @@
                                         <input type="number" name="WatershedRetention" ng-model="vm.watershedRetention" ng-minlength="0" ng-pattern="greaterThanOrEqualToZero" required/>
                                     </div>
                                     <div class="form-column-right">
-                                        <label for="StandardCurveNumber">Standard Curve Number, CN:</label> <span ng-if="SyntheticUrbanHydrograph.StandardCurveNumber.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
-                                        <input type="number" name="StandardCurveNumber" ng-model="vm.standardCurveNumber" ng-minlength="0" ng-pattern="greaterThanOrEqualToZero" required/>
+                                        
                                     </div>
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-column-left">
-                                        <label for="InitialAbstraction">Initial Abstraction, Ia:</label> <span ng-if="SyntheticUrbanHydrograph.InitialAbstraction.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
-                                        <input type="number" name="InitialAbstraction" ng-model="vm.initialAbstraction" ng-minlength="0" ng-pattern="greaterThanOrEqualToZero" required/>
-                                    </div>
-                                    <div class="form-column-right"></div>
                                 </div>
 
-                                <!-- Peak Rate Factor-->
+
+                                <!-- Curve Number -->
+                                <h3 class="center-div">Curve Number Inputs</h3>
+                                <label for="StandardCurve">Select a Standard Curve Number Value:</label>
+                                <select name="StandardCurve" ng-model="vm.SelectedStandardCurve" ng-options="curve.name for curve in vm.StandardCurveOptions track by curve.value" required></select>
+                                <label for="CNModification">Select a Curve Number Modification Method:</label>
+                                <select name="CNModification" ng-model="vm.SelectedCNModification" ng-options="cnmod.name for cnmod in vm.CNModificationOptions track by cnmod.value" required></select>
+                                <label for="StandardCurveNumber">Standard Curve Number, CN:</label> <span ng-if="SyntheticUrbanHydrograph.StandardCurveNumber.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
+                                <input type="number" name="StandardCurveNumber" ng-model="vm.standardCurveNumber" ng-minlength="0" ng-pattern="greaterThanOrEqualToZero" required/>
+
+                                <!-- Peak Rate Factor -->
+                                <h3 class="center-div">Peak Rate Factor Inputs</h3>
                                 <div>
                                     <div class="flow-form-row">                                    
                                         <label for="PeakRateFactor">Peak Rate Factor input form:</label>
                                         <div class="flow-form-accordion">
                                             <accordion id="PRF">
                                                 <accordion-group is-open="PRF.accordionOpen" style="overflow:auto">
-                                                    <accordion-heading><i ng-class="PRF.accordionOpen ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i> PRF Segments ({{vm.prfSegments.length}})</accordion-heading>
+                                                    <accordion-heading><i ng-class="PRF.accordionOpen ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i> PRF Inputs ({{vm.prfSegments.length}})</accordion-heading>
                                                         <ng-form ng-repeat="segment in vm.prfSegments" name="{{'PRF' + 'key' + $index}}" class="hidden-print">
-                                                            <h4>Segment {{$index + 1}}</h4>
+                                                            <h4>Input {{$index + 1}}</h4>
                                                                 <label>Land Use: {{vm.prfSegments[$index].landUse}}</label><br>
                                                                 <label>PRF:  {{vm.prfSegments[$index].PRF}}</label><br>
-                                                                <label>Area:  {{vm.prfSegments[$index].Area}}</label><br>
+                                                                <label>Area (ac):  {{vm.prfSegments[$index].Area}}</label><br>
                                                             <div>&nbsp;</div>
-                                                            <button ng-click="vm.removeFlowSegment('PRF', $index)"><i class="fa fa-trash"></i> Remove Segment </button>
+                                                            <button ng-click="vm.removeFlowSegment('PRF', $index)"><i class="fa fa-trash"></i> Remove Input </button>
                                                             <div>&nbsp;</div>
                                                         </ng-form>
-                                                        <div class="flow-form-row">                                    
-                                                            <label for="PeakRateFactor">Peak Rate Factor, PRF:</label> <span ng-if="SyntheticUrbanHydrograph.PeakRateFactor.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
-                                                            <input type="number" name="PeakRateFactor" ng-model="vm.peakRateFactor" ng-minlength="0" ng-pattern="greaterThanOrEqualToZero" required/>&nbsp;&nbsp;
-                                                            <div class="flow-form-button">
-                                                                <button ng-click="vm.calculatePRF()"><i class="fa fa-calculator"></i> Calculate PRF</button>
-                                                            </div>
-                                                        </div>
                                                 </accordion-group>
                                             </accordion>
                                         </div>
                                         <div class="flow-form-button">
-                                            <button ng-click="vm.openAddFlowSegment('PRF')"><i class="fa fa-arrow-left"></i> Add Segment</button>
+                                            <button ng-click="vm.openAddFlowSegment('PRF')"><i class="fa fa-arrow-left"></i> Add Input</button>
                                         </div>
                                     </div>
 
@@ -215,7 +205,7 @@
 
                                             <label for="prfValue">PRF</label>
                                             <input type="number" name="prfValue" ng-model="vm.prfForm.prfValue" required/>
-                                            <label for="area">Area</label>
+                                            <label for="area">Area (ac)</label>
                                             <input type="number" name="area" ng-model="vm.prfForm.area" required/>
                                             <div>&nbsp;</div>
                                             <div class="form-row-extremes">
@@ -229,11 +219,20 @@
                                             <div>&nbsp;</div>
                                         </ng-form>
                                     </div>
-                                    
                                 </div>
+                                <label for="PeakRateFactor">Peak Rate Factor, PRF:</label> <span ng-if="SyntheticUrbanHydrograph.PeakRateFactor.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
+                                <input type="number" name="PeakRateFactor" ng-model="vm.peakRateFactor" ng-minlength="0" ng-pattern="greaterThanOrEqualToZero" required/>&nbsp;&nbsp;
+
+
+                                <!-- Time of Concentration -->
+                                <h3 class="center-div">Time of Concentration Inputs</h3>
+                                <label for="TimeOfConcentration">Select Time of Concentration:</label>
+                                <select name="TimeOfConcentration" ng-model="vm.SelectedTimeOfConcentration" ng-options="time.name for time in vm.TimeOfConcentrationOptions track by time.value" required></select>
+                                <label for="TimeOfConcentrationMin">Time of Concentration, Tc (minutes):</label> <span ng-if="SyntheticUrbanHydrograph.TimeOfConcentrationMin.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
+                                <input type="number" name="TimeOfConcentrationMin" ng-model="vm.timeOfConcentrationMin" ng-minlength="0" ng-pattern="greaterThanOrEqualToZero" required/>
 
                                 <div ng-if="vm.SelectedTimeOfConcentration.value == 1 || vm.SelectedTimeOfConcentration.value == 2" class="center-div">
-                                    <h3 class="center-title">{{vm.TimeOfConcentrationOptions[vm.SelectedTimeOfConcentration.value - 1].name}}</h3>
+                                    <h4 class="center-title">{{vm.TimeOfConcentrationOptions[vm.SelectedTimeOfConcentration.value - 1].name}}</h4>
                                 </div>
 
                                 <!-- Lag Time Equation -->

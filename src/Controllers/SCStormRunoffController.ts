@@ -1245,6 +1245,7 @@ module StreamStats.Controllers {
                             data = {
                                 "lat": this.studyAreaService.selectedStudyArea.Pourpoint.Latitude,
                                 "lon": this.studyAreaService.selectedStudyArea.Pourpoint.Longitude,
+                                "prfData": this.prfSegments,
                                 "AEP": this._selectedAEPSynthetic?.value,
                                 "curveNumberMethod": this._selectedStandardCurve?.endpointValue,
                                 "TcMethod": this._selectedTimeOfConcentration.endpointValue,
@@ -1351,7 +1352,7 @@ module StreamStats.Controllers {
                     Area: this.prfForm.area
                 }
                 this.prfSegments.push(newSegment);
-                this.prfForm={ landUse:null, prfValue: null, area:null };
+                this.prfForm = { landUse: null, prfValue: null, area: null };
             } else {
                 let newSegment = [];
                 let questionSet = this.TravelTimeFlowTypes[index].questions;
@@ -1386,7 +1387,6 @@ module StreamStats.Controllers {
         }
 
         public calculatePRF(){
-            console.log(this.prfSegments);
             if (this.prfSegments.length == 0) {
                 this.toaster.pop('error', "No PRF information was added, cannot calculate.", "", 500);
                 this.peakRateFactor = 0;                 
@@ -1395,13 +1395,10 @@ module StreamStats.Controllers {
                 {
                     "prfData": this.prfSegments
                 };
-                console.log(data)
                 var url = configuration.baseurls['SCStormRunoffServices'] + configuration.queryparams['SCStormRunoffPRF']     
                 var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(data));
                 
-                console.log(request)
                 this.Execute(request).then((response: any) => {     
-                    console.log(response)
                     this.peakRateFactor = response.data.PRF
                 },(error) => {
                     //sm when error
