@@ -83,7 +83,6 @@ module StreamStats.Controllers {
         public angulartics: any;
 
         private _selectedTab: SCStormRunoffType;
-        prfValue = {};
         public get SelectedTab(): SCStormRunoffType {
             return this._selectedTab;
         }
@@ -1332,8 +1331,6 @@ module StreamStats.Controllers {
         }
 
         public openAddFlowSegment(chosenFlow : any) {
-            console.log('open add flow segment')
-            console.log(chosenFlow)
             this.addFlowSegmentOpen = true;
             this._chosenFlowType = chosenFlow;
         }
@@ -1346,16 +1343,15 @@ module StreamStats.Controllers {
         }
 
         public addFlowSegment(index) {
-            console.log('addFlowSegment')
-            console.log(this._chosenFlowType)
             if (this._chosenFlowType == 'PRF') { 
-                let newSegment = {}
+                let newSegment = {};
                 newSegment = {
                     landUse: this.prfForm.landUse.name,
                     prf: this.prfForm.prfValue,
                     area: this.prfForm.area
                 }
-                this.prfSegments.push(newSegment)
+                this.prfSegments.push(newSegment);
+                this.prfForm={ landUse:null, prfValue: null, area:null };
             } else {
                 let newSegment = [];
                 let questionSet = this.TravelTimeFlowTypes[index].questions;
@@ -1371,9 +1367,6 @@ module StreamStats.Controllers {
         }
 
         public removeFlowSegment(flowTypeID, indexOfRemoval : number) {
-            console.log('remove flow segment')
-            console.log(flowTypeID)
-            console.log(indexOfRemoval)
             var flowType = null;
             if (flowTypeID == "PRF") {
                 flowType = this.prfSegments;
@@ -1391,14 +1384,9 @@ module StreamStats.Controllers {
         public calculatePRF(){
             console.log(this.prfSegments);
             if (this.prfSegments.length == 0) {
-                this.toaster.pop('error', "No PRF information was added, cannot calculate.", "", 0);
+                this.toaster.pop('error', "No PRF information was added, cannot calculate.", "", 500);
                 this.peakRateFactor = 0;                 
             }
-        }
-
-        public setPRF(test) {
-            console.log(test)
-            this.prfForm.prfValue = test.value
         }
 
         /**

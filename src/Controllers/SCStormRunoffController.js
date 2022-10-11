@@ -33,7 +33,6 @@ var StreamStats;
                 _this.$timeout = $timeout;
                 _this.EventManager = EventManager;
                 _this.isSyntheticUHOpen = false;
-                _this.prfValue = {};
                 _this.AEPOptions = [{
                         "name": "50%",
                         "value": 50
@@ -1132,8 +1131,6 @@ var StreamStats;
                 }
             };
             SCStormRunoffController.prototype.openAddFlowSegment = function (chosenFlow) {
-                console.log('open add flow segment');
-                console.log(chosenFlow);
                 this.addFlowSegmentOpen = true;
                 this._chosenFlowType = chosenFlow;
             };
@@ -1143,8 +1140,6 @@ var StreamStats;
                 this.TravelTimeFlowTypes = this._defaultFlowTypes.slice();
             };
             SCStormRunoffController.prototype.addFlowSegment = function (index) {
-                console.log('addFlowSegment');
-                console.log(this._chosenFlowType);
                 if (this._chosenFlowType == 'PRF') {
                     var newSegment = {};
                     newSegment = {
@@ -1153,6 +1148,7 @@ var StreamStats;
                         area: this.prfForm.area
                     };
                     this.prfSegments.push(newSegment);
+                    this.prfForm = { landUse: null, prfValue: null, area: null };
                 }
                 else {
                     var newSegment = [];
@@ -1168,9 +1164,6 @@ var StreamStats;
                 this.addFlowSegmentOpen = false;
             };
             SCStormRunoffController.prototype.removeFlowSegment = function (flowTypeID, indexOfRemoval) {
-                console.log('remove flow segment');
-                console.log(flowTypeID);
-                console.log(indexOfRemoval);
                 var flowType = null;
                 if (flowTypeID == "PRF") {
                     flowType = this.prfSegments;
@@ -1187,13 +1180,9 @@ var StreamStats;
             SCStormRunoffController.prototype.calculatePRF = function () {
                 console.log(this.prfSegments);
                 if (this.prfSegments.length == 0) {
-                    this.toaster.pop('error', "No PRF information was added, cannot calculate.", "", 0);
+                    this.toaster.pop('error', "No PRF information was added, cannot calculate.", "", 500);
                     this.peakRateFactor = 0;
                 }
-            };
-            SCStormRunoffController.prototype.setPRF = function (test) {
-                console.log(test);
-                this.prfForm.prfValue = test.value;
             };
             SCStormRunoffController.prototype.calculateSyntheticParamsDisabled = function () {
                 var _a;
