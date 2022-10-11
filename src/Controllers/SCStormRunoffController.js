@@ -1144,8 +1144,8 @@ var StreamStats;
                     var newSegment = {};
                     newSegment = {
                         landUse: this.prfForm.landUse.name,
-                        prf: this.prfForm.prfValue,
-                        area: this.prfForm.area
+                        PRF: this.prfForm.prfValue,
+                        Area: this.prfForm.area
                     };
                     this.prfSegments.push(newSegment);
                     this.prfForm = { landUse: null, prfValue: null, area: null };
@@ -1177,11 +1177,32 @@ var StreamStats;
                 }
                 flowType.splice(indexOfRemoval, 1);
             };
+            SCStormRunoffController.prototype.setPRF = function (landuse) {
+                this.prfForm.prfValue = landuse.value;
+            };
             SCStormRunoffController.prototype.calculatePRF = function () {
+                var _this = this;
                 console.log(this.prfSegments);
                 if (this.prfSegments.length == 0) {
                     this.toaster.pop('error', "No PRF information was added, cannot calculate.", "", 500);
                     this.peakRateFactor = 0;
+                }
+                else {
+                    var data = {
+                        "prfData": this.prfSegments
+                    };
+                    console.log(data);
+                    var url = configuration.baseurls['SCStormRunoffServices'] + configuration.queryparams['SCStormRunoffPRF'];
+                    var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(data));
+                    console.log(request);
+                    this.Execute(request).then(function (response) {
+                        console.log(response);
+                        _this.peakRateFactor = response.data.PRF;
+                    }, function (error) {
+                        _this.toaster.clear();
+                        _this.toaster.pop("error", "There was an HTTP error calculating prf", "Please retry", 0);
+                    }).finally(function () {
+                    });
                 }
             };
             SCStormRunoffController.prototype.calculateSyntheticParamsDisabled = function () {

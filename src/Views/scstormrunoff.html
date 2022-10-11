@@ -186,8 +186,8 @@
                                                         <ng-form ng-repeat="segment in vm.prfSegments" name="{{'PRF' + 'key' + $index}}" class="hidden-print">
                                                             <h4>Segment {{$index + 1}}</h4>
                                                                 <label>Land Use: {{vm.prfSegments[$index].landUse}}</label><br>
-                                                                <label>PRF:  {{vm.prfSegments[$index].prf}}</label><br>
-                                                                <label>Area:  {{vm.prfSegments[$index].area}}</label><br>
+                                                                <label>PRF:  {{vm.prfSegments[$index].PRF}}</label><br>
+                                                                <label>Area:  {{vm.prfSegments[$index].Area}}</label><br>
                                                             <div>&nbsp;</div>
                                                             <button ng-click="vm.removeFlowSegment('PRF', $index)"><i class="fa fa-trash"></i> Remove Segment </button>
                                                             <div>&nbsp;</div>
