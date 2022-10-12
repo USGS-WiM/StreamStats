@@ -1263,50 +1263,54 @@ var StreamStats;
                     return false;
                 }
             };
-            SCStormRunoffController.prototype.clearResults = function () {
-                this.drainageArea = null;
-                this.drainageAreaSynthetic = null;
-                this.timeOfConcentrationMin = null;
-                this.peakRateFactor = null;
-                this.standardCurveNumber = null;
-                this.watershedRetention = null;
-                this.initialAbstraction = null;
-                this.lagTimeLength = null;
-                this.lagTimeSlope = null;
-                this._chosenFlowType = null;
-                this.mainChannelLength = null;
-                this.mainChannelSlope = null;
-                this.totalImperviousArea = null;
-                this.SelectedAEP = null;
-                this.SelectedAEPSynthetic = null;
-                this.showResults = false;
-                this.warningMessages = null;
-            };
-            SCStormRunoffController.prototype.clearSyntheticResults = function () {
-                this._selectedAEPSynthetic = null;
-                this._selectedStandardCurve = null;
-                this._selectedCNModification = null;
-                this._selectedTimeOfConcentration = null;
-                this._selectedRainfallDistribution = null;
-                this.TravelTimeFlowTypes = this._defaultFlowTypes.slice();
-                this.TravelTimeFlowSegments = JSON.parse(JSON.stringify(this._defaultFlowSegments));
-                this.drainageAreaSynthetic = null;
-                this.timeOfConcentrationMin = null;
-                this.peakRateFactor = null;
-                this.standardCurveNumber = null;
-                this.watershedRetention = null;
-                this.initialAbstraction = null;
-                this.lagTimeLength = null;
-                this.lagTimeSlope = null;
-                this._selectedCNModification = null;
-                this.showResultsSynthetic = false;
-                this.stormHydrographOrdinatesAccordionOpen = false;
-                this.warningMessagesSynthetic = null;
-                this._selectedDHourStorm = {
-                    "name": "1-Hour",
-                    "value": 1,
-                    "maxTimeMinutes": 500
-                };
+            SCStormRunoffController.prototype.clearResults = function (name) {
+                if (name == "BohmanUrbanForm") {
+                    this.drainageArea = null;
+                    this.timeOfConcentrationMin = null;
+                    this.peakRateFactor = null;
+                    this.standardCurveNumber = null;
+                    this.watershedRetention = null;
+                    this.initialAbstraction = null;
+                    this.lagTimeLength = null;
+                    this.lagTimeSlope = null;
+                    this._chosenFlowType = null;
+                    this.mainChannelLength = null;
+                    this.mainChannelSlope = null;
+                    this.totalImperviousArea = null;
+                    this.SelectedAEP = null;
+                    this.SelectedAEPSynthetic = null;
+                    this.showResults = false;
+                    this.warningMessages = null;
+                }
+                else if (name == "SyntheticUrbanHydrograph") {
+                    this._selectedAEPSynthetic = null;
+                    this._selectedStandardCurve = null;
+                    this._selectedCNModification = null;
+                    this._selectedTimeOfConcentration = null;
+                    this._selectedRainfallDistribution = null;
+                    this.TravelTimeFlowTypes = this._defaultFlowTypes.slice();
+                    this.TravelTimeFlowSegments = JSON.parse(JSON.stringify(this._defaultFlowSegments));
+                    this.drainageAreaSynthetic = null;
+                    this.timeOfConcentrationMin = null;
+                    this.peakRateFactor = null;
+                    this.standardCurveNumber = null;
+                    this.watershedRetention = null;
+                    this.initialAbstraction = null;
+                    this.lagTimeLength = null;
+                    this.lagTimeSlope = null;
+                    this._selectedCNModification = null;
+                    this.showResultsSynthetic = false;
+                    this.stormHydrographOrdinatesAccordionOpen = false;
+                    this.warningMessagesSynthetic = null;
+                    this._selectedDHourStorm = {
+                        "name": "1-Hour",
+                        "value": 1,
+                        "maxTimeMinutes": 500
+                    };
+                    this.prfSegments = [];
+                }
+                else if (name == "BohmanRuralForm") {
+                }
             };
             SCStormRunoffController.prototype.Close = function () {
                 this.modalInstance.dismiss('cancel');

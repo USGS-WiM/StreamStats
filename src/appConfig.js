@@ -13,7 +13,7 @@ configuration.baseurls =
         'ScienceBase': 'https://gis.usgs.gov/sciencebase2',
         'GageStatsServices': 'https://test.streamstats.usgs.gov/gagestatsservices',
         'WeightingServices': 'https://ss-weightingservices.streamstats.usgs.gov',
-        'SCStormRunoffServices': 'http://127.0.0.1:8000',
+        'SCStormRunoffServices': 'https://streamstats.usgs.gov/local/scrunoffservices',
         'NationalMapServices': 'https://hydro.nationalmap.gov/arcgis/rest/services'
     };
 
