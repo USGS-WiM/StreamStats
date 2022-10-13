@@ -1302,20 +1302,24 @@ var StreamStats;
                 if (this.regionServices.regionMapLayerList.length < 1)
                     return;
                 var layerList = [];
+                var visibleList = [];
                 var roots = this.regionServices.regionMapLayerList.map(function (layer) {
                     layerList.push(layer[1]);
+                    if (this.regionServices.selectedRegion.Applications.indexOf("StormDrain") > -1 && layer[0] == 'StreamGrid') {
+                        visibleList.push(false);
+                    }
+                    else {
+                        visibleList.push(true);
+                    }
                 });
-                var visible = true;
-                if (regionId == 'MRB')
-                    visible = false;
-                layerList.forEach(function (layer) {
+                layerList.forEach(function (layer, index) {
                     _this.layers.overlays[regionId + "_region" + layer] =
                         {
                             name: String(layer),
                             group: regionId + " Map layers",
                             url: configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['SSStateLayers'],
                             type: 'agsDynamic',
-                            visible: visible,
+                            visible: visibleList[index],
                             layerOptions: {
                                 opacity: 1,
                                 layers: [layer],
