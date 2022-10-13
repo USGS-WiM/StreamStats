@@ -12,7 +12,7 @@ configuration.baseurls =
         'StormRunoffServices': 'https://test.streamstats.usgs.gov/runoffmodelingservices',
         'ScienceBase': 'https://gis.usgs.gov/sciencebase2',
         'GageStatsServices': 'https://test.streamstats.usgs.gov/gagestatsservices',
-        'WeightingServices': 'https://streamstats.usgs.gov/channelweightingservices',        
+        'WeightingServices': 'https://streamstats.usgs.gov/channelweightingservices',
         'FlowAnywhereRegressionServices': 'https://streamstats.usgs.gov/regressionservices'
     };
 
@@ -23,8 +23,8 @@ if (window.location.host === 'streamstats.usgs.gov') {
         configuration.baseurls.NSS = 'https://streamstats.usgs.gov/nssservices',
         configuration.baseurls.WaterUseServices = 'https://streamstats.usgs.gov/wateruseservices',
         configuration.baseurls.StormRunoffServices = 'https://streamstats.usgs.gov/runoffmodelingservices',
-        configuration.baseurls.GageStatsServices = 'https://streamstats.usgs.gov/gagestatsservices',        
-        configuration.baseurls.FlowAnywhereRegressionServices = 'https://streamstats.usgs.gov/regressionservices',
+        configuration.baseurls.GageStatsServices = 'https://streamstats.usgs.gov/gagestatsservices',
+		configuration.baseurls.FlowAnywhereRegressionServices = 'https://streamstats.usgs.gov/regressionservices',
         configuration.environment = 'production';
 }
 
@@ -40,7 +40,7 @@ configuration.queryparams =
         'statisticsGroupParameterLookup': '/scenarios?regions={0},NA&statisticgroups={1}&regressionregions={2}',
         'estimateFlows': '/scenarios/estimate?regions={0},NA',
         'SSdelineation': '/streamstatsservices/watershed.{0}?rcode={1}&xlocation={2}&ylocation={3}&crs={4}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
-        'SSstormwaterDelineation': '/stormwaterservices/watershed?rcode={0}&xlocation={1}&ylocation={2}&surfacecontributiononly={3}',
+        'SSstormwaterDelineation': '/stormwaterservices/watershed?rcode={0}&xlocation={1}&ylocation={2}&simplify=false&surfacecontributiononly={3}',
         'SSwatershedByWorkspace': '/streamstatsservices/watershed.{0}?rcode={1}&workspaceID={2}&crs={3}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
         'SSeditBasin': '/streamstatsservices/watershed/edit.{0}?rcode={1}&workspaceID={2}&crs={3}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
         'SSAvailableParams': '/streamstatsservices/parameters.json?rcode={0}',
@@ -406,13 +406,14 @@ configuration.regions = [
                     "layerOptions": {
                         "zIndex": 1,
                         "format": "png8",
+						"layers": [0,1,2],
                         "f": "image"
                     },
                     "queryProperties": { "Pipe": { "USGS_Type": "USGS Type", "USGS_SourceID": "USGS Source ID", "USGS_Town": "USGS Town" } }
 
                 }
             }, 
-		"Applications": ["StormDrain"], "regionEnabled": false, "ScenariosAvailable": false
+		"Applications": ["StormDrain"], "regionEnabled": true, "ScenariosAvailable": true
     },
     { "RegionID": "MS", "Name": "Mississippi", "Bounds": [[30.194935, -91.643682], [35.005041, -88.090468]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     {
@@ -590,7 +591,7 @@ configuration.regions = [
     { "RegionID": "WV", "Name": "West Virginia", "Bounds": [[37.20491, -82.647158], [40.637203, -77.727467]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "WY", "Name": "Wyoming", "Bounds": [[40.994289, -111.053428], [45.002793, -104.051705]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
     { "RegionID": "CRB", "Name": "Connecticut River Basin", "Bounds": [[41.227366, -73.254776], [45.305324, -71.059248]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": false },
-    { "RegionID": "DRB", "Name": "Delaware River Basin", "Bounds": [[38.666626, -76.452907], [42.507076, -74.319593]], "Layers": {}, "Applications": ["Wateruse"], "regionEnabled": true, "ScenariosAvailable": false },
+    { "RegionID": "DRB", "Name": "Delaware River Basin", "Bounds": [[38.666626, -76.452907], [42.507076, -74.319593]], "Layers": {}, "Applications": ["Wateruse"], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "RRB", "Name": "Rainy River Basin", "Bounds": [[47.268377, -95.64855], [50.054196, -89.766532]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true }
 
 ];//end regions
