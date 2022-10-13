@@ -14,7 +14,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   - NWIS Page link from legacy real-time page to Next Generation Monitoring Location page
   - FlowAnywhereMapServices to StreamStatsMapServices because IowaStreamEst map services were moved from gis.wim.usgs.gov to gis.streamstats.usgs.gov
   - Flow Anywhere application shows published NWIS Drainage Area instead of GIS-calculated drainage area
-
+  - SSstormwaterDelineation url in appconfig
+  - Mystic configuration in appconfig
+  - DRB configuration in appconfig
+  
   ### Fixed
 
   ### Removed
