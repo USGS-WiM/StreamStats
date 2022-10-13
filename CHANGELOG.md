@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   - SSstormwaterDelineation url in appconfig
   - Mystic configuration in appconfig
   - DRB configuration in appconfig
+  - StreamGrid is not visible by default for StormDrain applications
   
   ### Fixed
 

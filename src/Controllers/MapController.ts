@@ -1738,20 +1738,27 @@ module StreamStats.Controllers {
 
             if (this.regionServices.regionMapLayerList.length < 1) return;
 
-            var layerList = [];
+            var layerList = []; // Map layers for selected Region
+            var visibleList = []; // Visibility of map layers for selected Region
             var roots = this.regionServices.regionMapLayerList.map(function (layer) {
                 layerList.push(layer[1])
+                if (this.regionServices.selectedRegion.Applications.indexOf("StormDrain") > -1 && layer[0] == 'StreamGrid') {
+                    // StreamGrid should not be visible by default for StormDrain applications
+                    visibleList.push(false);
+                } else {
+                    visibleList.push(true);
+                }
+                
             });
-            var visible = true;
-            if (regionId == 'MRB') visible = false;
-            layerList.forEach(layer => {
+
+            layerList.forEach((layer, index) => {
                 this.layers.overlays[regionId + "_region" + layer] = 
                 {
                     name: String(layer),
                     group: regionId + " Map layers",
                     url: configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['SSStateLayers'],
                     type: 'agsDynamic',
-                    visible: visible,
+                    visible:  visibleList[index],
                     layerOptions: {
                         opacity: 1,
                         layers: [layer],
