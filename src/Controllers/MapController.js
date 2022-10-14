@@ -1303,9 +1303,10 @@ var StreamStats;
                     return;
                 var layerList = [];
                 var visibleList = [];
+                var self = this;
                 var roots = this.regionServices.regionMapLayerList.map(function (layer) {
                     layerList.push(layer[1]);
-                    if (this.regionServices.selectedRegion.Applications.indexOf("StormDrain") > -1 && layer[0] == 'StreamGrid') {
+                    if (self.regionServices.selectedRegion.Applications.indexOf("StormDrain") > -1 && layer[0] == 'StreamGrid') {
                         visibleList.push(false);
                     }
                     else {
