@@ -1,23 +1,19 @@
 var configuration = {};
-configuration.version = "4.11.0";
+configuration.version = "4.11.1";
 configuration.environment = 'development';
 
 configuration.baseurls =
     {
         'NWISurl': 'https://waterservices.usgs.gov/nwis',
-        'StreamStatsServices': 'https://dev.streamstats.usgs.gov',
+        'StreamStatsServices': 'https://test.streamstats.usgs.gov',
         'StreamStatsMapServices': 'https://gis.streamstats.usgs.gov',
-        'NSS': 'https://dev.streamstats.usgs.gov/nssservices',
+        'NSS': 'https://test.streamstats.usgs.gov/nssservices',
         'WaterUseServices': 'https://test.streamstats.usgs.gov/wateruseservices',
         'StormRunoffServices': 'https://test.streamstats.usgs.gov/runoffmodelingservices',
         'ScienceBase': 'https://gis.usgs.gov/sciencebase2',
-        'GageStatsServices': 'https://dev.streamstats.usgs.gov/gagestatsservices',
-        'WeightingServices': 'https://streamstats.usgs.gov/channelweightingservices',        
-        'SCStormRunoffServices': 'https://streamstats.usgs.gov/local/scrunoffservices',
-        'FlowAnywhereRegressionServices': 'https://streamstats.usgs.gov/regressionservices',
-        'NationalMapServices': 'https://hydro.nationalmap.gov/arcgis/rest/services',
-        'FlowAnywhereRegressionServices': 'https://streamstats.usgs.gov/regressionservices',
-        'NationalMapServices': 'https://hydro.nationalmap.gov/arcgis/rest/services'
+        'GageStatsServices': 'https://test.streamstats.usgs.gov/gagestatsservices',
+        'WeightingServices': 'https://streamstats.usgs.gov/channelweightingservices',
+        'FlowAnywhereRegressionServices': 'https://streamstats.usgs.gov/regressionservices'
     };
 
 //override streamstats arguments if on production, these get overriden again in MapController after load balancer assigns a server
@@ -28,7 +24,7 @@ if (window.location.host === 'streamstats.usgs.gov') {
         configuration.baseurls.WaterUseServices = 'https://streamstats.usgs.gov/wateruseservices',
         configuration.baseurls.StormRunoffServices = 'https://streamstats.usgs.gov/runoffmodelingservices',
         configuration.baseurls.GageStatsServices = 'https://streamstats.usgs.gov/gagestatsservices',
-        configuration.baseurls.FlowAnywhereRegressionServices = 'https://streamstats.usgs.gov/regressionservices',
+		configuration.baseurls.FlowAnywhereRegressionServices = 'https://streamstats.usgs.gov/regressionservices',
         configuration.environment = 'production';
 }
 
@@ -51,8 +47,8 @@ configuration.queryparams =
         'SSComputeParams': '/streamstatsservices/parameters.json?rcode={0}&workspaceID={1}&includeparameters={2}',
         'SSavailableFeatures': '/streamstatsservices/features.json?workspaceID={0}',
         'SSfeatures': '/streamstatsservices/features.geojson?workspaceID={0}&crs={1}&includefeatures={2}&simplify=true',
-        'SSStateLayers': '/arcgis/rest/services/StreamStats/stateServices_dev/MapServer',
-        'SSNationalLayers': '/arcgis/rest/services/StreamStats/nationalLayers_test/MapServer',
+        'SSStateLayers': '/arcgis/rest/services/StreamStats/stateServices/MapServer',
+        'SSNationalLayers': '/arcgis/rest/services/StreamStats/nationalLayers/MapServer',
         'regionService': '/arcgis/rest/services/ss_studyAreas_prod/MapServer/identify',
         'NLCDQueryService': '/LandCover/USGS_EROS_LandCover_NLCD/MapServer/4',
         'regulationService': '/arcgis/rest/services/regulations/{0}/MapServer/exts/RegulationRESTSOE/Regulation',
@@ -83,7 +79,7 @@ configuration.queryparams =
         'GageStatsServicesNetwork': '/stations/Network?lat={0}&lon={1}&distance={2}&includeStats=true&geojson=false',
         'GageStatsServicesBounds': '/stations/Bounds?xmin={0}&xmax={1}&ymin={2}&ymax={3}&geojson=true',
         'FlowAnywhereEstimates': '/models/FLA/estimate?state={0}',
-		'FlowAnywhereGages': '/arcgis/rest/services/IowaStreamEst/FlowAnywhere/MapServer/1/query?geometry={0},{1}&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.da_pub_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson'
+        'FlowAnywhereGages': '/arcgis/rest/services/IowaStreamEst/FlowAnywhere/MapServer/1/query?geometry={0},{1}&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.da_pub_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson'
     };
 
 configuration.SupportTicketService = {
@@ -317,11 +313,11 @@ configuration.regions = [
             }
         }, "Applications": ["KarstCheck"], "regionEnabled": true, "ScenariosAvailable": true
     },
-    { "RegionID": "LA", "Name": "Louisiana", "Bounds": [[28.939655, -94.041785], [33.023422, -89.021803]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
+    { "RegionID": "LA", "Name": "Louisiana", "Bounds": [[28.939655, -94.041785], [33.023422, -89.021803]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
     { "RegionID": "MA", "Name": "Massachusetts", "Bounds": [[41.238279, -73.49884], [42.886877, -69.91778]], "Layers": {}, "Applications": ["Wateruse"], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "MD", "Name": "Maryland and District of Columbia", "Bounds": [[37.970255, -79.489865], [39.725461, -75.045623]], "Layers": {}, "Applications": ["Wateruse"], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "ME", "Name": "Maine", "Bounds": [[43.09105, -71.087509], [47.453334, -66.969271]], "Layers": 
-	{
+    {
         "MeanAugustBaseflow": {
             "name": "Mean August Baseflow",
             "url": "https://gis.usgs.gov/sciencebase3/rest/services/Catalog/620408c1d34e622189de5ad6/MapServer",
@@ -479,7 +475,7 @@ configuration.regions = [
                             var popupContent = '<h5>SCDOT Bridges</h5> ';
                             var queryProperties = { 
                                 "STRUCTURE_": "Structure ID", 
-                                "ASSET_ID": "Asset ID",
+                                "ASSET_ID": "Asset ID",
                                 "CROSSING": "Crossing", 
                                 "COUNTY_ID": "County Identifier", 
                                 "RTE_TYPE": "Route Type", 
@@ -591,9 +587,9 @@ configuration.regions = [
     { "RegionID": "VT", "Name": "Vermont", "Bounds": [[42.725852, -73.436], [45.013351, -71.505372]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "VI", "Name": "Virgin Islands", "Bounds": [[17.676666, -65.026947], [18.377777, -64.560287]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
     { "RegionID": "WA", "Name": "Washington", "Bounds": [[45.543092, -124.732769], [48.999931, -116.919132]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
-    { "RegionID": "WI", "Name": "Wisconsin", "Bounds": [[42.489152, -92.885397], [46.952479, -86.967712]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
+    { "RegionID": "WI", "Name": "Wisconsin", "Bounds": [[42.489152, -92.885397], [46.952479, -86.967712]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": false },
     { "RegionID": "WV", "Name": "West Virginia", "Bounds": [[37.20491, -82.647158], [40.637203, -77.727467]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
-    { "RegionID": "WY", "Name": "Wyoming", "Bounds": [[40.994289, -111.053428], [45.002793, -104.051705]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": false },
+    { "RegionID": "WY", "Name": "Wyoming", "Bounds": [[40.994289, -111.053428], [45.002793, -104.051705]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
     { "RegionID": "CRB", "Name": "Connecticut River Basin", "Bounds": [[41.227366, -73.254776], [45.305324, -71.059248]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": false },
     { "RegionID": "DRB", "Name": "Delaware River Basin", "Bounds": [[38.666626, -76.452907], [42.507076, -74.319593]], "Layers": {}, "Applications": ["Wateruse"], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "RRB", "Name": "Rainy River Basin", "Bounds": [[47.268377, -95.64855], [50.054196, -89.766532]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true }
