@@ -604,8 +604,9 @@ module StreamStats.Controllers {
                                     var text = ['Flow-Duration Statistics by Water Years:',
                                     'Flow-Duration Statistics by Period of Record, Calendar Day & Month, & Seasonal Periods:',
                                     'Stream Flow Statistics:'];
+                                    var NWISpage = 'https://waterdata.usgs.gov/monitoring-location/' + siteNo;
                                     
-                                    var html = '<strong>NWIS page: </strong><a href="' + queryResult.properties[k] + ' "target="_blank">link</a></br><strong>StreamStats Gage Page: </strong><a ng-click="' + SSgagepage + '">link</a></br>';
+                                    var html = '<strong>NWIS page: </strong><a href="' + NWISpage + ' "target="_blank">link</a></br><strong>StreamStats Gage Page: </strong><a ng-click="' + SSgagepage + '">link</a></br>';
                                     this.additionalLinkCheck(urls.length-1, urls, '', text);
                                     setTimeout(() => {
                                         html = html + this.additionalHTML;
@@ -1460,7 +1461,7 @@ module StreamStats.Controllers {
                         var text = ['Flow-Duration Statistics by Water Years:',
                         'Flow-Duration Statistics by Period of Record, Calendar Day & Month, & Seasonal Periods:',
                         'Stream Flow Statistics:'];
-                        var NWISpage = 'http://nwis.waterdata.usgs.gov/nwis/inventory/?site_no=' + siteNo;
+                        var NWISpage = 'https://waterdata.usgs.gov/monitoring-location/' + siteNo;
                         var gageButtonDiv = L.DomUtil.create('div', 'innerDiv');
                         var gageButtonLoaderDiv = L.DomUtil.create('div', 'innerDiv');
 
@@ -1737,20 +1738,27 @@ module StreamStats.Controllers {
 
             if (this.regionServices.regionMapLayerList.length < 1) return;
 
-            var layerList = [];
+            var layerList = []; // Map layers for selected Region
+            var visibleList = []; // Visibility of map layers for selected Region
             var roots = this.regionServices.regionMapLayerList.map(function (layer) {
                 layerList.push(layer[1])
+                if (this.regionServices.selectedRegion.Applications.indexOf("StormDrain") > -1 && layer[0] == 'StreamGrid') {
+                    // StreamGrid should not be visible by default for StormDrain applications
+                    visibleList.push(false);
+                } else {
+                    visibleList.push(true);
+                }
+                
             });
-            var visible = true;
-            if (regionId == 'MRB') visible = false;
-            layerList.forEach(layer => {
+
+            layerList.forEach((layer, index) => {
                 this.layers.overlays[regionId + "_region" + layer] = 
                 {
                     name: String(layer),
                     group: regionId + " Map layers",
                     url: configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['SSStateLayers'],
                     type: 'agsDynamic',
-                    visible: visible,
+                    visible:  visibleList[index],
                     layerOptions: {
                         opacity: 1,
                         layers: [layer],

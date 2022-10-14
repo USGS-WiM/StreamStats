@@ -1,6 +1,6 @@
 {
   "name": "StreamStats",
-  "version": "4.10.1",
+  "version": "4.11.0",
   "homepage": "https://github.com/USGS-WiM/StreamStats",
   "repository": "https://github.com/USGS-WiM/StreamStats",
   "authors": [
@@ -42,7 +42,7 @@
     "ng-file-upload": "~12.0.1",
     "save-svg-as-png": "^1.4.6",
     "tokml": "^0.4.0",
-    "usgs-search-api": "github:usgs/search_api",
+    "usgs-search-api": "github:usgs/search_api#a9537dd5549fd1149737dd2815b1146aa0a2bc01",
     "wim-styles": "github:usgs-wim/wim-styles#master",
     "wim_angular": "github:usgs-wim/wim_angular#master_streamstats"
   },

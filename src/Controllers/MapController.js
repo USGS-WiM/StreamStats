@@ -425,7 +425,8 @@ var StreamStats;
                                         var text = ['Flow-Duration Statistics by Water Years:',
                                             'Flow-Duration Statistics by Period of Record, Calendar Day & Month, & Seasonal Periods:',
                                             'Stream Flow Statistics:'];
-                                        var html = '<strong>NWIS page: </strong><a href="' + queryResult.properties[k] + ' "target="_blank">link</a></br><strong>StreamStats Gage Page: </strong><a ng-click="' + SSgagepage + '">link</a></br>';
+                                        var NWISpage = 'https://waterdata.usgs.gov/monitoring-location/' + siteNo;
+                                        var html = '<strong>NWIS page: </strong><a href="' + NWISpage + ' "target="_blank">link</a></br><strong>StreamStats Gage Page: </strong><a ng-click="' + SSgagepage + '">link</a></br>';
                                         _this.additionalLinkCheck(urls.length - 1, urls, '', text);
                                         setTimeout(function () {
                                             html = html + _this.additionalHTML;
@@ -1066,7 +1067,7 @@ var StreamStats;
                             var text = ['Flow-Duration Statistics by Water Years:',
                                 'Flow-Duration Statistics by Period of Record, Calendar Day & Month, & Seasonal Periods:',
                                 'Stream Flow Statistics:'];
-                            var NWISpage = 'http://nwis.waterdata.usgs.gov/nwis/inventory/?site_no=' + siteNo;
+                            var NWISpage = 'https://waterdata.usgs.gov/monitoring-location/' + siteNo;
                             var gageButtonDiv = L.DomUtil.create('div', 'innerDiv');
                             var gageButtonLoaderDiv = L.DomUtil.create('div', 'innerDiv');
                             gageButtonLoaderDiv.innerHTML = '<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>';
@@ -1301,20 +1302,24 @@ var StreamStats;
                 if (this.regionServices.regionMapLayerList.length < 1)
                     return;
                 var layerList = [];
+                var visibleList = [];
                 var roots = this.regionServices.regionMapLayerList.map(function (layer) {
                     layerList.push(layer[1]);
+                    if (this.regionServices.selectedRegion.Applications.indexOf("StormDrain") > -1 && layer[0] == 'StreamGrid') {
+                        visibleList.push(false);
+                    }
+                    else {
+                        visibleList.push(true);
+                    }
                 });
-                var visible = true;
-                if (regionId == 'MRB')
-                    visible = false;
-                layerList.forEach(function (layer) {
+                layerList.forEach(function (layer, index) {
                     _this.layers.overlays[regionId + "_region" + layer] =
                         {
                             name: String(layer),
                             group: regionId + " Map layers",
                             url: configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['SSStateLayers'],
                             type: 'agsDynamic',
-                            visible: visible,
+                            visible: visibleList[index],
                             layerOptions: {
                                 opacity: 1,
                                 layers: [layer],
