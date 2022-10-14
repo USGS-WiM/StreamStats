@@ -28,7 +28,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Security  
 
-- 
+
+
+## [v4.11.1](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.11.1) - 2022-10-14
+
+### Added 
+
+- Harper and Andrea to authors in package.json
+
+### Fixed  
+
+- Issue where state layers were not showing up 
+
+
 
 ## [v4.11.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.11.0) - 2022-10-14
 
