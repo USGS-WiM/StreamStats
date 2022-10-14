@@ -6,6 +6,32 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 ## [Unreleased](https://github.com/USGS-WiM/StreamStats/tree/dev)
   
+### Added 
+
+-
+
+### Changed  
+
+-
+
+### Deprecated 
+
+-
+
+### Removed 
+
+- 
+
+### Fixed  
+
+- 
+
+### Security  
+
+- 
+
+## [v4.11.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.11.0) - 2022-10-14
+
   ### Added
   - Flow Anywhere Method from StreamEst
 
@@ -18,17 +44,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   - Mystic configuration in appconfig
   - DRB configuration in appconfig
   - StreamGrid is not visible by default for StormDrain applications
-  
-  ### Fixed
-
-  ### Removed
-
-## [v.4.10.1](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.10.1) - 2022-07-20
+  ## [v4.10.1](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.10.1) - 2022-07-20
   
   ### Added
   - Added Channel-width Methods Weighting results to downloaded CSV
 
-## [v.4.10.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.10.0) - 2022-06-16
+## [v4.10.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.10.0) - 2022-06-16
   
   ### Added
   - Added loader and disabled download button until longest flow path is downloaded
