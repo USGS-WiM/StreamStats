@@ -1,9 +1,11 @@
 {
   "name": "StreamStats",
-  "version": "4.11.0",
+  "version": "4.11.1",
   "homepage": "https://github.com/USGS-WiM/StreamStats",
   "repository": "https://github.com/USGS-WiM/StreamStats",
   "authors": [
+    "Harper Wavra <hwavra@usgs.gov",
+    "Andrea Medenblik <amedenblik@usgs.gov>",
     "Katrin Jacobsen <kjacobsen@usgs.gov>",
     "Jeremy Newson <jknewson@usgs.gov>",
     "Martyn Smith <marsmith@usgs.gov>"

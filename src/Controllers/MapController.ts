@@ -1740,9 +1740,10 @@ module StreamStats.Controllers {
 
             var layerList = []; // Map layers for selected Region
             var visibleList = []; // Visibility of map layers for selected Region
+            var self = this;
             var roots = this.regionServices.regionMapLayerList.map(function (layer) {
                 layerList.push(layer[1])
-                if (this.regionServices.selectedRegion.Applications.indexOf("StormDrain") > -1 && layer[0] == 'StreamGrid') {
+                if (self.regionServices.selectedRegion.Applications.indexOf("StormDrain") > -1 && layer[0] == 'StreamGrid') {
                     // StreamGrid should not be visible by default for StormDrain applications
                     visibleList.push(false);
                 } else {
