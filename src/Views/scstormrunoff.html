@@ -164,7 +164,7 @@
 
                                 <!-- Curve Number -->
                                 <h3 class="center-div">Curve Number</h3>
-                                <div class="wim-alert hidden-print">Select a 'Standard Curve Number Value' and a 'Curve Number Modification Method', once selected 'Standard Curve Number' will be calculated with <b>Calculate Missing Parameters</b>.</div>
+                                <div class="wim-alert hidden-print">Select a 'Standard Curve Number Value' and a 'Curve Number Modification Method'. Once selected, 'Standard Curve Number' will be calculated with <b>Calculate Missing Parameters</b>.</div>
                                 <label for="StandardCurve">Select a Standard Curve Number Value:<span style="color: #ffcc00">*</span></label>
                                 <select name="StandardCurve" ng-model="vm.SelectedStandardCurve" ng-options="curve.name for curve in vm.StandardCurveOptions track by curve.value" required></select>
                                 <label for="CNModification">Select a Curve Number Modification Method:<span style="color: #ffcc00">*</span></label>
@@ -177,7 +177,7 @@
                                 <div>
                                     <div class="wim-alert hidden-print">Fill out 'Peak Rate Factor Input Form'. Once form is filled out 'Peak Rate Factor' will be calculated automatically <b>Calculate Missing Parameters</b>.</div>
                                     <div class="flow-form-row">                                    
-                                        <label for="PeakRateFactor">Peak Rate Factor input form:<span style="color: #ffcc00">*</span></label>
+                                        <label for="PeakRateFactor">Peak Rate Factor Input Form:<span style="color: #ffcc00">*</span></label>
                                         <div class="flow-form-accordion">
                                             <accordion id="PRF">
                                                 <accordion-group is-open="PRF.accordionOpen" style="overflow:auto">
@@ -200,14 +200,14 @@
                                     </div>
 
                                     <div ng-if="vm.chosenFlowTypeIndex == 'PRF'">
-                                        <h4 class="modal-title">New PRF Segment</h4>
+                                        <h4 class="modal-title">New PRF Input</h4>
                                         <ng-form name="PRF" class="hidden-print">
                                             <label for="landUse">Land Use<span style="color: #ffcc00">*</span></label>
                                             <select name="landUse" ng-model="vm.prfForm.landUse" ng-options="item.name for item in vm.prfTypes" ng-change="vm.setPRF(vm.prfForm.landUse)" required></select>                                                                          
 
                                             <label for="prfValue">PRF<span style="color: #ffcc00">*</span></label>
                                             <input type="number" name="prfValue" ng-model="vm.prfForm.prfValue" required/>
-                                            <label for="area">Area (ac)<span style="color: #ffcc00">*</span></label>
+                                            <label for="area">Area (acres)<span style="color: #ffcc00">*</span></label>
                                             <input type="number" name="area" ng-model="vm.prfForm.area" required/>
                                             <div>&nbsp;</div>
                                             <div class="form-row-extremes">
@@ -228,7 +228,7 @@
 
                                 <!-- Time of Concentration -->
                                 <h3 class="center-div">Time of Concentration</h3>
-                                <div class="wim-alert hidden-print">Select a 'Time of concentration'. If 'Lag Time Equation' is selected, no additional user input is needed. If 'Travel Time Method' is selected user must add at least one flow segment for each flow type. Once filled out 'Time of Concentration' will be calculated automatically with <b>Calculate Missing Parameters</b>.</div>
+                                <div class="wim-alert hidden-print">Select a 'Time of Concentration'. If 'Lag Time Equation' is selected, no additional user input is needed. If 'Travel Time Method' is selected, add at least one flow segment. Once filled out, 'Time of Concentration' will be calculated automatically with <b>Calculate Missing Parameters</b>.</div>
                                 <label for="TimeOfConcentration">Select Time of Concentration:<span style="color: #ffcc00">*</span></label>
                                 <select name="TimeOfConcentration" ng-model="vm.SelectedTimeOfConcentration" ng-options="time.name for time in vm.TimeOfConcentrationOptions track by time.value" required></select>
                                 <label for="TimeOfConcentrationMin">Time of Concentration, Tc (minutes):</label> <span ng-if="SyntheticUrbanHydrograph.TimeOfConcentrationMin.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
@@ -319,10 +319,10 @@
                                     <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-red" ng-click="vm.clearResults(SyntheticUrbanHydrograph.$name)" ng-hide="!vm.validateForm(SyntheticUrbanHydrograph)"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;Clear All</button>
                                     <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.queryRegressionRegionsSynthetic()" ng-hide="!vm.validateForm(SyntheticUrbanHydrograph)"><span ng-class="vm.canContinueSynthetic ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></span>{{ vm.showResults ? '&nbsp;&nbsp;Recalculate Results' : '&nbsp;&nbsp;Continue' }}</button>
                                 </div>
-                                <label class="fullwidth alignc orange" ng-if="vm.calculateSyntheticParamsDisabled() == 1"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Must select 'AEP', 'Standard Curve Number Value', and 'Time of Concentration' Before Calculating Missing Parameters</label>
-                                <label class="fullwidth alignc orange" ng-if="vm.calculateSyntheticParamsDisabled() == 2"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Must select 'AEP' and 'Standard Curve Number Value' Before Calculating Missing Parameters</label>
-                                <label class="fullwidth alignc orange" ng-if="vm.calculateSyntheticParamsDisabled() == 3"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Must select 'AEP', 'Standard Curve Number Value', and at Least One Flow Segment for Each Flow Type Before Calculating Missing Parameters</label>
-                                <label class="fullwidth alignc orange" ng-if="vm.calculateSyntheticParamsDisabled() == 4"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Must Add at Least One Flow Segment for Each Flow Type Before Calculating Missing Parameters</label>
+                                <label class="fullwidth alignc orange" ng-if="vm.calculateSyntheticParamsDisabled() == 1"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Must select 'AEP', 'Standard Curve Number Value', and 'Time of Concentration' Before <b>Calculate Missing Parameters</b>.</label>
+                                <label class="fullwidth alignc orange" ng-if="vm.calculateSyntheticParamsDisabled() == 2"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Must select 'AEP' and 'Standard Curve Number Value' Before <b>Calculate Missing Parameters</b>.</label>
+                                <label class="fullwidth alignc orange" ng-if="vm.calculateSyntheticParamsDisabled() == 3"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Must select 'AEP', 'Standard Curve Number Value', and at Least One Flow Segment for Each Flow Type Before <b>Calculate Missing Parameters</b>.</label>
+                                <label class="fullwidth alignc orange" ng-if="vm.calculateSyntheticParamsDisabled() == 4"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Must Add at Least One Flow Segment Before <b>Calculate Missing Parameters</b>.</label>
                                 <label class="fullwidth alignc orange" ng-if="!vm.validateForm(SyntheticUrbanHydrograph) && !vm.calculateSyntheticParamsDisabled()"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Parameters Must Be Entered Before Results Can Be Computed</label>
                                 <label ng-if="vm.validateForm(SyntheticUrbanHydrograph)">&nbsp;&nbsp;</label> 
                             </form>
