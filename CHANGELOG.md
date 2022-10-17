@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
     -  South Carolina application allows user to select a different NHD stream via radio buttons in report
     -  Query NHD streams in South Carolina and add new section to report
     -  Added Synthetic Unit Hydrograph functionality to the SC Storm Runoff model
-
+    -  Added notes on Time of Concentration to bottom of Synthetic Unit Hydrograph Hydrograph results
 
   ### Changed
 
@@ -22,6 +22,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
     - Changed some text related to the NHD streams section in report
 
   ### Fixed
+
+    - Fixed bug when dowloading CSV results for Synthetic Unit Hydrograph
 
   ### Removed
 
