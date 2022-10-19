@@ -1417,37 +1417,34 @@ module StreamStats.Controllers {
         public calculateSyntheticParamsDisabled() {
             // travel time selected
             if(this._selectedTimeOfConcentration?.value == 1) {
-                let completedAllFlowSegments = this.completedFlowSegments();
+                let numCompletedFlowSegments = this.completedFlowSegments();
                 if(!this._selectedAEPSynthetic || !this._selectedStandardCurve) {
-                    // just missing fields
-                    if(completedAllFlowSegments) {
-                        return 2;
-                    }
                     // missing fields and flow segments
-                    return 3;
+                    return 2;
                 }
-                if(!completedAllFlowSegments) {
+                if (numCompletedFlowSegments < 1) {
                     // missing just flow segments
-                    return 4;
+                    return 3;
                 }
             }
             // if there's missing params altogether
-            if(!this._selectedAEPSynthetic || !this._selectedStandardCurve || !this._selectedTimeOfConcentration) {
+            if (!this._selectedAEPSynthetic || !this._selectedStandardCurve || !this._selectedTimeOfConcentration || this.prfSegments.length == 0) {
                 return 1;
             }
             return 0;
         }
 
         private completedFlowSegments() {
+            var counter = 0;
             if(this._selectedTimeOfConcentration?.value == 1) {
                 let keys = Object.keys(this.TravelTimeFlowSegments);
                 for(let segmentName of keys) {
-                    if(!this.TravelTimeFlowSegments[segmentName].length) {
-                        return false;
+                    if(this.TravelTimeFlowSegments[segmentName].length) {
+                        counter ++
                     }
                 }
             }
-            return true;
+            return counter;
         }
 
         public validateForm(mainForm) {

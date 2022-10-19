@@ -1205,34 +1205,32 @@ var StreamStats;
             SCStormRunoffController.prototype.calculateSyntheticParamsDisabled = function () {
                 var _a;
                 if (((_a = this._selectedTimeOfConcentration) === null || _a === void 0 ? void 0 : _a.value) == 1) {
-                    var completedAllFlowSegments = this.completedFlowSegments();
+                    var numCompletedFlowSegments = this.completedFlowSegments();
                     if (!this._selectedAEPSynthetic || !this._selectedStandardCurve) {
-                        if (completedAllFlowSegments) {
-                            return 2;
-                        }
+                        return 2;
+                    }
+                    if (numCompletedFlowSegments < 1) {
                         return 3;
                     }
-                    if (!completedAllFlowSegments) {
-                        return 4;
-                    }
                 }
-                if (!this._selectedAEPSynthetic || !this._selectedStandardCurve || !this._selectedTimeOfConcentration) {
+                if (!this._selectedAEPSynthetic || !this._selectedStandardCurve || !this._selectedTimeOfConcentration || this.prfSegments.length == 0) {
                     return 1;
                 }
                 return 0;
             };
             SCStormRunoffController.prototype.completedFlowSegments = function () {
                 var _a;
+                var counter = 0;
                 if (((_a = this._selectedTimeOfConcentration) === null || _a === void 0 ? void 0 : _a.value) == 1) {
                     var keys = Object.keys(this.TravelTimeFlowSegments);
                     for (var _i = 0, keys_2 = keys; _i < keys_2.length; _i++) {
                         var segmentName = keys_2[_i];
-                        if (!this.TravelTimeFlowSegments[segmentName].length) {
-                            return false;
+                        if (this.TravelTimeFlowSegments[segmentName].length) {
+                            counter++;
                         }
                     }
                 }
-                return true;
+                return counter;
             };
             SCStormRunoffController.prototype.validateForm = function (mainForm) {
                 var _a;
