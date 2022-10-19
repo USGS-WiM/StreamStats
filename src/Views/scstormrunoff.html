@@ -16,8 +16,6 @@
                         <li ng-class="{'active': vm.SelectedTab == 2}"><a ng-click="vm.SelectedTab=2">USGS SC Flood Hydrograph for Urban Watersheds</a></li>
                         <li ng-class="{'active': vm.SelectedTab == 1}"><a ng-click="vm.SelectedTab=1">USGS SC Flood Hydrograph for Rural Watersheds</a></li>
                     </ul>
-                    <div ng-if="vm.SelectedTab == 2" class="wim-alert hidden-print">Enter custom values below or <b>Calculate Missing Parameters</b>. Click <b>Continue</b> to view peak discharge and hydrograph.</div>
-
                     <div id="printArea" class="SCStormRunoffInput">
                         <!-- Bohman Rural (1989) tab -->
                         <div ng-if="vm.SelectedTab == 1" style="position:relative;">
@@ -33,7 +31,7 @@
                                 <label class="fullwidth" ng-if="!vm.validateForm(BohmanRuralForm) || (vm.validateForm(BohmanRuralForm) && vm.hideAlerts)">&nbsp;&nbsp;</label>
                                 <div class="hidden-print">
                                     <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.calculateParameters('DRNAREA')" ng-hide="vm.validateForm(BohmanRuralForm)"><span ng-class="vm.canContinue ? 'fa fa-calculator' : 'fa fa-refresh fa-spin'"></span>&nbsp;&nbsp;Calculate Missing Parameters</button>
-                                    <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-red" ng-click="vm.clearResults()" ng-hide="!vm.validateForm(BohmanRuralForm)"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;Clear All</button>
+                                    <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-red" ng-click="vm.clearResults(BohmanRuralForm)" ng-hide="!vm.validateForm(BohmanRuralForm)"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;Clear All</button>
                                     <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.queryRegressionRegions()" ng-hide="!vm.validateForm(BohmanRuralForm)"><span ng-class="vm.canContinue ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></span>{{ vm.showResults ? '&nbsp;&nbsp;Recalculate Results' : '&nbsp;&nbsp;Continue' }}</button>
                                 </div>
                                 <label class="fullwidth alignc orange" ng-if="!vm.validateForm(BohmanRuralForm)"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Parameters Must Be Entered Before Results Can Be Calculated</label>
@@ -44,24 +42,25 @@
                         </div>
                         <!-- Bohman Urban (1992) tab -->
                         <div ng-if="vm.SelectedTab == 2" style="position:relative;">
+                            <div class="wim-alert hidden-print">Fill out required<span style="color: #ffcc00">*</span> fields. Remaining inputs will be calculated with <b>Calculate Missing Parameters</b> based on delineated basin. Then click <b>Continue</b> to view peak discharge and hydrograph.</div>
                             <form id="BohmanUrbanForm" name="BohmanUrbanForm" class="hidden-print" novalidate>
-                                <label for="AEPOptions">Select an Annual Exceedance Probability (AEP):</label>
-                                <select name="AEPOptions" ng-model="vm.SelectedAEP" ng-options="precip.name for precip in vm.AEPOptions track by precip.value"></select>
+                                <label for="AEPOptions">Annual Exceedance Probability (AEP):<span style="color: #ffcc00">*</span></label>
+                                <select name="AEPOptions" ng-model="vm.SelectedAEP" ng-options="precip.name for precip in vm.AEPOptions track by precip.value" required></select>
 
                                 <label for="DrainageArea">Drainage Area (square miles):</label> <span ng-if="BohmanUrbanForm.DrainageArea.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
-                                <input type="number" name="DrainageArea" ng-model="vm.drainageArea" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+                                <input type="number" name="DrainageArea" ng-model="vm.drainageArea" required readonly/>
                                 <label for="MainChannelLength">Main Channel Length (miles):</label> <span ng-if="BohmanUrbanForm.MainChannelLength.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
-                                <input type="number" name="MainChannelLength" ng-model="vm.mainChannelLength" ng-pattern="greaterThanZero" required/>
+                                <input type="number" name="MainChannelLength" ng-model="vm.mainChannelLength" required readonly/>
                                 <label for="MainChannelSlope">Main Channel Slope (feet per mile):</label>  <span ng-if="BohmanUrbanForm.MainChannelSlope.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
-                                <input type="number" name="MainChannelSlope" ng-model="vm.mainChannelSlope" ng-pattern="greaterThanZero" required/>
+                                <input type="number" name="MainChannelSlope" ng-model="vm.mainChannelSlope" required readonly/>
                                 <label for="TotalImperviousArea">Total impervious area (%):</label>  <span ng-if="BohmanUrbanForm.TotalImperviousArea.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be between 0 and 100</span>
-                                <input type="number" name="TotalImperviousArea" ng-model="vm.totalImperviousArea" ng-pattern="betweenZeroOneHundred" required/>
+                                <input type="number" name="TotalImperviousArea" ng-model="vm.totalImperviousArea" required readonly/>
 
                                 <label class="fullwidth alignc" ng-if="vm.validateForm(BohmanUrbanForm) && !vm.hideAlerts"><span class="fa fa-check"></span>&nbsp;Parameters Have Been Calculated</label>
                                 <label class="fullwidth" ng-if="!vm.validateForm(BohmanUrbanForm) || (vm.validateForm(BohmanUrbanForm) && vm.hideAlerts)">&nbsp;&nbsp;</label>
                                 <div class="hidden-print">
                                     <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.calculateParameters('DRNAREA,LFPLENGTH,CSL10_85fm,LC06IMP')" ng-hide="vm.validateForm(BohmanUrbanForm)"><span ng-class="vm.canContinue ? 'fa fa-calculator' : 'fa fa-refresh fa-spin'"></span>&nbsp;&nbsp;Calculate Missing Parameters</button>
-                                    <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-red" ng-click="vm.clearResults()" ng-hide="!vm.validateForm(BohmanUrbanForm)"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;Clear All</button>
+                                    <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-red" ng-click="vm.clearResults(BohmanUrbanForm.$name)" ng-hide="!vm.validateForm(BohmanUrbanForm)"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;Clear All</button>
                                     <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.queryRegressionRegions()" ng-hide="!vm.validateForm(BohmanUrbanForm)"><span ng-class="vm.canContinue ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></span>{{ vm.showResults ? '&nbsp;&nbsp;Recalculate Results' : '&nbsp;&nbsp;Continue' }}</button>
                                 </div>
                                 <label class="fullwidth alignc orange" ng-if="!vm.validateForm(BohmanUrbanForm)"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Parameters Must Be Entered Before Results Can Be Computed</label>
@@ -135,66 +134,125 @@
                         <!-- Synthetic Urban Hydrograph tab -->
                         <div ng-if="vm.SelectedTab == 3" style="position:relative;">
                             <div>&nbsp;</div>
+                            <div class="wim-alert hidden-print">Fill out required<span style="color: #ffcc00">*</span> fields. Remaining inputs will be calculated with <b>Calculate Missing Parameters</b> based on delineated basin. Then click <b>Continue</b> to view peak discharge and hydrograph.</div>
                             <form id="SyntheticUrbanHydrograph" name="SyntheticUrbanHydrograph" class="hidden-print" novalidate>
-                                <label for="AEPOptionsSynthetic">Select an Annual Exceedance Probability (AEP) / Design Storm Return Period:</label>
+                                <label for="AEPOptionsSynthetic">Annual Exceedance Probability (AEP) / Design Storm Return Period:<span style="color: #ffcc00">*</span></label>
                                 <select name="AEPOptionsSynthetic" ng-model="vm.SelectedAEPSynthetic" ng-options="precip.name for precip in vm.AEPOptionsSynthetic track by precip.value" required></select>
-                                <label for="StandardCurve">Select a Standard Curve Number Value:</label>
-                                <select name="StandardCurve" ng-model="vm.SelectedStandardCurve" ng-options="curve.name for curve in vm.StandardCurveOptions track by curve.value" required></select>
-                                <label for="TimeOfConcentration">Select Time of Concentration:</label>
-                                <select name="TimeOfConcentration" ng-model="vm.SelectedTimeOfConcentration" ng-options="time.name for time in vm.TimeOfConcentrationOptions track by time.value" required></select>
-                                <label for="CNModification">Select a CN Modification Method:</label>
-                                <select name="CNModification" ng-model="vm.SelectedCNModification" ng-options="cnmod.name for cnmod in vm.CNModificationOptions track by cnmod.value" required></select>
-                                <label for="RainfallDistribution">Select a Rainfall Distribution Curve:</label>
-                                <select name="RainfallDistribution" ng-model="vm.SelectedRainfallDistribution" ng-options="distr.name for distr in vm.RainfallDistributionOptions track by distr.value" required></select>
-
+                                <label for="RainfallDistribution">Rainfall Distribution Curve:</label>
+                                <select style="pointer-events: none;" name="RainfallDistribution" ng-model="vm.SelectedRainfallDistribution" ng-options="distr.name for distr in vm.RainfallDistributionOptions track by distr.value" required readonly></select>
+                                
                                 <div class="form-row">
                                     <div class="form-column-left">
                                         <label for="DrainageAreaSynthetic">Drainage Area (acres):</label> <span ng-if="SyntheticUrbanHydrograph.DrainageAreaSynthetic.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
-                                        <input type="number" name="DrainageAreaSynthetic" ng-model="vm.drainageAreaSynthetic" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+                                        <input type="number" name="DrainageAreaSynthetic" ng-model="vm.drainageAreaSynthetic" ng-minlength="1" ng-pattern="greaterThanZero" required readonly/>
                                     </div>
                                     <div class="form-column-right">
-                                        <label for="TimeOfConcentrationMin">Time of Concentration, Tc (minutes):</label> <span ng-if="SyntheticUrbanHydrograph.TimeOfConcentrationMin.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
-                                        <input type="number" name="TimeOfConcentrationMin" ng-model="vm.timeOfConcentrationMin" ng-minlength="0" ng-pattern="greaterThanOrEqualToZero" required/>
-                                    </div>
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-column-left">
-                                        <label for="PeakRateFactor">Peak Rate Factor, PRF:</label> <span ng-if="SyntheticUrbanHydrograph.PeakRateFactor.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
-                                        <input type="number" name="PeakRateFactor" ng-model="vm.peakRateFactor" ng-minlength="0" ng-pattern="greaterThanOrEqualToZero" required/>
-                                    </div>
-                                    <div class="form-column-right">
-                                        <label for="StandardCurveNumber">Standard Curve Number, CN:</label> <span ng-if="SyntheticUrbanHydrograph.StandardCurveNumber.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
-                                        <input type="number" name="StandardCurveNumber" ng-model="vm.standardCurveNumber" ng-minlength="0" ng-pattern="greaterThanOrEqualToZero" required/>
+                                        <label for="InitialAbstraction">Initial Abstraction, Ia:</label> <span ng-if="SyntheticUrbanHydrograph.InitialAbstraction.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
+                                        <input type="number" name="InitialAbstraction" ng-model="vm.initialAbstraction" ng-minlength="0" ng-pattern="greaterThanOrEqualToZero" required readonly/>
                                     </div>
                                 </div>
                                 <div class="form-row">
                                     <div class="form-column-left">
                                         <label for="WatershedRetention">Watershed Retention, S:</label> <span ng-if="SyntheticUrbanHydrograph.WatershedRetention.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
-                                        <input type="number" name="WatershedRetention" ng-model="vm.watershedRetention" ng-minlength="0" ng-pattern="greaterThanOrEqualToZero" required/>
+                                        <input type="number" name="WatershedRetention" ng-model="vm.watershedRetention" ng-minlength="0" ng-pattern="greaterThanOrEqualToZero" required readonly/>
                                     </div>
                                     <div class="form-column-right">
-                                        <label for="InitialAbstraction">Initial Abstraction, Ia:</label> <span ng-if="SyntheticUrbanHydrograph.InitialAbstraction.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
-                                        <input type="number" name="InitialAbstraction" ng-model="vm.initialAbstraction" ng-minlength="0" ng-pattern="greaterThanOrEqualToZero" required/>
+                                        
                                     </div>
                                 </div>
-                                
-                                <div ng-if="vm.SelectedTimeOfConcentration.value == 1 || vm.SelectedTimeOfConcentration.value == 2" class="center-div">
-                                    <h3 class="center-title">{{vm.TimeOfConcentrationOptions[vm.SelectedTimeOfConcentration.value - 1].name}}</h3>
+
+
+                                <!-- Curve Number -->
+                                <h3 class="center-div">Curve Number</h3>
+                                <div class="wim-alert hidden-print">Select a 'Standard Curve Number Value' and a 'Curve Number Modification Method'. Once selected, 'Standard Curve Number' will be calculated with <b>Calculate Missing Parameters</b>.</div>
+                                <label for="StandardCurve">Select a Standard Curve Number Value:<span style="color: #ffcc00">*</span></label>
+                                <select name="StandardCurve" ng-model="vm.SelectedStandardCurve" ng-options="curve.name for curve in vm.StandardCurveOptions track by curve.value" required></select>
+                                <label for="CNModification">Select a Curve Number Modification Method:<span style="color: #ffcc00">*</span></label>
+                                <select name="CNModification" ng-model="vm.SelectedCNModification" ng-options="cnmod.name for cnmod in vm.CNModificationOptions track by cnmod.value" required></select>
+                                <label for="StandardCurveNumber">Standard Curve Number, CN:</label> <span ng-if="SyntheticUrbanHydrograph.StandardCurveNumber.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
+                                <input type="number" name="StandardCurveNumber" ng-model="vm.standardCurveNumber" required readonly/>
+
+                                <!-- Peak Rate Factor -->
+                                <h3 class="center-div">Peak Rate Factor</h3>
+                                <div>
+                                    <div class="wim-alert hidden-print">Fill out 'Peak Rate Factor Input Form'. Once form is filled out 'Peak Rate Factor' will be calculated automatically <b>Calculate Missing Parameters</b>.</div>
+                                    <div class="flow-form-row">                                    
+                                        <label for="PeakRateFactor">Peak Rate Factor Input Form:<span style="color: #ffcc00">*</span></label>
+                                        <div class="flow-form-accordion">
+                                            <accordion id="PRF">
+                                                <accordion-group is-open="PRF.accordionOpen" style="overflow:auto">
+                                                    <accordion-heading><i ng-class="PRF.accordionOpen ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i> PRF Inputs ({{vm.prfSegments.length}})</accordion-heading>
+                                                        <ng-form ng-repeat="segment in vm.prfSegments" name="{{'PRF' + 'key' + $index}}" class="hidden-print">
+                                                            <h4>Input {{$index + 1}}</h4>
+                                                                <label>Land Use: {{vm.prfSegments[$index].landUse}}</label><br>
+                                                                <label>PRF:  {{vm.prfSegments[$index].PRF}}</label><br>
+                                                                <label>Area (ac):  {{vm.prfSegments[$index].Area}}</label><br>
+                                                            <div>&nbsp;</div>
+                                                            <button ng-click="vm.removeFlowSegment('PRF', $index)"><i class="fa fa-trash"></i> Remove Input </button>
+                                                            <div>&nbsp;</div>
+                                                        </ng-form>
+                                                </accordion-group>
+                                            </accordion>
+                                        </div>
+                                        <div class="flow-form-button">
+                                            <button ng-click="vm.openAddFlowSegment('PRF')"><i class="fa fa-arrow-left"></i> Add Input</button>
+                                        </div>
+                                    </div>
+
+                                    <div ng-if="vm.chosenFlowTypeIndex == 'PRF'">
+                                        <h4 class="modal-title">New PRF Input</h4>
+                                        <ng-form name="PRF" class="hidden-print">
+                                            <label for="landUse">Land Use<span style="color: #ffcc00">*</span></label>
+                                            <select name="landUse" ng-model="vm.prfForm.landUse" ng-options="item.name for item in vm.prfTypes" ng-change="vm.setPRF(vm.prfForm.landUse)" required></select>                                                                          
+
+                                            <label for="prfValue">PRF<span style="color: #ffcc00">*</span></label>
+                                            <input type="number" name="prfValue" ng-model="vm.prfForm.prfValue" required/>
+                                            <label for="area">Area (acres)<span style="color: #ffcc00">*</span></label>
+                                            <input type="number" name="area" ng-model="vm.prfForm.area" required/>
+                                            <div>&nbsp;</div>
+                                            <div class="form-row-extremes">
+                                                <div class="button-column-left">
+                                                    <button ng-click="vm.closeAddFlowSegment()"><i class="fa fa-times"></i> Cancel</button>
+                                                </div>
+                                                <div class="button-column-right">
+                                                    <button ng-disabled="PRF.$invalid" ng-click="vm.addFlowSegment()"><i class="fa fa-plus"></i> Add</button>
+                                                </div>
+                                            </div>
+                                            <div>&nbsp;</div>
+                                        </ng-form>
+                                    </div>
                                 </div>
-                                <!-- <div>&nbsp;</div> -->
-                                <!-- if Lag Time Equation is selected -->
+                                <label for="PeakRateFactor">Peak Rate Factor, PRF:</label> <span ng-if="SyntheticUrbanHydrograph.PeakRateFactor.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
+                                <input type="number" name="PeakRateFactor" ng-model="vm.peakRateFactor" required readonly/>&nbsp;&nbsp;
+
+
+                                <!-- Time of Concentration -->
+                                <h3 class="center-div">Time of Concentration</h3>
+                                <div class="wim-alert hidden-print">Select a 'Time of Concentration'. If 'Lag Time Equation' is selected, no additional user input is needed. If 'Travel Time Method' is selected, add at least one flow segment. Once filled out, 'Time of Concentration' will be calculated automatically with <b>Calculate Missing Parameters</b>.</div>
+                                <label for="TimeOfConcentration">Select Time of Concentration:<span style="color: #ffcc00">*</span></label>
+                                <select name="TimeOfConcentration" ng-model="vm.SelectedTimeOfConcentration" ng-options="time.name for time in vm.TimeOfConcentrationOptions track by time.value" required></select>
+                                <label for="TimeOfConcentrationMin">Time of Concentration, Tc (minutes):</label> <span ng-if="SyntheticUrbanHydrograph.TimeOfConcentrationMin.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
+                                <input type="number" name="TimeOfConcentrationMin" ng-model="vm.timeOfConcentrationMin" required readonly/>
+
+                                <div ng-if="vm.SelectedTimeOfConcentration.value == 1 || vm.SelectedTimeOfConcentration.value == 2" class="center-div">
+                                    <h4 class="center-title">{{vm.TimeOfConcentrationOptions[vm.SelectedTimeOfConcentration.value - 1].name}}
+                                        <span ng-if="vm.SelectedTimeOfConcentration.value == 1" style="color: #ffcc00">*</span>
+                                    </h4>
+                                </div>
+
+                                <!-- Lag Time Equation -->
                                 <div ng-if="vm.SelectedTimeOfConcentration.value == 2" class="form-row">
                                     <div class="form-column-left">
                                         <label for="LagTimeLength">Length (feet):</label> <span ng-if="SyntheticUrbanHydrograph.LagTimeLength.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
-                                        <input type="number" name="LagTimeLength" ng-model="vm.lagTimeLength" ng-minlength="0" ng-pattern="greaterThanOrEqualToZero" required/>
+                                        <input type="number" name="LagTimeLength" ng-model="vm.lagTimeLength" required readonly/>
                                     </div>
                                     <div class="form-column-right">
                                         <label for="LagTimeSlope">Slope (%):</label> <span ng-if="SyntheticUrbanHydrograph.LagTimeSlope.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
-                                        <input type="number" name="LagTimeSlope" ng-model="vm.lagTimeSlope" ng-minlength="0" ng-pattern="greaterThanOrEqualToZero" required/>
+                                        <input type="number" name="LagTimeSlope" ng-model="vm.lagTimeSlope" required readonly/>
                                     </div>
                                 </div>
                                 
-                                <!-- if Lag Time Equation is selected -->
+                                <!-- Travel Time Method -->
                                 <div ng-if="vm.SelectedTimeOfConcentration.value == 1">
                                     <div ng-repeat="flowType in vm.TravelTimeFlowTypes">
                                         <div class="flow-form-row">
@@ -222,14 +280,14 @@
                                                 </accordion>
                                             </div>
                                             <div class="flow-form-button">
-                                                <button ng-click="vm.openAddFlowSegment($index)"><i class="fa fa-arrow-left"></i> Add Flow Segment</button>
+                                                <button ng-click="vm.openAddFlowSegment(flowType.id)"><i class="fa fa-arrow-left"></i> Add Flow Segment</button>
                                             </div>
                                         </div>
-                                        <div ng-if="vm.chosenFlowTypeIndex == $index">
+                                        <div ng-if="vm.chosenFlowTypeIndex == flowType.id">
                                             <h4 class="modal-title">New {{flowType.displayName}} Segment</h4>
                                             <ng-form name="{{flowType.id}}" class="hidden-print">
                                                 <div ng-repeat="question in flowType.questions">
-                                                    <label for="{{question.label}}">{{question.label}}</label>
+                                                    <label for="{{question.label}}">{{question.label}}<span style="color: #ffcc00">*</span></label>
                                                     <span ng-show="{{flowType.id}}.{{question.id}}.$error.pattern" class="red label">
                                                         <span class="fa fa-exclamation-triangle"></span>&nbsp;{{question.invalidMessage}}
                                                     </span>
@@ -244,7 +302,7 @@
                                                         <button ng-click="vm.closeAddFlowSegment()"><i class="fa fa-times"></i> Cancel</button>
                                                     </div>
                                                     <div class="button-column-right">
-                                                        <button ng-disabled="{{flowType.id}}.$invalid" ng-click="vm.addFlowSegment()"><i class="fa fa-plus"></i> Add</button>
+                                                        <button ng-disabled="{{flowType.id}}.$invalid" ng-click="vm.addFlowSegment($index)"><i class="fa fa-plus"></i> Add</button>
                                                     </div>
                                                 </div>
                                                 <div>&nbsp;</div>
@@ -258,13 +316,12 @@
                                 <label class="fullwidth" ng-if="!vm.validateForm(SyntheticUrbanHydrograph) || (vm.validateForm(SyntheticUrbanHydrograph) && vm.hideAlerts)">&nbsp;&nbsp;</label>
                                 <div class="hidden-print">
                                     <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-disabled="vm.calculateSyntheticParamsDisabled()" ng-click="vm.calculateSyntheticParameters('DRNAREA,LFPLENGTH,CSL10_85fm')" ng-hide="vm.validateForm(SyntheticUrbanHydrograph)"><span ng-class="vm.canContinueSynthetic ? 'fa fa-calculator' : 'fa fa-refresh fa-spin'"></span>&nbsp;&nbsp;Calculate Missing Parameters</button>
-                                    <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-red" ng-click="vm.clearSyntheticResults()" ng-hide="!vm.validateForm(SyntheticUrbanHydrograph)"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;Clear All</button>
+                                    <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-red" ng-click="vm.clearResults(SyntheticUrbanHydrograph.$name)" ng-hide="!vm.validateForm(SyntheticUrbanHydrograph)"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;Clear All</button>
                                     <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.queryRegressionRegionsSynthetic()" ng-hide="!vm.validateForm(SyntheticUrbanHydrograph)"><span ng-class="vm.canContinueSynthetic ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></span>{{ vm.showResults ? '&nbsp;&nbsp;Recalculate Results' : '&nbsp;&nbsp;Continue' }}</button>
                                 </div>
-                                <label class="fullwidth alignc orange" ng-if="vm.calculateSyntheticParamsDisabled() == 1"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Must select 'AEP', 'Standard Curve Number Value', and 'Time of Concentration' Before Calculating Missing Parameters</label>
-                                <label class="fullwidth alignc orange" ng-if="vm.calculateSyntheticParamsDisabled() == 2"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Must select 'AEP' and 'Standard Curve Number Value' Before Calculating Missing Parameters</label>
-                                <label class="fullwidth alignc orange" ng-if="vm.calculateSyntheticParamsDisabled() == 3"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Must select 'AEP', 'Standard Curve Number Value', and at Least One Flow Segment for Each Flow Type Before Calculating Missing Parameters</label>
-                                <label class="fullwidth alignc orange" ng-if="vm.calculateSyntheticParamsDisabled() == 4"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Must Add at Least One Flow Segment for Each Flow Type Before Calculating Missing Parameters</label>
+                                <label class="fullwidth alignc orange" ng-if="vm.calculateSyntheticParamsDisabled() == 1"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Must select 'AEP', 'Standard Curve Number Value', fill out 'Peak Rate Factor Input Form', and 'Time of Concentration' Before <b>Calculate Missing Parameters</b>.</label>
+                                <label class="fullwidth alignc orange" ng-if="vm.calculateSyntheticParamsDisabled() == 2"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Must select 'AEP', 'Standard Curve Number Value', fill out 'Peak Rate Factor Input Form', and at Least One Flow Segment Before <b>Calculate Missing Parameters</b>.</label>
+                                <label class="fullwidth alignc orange" ng-if="vm.calculateSyntheticParamsDisabled() == 3"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Must Add at Least One Flow Segment Before <b>Calculate Missing Parameters</b>.</label>
                                 <label class="fullwidth alignc orange" ng-if="!vm.validateForm(SyntheticUrbanHydrograph) && !vm.calculateSyntheticParamsDisabled()"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Parameters Must Be Entered Before Results Can Be Computed</label>
                                 <label ng-if="vm.validateForm(SyntheticUrbanHydrograph)">&nbsp;&nbsp;</label> 
                             </form>

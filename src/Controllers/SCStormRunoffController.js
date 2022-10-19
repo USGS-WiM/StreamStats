@@ -58,6 +58,11 @@ var StreamStats;
                         "name": ".2%",
                         "value": 0.2
                     }];
+                _this.prfForm = {
+                    landUse: null,
+                    prfValue: null,
+                    area: null
+                };
                 _this.AEPOptionsSynthetic = [{
                         "name": "10% AEP / 10 Year Return Period",
                         "value": 10
@@ -120,6 +125,34 @@ var StreamStats;
                 _this.greaterThanOrEqualToZero = /0+|^([0-9]*[1-9][0-9]*(\.[0-9]+)?|[0]+\.[0-9]*[1-9][0-9]*)$/;
                 _this.gTOETZInvalidMessage = "Value must be greater than or equal to 0";
                 _this.betweenZeroOneHundred = /^(\d{0,2}(\.\d{1,2})?|100(\.00?)?)$/;
+                _this.prfTypes = [
+                    { name: "Open Space - Poor Condition (grass cover < 50%)", value: 250 },
+                    { name: "Open Space - Fair Condition (grass cover 50-75%)", value: 250 },
+                    { name: "Open Space - Good Condition (grass cover > 75%)", value: 250 },
+                    { name: "Impervious Areas (paved parking lots, roofs, etc.)	", value: 550 },
+                    { name: "Streets and Roads - Paved with curbs and storm sewers", value: 550 },
+                    { name: "Streets and Roads - Paved with open ditches", value: 500 },
+                    { name: "Streets and Roads - Gravel", value: 450 },
+                    { name: "Streets and Roads - Dirt", value: 350 },
+                    { name: "Urban Land Use - Commercial and Business", value: 550 },
+                    { name: "Urban Land Use - Industrial", value: 550 },
+                    { name: "Urban Land Use - 1/8 Acre", value: 400 },
+                    { name: "Urban Land Use - 1/4 Acre", value: 375 },
+                    { name: "Urban Land Use - 1/3 Acre", value: 350 },
+                    { name: "Urban Land Use - 1/2 Acre", value: 350 },
+                    { name: "Urban Land Use - 1 Acre", value: 325 },
+                    { name: "Urban Land Use - 2 Acre", value: 300 },
+                    { name: "Developing urban areas, newly graded, no grass cover", value: 400 },
+                    { name: "Pasture - Poor", value: 200 },
+                    { name: "Pasture - Fair", value: 190 },
+                    { name: "Pasture - Good", value: 180 },
+                    { name: "Woods - Poor", value: 200 },
+                    { name: "Woods - Fair", value: 190 },
+                    { name: "Woods - Good", value: 180 },
+                    { name: "Row Crop - Straight Row", value: 300 },
+                    { name: "Row Crop - Contoured", value: 275 },
+                    { name: "Row Crop - Contoured and Terraced", value: 250 }
+                ];
                 _this._defaultFlowTypes = [
                     {
                         id: "sheetFlow",
@@ -373,6 +406,7 @@ var StreamStats;
                 };
                 _this.TravelTimeFlowTypes = _this._defaultFlowTypes.slice();
                 _this.TravelTimeFlowSegments = JSON.parse(JSON.stringify(_this._defaultFlowSegments));
+                _this.prfSegments = [];
                 _this.addFlowSegmentOpen = false;
                 _this.DHourStormOptions = [{
                         "name": "1-Hour",
@@ -504,7 +538,7 @@ var StreamStats;
             });
             Object.defineProperty(SCStormRunoffController.prototype, "chosenFlowTypeIndex", {
                 get: function () {
-                    return this._chosenFlowTypeIndex;
+                    return this._chosenFlowType;
                 },
                 enumerable: false,
                 configurable: true
@@ -1007,6 +1041,7 @@ var StreamStats;
                             data = {
                                 "lat": _this.studyAreaService.selectedStudyArea.Pourpoint.Latitude,
                                 "lon": _this.studyAreaService.selectedStudyArea.Pourpoint.Longitude,
+                                "prfData": _this.prfSegments,
                                 "AEP": (_a = _this._selectedAEPSynthetic) === null || _a === void 0 ? void 0 : _a.value,
                                 "curveNumberMethod": (_b = _this._selectedStandardCurve) === null || _b === void 0 ? void 0 : _b.endpointValue,
                                 "TcMethod": _this._selectedTimeOfConcentration.endpointValue,
@@ -1096,66 +1131,106 @@ var StreamStats;
                     this.toaster.pop('error', "There was an error calculating parameters", "", 0);
                 }
             };
-            SCStormRunoffController.prototype.openAddFlowSegment = function (indexOfFlow) {
+            SCStormRunoffController.prototype.openAddFlowSegment = function (chosenFlow) {
                 this.addFlowSegmentOpen = true;
-                this._chosenFlowTypeIndex = indexOfFlow;
+                this._chosenFlowType = chosenFlow;
             };
             SCStormRunoffController.prototype.closeAddFlowSegment = function () {
                 this.addFlowSegmentOpen = false;
-                this._chosenFlowTypeIndex = null;
+                this._chosenFlowType = null;
                 this.TravelTimeFlowTypes = this._defaultFlowTypes.slice();
             };
-            SCStormRunoffController.prototype.addFlowSegment = function () {
-                var questionSet = this.TravelTimeFlowTypes[this._chosenFlowTypeIndex].questions;
-                var newSegment = [];
-                for (var _i = 0, questionSet_1 = questionSet; _i < questionSet_1.length; _i++) {
-                    var question = questionSet_1[_i];
-                    newSegment.push(JSON.parse(JSON.stringify(question)));
-                    question.value = null;
+            SCStormRunoffController.prototype.addFlowSegment = function (index) {
+                if (this._chosenFlowType == 'PRF') {
+                    var newSegment = {};
+                    newSegment = {
+                        landUse: this.prfForm.landUse.name,
+                        PRF: this.prfForm.prfValue,
+                        Area: this.prfForm.area
+                    };
+                    this.prfSegments.push(newSegment);
+                    this.prfForm = { landUse: null, prfValue: null, area: null };
                 }
-                this.TravelTimeFlowSegments[this.TravelTimeFlowTypes[this._chosenFlowTypeIndex].id].push(newSegment);
-                this._chosenFlowTypeIndex = null;
+                else {
+                    var newSegment = [];
+                    var questionSet = this.TravelTimeFlowTypes[index].questions;
+                    for (var _i = 0, questionSet_1 = questionSet; _i < questionSet_1.length; _i++) {
+                        var question = questionSet_1[_i];
+                        newSegment.push(JSON.parse(JSON.stringify(question)));
+                        question.value = null;
+                    }
+                    this.TravelTimeFlowSegments[this.TravelTimeFlowTypes[index].id].push(newSegment);
+                }
+                this._chosenFlowType = null;
                 this.addFlowSegmentOpen = false;
             };
             SCStormRunoffController.prototype.removeFlowSegment = function (flowTypeID, indexOfRemoval) {
-                var flowType = this.TravelTimeFlowSegments[flowTypeID];
+                var flowType = null;
+                if (flowTypeID == "PRF") {
+                    flowType = this.prfSegments;
+                }
+                else {
+                    flowType = this.TravelTimeFlowSegments[flowTypeID];
+                }
                 if (!flowType) {
                     console.error("Unable to remove flow segment: improper flow type ID. This is a bug!");
                     return;
                 }
                 flowType.splice(indexOfRemoval, 1);
             };
+            SCStormRunoffController.prototype.setPRF = function (landuse) {
+                this.prfForm.prfValue = landuse.value;
+            };
+            SCStormRunoffController.prototype.calculatePRF = function () {
+                var _this = this;
+                if (this.prfSegments.length == 0) {
+                    this.toaster.pop('error', "No PRF information was added, cannot calculate.", "", 500);
+                    this.peakRateFactor = 0;
+                }
+                else {
+                    var data = {
+                        "prfData": this.prfSegments
+                    };
+                    var url = configuration.baseurls['SCStormRunoffServices'] + configuration.queryparams['SCStormRunoffPRF'];
+                    var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(data));
+                    this.Execute(request).then(function (response) {
+                        _this.peakRateFactor = response.data.PRF;
+                    }, function (error) {
+                        _this.toaster.clear();
+                        _this.toaster.pop("error", "There was an HTTP error calculating prf", "Please retry", 0);
+                    }).finally(function () {
+                    });
+                }
+            };
             SCStormRunoffController.prototype.calculateSyntheticParamsDisabled = function () {
                 var _a;
                 if (((_a = this._selectedTimeOfConcentration) === null || _a === void 0 ? void 0 : _a.value) == 1) {
-                    var completedAllFlowSegments = this.completedFlowSegments();
+                    var numCompletedFlowSegments = this.completedFlowSegments();
                     if (!this._selectedAEPSynthetic || !this._selectedStandardCurve) {
-                        if (completedAllFlowSegments) {
-                            return 2;
-                        }
+                        return 2;
+                    }
+                    if (numCompletedFlowSegments < 1) {
                         return 3;
                     }
-                    if (!completedAllFlowSegments) {
-                        return 4;
-                    }
                 }
-                if (!this._selectedAEPSynthetic || !this._selectedStandardCurve || !this._selectedTimeOfConcentration) {
+                if (!this._selectedAEPSynthetic || !this._selectedStandardCurve || !this._selectedTimeOfConcentration || this.prfSegments.length == 0) {
                     return 1;
                 }
                 return 0;
             };
             SCStormRunoffController.prototype.completedFlowSegments = function () {
                 var _a;
+                var counter = 0;
                 if (((_a = this._selectedTimeOfConcentration) === null || _a === void 0 ? void 0 : _a.value) == 1) {
                     var keys = Object.keys(this.TravelTimeFlowSegments);
                     for (var _i = 0, keys_2 = keys; _i < keys_2.length; _i++) {
                         var segmentName = keys_2[_i];
-                        if (!this.TravelTimeFlowSegments[segmentName].length) {
-                            return false;
+                        if (this.TravelTimeFlowSegments[segmentName].length) {
+                            counter++;
                         }
                     }
                 }
-                return true;
+                return counter;
             };
             SCStormRunoffController.prototype.validateForm = function (mainForm) {
                 var _a;
@@ -1186,50 +1261,54 @@ var StreamStats;
                     return false;
                 }
             };
-            SCStormRunoffController.prototype.clearResults = function () {
-                this.drainageArea = null;
-                this.drainageAreaSynthetic = null;
-                this.timeOfConcentrationMin = null;
-                this.peakRateFactor = null;
-                this.standardCurveNumber = null;
-                this.watershedRetention = null;
-                this.initialAbstraction = null;
-                this.lagTimeLength = null;
-                this.lagTimeSlope = null;
-                this._chosenFlowTypeIndex = null;
-                this.mainChannelLength = null;
-                this.mainChannelSlope = null;
-                this.totalImperviousArea = null;
-                this.SelectedAEP = null;
-                this.SelectedAEPSynthetic = null;
-                this.showResults = false;
-                this.warningMessages = null;
-            };
-            SCStormRunoffController.prototype.clearSyntheticResults = function () {
-                this._selectedAEPSynthetic = null;
-                this._selectedStandardCurve = null;
-                this._selectedCNModification = null;
-                this._selectedTimeOfConcentration = null;
-                this._selectedRainfallDistribution = null;
-                this.TravelTimeFlowTypes = this._defaultFlowTypes.slice();
-                this.TravelTimeFlowSegments = JSON.parse(JSON.stringify(this._defaultFlowSegments));
-                this.drainageAreaSynthetic = null;
-                this.timeOfConcentrationMin = null;
-                this.peakRateFactor = null;
-                this.standardCurveNumber = null;
-                this.watershedRetention = null;
-                this.initialAbstraction = null;
-                this.lagTimeLength = null;
-                this.lagTimeSlope = null;
-                this._selectedCNModification = null;
-                this.showResultsSynthetic = false;
-                this.stormHydrographOrdinatesAccordionOpen = false;
-                this.warningMessagesSynthetic = null;
-                this._selectedDHourStorm = {
-                    "name": "1-Hour",
-                    "value": 1,
-                    "maxTimeMinutes": 500
-                };
+            SCStormRunoffController.prototype.clearResults = function (name) {
+                if (name == "BohmanUrbanForm") {
+                    this.drainageArea = null;
+                    this.timeOfConcentrationMin = null;
+                    this.peakRateFactor = null;
+                    this.standardCurveNumber = null;
+                    this.watershedRetention = null;
+                    this.initialAbstraction = null;
+                    this.lagTimeLength = null;
+                    this.lagTimeSlope = null;
+                    this._chosenFlowType = null;
+                    this.mainChannelLength = null;
+                    this.mainChannelSlope = null;
+                    this.totalImperviousArea = null;
+                    this.SelectedAEP = null;
+                    this.SelectedAEPSynthetic = null;
+                    this.showResults = false;
+                    this.warningMessages = null;
+                }
+                else if (name == "SyntheticUrbanHydrograph") {
+                    this._selectedAEPSynthetic = null;
+                    this._selectedStandardCurve = null;
+                    this._selectedCNModification = null;
+                    this._selectedTimeOfConcentration = null;
+                    this._selectedRainfallDistribution = null;
+                    this.TravelTimeFlowTypes = this._defaultFlowTypes.slice();
+                    this.TravelTimeFlowSegments = JSON.parse(JSON.stringify(this._defaultFlowSegments));
+                    this.drainageAreaSynthetic = null;
+                    this.timeOfConcentrationMin = null;
+                    this.peakRateFactor = null;
+                    this.standardCurveNumber = null;
+                    this.watershedRetention = null;
+                    this.initialAbstraction = null;
+                    this.lagTimeLength = null;
+                    this.lagTimeSlope = null;
+                    this._selectedCNModification = null;
+                    this.showResultsSynthetic = false;
+                    this.stormHydrographOrdinatesAccordionOpen = false;
+                    this.warningMessagesSynthetic = null;
+                    this._selectedDHourStorm = {
+                        "name": "1-Hour",
+                        "value": 1,
+                        "maxTimeMinutes": 500
+                    };
+                    this.prfSegments = [];
+                }
+                else if (name == "BohmanRuralForm") {
+                }
             };
             SCStormRunoffController.prototype.Close = function () {
                 this.modalInstance.dismiss('cancel');
@@ -1321,7 +1400,7 @@ var StreamStats;
                 this.hideAlerts = false;
                 this.canContinue = true;
                 this.canContinueSynthetic = true;
-                this._chosenFlowTypeIndex = null;
+                this._chosenFlowType = null;
                 this.stormHydrographOrdinatesAccordionOpen = false;
             };
             SCStormRunoffController.prototype.selectRunoffType = function () {

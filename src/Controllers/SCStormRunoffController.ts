@@ -127,6 +127,12 @@ module StreamStats.Controllers {
         }
 
         // Synthetic UH
+        public prfForm = {
+            landUse: null,
+            prfValue: null,
+            area: null
+        }
+          
         private _selectedAEPSynthetic;
         private _selectedStandardCurve;
         private _selectedCNModification;
@@ -226,7 +232,37 @@ module StreamStats.Controllers {
         private gTOETZInvalidMessage = "Value must be greater than or equal to 0"
         private betweenZeroOneHundred = /^(\d{0,2}(\.\d{1,2})?|100(\.00?)?)$/;
 
+        public prfTypes = [
+            { name: "Open Space - Poor Condition (grass cover < 50%)", value: 250 },
+            { name: "Open Space - Fair Condition (grass cover 50-75%)", value: 250 },
+            { name: "Open Space - Good Condition (grass cover > 75%)", value: 250 },
+            { name: "Impervious Areas (paved parking lots, roofs, etc.)	", value: 550 },
+            { name: "Streets and Roads - Paved with curbs and storm sewers", value: 550 },
+            { name: "Streets and Roads - Paved with open ditches", value: 500 },
+            { name: "Streets and Roads - Gravel", value: 450 },
+            { name: "Streets and Roads - Dirt", value: 350 },
+            { name: "Urban Land Use - Commercial and Business", value: 550 },
+            { name: "Urban Land Use - Industrial", value: 550 },
+            { name: "Urban Land Use - 1/8 Acre", value: 400 },
+            { name: "Urban Land Use - 1/4 Acre", value: 375 }, 
+            { name: "Urban Land Use - 1/3 Acre", value: 350 },
+            { name: "Urban Land Use - 1/2 Acre", value: 350 },
+            { name: "Urban Land Use - 1 Acre", value: 325 },
+            { name: "Urban Land Use - 2 Acre", value: 300 },
+            { name: "Developing urban areas, newly graded, no grass cover", value: 400 },
+            { name: "Pasture - Poor", value: 200 },
+            { name: "Pasture - Fair", value: 190 },
+            { name: "Pasture - Good", value: 180 },
+            { name: "Woods - Poor", value: 200 },
+            { name: "Woods - Fair", value: 190 },
+            { name: "Woods - Good", value: 180 },
+            { name: "Row Crop - Straight Row", value: 300 },
+            { name: "Row Crop - Contoured", value: 275 },
+            { name: "Row Crop - Contoured and Terraced", value: 250 }    
+        ]
+
         private _defaultFlowTypes = [
+           
             {
                 id: "sheetFlow",
                 displayName: "Sheet Flow",
@@ -599,10 +635,12 @@ module StreamStats.Controllers {
         public TravelTimeFlowTypes = this._defaultFlowTypes.slice();
         public TravelTimeFlowSegments = JSON.parse(JSON.stringify(this._defaultFlowSegments));
 
+        public prfSegments = [];
+
         public addFlowSegmentOpen = false;
-        private _chosenFlowTypeIndex : number;
+        private _chosenFlowType : string;
         public get chosenFlowTypeIndex() {
-            return this._chosenFlowTypeIndex;
+            return this._chosenFlowType;
         } 
 
         // for synthetic graph options 
@@ -1207,6 +1245,7 @@ module StreamStats.Controllers {
                             data = {
                                 "lat": this.studyAreaService.selectedStudyArea.Pourpoint.Latitude,
                                 "lon": this.studyAreaService.selectedStudyArea.Pourpoint.Longitude,
+                                "prfData": this.prfSegments,
                                 "AEP": this._selectedAEPSynthetic?.value,
                                 "curveNumberMethod": this._selectedStandardCurve?.endpointValue,
                                 "TcMethod": this._selectedTimeOfConcentration.endpointValue,
@@ -1292,39 +1331,82 @@ module StreamStats.Controllers {
             }          
         }
 
-        public openAddFlowSegment(indexOfFlow : number) {
+        public openAddFlowSegment(chosenFlow : any) {
             this.addFlowSegmentOpen = true;
-            this._chosenFlowTypeIndex = indexOfFlow;
+            this._chosenFlowType = chosenFlow;
         }
 
         public closeAddFlowSegment() {
             this.addFlowSegmentOpen = false;
-            this._chosenFlowTypeIndex = null;
+            this._chosenFlowType = null;
             /// reset the options
             this.TravelTimeFlowTypes = this._defaultFlowTypes.slice();
         }
 
-        public addFlowSegment() {
-            let questionSet = this.TravelTimeFlowTypes[this._chosenFlowTypeIndex].questions;
-            let newSegment = [];
-            for(let question of questionSet) {
-                newSegment.push(JSON.parse(JSON.stringify(question)));
-                question.value = null;
+        public addFlowSegment(index) {
+            if (this._chosenFlowType == 'PRF') { 
+                let newSegment = {};
+                newSegment = {
+                    landUse: this.prfForm.landUse.name,
+                    PRF: this.prfForm.prfValue,
+                    Area: this.prfForm.area
+                }
+                this.prfSegments.push(newSegment);
+                this.prfForm = { landUse: null, prfValue: null, area: null };
+            } else {
+                let newSegment = [];
+                let questionSet = this.TravelTimeFlowTypes[index].questions;
+                for(let question of questionSet) {
+                    newSegment.push(JSON.parse(JSON.stringify(question)));
+                    question.value = null;
+                }
+                this.TravelTimeFlowSegments[this.TravelTimeFlowTypes[index].id].push(newSegment);
             }
 
-            this.TravelTimeFlowSegments[this.TravelTimeFlowTypes[this._chosenFlowTypeIndex].id].push(newSegment);
-            this._chosenFlowTypeIndex = null;
+            this._chosenFlowType = null;
             this.addFlowSegmentOpen = false;
         }
 
         public removeFlowSegment(flowTypeID, indexOfRemoval : number) {
-            let flowType = this.TravelTimeFlowSegments[flowTypeID];
+            var flowType = null;
+            if (flowTypeID == "PRF") {
+                flowType = this.prfSegments;
+            } else {
+                flowType = this.TravelTimeFlowSegments[flowTypeID];
+            }
             if(!flowType) {
                 console.error("Unable to remove flow segment: improper flow type ID. This is a bug!");
                 return;
             }
             // remove the element from the array
             flowType.splice(indexOfRemoval, 1);
+        }
+
+        public setPRF(landuse) {
+            this.prfForm.prfValue = landuse.value
+        }
+
+        public calculatePRF(){
+            if (this.prfSegments.length == 0) {
+                this.toaster.pop('error', "No PRF information was added, cannot calculate.", "", 500);
+                this.peakRateFactor = 0;                 
+            } else {
+                var data = 
+                {
+                    "prfData": this.prfSegments
+                };
+                var url = configuration.baseurls['SCStormRunoffServices'] + configuration.queryparams['SCStormRunoffPRF']     
+                var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(data));
+                
+                this.Execute(request).then((response: any) => {     
+                    this.peakRateFactor = response.data.PRF
+                },(error) => {
+                    //sm when error
+                    this.toaster.clear();
+                    this.toaster.pop("error", "There was an HTTP error calculating prf", "Please retry", 0);
+                }).finally(() => {
+                });  
+            }
         }
 
         /**
@@ -1335,37 +1417,34 @@ module StreamStats.Controllers {
         public calculateSyntheticParamsDisabled() {
             // travel time selected
             if(this._selectedTimeOfConcentration?.value == 1) {
-                let completedAllFlowSegments = this.completedFlowSegments();
+                let numCompletedFlowSegments = this.completedFlowSegments();
                 if(!this._selectedAEPSynthetic || !this._selectedStandardCurve) {
-                    // just missing fields
-                    if(completedAllFlowSegments) {
-                        return 2;
-                    }
                     // missing fields and flow segments
-                    return 3;
+                    return 2;
                 }
-                if(!completedAllFlowSegments) {
+                if (numCompletedFlowSegments < 1) {
                     // missing just flow segments
-                    return 4;
+                    return 3;
                 }
             }
             // if there's missing params altogether
-            if(!this._selectedAEPSynthetic || !this._selectedStandardCurve || !this._selectedTimeOfConcentration) {
+            if (!this._selectedAEPSynthetic || !this._selectedStandardCurve || !this._selectedTimeOfConcentration || this.prfSegments.length == 0) {
                 return 1;
             }
             return 0;
         }
 
         private completedFlowSegments() {
+            var counter = 0;
             if(this._selectedTimeOfConcentration?.value == 1) {
                 let keys = Object.keys(this.TravelTimeFlowSegments);
                 for(let segmentName of keys) {
-                    if(!this.TravelTimeFlowSegments[segmentName].length) {
-                        return false;
+                    if(this.TravelTimeFlowSegments[segmentName].length) {
+                        counter ++
                     }
                 }
             }
-            return true;
+            return counter;
         }
 
         public validateForm(mainForm) {
@@ -1397,52 +1476,56 @@ module StreamStats.Controllers {
             }
         }
 
-        public clearResults() {
-            this.drainageArea = null;
-            this.drainageAreaSynthetic = null;
-            this.timeOfConcentrationMin = null;
-            this.peakRateFactor = null;
-            this.standardCurveNumber = null;
-            this.watershedRetention = null;
-            this.initialAbstraction = null;
-            this.lagTimeLength = null;
-            this.lagTimeSlope = null;
-            this._chosenFlowTypeIndex = null;
-            this.mainChannelLength = null;
-            this.mainChannelSlope = null;
-            this.totalImperviousArea = null;
-            this.SelectedAEP = null;
-            this.SelectedAEPSynthetic = null;
-            this.showResults = false;
-            this.warningMessages = null;
-        }
+        public clearResults(name) {
+            if (name == "BohmanUrbanForm") {
+                this.drainageArea = null;
+                this.timeOfConcentrationMin = null;
+                this.peakRateFactor = null;
+                this.standardCurveNumber = null;
+                this.watershedRetention = null;
+                this.initialAbstraction = null;
+                this.lagTimeLength = null;
+                this.lagTimeSlope = null;
+                this._chosenFlowType = null;
+                this.mainChannelLength = null;
+                this.mainChannelSlope = null;
+                this.totalImperviousArea = null;
+                this.SelectedAEP = null;
+                this.SelectedAEPSynthetic = null;
+                this.showResults = false;
+                this.warningMessages = null;
+            } else if(name == "SyntheticUrbanHydrograph"){
+                this._selectedAEPSynthetic = null;
+                this._selectedStandardCurve = null;
+                this._selectedCNModification = null;
+                this._selectedTimeOfConcentration = null;
+                this._selectedRainfallDistribution = null;
+                this.TravelTimeFlowTypes = this._defaultFlowTypes.slice();
+                this.TravelTimeFlowSegments = JSON.parse(JSON.stringify(this._defaultFlowSegments));
+                this.drainageAreaSynthetic = null;
+                this.timeOfConcentrationMin = null;
+                this.peakRateFactor = null;
+                this.standardCurveNumber = null;
+                this.watershedRetention = null;
+                this.initialAbstraction = null;
+                this.lagTimeLength = null;
+                this.lagTimeSlope = null;
+                this._selectedCNModification = null;
+                this.showResultsSynthetic = false;
+                this.stormHydrographOrdinatesAccordionOpen = false;
+                this.warningMessagesSynthetic = null;
+                this._selectedDHourStorm = {
+                    "name": "1-Hour",
+                    "value": 1,
+                    "maxTimeMinutes": 500
+                }
+                this.prfSegments = []
+            } else if(name == "BohmanRuralForm"){
 
-        public clearSyntheticResults() {
-            this._selectedAEPSynthetic = null;
-            this._selectedStandardCurve = null;
-            this._selectedCNModification = null;
-            this._selectedTimeOfConcentration = null;
-            this._selectedRainfallDistribution = null;
-            this.TravelTimeFlowTypes = this._defaultFlowTypes.slice();
-            this.TravelTimeFlowSegments = JSON.parse(JSON.stringify(this._defaultFlowSegments));
-            this.drainageAreaSynthetic = null;
-            this.timeOfConcentrationMin = null;
-            this.peakRateFactor = null;
-            this.standardCurveNumber = null;
-            this.watershedRetention = null;
-            this.initialAbstraction = null;
-            this.lagTimeLength = null;
-            this.lagTimeSlope = null;
-            this._selectedCNModification = null;
-            this.showResultsSynthetic = false;
-            this.stormHydrographOrdinatesAccordionOpen = false;
-            this.warningMessagesSynthetic = null;
-            this._selectedDHourStorm = {
-                "name": "1-Hour",
-                "value": 1,
-                "maxTimeMinutes": 500
             }
         }
+
+        
 
         public Close(): void {
             this.modalInstance.dismiss('cancel');
@@ -1550,7 +1633,7 @@ module StreamStats.Controllers {
             this.hideAlerts = false;
             this.canContinue = true;
             this.canContinueSynthetic = true;
-            this._chosenFlowTypeIndex = null;
+            this._chosenFlowType = null;
             this.stormHydrographOrdinatesAccordionOpen = false;
         }
 
