@@ -627,7 +627,7 @@ module StreamStats.Controllers {
                                 top: 20,
                                 right: 30,
                                 bottom: 60,
-                                left: 65
+                                left: 100
                             },
                             x: function (d) { return d.label; },
                             y: function (d) { return d.value; },
@@ -656,8 +656,8 @@ module StreamStats.Controllers {
                 },
                 flow: {
                     data: [
-                        { key: result.referanceGage.name, values: this.processData(result.referanceGage.discharge.observations)},
-                        { key: "Estimated (at clicked point)", values: this.processData(result.estimatedFlow.observations) }
+                        { key: "Observed", values: this.processData(result.referanceGage.discharge.observations)},
+                        { key: "Estimated", values: this.processData(result.estimatedFlow.observations) }
                     ],
                     options: {
                         chart: {
@@ -665,9 +665,9 @@ module StreamStats.Controllers {
                             height: 450,
                             margin: {
                                 top: 20,
-                                right: 0,
-                                bottom: 50,
-                                left: 0
+                                right: 30,
+                                bottom: 60,
+                                left: 100
                             },
                             x: function (d) {
                                 return new Date(d.x).getTime();
