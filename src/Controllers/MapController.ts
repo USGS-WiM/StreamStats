@@ -606,7 +606,7 @@ module StreamStats.Controllers {
                                     'Stream Flow Statistics:'];
                                     var NWISpage = 'https://waterdata.usgs.gov/monitoring-location/' + siteNo;
                                     
-                                    var html = '<strong>NWIS page: </strong><a href="' + NWISpage + ' "target="_blank">link</a></br><strong>StreamStats Gage Page: </strong><a ng-click="' + SSgagepage + '">link</a></br>';
+                                    var html = '<strong>Monitoring Location Page: </strong><a href="' + NWISpage + ' "target="_blank">link</a></br><strong>StreamStats Gage Page: </strong><a ng-click="' + SSgagepage + '">link</a></br>';
                                     this.additionalLinkCheck(urls.length-1, urls, '', text);
                                     setTimeout(() => {
                                         html = html + this.additionalHTML;
@@ -1499,7 +1499,7 @@ module StreamStats.Controllers {
                                 self.additionalLinkCheck(urls.length-1, urls, '', text);
                                 setTimeout(() => {
                                     gageButtonDiv.innerHTML = '<strong>Station ID: </strong>' + siteNo + '</br><strong>Station Name: </strong>' + feature.properties['Name'] + '</br><strong>Latitude: </strong>' + feature.geometry.coordinates[1] + '</br><strong>Longitude: </strong>' + feature.geometry.coordinates[0] + '</br><strong>Station Type</strong>: ' + feature.properties.StationType.name +
-                                    '</br><strong>NWIS Page: </strong><a href="' + NWISpage + ' "target="_blank">link</a></br><strong>StreamStats Gage Page: </strong><a id="gagePageLink" class="' + siteNo + '">link</a><br>';
+                                    '</br><strong>Monitoring Location Page: </strong><a href="' + NWISpage + ' "target="_blank">link</a></br><strong>StreamStats Gage Page: </strong><a id="gagePageLink" class="' + siteNo + '">link</a><br>';
                                     gageButtonDiv.innerHTML = gageButtonDiv.innerHTML + self.additionalHTML;
                                     layer.bindPopup(gageButtonDiv);
                                     this.openPopup();
@@ -1517,7 +1517,7 @@ module StreamStats.Controllers {
                                 self.additionalLinkCheck(urls.length-1, urls, '', text);
                                 setTimeout(() => {
                                     gageButtonDiv.innerHTML = '<strong>Station ID: </strong>' + siteNo + '</br><strong>Station Name: </strong>' + feature.properties['Name'] + '</br><strong>Latitude: </strong>' + feature.geometry.coordinates[1] + '</br><strong>Longitude: </strong>' + feature.geometry.coordinates[0] + '</br><strong>Station Type</strong>: ' + feature.properties.StationType.name +
-                                    '</br><strong>NWIS Page: </strong><a href="' + NWISpage + ' "target="_blank">link</a></br><strong>StreamStats Gage Page: </strong><a id="gagePageLink" class="' + siteNo + '">link</a><br>';
+                                    '</br><strong>Monitoring Location Page: </strong><a href="' + NWISpage + ' "target="_blank">link</a></br><strong>StreamStats Gage Page: </strong><a id="gagePageLink" class="' + siteNo + '">link</a><br>';
                                     gageButtonDiv.innerHTML = gageButtonDiv.innerHTML + self.additionalHTML;
                                     layer.bindPopup(gageButtonDiv);
                                     this.openPopup();
