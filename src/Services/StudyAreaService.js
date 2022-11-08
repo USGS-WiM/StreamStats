@@ -528,7 +528,7 @@ var StreamStats;
                     }
                     if (response.data.features.length > 0) {
                         var attributes = response.data.features[0].attributes;
-                        _this.selectedStudyArea.CoordinatedReach = new StreamStats.Models.CoordinatedReach(attributes["eqWithStrID.BASIN_NAME"], attributes["eqWithStrID.DVA_EQ_ID"], attributes["eqWithStrID.Stream_Name"], attributes["eqWithStrID.StreamID_ID"]);
+                        _this.selectedStudyArea.CoordinatedReach = new StreamStats.Models.CoordinatedReach(attributes["eqWithStrID.BASIN_NAME"], attributes["eqWithStrID.DVA_EQ_ID"], attributes["eqWithStrID.Stream_Name"], attributes["eqWithStrID.StreamID_ID"], attributes["eqWithStrID.BEGIN_DA"], attributes["eqWithStrID.END_DA"]);
                         delete attributes["eqWithStrID.BASIN_NAME"];
                         delete attributes["eqWithStrID.DVA_EQ_ID"];
                         var feildprecursor = "eqWithStrID.";
