@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   
 ### Added 
 
--
+- Begin Drainage Area and End Drainage Area attributes to Indiana Coordinated Discharge report
 
 ### Changed  
 
