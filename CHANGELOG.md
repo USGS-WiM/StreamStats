@@ -24,7 +24,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed  
 
-- 
+- Bug that shows out of range parameter warning after parameters have been edited to be within range and report is reopened
 
 ### Security  
 
