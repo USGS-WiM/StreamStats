@@ -14,11 +14,6 @@
             <div class="panel panel-default">
                 <div class="panel-heading">Gage Information</div>
                 <div class="panel-body">
-                    <div ng-if="vm.URLsToDisplay.length > 0"><b>Links to Additional Information: </b>
-                        <div ng-repeat = "item in vm.URLsToDisplay">
-                            <a href="{{item.url}}">{{item.text}}</a><br>
-                        </div>
-                    </div>
                     <table class="table table-striped">
                         <thead>
                             <tr>
@@ -110,9 +105,15 @@
                     
                 </div>
             </div>
+        
 
-            <div class="panel panel-default" ng-show="vm.gage.statisticsgroups.length > 0">
+            <div class="panel panel-default" ng-show="vm.gage.statisticsgroups.length > 0 || vm.URLsToDisplay.length > 0">
                 <div class="table-title stat-table-title">Streamflow Statistics
+                    <div ng-show="vm.URLsToDisplay.length > 0">Links to Additional Statistics: 
+                        <div ng-repeat = "item in vm.URLsToDisplay">
+                            <a href="{{item.url}}">{{item.text}}</a><br>
+                        </div>
+                    </div>
                     <div class="stat-filters">
                         <label>Filter By Statistic Group: </label>
                         <div id="statGroupSelect" ng-dropdown-multiselect="" options="vm.gage.statisticsgroups" selected-model="vm.selectedStatisticGroups" extra-settings="vm.multiselectOptions"></div>
@@ -121,9 +122,8 @@
                         <button  ng-if="!vm.showPreferred" ng-click="vm.showPreferred = true">Show Only Preferred  <i class="fa fa-toggle-off" ></i></button>
                         <button  ng-if="vm.showPreferred" ng-click="vm.showPreferred = false">Show Only Preferred  <i class="fa fa-toggle-on" ></i></button> 
                     </div>
-                </div>
-                <div class="panel-body">
-                    
+                </div><br>
+                <div class="panel-body" ng-show="vm.gage.statisticsgroups.length > 0">
                     <div class="panel panel-default" ng-repeat="statisticGroup in vm.gage.statisticsgroups" ng-if="vm.selectedStatisticGroups.length == 0 || vm.selectedStatisticGroups.indexOf(statisticGroup) > -1" ng-form="statisticGroupForm">
                         <div class="panel-heading">{{statisticGroup.name}}</div>
                         <div class="panel-body">
