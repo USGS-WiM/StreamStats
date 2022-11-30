@@ -14,7 +14,11 @@
             <div class="panel panel-default">
                 <div class="panel-heading">Gage Information</div>
                 <div class="panel-body">
-    
+                    <div ng-if="vm.URLsToDisplay.length > 0"><b>Links to Additional Information: </b>
+                        <div ng-repeat = "item in vm.URLsToDisplay">
+                            <a href="{{item.url}}">{{item.text}}</a><br>
+                        </div>
+                    </div>
                     <table class="table table-striped">
                         <thead>
                             <tr>

@@ -87,7 +87,6 @@ var StreamStats;
                     displayProp: 'id'
                 };
                 _this.URLsToDisplay = [];
-                _this.done = false;
                 $scope.vm = _this;
                 _this.modalInstance = modal;
                 _this.modalService = modalService;

@@ -164,7 +164,6 @@ module StreamStats.Controllers {
         public NWISlat: string;
         public NWISlng: string;
         public URLsToDisplay = [];
-        public done = false;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -238,7 +237,8 @@ module StreamStats.Controllers {
                 { 
                     url: 'https://streamstatsags.cr.usgs.gov/NC_gagePages/Sta_' + siteNo + '_daily_discharge_percentiles_table_by-day-month-seasonal.txt', 
                     text: "Flow-Duration Statistics by Period of Record, Calendar Day & Month, & Seasonal Periods",
-                    available: false },
+                    available: false 
+                },
                 { 
                     url: 'https://streamstatsags.cr.usgs.gov/IA_gagePages/' + siteNo + '_stats.pdf', 
                     text: "Stream Flow Statistics",
@@ -251,7 +251,7 @@ module StreamStats.Controllers {
                 this.Execute(request).then((response: any) => {
                     if (response.status == 200) { 
                         additionalURLs[index].available = true; 
-                        this.URLsToDisplay.push(additionalURLs[index])
+                        this.URLsToDisplay.push(additionalURLs[index]);
                     }
                 },(error) => {
                 }).finally(() => {
