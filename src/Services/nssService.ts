@@ -326,12 +326,15 @@ module StreamStats.Services {
                 this.estimateFlowsCounter++;
                 this.cleanRegressionRegions(statGroup.regressionRegions);
 
-                statGroup.regressionRegions.forEach((regressionRegion) => {                    
+                statGroup.regressionRegions.forEach((regressionRegion) => {  
+                    if (regressionRegion.disclaimer) { // resets regression region diclaimers if values are edited and report is opened a second time
+                        regressionRegion.disclaimer = null; 
+                    }                  
                     regressionRegion.parameters.forEach((regressionParam) => {                        
                         studyAreaParameterList.forEach((param) => {
-                            //console.log('search for matching params ', regressionParam.Code.toLowerCase(), param.code.toLowerCase());
+                            //console.log('search for matching params ', regressionParam.code.toLowerCase(), param.code.toLowerCase());
                             if (regressionParam.code.toLowerCase() == param.code.toLowerCase()) {
-                                //console.log('updating parameter in scenario object for: ', regressionParam.Code, ' from: ', regressionParam.Value, ' to: ', param.value);
+                                //console.log('updating parameter in scenario object for: ', regressionParam.code, ' from: ', regressionParam.value, ' to: ', param.value);
                                 regressionParam.value = param[paramValueField];
                             }
                         });

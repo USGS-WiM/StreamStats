@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed  
 
 - Moved NC And IA gage pages links inside StreamStats gage page modal
+- Watershed symbols in the legend
 
 ### Deprecated 
 
@@ -24,7 +25,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed  
 
-- 
+- Bug that shows out of range parameter warning after parameters have been edited to be within range and report is reopened
 
 ### Security  
 
