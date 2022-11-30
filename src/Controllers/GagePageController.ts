@@ -163,6 +163,8 @@ module StreamStats.Controllers {
         }
         public NWISlat: string;
         public NWISlng: string;
+        public URLsToDisplay = [];
+        public done = false;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -210,18 +212,51 @@ module StreamStats.Controllers {
                     this.gage.lng = response.data.location.coordinates[0];
                     this.gage.statisticsgroups = [];
                     this.gage.citations = [];
-
                     this.getStationCharacteristics(response.data.characteristics);
                     this.getStationStatistics(response.data.statistics);
                     this.getNWISInfo();
                     this.getNWISPeriodOfRecord(this.gage);
+                    this.additionalLinkCheck(this.gage.code);
 
                 }, (error) => {
                     //sm when error
                 }).finally(() => {
 
-                });
+                }
+            );
+        }
 
+        public additionalLinkCheck(siteNo)  {
+            this.URLsToDisplay = [];
+            var additionalURLs = 
+            [
+                { 
+                    url: 'https://streamstatsags.cr.usgs.gov/NC_gagePages/Sta_' + siteNo + '_daily_discharge_percentiles_table_by-wateryears.txt', 
+                    text: "Flow-Duration Statistics by Water Year",
+                    available: false 
+                },
+                { 
+                    url: 'https://streamstatsags.cr.usgs.gov/NC_gagePages/Sta_' + siteNo + '_daily_discharge_percentiles_table_by-day-month-seasonal.txt', 
+                    text: "Flow-Duration Statistics by Period of Record, Calendar Day & Month, & Seasonal Periods",
+                    available: false },
+                { 
+                    url: 'https://streamstatsags.cr.usgs.gov/IA_gagePages/' + siteNo + '_stats.pdf', 
+                    text: "Stream Flow Statistics",
+                    available: false 
+                }
+            ]
+
+            for (let index = 0; index < additionalURLs.length; index++) {
+                var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(additionalURLs[index].url, true, WiM.Services.Helpers.methodType.GET, 'json');
+                this.Execute(request).then((response: any) => {
+                    if (response.status == 200) { 
+                        additionalURLs[index].available = true; 
+                        this.URLsToDisplay.push(additionalURLs[index])
+                    }
+                },(error) => {
+                }).finally(() => {
+                });  
+            }
         }
 
         public setPreferred(pref: boolean) {
@@ -416,7 +451,7 @@ module StreamStats.Controllers {
             //console.log("in GagePage controller");
             this.AppVersion = configuration.version;
 
-            this.getGagePage()
+            this.getGagePage();
         }
 
 

@@ -134,7 +134,7 @@ module StreamStats.Controllers {
         }
     }
 
-    class MapController extends WiM.Services.HTTPServiceBase implements IMapController {
+    class MapController implements IMapController {
         //Events
         //-+-+-+-+-+-+-+-+-+-+-+-
         //Properties
@@ -201,12 +201,10 @@ module StreamStats.Controllers {
             fillOpacity: 0.5
         }
         public imageryToggled = false;
-        public additionalHTML: string = ''; 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$compile', 'toaster', '$analytics', '$location', '$stateParams','leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack', '$http'];
         constructor(public $scope: IMapControllerScope, public $compile: IMapControllerCompile, toaster, $analytics, $location: ng.ILocationService, $stateParams, leafletBoundsHelper: any, leafletData: ILeafletData, search: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, exploration: Services.IExplorationService, private _prosperServices: Services.IProsperService, eventManager: WiM.Event.IEventManager, private modal: Services.IModalService, private modalStack: ng.ui.bootstrap.IModalStackService, $http: ng.IHttpService) {
-            super($http, configuration.baseurls.StreamStats);
             $scope.vm = this;
             
             this.toaster = toaster;
@@ -598,20 +596,12 @@ module StreamStats.Controllers {
                                 if (item.layerName == "Streamgages" && k == "FeatureURL") {
                                     var siteNo = queryResult.properties[k].split('site_no=')[1];
                                     var SSgagepage = "vm.openGagePage('" + siteNo + "')";
-                                    var urls = ['https://streamstats.usgs.gov/gagePages/NC/Sta_' + siteNo + '_daily_discharge_percentiles_table_by-wateryears.txt',
-                                    'https://streamstats.usgs.gov/gagePages/NC/Sta_' + siteNo + '_daily_discharge_percentiles_table_by-day-month-seasonal.txt',
-                                    'https://streamstats.usgs.gov/gagePages/IA/' + siteNo + '_stats.pdf'];
-                                    var text = ['Flow-Duration Statistics by Water Years:',
-                                    'Flow-Duration Statistics by Period of Record, Calendar Day & Month, & Seasonal Periods:',
-                                    'Stream Flow Statistics:'];
                                     var NWISpage = 'https://waterdata.usgs.gov/monitoring-location/' + siteNo;
-                                    
+
                                     var html = '<strong>Monitoring Location Page: </strong><a href="' + NWISpage + ' "target="_blank">link</a></br><strong>StreamStats Gage Page: </strong><a ng-click="' + SSgagepage + '">link</a></br>';
-                                    this.additionalLinkCheck(urls.length-1, urls, '', text);
-                                    setTimeout(() => {
-                                        html = html + this.additionalHTML;
-                                        querylayers.append(html);
-                                    },700)
+                                    querylayers.append(html);
+
+
                                     this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'streamgageQuery' });
                                 }
                                 else if (item.layerName == "Mean August Baseflow") {
@@ -1455,20 +1445,13 @@ module StreamStats.Controllers {
                     },
                     onEachFeature: function (feature, layer) {
                         var siteNo = feature.properties['Code'];
-                        var urls = ['https://streamstats.usgs.gov/gagePages/NC/Sta_' + siteNo + '_daily_discharge_percentiles_table_by-wateryears.txt',
-                        'https://streamstats.usgs.gov/gagePages/NC/Sta_' + siteNo + '_daily_discharge_percentiles_table_by-day-month-seasonal.txt',
-                        'https://streamstats.usgs.gov/gagePages/IA/' + siteNo + '_stats.pdf'];
-                        var text = ['Flow-Duration Statistics by Water Years:',
-                        'Flow-Duration Statistics by Period of Record, Calendar Day & Month, & Seasonal Periods:',
-                        'Stream Flow Statistics:'];
                         var NWISpage = 'https://waterdata.usgs.gov/monitoring-location/' + siteNo;
                         var gageButtonDiv = L.DomUtil.create('div', 'innerDiv');
-                        var gageButtonLoaderDiv = L.DomUtil.create('div', 'innerDiv');
 
-                        
-                        gageButtonLoaderDiv.innerHTML = '<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>';
+                        gageButtonDiv.innerHTML = '<strong>Station ID: </strong>' + siteNo + '</br><strong>Station Name: </strong>' + feature.properties['Name'] + '</br><strong>Latitude: </strong>' + feature.geometry.coordinates[1] + '</br><strong>Longitude: </strong>' + feature.geometry.coordinates[0] + '</br><strong>Station Type</strong>: ' + feature.properties.StationType.name +
+                        '</br><strong>Monitoring Location Page: </strong><a href="' + NWISpage + ' "target="_blank">link</a></br><strong>StreamStats Gage Page: </strong><a id="gagePageLink" class="' + siteNo + '">link</a><br>';
 
-                        layer.bindPopup(gageButtonLoaderDiv);
+                        layer.bindPopup(gageButtonDiv);
 
                         var styling = configuration.streamgageSymbology.filter(function (item) {
                             return item.label.toLowerCase() == feature.properties.StationType.name.toLowerCase();
@@ -1496,14 +1479,7 @@ module StreamStats.Controllers {
 
                         layer.on('mouseover', function(e) {
                             if (self.studyArea.doSelectMapGage){
-                                self.additionalLinkCheck(urls.length-1, urls, '', text);
-                                setTimeout(() => {
-                                    gageButtonDiv.innerHTML = '<strong>Station ID: </strong>' + siteNo + '</br><strong>Station Name: </strong>' + feature.properties['Name'] + '</br><strong>Latitude: </strong>' + feature.geometry.coordinates[1] + '</br><strong>Longitude: </strong>' + feature.geometry.coordinates[0] + '</br><strong>Station Type</strong>: ' + feature.properties.StationType.name +
-                                    '</br><strong>Monitoring Location Page: </strong><a href="' + NWISpage + ' "target="_blank">link</a></br><strong>StreamStats Gage Page: </strong><a id="gagePageLink" class="' + siteNo + '">link</a><br>';
-                                    gageButtonDiv.innerHTML = gageButtonDiv.innerHTML + self.additionalHTML;
-                                    layer.bindPopup(gageButtonDiv);
-                                    this.openPopup();
-                                },700);
+                                this.openPopup();
                             } 
                         });
 
@@ -1514,14 +1490,7 @@ module StreamStats.Controllers {
                                 self.studyArea.doSelectMapGage = false;
                             }
                             else {
-                                self.additionalLinkCheck(urls.length-1, urls, '', text);
-                                setTimeout(() => {
-                                    gageButtonDiv.innerHTML = '<strong>Station ID: </strong>' + siteNo + '</br><strong>Station Name: </strong>' + feature.properties['Name'] + '</br><strong>Latitude: </strong>' + feature.geometry.coordinates[1] + '</br><strong>Longitude: </strong>' + feature.geometry.coordinates[0] + '</br><strong>Station Type</strong>: ' + feature.properties.StationType.name +
-                                    '</br><strong>Monitoring Location Page: </strong><a href="' + NWISpage + ' "target="_blank">link</a></br><strong>StreamStats Gage Page: </strong><a id="gagePageLink" class="' + siteNo + '">link</a><br>';
-                                    gageButtonDiv.innerHTML = gageButtonDiv.innerHTML + self.additionalHTML;
-                                    layer.bindPopup(gageButtonDiv);
-                                    this.openPopup();
-                                },700);
+                                this.openPopup();
                             } 
                         })
 
@@ -1542,23 +1511,6 @@ module StreamStats.Controllers {
                             color: 'blue'
                         }                 
                     }
-            }
-        }
-
-        public additionalLinkCheck(lastIndex, urls, additionalHTML, text)  {
-            if (lastIndex >= 0) {
-                var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(urls[lastIndex], true, WiM.Services.Helpers.methodType.GET, 'json');
-                this.Execute(request).then((response: any) => {
-                    if (response.status == 200) { // display ncGagePageWY link
-                        additionalHTML = additionalHTML + '<strong>'+ text[lastIndex] +' </strong><a href="' + urls[lastIndex] + ' "target="_blank">link</a></br>';
-                    }
-                },(error) => {
-                }).finally(() => {
-                    lastIndex = lastIndex - 1;
-                    this.additionalLinkCheck(lastIndex, urls, additionalHTML, text); // recursively call function 
-                });  
-            } else {
-                this.additionalHTML = additionalHTML;
             }
         }
 

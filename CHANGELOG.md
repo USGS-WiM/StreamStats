@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed  
 
--
+- Moved NC And IA gage pages links inside StreamStats gage page modal
 
 ### Deprecated 
 
