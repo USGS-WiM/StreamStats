@@ -86,6 +86,7 @@ var StreamStats;
                 _this.citationMultiselectOptions = {
                     displayProp: 'id'
                 };
+                _this.URLsToDisplay = [];
                 $scope.vm = _this;
                 _this.modalInstance = modal;
                 _this.modalService = modalService;
@@ -120,9 +121,46 @@ var StreamStats;
                     _this.getStationStatistics(response.data.statistics);
                     _this.getNWISInfo();
                     _this.getNWISPeriodOfRecord(_this.gage);
+                    _this.additionalLinkCheck(_this.gage.code);
                 }, function (error) {
                 }).finally(function () {
                 });
+            };
+            GagePageController.prototype.additionalLinkCheck = function (siteNo) {
+                var _this = this;
+                this.URLsToDisplay = [];
+                var additionalURLs = [
+                    {
+                        url: 'https://streamstats.usgs.gov/gagePages/NC/Sta_' + siteNo + '_daily_discharge_percentiles_table_by-wateryears.txt',
+                        text: "Flow-Duration Statistics by Water Year",
+                        available: false
+                    },
+                    {
+                        url: 'https://streamstats.usgs.gov/gagePages/NC/Sta_' + siteNo + '_daily_discharge_percentiles_table_by-day-month-seasonal.txt',
+                        text: "Flow-Duration Statistics by Period of Record, Calendar Day & Month, & Seasonal Periods",
+                        available: false
+                    },
+                    {
+                        url: 'https://streamstats.usgs.gov/gagePages/IA/' + siteNo + '_stats.pdf',
+                        text: "Stream Flow Statistics",
+                        available: false
+                    }
+                ];
+                var _loop_1 = function (index) {
+                    request = new WiM.Services.Helpers.RequestInfo(additionalURLs[index].url, true, WiM.Services.Helpers.methodType.GET, 'json');
+                    this_1.Execute(request).then(function (response) {
+                        if (response.status == 200) {
+                            additionalURLs[index].available = true;
+                            _this.URLsToDisplay.push(additionalURLs[index]);
+                        }
+                    }, function (error) {
+                    }).finally(function () {
+                    });
+                };
+                var this_1 = this, request;
+                for (var index = 0; index < additionalURLs.length; index++) {
+                    _loop_1(index);
+                }
             };
             GagePageController.prototype.setPreferred = function (pref) {
                 this.showPreferred = pref;
