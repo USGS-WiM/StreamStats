@@ -14,7 +14,7 @@
             <div class="panel panel-default">
                 <div class="panel-heading">Gage Information</div>
                 <div class="panel-body">
-                    <table class="table table-striped">
+                    <table id="gage-information-table" class="table table-striped">
                         <thead>
                             <tr>
                                 <th >Name</th>
@@ -127,7 +127,7 @@
                     <div class="panel panel-default" ng-repeat="statisticGroup in vm.gage.statisticsgroups" ng-if="vm.selectedStatisticGroups.length == 0 || vm.selectedStatisticGroups.indexOf(statisticGroup) > -1" ng-form="statisticGroupForm">
                         <div class="panel-heading">{{statisticGroup.name}}</div>
                         <div class="panel-body">
-                            <table class="table table-striped">
+                            <table id="class="table table-striped">
                                 <thead>
                                     <tr>
                                         <th >Statistic Name</th>
@@ -178,7 +178,7 @@
                 <div class="panel-heading">Citations</div>
                 <div class="panel-body">
     
-                    <table class="table table-striped">
+                    <table id="citations-table" class="table table-striped">
                         <thead>
                             <tr>
                                 <th >ID</th>
@@ -201,6 +201,7 @@
     <div class="modal-footer hidden-print">
         <div class="btn-group">
             <button ng-click="vm.Close()" class="btn-black"><i class="fa fa-close"></i><span>&nbsp;&nbsp;Close</span></button>
+            <button type="button" class="btn-blue" ng-click="vm.downloadCSV()"><span><i class="fa fa-download"></i>&nbsp;&nbsp;Download CSV</span></button>
             <button class="btn-blue" ng-click="vm.print()" analytics-on analytics-event="Print" analytics-category="GagePage" analytics-label="gagePagePrint"><i class="fa fa-print"></i>&nbsp;&nbsp;Print</button>
         </div>
     </div>

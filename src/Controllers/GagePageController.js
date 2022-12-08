@@ -305,9 +305,58 @@ var StreamStats;
                 }
                 return false;
             };
+            GagePageController.prototype.downloadCSV = function () {
+                var filename = 'data.csv';
+                var csvFile = 'StreamStats Gage Page\n\n';
+                csvFile += this.tableToCSV($('#gage-information-table'));
+                var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
+                if (navigator.msSaveBlob) {
+                    navigator.msSaveBlob(blob, filename);
+                }
+                else {
+                    var link = document.createElement("a");
+                    var url = URL.createObjectURL(blob);
+                    if (link.download !== undefined) {
+                        link.setAttribute("href", url);
+                        link.setAttribute("download", filename);
+                        link.style.visibility = 'hidden';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }
+                    else {
+                        window.open(url);
+                    }
+                }
+            };
             GagePageController.prototype.init = function () {
                 this.AppVersion = configuration.version;
                 this.getGagePage();
+            };
+            GagePageController.prototype.tableToCSV = function ($table) {
+                var $headers = $table.find('tr:has(th)'), $rows = $table.find('tr:has(td)'), tmpColDelim = String.fromCharCode(11), tmpRowDelim = String.fromCharCode(0), colDelim = '","', rowDelim = '"\r\n"';
+                var csv = '"';
+                csv += formatRows($headers.map(grabRow));
+                csv += rowDelim;
+                csv += formatRows($rows.map(grabRow)) + '"';
+                return csv;
+                function formatRows(rows) {
+                    return rows.get().join(tmpRowDelim)
+                        .split(tmpRowDelim).join(rowDelim)
+                        .split(tmpColDelim).join(colDelim);
+                }
+                function grabRow(i, row) {
+                    var $row = $(row);
+                    var $cols = $row.find('td');
+                    if (!$cols.length)
+                        $cols = $row.find('th');
+                    return $cols.map(grabCol)
+                        .get().join(tmpColDelim);
+                }
+                function grabCol(j, col) {
+                    var $col = $(col), $text = $col.text();
+                    return $text.replace('"', '""');
+                }
             };
             GagePageController.$inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance'];
             return GagePageController;
