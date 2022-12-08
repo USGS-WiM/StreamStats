@@ -61,7 +61,6 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include=".typingsrc" />
-    <Content Include="gulpfile.js" />
     <Content Include="src\appConfig.js" />
     <Content Include="src\Assets\JS\shpwrite_modified.js" />
     <Content Include="src\css\custom.css" />
