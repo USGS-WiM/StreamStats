@@ -306,9 +306,38 @@ var StreamStats;
                 return false;
             };
             GagePageController.prototype.downloadCSV = function () {
+                var periodOfRecord = (this.gage['StartDate'] !== undefined || this.gage['EndDate'] !== undefined) ? this.convertDateToString(this.gage['StartDate']) + " - " + this.convertDateToString(this.gage['EndDate']) : "Undefined";
                 var filename = 'data.csv';
-                var csvFile = 'StreamStats Gage Page\n\n';
-                csvFile += this.tableToCSV($('#gage-information-table'));
+                var csvFile = 'StreamStats Gage Page\n\n'
+                    + 'Gage Information\n\n'
+                    + 'Name,Value\n'
+                    + 'USGS Station Number,"' + this.gage.code + '"\n'
+                    + 'Station Name,"' + this.gage.name + '"\n'
+                    + 'Station Type,"' + this.gage.stationType.name + '"\n'
+                    + 'Latitude,"' + this.gage.lat + '"\n'
+                    + 'Longitude,"' + this.gage.lng + '"\n'
+                    + 'NWIS Latitude,"' + this.NWISlat + '"\n'
+                    + 'NWIS Longitude,"' + this.NWISlng + '"\n'
+                    + 'Is regulated?,"' + this.gage.isRegulated + '"\n'
+                    + 'Agency,"' + this.gage.agency.name + '"\n'
+                    + 'NWIS Discharge Period of Record,"' + periodOfRecord + '"\n\n';
+                var self = this;
+                if (this.gage.characteristics.length > 0) {
+                    csvFile += 'Physical Characteristics\n\n';
+                    this.filteredStatGroupsChar.forEach(function (statisticGroup) {
+                        csvFile += '"' + statisticGroup.name + '"\n';
+                        csvFile += self.tableToCSV($('#physical-characteristics-table-' + statisticGroup.id)) + "\n\n";
+                    });
+                }
+                if (this.gage.statisticsgroups.length > 0) {
+                    csvFile += 'Streamflow Statistics\n\n';
+                    this.gage.statisticsgroups.forEach(function (statisticGroup) {
+                        console.log(statisticGroup);
+                        csvFile += '"' + statisticGroup.name + '"\n';
+                        csvFile += self.tableToCSV($('#streamflow-statistics-table-' + statisticGroup.id)) + "\n\n";
+                    });
+                }
+                csvFile += this.tableToCSV($('#citations-table'));
                 var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
                 if (navigator.msSaveBlob) {
                     navigator.msSaveBlob(blob, filename);
@@ -332,6 +361,14 @@ var StreamStats;
             GagePageController.prototype.init = function () {
                 this.AppVersion = configuration.version;
                 this.getGagePage();
+            };
+            GagePageController.prototype.convertDateToString = function (date) {
+                var yyyy = date.getFullYear().toString();
+                var mm = (date.getMonth() + 1).toString();
+                var dd = date.getDate().toString();
+                var mmChars = mm.split('');
+                var ddChars = dd.split('');
+                return yyyy + '-' + (mmChars[1] ? mm : "0" + mmChars[0]) + '-' + (ddChars[1] ? dd : "0" + ddChars[0]);
             };
             GagePageController.prototype.tableToCSV = function ($table) {
                 var $headers = $table.find('tr:has(th)'), $rows = $table.find('tr:has(td)'), tmpColDelim = String.fromCharCode(11), tmpRowDelim = String.fromCharCode(0), colDelim = '","', rowDelim = '"\r\n"';
