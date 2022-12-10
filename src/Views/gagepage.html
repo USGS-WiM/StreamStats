@@ -127,7 +127,7 @@
                     <div class="panel panel-default" ng-repeat="statisticGroup in vm.gage.statisticsgroups" ng-if="vm.selectedStatisticGroups.length == 0 || vm.selectedStatisticGroups.indexOf(statisticGroup) > -1" ng-form="statisticGroupForm">
                         <div class="panel-heading">{{statisticGroup.name}}</div>
                         <div class="panel-body">
-                            <table iid="{{'streamflow-statistics-table-' + statisticGroup.id}}" class="table table-striped">
+                            <table id="{{'streamflow-statistics-table-' + statisticGroup.id}}" class="table table-striped">
                                 <thead>
                                     <tr>
                                         <th >Statistic Name</th>
@@ -148,15 +148,11 @@
                                         <td class="stat-names" ng-bind="statistic.regressionType.name"></td>
                                         <td ng-bind="statistic.value"></td>
                                         <td ng-bind="statistic.unitType.name"></td>
-                                        <td>
-                                            <i ng-if="statistic.isPreferred" class="fa fa-check"></i>
-                                        </td>
+                                        <td ng-if="statistic.isPreferred">&#10004;</td>
+                                        <td ng-if="!statistic.isPreferred"></td>
                                         <td ng-bind="statistic.yearsofRecord"></td>
-                                        <td>
-                                            <div ng-if="statistic.statisticErrors.length > 0" ng-repeat="error in statistic.statisticErrors">
-                                                {{error.value}}
-                                            </div>
-                                        </td>
+                                        <td ng-bind="statistic.statisticErrors[0].value" ng-if="statistic.statisticErrors.length > 0"></td>
+                                        <td ng-bind="" ng-if="statistic.statisticErrors.length <= 0"></td>
                                         <td ng-bind="statistic.predictionInterval.variance" ng-if="vm.checkForPredInt(statisticGroup.id)"></td>
                                         <td ng-bind="statistic.predictionInterval.lowerConfidenceInterval" ng-if="vm.checkForPredInt(statisticGroup.id)"></td>
                                         <td ng-bind="statistic.predictionInterval.upperConfidenceInterval" ng-if="vm.checkForPredInt(statisticGroup.id)"></td>

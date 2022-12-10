@@ -450,11 +450,15 @@ module StreamStats.Controllers {
             // TODO put new Google Analytics version 4 event here
             // this.angulartics.eventTrack('Download', { category: 'Report', label: 'CSV' });
 
+            let disclaimer = '"USGS Data Disclaimer: Unless otherwise stated, all data, metadata and related materials are considered to satisfy the quality standards relative to the purpose for which the data were collected. Although these data and associated metadata have been reviewed for accuracy and completeness and approved for release by the U.S. Geological Survey (USGS), no warranty expressed or implied is made regarding the display or utility of the data for other purposes, nor on all computer systems, nor shall the act of distribution constitute any such warranty."\n'
+            + '"USGS Software Disclaimer: This software has been approved for release by the U.S. Geological Survey (USGS). Although the software has been subjected to rigorous review, the USGS reserves the right to update the software as needed pursuant to further analysis and review. No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty. Furthermore, the software is released on condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from its authorized or unauthorized use."\n'
+            + '"USGS Product Names Disclaimer: Any use of trade, firm, or product names is for descriptive purposes only and does not imply endorsement by the U.S. Government."\n\n';
+            
             let periodOfRecord = (this.gage['StartDate'] !== undefined || this.gage['EndDate'] !== undefined) ? this.convertDateToString(this.gage['StartDate']) + " - " + this.convertDateToString(this.gage['EndDate']) : "Undefined";
 
             var filename = 'data.csv';
-            var csvFile = 'StreamStats Gage Page\n\n'
-            + 'Gage Information\n\n'
+            var csvFile = '\uFEFFStreamStats Gage Page\n\n'
+            + 'Gage Information\n'
             + 'Name,Value\n'
             + 'USGS Station Number,"' + this.gage.code + '"\n'
             + 'Station Name,"' + this.gage.name + '"\n'
@@ -468,12 +472,14 @@ module StreamStats.Controllers {
             + 'NWIS Discharge Period of Record,"' + periodOfRecord + '"\n\n';
 
             // Physical Characteristics tables
-            var self = this;
+            var _this = this;
             if (this.gage.characteristics.length > 0) {
                 csvFile += 'Physical Characteristics\n\n';
                 this.filteredStatGroupsChar.forEach(function (statisticGroup) {
-                    csvFile += '"' + statisticGroup.name + '"\n';
-                    csvFile += self.tableToCSV($('#physical-characteristics-table-' + statisticGroup.id)) + "\n\n";
+                    if (_this.selectedStatGroupsChar.length == 0 || _this.selectedStatGroupsChar.indexOf(statisticGroup) > -1) {
+                        csvFile += '"' + statisticGroup.name + '"\n'
+                        + _this.tableToCSV($('#physical-characteristics-table-' + statisticGroup.id)) + "\n\n";
+                    }
                 });
             }
 
@@ -481,14 +487,21 @@ module StreamStats.Controllers {
             if (this.gage.statisticsgroups.length > 0) {
                 csvFile += 'Streamflow Statistics\n\n';
                 this.gage.statisticsgroups.forEach(function (statisticGroup) {
-                    console.log(statisticGroup);
-                    csvFile += '"' + statisticGroup.name + '"\n';
-                    csvFile += self.tableToCSV($('#streamflow-statistics-table-' + statisticGroup.id)) + "\n\n";
+                    if (_this.selectedStatisticGroups.length == 0 || _this.selectedStatisticGroups.indexOf(statisticGroup) > -1) {
+                        csvFile += '"' + statisticGroup.name + '"\n'
+                        + _this.tableToCSV($('#streamflow-statistics-table-' + statisticGroup.id)) + "\n\n";
+                    }
                 });
             }
 
             // Citations table
-            csvFile += this.tableToCSV($('#citations-table'));
+            if (this.gage.citations.length > 0) {
+                csvFile += "Citations\n"
+                + this.tableToCSV($('#citations-table')) + "\n\n";
+            }
+            
+            csvFile += disclaimer
+            + '"Application Version:",' + this.AppVersion;
 
             var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
 
@@ -525,12 +538,12 @@ module StreamStats.Controllers {
             var yyyy = date.getFullYear().toString();
             var mm = (date.getMonth()+1).toString();
             var dd  = date.getDate().toString();
-          
+        
             var mmChars = mm.split('');
             var ddChars = dd.split('');
-          
+        
             return yyyy + '-' + (mmChars[1]?mm:"0"+mmChars[0]) + '-' + (ddChars[1]?dd:"0"+ddChars[0]);
-          }
+        }
 
         private tableToCSV($table) {
             var $headers = $table.find('tr:has(th)')

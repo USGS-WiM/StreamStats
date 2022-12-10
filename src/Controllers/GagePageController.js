@@ -77,57 +77,57 @@ var StreamStats;
         var GagePageController = (function (_super) {
             __extends(GagePageController, _super);
             function GagePageController($scope, $http, modalService, modal) {
-                var _this = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
-                _this.filteredStatGroupsChar = [];
-                _this.showPreferred = false;
-                _this.multiselectOptions = {
+                var _this_1 = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
+                _this_1.filteredStatGroupsChar = [];
+                _this_1.showPreferred = false;
+                _this_1.multiselectOptions = {
                     displayProp: 'name'
                 };
-                _this.citationMultiselectOptions = {
+                _this_1.citationMultiselectOptions = {
                     displayProp: 'id'
                 };
-                _this.URLsToDisplay = [];
-                $scope.vm = _this;
-                _this.modalInstance = modal;
-                _this.modalService = modalService;
-                _this.init();
-                _this.selectedStatisticGroups = [];
-                _this.selectedCitations = [];
-                _this.selectedStatGroupsChar = [];
-                _this.selectedCitationsChar = [];
-                _this.statCitationList = [];
-                _this.charCitationList = [];
-                _this.showPreferred = false;
-                _this.print = function () {
+                _this_1.URLsToDisplay = [];
+                $scope.vm = _this_1;
+                _this_1.modalInstance = modal;
+                _this_1.modalService = modalService;
+                _this_1.init();
+                _this_1.selectedStatisticGroups = [];
+                _this_1.selectedCitations = [];
+                _this_1.selectedStatGroupsChar = [];
+                _this_1.selectedCitationsChar = [];
+                _this_1.statCitationList = [];
+                _this_1.charCitationList = [];
+                _this_1.showPreferred = false;
+                _this_1.print = function () {
                     window.print();
                 };
-                return _this;
+                return _this_1;
             }
             GagePageController.prototype.Close = function () {
                 this.modalInstance.dismiss('cancel');
             };
             GagePageController.prototype.getGagePage = function () {
-                var _this = this;
+                var _this_1 = this;
                 this.gage = new GageInfo(this.modalService.modalOptions.siteid);
                 var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + this.gage.code;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
-                    _this.gage = response.data;
-                    _this.gage.lat = response.data.location.coordinates[1];
-                    _this.gage.lng = response.data.location.coordinates[0];
-                    _this.gage.statisticsgroups = [];
-                    _this.gage.citations = [];
-                    _this.getStationCharacteristics(response.data.characteristics);
-                    _this.getStationStatistics(response.data.statistics);
-                    _this.getNWISInfo();
-                    _this.getNWISPeriodOfRecord(_this.gage);
-                    _this.additionalLinkCheck(_this.gage.code);
+                    _this_1.gage = response.data;
+                    _this_1.gage.lat = response.data.location.coordinates[1];
+                    _this_1.gage.lng = response.data.location.coordinates[0];
+                    _this_1.gage.statisticsgroups = [];
+                    _this_1.gage.citations = [];
+                    _this_1.getStationCharacteristics(response.data.characteristics);
+                    _this_1.getStationStatistics(response.data.statistics);
+                    _this_1.getNWISInfo();
+                    _this_1.getNWISPeriodOfRecord(_this_1.gage);
+                    _this_1.additionalLinkCheck(_this_1.gage.code);
                 }, function (error) {
                 }).finally(function () {
                 });
             };
             GagePageController.prototype.additionalLinkCheck = function (siteNo) {
-                var _this = this;
+                var _this_1 = this;
                 this.URLsToDisplay = [];
                 var additionalURLs = [
                     {
@@ -151,7 +151,7 @@ var StreamStats;
                     this_1.Execute(request).then(function (response) {
                         if (response.status == 200) {
                             additionalURLs[index].available = true;
-                            _this.URLsToDisplay.push(additionalURLs[index]);
+                            _this_1.URLsToDisplay.push(additionalURLs[index]);
                         }
                     }, function (error) {
                     }).finally(function () {
@@ -166,26 +166,26 @@ var StreamStats;
                 this.showPreferred = pref;
             };
             GagePageController.prototype.getStationCharacteristics = function (characteristics) {
-                var _this = this;
+                var _this_1 = this;
                 characteristics.forEach(function (char, index) {
                     var characteristic = char;
                     if (char.hasOwnProperty('citation') && char.citation.id) {
                         if (char.citation && char.citation.citationURL)
                             char.citation.citationURL = char.citation.citationURL.replace('#', '');
-                        if (!_this.checkForCitation(char.citation.id)) {
-                            _this.gage.citations.push(char.citation);
+                        if (!_this_1.checkForCitation(char.citation.id)) {
+                            _this_1.gage.citations.push(char.citation);
                         }
-                        if (!_this.checkForStatOrCharCitation(char.citation.id, _this.charCitationList)) {
-                            _this.charCitationList.push(char.citation);
+                        if (!_this_1.checkForStatOrCharCitation(char.citation.id, _this_1.charCitationList)) {
+                            _this_1.charCitationList.push(char.citation);
                         }
                     }
-                    if (!_this.checkForCharStatisticGroup(char.variableType.statisticGroupTypeID)) {
+                    if (!_this_1.checkForCharStatisticGroup(char.variableType.statisticGroupTypeID)) {
                         if (char.hasOwnProperty('statisticGroupType')) {
                             var statgroup = char.statisticGroupType;
-                            _this.filteredStatGroupsChar.push(statgroup);
+                            _this_1.filteredStatGroupsChar.push(statgroup);
                         }
                         else {
-                            _this.getCharStatGroup(char.variableType.statisticGroupTypeID);
+                            _this_1.getCharStatGroup(char.variableType.statisticGroupTypeID);
                         }
                     }
                 });
@@ -199,45 +199,45 @@ var StreamStats;
                 return found;
             };
             GagePageController.prototype.getStationStatistics = function (statistics) {
-                var _this = this;
+                var _this_1 = this;
                 statistics.forEach(function (stat, index) {
                     if (stat.hasOwnProperty('citation') && stat.citation.id) {
                         if (stat.citation && stat.citation.citationURL)
                             stat.citation.citationURL = stat.citation.citationURL.replace('#', '');
-                        if (!_this.checkForCitation(stat.citation.id)) {
-                            _this.gage.citations.push(stat.citation);
+                        if (!_this_1.checkForCitation(stat.citation.id)) {
+                            _this_1.gage.citations.push(stat.citation);
                         }
-                        if (!_this.checkForStatOrCharCitation(stat.citation.id, _this.statCitationList)) {
-                            _this.statCitationList.push(stat.citation);
+                        if (!_this_1.checkForStatOrCharCitation(stat.citation.id, _this_1.statCitationList)) {
+                            _this_1.statCitationList.push(stat.citation);
                         }
                     }
-                    if (!_this.checkForStatisticGroup(stat.statisticGroupTypeID)) {
+                    if (!_this_1.checkForStatisticGroup(stat.statisticGroupTypeID)) {
                         if (stat.hasOwnProperty('statisticGroupType')) {
                             var statgroup = stat.statisticGroupType;
-                            _this.gage.statisticsgroups.push(statgroup);
+                            _this_1.gage.statisticsgroups.push(statgroup);
                         }
                         else {
-                            _this.getStatGroup(stat.statisticGroupTypeID);
+                            _this_1.getStatGroup(stat.statisticGroupTypeID);
                         }
                     }
                 });
             };
             GagePageController.prototype.getStatGroup = function (id) {
-                var _this = this;
+                var _this_1 = this;
                 var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStatGroups + id;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
-                    if (!_this.checkForStatisticGroup(response.data.id))
-                        _this.gage.statisticsgroups.push(response.data);
+                    if (!_this_1.checkForStatisticGroup(response.data.id))
+                        _this_1.gage.statisticsgroups.push(response.data);
                 });
             };
             GagePageController.prototype.getCharStatGroup = function (id) {
-                var _this = this;
+                var _this_1 = this;
                 var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStatGroups + id;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
-                    if (!_this.checkForCharStatisticGroup(response.data.id))
-                        _this.filteredStatGroupsChar.push(response.data);
+                    if (!_this_1.checkForCharStatisticGroup(response.data.id))
+                        _this_1.filteredStatGroupsChar.push(response.data);
                 });
             };
             GagePageController.prototype.checkForStatisticGroup = function (id) {
@@ -253,14 +253,14 @@ var StreamStats;
                 return found;
             };
             GagePageController.prototype.getNWISInfo = function () {
-                var _this = this;
+                var _this_1 = this;
                 var url = configuration.baseurls.NWISurl + configuration.queryparams.NWISsiteinfo + this.gage.code;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
                     var regex = /[+-]?((\d+(\.\d*)?)|(\.\d+))/g;
-                    var latLong = response.data.split(_this.gage.name)[1].match(regex);
-                    _this.NWISlat = latLong[0];
-                    _this.NWISlng = latLong[1];
+                    var latLong = response.data.split(_this_1.gage.name)[1].match(regex);
+                    _this_1.NWISlat = latLong[0];
+                    _this_1.NWISlng = latLong[1];
                 });
             };
             GagePageController.prototype.getNWISPeriodOfRecord = function (gage) {
@@ -306,10 +306,13 @@ var StreamStats;
                 return false;
             };
             GagePageController.prototype.downloadCSV = function () {
+                var disclaimer = '"USGS Data Disclaimer: Unless otherwise stated, all data, metadata and related materials are considered to satisfy the quality standards relative to the purpose for which the data were collected. Although these data and associated metadata have been reviewed for accuracy and completeness and approved for release by the U.S. Geological Survey (USGS), no warranty expressed or implied is made regarding the display or utility of the data for other purposes, nor on all computer systems, nor shall the act of distribution constitute any such warranty."\n'
+                    + '"USGS Software Disclaimer: This software has been approved for release by the U.S. Geological Survey (USGS). Although the software has been subjected to rigorous review, the USGS reserves the right to update the software as needed pursuant to further analysis and review. No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty. Furthermore, the software is released on condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from its authorized or unauthorized use."\n'
+                    + '"USGS Product Names Disclaimer: Any use of trade, firm, or product names is for descriptive purposes only and does not imply endorsement by the U.S. Government."\n\n';
                 var periodOfRecord = (this.gage['StartDate'] !== undefined || this.gage['EndDate'] !== undefined) ? this.convertDateToString(this.gage['StartDate']) + " - " + this.convertDateToString(this.gage['EndDate']) : "Undefined";
                 var filename = 'data.csv';
-                var csvFile = 'StreamStats Gage Page\n\n'
-                    + 'Gage Information\n\n'
+                var csvFile = '\uFEFFStreamStats Gage Page\n\n'
+                    + 'Gage Information\n'
                     + 'Name,Value\n'
                     + 'USGS Station Number,"' + this.gage.code + '"\n'
                     + 'Station Name,"' + this.gage.name + '"\n'
@@ -321,23 +324,31 @@ var StreamStats;
                     + 'Is regulated?,"' + this.gage.isRegulated + '"\n'
                     + 'Agency,"' + this.gage.agency.name + '"\n'
                     + 'NWIS Discharge Period of Record,"' + periodOfRecord + '"\n\n';
-                var self = this;
+                var _this = this;
                 if (this.gage.characteristics.length > 0) {
                     csvFile += 'Physical Characteristics\n\n';
                     this.filteredStatGroupsChar.forEach(function (statisticGroup) {
-                        csvFile += '"' + statisticGroup.name + '"\n';
-                        csvFile += self.tableToCSV($('#physical-characteristics-table-' + statisticGroup.id)) + "\n\n";
+                        if (_this.selectedStatGroupsChar.length == 0 || _this.selectedStatGroupsChar.indexOf(statisticGroup) > -1) {
+                            csvFile += '"' + statisticGroup.name + '"\n'
+                                + _this.tableToCSV($('#physical-characteristics-table-' + statisticGroup.id)) + "\n\n";
+                        }
                     });
                 }
                 if (this.gage.statisticsgroups.length > 0) {
                     csvFile += 'Streamflow Statistics\n\n';
                     this.gage.statisticsgroups.forEach(function (statisticGroup) {
-                        console.log(statisticGroup);
-                        csvFile += '"' + statisticGroup.name + '"\n';
-                        csvFile += self.tableToCSV($('#streamflow-statistics-table-' + statisticGroup.id)) + "\n\n";
+                        if (_this.selectedStatisticGroups.length == 0 || _this.selectedStatisticGroups.indexOf(statisticGroup) > -1) {
+                            csvFile += '"' + statisticGroup.name + '"\n'
+                                + _this.tableToCSV($('#streamflow-statistics-table-' + statisticGroup.id)) + "\n\n";
+                        }
                     });
                 }
-                csvFile += this.tableToCSV($('#citations-table'));
+                if (this.gage.citations.length > 0) {
+                    csvFile += "Citations\n"
+                        + this.tableToCSV($('#citations-table')) + "\n\n";
+                }
+                csvFile += disclaimer
+                    + '"Application Version:",' + this.AppVersion;
                 var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
                 if (navigator.msSaveBlob) {
                     navigator.msSaveBlob(blob, filename);
