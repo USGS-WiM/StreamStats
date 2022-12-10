@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Moved NC And IA gage pages links inside StreamStats gage page modal
 - Watershed symbols in the legend
+- StreamStats Gage Page link in gage popups to a button
 
 ### Deprecated 
 
@@ -22,6 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Removed 
 
 - Legacy NWIS link for gage pages
+- NWIS page link in gage popups
 
 ### Fixed  
 
