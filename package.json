@@ -28,8 +28,6 @@
     "angularjs-dropdown-multiselect": "^2.0.0-beta.10",
     "angularjs-slider": "^2.9.0",
     "angularjs-toaster": "github:jirikavi/AngularJS-Toaster",
-    "angulartics": "~1.0.3",
-    "angulartics-google-analytics": "~0.1.4",
     "d3": "~3.5.12",
     "daterangepicker": "^3.0.5",
     "esri-leaflet": "1.0.4",

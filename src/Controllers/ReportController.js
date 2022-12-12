@@ -12,7 +12,7 @@ var StreamStats;
             return Center;
         }());
         var ReportController = (function () {
-            function ReportController($scope, $analytics, $modalInstance, studyArea, StatisticsGroup, leafletData, regionService, modal, eventManager) {
+            function ReportController($scope, $modalInstance, studyArea, StatisticsGroup, leafletData, regionService, modal, eventManager) {
                 var _this = this;
                 this.regionService = regionService;
                 this.modal = modal;
@@ -746,7 +746,7 @@ var StreamStats;
                 }
                 return returnData;
             };
-            ReportController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService', 'StreamStats.Services.ModalService', 'WiM.Event.EventManager'];
+            ReportController.$inject = ['$scope', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService', 'StreamStats.Services.ModalService', 'WiM.Event.EventManager'];
             return ReportController;
         }());
         angular.module('StreamStats.Controllers')

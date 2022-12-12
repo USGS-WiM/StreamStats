@@ -4,7 +4,7 @@ var StreamStats;
     (function (Controllers) {
         'use string';
         var ExplorationToolsModalController = (function () {
-            function ExplorationToolsModalController($scope, $analytics, $sce, modal, modalservice, exploration, studyArea) {
+            function ExplorationToolsModalController($scope, $sce, modal, modalservice, exploration, studyArea) {
                 $scope.vm = this;
                 this.sce = $sce;
                 this.modalInstance = modal;
@@ -137,7 +137,7 @@ var StreamStats;
                     }
                 });
             };
-            ExplorationToolsModalController.$inject = ['$scope', '$analytics', '$sce', '$modalInstance', 'StreamStats.Services.ModalService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.StudyAreaService'];
+            ExplorationToolsModalController.$inject = ['$scope', '$sce', '$modalInstance', 'StreamStats.Services.ModalService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.StudyAreaService'];
             return ExplorationToolsModalController;
         }());
         angular.module('StreamStats.Controllers')

@@ -41,7 +41,7 @@ var StreamStats;
         Services.StudyAreaEventArgs = StudyAreaEventArgs;
         var StudyAreaService = (function (_super) {
             __extends(StudyAreaService, _super);
-            function StudyAreaService($http, $q, eventManager, toaster, modal, nssService, regionService, $analytics) {
+            function StudyAreaService($http, $q, eventManager, toaster, modal, nssService, regionService) {
                 var _this = _super.call(this, $http, configuration.baseurls['StreamStatsServices']) || this;
                 _this.$http = $http;
                 _this.$q = $q;
@@ -1066,9 +1066,9 @@ var StreamStats;
             };
             return StudyAreaService;
         }(WiM.Services.HTTPServiceBase));
-        factory.$inject = ['$http', '$q', 'WiM.Event.EventManager', 'toaster', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService', 'StreamStats.Services.RegionService', '$analytics'];
-        function factory($http, $q, eventManager, toaster, modalService, nssService, regionService, $analytics) {
-            return new StudyAreaService($http, $q, eventManager, toaster, modalService, nssService, regionService, $analytics);
+        factory.$inject = ['$http', '$q', 'WiM.Event.EventManager', 'toaster', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService', 'StreamStats.Services.RegionService'];
+        function factory($http, $q, eventManager, toaster, modalService, nssService, regionService) {
+            return new StudyAreaService($http, $q, eventManager, toaster, modalService, nssService, regionService);
         }
         angular.module('StreamStats.Services')
             .factory('StreamStats.Services.StudyAreaService', factory);

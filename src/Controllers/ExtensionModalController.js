@@ -20,7 +20,7 @@ var StreamStats;
         'use string';
         var ExtensionModalController = (function (_super) {
             __extends(ExtensionModalController, _super);
-            function ExtensionModalController($scope, $analytics, modal, modalservice, studyArea, events, $http, toaster) {
+            function ExtensionModalController($scope, modal, modalservice, studyArea, events, $http, toaster) {
                 var _this = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
                 _this.events = events;
                 _this.isBusy = false;
@@ -539,7 +539,7 @@ var StreamStats;
                 var gage = new StreamStats.Models.ReferenceGage(this.stationNumber, '');
                 this.getGageStatsStationInfo(gage, true);
             };
-            ExtensionModalController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.ModalService', 'StreamStats.Services.StudyAreaService', 'WiM.Event.EventManager', '$http', 'toaster'];
+            ExtensionModalController.$inject = ['$scope', '$modalInstance', 'StreamStats.Services.ModalService', 'StreamStats.Services.StudyAreaService', 'WiM.Event.EventManager', '$http', 'toaster'];
             return ExtensionModalController;
         }(WiM.Services.HTTPServiceBase));
         angular.module('StreamStats.Controllers')

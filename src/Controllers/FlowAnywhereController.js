@@ -19,7 +19,7 @@ var StreamStats;
     (function (Controllers) {
         var FlowAnywhereController = (function (_super) {
             __extends(FlowAnywhereController, _super);
-            function FlowAnywhereController($scope, $analytics, modal, modalservice, studyArea, events, $http, toaster) {
+            function FlowAnywhereController($scope, modal, modalservice, studyArea, events, $http, toaster) {
                 var _this = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
                 _this.events = events;
                 _this.isBusy = false;
@@ -185,7 +185,7 @@ var StreamStats;
                 else
                     return 'N/A';
             };
-            FlowAnywhereController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.ModalService', 'StreamStats.Services.StudyAreaService', 'WiM.Event.EventManager', '$http', 'toaster'];
+            FlowAnywhereController.$inject = ['$scope', '$modalInstance', 'StreamStats.Services.ModalService', 'StreamStats.Services.StudyAreaService', 'WiM.Event.EventManager', '$http', 'toaster'];
             return FlowAnywhereController;
         }(WiM.Services.HTTPServiceBase));
         angular.module('StreamStats.Controllers')
