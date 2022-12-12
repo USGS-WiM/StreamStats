@@ -155,6 +155,7 @@ module StreamStats.Controllers {
             this.init();  
 
             this.print = function () {
+                //ga event
                 gtag('event', 'Download', { 'Category': 'COStormRunoff', Type: 'Print' });
                 window.print();
             };

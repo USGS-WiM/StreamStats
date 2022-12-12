@@ -1214,6 +1214,7 @@ module StreamStats.Services {
                             var latLong = self.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + ',' + self.selectedStudyArea.Pourpoint.Longitude.toFixed(5);
                             var daValue = val.value;
                             if (val.unit.toLowerCase().trim() == 'square kilometers') daValue = daValue / 2.59;
+                            //ga event
                             gtag('event', 'Calculate', {'Category': 'DraingeArea', 'Location': latLong, 'Value': daValue.toFixed(0) });
                         }
 

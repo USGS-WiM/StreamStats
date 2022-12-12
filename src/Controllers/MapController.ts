@@ -965,6 +965,7 @@ module StreamStats.Controllers {
                                 else {
                                     this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", popupMsg, true, 0);
                                     this.startDelineate(latlng, true, popupMsg);
+                                    //ga event
                                     gtag('event', 'ValidatePoint',{ 'Label': 'Not advised' });
                                 }
                             }
@@ -1008,6 +1009,7 @@ module StreamStats.Controllers {
 
                             else{
                                 this.addGeoJSON('adds', clipPolygon);
+                                //ga event
                                 gtag('event', 'BasinEditor',{ 'Type': 'Add Area' });
 
                                 this.studyArea.WatershedEditDecisionList.append.push(clipPolygon);
@@ -1023,6 +1025,7 @@ module StreamStats.Controllers {
 
                             else{
                                 this.addGeoJSON('removes', clipPolygon);
+                                //ga event
                                 gtag('event', 'BasinEditor',{ 'Type': 'Remove Area' });
 
                                 this.studyArea.WatershedEditDecisionList.remove.push(clipPolygon);
@@ -1099,6 +1102,7 @@ module StreamStats.Controllers {
             return true;
         }
         private onExplorationMethodComplete(sender: any, e: Services.ExplorationServiceEventArgs) {
+            //ga event
             gtag('event', 'ExplorationTools',{ 'Category': 'networknav-' + this.explorationService.selectedMethod.navigationInfo.code });
 
             //console.log('in onexplorationmethodCOmplete:', this.explorationService.selectedMethod.navigationInfo.code)

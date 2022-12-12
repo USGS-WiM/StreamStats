@@ -15,11 +15,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Moved NC And IA gage pages links inside StreamStats gage page modal
 - Watershed symbols in the legend
-<<<<<<< HEAD
 - StreamStats Gage Page link in gage popups to a button
-=======
 - Updated to Google Analytics 4
->>>>>>> de70911fa5fc16ee1d823cf82eb93c5a6e81e838
 
 ### Deprecated 
 
