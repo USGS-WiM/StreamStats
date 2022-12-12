@@ -444,6 +444,86 @@ module StreamStats.Controllers {
             }
             return false;
         }
+
+        private downloadCSV() {
+
+            // TODO put new Google Analytics version 4 event here
+            // this.angulartics.eventTrack('Download', { category: 'Report', label: 'CSV' });
+
+            let disclaimer = '"USGS Data Disclaimer: Unless otherwise stated, all data, metadata and related materials are considered to satisfy the quality standards relative to the purpose for which the data were collected. Although these data and associated metadata have been reviewed for accuracy and completeness and approved for release by the U.S. Geological Survey (USGS), no warranty expressed or implied is made regarding the display or utility of the data for other purposes, nor on all computer systems, nor shall the act of distribution constitute any such warranty."\n'
+            + '"USGS Software Disclaimer: This software has been approved for release by the U.S. Geological Survey (USGS). Although the software has been subjected to rigorous review, the USGS reserves the right to update the software as needed pursuant to further analysis and review. No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty. Furthermore, the software is released on condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from its authorized or unauthorized use."\n'
+            + '"USGS Product Names Disclaimer: Any use of trade, firm, or product names is for descriptive purposes only and does not imply endorsement by the U.S. Government."\n\n';
+            
+            let periodOfRecord = (this.gage['StartDate'] !== undefined || this.gage['EndDate'] !== undefined) ? this.convertDateToString(this.gage['StartDate']) + " - " + this.convertDateToString(this.gage['EndDate']) : "Undefined";
+
+            var filename = 'data.csv';
+            var csvFile = '\uFEFFStreamStats Gage Page\n\n'
+            + 'Gage Information\n'
+            + 'Name,Value\n'
+            + 'USGS Station Number,"' + this.gage.code + '"\n'
+            + 'Station Name,"' + this.gage.name + '"\n'
+            + 'Station Type,"' + this.gage.stationType.name + '"\n'
+            + 'Latitude,"' + this.gage.lat + '"\n'
+            + 'Longitude,"' + this.gage.lng + '"\n'
+            + 'NWIS Latitude,"' + this.NWISlat + '"\n'
+            + 'NWIS Longitude,"' + this.NWISlng + '"\n'
+            + 'Is regulated?,"' + this.gage.isRegulated + '"\n'
+            + 'Agency,"' + this.gage.agency.name + '"\n'
+            + 'NWIS Discharge Period of Record,"' + periodOfRecord + '"\n\n';
+
+            // Physical Characteristics tables
+            var _this = this;
+            if (this.gage.characteristics.length > 0) {
+                csvFile += 'Physical Characteristics\n\n';
+                this.filteredStatGroupsChar.forEach(function (statisticGroup) {
+                    if (_this.selectedStatGroupsChar.length == 0 || _this.selectedStatGroupsChar.indexOf(statisticGroup) > -1) {
+                        csvFile += '"' + statisticGroup.name + '"\n'
+                        + _this.tableToCSV($('#physical-characteristics-table-' + statisticGroup.id)) + "\n\n";
+                    }
+                });
+            }
+
+            // Streamflow Statistics tables
+            if (this.gage.statisticsgroups.length > 0) {
+                csvFile += 'Streamflow Statistics\n\n';
+                this.gage.statisticsgroups.forEach(function (statisticGroup) {
+                    if (_this.selectedStatisticGroups.length == 0 || _this.selectedStatisticGroups.indexOf(statisticGroup) > -1) {
+                        csvFile += '"' + statisticGroup.name + '"\n'
+                        + _this.tableToCSV($('#streamflow-statistics-table-' + statisticGroup.id)) + "\n\n";
+                    }
+                });
+            }
+
+            // Citations table
+            if (this.gage.citations.length > 0) {
+                csvFile += "Citations\n"
+                + this.tableToCSV($('#citations-table')) + "\n\n";
+            }
+            
+            csvFile += disclaimer
+            + '"Application Version:",' + this.AppVersion;
+
+            var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
+
+            if (navigator.msSaveBlob) { // IE 10+
+                navigator.msSaveBlob(blob, filename);
+            } else {
+                var link = <any>document.createElement("a");
+                var url = URL.createObjectURL(blob);
+                if (link.download !== undefined) { // feature detection
+                    // Browsers that support HTML5 download attribute
+                    link.setAttribute("href", url);
+                    link.setAttribute("download", filename);
+                    link.style.visibility = 'hidden';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+                else {
+                    window.open(url);
+                }
+            }
+        }
         
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -454,8 +534,69 @@ module StreamStats.Controllers {
             this.getGagePage();
         }
 
+        private convertDateToString(date) {
+            var yyyy = date.getFullYear().toString();
+            var mm = (date.getMonth()+1).toString();
+            var dd  = date.getDate().toString();
+        
+            var mmChars = mm.split('');
+            var ddChars = dd.split('');
+        
+            return yyyy + '-' + (mmChars[1]?mm:"0"+mmChars[0]) + '-' + (ddChars[1]?dd:"0"+ddChars[0]);
+        }
 
-      
+        private tableToCSV($table) {
+            var $headers = $table.find('tr:has(th)')
+                , $rows = $table.find('tr:has(td)')
+
+                // Temporary delimiter characters unlikely to be typed by keyboard
+                // This is to avoid accidentally splitting the actual contents
+                , tmpColDelim = String.fromCharCode(11) // vertical tab character
+                , tmpRowDelim = String.fromCharCode(0) // null character
+
+                // actual delimiter characters for CSV format
+                , colDelim = '","'
+                , rowDelim = '"\r\n"';
+
+            // Grab text from table into CSV formatted string
+            var csv = '"';
+            csv += formatRows($headers.map(grabRow));
+            csv += rowDelim;
+            csv += formatRows($rows.map(grabRow)) + '"';
+            return csv
+
+            //------------------------------------------------------------
+            // Helper Functions 
+            //------------------------------------------------------------
+            // Format the output so it has the appropriate delimiters
+            function formatRows(rows) {
+                return rows.get().join(tmpRowDelim)
+                    .split(tmpRowDelim).join(rowDelim)
+                    .split(tmpColDelim).join(colDelim);
+            }
+
+            // Grab and format a row from the table
+            function grabRow(i, row) {
+
+                var $row = $(row);
+                //for some reason $cols = $row.find('td') || $row.find('th') won't work...
+                var $cols = $row.find('td');
+                if (!$cols.length) $cols = $row.find('th');
+
+                return $cols.map(grabCol)
+                    .get().join(tmpColDelim);
+            }
+
+            // Grab and format a column from the table 
+            function grabCol(j, col) {
+                var $col = $(col),
+                    $text = $col.text();
+
+                return $text.replace('"', '""'); // escape double quotes
+
+            }
+        }
+
     }//end  class
 
     angular.module('StreamStats.Controllers')

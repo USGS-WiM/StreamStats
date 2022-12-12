@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added 
 
 - Begin Drainage Area and End Drainage Area attributes to Indiana Coordinated Discharge report
+- Ability to download gage pages as a CSV
 
 ### Changed  
 
@@ -27,6 +28,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed  
 
 - Bug that shows out of range parameter warning after parameters have been edited to be within range and report is reopened
+- Printed gage page now shows all table content instead of cutting of scrolling tables
+- Disclaimers on report are now not delimited by commas when downloaded as a CSV
 
 ### Security  
 
