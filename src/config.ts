@@ -1,6 +1,6 @@
 ﻿//https://lgorithms.blogspot.com/2013/07/angularui-router-as-infrastructure-of.html
 //https://www.funnyant.com/angularjs-ui-router/
-
+declare let gtag: Function;
 declare var configuration: any;
 module StreamStats {
     //'use strict';

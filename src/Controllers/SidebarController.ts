@@ -590,7 +590,7 @@ module StreamStats.Controllers {
         }
         public OpenStormRunoff() {
             //ga event
-            gtag('event', 'AdditionalFunctionality', { 'Category': 'COStormRunoff' });
+            gtag('event', 'AdditionalFunctionality', { 'Category': 'StormRunoff' });
             this.modalService.openModal(Services.SSModalType.e_stormrunnoff);
         }
 

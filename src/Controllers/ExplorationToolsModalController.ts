@@ -20,7 +20,6 @@
 //04.24.2017 mjs - Created
 
 //Import
-declare let gtag: Function;
 
 module StreamStats.Controllers {
     'use string';

@@ -156,7 +156,7 @@ module StreamStats.Controllers {
 
             this.print = function () {
                 //ga event
-                gtag('event', 'Download', { 'Category': 'COStormRunoff', Type: 'Print' });
+                gtag('event', 'Download', { 'Category': 'StormRunoff', Type: 'Print' });
                 window.print();
             };
         }  
@@ -310,7 +310,7 @@ module StreamStats.Controllers {
 
         private downloadCSV() {
             //ga event
-            gtag('event', 'Download', { 'Category': 'COStormRunoff', Type: 'CSV' });
+            gtag('event', 'Download', { 'Category': 'StormRunoff', Type: 'CSV' });
 
             var filename = 'data.csv';
 
