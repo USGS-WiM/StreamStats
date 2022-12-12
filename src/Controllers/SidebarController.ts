@@ -362,7 +362,7 @@ module StreamStats.Controllers {
 
         public calculateParameters() {
             //ga event
-            gtag('event', 'CalculateParameters', { 'Region': this.regionService.selectedRegion.Name, 'Parameters':  this.studyAreaService.studyAreaParameterList.map(function (elem) { return elem.code; }).join(",")});
+            gtag('event', 'Calculate', { 'Category': "Parameters", 'Location': this.regionService.selectedRegion.Name, 'Value':  this.studyAreaService.studyAreaParameterList.map(function (elem) { return elem.code; }).join(",")});
 
             //console.log('in Calculate Parameters');
             this.studyAreaService.loadParameters();
@@ -417,7 +417,7 @@ module StreamStats.Controllers {
             this.toaster.pop('wait', "Opening Report", "Please wait...",5000);
             
             //ga event
-            gtag('event', 'CalculateFlows', { 'Region': this.regionService.selectedRegion.Name, 'StatisticGroups': this.nssService.selectedStatisticsGroupList.map(function (elem) { return elem.name; }).join(",") });
+            gtag('event', 'Calculate', { 'Category': 'Flows', 'Location': this.regionService.selectedRegion.Name, 'Value': this.nssService.selectedStatisticsGroupList.map(function (elem) { return elem.name; }).join(",") });
 
             this.studyAreaService.extensionResultsChanged = 0; //reset FDCTM results
 
@@ -484,6 +484,9 @@ module StreamStats.Controllers {
 
         public checkRegulation() {
             //console.log('checking for regulation');
+            //ga event
+            gtag('event', 'AdditionalFunctionality', { 'Category': 'Regulation' });
+
             this.studyAreaService.upstreamRegulation();
         }
 
@@ -581,17 +584,26 @@ module StreamStats.Controllers {
         }
 
         public OpenWateruse() {
+            //ga event
+            gtag('event', 'AdditionalFunctionality', { 'Category': 'WaterUse' });
             this.modalService.openModal(Services.SSModalType.e_wateruse);
         }
         public OpenStormRunoff() {
+            //ga event
+            gtag('event', 'AdditionalFunctionality', { 'Category': 'COStormRunoff' });
             this.modalService.openModal(Services.SSModalType.e_stormrunnoff);
         }
 
         public OpenNearestGages() {
+            //ga event
+            gtag('event', 'AdditionalFunctionality', { 'Category': 'NearestGages' });
             this.modalService.openModal(Services.SSModalType.e_nearestgages);
         }
 
         public downloadGeoJSON() {
+
+            //ga event
+            gtag('event', 'Download', { 'Category': 'Basin', 'Type': 'Geojson' });
 
             var GeoJSON = angular.toJson(this.studyAreaService.selectedStudyArea.FeatureCollection);
 
@@ -620,6 +632,9 @@ module StreamStats.Controllers {
         }
 
         public downloadKML() {
+            //ga event
+            gtag('event', 'Download', { 'Category': 'Basin', 'Type': 'KML' });
+
             //https://github.com/mapbox/tokml
             //https://gis.stackexchange.com/questions/159344/export-to-kml-option-using-leaflet
             var geojson = JSON.parse(angular.toJson(this.studyAreaService.selectedStudyArea.FeatureCollection));
@@ -646,6 +661,9 @@ module StreamStats.Controllers {
             }
         }
         public downloadShapeFile() {
+            //ga event
+            gtag('event', 'Download', { 'Category': 'Basin', 'Type': 'Shapefile' });
+
             try {
                 var flowTable: Array<Services.INSSResultTable> = null;
 

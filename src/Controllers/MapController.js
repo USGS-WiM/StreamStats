@@ -400,8 +400,7 @@ var StreamStats;
                                     if (item.layerName == "Streamgages" && k == "FeatureURL") {
                                         var siteNo = queryResult.properties[k].split('site_no=')[1];
                                         var SSgagepage = "vm.openGagePage('" + siteNo + "')";
-                                        var NWISpage = 'https://waterdata.usgs.gov/monitoring-location/' + siteNo;
-                                        var html = '<strong>Monitoring Location Page: </strong><a href="' + NWISpage + ' "target="_blank">link</a></br><strong>StreamStats Gage Page: </strong><a ng-click="' + SSgagepage + '">link</a></br>';
+                                        var html = '</br><br><button ng-click="' + SSgagepage + '" type="button" class="btn-blue fullwidth">Open StreamStats Gage Page</button>';
                                         querylayers.append(html);
                                         gtag('event', 'ExplorationTools', { 'Category': 'QueryStreamgage' });
                                     }
@@ -1036,7 +1035,7 @@ var StreamStats;
                             var NWISpage = 'https://waterdata.usgs.gov/monitoring-location/' + siteNo;
                             var gageButtonDiv = L.DomUtil.create('div', 'innerDiv');
                             gageButtonDiv.innerHTML = '<strong>Station ID: </strong>' + siteNo + '</br><strong>Station Name: </strong>' + feature.properties['Name'] + '</br><strong>Latitude: </strong>' + feature.geometry.coordinates[1] + '</br><strong>Longitude: </strong>' + feature.geometry.coordinates[0] + '</br><strong>Station Type</strong>: ' + feature.properties.StationType.name +
-                                '</br><strong>Monitoring Location Page: </strong><a href="' + NWISpage + ' "target="_blank">link</a></br><strong>StreamStats Gage Page: </strong><a id="gagePageLink" class="' + siteNo + '">link</a><br>';
+                                '</br><br><button id="gagePageLink" type="button" class="btn-blue fullwidth">Open StreamStats Gage Page</button>';
                             layer.bindPopup(gageButtonDiv);
                             var styling = configuration.streamgageSymbology.filter(function (item) {
                                 return item.label.toLowerCase() == feature.properties.StationType.name.toLowerCase();

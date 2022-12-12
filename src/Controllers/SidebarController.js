@@ -231,7 +231,7 @@ var StreamStats;
                 }
             };
             SidebarController.prototype.calculateParameters = function () {
-                gtag('event', 'CalculateParameters', { 'Region': this.regionService.selectedRegion.Name, 'Parameters': this.studyAreaService.studyAreaParameterList.map(function (elem) { return elem.code; }).join(",") });
+                gtag('event', 'Calculate', { 'Category': "Parameters", 'Location': this.regionService.selectedRegion.Name, 'Value': this.studyAreaService.studyAreaParameterList.map(function (elem) { return elem.code; }).join(",") });
                 this.studyAreaService.loadParameters();
                 if (this.scenarioHasExtensions && this.nssService.selectedStatisticsGroupList.length == 1) {
                     this.nssService.showBasinCharacteristicsTable = false;
@@ -264,7 +264,7 @@ var StreamStats;
             SidebarController.prototype.generateReport = function () {
                 var _this = this;
                 this.toaster.pop('wait', "Opening Report", "Please wait...", 5000);
-                gtag('event', 'CalculateFlows', { 'Region': this.regionService.selectedRegion.Name, 'StatisticGroups': this.nssService.selectedStatisticsGroupList.map(function (elem) { return elem.name; }).join(",") });
+                gtag('event', 'Calculate', { 'Category': 'Flows', 'Location': this.regionService.selectedRegion.Name, 'Value': this.nssService.selectedStatisticsGroupList.map(function (elem) { return elem.name; }).join(",") });
                 this.studyAreaService.extensionResultsChanged = 0;
                 if (this.regionService.selectedRegion.Applications.indexOf('FLA') != -1 && this.studyAreaService.flowAnywhereData && this.studyAreaService.flowAnywhereData.selectedGage && this.studyAreaService.flowAnywhereData.dateRange) {
                     this.studyAreaService.computeFlowAnywhereResults();
@@ -317,6 +317,7 @@ var StreamStats;
                 });
             };
             SidebarController.prototype.checkRegulation = function () {
+                gtag('event', 'AdditionalFunctionality', { 'Category': 'Regulation' });
                 this.studyAreaService.upstreamRegulation();
             };
             SidebarController.prototype.queryRegressionRegions = function () {
@@ -381,15 +382,19 @@ var StreamStats;
                 });
             };
             SidebarController.prototype.OpenWateruse = function () {
+                gtag('event', 'AdditionalFunctionality', { 'Category': 'WaterUse' });
                 this.modalService.openModal(StreamStats.Services.SSModalType.e_wateruse);
             };
             SidebarController.prototype.OpenStormRunoff = function () {
+                gtag('event', 'AdditionalFunctionality', { 'Category': 'COStormRunoff' });
                 this.modalService.openModal(StreamStats.Services.SSModalType.e_stormrunnoff);
             };
             SidebarController.prototype.OpenNearestGages = function () {
+                gtag('event', 'AdditionalFunctionality', { 'Category': 'NearestGages' });
                 this.modalService.openModal(StreamStats.Services.SSModalType.e_nearestgages);
             };
             SidebarController.prototype.downloadGeoJSON = function () {
+                gtag('event', 'Download', { 'Category': 'Basin', 'Type': 'Geojson' });
                 var GeoJSON = angular.toJson(this.studyAreaService.selectedStudyArea.FeatureCollection);
                 var filename = 'data.geojson';
                 var blob = new Blob([GeoJSON], { type: 'text/csv;charset=utf-8;' });
@@ -413,6 +418,7 @@ var StreamStats;
                 }
             };
             SidebarController.prototype.downloadKML = function () {
+                gtag('event', 'Download', { 'Category': 'Basin', 'Type': 'KML' });
                 var geojson = JSON.parse(angular.toJson(this.studyAreaService.selectedStudyArea.FeatureCollection));
                 var kml = tokml(geojson);
                 var blob = new Blob([kml], { type: 'text/csv;charset=utf-8;' });
@@ -437,6 +443,7 @@ var StreamStats;
                 }
             };
             SidebarController.prototype.downloadShapeFile = function () {
+                gtag('event', 'Download', { 'Category': 'Basin', 'Type': 'Shapefile' });
                 try {
                     var flowTable = null;
                     if (this.nssService.showFlowsTable)
