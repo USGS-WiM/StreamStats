@@ -51,7 +51,6 @@ module StreamStats.Controllers {
         private modalService: Services.IModalService;
         private eventManager: WiM.Event.IEventManager;
 
-        public angulartics: any;
         public title: string;
         public isBusy: boolean = false;
         public toaster: any;
@@ -72,7 +71,6 @@ module StreamStats.Controllers {
         constructor($scope: IExtensionModalControllerScope, $analytics, modal: ng.ui.bootstrap.IModalServiceInstance, modalservice: Services.IModalService, studyArea: Services.IStudyAreaService, private events: WiM.Event.IEventManager, $http: ng.IHttpService, toaster) {
             super($http, configuration.baseurls.StreamStats);
             $scope.vm = this;
-            this.angulartics = $analytics;
             this.modalInstance = modal;
             this.studyAreaService = studyArea; 
             this.modalService = modalservice;

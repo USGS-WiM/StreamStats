@@ -41,7 +41,6 @@ var StreamStats;
                 _this.domainY = [];
                 _this.domainY2 = [];
                 $scope.vm = _this;
-                _this.angulartics = $analytics;
                 _this.toaster = toaster;
                 _this.modalInstance = modal;
                 _this.StudyArea = studyAreaService.selectedStudyArea;
@@ -56,6 +55,7 @@ var StreamStats;
                 });
                 _this.init();
                 _this.print = function () {
+                    gtag('event', 'Download', { 'Category': 'COStormRunoff', Type: 'Print' });
                     window.print();
                 };
                 return _this;
@@ -220,7 +220,7 @@ var StreamStats;
             };
             StormRunoffController.prototype.downloadCSV = function () {
                 var _this = this;
-                this.angulartics.eventTrack('Download', { category: 'Report', label: 'CSV' });
+                gtag('event', 'Download', { 'Category': 'COStormRunoff', Type: 'CSV' });
                 var filename = 'data.csv';
                 var processTR55Table = function (data) {
                     var finalVal = 'Peak Runoff from ' + _this.SelectedPrecip.name + ' (TR55)\n';

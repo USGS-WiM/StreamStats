@@ -96,7 +96,6 @@ module StreamStats.Controllers {
         private leafletData: ILeafletData;
         public reportTitle: string;
         public reportComments: string;
-        public angulartics: any;
         public AppVersion: string;
         public isExceedanceTableOpen = false;
         public isFlowTableOpen = false;
@@ -151,7 +150,6 @@ module StreamStats.Controllers {
         constructor($scope: IReportControllerScope, $analytics, $modalInstance: ng.ui.bootstrap.IModalServiceInstance, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, leafletData: ILeafletData, private regionService:Services.IRegionService, private modal: Services.IModalService, eventManager: WiM.Event.IEventManager) {
             $scope.vm = this;
 
-            this.angulartics = $analytics;
             this.studyAreaService = studyArea;
             this.nssService = StatisticsGroup;
             this.leafletData = leafletData;
@@ -202,6 +200,8 @@ module StreamStats.Controllers {
             };
 
             this.print = function () {
+                //ga event
+                gtag('event', 'Download', { 'Category': 'Report', 'Type':'Print' });
                 window.print();
             };
 
@@ -218,7 +218,8 @@ module StreamStats.Controllers {
         public downloadCSV() {
 
             //ga event
-            this.angulartics.eventTrack('Download', { category: 'Report', label: 'CSV' });
+            gtag('event', 'Download', { 'Category': 'Report', 'Type':'CSV' });
+
 
             var filename = 'data.csv';
 

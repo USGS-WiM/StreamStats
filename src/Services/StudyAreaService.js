@@ -76,7 +76,6 @@ var StreamStats;
                 }));
                 eventManager.AddEvent(Services.onEditClick);
                 _this._studyAreaList = [];
-                _this.angulartics = $analytics;
                 _this.toaster = toaster;
                 _this.clearStudyArea();
                 _this.servicesURL = configuration.baseurls['StreamStatsServices'];
@@ -854,7 +853,7 @@ var StreamStats;
                                 var daValue = val.value;
                                 if (val.unit.toLowerCase().trim() == 'square kilometers')
                                     daValue = daValue / 2.59;
-                                self.angulartics.eventTrack('ComputedDrainageArea', { category: 'SideBar', label: latLong, value: daValue.toFixed(0) });
+                                gtag('event', 'ComputedDrainageArea', { 'Location': latLong, 'Value': daValue.toFixed(0) });
                             }
                             value.value = val.value;
                             value.loaded = val.loaded;

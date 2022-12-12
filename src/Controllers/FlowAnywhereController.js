@@ -25,7 +25,6 @@ var StreamStats;
                 _this.isBusy = false;
                 _this.selectedReferenceGage = null;
                 $scope.vm = _this;
-                _this.angulartics = $analytics;
                 _this.modalInstance = modal;
                 _this.studyAreaService = studyArea;
                 _this.modalService = modalservice;

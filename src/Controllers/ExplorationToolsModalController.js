@@ -7,7 +7,6 @@ var StreamStats;
             function ExplorationToolsModalController($scope, $analytics, $sce, modal, modalservice, exploration, studyArea) {
                 $scope.vm = this;
                 this.sce = $sce;
-                this.angulartics = $analytics;
                 this.modalInstance = modal;
                 this.explorationService = exploration;
                 this.studyAreaService = studyArea;
@@ -18,6 +17,7 @@ var StreamStats;
                     this.checkWorkspaceID();
                 }
                 this.print = function () {
+                    gtag('event', 'Download', { 'Category': 'ElevationProfile', "Type": 'Print' });
                     window.print();
                 };
             }
@@ -41,7 +41,7 @@ var StreamStats;
                 this.explorationService.selectedMethod.addLocation(name, new WiM.Models.Point(lat, lng, crs));
             };
             ExplorationToolsModalController.prototype.downloadCSV = function () {
-                this.angulartics.eventTrack('Download', { category: 'ElevationProfile', label: 'CSV' });
+                gtag('event', 'Download', { 'Category': 'ElevationProfile', "Type": 'CSV' });
                 var filename = 'elevation-profile.csv';
                 var csvFile = 'long,lat,elevation(feet),distance(mi)\r\n';
                 this.explorationService.coordinateList.forEach(function (value) {

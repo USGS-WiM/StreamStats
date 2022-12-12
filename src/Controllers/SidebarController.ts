@@ -65,7 +65,6 @@ module StreamStats.Controllers {
         public sideBarCollapsed: boolean;
         public selectedProcedure: ProcedureType;
         public toaster: any;
-        public angulartics: any;
         public selectedStatisticsGroupList: Services.IStatisticsGroup;
         private regionService: Services.IRegionService;
         private nssService: Services.InssService;
@@ -97,7 +96,6 @@ module StreamStats.Controllers {
             this.init();
 
             this.toaster = toaster;
-            this.angulartics = $analytics;
             this.sideBarCollapsed = false;
             this.selectedProcedure = ProcedureType.INIT;
             this.regionService = region;
@@ -172,7 +170,7 @@ module StreamStats.Controllers {
         }
         public setRegion(region: Services.IRegion) {
             //ga event
-            this.angulartics.eventTrack('initialOperation', { category: 'SideBar', label: 'Region Selection Button' });
+            gtag('event', 'SetRegion', { 'Region': region.RegionID });
 
             //console.log('setting region: ', region);
             if (this.regionService.selectedRegion == undefined || this.regionService.selectedRegion.RegionID !== region.RegionID)
@@ -363,10 +361,8 @@ module StreamStats.Controllers {
         }
 
         public calculateParameters() {
-
             //ga event
-            this.angulartics.eventTrack('CalculateParameters', {
-                category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.studyAreaService.studyAreaParameterList.map(function (elem) { return elem.code; }).join(",")});
+            gtag('event', 'CalculateParameters', { 'Region': this.regionService.selectedRegion.Name, 'Parameters':  this.studyAreaService.studyAreaParameterList.map(function (elem) { return elem.code; }).join(",")});
 
             //console.log('in Calculate Parameters');
             this.studyAreaService.loadParameters();
@@ -386,8 +382,8 @@ module StreamStats.Controllers {
         }
 
         public submitBasinEdits() {
-
-            this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'sumbitEdits' });
+            //ga event
+            gtag('event', 'BasinEditor', { 'Type': 'SubmitEdits'});
 
             this.studyAreaService.showEditToolbar = false;
 
@@ -419,10 +415,9 @@ module StreamStats.Controllers {
 
             //console.log('in estimateFlows');
             this.toaster.pop('wait', "Opening Report", "Please wait...",5000);
-
+            
             //ga event
-            this.angulartics.eventTrack('CalculateFlows', {
-                category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.nssService.selectedStatisticsGroupList.map(function (elem) { return elem.name; }).join(",") });
+            gtag('event', 'CalculateFlows', { 'Region': this.regionService.selectedRegion.Name, 'StatisticGroups': this.nssService.selectedStatisticsGroupList.map(function (elem) { return elem.name; }).join(",") });
 
             this.studyAreaService.extensionResultsChanged = 0; //reset FDCTM results
 

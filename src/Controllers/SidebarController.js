@@ -12,7 +12,6 @@ var StreamStats;
                 $scope.vm = this;
                 this.init();
                 this.toaster = toaster;
-                this.angulartics = $analytics;
                 this.sideBarCollapsed = false;
                 this.selectedProcedure = ProcedureType.INIT;
                 this.regionService = region;
@@ -104,7 +103,7 @@ var StreamStats;
                 var region = angular.fromJson(inRegion);
             };
             SidebarController.prototype.setRegion = function (region) {
-                this.angulartics.eventTrack('initialOperation', { category: 'SideBar', label: 'Region Selection Button' });
+                gtag('event', 'SetRegion', { 'Region': region.RegionID });
                 if (this.regionService.selectedRegion == undefined || this.regionService.selectedRegion.RegionID !== region.RegionID)
                     this.regionService.selectedRegion = region;
                 this.setProcedureType(2);
@@ -232,9 +231,7 @@ var StreamStats;
                 }
             };
             SidebarController.prototype.calculateParameters = function () {
-                this.angulartics.eventTrack('CalculateParameters', {
-                    category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.studyAreaService.studyAreaParameterList.map(function (elem) { return elem.code; }).join(",")
-                });
+                gtag('event', 'CalculateParameters', { 'Region': this.regionService.selectedRegion.Name, 'Parameters': this.studyAreaService.studyAreaParameterList.map(function (elem) { return elem.code; }).join(",") });
                 this.studyAreaService.loadParameters();
                 if (this.scenarioHasExtensions && this.nssService.selectedStatisticsGroupList.length == 1) {
                     this.nssService.showBasinCharacteristicsTable = false;
@@ -250,7 +247,7 @@ var StreamStats;
                 }
             };
             SidebarController.prototype.submitBasinEdits = function () {
-                this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'sumbitEdits' });
+                gtag('event', 'BasinEditor', { 'Type': 'SubmitEdits' });
                 this.studyAreaService.showEditToolbar = false;
                 this.toaster.pop('wait', "Submitting edited basin", "Please wait...", 0);
                 if (this.studyAreaService.selectedStudyArea.Disclaimers['isEdited']) {
@@ -267,9 +264,7 @@ var StreamStats;
             SidebarController.prototype.generateReport = function () {
                 var _this = this;
                 this.toaster.pop('wait', "Opening Report", "Please wait...", 5000);
-                this.angulartics.eventTrack('CalculateFlows', {
-                    category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.nssService.selectedStatisticsGroupList.map(function (elem) { return elem.name; }).join(",")
-                });
+                gtag('event', 'CalculateFlows', { 'Region': this.regionService.selectedRegion.Name, 'StatisticGroups': this.nssService.selectedStatisticsGroupList.map(function (elem) { return elem.name; }).join(",") });
                 this.studyAreaService.extensionResultsChanged = 0;
                 if (this.regionService.selectedRegion.Applications.indexOf('FLA') != -1 && this.studyAreaService.flowAnywhereData && this.studyAreaService.flowAnywhereData.selectedGage && this.studyAreaService.flowAnywhereData.dateRange) {
                     this.studyAreaService.computeFlowAnywhereResults();

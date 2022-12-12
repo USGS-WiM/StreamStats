@@ -181,7 +181,6 @@ module StreamStats.Services {
         private statisticgroupEventHandler: WiM.Event.EventHandler<Services.NSSEventArgs>;
         private q10EventHandler: WiM.Event.EventHandler<Services.NSSEventArgs>;
         private regtype: string;
-        public angulartics: any;
         public additionalFeaturesLoaded : boolean = false;
         //QPPQ
         public extensionDateRange: IDateRange = null;
@@ -227,7 +226,6 @@ module StreamStats.Services {
             eventManager.AddEvent<WiM.Event.EventArgs>(onEditClick);
             this._studyAreaList = [];
 
-            this.angulartics = $analytics;
             this.toaster = toaster;
             this.clearStudyArea();
             this.servicesURL = configuration.baseurls['StreamStatsServices'];
@@ -1216,7 +1214,7 @@ module StreamStats.Services {
                             var latLong = self.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + ',' + self.selectedStudyArea.Pourpoint.Longitude.toFixed(5);
                             var daValue = val.value;
                             if (val.unit.toLowerCase().trim() == 'square kilometers') daValue = daValue / 2.59;
-                            self.angulartics.eventTrack('ComputedDrainageArea', { category: 'SideBar', label: latLong, value: daValue.toFixed(0) });
+                            gtag('event', 'ComputedDrainageArea', { 'Location': latLong, 'Value': daValue.toFixed(0) });
                         }
 
                         value.value = val.value;

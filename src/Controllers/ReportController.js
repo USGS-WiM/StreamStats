@@ -33,7 +33,6 @@ var StreamStats;
                     options: {}
                 };
                 $scope.vm = this;
-                this.angulartics = $analytics;
                 this.studyAreaService = studyArea;
                 this.nssService = StatisticsGroup;
                 this.leafletData = leafletData;
@@ -74,6 +73,7 @@ var StreamStats;
                     $modalInstance.dismiss('cancel');
                 };
                 this.print = function () {
+                    gtag('event', 'Download', { 'Category': 'Report', 'Type': 'Print' });
                     window.print();
                 };
                 this.NSSServicesVersion = this.studyAreaService.NSSServicesVersion;
@@ -146,7 +146,7 @@ var StreamStats;
             };
             ReportController.prototype.downloadCSV = function () {
                 var _this = this;
-                this.angulartics.eventTrack('Download', { category: 'Report', label: 'CSV' });
+                gtag('event', 'Download', { 'Category': 'Report', 'Type': 'CSV' });
                 var filename = 'data.csv';
                 var processMainParameterTable = function (data) {
                     var finalVal = '\nBasin Characteristics\n';

@@ -131,7 +131,6 @@ module StreamStats.Controllers {
         public padY2 = 0;
         public domainY = [];
         public domainY2 = [];
-        public angulartics: any;
         public duration: any;
 
         //Constructor
@@ -140,7 +139,6 @@ module StreamStats.Controllers {
         constructor($scope: IStormRunoffControllerScope, $analytics, toaster, $http: ng.IHttpService, studyAreaService: StreamStats.Services.IStudyAreaService, StatisticsGroup: Services.InssService, region: StreamStats.Services.IRegionService, modal: ng.ui.bootstrap.IModalServiceInstance, public $timeout: ng.ITimeoutService, private EventManager: WiM.Event.IEventManager) {
             super($http, configuration.baseurls.StormRunoffServices);
             $scope.vm = this;
-            this.angulartics = $analytics;
             this.toaster = toaster;
             this.modalInstance = modal;
             this.StudyArea = studyAreaService.selectedStudyArea;
@@ -157,6 +155,7 @@ module StreamStats.Controllers {
             this.init();  
 
             this.print = function () {
+                gtag('event', 'Download', { 'Category': 'COStormRunoff', Type: 'Print' });
                 window.print();
             };
         }  
@@ -310,7 +309,7 @@ module StreamStats.Controllers {
 
         private downloadCSV() {
             //ga event
-            this.angulartics.eventTrack('Download', { category: 'Report', label: 'CSV' });
+            gtag('event', 'Download', { 'Category': 'COStormRunoff', Type: 'CSV' });
 
             var filename = 'data.csv';
 

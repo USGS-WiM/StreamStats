@@ -30,7 +30,6 @@ var StreamStats;
                 _this.distance = 10;
                 _this.stationNumber = '';
                 $scope.vm = _this;
-                _this.angulartics = $analytics;
                 _this.modalInstance = modal;
                 _this.studyAreaService = studyArea;
                 _this.modalService = modalservice;
