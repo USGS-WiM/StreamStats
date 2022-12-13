@@ -808,7 +808,7 @@ module StreamStats.Controllers {
             this.explorationService.measurementData = 'Click the map to begin\nDouble click to end the Drawing';
 
             //report ga event
-            gtag('event', 'ExplorationTools',{ 'Category': 'Measurment' });
+            gtag('event', 'ExplorationTools',{ 'Category': 'Measurement' });
 
 
             this.leafletData.getMap("mainMap").then((map: any) => {
@@ -910,7 +910,7 @@ module StreamStats.Controllers {
                         });
 
                         //report ga event
-                        gtag('event', 'DelineationClick',{ 'Region': this.regionServices.selectedRegion.Name });
+                        gtag('event', 'DelineationClick',{ 'Region': this.regionServices.selectedRegion.Name, 'Location': latlng });
 
                         //force map refresh
                         map.invalidateSize();

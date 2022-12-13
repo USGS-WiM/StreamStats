@@ -562,7 +562,7 @@ var StreamStats;
             MapController.prototype.measurement = function () {
                 var _this = this;
                 this.explorationService.measurementData = 'Click the map to begin\nDouble click to end the Drawing';
-                gtag('event', 'ExplorationTools', { 'Category': 'Measurment' });
+                gtag('event', 'ExplorationTools', { 'Category': 'Measurement' });
                 this.leafletData.getMap("mainMap").then(function (map) {
                     _this.leafletData.getLayers("mainMap").then(function (maplayers) {
                         var stopclick = false;
@@ -633,7 +633,7 @@ var StreamStats;
                                 if (item[0] == 'ExcludePolys')
                                     queryString += item[1];
                             });
-                            gtag('event', 'DelineationClick', { 'Region': _this.regionServices.selectedRegion.Name });
+                            gtag('event', 'DelineationClick', { 'Region': _this.regionServices.selectedRegion.Name, 'Location': latlng });
                             map.invalidateSize();
                             var selectedRegionLayerName = _this.regionServices.selectedRegion.RegionID + "_region";
                             if (queryString === 'visible:') {
