@@ -96,7 +96,6 @@ module StreamStats.Controllers {
         private leafletData: ILeafletData;
         public reportTitle: string;
         public reportComments: string;
-        public angulartics: any;
         public AppVersion: string;
         public isExceedanceTableOpen = false;
         public isFlowTableOpen = false;
@@ -147,11 +146,10 @@ module StreamStats.Controllers {
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService', 'StreamStats.Services.ModalService', 'WiM.Event.EventManager'];
-        constructor($scope: IReportControllerScope, $analytics, $modalInstance: ng.ui.bootstrap.IModalServiceInstance, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, leafletData: ILeafletData, private regionService:Services.IRegionService, private modal: Services.IModalService, eventManager: WiM.Event.IEventManager) {
+        static $inject = ['$scope', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService', 'StreamStats.Services.ModalService', 'WiM.Event.EventManager'];
+        constructor($scope: IReportControllerScope, $modalInstance: ng.ui.bootstrap.IModalServiceInstance, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, leafletData: ILeafletData, private regionService:Services.IRegionService, private modal: Services.IModalService, eventManager: WiM.Event.IEventManager) {
             $scope.vm = this;
 
-            this.angulartics = $analytics;
             this.studyAreaService = studyArea;
             this.nssService = StatisticsGroup;
             this.leafletData = leafletData;
@@ -202,6 +200,8 @@ module StreamStats.Controllers {
             };
 
             this.print = function () {
+                //ga event
+                gtag('event', 'Download', { 'Category': 'Report', 'Type':'Print' });
                 window.print();
             };
 
@@ -218,7 +218,8 @@ module StreamStats.Controllers {
         public downloadCSV() {
 
             //ga event
-            this.angulartics.eventTrack('Download', { category: 'Report', label: 'CSV' });
+            gtag('event', 'Download', { 'Category': 'Report', 'Type':'CSV' });
+
 
             var filename = 'data.csv';
 
@@ -423,6 +424,9 @@ module StreamStats.Controllers {
 
         public downloadGeoJSON() {
 
+            //ga event
+            gtag('event', 'Download', { 'Category': 'Report', "Type": 'Geojson' });
+
             var fc: GeoJSON.FeatureCollection = this.studyAreaService.selectedStudyArea.FeatureCollection
             fc.features.forEach(f => {
                 f.properties["Name"] = this.studyAreaService.selectedStudyArea.WorkspaceID;
@@ -461,6 +465,8 @@ module StreamStats.Controllers {
         }
 
         public downloadKML() {
+            //ga event
+            gtag('event', 'Download', { 'Category': 'Report', "Type": 'KML' });
 
             var fc: GeoJSON.FeatureCollection = this.studyAreaService.selectedStudyArea.FeatureCollection
             fc.features.forEach(f => {
@@ -502,6 +508,10 @@ module StreamStats.Controllers {
         }
 
         public downloadShapeFile() {
+
+            //ga event
+            gtag('event', 'Download', { 'Category': 'Report', "Type": 'Shapefile' });
+
             try {
                 var flowTable: Array<Services.INSSResultTable> = null;
 

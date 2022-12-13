@@ -166,7 +166,6 @@ module StreamStats.Controllers {
         public regionLayer: Object = null;
         public drawControl: any;
         public toaster: any;
-        public angulartics: any;
         public nomnimalZoomLevel: string;
         public get selectedExplorationMethodType(): Services.ExplorationMethodType {
             if (this.explorationService.selectedMethod == null) return 0;
@@ -203,12 +202,11 @@ module StreamStats.Controllers {
         public imageryToggled = false;
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$compile', 'toaster', '$analytics', '$location', '$stateParams','leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack', '$http'];
-        constructor(public $scope: IMapControllerScope, public $compile: IMapControllerCompile, toaster, $analytics, $location: ng.ILocationService, $stateParams, leafletBoundsHelper: any, leafletData: ILeafletData, search: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, exploration: Services.IExplorationService, private _prosperServices: Services.IProsperService, eventManager: WiM.Event.IEventManager, private modal: Services.IModalService, private modalStack: ng.ui.bootstrap.IModalStackService, $http: ng.IHttpService) {
+        static $inject = ['$scope', '$compile', 'toaster', '$location', '$stateParams','leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack', '$http'];
+        constructor(public $scope: IMapControllerScope, public $compile: IMapControllerCompile, toaster, $location: ng.ILocationService, $stateParams, leafletBoundsHelper: any, leafletData: ILeafletData, search: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, exploration: Services.IExplorationService, private _prosperServices: Services.IProsperService, eventManager: WiM.Event.IEventManager, private modal: Services.IModalService, private modalStack: ng.ui.bootstrap.IModalStackService, $http: ng.IHttpService) {
             $scope.vm = this;
             
             this.toaster = toaster;
-            this.angulartics = $analytics;
             this.searchService = search;
             this.$locationService = $location;
             this.regionServices = region;
@@ -587,7 +585,7 @@ module StreamStats.Controllers {
                         querylayers.append('<h5>' + item.layerName + '</h5>');
                         this.queryContent.responseCount++;
                         //report ga event
-                        this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'queryPoints' });
+                        gtag('event', 'ExplorationTools', { 'Category': 'QueryPoints' });
     
                         //show only specified fields (if applicable)
                         if (this.layers.overlays[lyr].hasOwnProperty("queryProperties") && this.layers.overlays[lyr].queryProperties.hasOwnProperty(item.layerName)) {      
@@ -599,7 +597,8 @@ module StreamStats.Controllers {
                                     var html = '</br><br><button ng-click="' + SSgagepage + '" type="button" class="btn-blue fullwidth">Open StreamStats Gage Page</button>';
                                     querylayers.append(html);
 
-                                    this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'streamgageQuery' });
+                                    //report ga event
+                                    gtag('event', 'ExplorationTools',{ 'Category': 'QueryStreamgage' });
                                 }
                                 else if (item.layerName == "Mean August Baseflow") {
                                     if (queryProperties[k] == "Drainage Area out-of-bounds" || queryProperties[k] == "Mean July Precip out-of-bounds" || queryProperties[k] == "% Aquifer Area out-of-bounds" || queryProperties[k] == "Regulated stream/river") {
@@ -658,7 +657,7 @@ module StreamStats.Controllers {
             });
 
             //report ga event
-            this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'elevationProfile' });
+            gtag('event', 'ExplorationTools',{ 'Category': 'ElevationProfile' });
 
             this.leafletData.getMap("mainMap").then((map: any) => {
                 this.leafletData.getLayers("mainMap").then((maplayers: any) => {
@@ -754,7 +753,8 @@ module StreamStats.Controllers {
 
         private showLocation() {
 
-            this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'showLocation' });
+            //report ga event
+            gtag('event', 'ExplorationTools',{ 'Category': 'ShowLocation' });
 
             //get reference to location control
             var lc;
@@ -808,7 +808,8 @@ module StreamStats.Controllers {
             this.explorationService.measurementData = 'Click the map to begin\nDouble click to end the Drawing';
 
             //report ga event
-            this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'measurement' });
+            gtag('event', 'ExplorationTools',{ 'Category': 'Measurement' });
+
 
             this.leafletData.getMap("mainMap").then((map: any) => {
                 //console.log('got map: ', map);
@@ -908,7 +909,8 @@ module StreamStats.Controllers {
                             if (item[0] == 'ExcludePolys') queryString += item[1];
                         });
 
-                        this.angulartics.eventTrack('delineationClick', { category: 'Map', label: this.regionServices.selectedRegion.Name });
+                        //report ga event
+                        gtag('event', 'DelineationClick',{ 'Region': this.regionServices.selectedRegion.Name, 'Location': latlng });
 
                         //force map refresh
                         map.invalidateSize();
@@ -920,7 +922,8 @@ module StreamStats.Controllers {
                             this.toaster.clear();
                             this.toaster.pop("warning", "Selected State/Region does not have exlusion areas defined", "Delineating with no exclude polygon layer...", true, 0);
                             this.startDelineate(latlng, true);
-                            this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'not advised (no point query)' });
+                            //report ga event
+                            gtag('event', 'ValidatePoint',{ 'Label': 'Not advised (no point query)' });
                             this.cursorStyle = 'pointer';
                             return;
                         }
@@ -941,7 +944,7 @@ module StreamStats.Controllers {
                             //if there are no exclusion area hits
                             if (results.features.length == 0) {
                                 //ga event
-                                this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'valid' });
+                                gtag('event', 'ValidatePoint',{ 'Label': 'Valid' });
 
                                 this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000)
                                 this.studyArea.checkingDelineatedPoint = false;
@@ -957,12 +960,13 @@ module StreamStats.Controllers {
                                 if (excludeCode == 1) {
                                     this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", popupMsg, 0);
                                     //ga event
-                                    this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'not allowed' });
+                                    gtag('event', 'ValidatePoint',{ 'Label': 'Not allowed' });
                                 }
                                 else {
                                     this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", popupMsg, true, 0);
                                     this.startDelineate(latlng, true, popupMsg);
-                                    this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'not advised' });
+                                    //ga event
+                                    gtag('event', 'ValidatePoint',{ 'Label': 'Not advised' });
                                 }
                             }
 
@@ -1005,7 +1009,9 @@ module StreamStats.Controllers {
 
                             else{
                                 this.addGeoJSON('adds', clipPolygon);
-                                this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'addArea' });
+                                //ga event
+                                gtag('event', 'BasinEditor',{ 'Type': 'Add Area' });
+
                                 this.studyArea.WatershedEditDecisionList.append.push(clipPolygon);
                             }
 
@@ -1019,7 +1025,9 @@ module StreamStats.Controllers {
 
                             else{
                                 this.addGeoJSON('removes', clipPolygon);
-                                this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'removeArea' });
+                                //ga event
+                                gtag('event', 'BasinEditor',{ 'Type': 'Remove Area' });
+
                                 this.studyArea.WatershedEditDecisionList.remove.push(clipPolygon);
                             }
 
@@ -1094,7 +1102,8 @@ module StreamStats.Controllers {
             return true;
         }
         private onExplorationMethodComplete(sender: any, e: Services.ExplorationServiceEventArgs) {
-            this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'networknav-' + this.explorationService.selectedMethod.navigationInfo.code });
+            //ga event
+            gtag('event', 'ExplorationTools',{ 'Category': 'networknav-' + this.explorationService.selectedMethod.navigationInfo.code });
 
             //console.log('in onexplorationmethodCOmplete:', this.explorationService.selectedMethod.navigationInfo.code)
             this.explorationService.explorationMethodBusy = false;
@@ -1136,7 +1145,7 @@ module StreamStats.Controllers {
         private onSelectedAreaOfInterestChanged(sender: any, e: WiM.Services.SearchAPIEventArgs) {
 
             //ga event
-            this.angulartics.eventTrack('Search', { category: 'Sidebar' });
+            gtag('event', 'Search', {  });
 
             this.paths = {};
             var AOI = e.selectedAreaOfInterest;
@@ -1481,6 +1490,8 @@ module StreamStats.Controllers {
                         });
 
                         layer.on('click', function(e) {
+                            //report ga event
+                            gtag('event', 'ExplorationTools',{ 'Category': 'QueryStreamgage' });
                             // need to select gage if that's the question
                             if (self.studyArea.doSelectMapGage) {
                                 self.studyArea.selectGage(feature);

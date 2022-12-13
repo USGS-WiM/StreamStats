@@ -183,6 +183,8 @@ module StreamStats.Controllers {
             this.showPreferred = false;
 
             this.print = function () {
+                //ga event
+                gtag('event', 'Download', { 'Category': 'GagePage', "Type": 'Print' });
                 window.print();
             };
         }  
@@ -447,8 +449,8 @@ module StreamStats.Controllers {
 
         private downloadCSV() {
 
-            // TODO put new Google Analytics version 4 event here
-            // this.angulartics.eventTrack('Download', { category: 'Report', label: 'CSV' });
+            //ga event
+            gtag('event', 'Download', { 'Category': 'GagePage', "Type": 'CSV' });
 
             let disclaimer = '"USGS Data Disclaimer: Unless otherwise stated, all data, metadata and related materials are considered to satisfy the quality standards relative to the purpose for which the data were collected. Although these data and associated metadata have been reviewed for accuracy and completeness and approved for release by the U.S. Geological Survey (USGS), no warranty expressed or implied is made regarding the display or utility of the data for other purposes, nor on all computer systems, nor shall the act of distribution constitute any such warranty."\n'
             + '"USGS Software Disclaimer: This software has been approved for release by the U.S. Geological Survey (USGS). Although the software has been subjected to rigorous review, the USGS reserves the right to update the software as needed pursuant to further analysis and review. No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty. Furthermore, the software is released on condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from its authorized or unauthorized use."\n'

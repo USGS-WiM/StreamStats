@@ -12,7 +12,7 @@ var StreamStats;
             return Center;
         }());
         var ReportController = (function () {
-            function ReportController($scope, $analytics, $modalInstance, studyArea, StatisticsGroup, leafletData, regionService, modal, eventManager) {
+            function ReportController($scope, $modalInstance, studyArea, StatisticsGroup, leafletData, regionService, modal, eventManager) {
                 var _this = this;
                 this.regionService = regionService;
                 this.modal = modal;
@@ -33,7 +33,6 @@ var StreamStats;
                     options: {}
                 };
                 $scope.vm = this;
-                this.angulartics = $analytics;
                 this.studyAreaService = studyArea;
                 this.nssService = StatisticsGroup;
                 this.leafletData = leafletData;
@@ -74,6 +73,7 @@ var StreamStats;
                     $modalInstance.dismiss('cancel');
                 };
                 this.print = function () {
+                    gtag('event', 'Download', { 'Category': 'Report', 'Type': 'Print' });
                     window.print();
                 };
                 this.NSSServicesVersion = this.studyAreaService.NSSServicesVersion;
@@ -146,7 +146,7 @@ var StreamStats;
             };
             ReportController.prototype.downloadCSV = function () {
                 var _this = this;
-                this.angulartics.eventTrack('Download', { category: 'Report', label: 'CSV' });
+                gtag('event', 'Download', { 'Category': 'Report', 'Type': 'CSV' });
                 var filename = 'data.csv';
                 var processMainParameterTable = function (data) {
                     var finalVal = '\nBasin Characteristics\n';
@@ -295,6 +295,7 @@ var StreamStats;
             };
             ReportController.prototype.downloadGeoJSON = function () {
                 var _this = this;
+                gtag('event', 'Download', { 'Category': 'Report', "Type": 'Geojson' });
                 var fc = this.studyAreaService.selectedStudyArea.FeatureCollection;
                 fc.features.forEach(function (f) {
                     f.properties["Name"] = _this.studyAreaService.selectedStudyArea.WorkspaceID;
@@ -330,6 +331,7 @@ var StreamStats;
             };
             ReportController.prototype.downloadKML = function () {
                 var _this = this;
+                gtag('event', 'Download', { 'Category': 'Report', "Type": 'KML' });
                 var fc = this.studyAreaService.selectedStudyArea.FeatureCollection;
                 fc.features.forEach(function (f) {
                     f.properties["Name"] = _this.studyAreaService.selectedStudyArea.WorkspaceID;
@@ -366,6 +368,7 @@ var StreamStats;
                 }
             };
             ReportController.prototype.downloadShapeFile = function () {
+                gtag('event', 'Download', { 'Category': 'Report', "Type": 'Shapefile' });
                 try {
                     var flowTable = null;
                     if (this.nssService.showFlowsTable)
@@ -746,7 +749,7 @@ var StreamStats;
                 }
                 return returnData;
             };
-            ReportController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService', 'StreamStats.Services.ModalService', 'WiM.Event.EventManager'];
+            ReportController.$inject = ['$scope', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService', 'StreamStats.Services.ModalService', 'WiM.Event.EventManager'];
             return ReportController;
         }());
         angular.module('StreamStats.Controllers')

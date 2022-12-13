@@ -41,7 +41,7 @@ var StreamStats;
         Services.StudyAreaEventArgs = StudyAreaEventArgs;
         var StudyAreaService = (function (_super) {
             __extends(StudyAreaService, _super);
-            function StudyAreaService($http, $q, eventManager, toaster, modal, nssService, regionService, $analytics) {
+            function StudyAreaService($http, $q, eventManager, toaster, modal, nssService, regionService) {
                 var _this = _super.call(this, $http, configuration.baseurls['StreamStatsServices']) || this;
                 _this.$http = $http;
                 _this.$q = $q;
@@ -76,7 +76,6 @@ var StreamStats;
                 }));
                 eventManager.AddEvent(Services.onEditClick);
                 _this._studyAreaList = [];
-                _this.angulartics = $analytics;
                 _this.toaster = toaster;
                 _this.clearStudyArea();
                 _this.servicesURL = configuration.baseurls['StreamStatsServices'];
@@ -854,7 +853,7 @@ var StreamStats;
                                 var daValue = val.value;
                                 if (val.unit.toLowerCase().trim() == 'square kilometers')
                                     daValue = daValue / 2.59;
-                                self.angulartics.eventTrack('ComputedDrainageArea', { category: 'SideBar', label: latLong, value: daValue.toFixed(0) });
+                                gtag('event', 'Calculate', { 'Category': 'DraingeArea', 'Location': latLong, 'Value': daValue.toFixed(0) });
                             }
                             value.value = val.value;
                             value.loaded = val.loaded;
@@ -1067,9 +1066,9 @@ var StreamStats;
             };
             return StudyAreaService;
         }(WiM.Services.HTTPServiceBase));
-        factory.$inject = ['$http', '$q', 'WiM.Event.EventManager', 'toaster', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService', 'StreamStats.Services.RegionService', '$analytics'];
-        function factory($http, $q, eventManager, toaster, modalService, nssService, regionService, $analytics) {
-            return new StudyAreaService($http, $q, eventManager, toaster, modalService, nssService, regionService, $analytics);
+        factory.$inject = ['$http', '$q', 'WiM.Event.EventManager', 'toaster', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService', 'StreamStats.Services.RegionService'];
+        function factory($http, $q, eventManager, toaster, modalService, nssService, regionService) {
+            return new StudyAreaService($http, $q, eventManager, toaster, modalService, nssService, regionService);
         }
         angular.module('StreamStats.Services')
             .factory('StreamStats.Services.StudyAreaService', factory);
