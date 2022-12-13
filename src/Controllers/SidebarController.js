@@ -386,7 +386,7 @@ var StreamStats;
                 this.modalService.openModal(StreamStats.Services.SSModalType.e_wateruse);
             };
             SidebarController.prototype.OpenStormRunoff = function () {
-                gtag('event', 'AdditionalFunctionality', { 'Category': 'COStormRunoff' });
+                gtag('event', 'AdditionalFunctionality', { 'Category': 'StormRunoff' });
                 this.modalService.openModal(StreamStats.Services.SSModalType.e_stormrunnoff);
             };
             SidebarController.prototype.OpenNearestGages = function () {

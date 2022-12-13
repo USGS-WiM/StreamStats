@@ -1020,7 +1020,6 @@ var StreamStats;
                     }
                 }
                 else if (LayerName == 'streamgages') {
-                    gtag('event', 'ExplorationTools', { 'Category': 'QueryStreamgage' });
                     var self = this;
                     this.geojson['streamgages'] = {
                         name: 'Streamgages',
@@ -1064,6 +1063,7 @@ var StreamStats;
                                 }
                             });
                             layer.on('click', function (e) {
+                                gtag('event', 'ExplorationTools', { 'Category': 'QueryStreamgage' });
                                 if (self.studyArea.doSelectMapGage) {
                                     self.studyArea.selectGage(feature);
                                     self.studyArea.doSelectMapGage = false;

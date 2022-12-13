@@ -1440,8 +1440,6 @@ module StreamStats.Controllers {
                 } 
             }
             else if (LayerName == 'streamgages') {
-                //report ga event
-                gtag('event', 'ExplorationTools',{ 'Category': 'QueryStreamgage' });
                 var self = this;
                 this.geojson['streamgages'] = {
                     name: 'Streamgages',
@@ -1492,6 +1490,8 @@ module StreamStats.Controllers {
                         });
 
                         layer.on('click', function(e) {
+                            //report ga event
+                            gtag('event', 'ExplorationTools',{ 'Category': 'QueryStreamgage' });
                             // need to select gage if that's the question
                             if (self.studyArea.doSelectMapGage) {
                                 self.studyArea.selectGage(feature);

@@ -55,7 +55,7 @@ var StreamStats;
                 });
                 _this.init();
                 _this.print = function () {
-                    gtag('event', 'Download', { 'Category': 'COStormRunoff', Type: 'Print' });
+                    gtag('event', 'Download', { 'Category': 'StormRunoff', Type: 'Print' });
                     window.print();
                 };
                 return _this;
@@ -220,7 +220,7 @@ var StreamStats;
             };
             StormRunoffController.prototype.downloadCSV = function () {
                 var _this = this;
-                gtag('event', 'Download', { 'Category': 'COStormRunoff', Type: 'CSV' });
+                gtag('event', 'Download', { 'Category': 'StormRunoff', Type: 'CSV' });
                 var filename = 'data.csv';
                 var processTR55Table = function (data) {
                     var finalVal = 'Peak Runoff from ' + _this.SelectedPrecip.name + ' (TR55)\n';
