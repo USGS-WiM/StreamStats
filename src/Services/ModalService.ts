@@ -184,6 +184,15 @@ module StreamStats.Services {
                             backdrop: 'static',
                             windowClass: 'windowZ',
                         };
+                    case SSModalType.e_gageplot:
+                        return {
+                            templateUrl: 'Views/gageplot.html',
+                            controller: 'StreamStats.Controllers.GagePlotController',
+                            size: 'lg',
+                            backdropClass: 'backdropZ',
+                            backdrop: 'static',
+                            windowClass: 'windowZ modal-xl',
+                        };
      
                     default:
                         return null;
@@ -208,9 +217,8 @@ export enum SSModalType {
         e_extensionsupport = 9,
         e_gagepage = 10,
         e_nearestgages = 11,        
-        e_flowanywhere = 12
-        
-        
+        e_flowanywhere = 12, 
+        e_gageplot = 13
     }
 
     factory.$inject = ['$modal'];

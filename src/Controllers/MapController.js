@@ -278,6 +278,10 @@ var StreamStats;
                 console.log('gage page id:', siteid);
                 this.modal.openModal(StreamStats.Services.SSModalType.e_gagepage, { 'siteid': siteid });
             };
+            MapController.prototype.openGagePlot = function (siteid) {
+                console.log('gage plot id:', siteid);
+                this.modal.openModal(StreamStats.Services.SSModalType.e_gageplot, { 'siteid': siteid });
+            };
             MapController.prototype.init = function () {
                 this.setupMap();
                 this.explorationService.getNavigationEndPoints();
@@ -400,7 +404,8 @@ var StreamStats;
                                     if (item.layerName == "Streamgages" && k == "FeatureURL") {
                                         var siteNo = queryResult.properties[k].split('site_no=')[1];
                                         var SSgagepage = "vm.openGagePage('" + siteNo + "')";
-                                        var html = '</br><br><button ng-click="' + SSgagepage + '" type="button" class="btn-blue fullwidth">Open StreamStats Gage Page</button>';
+                                        var SSgageplot = "vm.openGagePlot('" + siteNo + "')";
+                                        var html = '</br><br><button ng-click="' + SSgagepage + '" type="button" class="btn-blue fullwidth">Open StreamStats Gage Page</button></br><strong>StreamStats Gage Plots: </strong><a ng-click="' + SSgageplot + '">link</a></br>';
                                         querylayers.append(html);
                                         gtag('event', 'ExplorationTools', { 'Category': 'QueryStreamgage' });
                                     }
@@ -1031,10 +1036,10 @@ var StreamStats;
                         },
                         onEachFeature: function (feature, layer) {
                             var siteNo = feature.properties['Code'];
-                            var NWISpage = 'https://waterdata.usgs.gov/monitoring-location/' + siteNo;
+                            var PeakNWISPage = 'http://nwis.waterdata.usgs.gov/usa/nwis/peak/?site_no=' + siteNo;
                             var gageButtonDiv = L.DomUtil.create('div', 'innerDiv');
                             gageButtonDiv.innerHTML = '<strong>Station ID: </strong>' + siteNo + '</br><strong>Station Name: </strong>' + feature.properties['Name'] + '</br><strong>Latitude: </strong>' + feature.geometry.coordinates[1] + '</br><strong>Longitude: </strong>' + feature.geometry.coordinates[0] + '</br><strong>Station Type</strong>: ' + feature.properties.StationType.name +
-                                '</br><br><button id="gagePageLink" type="button" class="btn-blue fullwidth">Open StreamStats Gage Page</button>';
+                                '</br><br><button id="gagePageLink" type="button" class="btn-blue fullwidth">Open StreamStats Gage Page</button><strong>StreamStats Gage Plots: </strong><a id="gagePlotLink" class="' + siteNo + '">link</a><br>';
                             layer.bindPopup(gageButtonDiv);
                             var styling = configuration.streamgageSymbology.filter(function (item) {
                                 return item.label.toLowerCase() == feature.properties.StationType.name.toLowerCase();
@@ -1055,6 +1060,12 @@ var StreamStats;
                                 var id = event.target['id'];
                                 if (id === 'gagePageLink') {
                                     self.openGagePage(siteNo);
+                                }
+                            });
+                            L.DomEvent.on(gageButtonDiv, 'click', function (event) {
+                                var id = event.target['id'];
+                                if (id === 'gagePlotLink') {
+                                    self.openGagePlot(siteNo);
                                 }
                             });
                             layer.on('mouseover', function (e) {

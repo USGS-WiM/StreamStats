@@ -455,6 +455,10 @@ module StreamStats.Controllers {
             this.modal.openModal(Services.SSModalType.e_gagepage, { 'siteid':siteid });
         }
 
+        public openGagePlot(siteid: string): void {
+            console.log('gage plot id:', siteid)
+            this.modal.openModal(Services.SSModalType.e_gageplot, { 'siteid':siteid });
+        }
 
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -594,7 +598,8 @@ module StreamStats.Controllers {
                                 if (item.layerName == "Streamgages" && k == "FeatureURL") {
                                     var siteNo = queryResult.properties[k].split('site_no=')[1];
                                     var SSgagepage = "vm.openGagePage('" + siteNo + "')";
-                                    var html = '</br><br><button ng-click="' + SSgagepage + '" type="button" class="btn-blue fullwidth">Open StreamStats Gage Page</button>';
+                                    var SSgageplot = "vm.openGagePlot('" + siteNo + "')";
+                                    var html = '</br><br><button ng-click="' + SSgagepage + '" type="button" class="btn-blue fullwidth">Open StreamStats Gage Page</button></br><strong>StreamStats Gage Plots: </strong><a ng-click="' + SSgageplot + '">link</a></br>';
                                     querylayers.append(html);
 
                                     //report ga event
@@ -1451,11 +1456,11 @@ module StreamStats.Controllers {
                     },
                     onEachFeature: function (feature, layer) {
                         var siteNo = feature.properties['Code'];
-                        var NWISpage = 'https://waterdata.usgs.gov/monitoring-location/' + siteNo;
+                        var PeakNWISPage = 'http://nwis.waterdata.usgs.gov/usa/nwis/peak/?site_no=' + siteNo;
                         var gageButtonDiv = L.DomUtil.create('div', 'innerDiv');
 
                         gageButtonDiv.innerHTML = '<strong>Station ID: </strong>' + siteNo + '</br><strong>Station Name: </strong>' + feature.properties['Name'] + '</br><strong>Latitude: </strong>' + feature.geometry.coordinates[1] + '</br><strong>Longitude: </strong>' + feature.geometry.coordinates[0] + '</br><strong>Station Type</strong>: ' + feature.properties.StationType.name +
-                        '</br><br><button id="gagePageLink" type="button" class="btn-blue fullwidth">Open StreamStats Gage Page</button>';
+                        '</br><br><button id="gagePageLink" type="button" class="btn-blue fullwidth">Open StreamStats Gage Page</button><strong>StreamStats Gage Plots: </strong><a id="gagePlotLink" class="' + siteNo + '">link</a><br>';
 
                         layer.bindPopup(gageButtonDiv);
 
@@ -1482,6 +1487,14 @@ module StreamStats.Controllers {
                                 self.openGagePage(siteNo);
                             }
                         })
+
+                        L.DomEvent.on(gageButtonDiv, 'click', (event) => {
+                            const id = event.target['id'];
+                            if (id === 'gagePlotLink') {
+                                self.openGagePlot(siteNo);
+                            }
+                        })
+
 
                         layer.on('mouseover', function(e) {
                             if (self.studyArea.doSelectMapGage){
