@@ -77,7 +77,7 @@ module StreamStats.Controllers {
         // //Constructor
         // //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance'];
-        chartConfig: {  chart: {zoomType: string},
+        chartConfig: {  chart: {zooming: {type: string}},
                         title: { text: string, align: string},
                         subtitle: { text: string, align: string},  
                         xAxis: {  type: string, title: {text: string}},
@@ -266,14 +266,16 @@ module StreamStats.Controllers {
 
         this.chartConfig = {
             chart: {
-                zoomType: 'xy',
+                zooming: {
+                    type: 'xy'
+                }
             },
             title: {
                 text: 'Annual Peak Streamflow',
                 align: 'center'
             },
             subtitle: {
-                text: 'click and drag',
+                text: 'Click and drag in the plot area to zoom in',
                 align: 'center'
             },
             xAxis: {
@@ -288,30 +290,6 @@ module StreamStats.Controllers {
                 }
                 },
             series  : [
-                {
-                name    : 'Annual Peak Streamflow',
-                tooltip: {
-                    headerFormat:'<b>Peak Annual Flow<br>',
-                    pointFormatter: function(){
-                        if (this.formattedPeakDates !== null){
-                            let waterYear = this.x.getUTCFullYear();
-                            if (this.x.getUTCMonth() > 8) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
-                                waterYear += 1; // adding a year to dates that fall into the next water year
-                            };
-                            let UTCday = this.x.getUTCDate();
-                            let year = this.x.getUTCFullYear();
-                            let month = this.x.getUTCMonth();
-                                month += 1; // adding a month to the UTC months (which are zero-indexed)
-                            let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
-                            return '<b>Date: '  + formattedUTCPeakDate + '<br>Value: ' + this.y + ' ft³/s<br>Water Year: ' + waterYear
-                        }
-                    }
-                },
-                turboThreshold: 0, 
-                type    : 'scatter',
-                color   : '#4185f8',
-                data    : this.formattedPeakDates
-            },
             {
                 name    : 'Daily Flow',
                 tooltip: {
@@ -332,6 +310,30 @@ module StreamStats.Controllers {
                 color   : '#add8f2',
                 data    : this.formattedDailyFlow
             },
+            {
+                name    : 'Annual Peak Streamflow',
+                tooltip: {
+                    headerFormat:'<b>Peak Annual Flow<br>',
+                    pointFormatter: function(){
+                        if (this.formattedPeakDates !== null){
+                            let waterYear = this.x.getUTCFullYear();
+                            if (this.x.getUTCMonth() > 8) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
+                                waterYear += 1; // adding a year to dates that fall into the next water year
+                            };
+                            let UTCday = this.x.getUTCDate();
+                            let year = this.x.getUTCFullYear();
+                            let month = this.x.getUTCMonth();
+                                month += 1; // adding a month to the UTC months (which are zero-indexed)
+                            let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                            return '<b>Date: '  + formattedUTCPeakDate + '<br>Value: ' + this.y + ' ft³/s<br>Water Year: ' + waterYear
+                        }
+                    }
+                },
+                turboThreshold: 0, 
+                type    : 'scatter',
+                color   : 'black',
+                data    : this.formattedPeakDates
+            }
             ] 
         } 
 

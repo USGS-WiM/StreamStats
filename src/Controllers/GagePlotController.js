@@ -200,14 +200,16 @@ var StreamStats;
                 console.log('daily flow plot data', this.formattedDailyFlow);
                 this.chartConfig = {
                     chart: {
-                        zoomType: 'xy',
+                        zooming: {
+                            type: 'xy'
+                        }
                     },
                     title: {
                         text: 'Annual Peak Streamflow',
                         align: 'center'
                     },
                     subtitle: {
-                        text: 'click and drag',
+                        text: 'Click and drag in the plot area to zoom in',
                         align: 'center'
                     },
                     xAxis: {
@@ -222,6 +224,26 @@ var StreamStats;
                         }
                     },
                     series: [
+                        {
+                            name: 'Daily Flow',
+                            tooltip: {
+                                headerFormat: '<b>Daily Flow<br>',
+                                pointFormatter: function () {
+                                    if (this.formattedPeakDates !== null) {
+                                        var UTCday = this.x.getUTCDate();
+                                        var year = this.x.getUTCFullYear();
+                                        var month = this.x.getUTCMonth();
+                                        month += 1;
+                                        var formattedUTCDailyDate = month + '/' + UTCday + '/' + year;
+                                        return '<b>Date: ' + formattedUTCDailyDate + '<br>Value: ' + this.y + ' ft³/s';
+                                    }
+                                }
+                            },
+                            turboThreshold: 0,
+                            type: 'line',
+                            color: '#add8f2',
+                            data: this.formattedDailyFlow
+                        },
                         {
                             name: 'Annual Peak Streamflow',
                             tooltip: {
@@ -244,29 +266,9 @@ var StreamStats;
                             },
                             turboThreshold: 0,
                             type: 'scatter',
-                            color: '#4185f8',
+                            color: 'black',
                             data: this.formattedPeakDates
-                        },
-                        {
-                            name: 'Daily Flow',
-                            tooltip: {
-                                headerFormat: '<b>Daily Flow<br>',
-                                pointFormatter: function () {
-                                    if (this.formattedPeakDates !== null) {
-                                        var UTCday = this.x.getUTCDate();
-                                        var year = this.x.getUTCFullYear();
-                                        var month = this.x.getUTCMonth();
-                                        month += 1;
-                                        var formattedUTCDailyDate = month + '/' + UTCday + '/' + year;
-                                        return '<b>Date: ' + formattedUTCDailyDate + '<br>Value: ' + this.y + ' ft³/s';
-                                    }
-                                }
-                            },
-                            turboThreshold: 0,
-                            type: 'line',
-                            color: '#add8f2',
-                            data: this.formattedDailyFlow
-                        },
+                        }
                     ]
                 };
                 console.log(this.chartConfig);
