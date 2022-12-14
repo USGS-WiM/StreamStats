@@ -195,14 +195,13 @@ module StreamStats.Controllers {
     //This will be used to plot a daily flow line
     public getDailyFlow() {
         //to do: figure out good start and end dates -- doesn't seem to have the right data format without them at all but I'm sure we'll want earlier data
-        var url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&startDT=1900-04-29&endDT=2022-12-30';
+        var url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01';
         console.log('GetDailyFlowURL', url);
         const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
 
         this.Execute(request).then(
             (response: any) => {
                 var data = response.data.value.timeSeries[0].values[0].value;
-                console.log('daily value data', data);
                 this.dailyFlow = data
                 this.formatData();
             }); 

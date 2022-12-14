@@ -135,12 +135,11 @@ var StreamStats;
             ;
             GagePlotController.prototype.getDailyFlow = function () {
                 var _this = this;
-                var url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&startDT=1900-04-29&endDT=2022-12-30';
+                var url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01';
                 console.log('GetDailyFlowURL', url);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
                     var data = response.data.value.timeSeries[0].values[0].value;
-                    console.log('daily value data', data);
                     _this.dailyFlow = data;
                     _this.formatData();
                 });
