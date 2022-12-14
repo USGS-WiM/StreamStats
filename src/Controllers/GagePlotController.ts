@@ -175,13 +175,14 @@ module StreamStats.Controllers {
             this.Execute(request).then(
                 (response: any) => {
                     const data = response.data
+                    console.log('AEP data', data)
                     // create a lookup array
                     const lookup = [9, 852, 8, 4, 7, 3, 6, 1, 501, 5, 2, 500, 851, 1438];
                     let chartData = [];
                     do {
                         var IDs = data.statistics
                         for (let item of IDs) {
-                            if(lookup.indexOf(item.regressionTypeID) >=0 ){
+                            if(lookup.indexOf(item.regressionTypeID) >=0 && item.isPreferred == true){
                                 chartData.push(item);
                             } 
                         }

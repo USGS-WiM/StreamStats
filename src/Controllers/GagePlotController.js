@@ -116,13 +116,14 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
                     var data = response.data;
+                    console.log('AEP data', data);
                     var lookup = [9, 852, 8, 4, 7, 3, 6, 1, 501, 5, 2, 500, 851, 1438];
                     var chartData = [];
                     do {
                         var IDs = data.statistics;
                         for (var _i = 0, IDs_1 = IDs; _i < IDs_1.length; _i++) {
                             var item = IDs_1[_i];
-                            if (lookup.indexOf(item.regressionTypeID) >= 0) {
+                            if (lookup.indexOf(item.regressionTypeID) >= 0 && item.isPreferred == true) {
                                 chartData.push(item);
                             }
                         }
