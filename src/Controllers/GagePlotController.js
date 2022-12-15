@@ -181,12 +181,14 @@ var StreamStats;
                     };
                     this.floodFreq.forEach(function (floodFreqItem) {
                         var colorIndex = floodFreqItem.regressionTypeID;
+                        var formattedName = floodFreqItem.regressionType.name.substring(0, floodFreqItem.regressionType.name.length - 18);
+                        console.log('string format', formattedName);
                         _this.formattedFloodFreq.push({
                             value: floodFreqItem.value,
                             color: AEPColors_1[colorIndex],
-                            width: 1,
+                            width: 1.5,
                             zIndex: 4,
-                            label: { text: floodFreqItem.regressionType.name }
+                            label: { text: formattedName + '% AEP' }
                         });
                     });
                     this.createAnnualFlowPlot();
