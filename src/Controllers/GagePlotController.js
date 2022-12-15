@@ -162,21 +162,21 @@ var StreamStats;
                 if (this.floodFreq) {
                     this.formattedFloodFreq = [];
                     var AEPColors_1 = {
-                        9: '#e6194B',
-                        852: '#9A6324',
-                        8: '#ffe119',
-                        4: '#4363d8',
+                        9: '#9A6324',
+                        852: '#800000',
+                        8: '#e6194B',
+                        818: '#ffd8b1',
                         7: '#f58231',
-                        3: '#911eb4',
-                        6: '#42d4f4',
-                        1: '#fabed4',
-                        501: '#469990',
-                        5: '#dcbeff',
-                        2: '#3cb44b',
-                        500: '#800000',
-                        851: '#aaffc3',
-                        1438: '#ffd8b1',
-                        818: '#000075'
+                        6: '#ffe119',
+                        5: '#bfef45',
+                        4: '#3cb44b',
+                        3: '#42d4f4',
+                        1: '#4363d8',
+                        501: '#000075',
+                        2: '#911eb4',
+                        500: '#dcbeff',
+                        851: '#fabed4',
+                        1438: '#469990'
                     };
                     this.floodFreq.forEach(function (floodFreqItem) {
                         var colorIndex = floodFreqItem.regressionTypeID;
@@ -243,7 +243,11 @@ var StreamStats;
                             turboThreshold: 0,
                             type: 'line',
                             color: '#add8f2',
-                            data: this.formattedDailyFlow
+                            data: this.formattedDailyFlow,
+                            marker: {
+                                symbol: '',
+                                radius: 3
+                            }
                         },
                         {
                             name: 'Annual Peak Streamflow',
@@ -268,7 +272,11 @@ var StreamStats;
                             turboThreshold: 0,
                             type: 'scatter',
                             color: 'black',
-                            data: this.formattedPeakDates
+                            data: this.formattedPeakDates,
+                            marker: {
+                                symbol: 'circle',
+                                radius: 3
+                            }
                         }
                     ]
                 };
