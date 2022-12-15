@@ -177,7 +177,7 @@ module StreamStats.Controllers {
                     const data = response.data
                     console.log('AEP data', data)
                     // create a lookup array
-                    const lookup = [9, 852, 8, 4, 7, 3, 6, 1, 501, 5, 2, 500, 851, 1438];
+                    const lookup = [9, 852, 8, 4, 7, 3, 6, 1, 501, 5, 2, 500, 851, 1438, 818];
                     let chartData = [];
                     do {
                         var IDs = data.statistics
@@ -223,15 +223,33 @@ module StreamStats.Controllers {
             });
         }
         if (this.floodFreq) {
-                var finalYearIndex = this.formattedPeakDates.length-1;
-                var endWY = this.formattedPeakDates[finalYearIndex].x;
-                var startWY = this.formattedPeakDates[0].x
+                // var finalYearIndex = this.formattedPeakDates.length-1;
+                // var endWY = this.formattedPeakDates[finalYearIndex].x;
+                // var startWY = this.formattedPeakDates[0].x
                 this.formattedFloodFreq = [];
+            const AEPColors = {
+                9: '#e6194B',
+                852: '#9A6324',
+                8: '#ffe119',
+                4: '#4363d8',
+                7: '#f58231',
+                3: '#911eb4',
+                6: '#42d4f4',
+                1: '#fabed4',
+                501: '#469990',
+                5: '#dcbeff',
+                2: '#3cb44b',
+                500: '#800000',
+                851: '#aaffc3',
+                1438: '#ffd8b1',
+                818: '#000075'
+            };
                 this.floodFreq.forEach((floodFreqItem) => {
+                    let colorIndex = floodFreqItem.regressionTypeID;
                     this.formattedFloodFreq.push({
                         value: floodFreqItem.value,
-                        color: '',
-                        width: 2,
+                        color: AEPColors[colorIndex],
+                        width: 1,
                         zIndex: 4,
                         label: {text: floodFreqItem.regressionType.name}
 
