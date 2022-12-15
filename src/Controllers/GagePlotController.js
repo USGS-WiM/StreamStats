@@ -167,27 +167,11 @@ var StreamStats;
                     this.formattedFloodFreq = [];
                     this.floodFreq.forEach(function (floodFreqItem) {
                         _this.formattedFloodFreq.push({
-                            name: floodFreqItem.regressionType.name,
-                            tooltip: {
-                                headerFormat: '<b>Annual Exceedance Percentage (AEP)<br>',
-                                pointFormatter: function () {
-                                    if (this.formattedPeakDates !== null) {
-                                        return '<b>' + floodFreqItem.regressionType.name + '<br>Value: ' + floodFreqItem.value + ' ft³/s<br>';
-                                    }
-                                }
-                            },
-                            turboThreshold: 0,
-                            type: 'line',
+                            value: floodFreqItem.value,
                             color: '',
-                            data: [
-                                {
-                                    x: startWY,
-                                    y: floodFreqItem.value
-                                }, {
-                                    x: endWY,
-                                    y: floodFreqItem.value
-                                }
-                            ]
+                            width: 2,
+                            zIndex: 4,
+                            label: { text: floodFreqItem.regressionType.name }
                         });
                     });
                     this.createAnnualFlowPlot();
@@ -221,7 +205,8 @@ var StreamStats;
                     yAxis: {
                         title: {
                             text: 'Discharge (Q), in ft³/s'
-                        }
+                        },
+                        plotLines: []
                     },
                     series: [
                         {
@@ -273,7 +258,7 @@ var StreamStats;
                 };
                 console.log(this.chartConfig);
                 this.formattedFloodFreq.forEach(function (formattedFloodFreqItem) {
-                    _this.chartConfig.series.push(formattedFloodFreqItem);
+                    _this.chartConfig.yAxis.plotLines.push(formattedFloodFreqItem);
                 });
             };
             GagePlotController.prototype.init = function () {

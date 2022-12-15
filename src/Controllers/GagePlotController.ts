@@ -81,7 +81,7 @@ module StreamStats.Controllers {
                         title: { text: string, align: string},
                         subtitle: { text: string, align: string},  
                         xAxis: {  type: string, title: {text: string}},
-                        yAxis: { title: {text: string}},
+                        yAxis: { title: {text: string}, plotLines: [{value: number, color: string, width: number, zIndex: number, label: {text: string}}]},
                         series: { name: string; tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number; type: string, color: string, data: number[]; }[]; };
         constructor($scope: IGagePlotControllerScope, $http: ng.IHttpService, modalService: Services.IModalService, modal:ng.ui.bootstrap.IModalServiceInstance) {
             super($http, configuration.baseurls.StreamStats);
@@ -229,28 +229,35 @@ module StreamStats.Controllers {
                 this.formattedFloodFreq = [];
                 this.floodFreq.forEach((floodFreqItem) => {
                     this.formattedFloodFreq.push({
-                        name: floodFreqItem.regressionType.name,
-                        tooltip: {
-                            headerFormat:'<b>Annual Exceedance Percentage (AEP)<br>',
-                            pointFormatter: function(){
-                                if (this.formattedPeakDates !== null){
-                                    return '<b>'  + floodFreqItem.regressionType.name + '<br>Value: ' + floodFreqItem.value + ' ft³/s<br>'
-                                }
-                            }
-                        },
-                        turboThreshold: 0, 
-                        type: 'line',
+                        value: floodFreqItem.value,
                         color: '',
-                        data:
-                        [
-                            {
-                                x: startWY,
-                                y: floodFreqItem.value
-                            },{
-                                x: endWY,
-                                y: floodFreqItem.value
-                            }
-                        ]
+                        width: 2,
+                        zIndex: 4,
+                        label: {text: floodFreqItem.regressionType.name}
+
+
+                        // name: floodFreqItem.regressionType.name,
+                        // tooltip: {
+                        //     headerFormat:'<b>Annual Exceedance Percentage (AEP)<br>',
+                        //     pointFormatter: function(){
+                        //         if (this.formattedPeakDates !== null){
+                        //             return '<b>'  + floodFreqItem.regressionType.name + '<br>Value: ' + floodFreqItem.value + ' ft³/s<br>'
+                        //         }
+                        //     }
+                        // },
+                        // turboThreshold: 0, 
+                        // type: 'line',
+                        // color: '',
+                        // data:
+                        // [
+                        //     {
+                        //         x: startWY,
+                        //         y: floodFreqItem.value
+                        //     },{
+                        //         x: endWY,
+                        //         y: floodFreqItem.value
+                        //     }
+                        // ]
                         })
                 });
         this.createAnnualFlowPlot();
@@ -287,7 +294,8 @@ module StreamStats.Controllers {
             yAxis: {
                 title: {
                     text: 'Discharge (Q), in ft³/s'
-                }
+                },
+                plotLines: []
                 },
             series  : [
             {
@@ -340,7 +348,7 @@ module StreamStats.Controllers {
         console.log(this.chartConfig)
 
         this.formattedFloodFreq.forEach((formattedFloodFreqItem) => {
-            this.chartConfig.series.push(formattedFloodFreqItem)
+            this.chartConfig.yAxis.plotLines.push(formattedFloodFreqItem)
         });
     }
 
