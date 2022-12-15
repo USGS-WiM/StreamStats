@@ -116,7 +116,6 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
                     var data = response.data;
-                    console.log('AEP data', data);
                     var lookup = [9, 852, 8, 4, 7, 3, 6, 1, 501, 5, 2, 500, 851, 1438, 818];
                     var chartData = [];
                     do {
@@ -182,7 +181,6 @@ var StreamStats;
                     this.floodFreq.forEach(function (floodFreqItem) {
                         var colorIndex = floodFreqItem.regressionTypeID;
                         var formattedName = floodFreqItem.regressionType.name.substring(0, floodFreqItem.regressionType.name.length - 18);
-                        console.log('string format', formattedName);
                         _this.formattedFloodFreq.push({
                             value: floodFreqItem.value,
                             color: AEPColors_1[colorIndex],
@@ -197,10 +195,11 @@ var StreamStats;
             GagePlotController.prototype.createAnnualFlowPlot = function () {
                 var _this = this;
                 console.log('peak value plot data', this.formattedPeakDates);
-                console.log('flood freq plot data', this.formattedFloodFreq);
                 console.log('daily flow plot data', this.formattedDailyFlow);
                 this.chartConfig = {
                     chart: {
+                        height: 450,
+                        width: 800,
                         zooming: {
                             type: 'xy'
                         }
@@ -273,7 +272,6 @@ var StreamStats;
                         }
                     ]
                 };
-                console.log(this.chartConfig);
                 this.formattedFloodFreq.forEach(function (formattedFloodFreqItem) {
                     _this.chartConfig.yAxis.plotLines.push(formattedFloodFreqItem);
                 });

@@ -77,7 +77,7 @@ module StreamStats.Controllers {
         // //Constructor
         // //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance'];
-        chartConfig: {  chart: {zooming: {type: string}},
+        chartConfig: {  chart: {height: number, width: number, zooming: {type: string}},
                         title: { text: string, align: string},
                         subtitle: { text: string, align: string},  
                         xAxis: {  type: string, title: {text: string}},
@@ -175,7 +175,6 @@ module StreamStats.Controllers {
             this.Execute(request).then(
                 (response: any) => {
                     const data = response.data
-                    console.log('AEP data', data)
                     // create a lookup array
                     const lookup = [9, 852, 8, 4, 7, 3, 6, 1, 501, 5, 2, 500, 851, 1438, 818];
                     let chartData = [];
@@ -247,7 +246,6 @@ module StreamStats.Controllers {
                 this.floodFreq.forEach((floodFreqItem) => {
                     let colorIndex = floodFreqItem.regressionTypeID;
                     let formattedName = floodFreqItem.regressionType.name.substring(0, floodFreqItem.regressionType.name.length-18);
-                    console.log('string format', formattedName);
                     this.formattedFloodFreq.push({
                         value: floodFreqItem.value,
                         color: AEPColors[colorIndex],
@@ -288,11 +286,13 @@ module StreamStats.Controllers {
     //Create chart
     public createAnnualFlowPlot(): void {
         console.log('peak value plot data', this.formattedPeakDates);
-        console.log('flood freq plot data', this.formattedFloodFreq);
+        // console.log('flood freq plot data', this.formattedFloodFreq);
         console.log('daily flow plot data', this.formattedDailyFlow);
 
         this.chartConfig = {
             chart: {
+                height: 450,
+                width: 800,
                 zooming: {
                     type: 'xy'
                 }
@@ -364,9 +364,6 @@ module StreamStats.Controllers {
             }
             ] 
         } 
-
-        console.log(this.chartConfig)
-
         this.formattedFloodFreq.forEach((formattedFloodFreqItem) => {
             this.chartConfig.yAxis.plotLines.push(formattedFloodFreqItem)
         });
