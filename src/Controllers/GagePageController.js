@@ -104,6 +104,18 @@ var StreamStats;
                 };
                 return _this_1;
             }
+            Object.defineProperty(GagePageController.prototype, "SelectedTab", {
+                get: function () {
+                    return this._selectedTab;
+                },
+                set: function (val) {
+                    if (this._selectedTab != val) {
+                        this._selectedTab = val;
+                    }
+                },
+                enumerable: false,
+                configurable: true
+            });
             GagePageController.prototype.Close = function () {
                 this.modalInstance.dismiss('cancel');
             };
@@ -374,6 +386,7 @@ var StreamStats;
             GagePageController.prototype.init = function () {
                 this.AppVersion = configuration.version;
                 this.getGagePage();
+                this.SelectedTab = GagePageTab.GageInformation;
             };
             GagePageController.prototype.convertDateToString = function (date) {
                 var yyyy = date.getFullYear().toString();
@@ -411,6 +424,11 @@ var StreamStats;
             GagePageController.$inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance'];
             return GagePageController;
         }(WiM.Services.HTTPServiceBase));
+        var GagePageTab;
+        (function (GagePageTab) {
+            GagePageTab[GagePageTab["GageInformation"] = 1] = "GageInformation";
+            GagePageTab[GagePageTab["GageAnalysisPlots"] = 2] = "GageAnalysisPlots";
+        })(GagePageTab || (GagePageTab = {}));
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.GagePageController', GagePageController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));

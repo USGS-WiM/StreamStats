@@ -165,6 +165,16 @@ module StreamStats.Controllers {
         public NWISlng: string;
         public URLsToDisplay = [];
 
+        private _selectedTab: GagePageTab;
+        public get SelectedTab(): GagePageTab {
+            return this._selectedTab;
+        }
+        public set SelectedTab(val: GagePageTab) {
+            if (this._selectedTab != val) {
+                this._selectedTab = val;
+            }      
+        }
+
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance'];
@@ -532,8 +542,8 @@ module StreamStats.Controllers {
         private init(): void {   
             //console.log("in GagePage controller");
             this.AppVersion = configuration.version;
-
             this.getGagePage();
+            this.SelectedTab = GagePageTab.GageInformation;
         }
 
         private convertDateToString(date) {
@@ -600,6 +610,11 @@ module StreamStats.Controllers {
         }
 
     }//end  class
+
+    enum GagePageTab {
+        GageInformation = 1,
+        GageAnalysisPlots = 2
+    }
 
     angular.module('StreamStats.Controllers')
         .controller('StreamStats.Controllers.GagePageController', GagePageController);
