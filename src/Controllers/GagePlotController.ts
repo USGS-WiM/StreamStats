@@ -144,7 +144,8 @@ module StreamStats.Controllers {
 
             this.Execute(request).then(
                 (response: any) => {
-                    const peakValues = []
+                    const peakValues = [];
+                    const estPeakValues = []; // going to put dates here that have 00, make them 01, and change the symbology
                     const data = response.data.split('\n').filter(r => { return (!r.startsWith("#") && r != "") });
                     const headers:Array<string> = data.shift().split('\t');
                     //remove extra random line

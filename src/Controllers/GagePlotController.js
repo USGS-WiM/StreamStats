@@ -90,6 +90,7 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
                     var peakValues = [];
+                    var estPeakValues = [];
                     var data = response.data.split('\n').filter(function (r) { return (!r.startsWith("#") && r != ""); });
                     var headers = data.shift().split('\t');
                     data.shift();
