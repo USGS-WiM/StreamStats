@@ -209,7 +209,7 @@
     <div class="modal-footer hidden-print">
         <div class="btn-group">
             <button ng-click="vm.Close()" class="btn-black"><i class="fa fa-close"></i><span>&nbsp;&nbsp;Close</span></button>
-            <button type="button" class="btn-blue" ng-click="vm.downloadCSV()"><span><i class="fa fa-download"></i>&nbsp;&nbsp;Download CSV</span></button>
+            <button ng-if="vm.SelectedTab == 1" type="button" class="btn-blue" ng-click="vm.downloadCSV()"><span><i class="fa fa-download"></i>&nbsp;&nbsp;Download CSV</span></button>
             <button class="btn-blue" ng-click="vm.print()"><i class="fa fa-print"></i>&nbsp;&nbsp;Print</button>
         </div>
     </div>
