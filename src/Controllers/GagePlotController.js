@@ -105,8 +105,14 @@ var StreamStats;
                             peak_va: parseInt(dataRow[4])
                         };
                         peakValues.push(peakObj);
-                        if (peakObj.peak_dt[8] === '0' && peakObj.peak_dt[9] === '0') {
-                            estPeakValues.push(peakObj);
+                        var estPeakObj = {
+                            agency_cd: dataRow[0],
+                            site_no: dataRow[1],
+                            peak_dt: dataRow[2].substring(0, 9) + '1',
+                            peak_va: parseInt(dataRow[4])
+                        };
+                        if (peakObj.peak_dt[8] + peakObj.peak_dt[9] === '00') {
+                            estPeakValues.push(estPeakObj);
                         }
                         ;
                     } while (data.length > 0);
@@ -292,6 +298,35 @@ var StreamStats;
                             data: this.formattedPeakDates,
                             marker: {
                                 symbol: 'circle',
+                                radius: 3
+                            }
+                        },
+                        {
+                            name: 'Annual Peak Streamflow (Date Estimated)',
+                            tooltip: {
+                                headerFormat: '<b>Peak Annual Flow<br>',
+                                pointFormatter: function () {
+                                    if (this.formattedPeakDates !== null) {
+                                        var waterYear = this.x.getUTCFullYear();
+                                        if (this.x.getUTCMonth() > 8) {
+                                            waterYear += 1;
+                                        }
+                                        ;
+                                        var UTCday = this.x.getUTCDate();
+                                        var year = this.x.getUTCFullYear();
+                                        var month = this.x.getUTCMonth();
+                                        month += 1;
+                                        var formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                                        return '<b>Date (estimated): ' + formattedUTCPeakDate + '<br>Value: ' + this.y + ' ft³/s<br>Water Year: ' + waterYear;
+                                    }
+                                }
+                            },
+                            turboThreshold: 0,
+                            type: 'scatter',
+                            color: 'red',
+                            data: this.formattedEstPeakDates,
+                            marker: {
+                                symbol: 'square',
                                 radius: 3
                             }
                         }

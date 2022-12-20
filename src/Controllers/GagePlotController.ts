@@ -102,8 +102,6 @@ module StreamStats.Controllers {
             this.print = function () {
                 window.print();
             };
-
-
         }  
 
         // //Methods  
@@ -160,8 +158,15 @@ module StreamStats.Controllers {
                             peak_va: parseInt(dataRow[4])
                         };
                         peakValues.push(peakObj)
-                        if (peakObj.peak_dt[8] === '0' && peakObj.peak_dt[9] === '0') {
-                            estPeakValues.push(peakObj) //making a new array of invalid dates that will be 'estimated'
+                        //making a new array of invalid dates that will be 'estimated'
+                        const estPeakObj = {
+                            agency_cd: dataRow[0], 
+                            site_no: dataRow[1],
+                            peak_dt: dataRow[2].substring(0, 9) + '1',
+                            peak_va: parseInt(dataRow[4])
+                        };
+                        if (peakObj.peak_dt[8] + peakObj.peak_dt[9] === '00') {
+                            estPeakValues.push(estPeakObj) 
                         };
                     } while (data.length > 0);
                     const filteredArray = peakValues.filter(item => {
@@ -238,9 +243,6 @@ module StreamStats.Controllers {
             });
         }
         if (this.floodFreq) {
-                // var finalYearIndex = this.formattedPeakDates.length-1;
-                // var endWY = this.formattedPeakDates[finalYearIndex].x;
-                // var startWY = this.formattedPeakDates[0].x
                 this.formattedFloodFreq = [];
             const AEPColors = {
                 9: '#9A6324',
@@ -268,41 +270,14 @@ module StreamStats.Controllers {
                         width: 1.5,
                         zIndex: 4,
                         label: {text: formattedName + '% AEP'}
-
-
-                        // name: floodFreqItem.regressionType.name,
-                        // tooltip: {
-                        //     headerFormat:'<b>Annual Exceedance Percentage (AEP)<br>',
-                        //     pointFormatter: function(){
-                        //         if (this.formattedPeakDates !== null){
-                        //             return '<b>'  + floodFreqItem.regressionType.name + '<br>Value: ' + floodFreqItem.value + ' ft³/s<br>'
-                        //         }
-                        //     }
-                        // },
-                        // turboThreshold: 0, 
-                        // type: 'line',
-                        // color: '',
-                        // data:
-                        // [
-                        //     {
-                        //         x: startWY,
-                        //         y: floodFreqItem.value
-                        //     },{
-                        //         x: endWY,
-                        //         y: floodFreqItem.value
-                        //     }
-                        // ]
                         })
                 });
         this.createAnnualFlowPlot();
     }}
 
-
-
     //Create chart
     public createAnnualFlowPlot(): void {
         console.log('peak value plot data', this.formattedPeakDates);
-        // console.log('flood freq plot data', this.formattedFloodFreq);
         console.log('daily flow plot data', this.formattedDailyFlow);
 
         this.chartConfig = {
@@ -383,6 +358,34 @@ module StreamStats.Controllers {
                 data    : this.formattedPeakDates,
                 marker: {
                     symbol: 'circle',
+                    radius: 3
+                }
+            },
+            {
+                name    : 'Annual Peak Streamflow (Date Estimated)',
+                tooltip: {
+                    headerFormat:'<b>Peak Annual Flow<br>',
+                    pointFormatter: function(){
+                        if (this.formattedPeakDates !== null){
+                            let waterYear = this.x.getUTCFullYear();
+                            if (this.x.getUTCMonth() > 8) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
+                                waterYear += 1; // adding a year to dates that fall into the next water year
+                            };
+                            let UTCday = this.x.getUTCDate();
+                            let year = this.x.getUTCFullYear();
+                            let month = this.x.getUTCMonth();
+                                month += 1; // adding a month to the UTC months (which are zero-indexed)
+                            let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                            return '<b>Date (estimated): '  + formattedUTCPeakDate + '<br>Value: ' + this.y + ' ft³/s<br>Water Year: ' + waterYear
+                        }
+                    }
+                },
+                turboThreshold: 0, 
+                type    : 'scatter',
+                color   : 'red',
+                data    : this.formattedEstPeakDates,
+                marker: {
+                    symbol: 'square',
                     radius: 3
                 }
             }
