@@ -53,9 +53,11 @@ module StreamStats.Controllers {
         //public peakValues: any;
         public floodFreq = undefined;
         public peakDates = undefined;
+        public estPeakDates = undefined;
         public dailyFlow = undefined;
         public formattedFloodFreq = undefined;
         public formattedPeakDates = undefined;
+        public formattedEstPeakDates = undefined;
         public formattedDailyFlow = undefined;
         public selectedStatisticGroups;
         public selectedCitations;
@@ -141,7 +143,6 @@ module StreamStats.Controllers {
             const url = 'https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no=' + this.gage.code
             console.log('GetPeakURL', url)
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
-
             this.Execute(request).then(
                 (response: any) => {
                     const peakValues = [];
@@ -159,8 +160,15 @@ module StreamStats.Controllers {
                             peak_va: parseInt(dataRow[4])
                         };
                         peakValues.push(peakObj)
+                        if (peakObj.peak_dt[8] === '0' && peakObj.peak_dt[9] === '0') {
+                            estPeakValues.push(peakObj) //making a new array of invalid dates that will be 'estimated'
+                        };
                     } while (data.length > 0);
-                    this.peakDates = peakValues;
+                    const filteredArray = peakValues.filter(item => {
+                        return (item.peak_dt[8] + item.peak_dt[9] !== '00') //filtering out invalid dates
+                    });
+                    this.peakDates = filteredArray;
+                    this.estPeakDates = estPeakValues;
                 }, (error) => {
                 }).finally(() => {
                     this.getFloodFreq()
@@ -216,7 +224,13 @@ module StreamStats.Controllers {
             this.peakDates.forEach(test => {
                 this.formattedPeakDates.push({x: new Date(test.peak_dt), y: test.peak_va})
             });
-        } 
+        }
+        if (this.estPeakDates) {
+            this.formattedEstPeakDates = [];
+            this.estPeakDates.forEach(test => {
+                this.formattedEstPeakDates.push({x: new Date(test.peak_dt), y: test.peak_va})
+            });
+        }
         if (this.dailyFlow) {
             this.formattedDailyFlow = [];
             this.dailyFlow.forEach(test => {

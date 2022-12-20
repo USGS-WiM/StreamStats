@@ -35,9 +35,11 @@ var StreamStats;
                 var _this = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
                 _this.floodFreq = undefined;
                 _this.peakDates = undefined;
+                _this.estPeakDates = undefined;
                 _this.dailyFlow = undefined;
                 _this.formattedFloodFreq = undefined;
                 _this.formattedPeakDates = undefined;
+                _this.formattedEstPeakDates = undefined;
                 _this.formattedDailyFlow = undefined;
                 _this.filteredStatGroupsChar = [];
                 _this.showPreferred = false;
@@ -103,8 +105,16 @@ var StreamStats;
                             peak_va: parseInt(dataRow[4])
                         };
                         peakValues.push(peakObj);
+                        if (peakObj.peak_dt[8] === '0' && peakObj.peak_dt[9] === '0') {
+                            estPeakValues.push(peakObj);
+                        }
+                        ;
                     } while (data.length > 0);
-                    _this.peakDates = peakValues;
+                    var filteredArray = peakValues.filter(function (item) {
+                        return (item.peak_dt[8] + item.peak_dt[9] !== '00');
+                    });
+                    _this.peakDates = filteredArray;
+                    _this.estPeakDates = estPeakValues;
                 }, function (error) {
                 }).finally(function () {
                     _this.getFloodFreq();
@@ -152,6 +162,12 @@ var StreamStats;
                     this.formattedPeakDates = [];
                     this.peakDates.forEach(function (test) {
                         _this.formattedPeakDates.push({ x: new Date(test.peak_dt), y: test.peak_va });
+                    });
+                }
+                if (this.estPeakDates) {
+                    this.formattedEstPeakDates = [];
+                    this.estPeakDates.forEach(function (test) {
+                        _this.formattedEstPeakDates.push({ x: new Date(test.peak_dt), y: test.peak_va });
                     });
                 }
                 if (this.dailyFlow) {
