@@ -111,13 +111,13 @@ var StreamStats;
                             peak_dt: dataRow[2].substring(0, 9) + '1',
                             peak_va: parseInt(dataRow[4])
                         };
-                        if (peakObj.peak_dt[8] + peakObj.peak_dt[9] === '00') {
+                        if (peakObj.peak_dt[8] + peakObj.peak_dt[9] === '00' || peakObj.peak_dt[5] + peakObj.peak_dt[6] === '00') {
                             estPeakValues.push(estPeakObj);
                         }
                         ;
                     } while (data.length > 0);
                     var filteredArray = peakValues.filter(function (item) {
-                        return (item.peak_dt[8] + item.peak_dt[9] !== '00');
+                        return (item.peak_dt[8] + item.peak_dt[9] !== '00' || item.peak_dt[5] + item.peak_dt[6] !== '00');
                     });
                     _this.peakDates = filteredArray;
                     _this.estPeakDates = estPeakValues;
@@ -158,6 +158,7 @@ var StreamStats;
                 this.Execute(request).then(function (response) {
                     var data = response.data.value.timeSeries[0].values[0].value;
                     _this.dailyFlow = data;
+                    console.log('daily flow', data);
                     _this.formatData();
                 });
             };
@@ -179,7 +180,9 @@ var StreamStats;
                 if (this.dailyFlow) {
                     this.formattedDailyFlow = [];
                     this.dailyFlow.forEach(function (test) {
-                        _this.formattedDailyFlow.push({ x: new Date(test.dateTime), y: parseInt(test.value) });
+                        if (test.qualifiers[0] === 'A') {
+                            _this.formattedDailyFlow.push({ x: new Date(test.dateTime), y: parseInt(test.value) });
+                        }
                     });
                 }
                 if (this.floodFreq) {

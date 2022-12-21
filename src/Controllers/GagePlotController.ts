@@ -1,6 +1,6 @@
 //Maggie Jaenicke
 //10-6-2022
-//Adds a new link to the gage pop-ups that opens a new modal showing a plot of annual peak streamflow, retrieved from the NWIS
+//Configures a plot of annual peak streamflow and daily streamflow, retrieved from the NWIS
 //and the x-percent AEP flood statistics as horizontal lines retrieved from our own GageStatsServices API.
 
 module StreamStats.Controllers {
@@ -165,15 +165,15 @@ module StreamStats.Controllers {
                             peak_dt: dataRow[2].substring(0, 9) + '1',
                             peak_va: parseInt(dataRow[4])
                         };
-                        if (peakObj.peak_dt[8] + peakObj.peak_dt[9] === '00') {
-                            estPeakValues.push(estPeakObj) 
+                        if (peakObj.peak_dt[8] + peakObj.peak_dt[9] === '00' || peakObj.peak_dt[5] + peakObj.peak_dt[6] === '00') {
+                            estPeakValues.push(estPeakObj) // pushing invalid dates to the new array
                         };
                     } while (data.length > 0);
-                    const filteredArray = peakValues.filter(item => {
-                        return (item.peak_dt[8] + item.peak_dt[9] !== '00') //filtering out invalid dates
+                    const filteredArray = peakValues.filter(item => { //filtering out invalid dates from main array
+                        return (item.peak_dt[8] + item.peak_dt[9] !== '00' || item.peak_dt[5] + item.peak_dt[6] !== '00') 
                     });
-                    this.peakDates = filteredArray;
-                    this.estPeakDates = estPeakValues;
+                    this.peakDates = filteredArray; // main array of peak values
+                    this.estPeakDates = estPeakValues; // array of peak values that have invalid/estimated dates 
                 }, (error) => {
                 }).finally(() => {
                     this.getFloodFreq()
@@ -217,7 +217,16 @@ module StreamStats.Controllers {
         this.Execute(request).then(
             (response: any) => {
                 var data = response.data.value.timeSeries[0].values[0].value;
+                // const filteredDailyData = data.filter(item => {
+                //     return (data.item.qualifiers[0] === 'A') 
+                // });
+                // console.log('filtered daily', filteredDailyData);
+                // for (let item of data) {
+                //     if(data.item.qualifiers[0] = 'A'){
+                //         ;
+                //     } 
                 this.dailyFlow = data
+                console.log('daily flow', data)
                 this.formatData();
             }); 
         };
@@ -239,7 +248,9 @@ module StreamStats.Controllers {
         if (this.dailyFlow) {
             this.formattedDailyFlow = [];
             this.dailyFlow.forEach(test => {
+                if (test.qualifiers[0] === 'A') {
                 this.formattedDailyFlow.push({x: new Date(test.dateTime), y: parseInt(test.value)})
+                }
             });
         }
         if (this.floodFreq) {
