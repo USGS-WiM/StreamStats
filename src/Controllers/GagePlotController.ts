@@ -159,18 +159,27 @@ module StreamStats.Controllers {
                         };
                         peakValues.push(peakObj)
                         //making a new array of invalid dates that will be 'estimated'
-                        const estPeakObj = {
+                        const estPeakDay = {
                             agency_cd: dataRow[0], 
                             site_no: dataRow[1],
-                            peak_dt: dataRow[2].substring(0, 9) + '1',
+                            peak_dt: dataRow[2].substring(0, 9) + '1', 
+                            peak_va: parseInt(dataRow[4])
+                        };
+                        const estPeakMonth = {
+                            agency_cd: dataRow[0], 
+                            site_no: dataRow[1],
+                            peak_dt: dataRow[2].substring(0, 6) + '1' + dataRow[2].substring(7, 10),
                             peak_va: parseInt(dataRow[4])
                         };
                         if (peakObj.peak_dt[8] + peakObj.peak_dt[9] === '00') {
-                            estPeakValues.push(estPeakObj) // pushing invalid dates to a new array
+                            estPeakValues.push(estPeakDay) // pushing invalid dates to a new array
+                        };
+                        if (peakObj.peak_dt[5] + peakObj.peak_dt[6] === '00') {
+                            estPeakValues.push(estPeakMonth) // pushing invalid dates to a new array
                         };
                     } while (data.length > 0);
                     const filteredArray = peakValues.filter(item => {
-                        return (item.peak_dt[8] + item.peak_dt[9] !== '00') //filtering out invalid dates
+                        return (item.peak_dt[8] + item.peak_dt[9] !== '00' || item.peak_dt[8] + item.peak_dt[9] !== '00') //filtering out invalid dates
                     });
                     this.peakDates = filteredArray;
                     this.estPeakDates = estPeakValues;
