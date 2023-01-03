@@ -224,7 +224,7 @@ module StreamStats.Controllers {
             this.environment = configuration.environment;
             this.selectedExplorationTool = null;
             this.http = $http;
-
+            this.getCulvertCreds();
             this.init();
 
             //subscribe to Events
@@ -1736,6 +1736,15 @@ module StreamStats.Controllers {
 
             //add disclaimer here
             if (isInExclusionArea && excludeReason) this.studyArea.selectedStudyArea.Disclaimers['isInExclusionArea'] = 'The delineation point is in an exclusion area. ' + excludeReason;
+        }
+        private getCulvertCreds() {
+            this.http.get('./data/culvert_secrets.json').then(function(response) {
+                configuration.regions.forEach(function(region){
+                    if (region.RegionID === "MA") {
+                        region.Layers.Culverts.layerOptions.token = response.data.token;
+                    }
+                })
+            })
         }
     }//end class
 
