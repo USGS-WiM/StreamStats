@@ -105,24 +105,14 @@ var StreamStats;
                             peak_va: parseInt(dataRow[4])
                         };
                         peakValues.push(peakObj);
-                        var estPeakDay = {
+                        var estPeakObj = {
                             agency_cd: dataRow[0],
                             site_no: dataRow[1],
                             peak_dt: dataRow[2].substring(0, 9) + '1',
                             peak_va: parseInt(dataRow[4])
                         };
-                        var estPeakMonth = {
-                            agency_cd: dataRow[0],
-                            site_no: dataRow[1],
-                            peak_dt: dataRow[2].substring(0, 6) + '1' + dataRow[2].substring(7, 10),
-                            peak_va: parseInt(dataRow[4])
-                        };
-                        if (peakObj.peak_dt[8] + peakObj.peak_dt[9] === '00') {
-                            estPeakValues.push(estPeakDay);
-                        }
-                        ;
-                        if (peakObj.peak_dt[5] + peakObj.peak_dt[6] === '00') {
-                            estPeakValues.push(estPeakMonth);
+                        if (peakObj.peak_dt[8] + peakObj.peak_dt[9] === '00' || peakObj.peak_dt[5] + peakObj.peak_dt[6] === '00') {
+                            estPeakValues.push(estPeakObj);
                         }
                         ;
                     } while (data.length > 0);
@@ -166,8 +156,16 @@ var StreamStats;
                 console.log('GetDailyFlowURL', url);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
-                    var data = response.data.value.timeSeries[0].values[0].value;
-                    _this.dailyFlow = data;
+                    var data = response.data.value.timeSeries;
+                    if (data.length !== 0) {
+                        var dailyValues = data[0].values[0].value;
+                    }
+                    else {
+                        dailyValues = 0;
+                    }
+                    ;
+                    console.log('test', dailyValues);
+                    _this.dailyFlow = dailyValues;
                     _this.formatData();
                 });
             };
@@ -227,9 +225,11 @@ var StreamStats;
                     this.createAnnualFlowPlot();
                 }
             };
+            ;
             GagePlotController.prototype.createAnnualFlowPlot = function () {
                 var _this = this;
                 console.log('peak value plot data', this.formattedPeakDates);
+                console.log('estimated peak plot data', this.formattedEstPeakDates);
                 console.log('daily flow plot data', this.formattedDailyFlow);
                 this.chartConfig = {
                     chart: {
@@ -313,35 +313,6 @@ var StreamStats;
                                 radius: 3
                             }
                         },
-                        {
-                            name: 'Annual Peak Streamflow (Date Estimated)',
-                            tooltip: {
-                                headerFormat: '<b>Peak Annual Flow<br>',
-                                pointFormatter: function () {
-                                    if (this.formattedPeakDates !== null) {
-                                        var waterYear = this.x.getUTCFullYear();
-                                        if (this.x.getUTCMonth() > 8) {
-                                            waterYear += 1;
-                                        }
-                                        ;
-                                        var UTCday = this.x.getUTCDate();
-                                        var year = this.x.getUTCFullYear();
-                                        var month = this.x.getUTCMonth();
-                                        month += 1;
-                                        var formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
-                                        return '<b>Date (estimated): ' + formattedUTCPeakDate + '<br>Value: ' + this.y + ' ft³/s<br>Water Year: ' + waterYear;
-                                    }
-                                }
-                            },
-                            turboThreshold: 0,
-                            type: 'scatter',
-                            color: 'red',
-                            data: this.formattedEstPeakDates,
-                            marker: {
-                                symbol: 'square',
-                                radius: 3
-                            }
-                        }
                     ]
                 };
                 this.formattedFloodFreq.forEach(function (formattedFloodFreqItem) {

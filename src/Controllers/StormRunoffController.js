@@ -625,7 +625,7 @@ var StreamStats;
                         text: 'Runoff hydrograph from ' + this.SelectedPrecip.name,
                         css: {
                             'font-size': '10pt',
-                            'font-weight': 'bold' 
+                            'font-weight': 'bold'
                         }
                     }
                 };

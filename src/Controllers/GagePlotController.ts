@@ -159,24 +159,24 @@ module StreamStats.Controllers {
                         };
                         peakValues.push(peakObj)
                         //making a new array of invalid dates that will be 'estimated'
-                        const estPeakDay = {
+                        const estPeakObj = {
                             agency_cd: dataRow[0], 
                             site_no: dataRow[1],
                             peak_dt: dataRow[2].substring(0, 9) + '1', 
                             peak_va: parseInt(dataRow[4])
                         };
-                        const estPeakMonth = {
-                            agency_cd: dataRow[0], 
-                            site_no: dataRow[1],
-                            peak_dt: dataRow[2].substring(0, 6) + '1' + dataRow[2].substring(7, 10),
-                            peak_va: parseInt(dataRow[4])
+                        // const estPeakMonth = {
+                        //     agency_cd: dataRow[0], 
+                        //     site_no: dataRow[1],
+                        //     peak_dt: dataRow[2].substring(0, 6) + '1' + dataRow[2].substring(7, 10),
+                        //     peak_va: parseInt(dataRow[4])
+                        // };
+                        if (peakObj.peak_dt[8] + peakObj.peak_dt[9] === '00' || peakObj.peak_dt[5] + peakObj.peak_dt[6] === '00') {
+                            estPeakValues.push(estPeakObj) // pushing invalid dates to a new array
                         };
-                        if (peakObj.peak_dt[8] + peakObj.peak_dt[9] === '00') {
-                            estPeakValues.push(estPeakDay) // pushing invalid dates to a new array
-                        };
-                        if (peakObj.peak_dt[5] + peakObj.peak_dt[6] === '00') {
-                            estPeakValues.push(estPeakMonth) // pushing invalid dates to a new array
-                        };
+                        // if (peakObj.peak_dt[5] + peakObj.peak_dt[6] === '00') {
+                        //     estPeakValues.push(estPeakMonth) // pushing invalid dates to a new array
+                        // };
                     } while (data.length > 0);
                     const filteredArray = peakValues.filter(item => {
                         return (item.peak_dt[8] + item.peak_dt[9] !== '00' || item.peak_dt[8] + item.peak_dt[9] !== '00') //filtering out invalid dates
@@ -215,6 +215,7 @@ module StreamStats.Controllers {
             this.getDailyFlow()
         }); 
     };
+
     //Pull in data for daily flow values
     //This will be used to plot a daily flow line
     public getDailyFlow() {
@@ -225,8 +226,15 @@ module StreamStats.Controllers {
 
         this.Execute(request).then(
             (response: any) => {
-                var data = response.data.value.timeSeries[0].values[0].value;
-                this.dailyFlow = data
+                var data = response.data.value.timeSeries;
+                if (data.length !== 0) {
+                    var dailyValues = data[0].values[0].value
+                }
+                else {
+                    dailyValues = 0
+                };
+                console.log('test', dailyValues)
+                this.dailyFlow = dailyValues
                 this.formatData();
             }); 
         };
@@ -253,42 +261,44 @@ module StreamStats.Controllers {
                 }
             });
         }
+
         if (this.floodFreq) {
-                this.formattedFloodFreq = [];
-            const AEPColors = {
-                9: '#9A6324',
-                852: '#800000',
-                8: '#e6194B',
-                818: '#ffd8b1',
-                7: '#f58231',
-                6: '#ffe119', 
-                5: '#bfef45',
-                4: '#3cb44b',
-                3: '#42d4f4',
-                1: '#4363d8',
-                501: '#000075',
-                2: '#911eb4',
-                500: '#dcbeff',
-                851: '#fabed4',
-                1438: '#469990'
-            };
-                this.floodFreq.forEach((floodFreqItem) => {
-                    let colorIndex = floodFreqItem.regressionTypeID;
-                    let formattedName = floodFreqItem.regressionType.name.substring(0, floodFreqItem.regressionType.name.length-18);
-                    this.formattedFloodFreq.push({
-                        value: floodFreqItem.value,
-                        color: AEPColors[colorIndex],
-                        width: 1.5,
-                        zIndex: 4,
-                        label: {text: formattedName + '% AEP'}
-                        })
+            this.formattedFloodFreq = [];
+                const AEPColors = {
+                    9: '#9A6324',
+                    852: '#800000',
+                    8: '#e6194B',
+                    818: '#ffd8b1',
+                    7: '#f58231',
+                    6: '#ffe119', 
+                    5: '#bfef45',
+                    4: '#3cb44b',
+                    3: '#42d4f4',
+                    1: '#4363d8',
+                    501: '#000075',
+                    2: '#911eb4',
+                    500: '#dcbeff',
+                    851: '#fabed4',
+                    1438: '#469990'
+                };
+            this.floodFreq.forEach((floodFreqItem) => {
+                let colorIndex = floodFreqItem.regressionTypeID;
+                let formattedName = floodFreqItem.regressionType.name.substring(0, floodFreqItem.regressionType.name.length-18);
+                this.formattedFloodFreq.push({
+                    value: floodFreqItem.value,
+                    color: AEPColors[colorIndex],
+                    width: 1.5,
+                    zIndex: 4,
+                    label: {text: formattedName + '% AEP'}
+                    });
                 });
         this.createAnnualFlowPlot();
-    }}
+    }};
 
     //Create chart
     public createAnnualFlowPlot(): void {
         console.log('peak value plot data', this.formattedPeakDates);
+        console.log('estimated peak plot data', this.formattedEstPeakDates);
         console.log('daily flow plot data', this.formattedDailyFlow);
 
         this.chartConfig = {
@@ -372,34 +382,34 @@ module StreamStats.Controllers {
                     radius: 3
                 }
             },
-            {
-                name    : 'Annual Peak Streamflow (Date Estimated)',
-                tooltip: {
-                    headerFormat:'<b>Peak Annual Flow<br>',
-                    pointFormatter: function(){
-                        if (this.formattedPeakDates !== null){
-                            let waterYear = this.x.getUTCFullYear();
-                            if (this.x.getUTCMonth() > 8) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
-                                waterYear += 1; // adding a year to dates that fall into the next water year
-                            };
-                            let UTCday = this.x.getUTCDate();
-                            let year = this.x.getUTCFullYear();
-                            let month = this.x.getUTCMonth();
-                                month += 1; // adding a month to the UTC months (which are zero-indexed)
-                            let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
-                            return '<b>Date (estimated): '  + formattedUTCPeakDate + '<br>Value: ' + this.y + ' ft³/s<br>Water Year: ' + waterYear
-                        }
-                    }
-                },
-                turboThreshold: 0, 
-                type    : 'scatter',
-                color   : 'red',
-                data    : this.formattedEstPeakDates,
-                marker: {
-                    symbol: 'square',
-                    radius: 3
-                }
-            }
+            // {
+            //     name    : 'Annual Peak Streamflow (Date Estimated)',
+            //     tooltip: {
+            //         headerFormat:'<b>Peak Annual Flow<br>',
+            //         pointFormatter: function(){
+            //             if (this.formattedPeakDates !== null){
+            //                 let waterYear = this.x.getUTCFullYear();
+            //                 if (this.x.getUTCMonth() > 8) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
+            //                     waterYear += 1; // adding a year to dates that fall into the next water year
+            //                 };
+            //                 let UTCday = this.x.getUTCDate();
+            //                 let year = this.x.getUTCFullYear();
+            //                 let month = this.x.getUTCMonth();
+            //                     month += 1; // adding a month to the UTC months (which are zero-indexed)
+            //                 let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+            //                 return '<b>Date (estimated): '  + formattedUTCPeakDate + '<br>Value: ' + this.y + ' ft³/s<br>Water Year: ' + waterYear
+            //             }
+            //         }
+            //     },
+            //     turboThreshold: 0, 
+            //     type    : 'scatter',
+            //     color   : 'red',
+            //     data    : this.formattedEstPeakDates,
+            //     marker: {
+            //         symbol: 'square',
+            //         radius: 3
+            //     }
+            // }
             ] 
         } 
         this.formattedFloodFreq.forEach((formattedFloodFreqItem) => {
