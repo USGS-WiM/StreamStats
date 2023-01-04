@@ -162,7 +162,7 @@ module StreamStats.Controllers {
                         const estPeakObj = {
                             agency_cd: dataRow[0], 
                             site_no: dataRow[1],
-                            peak_dt: dataRow[2].substring(0, 9) + '1', 
+                            peak_dt: dataRow[2].replaceAll('-00','-01'),
                             peak_va: parseInt(dataRow[4])
                         };
                         // const estPeakMonth = {
@@ -293,7 +293,7 @@ module StreamStats.Controllers {
                     });
                 });
         this.createAnnualFlowPlot();
-    }};
+    }}
 
     //Create chart
     public createAnnualFlowPlot(): void {
@@ -382,34 +382,34 @@ module StreamStats.Controllers {
                     radius: 3
                 }
             },
-            // {
-            //     name    : 'Annual Peak Streamflow (Date Estimated)',
-            //     tooltip: {
-            //         headerFormat:'<b>Peak Annual Flow<br>',
-            //         pointFormatter: function(){
-            //             if (this.formattedPeakDates !== null){
-            //                 let waterYear = this.x.getUTCFullYear();
-            //                 if (this.x.getUTCMonth() > 8) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
-            //                     waterYear += 1; // adding a year to dates that fall into the next water year
-            //                 };
-            //                 let UTCday = this.x.getUTCDate();
-            //                 let year = this.x.getUTCFullYear();
-            //                 let month = this.x.getUTCMonth();
-            //                     month += 1; // adding a month to the UTC months (which are zero-indexed)
-            //                 let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
-            //                 return '<b>Date (estimated): '  + formattedUTCPeakDate + '<br>Value: ' + this.y + ' ft³/s<br>Water Year: ' + waterYear
-            //             }
-            //         }
-            //     },
-            //     turboThreshold: 0, 
-            //     type    : 'scatter',
-            //     color   : 'red',
-            //     data    : this.formattedEstPeakDates,
-            //     marker: {
-            //         symbol: 'square',
-            //         radius: 3
-            //     }
-            // }
+            {
+                name    : 'Annual Peak Streamflow (Date Estimated)',
+                tooltip: {
+                    headerFormat:'<b>Peak Annual Flow<br>',
+                    pointFormatter: function(){
+                        if (this.formattedPeakDates !== null){
+                            let waterYear = this.x.getUTCFullYear();
+                            if (this.x.getUTCMonth() > 8) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
+                                waterYear += 1; // adding a year to dates that fall into the next water year
+                            };
+                            let UTCday = this.x.getUTCDate();
+                            let year = this.x.getUTCFullYear();
+                            let month = this.x.getUTCMonth();
+                                month += 1; // adding a month to the UTC months (which are zero-indexed)
+                            let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                            return '<b>Date (estimated): '  + formattedUTCPeakDate + '<br>Value: ' + this.y + ' ft³/s<br>Water Year: ' + waterYear
+                        }
+                    }
+                },
+                turboThreshold: 0, 
+                type    : 'scatter',
+                color   : 'red',
+                data    : this.formattedEstPeakDates,
+                marker: {
+                    symbol: 'square',
+                    radius: 3
+                }
+            }
             ] 
         } 
         this.formattedFloodFreq.forEach((formattedFloodFreqItem) => {
