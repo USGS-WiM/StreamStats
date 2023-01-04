@@ -65,7 +65,6 @@ module StreamStats.Controllers {
         public sideBarCollapsed: boolean;
         public selectedProcedure: ProcedureType;
         public toaster: any;
-        public angulartics: any;
         public selectedStatisticsGroupList: Services.IStatisticsGroup;
         private regionService: Services.IRegionService;
         private nssService: Services.InssService;
@@ -89,15 +88,14 @@ module StreamStats.Controllers {
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', 'toaster', '$analytics', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ModalService', 'leafletData', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager'];
-        constructor($scope: ISidebarControllerScope, toaster, $analytics, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, modal: Services.IModalService, leafletData: ILeafletData, exploration: Services.IExplorationService, private EventManager:WiM.Event.IEventManager) {
+        static $inject = ['$scope', 'toaster', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ModalService', 'leafletData', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager'];
+        constructor($scope: ISidebarControllerScope, toaster, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, modal: Services.IModalService, leafletData: ILeafletData, exploration: Services.IExplorationService, private EventManager:WiM.Event.IEventManager) {
             this.dateRange = { dates: { startDate: new Date(), endDate: new Date() }, minDate: new Date(1900, 1, 1), maxDate: new Date() };
 
             $scope.vm = this;
             this.init();
 
             this.toaster = toaster;
-            this.angulartics = $analytics;
             this.sideBarCollapsed = false;
             this.selectedProcedure = ProcedureType.INIT;
             this.regionService = region;
@@ -172,7 +170,7 @@ module StreamStats.Controllers {
         }
         public setRegion(region: Services.IRegion) {
             //ga event
-            this.angulartics.eventTrack('initialOperation', { category: 'SideBar', label: 'Region Selection Button' });
+            gtag('event', 'SetRegion', { 'Region': region.RegionID });
 
             //console.log('setting region: ', region);
             if (this.regionService.selectedRegion == undefined || this.regionService.selectedRegion.RegionID !== region.RegionID)
@@ -363,10 +361,8 @@ module StreamStats.Controllers {
         }
 
         public calculateParameters() {
-
             //ga event
-            this.angulartics.eventTrack('CalculateParameters', {
-                category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.studyAreaService.studyAreaParameterList.map(function (elem) { return elem.code; }).join(",")});
+            gtag('event', 'Calculate', { 'Category': "Parameters", 'Location': this.regionService.selectedRegion.Name, 'Value':  this.studyAreaService.studyAreaParameterList.map(function (elem) { return elem.code; }).join(",")});
 
             //console.log('in Calculate Parameters');
             this.studyAreaService.loadParameters();
@@ -386,8 +382,8 @@ module StreamStats.Controllers {
         }
 
         public submitBasinEdits() {
-
-            this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'sumbitEdits' });
+            //ga event
+            gtag('event', 'BasinEditor', { 'Type': 'SubmitEdits'});
 
             this.studyAreaService.showEditToolbar = false;
 
@@ -419,10 +415,9 @@ module StreamStats.Controllers {
 
             //console.log('in estimateFlows');
             this.toaster.pop('wait', "Opening Report", "Please wait...",5000);
-
+            
             //ga event
-            this.angulartics.eventTrack('CalculateFlows', {
-                category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.nssService.selectedStatisticsGroupList.map(function (elem) { return elem.name; }).join(",") });
+            gtag('event', 'Calculate', { 'Category': 'Flows', 'Location': this.regionService.selectedRegion.Name, 'Value': this.nssService.selectedStatisticsGroupList.map(function (elem) { return elem.name; }).join(",") });
 
             this.studyAreaService.extensionResultsChanged = 0; //reset FDCTM results
 
@@ -489,6 +484,9 @@ module StreamStats.Controllers {
 
         public checkRegulation() {
             //console.log('checking for regulation');
+            //ga event
+            gtag('event', 'AdditionalFunctionality', { 'Category': 'Regulation' });
+
             this.studyAreaService.upstreamRegulation();
         }
 
@@ -586,17 +584,26 @@ module StreamStats.Controllers {
         }
 
         public OpenWateruse() {
+            //ga event
+            gtag('event', 'AdditionalFunctionality', { 'Category': 'WaterUse' });
             this.modalService.openModal(Services.SSModalType.e_wateruse);
         }
         public OpenStormRunoff() {
+            //ga event
+            gtag('event', 'AdditionalFunctionality', { 'Category': 'StormRunoff' });
             this.modalService.openModal(Services.SSModalType.e_stormrunnoff);
         }
 
         public OpenNearestGages() {
+            //ga event
+            gtag('event', 'AdditionalFunctionality', { 'Category': 'NearestGages' });
             this.modalService.openModal(Services.SSModalType.e_nearestgages);
         }
 
         public downloadGeoJSON() {
+
+            //ga event
+            gtag('event', 'Download', { 'Category': 'Basin', 'Type': 'Geojson' });
 
             var GeoJSON = angular.toJson(this.studyAreaService.selectedStudyArea.FeatureCollection);
 
@@ -625,6 +632,9 @@ module StreamStats.Controllers {
         }
 
         public downloadKML() {
+            //ga event
+            gtag('event', 'Download', { 'Category': 'Basin', 'Type': 'KML' });
+
             //https://github.com/mapbox/tokml
             //https://gis.stackexchange.com/questions/159344/export-to-kml-option-using-leaflet
             var geojson = JSON.parse(angular.toJson(this.studyAreaService.selectedStudyArea.FeatureCollection));
@@ -651,6 +661,9 @@ module StreamStats.Controllers {
             }
         }
         public downloadShapeFile() {
+            //ga event
+            gtag('event', 'Download', { 'Category': 'Basin', 'Type': 'Shapefile' });
+
             try {
                 var flowTable: Array<Services.INSSResultTable> = null;
 

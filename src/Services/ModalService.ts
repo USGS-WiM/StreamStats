@@ -23,6 +23,7 @@
 //06.16.2015 mjs - Created
 
 //Import
+
 module StreamStats.Services {
     'use strict'
     export interface IModalService {

@@ -241,7 +241,7 @@
                                                             <tr>
                                                                 <th>Date</th>
                                                                 <th>Estimated</th>
-                                                                <th>{{r.referanceGage.name}}</th>
+                                                                <th>Observed ({{r.referanceGage.stationID}})</th>
                                                             </tr>
                                                         </thead>
 
@@ -493,10 +493,10 @@
                         <i ng-class="vm.studyAreaService.additionalFeaturesLoaded ? 'fa fa-download' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Download<span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="#" ng-click="vm.downloadGeoJSON()" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="GeoJSON"><span class="fa fa-download"></span>&nbsp;&nbsp;GeoJSON</a></li>
-                        <li><a href="#" ng-click="vm.isFlowTableOpen = true; vm.isExceedanceTableOpen = true; vm.downloadCSV()" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="CSV"><span class="fa fa-download"></span>&nbsp;&nbsp;CSV</a></li>
-                        <li><a href="#" ng-click="vm.downloadShapeFile()" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="ShapeFile"><span class="fa fa-download"></span>&nbsp;&nbsp;ShapeFile</a></li>
-                        <li><a href="#" ng-click="vm.downloadKML()" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="KML"><span class="fa fa-download"></span>&nbsp;&nbsp;KML</a></li>
+                        <li><a href="#" ng-click="vm.downloadGeoJSON()"><span class="fa fa-download"></span>&nbsp;&nbsp;GeoJSON</a></li>
+                        <li><a href="#" ng-click="vm.isFlowTableOpen = true; vm.isExceedanceTableOpen = true; vm.downloadCSV()"><span class="fa fa-download"></span>&nbsp;&nbsp;CSV</a></li>
+                        <li><a href="#" ng-click="vm.downloadShapeFile()"><span class="fa fa-download"></span>&nbsp;&nbsp;ShapeFile</a></li>
+                        <li><a href="#" ng-click="vm.downloadKML()"><span class="fa fa-download"></span>&nbsp;&nbsp;KML</a></li>
                     </ul>
                 </div>
             </div>
@@ -506,7 +506,7 @@
     <div class="modal-footer hidden-print">
         <div class="btn-group">
             <button class="btn-black" ng-click="vm.close()"><i class="fa fa-close"></i>&nbsp;&nbsp;Close</button>
-            <button class="btn-blue" ng-click="vm.print()" analytics-on analytics-event="Print" analytics-category="Report" analytics-label="Print"><i class="fa fa-print"></i>&nbsp;&nbsp;Print</button>
+            <button class="btn-blue" ng-click="vm.print()"><i class="fa fa-print"></i>&nbsp;&nbsp;Print</button>
         </div>
     </div>
     

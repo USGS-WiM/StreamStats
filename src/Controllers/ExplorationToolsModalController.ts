@@ -38,7 +38,6 @@ module StreamStats.Controllers {
         private explorationService: Services.IExplorationService;
         private studyAreaService: Services.IStudyAreaService;
         public sce: any;
-        public angulartics: any;
         public print: any;
         public selectedLimit: any;
         public selectedDirection: any;
@@ -47,11 +46,10 @@ module StreamStats.Controllers {
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$analytics', '$sce', '$modalInstance', 'StreamStats.Services.ModalService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.StudyAreaService'];
-        constructor($scope: IExplorationToolsModalControllerScope, $analytics, $sce: any, modal: ng.ui.bootstrap.IModalServiceInstance, modalservice: Services.IModalService, exploration: Services.IExplorationService, studyArea: Services.IStudyAreaService) {
+        static $inject = ['$scope', '$sce', '$modalInstance', 'StreamStats.Services.ModalService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.StudyAreaService'];
+        constructor($scope: IExplorationToolsModalControllerScope, $sce: any, modal: ng.ui.bootstrap.IModalServiceInstance, modalservice: Services.IModalService, exploration: Services.IExplorationService, studyArea: Services.IStudyAreaService) {
             $scope.vm = this;
             this.sce = $sce;
-            this.angulartics = $analytics;
             this.modalInstance = modal;
             this.explorationService = exploration;
             this.studyAreaService = studyArea;
@@ -65,6 +63,8 @@ module StreamStats.Controllers {
             }
             
             this.print = function () {
+                //ga event
+                gtag('event', 'Download', { 'Category': 'ElevationProfile', "Type": 'Print' });
                 window.print();
             };
         }  
@@ -98,7 +98,7 @@ module StreamStats.Controllers {
         private downloadCSV() {
 
             //ga event
-            this.angulartics.eventTrack('Download', { category: 'ElevationProfile', label: 'CSV' });
+            gtag('event', 'Download', { 'Category': 'ElevationProfile', "Type": 'CSV' });
 
             var filename = 'elevation-profile.csv';
 

@@ -167,6 +167,16 @@ text.nv-axislabel {
     overflow-y: scroll;
 }
 
+@media only print {
+    .panel {
+      /* width: auto; */
+      max-width: 100%;
+      max-height: none;
+      height: auto;
+      overflow-y: visible;
+    }
+ }
+
 #flowAnywhereModal .panel {
     overflow-y: visible;
 }

@@ -190,6 +190,9 @@ var StreamStats;
                     _this.estimateFlowsCounter++;
                     _this.cleanRegressionRegions(statGroup.regressionRegions);
                     statGroup.regressionRegions.forEach(function (regressionRegion) {
+                        if (regressionRegion.disclaimer) {
+                            regressionRegion.disclaimer = null;
+                        }
                         regressionRegion.parameters.forEach(function (regressionParam) {
                             studyAreaParameterList.forEach(function (param) {
                                 if (regressionParam.code.toLowerCase() == param.code.toLowerCase()) {
