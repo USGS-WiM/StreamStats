@@ -276,8 +276,9 @@ module StreamStats.Controllers {
 
                 }, (error) => {
                     //sm when error
+                    console.log(error);
                 }).finally(() => {
-
+                    console.log(this.gage.statisticsgroups);
                 }
             );
         }
@@ -584,23 +585,8 @@ module StreamStats.Controllers {
 
         // Gage Analysis Plots methods
 
-        public getGagePlot() {
-            //instantiate gage
-            this.gage = new GageInfo(this.modalService.modalOptions.siteid);
-            //below: how to get the data from API and setting it in controller
-            const url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + this.gage.code;
-            const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
-
-            this.Execute(request).then(
-                (response: any) => {
-                    this.gage = response.data;
-                    this.getPeakInfo();
-                    this.getFloodFreq();
-                    this.getDailyFlow();
-                }, (error) => {
-                    //sm when error
-                }).finally(() => {
-                });
+        public getGagePlots() {
+            this.getPeakInfo(); // Annual Peak Streamflow plot
         }
 
         //Get peak values from NWIS
@@ -874,7 +860,7 @@ module StreamStats.Controllers {
             //console.log("in GagePage controller");
             this.AppVersion = configuration.version;
             this.getGagePage();
-            this.getGagePlot();
+            this.getGagePlots();
             this.SelectedTab = GagePageTab.GageInformation;
         }
 

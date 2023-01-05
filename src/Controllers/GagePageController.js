@@ -149,7 +149,9 @@ var StreamStats;
                     _this_1.getNWISPeriodOfRecord(_this_1.gage);
                     _this_1.additionalLinkCheck(_this_1.gage.code);
                 }, function (error) {
+                    console.log(error);
                 }).finally(function () {
+                    console.log(_this_1.gage.statisticsgroups);
                 });
             };
             GagePageController.prototype.additionalLinkCheck = function (siteNo) {
@@ -396,19 +398,8 @@ var StreamStats;
                     }
                 }
             };
-            GagePageController.prototype.getGagePlot = function () {
-                var _this_1 = this;
-                this.gage = new GageInfo(this.modalService.modalOptions.siteid);
-                var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + this.gage.code;
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
-                this.Execute(request).then(function (response) {
-                    _this_1.gage = response.data;
-                    _this_1.getPeakInfo();
-                    _this_1.getFloodFreq();
-                    _this_1.getDailyFlow();
-                }, function (error) {
-                }).finally(function () {
-                });
+            GagePageController.prototype.getGagePlots = function () {
+                this.getPeakInfo();
             };
             GagePageController.prototype.getPeakInfo = function () {
                 var _this_1 = this;
@@ -673,7 +664,7 @@ var StreamStats;
             GagePageController.prototype.init = function () {
                 this.AppVersion = configuration.version;
                 this.getGagePage();
-                this.getGagePlot();
+                this.getGagePlots();
                 this.SelectedTab = GagePageTab.GageInformation;
             };
             GagePageController.prototype.convertDateToString = function (date) {
