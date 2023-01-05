@@ -195,10 +195,28 @@
                 </div>
             </div>
 
-            <!-- Gage Analysis Plots Tab-->
+            <!-- Gage Analysis Plots Tab -->
             <div ng-if="vm.SelectedTab == 2" style="position: relative;">
                 <div style="padding-top: 10px;">
-                    Gage Analysis Plots will go here
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Gage Information</div>
+                            <table class="table">
+                                <tbody>
+                                    <tr>
+                                        <th scope="row">USGS Station ID: </th>
+                                            <td>{{vm.gage.code}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Station Name:</th>
+                                            <td>{{vm.gage.name}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                    </div>
+                    <div class="panel panel-default">
+                        <!-- <div class="panel-heading">Annual Peak Streamflow</div> -->
+                        <highchart id="chart1" config="vm.chartConfig"></highchart>
+                    </div>
                 </div>
             </div>
         </div>
