@@ -276,9 +276,7 @@ module StreamStats.Controllers {
 
                 }, (error) => {
                     //sm when error
-                    console.log(error);
                 }).finally(() => {
-                    console.log(this.gage.statisticsgroups);
                 }
             );
         }

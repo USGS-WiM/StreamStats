@@ -149,9 +149,7 @@ var StreamStats;
                     _this_1.getNWISPeriodOfRecord(_this_1.gage);
                     _this_1.additionalLinkCheck(_this_1.gage.code);
                 }, function (error) {
-                    console.log(error);
                 }).finally(function () {
-                    console.log(_this_1.gage.statisticsgroups);
                 });
             };
             GagePageController.prototype.additionalLinkCheck = function (siteNo) {
