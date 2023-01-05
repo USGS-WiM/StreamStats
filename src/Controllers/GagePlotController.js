@@ -24,10 +24,10 @@ var StreamStats;
             }
             return GageInfo;
         }());
-        var peakValue = (function () {
-            function peakValue() {
+        var peakValues = (function () {
+            function peakValues() {
             }
-            return peakValue;
+            return peakValues;
         }());
         var GagePlotController = (function (_super) {
             __extends(GagePlotController, _super);
@@ -149,7 +149,6 @@ var StreamStats;
                     _this.getDailyFlow();
                 });
             };
-            ;
             GagePlotController.prototype.getDailyFlow = function () {
                 var _this = this;
                 var url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01';
@@ -169,7 +168,6 @@ var StreamStats;
                     _this.formatData();
                 });
             };
-            ;
             GagePlotController.prototype.formatData = function () {
                 var _this = this;
                 if (this.peakDates) {
@@ -243,7 +241,7 @@ var StreamStats;
                         align: 'center'
                     },
                     subtitle: {
-                        text: 'Click and drag in the plot area to zoom in',
+                        text: 'Click and drag in the plot area to zoom in<br>AEP: Annual Exceedance Probability',
                         align: 'center'
                     },
                     xAxis: {
@@ -262,7 +260,7 @@ var StreamStats;
                         {
                             name: 'Daily Flow',
                             tooltip: {
-                                headerFormat: '<b>Daily Flow<br>',
+                                headerFormat: '<b>Daily Flow</b>',
                                 pointFormatter: function () {
                                     if (this.formattedPeakDates !== null) {
                                         var UTCday = this.x.getUTCDate();
@@ -270,7 +268,7 @@ var StreamStats;
                                         var month = this.x.getUTCMonth();
                                         month += 1;
                                         var formattedUTCDailyDate = month + '/' + UTCday + '/' + year;
-                                        return '<b>Date: ' + formattedUTCDailyDate + '<br>Value: ' + this.y + ' ft³/s';
+                                        return '<br>Date: <b>' + formattedUTCDailyDate + '</b><br>Value: <b>' + this.y + ' ft³/s';
                                     }
                                 }
                             },
@@ -286,7 +284,7 @@ var StreamStats;
                         {
                             name: 'Annual Peak Streamflow',
                             tooltip: {
-                                headerFormat: '<b>Peak Annual Flow<br>',
+                                headerFormat: '<b>Peak Annual Flow</b>',
                                 pointFormatter: function () {
                                     if (this.formattedPeakDates !== null) {
                                         var waterYear = this.x.getUTCFullYear();
@@ -299,7 +297,7 @@ var StreamStats;
                                         var month = this.x.getUTCMonth();
                                         month += 1;
                                         var formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
-                                        return '<b>Date: ' + formattedUTCPeakDate + '<br>Value: ' + this.y + ' ft³/s<br>Water Year: ' + waterYear;
+                                        return '<br>Date: <b>' + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear;
                                     }
                                 }
                             },
@@ -315,7 +313,7 @@ var StreamStats;
                         {
                             name: 'Annual Peak Streamflow (Date Estimated)',
                             tooltip: {
-                                headerFormat: '<b>Peak Annual Flow<br>',
+                                headerFormat: '<b>Peak Annual Flow</b>',
                                 pointFormatter: function () {
                                     if (this.formattedPeakDates !== null) {
                                         var waterYear = this.x.getUTCFullYear();
@@ -328,7 +326,7 @@ var StreamStats;
                                         var month = this.x.getUTCMonth();
                                         month += 1;
                                         var formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
-                                        return '<b>Date (estimated): ' + formattedUTCPeakDate + '<br>Value: ' + this.y + ' ft³/s<br>Water Year: ' + waterYear;
+                                        return '<br>Date (estimated): <b>' + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear;
                                     }
                                 }
                             },
