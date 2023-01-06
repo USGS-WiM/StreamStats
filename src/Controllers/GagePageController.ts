@@ -144,17 +144,6 @@ module StreamStats.Controllers {
         description: string;
     }
 
-    // Gage Analysis Plots classes
-    class peakValues {
-        agency_cd: String;
-        site_no: String;
-        peak_dt: Date;
-        peak_tm?: Number;
-        peak_va: Number;
-        peak_cd?: String;
-        gage_ht: Number;
-    }
-
     class GagePageController extends WiM.Services.HTTPServiceBase implements IGagePageController {
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -219,7 +208,7 @@ module StreamStats.Controllers {
                         xAxis: {  type: string, title: {text: string}},
                         yAxis: { title: {text: string}, plotLines: [{value: number, color: string, width: number, zIndex: number, label: {text: string}}]},
                         series: { name: string; tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number; type: string, color: string, 
-                        data: number[], marker: {symbol: string, radius: number}; }[]; };
+                        data: number[], marker: {symbol: string, radius: number}, showInLegend: boolean; }[]; };
         constructor($scope: IGagePageControllerScope, $http: ng.IHttpService, modalService: Services.IModalService, modal:ng.ui.bootstrap.IModalServiceInstance) {
             super($http, configuration.baseurls.StreamStats);
             $scope.vm = this;
@@ -597,7 +586,7 @@ module StreamStats.Controllers {
                     const peakValues = [];
                     const estPeakValues = []; //dates that include a '-00'
                     const data = response.data.split('\n').filter(r => { return (!r.startsWith("#") && r != "") });
-                    const headers:Array<string> = data.shift().split('\t');
+                    data.shift().split('\t');
                     //remove extra random line
                     data.shift();
                     do {
@@ -627,7 +616,7 @@ module StreamStats.Controllers {
                     this.estPeakDates = estPeakValues;
                 }, (error) => {
                 }).finally(() => {
-                    this.getFloodFreq()
+                    this.getFloodFreq();
                 });
         }             
 
@@ -635,7 +624,7 @@ module StreamStats.Controllers {
         //This will be used to plot x-percent AEP flood values as horizontal plotLines
         public getFloodFreq() {
             var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + this.gage.code;
-            console.log('GetFloodFreqURL', url)
+            // console.log('GetFloodFreqURL', url)
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             this.Execute(request).then(
                 (response: any) => {
@@ -653,14 +642,14 @@ module StreamStats.Controllers {
                 } while (data.length > 0);
                 this.floodFreq = chartData
             }).finally(() => {
-                this.getDailyFlow()
+                this.getDailyFlow();
             }); 
         }
 
         //Pull in data for daily flow values
         public getDailyFlow() {
             var url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01';
-            console.log('GetDailyFlowURL', url);
+            // console.log('GetDailyFlowURL', url);
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             this.Execute(request).then(
                 (response: any) => {
@@ -671,7 +660,6 @@ module StreamStats.Controllers {
                     else {
                         dailyValues = 0
                     };
-                    console.log('test', dailyValues)
                     this.dailyFlow = dailyValues
                     this.formatData();
                 }); 
@@ -681,21 +669,21 @@ module StreamStats.Controllers {
         public formatData(): void {
             if (this.peakDates) {
                 this.formattedPeakDates = [];
-                this.peakDates.forEach(test => {
-                    this.formattedPeakDates.push({x: new Date(test.peak_dt), y: test.peak_va})
+                this.peakDates.forEach(peakObj => {
+                    this.formattedPeakDates.push({x: new Date(peakObj.peak_dt), y: peakObj.peak_va})
                 });
             }
             if (this.estPeakDates) {
                 this.formattedEstPeakDates = [];
-                this.estPeakDates.forEach(test => {
-                    this.formattedEstPeakDates.push({x: new Date(test.peak_dt), y: test.peak_va})
+                this.estPeakDates.forEach(estPeakObj => {
+                    this.formattedEstPeakDates.push({x: new Date(estPeakObj.peak_dt), y: estPeakObj.peak_va})
                 });
             }
             if (this.dailyFlow) {
                 this.formattedDailyFlow = [];
-                this.dailyFlow.forEach(test => {
-                    if (test.qualifiers[0] === 'A') {
-                    this.formattedDailyFlow.push({x: new Date(test.dateTime), y: parseInt(test.value)})
+                this.dailyFlow.forEach(dailyObj => {
+                    if (dailyObj.qualifiers[0] === 'A') {
+                    this.formattedDailyFlow.push({x: new Date(dailyObj.dateTime), y: parseInt(dailyObj.value)})
                     }
                 });
             }
@@ -734,9 +722,9 @@ module StreamStats.Controllers {
 
         //Create chart
         public createAnnualFlowPlot(): void {
-            console.log('peak value plot data', this.formattedPeakDates);
-            console.log('estimated peak plot data', this.formattedEstPeakDates);
-            console.log('daily flow plot data', this.formattedDailyFlow);
+            // console.log('peak value plot data', this.formattedPeakDates);
+            // console.log('estimated peak plot data', this.formattedEstPeakDates);
+            // console.log('daily flow plot data', this.formattedDailyFlow);
             this.chartConfig = {
                 chart: {
                     height: 450,
@@ -750,7 +738,7 @@ module StreamStats.Controllers {
                     align: 'center'
                 },
                 subtitle: {
-                    text: 'Click and drag in the plot area to zoom in<br>AEP: Annual Exceedance Probability',
+                    text: 'Click and drag in the plot area to zoom in<br>AEP = Annual Exceedance Probability',
                     align: 'center'
                 },
                 xAxis: {
@@ -767,9 +755,9 @@ module StreamStats.Controllers {
                 },
                 series  : [
                 {
-                    name    : 'Daily Flow',
+                    name    : 'Daily Streamflow',
                     tooltip: {
-                        headerFormat:'<b>Daily Flow</b>',
+                        headerFormat:'<b>Daily Streamflow</b>',
                         pointFormatter: function(){
                             if (this.formattedPeakDates !== null){
                                 let UTCday = this.x.getUTCDate();
@@ -788,12 +776,14 @@ module StreamStats.Controllers {
                     marker: {
                         symbol: '',
                         radius: 3
-                    }
+                    },
+                    showInLegend: this.formattedDailyFlow.length > 0
+
                 },
                 {
                     name    : 'Annual Peak Streamflow',
                     tooltip: {
-                        headerFormat:'<b>Peak Annual Flow</b>',
+                        headerFormat:'<b>Annual Peak Streamflow</b>',
                         pointFormatter: function(){
                             if (this.formattedPeakDates !== null){
                                 let waterYear = this.x.getUTCFullYear();
@@ -816,12 +806,13 @@ module StreamStats.Controllers {
                     marker: {
                         symbol: 'circle',
                         radius: 3
-                    }
+                    },
+                    showInLegend: this.formattedPeakDates.length > 0
                 },
                 {
                     name    : 'Annual Peak Streamflow (Date Estimated)',
                     tooltip: {
-                        headerFormat:'<b>Peak Annual Flow</b>',
+                        headerFormat:'<b>Annual Peak Streamflow</b>',
                         pointFormatter: function(){
                             if (this.formattedPeakDates !== null){
                                 let waterYear = this.x.getUTCFullYear();
@@ -844,7 +835,8 @@ module StreamStats.Controllers {
                     marker: {
                         symbol: 'square',
                         radius: 3
-                    }
+                    },
+                    showInLegend: this.formattedEstPeakDates.length > 0
                 }] 
             } 
             this.formattedFloodFreq.forEach((formattedFloodFreqItem) => {
