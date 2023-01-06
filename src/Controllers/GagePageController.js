@@ -531,6 +531,7 @@ var StreamStats;
             };
             GagePageController.prototype.createAnnualFlowPlot = function () {
                 var _this_1 = this;
+                console.log('daily flow plot data', this.formattedDailyFlow);
                 this.chartConfig = {
                     chart: {
                         height: 450,
@@ -583,7 +584,7 @@ var StreamStats;
                                 symbol: '',
                                 radius: 3
                             },
-                            showInLegend: this.formattedDailyFlow.length > 0
+                            showInLegend: this.formattedDailyFlow != undefined
                         },
                         {
                             name: 'Annual Peak Streamflow',
