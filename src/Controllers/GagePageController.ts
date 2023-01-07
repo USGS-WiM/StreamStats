@@ -579,7 +579,7 @@ module StreamStats.Controllers {
         //Get peak values from NWIS
         public getPeakInfo() {
             const url = 'https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no=' + this.gage.code
-            console.log('GetPeakURL', url)
+            // console.log('GetPeakURL', url)
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             this.Execute(request).then(
                 (response: any) => {
@@ -724,7 +724,7 @@ module StreamStats.Controllers {
         public createAnnualFlowPlot(): void {
             // console.log('peak value plot data', this.formattedPeakDates);
             // console.log('estimated peak plot data', this.formattedEstPeakDates);
-            console.log('daily flow plot data', this.formattedDailyFlow);
+            // console.log('daily flow plot data', this.formattedDailyFlow);
             this.chartConfig = {
                 chart: {
                     height: 450,
