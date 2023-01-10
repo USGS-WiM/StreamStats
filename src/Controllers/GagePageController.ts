@@ -222,7 +222,6 @@ module StreamStats.Controllers {
             this.statCitationList = [];
             this.charCitationList = [];
             this.showPreferred = false;
-            console.log(this.chartConfig)
             this.print = function () {
                 //ga event
                 gtag('event', 'Download', { 'Category': 'GagePage', "Type": 'Print' });
@@ -841,8 +840,6 @@ module StreamStats.Controllers {
             this.formattedFloodFreq.forEach((formattedFloodFreqItem) => {
                 this.chartConfig.yAxis.plotLines.push(formattedFloodFreqItem)
             });
-
-            console.log(this.chartConfig)
         }
         
         //Helper Methods
