@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - StreamStats Gage Page link in gage popups to a button
 - Updated to Google Analytics 4
 - Updated code.json
+- Updated favicon
 
 ### Deprecated 
 
