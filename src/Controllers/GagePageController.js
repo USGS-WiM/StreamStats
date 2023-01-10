@@ -106,6 +106,7 @@ var StreamStats;
                 _this_1.statCitationList = [];
                 _this_1.charCitationList = [];
                 _this_1.showPreferred = false;
+                console.log(_this_1.chartConfig);
                 _this_1.print = function () {
                     gtag('event', 'Download', { 'Category': 'GagePage', "Type": 'Print' });
                     window.print();
@@ -556,7 +557,7 @@ var StreamStats;
                         title: {
                             text: 'Discharge (Q), in ft³/s'
                         },
-                        plotLines: []
+                        plotLines: [{ value: null, color: null, width: null, zIndex: null, label: { text: null } }]
                     },
                     series: [
                         {
@@ -612,7 +613,7 @@ var StreamStats;
                                 symbol: 'circle',
                                 radius: 3
                             },
-                            showInLegend: this.formattedPeakDates.length > 0
+                            showInLegend: this.formattedPeakDates != undefined
                         },
                         {
                             name: 'Annual Peak Streamflow (Date Estimated)',
@@ -642,13 +643,14 @@ var StreamStats;
                                 symbol: 'square',
                                 radius: 3
                             },
-                            showInLegend: this.formattedEstPeakDates.length > 0
+                            showInLegend: this.formattedEstPeakDates != undefined
                         }
                     ]
                 };
                 this.formattedFloodFreq.forEach(function (formattedFloodFreqItem) {
                     _this_1.chartConfig.yAxis.plotLines.push(formattedFloodFreqItem);
                 });
+                console.log(this.chartConfig);
             };
             GagePageController.prototype.init = function () {
                 this.AppVersion = configuration.version;

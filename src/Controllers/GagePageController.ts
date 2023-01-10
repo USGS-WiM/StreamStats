@@ -202,7 +202,7 @@ module StreamStats.Controllers {
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance'];
-        chartConfig: {  chart: {height: number, width: number, zooming: {type: string}},
+        chartConfig: {  chart: { height: number, width: number, zooming: {type: string} },
                         title: { text: string, align: string},
                         subtitle: { text: string, align: string},  
                         xAxis: {  type: string, title: {text: string}},
@@ -222,7 +222,7 @@ module StreamStats.Controllers {
             this.statCitationList = [];
             this.charCitationList = [];
             this.showPreferred = false;
-
+            console.log(this.chartConfig)
             this.print = function () {
                 //ga event
                 gtag('event', 'Download', { 'Category': 'GagePage', "Type": 'Print' });
@@ -751,7 +751,7 @@ module StreamStats.Controllers {
                     title: {
                         text: 'Discharge (Q), in ft³/s'
                     },
-                    plotLines: []
+                    plotLines: [{value: null, color: null, width: null, zIndex: null, label: {text: null}}]
                 },
                 series  : [
                 {
@@ -806,7 +806,7 @@ module StreamStats.Controllers {
                         symbol: 'circle',
                         radius: 3
                     },
-                    showInLegend: this.formattedPeakDates.length > 0
+                    showInLegend: this.formattedPeakDates != undefined
                 },
                 {
                     name    : 'Annual Peak Streamflow (Date Estimated)',
@@ -835,12 +835,14 @@ module StreamStats.Controllers {
                         symbol: 'square',
                         radius: 3
                     },
-                    showInLegend: this.formattedEstPeakDates.length > 0
+                    showInLegend: this.formattedEstPeakDates != undefined
                 }] 
             } 
             this.formattedFloodFreq.forEach((formattedFloodFreqItem) => {
                 this.chartConfig.yAxis.plotLines.push(formattedFloodFreqItem)
             });
+
+            console.log(this.chartConfig)
         }
         
         //Helper Methods
