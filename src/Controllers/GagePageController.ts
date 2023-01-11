@@ -204,7 +204,9 @@ module StreamStats.Controllers {
         static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance'];
         chartConfig: {  chart: { height: number, width: number, zooming: {type: string} },
                         title: { text: string, align: string},
-                        subtitle: { text: string, align: string},  
+                        subtitle: { text: string, align: string},
+                        rangeSelector: { enabled: boolean, inputPosition: {align: string, x: number, y: number}, buttonPosition: {align: string, x: number, y: number}},
+                        navigator: { enabled: boolean},  
                         xAxis: {  type: string, title: {text: string}},
                         yAxis: { title: {text: string}, plotLines: [{value: number, color: string, width: number, zIndex: number, label: {text: string}}]},
                         series: { name: string; tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number; type: string, color: string, 
@@ -578,7 +580,7 @@ module StreamStats.Controllers {
         //Get peak values from NWIS
         public getPeakInfo() {
             const url = 'https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no=' + this.gage.code
-            // console.log('GetPeakURL', url)
+            console.log('GetPeakURL', url)
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             this.Execute(request).then(
                 (response: any) => {
@@ -719,11 +721,11 @@ module StreamStats.Controllers {
         //Create chart
         public createAnnualFlowPlot(): void {
             //console.log('peak value plot data', this.formattedPeakDates);
-            //console.log('estimated peak plot data', this.formattedEstPeakDates);
+            console.log('estimated peak plot data', this.formattedEstPeakDates);
             //console.log('daily flow plot data', this.formattedDailyFlow);
             this.chartConfig = {
                 chart: {
-                    height: 450,
+                    height: 550,
                     width: 800,
                     zooming: {
                         type: 'xy'
@@ -736,6 +738,22 @@ module StreamStats.Controllers {
                 subtitle: {
                     text: 'Click and drag in the plot area to zoom in<br>AEP = Annual Exceedance Probability',
                     align: 'center'
+                },
+                rangeSelector: {
+                    enabled: true, 
+                    inputPosition: {
+                        align: 'left',
+                        x: 0,
+                        y: 0
+                    },
+                    buttonPosition: {
+                        align: 'right',
+                        x: 0,
+                        y: 0
+                    },
+                },
+                navigator: {
+                    enabled: true
                 },
                 xAxis: {
                     type: 'datetime',

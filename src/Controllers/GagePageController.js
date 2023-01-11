@@ -397,6 +397,7 @@ var StreamStats;
             GagePageController.prototype.getPeakInfo = function () {
                 var _this_1 = this;
                 var url = 'https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no=' + this.gage.code;
+                console.log('GetPeakURL', url);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
                     var peakValues = [];
@@ -527,9 +528,10 @@ var StreamStats;
             };
             GagePageController.prototype.createAnnualFlowPlot = function () {
                 var _this_1 = this;
+                console.log('estimated peak plot data', this.formattedEstPeakDates);
                 this.chartConfig = {
                     chart: {
-                        height: 450,
+                        height: 550,
                         width: 800,
                         zooming: {
                             type: 'xy'
@@ -542,6 +544,22 @@ var StreamStats;
                     subtitle: {
                         text: 'Click and drag in the plot area to zoom in<br>AEP = Annual Exceedance Probability',
                         align: 'center'
+                    },
+                    rangeSelector: {
+                        enabled: true,
+                        inputPosition: {
+                            align: 'left',
+                            x: 0,
+                            y: 0
+                        },
+                        buttonPosition: {
+                            align: 'right',
+                            x: 0,
+                            y: 0
+                        },
+                    },
+                    navigator: {
+                        enabled: true
                     },
                     xAxis: {
                         type: 'datetime',
