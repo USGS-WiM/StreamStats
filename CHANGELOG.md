@@ -8,6 +8,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   
 ### Added 
 
+### Changed  
+
+### Deprecated 
+
+### Removed 
+  
+### Fixed  
+
+### Security  
+
+## [v4.12.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.12.0) - 2023-01-11
+  
+### Added 
+
 - Begin Drainage Area and End Drainage Area attributes to Indiana Coordinated Discharge report
 - Ability to download gage pages as a CSV
 
@@ -18,10 +32,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - StreamStats Gage Page link in gage popups to a button
 - Updated to Google Analytics 4
 - Updated code.json
-
-### Deprecated 
-
--
+- Updated favicon
 
 ### Removed 
 
@@ -35,10 +46,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Printed gage page now shows all table content instead of cutting of scrolling tables
 - Disclaimers on report are now not delimited by commas when downloaded as a CSV
 
-### Security  
-
-
-
 ## [v4.11.1](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.11.1) - 2022-10-14
 
 ### Added 
@@ -48,8 +55,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed  
 
 - Issue where state layers were not showing up 
-
-
 
 ## [v4.11.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.11.0) - 2022-10-14
 
