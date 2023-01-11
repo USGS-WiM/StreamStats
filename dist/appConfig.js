@@ -1,5 +1,5 @@
 var configuration = {};
-configuration.version = "4.11.1";
+configuration.version = "4.12.0";
 configuration.environment = 'development';
 
 configuration.baseurls =
@@ -784,8 +784,8 @@ configuration.overlayedLayers = {
                 "layerName": "Region",
                 "layerId": 1,
                 "legend": [{                        
-                    "contentType": "image/png",
-                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAEhJREFUOI1jYWBgYJg7d+5/BiqA5ORkRhZqGcbAAHEYC7UMgwHaG5icnMxIigHoQTYEvTxq4KiBw9JASouzIeDl5ORkRmpWAQArIxX92VSV8QAAAABJRU5ErkJggg==",
+                    "contentType": "image/svg+xml;base64",
+                    "imageData": "PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJ5ZXMiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMSIgaGVpZ2h0PSI2Ij4KPHBhdGggc3R5bGU9ImZpbGw6I2ViZWJlYjsgc3Ryb2tlOm5vbmU7IiBkPSJNMCAwTDEgMUwwIDB6Ii8+CjxwYXRoIHN0eWxlPSJmaWxsOiNkN2Q3ZDc7IHN0cm9rZTpub25lOyIgZD0iTTEgMEwxIDFMMzAgMUwxIDB6Ii8+CjxwYXRoIHN0eWxlPSJmaWxsOiNlYmViZWI7IHN0cm9rZTpub25lOyIgZD0iTTMwIDBMMzEgMUwzMCAweiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojYzNjM2MzOyBzdHJva2U6bm9uZTsiIGQ9Ik0wIDFDMS4zNDkyMyA5LjA4NDc4IDI5LjY1MDggOS4wODQ3NyAzMSAxTDMwIDFMMzAgNUwxIDVMMCAxeiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojODc4Nzg3OyBzdHJva2U6bm9uZTsiIGQ9Ik0xIDFMMSA1TDMwIDVMMzAgMUwxIDF6Ii8+CjxwYXRoIHN0eWxlPSJmaWxsOiNlMWUxZTE7IHN0cm9rZTpub25lOyIgZD0iTTAgNUwxIDZMMCA1TTMwIDVMMzEgNkwzMCA1eiIvPgo8L3N2Zz4K",
                     "label": "2-digit HU"
                 }]
             },
@@ -793,8 +793,8 @@ configuration.overlayedLayers = {
                 "layerName": "Subregion",
                 "layerId": 2,
                 "legend": [{                        
-                    "contentType": "image/png",
-                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAElJREFUOI3t1DEKACAMA8AI/jTvylvrVEFwqpmkmTpdM2XCnAkAkuIVIjk26IikIDkOML9UsLxtDRtssMGPQccu2hoeA1vdwVsWQMARe7k7EAEAAAAASUVORK5CYII=",
+                    "contentType": "image/svg+xml;base64",
+                    "imageData": "PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJ5ZXMiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMSIgaGVpZ2h0PSI2Ij4KPHBhdGggc3R5bGU9ImZpbGw6I2ZmZmZmZjsgc3Ryb2tlOm5vbmU7IiBkPSJNMCAwTDAgNkwzMSA2TDMxIDBMMCAweiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojYTVhNWE1OyBzdHJva2U6bm9uZTsiIGQ9Ik0xLjMzMzMzIDIuNjY2NjdMMS42NjY2NyAzLjMzMzMzTDEuMzMzMzMgMi42NjY2N3oiLz4KPHBhdGggc3R5bGU9ImZpbGw6Izg3ODc4Nzsgc3Ryb2tlOm5vbmU7IiBkPSJNMiAyTDIgNEwyOSA0TDI5IDJMMiAyeiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojZTFlMWUxOyBzdHJva2U6bm9uZTsiIGQ9Ik0yOS4zMzMzIDIuNjY2NjdMMjkuNjY2NyAzLjMzMzMzTDI5LjMzMzMgMi42NjY2N3oiLz4KPC9zdmc+Cg==",
                     "label": "4-digit HU"
                 }]
             },
@@ -802,8 +802,8 @@ configuration.overlayedLayers = {
                 "layerName": "Basin",
                 "layerId": 3,
                 "legend": [{                        
-                    "contentType": "image/png",
-                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAElJREFUOI3t1DEKACAMA8AI/jTvylvrVEFwqpmkmTpdM2XCnAkAkuIVIjk26IikIDkOML9UsLxtDRtssMGPQccu2hoeA1vdwVsWQMARe7k7EAEAAAAASUVORK5CYII=",
+                    "contentType": "image/svg+xml;base64",
+                    "imageData": "PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJ5ZXMiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMSIgaGVpZ2h0PSI2Ij4KPHBhdGggc3R5bGU9ImZpbGw6I2ZmZmZmZjsgc3Ryb2tlOm5vbmU7IiBkPSJNMCAwTDAgNkwzMSA2TDMxIDBMMCAweiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojYTVhNWE1OyBzdHJva2U6bm9uZTsiIGQ9Ik0xLjMzMzMzIDIuNjY2NjdMMS42NjY2NyAzLjMzMzMzTDEuMzMzMzMgMi42NjY2N3oiLz4KPHBhdGggc3R5bGU9ImZpbGw6Izg3ODc4Nzsgc3Ryb2tlOm5vbmU7IiBkPSJNMiAyTDIgNEwyOSA0TDI5IDJMMiAyeiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojZTFlMWUxOyBzdHJva2U6bm9uZTsiIGQ9Ik0yOS4zMzMzIDIuNjY2NjdMMjkuNjY2NyAzLjMzMzMzTDI5LjMzMzMgMi42NjY2N3oiLz4KPC9zdmc+Cg==",
                     "label": "6-digit HU"
                 }]
             },
@@ -811,8 +811,8 @@ configuration.overlayedLayers = {
                 "layerName": "Subbasin",
                 "layerId": 4,
                 "legend": [{                        
-                    "contentType": "image/png",
-                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAElJREFUOI3t1DEKACAMA8AI/jTvylvrVEFwqpmkmTpdM2XCnAkAkuIVIjk26IikIDkOML9UsLxtDRtssMGPQccu2hoeA1vdwVsWQMARe7k7EAEAAAAASUVORK5CYII=",
+                    "contentType": "image/svg+xml;base64",
+                    "imageData": "PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJ5ZXMiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMSIgaGVpZ2h0PSI2Ij4KPHBhdGggc3R5bGU9ImZpbGw6I2ZmZmZmZjsgc3Ryb2tlOm5vbmU7IiBkPSJNMCAwTDAgNkwzMSA2TDMxIDBMMCAweiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojYTVhNWE1OyBzdHJva2U6bm9uZTsiIGQ9Ik0xLjMzMzMzIDIuNjY2NjdMMS42NjY2NyAzLjMzMzMzTDEuMzMzMzMgMi42NjY2N3oiLz4KPHBhdGggc3R5bGU9ImZpbGw6Izg3ODc4Nzsgc3Ryb2tlOm5vbmU7IiBkPSJNMiAyTDIgNEwyOSA0TDI5IDJMMiAyeiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojZTFlMWUxOyBzdHJva2U6bm9uZTsiIGQ9Ik0yOS4zMzMzIDIuNjY2NjdMMjkuNjY2NyAzLjMzMzMzTDI5LjMzMzMgMi42NjY2N3oiLz4KPC9zdmc+Cg==",
                     "label": "8-digit HU"
                 }]
             },
@@ -820,8 +820,8 @@ configuration.overlayedLayers = {
                 "layerName": "Watershed",
                 "layerId": 5,
                 "legend": [{                        
-                    "contentType": "image/png",
-                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAElJREFUOI3t1DEKACAMA8AI/jTvylvrVEFwqpmkmTpdM2XCnAkAkuIVIjk26IikIDkOML9UsLxtDRtssMGPQccu2hoeA1vdwVsWQMARe7k7EAEAAAAASUVORK5CYII=",
+                    "contentType": "image/svg+xml;base64",
+                    "imageData": "PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJ5ZXMiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMSIgaGVpZ2h0PSI2Ij4KPHBhdGggc3R5bGU9ImZpbGw6I2ZmZmZmZjsgc3Ryb2tlOm5vbmU7IiBkPSJNMCAwTDAgNkwzMSA2TDMxIDBMMCAweiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojYTVhNWE1OyBzdHJva2U6bm9uZTsiIGQ9Ik0xLjMzMzMzIDIuNjY2NjdMMS42NjY2NyAzLjMzMzMzTDEuMzMzMzMgMi42NjY2N3oiLz4KPHBhdGggc3R5bGU9ImZpbGw6Izg3ODc4Nzsgc3Ryb2tlOm5vbmU7IiBkPSJNMiAyTDIgNEwyOSA0TDI5IDJMMiAyeiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojZTFlMWUxOyBzdHJva2U6bm9uZTsiIGQ9Ik0yOS4zMzMzIDIuNjY2NjdMMjkuNjY2NyAzLjMzMzMzTDI5LjMzMzMgMi42NjY2N3oiLz4KPC9zdmc+Cg==",
                     "label": "10-digit HU"
                 }]
             },
@@ -829,8 +829,8 @@ configuration.overlayedLayers = {
                 "layerName": "Subwatershed",
                 "layerId": 6,
                 "legend": [{                        
-                    "contentType": "image/png",
-                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAElJREFUOI3t1DEKACAMA8AI/jTvylvrVEFwqpmkmTpdM2XCnAkAkuIVIjk26IikIDkOML9UsLxtDRtssMGPQccu2hoeA1vdwVsWQMARe7k7EAEAAAAASUVORK5CYII=",
+                    "contentType": "image/svg+xml;base64",
+                    "imageData": "PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJ5ZXMiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMSIgaGVpZ2h0PSI2Ij4KPHBhdGggc3R5bGU9ImZpbGw6I2ZmZmZmZjsgc3Ryb2tlOm5vbmU7IiBkPSJNMCAwTDAgNkwzMSA2TDMxIDBMMCAweiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojYTVhNWE1OyBzdHJva2U6bm9uZTsiIGQ9Ik0xLjMzMzMzIDIuNjY2NjdMMS42NjY2NyAzLjMzMzMzTDEuMzMzMzMgMi42NjY2N3oiLz4KPHBhdGggc3R5bGU9ImZpbGw6Izg3ODc4Nzsgc3Ryb2tlOm5vbmU7IiBkPSJNMiAyTDIgNEwyOSA0TDI5IDJMMiAyeiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojZTFlMWUxOyBzdHJva2U6bm9uZTsiIGQ9Ik0yOS4zMzMzIDIuNjY2NjdMMjkuNjY2NyAzLjMzMzMzTDI5LjMzMzMgMi42NjY2N3oiLz4KPC9zdmc+Cg==",
                     "label": "12-digit HU"
                 }]
             },
@@ -838,8 +838,8 @@ configuration.overlayedLayers = {
                 "layerName": "",
                 "layerId": 7,
                 "legend": [{                        
-                    "contentType": "image/png",
-                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAElJREFUOI3t1DEKACAMA8AI/jTvylvrVEFwqpmkmTpdM2XCnAkAkuIVIjk26IikIDkOML9UsLxtDRtssMGPQccu2hoeA1vdwVsWQMARe7k7EAEAAAAASUVORK5CYII=",
+                    "contentType": "image/svg+xml;base64",
+                    "imageData": "PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJ5ZXMiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMSIgaGVpZ2h0PSI2Ij4KPHBhdGggc3R5bGU9ImZpbGw6I2ZmZmZmZjsgc3Ryb2tlOm5vbmU7IiBkPSJNMCAwTDAgNkwzMSA2TDMxIDBMMCAweiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojYTVhNWE1OyBzdHJva2U6bm9uZTsiIGQ9Ik0xLjMzMzMzIDIuNjY2NjdMMS42NjY2NyAzLjMzMzMzTDEuMzMzMzMgMi42NjY2N3oiLz4KPHBhdGggc3R5bGU9ImZpbGw6Izg3ODc4Nzsgc3Ryb2tlOm5vbmU7IiBkPSJNMiAyTDIgNEwyOSA0TDI5IDJMMiAyeiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojZTFlMWUxOyBzdHJva2U6bm9uZTsiIGQ9Ik0yOS4zMzMzIDIuNjY2NjdMMjkuNjY2NyAzLjMzMzMzTDI5LjMzMzMgMi42NjY2N3oiLz4KPC9zdmc+Cg==",
                     "label": "14-digit HU"
                 }]
             },
@@ -847,8 +847,8 @@ configuration.overlayedLayers = {
                 "layerName": "",
                 "layerId": 8,
                 "legend": [{                        
-                    "contentType": "image/png",
-                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAElJREFUOI3t1DEKACAMA8AI/jTvylvrVEFwqpmkmTpdM2XCnAkAkuIVIjk26IikIDkOML9UsLxtDRtssMGPQccu2hoeA1vdwVsWQMARe7k7EAEAAAAASUVORK5CYII=",
+                    "contentType": "image/svg+xml;base64",
+                    "imageData": "PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJ5ZXMiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMSIgaGVpZ2h0PSI2Ij4KPHBhdGggc3R5bGU9ImZpbGw6I2ZmZmZmZjsgc3Ryb2tlOm5vbmU7IiBkPSJNMCAwTDAgNkwzMSA2TDMxIDBMMCAweiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojYTVhNWE1OyBzdHJva2U6bm9uZTsiIGQ9Ik0xLjMzMzMzIDIuNjY2NjdMMS42NjY2NyAzLjMzMzMzTDEuMzMzMzMgMi42NjY2N3oiLz4KPHBhdGggc3R5bGU9ImZpbGw6Izg3ODc4Nzsgc3Ryb2tlOm5vbmU7IiBkPSJNMiAyTDIgNEwyOSA0TDI5IDJMMiAyeiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojZTFlMWUxOyBzdHJva2U6bm9uZTsiIGQ9Ik0yOS4zMzMzIDIuNjY2NjdMMjkuNjY2NyAzLjMzMzMzTDI5LjMzMzMgMi42NjY2N3oiLz4KPC9zdmc+Cg==",
                     "label": "16-digit HU"
                 }]
             }

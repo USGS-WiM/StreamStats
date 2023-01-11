@@ -28,7 +28,6 @@ module StreamStats.Controllers {
         private modalService: Services.IModalService;
         private eventManager: WiM.Event.IEventManager;
 
-        public angulartics: any;
         public title: string;
         public isBusy: boolean = false;
         public toaster: any;
@@ -40,11 +39,10 @@ module StreamStats.Controllers {
         
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.ModalService', 'StreamStats.Services.StudyAreaService', 'WiM.Event.EventManager', '$http', 'toaster'];
-        constructor($scope: IFlowAnywhereControllerScope, $analytics, modal: ng.ui.bootstrap.IModalServiceInstance, modalservice: Services.IModalService, studyArea: Services.IStudyAreaService, private events: WiM.Event.IEventManager, $http: ng.IHttpService, toaster) {
+        static $inject = ['$scope', '$modalInstance', 'StreamStats.Services.ModalService', 'StreamStats.Services.StudyAreaService', 'WiM.Event.EventManager', '$http', 'toaster'];
+        constructor($scope: IFlowAnywhereControllerScope, modal: ng.ui.bootstrap.IModalServiceInstance, modalservice: Services.IModalService, studyArea: Services.IStudyAreaService, private events: WiM.Event.IEventManager, $http: ng.IHttpService, toaster) {
             super($http, configuration.baseurls.StreamStats);
             $scope.vm = this;
-            this.angulartics = $analytics;
             this.modalInstance = modal;
             this.studyAreaService = studyArea; 
             this.modalService = modalservice;

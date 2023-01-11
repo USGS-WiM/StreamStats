@@ -8,27 +8,43 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   
 ### Added 
 
--
-
 ### Changed  
-
--
 
 ### Deprecated 
 
--
-
 ### Removed 
-
-- 
-
+  
 ### Fixed  
-
-- 
 
 ### Security  
 
+## [v4.12.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.12.0) - 2023-01-11
+  
+### Added 
 
+- Begin Drainage Area and End Drainage Area attributes to Indiana Coordinated Discharge report
+- Ability to download gage pages as a CSV
+
+### Changed  
+
+- Moved NC And IA gage pages links inside StreamStats gage page modal
+- Watershed symbols in the legend
+- StreamStats Gage Page link in gage popups to a button
+- Updated to Google Analytics 4
+- Updated code.json
+- Updated favicon
+
+### Removed 
+
+- Legacy NWIS link for gage pages
+- NWIS page link in gage popups
+- Angulartics
+  
+### Fixed  
+
+- Bug that shows out of range parameter warning after parameters have been edited to be within range and report is reopened
+- Printed gage page now shows all table content instead of cutting of scrolling tables
+- Disclaimers on report are now not delimited by commas when downloaded as a CSV
 
 ## [v4.11.1](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.11.1) - 2022-10-14
 
@@ -40,8 +56,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Issue where state layers were not showing up 
 
-
-
 ## [v4.11.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.11.0) - 2022-10-14
 
   ### Added
@@ -50,6 +64,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   ### Changed
   - Channel Weighting services URL 
   - NWIS Page link from legacy real-time page to Next Generation Monitoring Location page
+  - Replaced "NWIS Page" with "Monitoring Location Page"
   - FlowAnywhereMapServices to StreamStatsMapServices because IowaStreamEst map services were moved from gis.wim.usgs.gov to gis.streamstats.usgs.gov
   - Flow Anywhere application shows published NWIS Drainage Area instead of GIS-calculated drainage area
   - SSstormwaterDelineation url in appconfig

@@ -41,7 +41,7 @@ var StreamStats;
         Services.StudyAreaEventArgs = StudyAreaEventArgs;
         var StudyAreaService = (function (_super) {
             __extends(StudyAreaService, _super);
-            function StudyAreaService($http, $q, eventManager, toaster, modal, nssService, regionService, $analytics) {
+            function StudyAreaService($http, $q, eventManager, toaster, modal, nssService, regionService) {
                 var _this = _super.call(this, $http, configuration.baseurls['StreamStatsServices']) || this;
                 _this.$http = $http;
                 _this.$q = $q;
@@ -76,7 +76,6 @@ var StreamStats;
                 }));
                 eventManager.AddEvent(Services.onEditClick);
                 _this._studyAreaList = [];
-                _this.angulartics = $analytics;
                 _this.toaster = toaster;
                 _this.clearStudyArea();
                 _this.servicesURL = configuration.baseurls['StreamStatsServices'];
@@ -517,7 +516,7 @@ var StreamStats;
                     var destination = turf.destination(turfPoint, distance, bearing);
                     boundingBox[index] = destination.geometry.coordinates[index % 2 == 0 ? 0 : 1];
                 });
-                var outFields = "eqWithStrID.Stream_Name,eqWithStrID.StreamID_ID,eqWithStrID.BASIN_NAME,eqWithStrID.DVA_EQ_ID,eqWithStrID.a10,eqWithStrID.b10,eqWithStrID.a25,eqWithStrID.b25,eqWithStrID.a50,eqWithStrID.b50,eqWithStrID.a100,eqWithStrID.b100,eqWithStrID.a500,eqWithStrID.b500";
+                var outFields = "eqWithStrID.Stream_Name,eqWithStrID.StreamID_ID,eqWithStrID.BASIN_NAME,eqWithStrID.BEGIN_DA,eqWithStrID.END_DA,eqWithStrID.DVA_EQ_ID,eqWithStrID.a10,eqWithStrID.b10,eqWithStrID.a25,eqWithStrID.b25,eqWithStrID.a50,eqWithStrID.b50,eqWithStrID.a100,eqWithStrID.b100,eqWithStrID.a500,eqWithStrID.b500";
                 var url = configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['coordinatedReachQueryService']
                     .format(this.selectedStudyArea.RegionID.toLowerCase(), boundingBox[0], boundingBox[1], boundingBox[2], boundingBox[3], this.selectedStudyArea.Pourpoint.crs, outFields);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
@@ -528,7 +527,7 @@ var StreamStats;
                     }
                     if (response.data.features.length > 0) {
                         var attributes = response.data.features[0].attributes;
-                        _this.selectedStudyArea.CoordinatedReach = new StreamStats.Models.CoordinatedReach(attributes["eqWithStrID.BASIN_NAME"], attributes["eqWithStrID.DVA_EQ_ID"], attributes["eqWithStrID.Stream_Name"], attributes["eqWithStrID.StreamID_ID"]);
+                        _this.selectedStudyArea.CoordinatedReach = new StreamStats.Models.CoordinatedReach(attributes["eqWithStrID.BASIN_NAME"], attributes["eqWithStrID.DVA_EQ_ID"], attributes["eqWithStrID.Stream_Name"], attributes["eqWithStrID.StreamID_ID"], attributes["eqWithStrID.BEGIN_DA"], attributes["eqWithStrID.END_DA"]);
                         delete attributes["eqWithStrID.BASIN_NAME"];
                         delete attributes["eqWithStrID.DVA_EQ_ID"];
                         var feildprecursor = "eqWithStrID.";
@@ -854,7 +853,7 @@ var StreamStats;
                                 var daValue = val.value;
                                 if (val.unit.toLowerCase().trim() == 'square kilometers')
                                     daValue = daValue / 2.59;
-                                self.angulartics.eventTrack('ComputedDrainageArea', { category: 'SideBar', label: latLong, value: daValue.toFixed(0) });
+                                gtag('event', 'Calculate', { 'Category': 'DraingeArea', 'Location': latLong, 'Value': daValue.toFixed(0) });
                             }
                             value.value = val.value;
                             value.loaded = val.loaded;
@@ -1067,9 +1066,9 @@ var StreamStats;
             };
             return StudyAreaService;
         }(WiM.Services.HTTPServiceBase));
-        factory.$inject = ['$http', '$q', 'WiM.Event.EventManager', 'toaster', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService', 'StreamStats.Services.RegionService', '$analytics'];
-        function factory($http, $q, eventManager, toaster, modalService, nssService, regionService, $analytics) {
-            return new StudyAreaService($http, $q, eventManager, toaster, modalService, nssService, regionService, $analytics);
+        factory.$inject = ['$http', '$q', 'WiM.Event.EventManager', 'toaster', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService', 'StreamStats.Services.RegionService'];
+        function factory($http, $q, eventManager, toaster, modalService, nssService, regionService) {
+            return new StudyAreaService($http, $q, eventManager, toaster, modalService, nssService, regionService);
         }
         angular.module('StreamStats.Services')
             .factory('StreamStats.Services.StudyAreaService', factory);

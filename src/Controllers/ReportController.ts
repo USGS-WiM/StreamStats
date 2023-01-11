@@ -73,10 +73,10 @@ module StreamStats.Controllers {
     class ReportController implements IReportController  {
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
-        private disclaimer = "USGS Data Disclaimer: Unless otherwise stated, all data, metadata and related materials are considered to satisfy the quality standards relative to the purpose for which the data were collected. Although these data and associated metadata have been reviewed for accuracy and completeness and approved for release by the U.S. Geological Survey (USGS), no warranty expressed or implied is made regarding the display or utility of the data for other purposes, nor on all computer systems, nor shall the act of distribution constitute any such warranty." + '\n' +
-        "USGS Software Disclaimer: This software has been approved for release by the U.S. Geological Survey (USGS). Although the software has been subjected to rigorous review, the USGS reserves the right to update the software as needed pursuant to further analysis and review. No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty. Furthermore, the software is released on condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from its authorized or unauthorized use." + '\n' +
-        "USGS Product Names Disclaimer: Any use of trade, firm, or product names is for descriptive purposes only and does not imply endorsement by the U.S. Government." + '\n\n';
-
+        private disclaimer = '"USGS Data Disclaimer: Unless otherwise stated, all data, metadata and related materials are considered to satisfy the quality standards relative to the purpose for which the data were collected. Although these data and associated metadata have been reviewed for accuracy and completeness and approved for release by the U.S. Geological Survey (USGS), no warranty expressed or implied is made regarding the display or utility of the data for other purposes, nor on all computer systems, nor shall the act of distribution constitute any such warranty."\n'
+        + '"USGS Software Disclaimer: This software has been approved for release by the U.S. Geological Survey (USGS). Although the software has been subjected to rigorous review, the USGS reserves the right to update the software as needed pursuant to further analysis and review. No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty. Furthermore, the software is released on condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from its authorized or unauthorized use."\n'
+        + '"USGS Product Names Disclaimer: Any use of trade, firm, or product names is for descriptive purposes only and does not imply endorsement by the U.S. Government."\n\n';
+            
         public close: any;
         public print: any;
         private studyAreaService: Services.IStudyAreaService;
@@ -96,7 +96,6 @@ module StreamStats.Controllers {
         private leafletData: ILeafletData;
         public reportTitle: string;
         public reportComments: string;
-        public angulartics: any;
         public AppVersion: string;
         public isExceedanceTableOpen = false;
         public isFlowTableOpen = false;
@@ -147,11 +146,10 @@ module StreamStats.Controllers {
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService', 'StreamStats.Services.ModalService', 'WiM.Event.EventManager'];
-        constructor($scope: IReportControllerScope, $analytics, $modalInstance: ng.ui.bootstrap.IModalServiceInstance, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, leafletData: ILeafletData, private regionService:Services.IRegionService, private modal: Services.IModalService, eventManager: WiM.Event.IEventManager) {
+        static $inject = ['$scope', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService', 'StreamStats.Services.ModalService', 'WiM.Event.EventManager'];
+        constructor($scope: IReportControllerScope, $modalInstance: ng.ui.bootstrap.IModalServiceInstance, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, leafletData: ILeafletData, private regionService:Services.IRegionService, private modal: Services.IModalService, eventManager: WiM.Event.IEventManager) {
             $scope.vm = this;
 
-            this.angulartics = $analytics;
             this.studyAreaService = studyArea;
             this.nssService = StatisticsGroup;
             this.leafletData = leafletData;
@@ -202,6 +200,8 @@ module StreamStats.Controllers {
             };
 
             this.print = function () {
+                //ga event
+                gtag('event', 'Download', { 'Category': 'Report', 'Type':'Print' });
                 window.print();
             };
 
@@ -218,7 +218,8 @@ module StreamStats.Controllers {
         public downloadCSV() {
 
             //ga event
-            this.angulartics.eventTrack('Download', { category: 'Report', label: 'CSV' });
+            gtag('event', 'Download', { 'Category': 'Report', 'Type':'CSV' });
+
 
             var filename = 'data.csv';
 
@@ -423,6 +424,9 @@ module StreamStats.Controllers {
 
         public downloadGeoJSON() {
 
+            //ga event
+            gtag('event', 'Download', { 'Category': 'Report', "Type": 'Geojson' });
+
             var fc: GeoJSON.FeatureCollection = this.studyAreaService.selectedStudyArea.FeatureCollection
             fc.features.forEach(f => {
                 f.properties["Name"] = this.studyAreaService.selectedStudyArea.WorkspaceID;
@@ -461,6 +465,8 @@ module StreamStats.Controllers {
         }
 
         public downloadKML() {
+            //ga event
+            gtag('event', 'Download', { 'Category': 'Report', "Type": 'KML' });
 
             var fc: GeoJSON.FeatureCollection = this.studyAreaService.selectedStudyArea.FeatureCollection
             fc.features.forEach(f => {
@@ -502,6 +508,10 @@ module StreamStats.Controllers {
         }
 
         public downloadShapeFile() {
+
+            //ga event
+            gtag('event', 'Download', { 'Category': 'Report', "Type": 'Shapefile' });
+
             try {
                 var flowTable: Array<Services.INSSResultTable> = null;
 
@@ -627,7 +637,7 @@ module StreamStats.Controllers {
                                 top: 20,
                                 right: 30,
                                 bottom: 60,
-                                left: 65
+                                left: 100
                             },
                             x: function (d) { return d.label; },
                             y: function (d) { return d.value; },
@@ -656,8 +666,8 @@ module StreamStats.Controllers {
                 },
                 flow: {
                     data: [
-                        { key: result.referanceGage.name, values: this.processData(result.referanceGage.discharge.observations)},
-                        { key: "Estimated (at clicked point)", values: this.processData(result.estimatedFlow.observations) }
+                        { key: "Observed", values: this.processData(result.referanceGage.discharge.observations)},
+                        { key: "Estimated", values: this.processData(result.estimatedFlow.observations) }
                     ],
                     options: {
                         chart: {
@@ -665,9 +675,9 @@ module StreamStats.Controllers {
                             height: 450,
                             margin: {
                                 top: 20,
-                                right: 0,
-                                bottom: 50,
-                                left: 0
+                                right: 30,
+                                bottom: 60,
+                                left: 100
                             },
                             x: function (d) {
                                 return new Date(d.x).getTime();
