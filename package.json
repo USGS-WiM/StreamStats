@@ -32,6 +32,7 @@
     "daterangepicker": "^3.0.5",
     "esri-leaflet": "1.0.4",
     "font-awesome": "~4.3.0",
+    "highcharts": "^10.3.2",
     "highcharts-ng": "^1.2.1",
     "jquery": "^3.4.0",
     "leaflet": "0.7.7",

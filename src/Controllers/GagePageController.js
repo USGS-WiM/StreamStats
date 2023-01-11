@@ -92,9 +92,9 @@ var StreamStats;
                 _this_1.estPeakDates = undefined;
                 _this_1.dailyFlow = undefined;
                 _this_1.formattedFloodFreq = undefined;
-                _this_1.formattedPeakDates = undefined;
-                _this_1.formattedEstPeakDates = undefined;
-                _this_1.formattedDailyFlow = undefined;
+                _this_1.formattedPeakDates = [];
+                _this_1.formattedEstPeakDates = [];
+                _this_1.formattedDailyFlow = [];
                 $scope.vm = _this_1;
                 _this_1.modalInstance = modal;
                 _this_1.modalService = modalService;
@@ -476,19 +476,16 @@ var StreamStats;
             GagePageController.prototype.formatData = function () {
                 var _this_1 = this;
                 if (this.peakDates) {
-                    this.formattedPeakDates = [];
                     this.peakDates.forEach(function (peakObj) {
                         _this_1.formattedPeakDates.push({ x: new Date(peakObj.peak_dt), y: peakObj.peak_va });
                     });
                 }
                 if (this.estPeakDates) {
-                    this.formattedEstPeakDates = [];
                     this.estPeakDates.forEach(function (estPeakObj) {
                         _this_1.formattedEstPeakDates.push({ x: new Date(estPeakObj.peak_dt), y: estPeakObj.peak_va });
                     });
                 }
                 if (this.dailyFlow) {
-                    this.formattedDailyFlow = [];
                     this.dailyFlow.forEach(function (dailyObj) {
                         if (dailyObj.qualifiers[0] === 'A') {
                             _this_1.formattedDailyFlow.push({ x: new Date(dailyObj.dateTime), y: parseInt(dailyObj.value) });
@@ -556,7 +553,7 @@ var StreamStats;
                         title: {
                             text: 'Discharge (Q), in ft³/s'
                         },
-                        plotLines: []
+                        plotLines: [{ value: null, color: null, width: null, zIndex: null, label: { text: null } }]
                     },
                     series: [
                         {
@@ -582,7 +579,7 @@ var StreamStats;
                                 symbol: '',
                                 radius: 3
                             },
-                            showInLegend: this.formattedDailyFlow != undefined
+                            showInLegend: this.formattedDailyFlow.length > 0
                         },
                         {
                             name: 'Annual Peak Streamflow',
