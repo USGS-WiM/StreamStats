@@ -195,9 +195,9 @@ module StreamStats.Controllers {
         public estPeakDates = undefined;
         public dailyFlow = undefined;
         public formattedFloodFreq = undefined;
-        public formattedPeakDates = undefined;
-        public formattedEstPeakDates = undefined;
-        public formattedDailyFlow = undefined;
+        public formattedPeakDates = [];
+        public formattedEstPeakDates = [];
+        public formattedDailyFlow = [];
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -667,19 +667,16 @@ module StreamStats.Controllers {
         //Get data into (x, y) format and convert to dates in order to add it to the plot
         public formatData(): void {
             if (this.peakDates) {
-                this.formattedPeakDates = [];
                 this.peakDates.forEach(peakObj => {
                     this.formattedPeakDates.push({x: new Date(peakObj.peak_dt), y: peakObj.peak_va})
                 });
-            }
+            } 
             if (this.estPeakDates) {
-                this.formattedEstPeakDates = [];
                 this.estPeakDates.forEach(estPeakObj => {
                     this.formattedEstPeakDates.push({x: new Date(estPeakObj.peak_dt), y: estPeakObj.peak_va})
                 });
             }
             if (this.dailyFlow) {
-                this.formattedDailyFlow = [];
                 this.dailyFlow.forEach(dailyObj => {
                     if (dailyObj.qualifiers[0] === 'A') {
                     this.formattedDailyFlow.push({x: new Date(dailyObj.dateTime), y: parseInt(dailyObj.value)})
@@ -721,9 +718,9 @@ module StreamStats.Controllers {
 
         //Create chart
         public createAnnualFlowPlot(): void {
-            // console.log('peak value plot data', this.formattedPeakDates);
-            // console.log('estimated peak plot data', this.formattedEstPeakDates);
-            // console.log('daily flow plot data', this.formattedDailyFlow);
+            //console.log('peak value plot data', this.formattedPeakDates);
+            //console.log('estimated peak plot data', this.formattedEstPeakDates);
+            //console.log('daily flow plot data', this.formattedDailyFlow);
             this.chartConfig = {
                 chart: {
                     height: 450,
@@ -776,7 +773,7 @@ module StreamStats.Controllers {
                         symbol: '',
                         radius: 3
                     },
-                    showInLegend: this.formattedDailyFlow != undefined
+                    showInLegend: this.formattedDailyFlow.length > 0
                 },
                 {
                     name    : 'Annual Peak Streamflow',
@@ -805,7 +802,7 @@ module StreamStats.Controllers {
                         symbol: 'circle',
                         radius: 3
                     },
-                    showInLegend: this.formattedPeakDates != undefined
+                    showInLegend: this.formattedPeakDates.length > 0
                 },
                 {
                     name    : 'Annual Peak Streamflow (Date Estimated)',
@@ -834,7 +831,7 @@ module StreamStats.Controllers {
                         symbol: 'square',
                         radius: 3
                     },
-                    showInLegend: this.formattedEstPeakDates != undefined
+                    showInLegend: this.formattedEstPeakDates.length > 0
                 }] 
             } 
             this.formattedFloodFreq.forEach((formattedFloodFreqItem) => {

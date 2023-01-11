@@ -92,9 +92,9 @@ var StreamStats;
                 _this_1.estPeakDates = undefined;
                 _this_1.dailyFlow = undefined;
                 _this_1.formattedFloodFreq = undefined;
-                _this_1.formattedPeakDates = undefined;
-                _this_1.formattedEstPeakDates = undefined;
-                _this_1.formattedDailyFlow = undefined;
+                _this_1.formattedPeakDates = [];
+                _this_1.formattedEstPeakDates = [];
+                _this_1.formattedDailyFlow = [];
                 $scope.vm = _this_1;
                 _this_1.modalInstance = modal;
                 _this_1.modalService = modalService;
@@ -106,7 +106,6 @@ var StreamStats;
                 _this_1.statCitationList = [];
                 _this_1.charCitationList = [];
                 _this_1.showPreferred = false;
-                console.log(_this_1.chartConfig);
                 _this_1.print = function () {
                     gtag('event', 'Download', { 'Category': 'GagePage', "Type": 'Print' });
                     window.print();
@@ -477,19 +476,16 @@ var StreamStats;
             GagePageController.prototype.formatData = function () {
                 var _this_1 = this;
                 if (this.peakDates) {
-                    this.formattedPeakDates = [];
                     this.peakDates.forEach(function (peakObj) {
                         _this_1.formattedPeakDates.push({ x: new Date(peakObj.peak_dt), y: peakObj.peak_va });
                     });
                 }
                 if (this.estPeakDates) {
-                    this.formattedEstPeakDates = [];
                     this.estPeakDates.forEach(function (estPeakObj) {
                         _this_1.formattedEstPeakDates.push({ x: new Date(estPeakObj.peak_dt), y: estPeakObj.peak_va });
                     });
                 }
                 if (this.dailyFlow) {
-                    this.formattedDailyFlow = [];
                     this.dailyFlow.forEach(function (dailyObj) {
                         if (dailyObj.qualifiers[0] === 'A') {
                             _this_1.formattedDailyFlow.push({ x: new Date(dailyObj.dateTime), y: parseInt(dailyObj.value) });
@@ -583,7 +579,7 @@ var StreamStats;
                                 symbol: '',
                                 radius: 3
                             },
-                            showInLegend: this.formattedDailyFlow != undefined
+                            showInLegend: this.formattedDailyFlow.length > 0
                         },
                         {
                             name: 'Annual Peak Streamflow',
@@ -613,7 +609,7 @@ var StreamStats;
                                 symbol: 'circle',
                                 radius: 3
                             },
-                            showInLegend: this.formattedPeakDates != undefined
+                            showInLegend: this.formattedPeakDates.length > 0
                         },
                         {
                             name: 'Annual Peak Streamflow (Date Estimated)',
@@ -643,14 +639,13 @@ var StreamStats;
                                 symbol: 'square',
                                 radius: 3
                             },
-                            showInLegend: this.formattedEstPeakDates != undefined
+                            showInLegend: this.formattedEstPeakDates.length > 0
                         }
                     ]
                 };
                 this.formattedFloodFreq.forEach(function (formattedFloodFreqItem) {
                     _this_1.chartConfig.yAxis.plotLines.push(formattedFloodFreqItem);
                 });
-                console.log(this.chartConfig);
             };
             GagePageController.prototype.init = function () {
                 this.AppVersion = configuration.version;
