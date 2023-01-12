@@ -520,7 +520,8 @@ var StreamStats;
                             color: AEPColors_1[colorIndex],
                             width: 1.5,
                             zIndex: 4,
-                            label: { text: formattedName + '% AEP' }
+                            label: { text: formattedName + '% AEP' },
+                            id: 'plotlines'
                         });
                     });
                     this.createAnnualFlowPlot();
@@ -571,7 +572,7 @@ var StreamStats;
                         title: {
                             text: 'Discharge (Q), in ft³/s'
                         },
-                        plotLines: [{ value: null, color: null, width: null, zIndex: null, label: { text: null } }]
+                        plotLines: [{ value: null, color: null, width: null, zIndex: null, label: { text: null }, id: 'plotlines' }]
                     },
                     series: [
                         {
@@ -665,6 +666,11 @@ var StreamStats;
                     _this_1.chartConfig.yAxis.plotLines.push(formattedFloodFreqItem);
                 });
             };
+            GagePageController.prototype.removePlotLines = function () {
+                console.log('function test');
+                this.chartConfig.yAxis[1].removePlotLine('plotlines');
+            };
+            ;
             GagePageController.prototype.init = function () {
                 this.AppVersion = configuration.version;
                 this.getGagePage();

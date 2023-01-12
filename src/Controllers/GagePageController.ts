@@ -208,7 +208,7 @@ module StreamStats.Controllers {
                         rangeSelector: { enabled: boolean, inputPosition: {align: string, x: number, y: number}, buttonPosition: {align: string, x: number, y: number}},
                         navigator: { enabled: boolean},  
                         xAxis: {  type: string, title: {text: string}},
-                        yAxis: { title: {text: string}, plotLines: [{value: number, color: string, width: number, zIndex: number, label: {text: string}}]},
+                        yAxis: { title: {text: string}, plotLines: [{value: number, color: string, width: number, zIndex: number, label: {text: string}, id: string}]},
                         series: { name: string; tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number; type: string, color: string, 
                         data: number[], marker: {symbol: string, radius: number}, showInLegend: boolean; }[]; };
         constructor($scope: IGagePageControllerScope, $http: ng.IHttpService, modalService: Services.IModalService, modal:ng.ui.bootstrap.IModalServiceInstance) {
@@ -712,7 +712,8 @@ module StreamStats.Controllers {
                         color: AEPColors[colorIndex],
                         width: 1.5,
                         zIndex: 4,
-                        label: {text: formattedName + '% AEP'}
+                        label: {text: formattedName + '% AEP'},
+                        id: 'plotlines'
                         });
                     });
             this.createAnnualFlowPlot();
@@ -765,7 +766,7 @@ module StreamStats.Controllers {
                     title: {
                         text: 'Discharge (Q), in ft³/s'
                     },
-                    plotLines: [{value: null, color: null, width: null, zIndex: null, label: {text: null}}]
+                    plotLines: [{value: null, color: null, width: null, zIndex: null, label: {text: null}, id: 'plotlines'}]
                 },
                 series  : [
                 {
@@ -856,6 +857,11 @@ module StreamStats.Controllers {
                 this.chartConfig.yAxis.plotLines.push(formattedFloodFreqItem)
             });
         }
+
+        public removePlotLines () {
+            console.log('function test')
+            this.chartConfig.yAxis[1].removePlotLine('plotlines') // .removePlotLines() requires an ID in the (), so I gave them all the same id since I want to remove them all
+            };
         
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
