@@ -858,9 +858,10 @@ module StreamStats.Controllers {
             });
         }
 
-        public removePlotLines () {
-            console.log('function test')
-            this.chartConfig.yAxis[1].removePlotLine('plotlines') // .removePlotLines() requires an ID in the (), so I gave them all the same id since I want to remove them all
+            public removePlotLines () {
+                console.log('function test')
+                let chart = $('#chart1').highcharts();
+                chart.yAxis[0].removePlotLine('plotlines'); // all plot lines have id: 'plotlines'
             };
         
         //Helper Methods

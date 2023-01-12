@@ -668,7 +668,8 @@ var StreamStats;
             };
             GagePageController.prototype.removePlotLines = function () {
                 console.log('function test');
-                this.chartConfig.yAxis[1].removePlotLine('plotlines');
+                var chart = $('#chart1').highcharts();
+                chart.yAxis[0].removePlotLine('plotlines');
             };
             ;
             GagePageController.prototype.init = function () {
