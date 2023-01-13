@@ -667,9 +667,14 @@ var StreamStats;
                 });
             };
             GagePageController.prototype.removePlotLines = function () {
-                console.log('function test');
                 var chart = $('#chart1').highcharts();
-                chart.yAxis[0].removePlotLine('plotlines');
+                if ($("yesAEPLines").checked) {
+                    console.log('function test');
+                    chart.yAxis[0].addPlotLine('plotlines');
+                }
+                else {
+                    chart.yAxis[0].removePlotLine('plotlines');
+                }
             };
             ;
             GagePageController.prototype.init = function () {

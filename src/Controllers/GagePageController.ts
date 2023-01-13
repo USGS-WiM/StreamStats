@@ -190,6 +190,7 @@ module StreamStats.Controllers {
         public peakValuePlot: any;
         public annualFlowPlot: any;
         public peakValues: any;
+        public removeAEPLines: boolean;
         public floodFreq = undefined;
         public peakDates = undefined;
         public estPeakDates = undefined;
@@ -859,10 +860,17 @@ module StreamStats.Controllers {
         }
 
             public removePlotLines () {
-                console.log('function test')
                 let chart = $('#chart1').highcharts();
+                if ($("yesAEPLines").checked) {
+                console.log('function test')
+                chart.yAxis[0].addPlotLine('plotlines');
+            }
+                else {
                 chart.yAxis[0].removePlotLine('plotlines'); // all plot lines have id: 'plotlines'
+                }
             };
+
+        //} weather.gov code line 4220 and 102 for the view
         
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
