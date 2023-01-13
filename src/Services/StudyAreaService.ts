@@ -72,7 +72,9 @@ module StreamStats.Services {
         streamgagesVisible: boolean;
         streamgageLayer: any;
         extensionDateRange: IDateRange;
-        selectedGage: any;
+        selectedGage: any;        
+        flowAnywhereData: any;
+        computeFlowAnywhereResults();
         computeRegressionEquation(regtype: string);
         updateExtensions(); 
         freshdeskCredentials();
@@ -181,7 +183,6 @@ module StreamStats.Services {
         private statisticgroupEventHandler: WiM.Event.EventHandler<Services.NSSEventArgs>;
         private q10EventHandler: WiM.Event.EventHandler<Services.NSSEventArgs>;
         private regtype: string;
-        public angulartics: any;
         public additionalFeaturesLoaded : boolean = false;
         //QPPQ
         public extensionDateRange: IDateRange = null;
@@ -189,7 +190,8 @@ module StreamStats.Services {
         public extensionsConfigured = false;
         public loadingDrainageArea = false;
         public allIndexGages;
-        public extensionResultsChanged = 0;
+        public extensionResultsChanged = 0;        
+        public flowAnywhereData: any = null;
         // freshdesk
         private _freshdeskCreds: any;
         public get freshdeskCredentials(): any {
@@ -201,7 +203,7 @@ module StreamStats.Services {
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        constructor(public $http: ng.IHttpService, private $q: ng.IQService, private eventManager: WiM.Event.IEventManager, toaster, modal: Services.IModalService, private nssService: Services.InssService, private regionService: Services.IRegionService, $analytics) {
+        constructor(public $http: ng.IHttpService, private $q: ng.IQService, private eventManager: WiM.Event.IEventManager, toaster, modal: Services.IModalService, private nssService: Services.InssService, private regionService: Services.IRegionService) {
             super($http, configuration.baseurls['StreamStatsServices'])
             this.modalservices = modal;
 
@@ -226,7 +228,6 @@ module StreamStats.Services {
             eventManager.AddEvent<WiM.Event.EventArgs>(onEditClick);
             this._studyAreaList = [];
 
-            this.angulartics = $analytics;
             this.toaster = toaster;
             this.clearStudyArea();
             this.servicesURL = configuration.baseurls['StreamStatsServices'];
@@ -753,7 +754,7 @@ module StreamStats.Services {
                     boundingBox[index] = destination.geometry.coordinates[index % 2 == 0 ? 0 : 1];
                 });
 
-                var outFields = "eqWithStrID.Stream_Name,eqWithStrID.StreamID_ID,eqWithStrID.BASIN_NAME,eqWithStrID.DVA_EQ_ID,eqWithStrID.a10,eqWithStrID.b10,eqWithStrID.a25,eqWithStrID.b25,eqWithStrID.a50,eqWithStrID.b50,eqWithStrID.a100,eqWithStrID.b100,eqWithStrID.a500,eqWithStrID.b500";
+                var outFields = "eqWithStrID.Stream_Name,eqWithStrID.StreamID_ID,eqWithStrID.BASIN_NAME,eqWithStrID.BEGIN_DA,eqWithStrID.END_DA,eqWithStrID.DVA_EQ_ID,eqWithStrID.a10,eqWithStrID.b10,eqWithStrID.a25,eqWithStrID.b25,eqWithStrID.a50,eqWithStrID.b50,eqWithStrID.a100,eqWithStrID.b100,eqWithStrID.a500,eqWithStrID.b500";
                 var url = configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['coordinatedReachQueryService']
                     .format(this.selectedStudyArea.RegionID.toLowerCase(), boundingBox[0], boundingBox[1], boundingBox[2], boundingBox[3], this.selectedStudyArea.Pourpoint.crs, outFields);
                 var request: WiM.Services.Helpers.RequestInfo =
@@ -771,7 +772,7 @@ module StreamStats.Services {
                             var attributes = response.data.features[0].attributes
                             //console.log('query success');
 
-                            this.selectedStudyArea.CoordinatedReach = new Models.CoordinatedReach(attributes["eqWithStrID.BASIN_NAME"], attributes["eqWithStrID.DVA_EQ_ID"],attributes["eqWithStrID.Stream_Name"], attributes["eqWithStrID.StreamID_ID"]);
+                            this.selectedStudyArea.CoordinatedReach = new Models.CoordinatedReach(attributes["eqWithStrID.BASIN_NAME"], attributes["eqWithStrID.DVA_EQ_ID"],attributes["eqWithStrID.Stream_Name"], attributes["eqWithStrID.StreamID_ID"], attributes["eqWithStrID.BEGIN_DA"], attributes["eqWithStrID.END_DA"]);
                             //remove from arrays
                             delete attributes["eqWithStrID.BASIN_NAME"];
                             delete attributes["eqWithStrID.DVA_EQ_ID"];
@@ -1310,7 +1311,8 @@ module StreamStats.Services {
                             var latLong = self.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + ',' + self.selectedStudyArea.Pourpoint.Longitude.toFixed(5);
                             var daValue = val.value;
                             if (val.unit.toLowerCase().trim() == 'square kilometers') daValue = daValue / 2.59;
-                            self.angulartics.eventTrack('ComputedDrainageArea', { category: 'SideBar', label: latLong, value: daValue.toFixed(0) });
+                            //ga event
+                            gtag('event', 'Calculate', {'Category': 'DraingeArea', 'Location': latLong, 'Value': daValue.toFixed(0) });
                         }
 
                         value.value = val.value;
@@ -1376,6 +1378,111 @@ module StreamStats.Services {
             });
             //console.log('regulated params', this.studyAreaParameterList);
         }
+
+        public computeFlowAnywhereResults() {
+            var drainageArea;
+            this.studyAreaParameterList.forEach(parameter => {
+                if (parameter.code == 'DRNAREA') {
+                    drainageArea = parameter.value;
+                }
+            });
+            var dataFLA = {
+                "startdate": this.flowAnywhereData.dateRange.dates.startDate,
+                "enddate": this.flowAnywhereData.dateRange.dates.endDate,
+                "nwis_station_id": this.flowAnywhereData.selectedGage.StationID,
+                "parameters": [
+                    {
+                        "code": "drnarea",
+                        "value": drainageArea
+                    }
+                ],
+                "region": Number(this.flowAnywhereData.selectedGage.AggregatedRegion)
+            }
+            var url = configuration.baseurls.FlowAnywhereRegressionServices + configuration.queryparams.FlowAnywhereEstimates.format(this.regionService.selectedRegion.RegionID);
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', angular.toJson(dataFLA));
+            this.Execute(request).then(
+                (response: any) => {
+                    if (response.data) {
+                        this.flowAnywhereData.results = response.data;
+                        this.flowAnywhereData.estimatedFlowsArray = [];
+                        this.flowAnywhereData.results.EstimatedFlow.Observations.forEach((observation,index) =>{
+                            this.flowAnywhereData.estimatedFlowsArray.push({
+                                "date": observation.Date,
+                                "estimatedFlow": observation.Value,
+                                "observedFlow": this.flowAnywhereData.results.ReferanceGage.Discharge.Observations[index].Value
+                            });
+                        });
+                        this.flowAnywhereData["graphData"] = {
+                            data: [
+                                { key: "Observed", values: this.processData(this.flowAnywhereData.results.ReferanceGage.Discharge.Observations, 0)},
+                                { key: "Estimated", values: this.processData(this.flowAnywhereData.results.EstimatedFlow.Observations, 1) }
+                            ],
+                            options: {
+                                chart: {
+                                    type: 'lineChart',
+                                    height: 450,
+                                    margin: {
+                                        top: 20,
+                                        right: 20,
+                                        bottom: 50,
+                                        left: 80
+                                    },
+                                    x: function (d) {
+                                        return new Date(d.x).getTime();
+                                    },
+                                    y: function (d) {
+                                        return d.y;
+                                    },
+                                    useInteractiveGuideline: false,
+                                    interactive: true,
+                                    tooltips: true,
+                                    xAxis: {
+                                        tickFormat: function (d) {
+                                            return d3.time.format('%x')(new Date(d));
+                                        },
+                                        rotateLabels: -30,
+                                        showMaxMin: true
+                                    },
+                                    yAxis: {
+                                        axisLabel: 'Discharge (cfs)',
+                                        tickFormat: function (d) {
+                                            return d != null ? d.toUSGSvalue() : d;
+                                        }
+                                    },
+                                    zoom: {
+                                        enabled: false
+                                    },
+                                    forceY: 0
+                                }
+                            }
+                        };
+                    } else {
+                        this.toaster.clear();
+                        this.toaster.pop('error', "Error", "Error computing Flow Anywhere results", 0);
+                    }
+                    
+                }, (error) => {
+                    //sm when error
+                    this.toaster.clear();
+                    this.toaster.pop('error', "Error", "Error computing Flow Anywhere results", 0);
+                }).finally(() => {
+            });
+        }
+        private processData(data, seriesNumber) {
+            var returnData = [];
+            // get earliest and latest date in array (might not be the same as the start/end date coming from QPPQ)
+            var startDate = new Date(Math.min.apply(null, data.map(function(e) {return new Date(e["Date"])})));
+            var endDate = new Date(Math.max.apply(null, data.map(function(e) {return new Date(e["Date"])})));
+
+            // parse through data and add null values where dates are missing to show gap in timeseries
+            for (var d = startDate; d <= endDate; d.setDate(d.getDate() + 1)) {
+                var obs = data.filter(item => new Date(item["Date"]).getTime() == d.getTime())[0];
+                if (obs == undefined) returnData.push({x: d.getTime(), y: null});
+                else returnData.push({x: d.getTime(), y: obs.hasOwnProperty('Value') ? typeof obs["Value"] == 'number' ? obs["Value"].toUSGSvalue() : obs["Value"] : null})
+            }
+            return returnData;
+        }
+        
         //EventHandlers Methods
         //-+-+-+-+-+-+-+-+-+-+-+- 
         private onStudyAreaChanged(sender: any, e: StudyAreaEventArgs) {
@@ -1448,9 +1555,9 @@ module StreamStats.Services {
 
     }//end class
 
-    factory.$inject = ['$http', '$q', 'WiM.Event.EventManager', 'toaster', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService', 'StreamStats.Services.RegionService', '$analytics'];
-    function factory($http: ng.IHttpService, $q: ng.IQService, eventManager: WiM.Event.IEventManager, toaster: any, modalService: Services.IModalService, nssService: Services.InssService, regionService: Services.IRegionService, $analytics) {
-        return new StudyAreaService($http,$q, eventManager, toaster, modalService, nssService, regionService, $analytics)
+    factory.$inject = ['$http', '$q', 'WiM.Event.EventManager', 'toaster', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService', 'StreamStats.Services.RegionService'];
+    function factory($http: ng.IHttpService, $q: ng.IQService, eventManager: WiM.Event.IEventManager, toaster: any, modalService: Services.IModalService, nssService: Services.InssService, regionService: Services.IRegionService) {
+        return new StudyAreaService($http,$q, eventManager, toaster, modalService, nssService, regionService)
     }
     angular.module('StreamStats.Services')
         .factory('StreamStats.Services.StudyAreaService', factory)

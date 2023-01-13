@@ -131,16 +131,14 @@ module StreamStats.Controllers {
         public padY2 = 0;
         public domainY = [];
         public domainY2 = [];
-        public angulartics: any;
         public duration: any;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$analytics', 'toaster', '$http', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.RegionService', '$modalInstance', '$timeout', 'WiM.Event.EventManager'];
-        constructor($scope: IStormRunoffControllerScope, $analytics, toaster, $http: ng.IHttpService, studyAreaService: StreamStats.Services.IStudyAreaService, StatisticsGroup: Services.InssService, region: StreamStats.Services.IRegionService, modal: ng.ui.bootstrap.IModalServiceInstance, public $timeout: ng.ITimeoutService, private EventManager: WiM.Event.IEventManager) {
+        static $inject = ['$scope', 'toaster', '$http', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.RegionService', '$modalInstance', '$timeout', 'WiM.Event.EventManager'];
+        constructor($scope: IStormRunoffControllerScope, toaster, $http: ng.IHttpService, studyAreaService: StreamStats.Services.IStudyAreaService, StatisticsGroup: Services.InssService, region: StreamStats.Services.IRegionService, modal: ng.ui.bootstrap.IModalServiceInstance, public $timeout: ng.ITimeoutService, private EventManager: WiM.Event.IEventManager) {
             super($http, configuration.baseurls.StormRunoffServices);
             $scope.vm = this;
-            this.angulartics = $analytics;
             this.toaster = toaster;
             this.modalInstance = modal;
             this.StudyArea = studyAreaService.selectedStudyArea;
@@ -157,6 +155,8 @@ module StreamStats.Controllers {
             this.init();  
 
             this.print = function () {
+                //ga event
+                gtag('event', 'Download', { 'Category': 'StormRunoff', Type: 'Print' });
                 window.print();
             };
         }  
@@ -310,7 +310,7 @@ module StreamStats.Controllers {
 
         private downloadCSV() {
             //ga event
-            this.angulartics.eventTrack('Download', { category: 'Report', label: 'CSV' });
+            gtag('event', 'Download', { 'Category': 'StormRunoff', Type: 'CSV' });
 
             var filename = 'data.csv';
 

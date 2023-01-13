@@ -12,13 +12,13 @@ var StreamStats;
             return Center;
         }());
         var ReportController = (function () {
-            function ReportController($scope, $analytics, $modalInstance, studyArea, StatisticsGroup, leafletData, regionService, modal, eventManager) {
+            function ReportController($scope, $modalInstance, studyArea, StatisticsGroup, leafletData, regionService, modal, eventManager) {
                 var _this = this;
                 this.regionService = regionService;
                 this.modal = modal;
-                this.disclaimer = "USGS Data Disclaimer: Unless otherwise stated, all data, metadata and related materials are considered to satisfy the quality standards relative to the purpose for which the data were collected. Although these data and associated metadata have been reviewed for accuracy and completeness and approved for release by the U.S. Geological Survey (USGS), no warranty expressed or implied is made regarding the display or utility of the data for other purposes, nor on all computer systems, nor shall the act of distribution constitute any such warranty." + '\n' +
-                    "USGS Software Disclaimer: This software has been approved for release by the U.S. Geological Survey (USGS). Although the software has been subjected to rigorous review, the USGS reserves the right to update the software as needed pursuant to further analysis and review. No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty. Furthermore, the software is released on condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from its authorized or unauthorized use." + '\n' +
-                    "USGS Product Names Disclaimer: Any use of trade, firm, or product names is for descriptive purposes only and does not imply endorsement by the U.S. Government." + '\n\n';
+                this.disclaimer = '"USGS Data Disclaimer: Unless otherwise stated, all data, metadata and related materials are considered to satisfy the quality standards relative to the purpose for which the data were collected. Although these data and associated metadata have been reviewed for accuracy and completeness and approved for release by the U.S. Geological Survey (USGS), no warranty expressed or implied is made regarding the display or utility of the data for other purposes, nor on all computer systems, nor shall the act of distribution constitute any such warranty."\n'
+                    + '"USGS Software Disclaimer: This software has been approved for release by the U.S. Geological Survey (USGS). Although the software has been subjected to rigorous review, the USGS reserves the right to update the software as needed pursuant to further analysis and review. No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty. Furthermore, the software is released on condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from its authorized or unauthorized use."\n'
+                    + '"USGS Product Names Disclaimer: Any use of trade, firm, or product names is for descriptive purposes only and does not imply endorsement by the U.S. Government."\n\n';
                 this.markers = null;
                 this.overlays = null;
                 this.center = null;
@@ -26,13 +26,13 @@ var StreamStats;
                 this.geojson = null;
                 this.isExceedanceTableOpen = false;
                 this.isFlowTableOpen = false;
+                this.isEstimatedFlowFLATableOpen = false;
                 this.SSServicesVersion = '1.2.22';
                 this._graphData = {
                     data: {},
                     options: {}
                 };
                 $scope.vm = this;
-                this.angulartics = $analytics;
                 this.studyAreaService = studyArea;
                 this.nssService = StatisticsGroup;
                 this.leafletData = leafletData;
@@ -73,6 +73,7 @@ var StreamStats;
                     $modalInstance.dismiss('cancel');
                 };
                 this.print = function () {
+                    gtag('event', 'Download', { 'Category': 'Report', 'Type': 'Print' });
                     window.print();
                 };
                 this.NSSServicesVersion = this.studyAreaService.NSSServicesVersion;
@@ -160,7 +161,7 @@ var StreamStats;
             };
             ReportController.prototype.downloadCSV = function () {
                 var _this = this;
-                this.angulartics.eventTrack('Download', { category: 'Report', label: 'CSV' });
+                gtag('event', 'Download', { 'Category': 'Report', 'Type': 'CSV' });
                 var filename = 'data.csv';
                 var processMainParameterTable = function (data) {
                     var finalVal = '\nBasin Characteristics\n';
@@ -203,7 +204,7 @@ var StreamStats;
                     });
                     return finalVal + '\n';
                 };
-                var csvFile = 'StreamStats Output Report\n\n' + 'State/Region ID,' + this.studyAreaService.selectedStudyArea.RegionID.toUpperCase() + '\nWorkspace ID,' + this.studyAreaService.selectedStudyArea.WorkspaceID + '\nLatitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + '\nLongitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5);
+                var csvFile = 'StreamStats Output Report\n\n' + 'State/Region ID,' + this.studyAreaService.selectedStudyArea.RegionID.toUpperCase() + '\nWorkspace ID,' + this.studyAreaService.selectedStudyArea.WorkspaceID + '\nLatitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + '\nLongitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5) + '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n';
                 if (this.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID) {
                     csvFile += '\nNHD Stream GNIS ID,' + this.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID;
                 }
@@ -226,6 +227,7 @@ var StreamStats;
                 });
                 this.isExceedanceTableOpen = true;
                 this.isFlowTableOpen = true;
+                this.isEstimatedFlowFLATableOpen = true;
                 var self = this;
                 setTimeout(function () {
                     var extVal = '';
@@ -248,11 +250,21 @@ var StreamStats;
                                 extVal += self.tableToCSV($('#exceedanceTable'));
                                 extVal += '\n\nEstimated Flows\n';
                                 extVal += self.tableToCSV($('#flowTable'));
+                                extVal += '\n\n';
                             }
                         }
-                        csvFile += extVal + '\n\n';
                     }
                     if (self.applications) {
+                        if (self.applications.indexOf('FLA') != -1) {
+                            extVal += 'Flow Anywhere Method';
+                            extVal += '\n\n';
+                            extVal += self.tableToCSV($('#flowAnywhereReferenceGage'));
+                            extVal += '\n\n';
+                            extVal += self.tableToCSV($('#flowAnywhereModelParameters'));
+                            extVal += '\n\nEstimated Flows\n';
+                            extVal += self.tableToCSV($('#estimatedFlowFLATable'));
+                            extVal += '\n\n';
+                        }
                         var isChannelWidthWeighting = self.applications.indexOf('ChannelWidthWeighting') != -1;
                         var isPFS = false;
                         self.nssService.selectedStatisticsGroupList.forEach(function (s) {
@@ -276,9 +288,10 @@ var StreamStats;
                             else {
                                 extVal += 'No method weighting results returned.';
                             }
-                            csvFile += extVal + '\n\n';
+                            extVal += '\n\n';
                         }
                     }
+                    csvFile += extVal;
                     if (self.applications) {
                         var isHydrologicFeatures = self.applications.indexOf('HydrologicFeatures') != -1;
                         if (isHydrologicFeatures) {
@@ -322,10 +335,12 @@ var StreamStats;
                     }
                     this.isExceedanceTableOpen = false;
                     this.isFlowTableOpen = false;
+                    this.isEstimatedFlowFLATableOpen = false;
                 }, 300);
             };
             ReportController.prototype.downloadGeoJSON = function () {
                 var _this = this;
+                gtag('event', 'Download', { 'Category': 'Report', "Type": 'Geojson' });
                 var fc = this.studyAreaService.selectedStudyArea.FeatureCollection;
                 fc.features.forEach(function (f) {
                     f.properties["Name"] = _this.studyAreaService.selectedStudyArea.WorkspaceID;
@@ -361,6 +376,7 @@ var StreamStats;
             };
             ReportController.prototype.downloadKML = function () {
                 var _this = this;
+                gtag('event', 'Download', { 'Category': 'Report', "Type": 'KML' });
                 var fc = this.studyAreaService.selectedStudyArea.FeatureCollection;
                 fc.features.forEach(function (f) {
                     f.properties["Name"] = _this.studyAreaService.selectedStudyArea.WorkspaceID;
@@ -397,6 +413,7 @@ var StreamStats;
                 }
             };
             ReportController.prototype.downloadShapeFile = function () {
+                gtag('event', 'Download', { 'Category': 'Report', "Type": 'Shapefile' });
                 try {
                     var flowTable = null;
                     if (this.nssService.showFlowsTable)
@@ -497,7 +514,7 @@ var StreamStats;
                                     top: 20,
                                     right: 30,
                                     bottom: 60,
-                                    left: 65
+                                    left: 100
                                 },
                                 x: function (d) { return d.label; },
                                 y: function (d) { return d.value; },
@@ -525,8 +542,8 @@ var StreamStats;
                     },
                     flow: {
                         data: [
-                            { key: result.referanceGage.name, values: this.processData(result.referanceGage.discharge.observations) },
-                            { key: "Estimated (at clicked point)", values: this.processData(result.estimatedFlow.observations) }
+                            { key: "Observed", values: this.processData(result.referanceGage.discharge.observations) },
+                            { key: "Estimated", values: this.processData(result.estimatedFlow.observations) }
                         ],
                         options: {
                             chart: {
@@ -534,9 +551,9 @@ var StreamStats;
                                 height: 450,
                                 margin: {
                                     top: 20,
-                                    right: 0,
-                                    bottom: 50,
-                                    left: 0
+                                    right: 30,
+                                    bottom: 60,
+                                    left: 100
                                 },
                                 x: function (d) {
                                     return new Date(d.x).getTime();
@@ -621,8 +638,8 @@ var StreamStats;
                         type: "Feature",
                         geometry: {
                             coordinates: [
-                                this.studyAreaService.selectedGage["Latitude_DD"],
-                                this.studyAreaService.selectedGage["Longitude_DD"]
+                                this.studyAreaService.selectedGage.Latitude_DD,
+                                this.studyAreaService.selectedGage.Longitude_DD
                             ],
                             type: "Point"
                         }
@@ -777,7 +794,7 @@ var StreamStats;
                 }
                 return returnData;
             };
-            ReportController.$inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService', 'StreamStats.Services.ModalService', 'WiM.Event.EventManager'];
+            ReportController.$inject = ['$scope', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService', 'StreamStats.Services.ModalService', 'WiM.Event.EventManager'];
             return ReportController;
         }());
         angular.module('StreamStats.Controllers')

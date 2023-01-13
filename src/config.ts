@@ -1,6 +1,6 @@
 ﻿//https://lgorithms.blogspot.com/2013/07/angularui-router-as-infrastructure-of.html
 //https://www.funnyant.com/angularjs-ui-router/
-
+declare let gtag: Function;
 declare var configuration: any;
 module StreamStats {
     //'use strict';
@@ -52,7 +52,6 @@ module StreamStats {
     angular.module('StreamStats',[
         'ui.router', 'ui.bootstrap','ui.checkbox',
         'mobile-angular-ui',
-        'angulartics', 'angulartics.google.analytics',
         'toaster', 'ngFileUpload',
         'leaflet-directive',
         'StreamStats.Services',

@@ -125,6 +125,15 @@ var StreamStats;
                                 backdrop: 'static',
                                 windowClass: 'windowZ modal-xl',
                             };
+                        case SSModalType.e_flowanywhere:
+                            return {
+                                templateUrl: 'Views/flowanywhere.html',
+                                controller: 'StreamStats.Controllers.FlowAnywhereController',
+                                size: 'sm',
+                                backdropClass: 'backdropZ',
+                                backdrop: 'static',
+                                windowClass: 'windowZ',
+                            };
                         default:
                             return null;
                     }
@@ -149,6 +158,7 @@ var StreamStats;
             SSModalType[SSModalType["e_gagepage"] = 10] = "e_gagepage";
             SSModalType[SSModalType["e_nearestgages"] = 11] = "e_nearestgages";
             SSModalType[SSModalType["e_scstormrunnoff"] = 12] = "e_scstormrunnoff";
+            SSModalType[SSModalType["e_flowanywhere"] = 13] = "e_flowanywhere";
         })(SSModalType = Services.SSModalType || (Services.SSModalType = {}));
         factory.$inject = ['$modal'];
         function factory($modal) {

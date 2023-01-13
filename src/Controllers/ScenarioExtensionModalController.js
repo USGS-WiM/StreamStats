@@ -22,7 +22,6 @@ var StreamStats;
         var ExtensionModalController = /** @class */ (function () {
             function ExtensionModalController($scope, $analytics, modal, modalservice, studyArea) {
                 $scope.vm = this;
-                this.angulartics = $analytics;
                 this.modalInstance = modal;
                 this.studyAreaService = studyArea;
                 //init required values
