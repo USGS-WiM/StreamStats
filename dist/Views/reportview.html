@@ -32,7 +32,6 @@
                         <div class="col-md-7"><strong>Clicked Point (Latitude, Longitude):</strong></div>
                         <div class="col-md-5">{{vm.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5)}}, {{vm.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5)}}</div>
                     </div>
-<<<<<<< HEAD
                     <div ng-if="vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_NAME" class="row">
                         <div class="col-md-7"><strong>NHD Stream GNIS Name:</strong></div>
                         <div class="col-md-5">{{vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_NAME}} 
@@ -46,8 +45,6 @@
                         <div class="col-md-7"><strong>HUC 8:</strong></div>
                         <div class="col-md-5">{{vm.studyAreaService.selectedStudyArea.WBDHUC8.huc8}} <span ng-if="vm.studyAreaService.selectedStudyArea.WBDHUC8.name">({{vm.studyAreaService.selectedStudyArea.WBDHUC8.name}})</span></div>
                     </div>
-=======
->>>>>>> c6747bffd45e54eeae1c16ace3ebe7af30e0d41b
                     <div class="row">
                         <div class="col-md-7"><strong>Time:</strong></div>
                         <div class="col-md-5">{{vm.studyAreaService.selectedStudyArea.Date | date:'yyyy-MM-dd HH:mm:ss Z'}}</div>
@@ -357,11 +354,7 @@
                         </div><!--end sc-->
                     </div><!--end extension-->
 
-<<<<<<< HEAD
-                <!-- Channel Width Weighting Application -->
-=======
                     <!-- Flow Anywhere Method -->
-
                     <div ng-if="vm.regionService.selectedRegion.Applications.indexOf('FLA') != -1 && vm.studyAreaService.flowAnywhereData">
                         <div class ="well well-sm">
                             <h3 class="collapsible" ng-click="vm.collapseSection($event, 'stats', 'FLA')"><i ng-class="!vm.sectionCollapsed['FLA'] ? 'fa fa-chevron-right': 'fa fa-chevron-down'"></i>&nbsp;&nbsp;Flow Anywhere Method</h3>
@@ -477,8 +470,6 @@
                     </div>
 
                 <!-- Channel Width Weighting Application -->     
-
->>>>>>> c6747bffd45e54eeae1c16ace3ebe7af30e0d41b
                 <div class="well well-sm"  ng-if="vm.regionService.selectedRegion.Applications.indexOf('ChannelWidthWeighting') != -1 && vm.nssService.selectedStatisticsGroupList.name.indexOf('Peak-Flow Statistics') != -1">
                     <h3 class="collapsible" ng-click="vm.collapseSection($event, 'stats', 'ChannelWidthWeighting')"><i ng-class="!vm.sectionCollapsed['ChannelWidthWeighting'] ? 'fa fa-chevron-right': 'fa fa-chevron-down'"></i>&nbsp;&nbsp;Channel-width Methods Weighting</h3>
                         <div class="collapsible-content">

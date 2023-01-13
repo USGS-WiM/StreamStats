@@ -12,14 +12,10 @@ configuration.baseurls =
         'StormRunoffServices': 'https://test.streamstats.usgs.gov/runoffmodelingservices',
         'ScienceBase': 'https://gis.usgs.gov/sciencebase2',
         'GageStatsServices': 'https://test.streamstats.usgs.gov/gagestatsservices',
-<<<<<<< HEAD
         'WeightingServices': 'https://ss-weightingservices.streamstats.usgs.gov',
         'SCStormRunoffServices': 'https://streamstats.usgs.gov/local/scrunoffservices',
-        'NationalMapServices': 'https://hydro.nationalmap.gov/arcgis/rest/services'
-=======
-        'WeightingServices': 'https://streamstats.usgs.gov/channelweightingservices',
+        'NationalMapServices': 'https://hydro.nationalmap.gov/arcgis/rest/services',
         'FlowAnywhereRegressionServices': 'https://streamstats.usgs.gov/regressionservices'
->>>>>>> c6747bffd45e54eeae1c16ace3ebe7af30e0d41b
     };
 
 //override streamstats arguments if on production, these get overriden again in MapController after load balancer assigns a server
@@ -64,11 +60,8 @@ configuration.queryparams =
         'WateruseSourceCSV': '/summary/bysource?year={0}&endyear={1}&includePermits={2}&computeReturns={3}&computeDomestic={4}',
         'WateruseConfig': '/regions/{0}/config',
         'coordinatedReachQueryService': '/arcgis/rest/services/coordinatedreaches/{0}/MapServer/0/query?geometry={1},{2},{3},{4}&geometryType=esriGeometryEnvelope&inSR={5}&spatialRel=esriSpatialRelIntersects&outFields={6}&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
-<<<<<<< HEAD
         'NHDQueryService': '/nhd/MapServer/6',
         'WBDQueryService': '/wbd/MapServer/4',
-=======
->>>>>>> c6747bffd45e54eeae1c16ace3ebe7af30e0d41b
         'StormRunoffTR55': '/TR55/GetResult?area={0}&precip={1}&crvnum={2}&pdur={3}',
         'StormRunoffRationalMethod': '/RationalMethod?area={0}&precipint={1}&rcoeff={2}&pdur={3}',
         'ProsperPredictions': '/rest/services/Catalog/5c5204e4e4b0708288fb42e2/MapServer',
@@ -89,16 +82,13 @@ configuration.queryparams =
         'GageStatsServicesNearest': '/stations/Nearest?lat={0}&lon={1}&radius={2}&geojson=false&includeStats=true',
         'GageStatsServicesNetwork': '/stations/Network?lat={0}&lon={1}&distance={2}&includeStats=true&geojson=false',
         'GageStatsServicesBounds': '/stations/Bounds?xmin={0}&xmax={1}&ymin={2}&ymax={3}&geojson=true',
-<<<<<<< HEAD
         'SCStormRunoffBohman1989' : '/ruralhydrographbohman1989',
         'SCStormRunoffBohman1992' : '/urbanhydrographbohman1992',
         'SCStormRunoffSyntheticUnitHydrograph': '/calculatemissingparametersSCSUH',
         'SCStormRunoffSyntheticUnitComputerGraphResults': '/scsyntheticunithydrograph',
-        'SCStormRunoffPRF': '/prf'
-=======
+        'SCStormRunoffPRF': '/prf',
         'FlowAnywhereEstimates': '/models/FLA/estimate?state={0}',
         'FlowAnywhereGages': '/arcgis/rest/services/IowaStreamEst/FlowAnywhere/MapServer/1/query?geometry={0},{1}&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.da_pub_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson'
->>>>>>> c6747bffd45e54eeae1c16ace3ebe7af30e0d41b
     };
 
 configuration.SupportTicketService = {
@@ -621,11 +611,7 @@ configuration.regions = [
                     }}
                 }
             },
-<<<<<<< HEAD
         "Applications": ["Regulation", "SCStormRunoff", "HydrologicFeatures"], "regionEnabled": true, "ScenariosAvailable": true
-=======
-        "Applications": ["Regulation"], "regionEnabled": true, "ScenariosAvailable": true
->>>>>>> c6747bffd45e54eeae1c16ace3ebe7af30e0d41b
     },
     { "RegionID": "SD", "Name": "South Dakota", "Bounds": [[42.488459, -104.061036], [45.943547, -96.439394]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "TN", "Name": "Tennessee", "Bounds": [[34.988759, -90.305448], [36.679683, -81.652272]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
