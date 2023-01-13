@@ -91,10 +91,11 @@ var StreamStats;
                 _this_1.peakDates = undefined;
                 _this_1.estPeakDates = undefined;
                 _this_1.dailyFlow = undefined;
-                _this_1.formattedFloodFreq = undefined;
+                _this_1.formattedFloodFreq = [];
                 _this_1.formattedPeakDates = [];
                 _this_1.formattedEstPeakDates = [];
                 _this_1.formattedDailyFlow = [];
+                _this_1.plotlines = true;
                 $scope.vm = _this_1;
                 _this_1.modalInstance = modal;
                 _this_1.modalService = modalService;
@@ -668,12 +669,12 @@ var StreamStats;
             };
             GagePageController.prototype.removePlotLines = function () {
                 var chart = $('#chart1').highcharts();
-                if ($("yesAEPLines").checked) {
-                    console.log('on test');
-                    chart.yAxis[0].addPlotLine('plotlines');
+                if (this.plotlines) {
+                    this.chartConfig.yAxis.plotLines.forEach(function (plotLine) {
+                        chart.yAxis[0].addPlotLine(plotLine);
+                    });
                 }
                 else {
-                    console.log('off test');
                     chart.yAxis[0].removePlotLine('plotlines');
                 }
             };

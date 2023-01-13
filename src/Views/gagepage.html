@@ -226,11 +226,9 @@
                         &nbsp;<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
                     </div>
                     <div class="panel panel-default" ng-if="vm.chartConfig">
-                        <!-- <div class="panel-heading">Annual Peak Streamflow</div> -->
                         <highchart id="chart1" config="vm.chartConfig"></highchart> <br>
-                        <input type="checkbox" id="yesAEPLines" name="yesAEPLines" ng-model="vm.chart" ng-change="vm.removePlotLines()" checked>
-                        <label for="yesAEPLines"> AEP Plot Lines</label><br>
-                        <!-- <button id="removePlotLines" ng-click="vm.removePlotLines()" class="btn-white"></i><span>&nbsp;&nbsp;Remove AEP Plot Lines</span></button> -->
+                        <input type="checkbox" ng-if="vm.formattedFloodFreq.length > 0" id="yesAEPLines" name="yesAEPLines" ng-model="vm.plotlines" ng-change="vm.removePlotLines()" checked>
+                        <label for="yesAEPLines" ng-if="vm.formattedFloodFreq.length > 0"> AEP Plot Lines</label><br>
                     </div>
                     </center>
                 </div>

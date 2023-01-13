@@ -195,7 +195,7 @@ module StreamStats.Controllers {
         public peakDates = undefined;
         public estPeakDates = undefined;
         public dailyFlow = undefined;
-        public formattedFloodFreq = undefined;
+        public formattedFloodFreq = [];
         public formattedPeakDates = [];
         public formattedEstPeakDates = [];
         public formattedDailyFlow = [];
@@ -859,19 +859,19 @@ module StreamStats.Controllers {
             });
         }
 
+        //checkbox for turning plotLines on and off
+        public plotlines = true;
             public removePlotLines () {
                 let chart = $('#chart1').highcharts();
-                if ($("yesAEPLines").checked) {
-                console.log('on test');
-                chart.yAxis[0].addPlotLine('plotlines');
+                if (this.plotlines) {
+                this.chartConfig.yAxis.plotLines.forEach((plotLine) => {
+                    chart.yAxis[0].addPlotLine(plotLine);
+                });
             }
                 else {
-                console.log('off test');
                 chart.yAxis[0].removePlotLine('plotlines'); // all plot lines have id: 'plotlines'
                 }
             };
-
-        //} weather.gov code line 4220 and 102 for the view
         
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
