@@ -669,10 +669,11 @@ var StreamStats;
             GagePageController.prototype.removePlotLines = function () {
                 var chart = $('#chart1').highcharts();
                 if ($("yesAEPLines").checked) {
-                    console.log('function test');
+                    console.log('on test');
                     chart.yAxis[0].addPlotLine('plotlines');
                 }
                 else {
+                    console.log('off test');
                     chart.yAxis[0].removePlotLine('plotlines');
                 }
             };

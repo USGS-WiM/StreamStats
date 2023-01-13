@@ -862,10 +862,11 @@ module StreamStats.Controllers {
             public removePlotLines () {
                 let chart = $('#chart1').highcharts();
                 if ($("yesAEPLines").checked) {
-                console.log('function test')
+                console.log('on test');
                 chart.yAxis[0].addPlotLine('plotlines');
             }
                 else {
+                console.log('off test');
                 chart.yAxis[0].removePlotLine('plotlines'); // all plot lines have id: 'plotlines'
                 }
             };

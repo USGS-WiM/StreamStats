@@ -228,10 +228,7 @@
                     <div class="panel panel-default" ng-if="vm.chartConfig">
                         <!-- <div class="panel-heading">Annual Peak Streamflow</div> -->
                         <highchart id="chart1" config="vm.chartConfig"></highchart> <br>
-
-                        <!-- <checkbox large ng-model="vm.checked" checked></checkbox>AEP Plotlines -->
-
-                        <input type="checkbox" id="yesAEPLines" name="yesAEPLines" ng-model="vm.chart" ng-change="vm.removePlotLines()">
+                        <input type="checkbox" id="yesAEPLines" name="yesAEPLines" ng-model="vm.chart" ng-change="vm.removePlotLines()" checked>
                         <label for="yesAEPLines"> AEP Plot Lines</label><br>
                         <!-- <button id="removePlotLines" ng-click="vm.removePlotLines()" class="btn-white"></i><span>&nbsp;&nbsp;Remove AEP Plot Lines</span></button> -->
                     </div>
