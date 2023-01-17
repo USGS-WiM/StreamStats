@@ -680,13 +680,17 @@ var StreamStats;
                     },
                     xAxis: {
                         type: 'datetime',
+                        tickPositions: [1, 32, 62, 93, 124, 152, 183, 213, 244, 274, 305, 336, 380],
                         title: {
-                            text: null
+                            text: 'Day of the Year'
                         },
                     },
                     yAxis: {
                         title: {
-                            text: null
+                            text: 'Year'
+                        },
+                        custom: {
+                            allowNegativeLog: true
                         }
                     },
                     colorAxis: {
@@ -698,7 +702,8 @@ var StreamStats;
                             [1, '#3300CC']
                         ],
                         startOnTick: false,
-                        endOnTick: false
+                        endOnTick: false,
+                        allowNegativeLog: true
                     },
                     series: [{
                             name: 'Daily Streamflow',
@@ -710,7 +715,12 @@ var StreamStats;
                                     if (this.formattedDailyHeat !== null) {
                                         var year = this.y;
                                         var doy = this.x;
-                                        return '<br>Year: <b>' + year + '</b><br>Day of Year: <b>' + doy + '</b><br>Value: <b>' + this.value + ' ft³/s';
+                                        var fullDate = new Date(year, 0, doy);
+                                        var UTCday = fullDate.getUTCDate();
+                                        var month = fullDate.getUTCMonth();
+                                        month += 1;
+                                        var formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                                        return '<br>Year: <b>' + formattedUTCPeakDate + '</b><br>Value: <b>' + this.value + ' ft³/s';
                                     }
                                 }
                             },

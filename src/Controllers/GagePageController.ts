@@ -211,13 +211,12 @@ module StreamStats.Controllers {
                         series: { name: string; tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number; type: string, color: string, 
                         data: number[], marker: {symbol: string, radius: number}, showInLegend: boolean; }[]; };
         heatChartConfig: { 
-                        //data: { array: number[]},
                         chart: { height: number, width: number, zooming: {type: string} },
                         title: { text: string, align: string},
                         subtitle: { text: string, align: string},  
-                        xAxis: { type: string, title: {text: string}},
-                        yAxis: { title: {text: string}},
-                        colorAxis: { type: string, stops: any[], startOnTick: boolean, endOnTick: boolean,}
+                        xAxis: { type: string, tickPositions: any[], title: {text: string}},
+                        yAxis: { title: {text: string}, custom: { allowNegativeLog: boolean}},
+                        colorAxis: { type: string, stops: any[], startOnTick: boolean, endOnTick: boolean, allowNegativeLog: boolean}
                         series: { name: string, type: string, data: number[], tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number}[]; };
         constructor($scope: IGagePageControllerScope, $http: ng.IHttpService, modalService: Services.IModalService, modal:ng.ui.bootstrap.IModalServiceInstance) {
             super($http, configuration.baseurls.StreamStats);
@@ -696,6 +695,8 @@ module StreamStats.Controllers {
             if (this.dailyFlow) {
                 this.dailyFlow.forEach(dailyHeatObj => {
                     let now = new Date(dailyHeatObj.dateTime);
+                    //Getting Julian days - pulled from this exchange: https://stackoverflow.com/questions/8619879/javascript-calculate-the-day-of-the-year-1-366
+                    //to -do: dealing with leap years
                     function daysIntoYear(now){
                         return (Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(now.getFullYear(), 0, 0)) / 24 / 60 / 60 / 1000;
                     }
@@ -884,13 +885,17 @@ module StreamStats.Controllers {
                 },
                 xAxis: {
                     type: 'datetime',
+                    tickPositions: [1, 32, 62, 93, 124, 152, 183, 213, 244, 274, 305, 336, 380],
                     title: {
-                        text: null
+                        text: 'Day of the Year'
                     },
                 },
                 yAxis: {
                     title: {
-                        text: null
+                        text: 'Year'
+                    },
+                    custom: {
+                        allowNegativeLog: true
                     }
                 },
                 colorAxis: {
@@ -902,7 +907,8 @@ module StreamStats.Controllers {
                         [1 ,   '#3300CC']
                     ],
                     startOnTick: false,
-                    endOnTick: false
+                    endOnTick: false,
+                    allowNegativeLog: true
                 },
                 series: [{
                     name: 'Daily Streamflow',
@@ -915,7 +921,13 @@ module StreamStats.Controllers {
                                 //let UTCday = this.x.getUTCDate();
                                 let year = this.y;
                                 let doy = this.x;
-                                return '<br>Year: <b>'  + year + '</b><br>Day of Year: <b>'  + doy + '</b><br>Value: <b>' + this.value + ' ft³/s'
+                                let fullDate = new Date(year, 0, doy)
+                                let UTCday = fullDate.getUTCDate();
+                                let month = fullDate.getUTCMonth();
+                                    month += 1; // adding a month to the UTC months (which are zero-indexed)
+                                let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                                //return new Date(year, 0, doy); 
+                                return '<br>Year: <b>'  + formattedUTCPeakDate + '</b><br>Value: <b>' + this.value + ' ft³/s'
                             }
                         }
                     },
