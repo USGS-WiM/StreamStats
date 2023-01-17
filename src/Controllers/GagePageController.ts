@@ -214,6 +214,7 @@ module StreamStats.Controllers {
                         //data: { array: number[]},
                         chart: { height: number, width: number, zooming: {type: string} },
                         title: { text: string, align: string},
+                        subtitle: { text: string, align: string},  
                         xAxis: { type: string, title: {text: string}},
                         yAxis: { title: {text: string}},
                         colorAxis: { type: string, stops: any[], startOnTick: boolean, endOnTick: boolean,}
@@ -694,8 +695,12 @@ module StreamStats.Controllers {
             }
             if (this.dailyFlow) {
                 this.dailyFlow.forEach(dailyHeatObj => {
+                    let now = new Date(dailyHeatObj.dateTime);
+                    function daysIntoYear(now){
+                        return (Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(now.getFullYear(), 0, 0)) / 24 / 60 / 60 / 1000;
+                    }
                     if (dailyHeatObj.qualifiers[0] === 'A') {
-                        this.formattedDailyHeat.push({x: new Date(dailyHeatObj.dateTime).getUTCMonth(), y: new Date(dailyHeatObj.dateTime).getUTCFullYear(), value: parseInt(dailyHeatObj.value)})
+                        this.formattedDailyHeat.push({x: daysIntoYear(now), y: new Date(dailyHeatObj.dateTime).getUTCFullYear(), value: parseInt(dailyHeatObj.value)})
                     }
                 });
             }
@@ -873,6 +878,10 @@ module StreamStats.Controllers {
                     text: 'Daily Streamflow',
                     align: 'center'
                 },
+                subtitle: {
+                    text: 'Click and drag in the plot area to zoom in',
+                    align: 'center'
+                },
                 xAxis: {
                     type: 'datetime',
                     title: {
@@ -905,10 +914,8 @@ module StreamStats.Controllers {
                             if (this.formattedDailyHeat !== null){
                                 //let UTCday = this.x.getUTCDate();
                                 let year = this.y;
-                                let month = this.x;
-                                    month += 1; // adding a month to the UTC months (which are zero-indexed)
-                                let formattedUTCDailyHeat = month + year;
-                                return '<br>Date: <b>'  + formattedUTCDailyHeat + '</b><br>Value: <b>' + this.value + ' ft³/s'
+                                let doy = this.x;
+                                return '<br>Year: <b>'  + year + '</b><br>Day of Year: <b>'  + doy + '</b><br>Value: <b>' + this.value + ' ft³/s'
                             }
                         }
                     },

@@ -495,8 +495,12 @@ var StreamStats;
                 }
                 if (this.dailyFlow) {
                     this.dailyFlow.forEach(function (dailyHeatObj) {
+                        var now = new Date(dailyHeatObj.dateTime);
+                        function daysIntoYear(now) {
+                            return (Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(now.getFullYear(), 0, 0)) / 24 / 60 / 60 / 1000;
+                        }
                         if (dailyHeatObj.qualifiers[0] === 'A') {
-                            _this_1.formattedDailyHeat.push({ x: new Date(dailyHeatObj.dateTime).getUTCMonth(), y: new Date(dailyHeatObj.dateTime).getUTCFullYear(), value: parseInt(dailyHeatObj.value) });
+                            _this_1.formattedDailyHeat.push({ x: daysIntoYear(now), y: new Date(dailyHeatObj.dateTime).getUTCFullYear(), value: parseInt(dailyHeatObj.value) });
                         }
                     });
                 }
@@ -670,6 +674,10 @@ var StreamStats;
                         text: 'Daily Streamflow',
                         align: 'center'
                     },
+                    subtitle: {
+                        text: 'Click and drag in the plot area to zoom in',
+                        align: 'center'
+                    },
                     xAxis: {
                         type: 'datetime',
                         title: {
@@ -701,10 +709,8 @@ var StreamStats;
                                 pointFormatter: function () {
                                     if (this.formattedDailyHeat !== null) {
                                         var year = this.y;
-                                        var month = this.x;
-                                        month += 1;
-                                        var formattedUTCDailyHeat = month + year;
-                                        return '<br>Date: <b>' + formattedUTCDailyHeat + '</b><br>Value: <b>' + this.value + ' ft³/s';
+                                        var doy = this.x;
+                                        return '<br>Year: <b>' + year + '</b><br>Day of Year: <b>' + doy + '</b><br>Value: <b>' + this.value + ' ft³/s';
                                     }
                                 }
                             },
