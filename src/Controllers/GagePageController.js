@@ -92,6 +92,7 @@ var StreamStats;
                 _this_1.estPeakDates = undefined;
                 _this_1.dailyFlow = undefined;
                 _this_1.formattedFloodFreq = undefined;
+                _this_1.formattedDailyHeat = [];
                 _this_1.formattedPeakDates = [];
                 _this_1.formattedEstPeakDates = [];
                 _this_1.formattedDailyFlow = [];
@@ -492,6 +493,13 @@ var StreamStats;
                         }
                     });
                 }
+                if (this.dailyFlow) {
+                    this.dailyFlow.forEach(function (dailyHeatObj) {
+                        if (dailyHeatObj.qualifiers[0] === 'A') {
+                            _this_1.formattedDailyHeat.push({ x: new Date(dailyHeatObj.dateTime).getUTCMonth(), y: new Date(dailyHeatObj.dateTime).getUTCFullYear(), value: parseInt(dailyHeatObj.value) });
+                        }
+                    });
+                }
                 if (this.floodFreq) {
                     this.formattedFloodFreq = [];
                     var AEPColors_1 = {
@@ -523,6 +531,7 @@ var StreamStats;
                         });
                     });
                     this.createAnnualFlowPlot();
+                    this.createDailyRasterPlot();
                 }
             };
             GagePageController.prototype.createAnnualFlowPlot = function () {
@@ -561,7 +570,7 @@ var StreamStats;
                             tooltip: {
                                 headerFormat: '<b>Daily Streamflow</b>',
                                 pointFormatter: function () {
-                                    if (this.formattedPeakDates !== null) {
+                                    if (this.formattedDailyFlow !== null) {
                                         var UTCday = this.x.getUTCDate();
                                         var year = this.x.getUTCFullYear();
                                         var month = this.x.getUTCMonth();
@@ -647,6 +656,63 @@ var StreamStats;
                     _this_1.chartConfig.yAxis.plotLines.push(formattedFloodFreqItem);
                 });
             };
+            GagePageController.prototype.createDailyRasterPlot = function () {
+                console.log('daily values for heatmap', this.formattedDailyHeat);
+                this.heatChartConfig = {
+                    chart: {
+                        height: 450,
+                        width: 800,
+                        zooming: {
+                            type: 'xy'
+                        }
+                    },
+                    title: {
+                        text: 'Daily Streamflow',
+                        align: 'center'
+                    },
+                    xAxis: {
+                        type: 'datetime',
+                        title: {
+                            text: null
+                        },
+                    },
+                    yAxis: {
+                        title: {
+                            text: null
+                        }
+                    },
+                    colorAxis: {
+                        type: 'logarithmic',
+                        stops: [
+                            [0, '#FF0000'],
+                            [0.3, '#FFCC33'],
+                            [0.8, '#66CCFF'],
+                            [1, '#3300CC']
+                        ],
+                        startOnTick: false,
+                        endOnTick: false
+                    },
+                    series: [{
+                            name: 'Daily Streamflow',
+                            type: 'heatmap',
+                            data: this.formattedDailyHeat,
+                            tooltip: {
+                                headerFormat: '<b>Daily Streamflow</b>',
+                                pointFormatter: function () {
+                                    if (this.formattedDailyHeat !== null) {
+                                        var year = this.y;
+                                        var month = this.x;
+                                        month += 1;
+                                        var formattedUTCDailyHeat = month + year;
+                                        return '<br>Date: <b>' + formattedUTCDailyHeat + '</b><br>Value: <b>' + this.value + ' ft³/s';
+                                    }
+                                }
+                            },
+                            turboThreshold: 0
+                        }]
+                };
+            };
+            ;
             GagePageController.prototype.init = function () {
                 this.AppVersion = configuration.version;
                 this.getGagePage();

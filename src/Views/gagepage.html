@@ -226,10 +226,17 @@
                         &nbsp;<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
                     </div>
                     <div class="panel panel-default" ng-if="vm.chartConfig">
-                        <!-- <div class="panel-heading">Annual Peak Streamflow</div> -->
-                        <highchart config="vm.chartConfig"></highchart>
+                        <highchart id="chart1" config="vm.chartConfig"></highchart>
                     </div>
                     </center>
+                    <center>
+                        <div ng-if="!vm.heatChartConfig" class="panel panel-default reportSpinner">
+                            &nbsp;<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
+                        </div>
+                        <div class="panel panel-default" ng-if="vm.heatChartConfig">
+                            <highchart config="vm.heatChartConfig"></highchart>
+                        </div>
+                        </center>
                 </div>
             </div>
         </div>

@@ -195,6 +195,7 @@ module StreamStats.Controllers {
         public estPeakDates = undefined;
         public dailyFlow = undefined;
         public formattedFloodFreq = undefined;
+        public formattedDailyHeat = [];
         public formattedPeakDates = [];
         public formattedEstPeakDates = [];
         public formattedDailyFlow = [];
@@ -209,6 +210,14 @@ module StreamStats.Controllers {
                         yAxis: { title: {text: string}, plotLines: [{value: number, color: string, width: number, zIndex: number, label: {text: string}}]},
                         series: { name: string; tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number; type: string, color: string, 
                         data: number[], marker: {symbol: string, radius: number}, showInLegend: boolean; }[]; };
+        heatChartConfig: { 
+                        //data: { array: number[]},
+                        chart: { height: number, width: number, zooming: {type: string} },
+                        title: { text: string, align: string},
+                        xAxis: { type: string, title: {text: string}},
+                        yAxis: { title: {text: string}},
+                        colorAxis: { type: string, stops: any[], startOnTick: boolean, endOnTick: boolean,}
+                        series: { name: string, type: string, data: number[], tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number}[]; };
         constructor($scope: IGagePageControllerScope, $http: ng.IHttpService, modalService: Services.IModalService, modal:ng.ui.bootstrap.IModalServiceInstance) {
             super($http, configuration.baseurls.StreamStats);
             $scope.vm = this;
@@ -683,6 +692,13 @@ module StreamStats.Controllers {
                     }
                 });
             }
+            if (this.dailyFlow) {
+                this.dailyFlow.forEach(dailyHeatObj => {
+                    if (dailyHeatObj.qualifiers[0] === 'A') {
+                        this.formattedDailyHeat.push({x: new Date(dailyHeatObj.dateTime).getUTCMonth(), y: new Date(dailyHeatObj.dateTime).getUTCFullYear(), value: parseInt(dailyHeatObj.value)})
+                    }
+                });
+            }
             if (this.floodFreq) { //set up AEP plotLines
                 this.formattedFloodFreq = [];
                     const AEPColors = {
@@ -714,6 +730,7 @@ module StreamStats.Controllers {
                         });
                     });
             this.createAnnualFlowPlot();
+            this.createDailyRasterPlot();
         }}
 
         //Create chart
@@ -755,7 +772,7 @@ module StreamStats.Controllers {
                     tooltip: {
                         headerFormat:'<b>Daily Streamflow</b>',
                         pointFormatter: function(){
-                            if (this.formattedPeakDates !== null){
+                            if (this.formattedDailyFlow !== null){
                                 let UTCday = this.x.getUTCDate();
                                 let year = this.x.getUTCFullYear();
                                 let month = this.x.getUTCMonth();
@@ -838,6 +855,68 @@ module StreamStats.Controllers {
                 this.chartConfig.yAxis.plotLines.push(formattedFloodFreqItem)
             });
         }
+
+        public createDailyRasterPlot(): void {
+            console.log('daily values for heatmap', this.formattedDailyHeat);
+            this.heatChartConfig = {
+                // data: {
+                //     array: this.formattedDailyHeat
+                // },
+                chart: {
+                        height: 450,
+                        width: 800,
+                        zooming: {
+                            type: 'xy'
+                        }
+                },
+                title: {
+                    text: 'Daily Streamflow',
+                    align: 'center'
+                },
+                xAxis: {
+                    type: 'datetime',
+                    title: {
+                        text: null
+                    },
+                },
+                yAxis: {
+                    title: {
+                        text: null
+                    }
+                },
+                colorAxis: {
+                    type: 'logarithmic',
+                    stops: [
+                        [0 ,   '#FF0000'],
+                        [0.3, '#FFCC33'],
+                        [0.8, '#66CCFF'],
+                        [1 ,   '#3300CC']
+                    ],
+                    startOnTick: false,
+                    endOnTick: false
+                },
+                series: [{
+                    name: 'Daily Streamflow',
+                    type: 'heatmap',
+                    data: this.formattedDailyHeat,
+                    tooltip: {
+                        headerFormat:'<b>Daily Streamflow</b>',
+                        pointFormatter: function(){
+                            if (this.formattedDailyHeat !== null){
+                                //let UTCday = this.x.getUTCDate();
+                                let year = this.y;
+                                let month = this.x;
+                                    month += 1; // adding a month to the UTC months (which are zero-indexed)
+                                let formattedUTCDailyHeat = month + year;
+                                return '<br>Date: <b>'  + formattedUTCDailyHeat + '</b><br>Value: <b>' + this.value + ' ft³/s'
+                            }
+                        }
+                    },
+                    turboThreshold: 0
+                }]
+            }
+        };
+
         
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
