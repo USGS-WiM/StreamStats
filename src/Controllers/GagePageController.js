@@ -720,7 +720,12 @@ var StreamStats;
                                         var month = fullDate.getUTCMonth();
                                         month += 1;
                                         var formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
-                                        return '<br>Year: <b>' + formattedUTCPeakDate + '</b><br>Value: <b>' + this.value + ' ft³/s';
+                                        var waterYear = this.y;
+                                        if (month > 9) {
+                                            waterYear += 1;
+                                        }
+                                        ;
+                                        return '<br>Date: <b>' + formattedUTCPeakDate + '</b><br>Value: <b>' + this.value + ' ft³/s</b><br>Water Year: <b>' + waterYear;
                                     }
                                 }
                             },

@@ -926,8 +926,12 @@ module StreamStats.Controllers {
                                 let month = fullDate.getUTCMonth();
                                     month += 1; // adding a month to the UTC months (which are zero-indexed)
                                 let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                                let waterYear = this.y;
+                                if (month > 9) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
+                                    waterYear += 1; // adding a year to dates that fall into the next water year
+                                };
                                 //return new Date(year, 0, doy); 
-                                return '<br>Year: <b>'  + formattedUTCPeakDate + '</b><br>Value: <b>' + this.value + ' ft³/s'
+                                return '<br>Date: <b>'  + formattedUTCPeakDate + '</b><br>Value: <b>' + this.value + ' ft³/s</b><br>Water Year: <b>' + waterYear
                             }
                         }
                     },
