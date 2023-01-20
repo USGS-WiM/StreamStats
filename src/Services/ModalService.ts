@@ -23,6 +23,7 @@
 //06.16.2015 mjs - Created
 
 //Import
+
 module StreamStats.Services {
     'use strict'
     export interface IModalService {
@@ -182,6 +183,15 @@ module StreamStats.Services {
                             backdropClass: 'backdropZ',
                             backdrop: 'static',
                             windowClass: 'windowZ modal-xl',
+                        };                    
+                    case SSModalType.e_flowanywhere:
+                        return {
+                            templateUrl: 'Views/flowanywhere.html',
+                            controller: 'StreamStats.Controllers.FlowAnywhereController',
+                            size: 'sm',
+                            backdropClass: 'backdropZ',
+                            backdrop: 'static',
+                            windowClass: 'windowZ',
                         };
      
                     default:
@@ -195,7 +205,7 @@ module StreamStats.Services {
         }
 
     }//end class
-    export enum SSModalType {
+export enum SSModalType {
         e_report = 1,
         e_wateruse = 2,
         e_about = 3,
@@ -207,8 +217,8 @@ module StreamStats.Services {
         e_extensionsupport = 9,
         e_gagepage = 10,
         e_nearestgages = 11,
-        e_scstormrunnoff = 12
-
+        e_scstormrunnoff = 12,
+        e_flowanywhere = 13   
     }
 
     factory.$inject = ['$modal'];

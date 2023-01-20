@@ -296,7 +296,7 @@
                                                             <tr>
                                                                 <th>Date</th>
                                                                 <th>Estimated</th>
-                                                                <th>{{r.referanceGage.name}}</th>
+                                                                <th>Observed ({{r.referanceGage.stationID}})</th>
                                                             </tr>
                                                         </thead>
 
@@ -338,7 +338,7 @@
                                                                 <td><span>{{r.referanceGage.longitude_DD}}</span><span> Decimal Degrees</span></td>
                                                             </tr>
                                                             <tr>
-                                                                <td>Drainage Area:</td>
+                                                                <td>NWIS Drainage Area:</td>
                                                                 <td><span>{{r.referanceGage.drainageArea_sqMI}}</span><span> square miles</span></td>
                                                             </tr>
                                                         </tbody>
@@ -354,7 +354,122 @@
                         </div><!--end sc-->
                     </div><!--end extension-->
 
-                <!-- Channel Width Weighting Application -->
+                    <!-- Flow Anywhere Method -->
+                    <div ng-if="vm.regionService.selectedRegion.Applications.indexOf('FLA') != -1 && vm.studyAreaService.flowAnywhereData">
+                        <div class ="well well-sm">
+                            <h3 class="collapsible" ng-click="vm.collapseSection($event, 'stats', 'FLA')"><i ng-class="!vm.sectionCollapsed['FLA'] ? 'fa fa-chevron-right': 'fa fa-chevron-down'"></i>&nbsp;&nbsp;Flow Anywhere Method</h3>
+                            <div class="collapsible-content">
+                                <div ng-if="vm.studyAreaService.flowAnywhereData.results">
+                                    <div class="wim-alert-warning" ng-if="vm.studyAreaService.flowAnywhereData.results.Warnings.length > 0">{{vm.studyAreaService.flowAnywhereData.results.Warnings}}</div>
+
+                                    <!--Flow Anywhere Estimated Flow-->
+                                    <h3 class="reportChartHeader">Estimated Flow</h3>
+                                    <button class="chartExportButton" ng-click="vm.downloadPNG('estimatedFlowFLAGraph')">Download PNG</button>
+                                    <nvd3 id="estimatedFlowFLAGraph" options="vm.studyAreaService.flowAnywhereData.graphData.options" data="vm.studyAreaService.flowAnywhereData.graphData.data"></nvd3>
+                                    <a ng-click="vm.isEstimatedFlowFLATableOpen = !vm.isEstimatedFlowFLATableOpen">
+                                        <span ng-show="vm.isEstimatedFlowFLATableOpen">Hide</span>
+                                        <span ng-hide="vm.isEstimatedFlowFLATableOpen">Show</span> table<br>
+                                    </a>
+                                    <div ng-if="vm.isEstimatedFlowFLATableOpen">
+                                        <div class="well well-sm">
+
+                                            <table id="estimatedFlowFLATable" class="table table-condensed" title="Estimated Flow">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Date</th>
+                                                        <th>Estimated Flow (cfs)</th>
+                                                        <th>Observed Flow ({{vm.studyAreaService.flowAnywhereData.selectedGage.StationID}}) (cfs)</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody ng-repeat="estimatedFlow in vm.studyAreaService.flowAnywhereData.estimatedFlowsArray">
+                                                    <tr>
+                                                        <td>{{estimatedFlow.date | date:'yyyy/MM/dd'}}</td>
+                                                        <td>{{estimatedFlow.estimatedFlow.toUSGSvalue()}}</td>
+                                                        <td>{{estimatedFlow.observedFlow.toUSGSvalue()}}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <h3 class="reportChartHeader">Model Inputs</h3>
+                                    <div class="well well-sm">
+                                        <table id="flowAnywhereReferenceGage" class="table table-condensed">
+                                            <thead>
+                                                <tr>
+                                                    <th>Reference Gage</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td class="col-md-5">Station ID:</td>
+                                                    <td><a ng-click="vm.openGagePage(vm.studyAreaService.flowAnywhereData.selectedGage.StationID)">{{vm.studyAreaService.flowAnywhereData.selectedGage.StationID}}</a></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="col-md-5">Name:</td>
+                                                    <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData.selectedGage.Name}}</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="col-md-5">Latitude:</td>
+                                                    <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData.selectedGage.Latitude_DD}}</span><span> Decimal Degrees</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="col-md-5">Longitude:</td>
+                                                    <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData.selectedGage.Longitude_DD}}</span><span> Decimal Degrees</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="col-md-5">Drainage Area:</td>
+                                                    <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData.selectedGage.DrainageArea_sqMI}}</span><span> square miles</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="col-md-5">Aggregated Region:</td>
+                                                    <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData.selectedGage.AggregatedRegion}}</span></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <table id="flowAnywhereModelParameters" class="table table-condensed">
+                                            <thead>
+                                                <tr>
+                                                    <th>Model Parameters</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td class="col-md-5">Start Date:</td>
+                                                    <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData.graphData.data[0].values[0].x | date:'yyyy/MM/dd'}}</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="col-md-5">End Date:</td>
+                                                    <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData.graphData.data[0].values[vm.studyAreaService.flowAnywhereData.graphData.data[0].values.length-1].x | date:'yyyy/MM/dd'}}</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="col-md-5">Drainage Area Ratio:</td>
+                                                    <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData.results.AreaRato.toUSGSvalue()}}</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="col-md-5">Constant 1</td>
+                                                    <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData.results.Const1}}</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="col-md-5">Constant 2:</td>
+                                                    <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData.results.Const2}}</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="col-md-5">Constant 3:</td>
+                                                    <td class="col-md-7"><span>{{vm.studyAreaService.flowAnywhereData.results.Const3}}</span></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <h4>Flow Anywhere Method Citations</h4>
+                                    <a href="https://doi.org/10.3133/sir20125232" target="_blank">Linhart, S.M., Nania, J.F., Sanders, C.L., Jur., and and Archfield, S.A., 2012, Computing daily mean streamflow at ungaged locations in Iowa by using the Flow Anywhere and Flow Duration Curve Transfer statistical methods: U.S. Geological Survey Scientific Investigations Report 2012-5232, 50 p.</a>
+                                </div>
+                                <span ng-if="!vm.studyAreaService.flowAnywhereData.results" class="reportSpinner">&nbsp;<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></span>
+                            </div>
+
+                        </div>
+                    </div>
+
+                <!-- Channel Width Weighting Application -->     
                 <div class="well well-sm"  ng-if="vm.regionService.selectedRegion.Applications.indexOf('ChannelWidthWeighting') != -1 && vm.nssService.selectedStatisticsGroupList.name.indexOf('Peak-Flow Statistics') != -1">
                     <h3 class="collapsible" ng-click="vm.collapseSection($event, 'stats', 'ChannelWidthWeighting')"><i ng-class="!vm.sectionCollapsed['ChannelWidthWeighting'] ? 'fa fa-chevron-right': 'fa fa-chevron-down'"></i>&nbsp;&nbsp;Channel-width Methods Weighting</h3>
                         <div class="collapsible-content">
@@ -431,10 +546,10 @@
                         <i ng-class="vm.studyAreaService.additionalFeaturesLoaded ? 'fa fa-download' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Download<span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="#" ng-click="vm.downloadGeoJSON()" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="GeoJSON"><span class="fa fa-download"></span>&nbsp;&nbsp;GeoJSON</a></li>
-                        <li><a href="#" ng-click="vm.isFlowTableOpen = true; vm.isExceedanceTableOpen = true; vm.downloadCSV()" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="CSV"><span class="fa fa-download"></span>&nbsp;&nbsp;CSV</a></li>
-                        <li><a href="#" ng-click="vm.downloadShapeFile()" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="ShapeFile"><span class="fa fa-download"></span>&nbsp;&nbsp;ShapeFile</a></li>
-                        <li><a href="#" ng-click="vm.downloadKML()" analytics-on analytics-event="Download" analytics-category="Report" analytics-label="KML"><span class="fa fa-download"></span>&nbsp;&nbsp;KML</a></li>
+                        <li><a href="#" ng-click="vm.downloadGeoJSON()"><span class="fa fa-download"></span>&nbsp;&nbsp;GeoJSON</a></li>
+                        <li><a href="#" ng-click="vm.isFlowTableOpen = true; vm.isExceedanceTableOpen = true; vm.downloadCSV()"><span class="fa fa-download"></span>&nbsp;&nbsp;CSV</a></li>
+                        <li><a href="#" ng-click="vm.downloadShapeFile()"><span class="fa fa-download"></span>&nbsp;&nbsp;ShapeFile</a></li>
+                        <li><a href="#" ng-click="vm.downloadKML()"><span class="fa fa-download"></span>&nbsp;&nbsp;KML</a></li>
                     </ul>
                 </div>
             </div>
@@ -444,7 +559,7 @@
     <div class="modal-footer hidden-print">
         <div class="btn-group">
             <button class="btn-black" ng-click="vm.close()"><i class="fa fa-close"></i>&nbsp;&nbsp;Close</button>
-            <button class="btn-blue" ng-click="vm.print()" analytics-on analytics-event="Print" analytics-category="Report" analytics-label="Print"><i class="fa fa-print"></i>&nbsp;&nbsp;Print</button>
+            <button class="btn-blue" ng-click="vm.print()"><i class="fa fa-print"></i>&nbsp;&nbsp;Print</button>
         </div>
     </div>
     

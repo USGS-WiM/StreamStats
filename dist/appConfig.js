@@ -1,5 +1,5 @@
 var configuration = {};
-configuration.version = "4.10.0";
+configuration.version = "4.12.0";
 configuration.environment = 'development';
 
 configuration.baseurls =
@@ -14,7 +14,8 @@ configuration.baseurls =
         'GageStatsServices': 'https://test.streamstats.usgs.gov/gagestatsservices',
         'WeightingServices': 'https://ss-weightingservices.streamstats.usgs.gov',
         'SCStormRunoffServices': 'https://streamstats.usgs.gov/local/scrunoffservices',
-        'NationalMapServices': 'https://hydro.nationalmap.gov/arcgis/rest/services'
+        'NationalMapServices': 'https://hydro.nationalmap.gov/arcgis/rest/services',
+        'FlowAnywhereRegressionServices': 'https://streamstats.usgs.gov/regressionservices'
     };
 
 //override streamstats arguments if on production, these get overriden again in MapController after load balancer assigns a server
@@ -25,6 +26,7 @@ if (window.location.host === 'streamstats.usgs.gov') {
         configuration.baseurls.WaterUseServices = 'https://streamstats.usgs.gov/wateruseservices',
         configuration.baseurls.StormRunoffServices = 'https://streamstats.usgs.gov/runoffmodelingservices',
         configuration.baseurls.GageStatsServices = 'https://streamstats.usgs.gov/gagestatsservices',
+		configuration.baseurls.FlowAnywhereRegressionServices = 'https://streamstats.usgs.gov/regressionservices',
         configuration.environment = 'production';
 }
 
@@ -40,16 +42,15 @@ configuration.queryparams =
         'statisticsGroupParameterLookup': '/scenarios?regions={0},NA&statisticgroups={1}&regressionregions={2}',
         'estimateFlows': '/scenarios/estimate?regions={0},NA',
         'SSdelineation': '/streamstatsservices/watershed.{0}?rcode={1}&xlocation={2}&ylocation={3}&crs={4}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
-        'SSstormwaterDelineation': '/stormwaterservices/watershed?rcode={0}&xlocation={1}&ylocation={2}&surfacecontributiononly={3}',
+        'SSstormwaterDelineation': '/stormwaterservices/watershed?rcode={0}&xlocation={1}&ylocation={2}&simplify=false&surfacecontributiononly={3}',
         'SSwatershedByWorkspace': '/streamstatsservices/watershed.{0}?rcode={1}&workspaceID={2}&crs={3}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
         'SSeditBasin': '/streamstatsservices/watershed/edit.{0}?rcode={1}&workspaceID={2}&crs={3}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
         'SSAvailableParams': '/streamstatsservices/parameters.json?rcode={0}',
         'SSComputeParams': '/streamstatsservices/parameters.json?rcode={0}&workspaceID={1}&includeparameters={2}',
         'SSavailableFeatures': '/streamstatsservices/features.json?workspaceID={0}',
         'SSfeatures': '/streamstatsservices/features.geojson?workspaceID={0}&crs={1}&includefeatures={2}&simplify=true',
-        'SSStateLayers': '/arcgis/rest/services/StreamStats/stateServices_test/MapServer',
-        'SSNationalLayers': '/arcgis/rest/services/StreamStats/nationalLayers_test/MapServer',
-        'FARefGage': '/2/query?geometry={0}&geometryType=esriGeometryPoint&inSR={1}&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
+        'SSStateLayers': '/arcgis/rest/services/StreamStats/stateServices/MapServer',
+        'SSNationalLayers': '/arcgis/rest/services/StreamStats/nationalLayers/MapServer',
         'regionService': '/arcgis/rest/services/ss_studyAreas_prod/MapServer/identify',
         'NLCDQueryService': '/LandCover/USGS_EROS_LandCover_NLCD/MapServer/4',
         'regulationService': '/arcgis/rest/services/regulations/{0}/MapServer/exts/RegulationRESTSOE/Regulation',
@@ -85,7 +86,9 @@ configuration.queryparams =
         'SCStormRunoffBohman1992' : '/urbanhydrographbohman1992',
         'SCStormRunoffSyntheticUnitHydrograph': '/calculatemissingparametersSCSUH',
         'SCStormRunoffSyntheticUnitComputerGraphResults': '/scsyntheticunithydrograph',
-        'SCStormRunoffPRF': '/prf'
+        'SCStormRunoffPRF': '/prf',
+        'FlowAnywhereEstimates': '/models/FLA/estimate?state={0}',
+        'FlowAnywhereGages': '/arcgis/rest/services/IowaStreamEst/FlowAnywhere/MapServer/1/query?geometry={0},{1}&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.da_pub_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson'
     };
 
 configuration.SupportTicketService = {
@@ -268,7 +271,7 @@ configuration.regions = [
     { "RegionID": "HI", "Name": "Hawaii", "Bounds": [[18.921786, -160.242406], [22.22912, -154.791096]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     {
         "RegionID": "IA", "Name": "Iowa", "Bounds": [[40.371946, -96.640709], [43.501457, -90.142796]], "Layers":{},
-        "Applications": ["FDCTM"],
+        "Applications": ["FDCTM", "FLA"],
         "regionEnabled": true,
         "ScenariosAvailable": true
     },
@@ -412,13 +415,14 @@ configuration.regions = [
                     "layerOptions": {
                         "zIndex": 1,
                         "format": "png8",
+						"layers": [0,1,2],
                         "f": "image"
                     },
                     "queryProperties": { "Pipe": { "USGS_Type": "USGS Type", "USGS_SourceID": "USGS Source ID", "USGS_Town": "USGS Town" } }
 
                 }
             }, 
-		"Applications": ["StormDrain"], "regionEnabled": false, "ScenariosAvailable": false
+		"Applications": ["StormDrain"], "regionEnabled": true, "ScenariosAvailable": true
     },
     { "RegionID": "MS", "Name": "Mississippi", "Bounds": [[30.194935, -91.643682], [35.005041, -88.090468]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     {
@@ -621,7 +625,7 @@ configuration.regions = [
     { "RegionID": "WV", "Name": "West Virginia", "Bounds": [[37.20491, -82.647158], [40.637203, -77.727467]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "WY", "Name": "Wyoming", "Bounds": [[40.994289, -111.053428], [45.002793, -104.051705]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
     { "RegionID": "CRB", "Name": "Connecticut River Basin", "Bounds": [[41.227366, -73.254776], [45.305324, -71.059248]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": false },
-    { "RegionID": "DRB", "Name": "Delaware River Basin", "Bounds": [[38.666626, -76.452907], [42.507076, -74.319593]], "Layers": {}, "Applications": ["Wateruse"], "regionEnabled": true, "ScenariosAvailable": false },
+    { "RegionID": "DRB", "Name": "Delaware River Basin", "Bounds": [[38.666626, -76.452907], [42.507076, -74.319593]], "Layers": {}, "Applications": ["Wateruse"], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "RRB", "Name": "Rainy River Basin", "Bounds": [[47.268377, -95.64855], [50.054196, -89.766532]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true }
 
 ];//end regions
@@ -814,8 +818,8 @@ configuration.overlayedLayers = {
                 "layerName": "Region",
                 "layerId": 1,
                 "legend": [{                        
-                    "contentType": "image/png",
-                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAEhJREFUOI1jYWBgYJg7d+5/BiqA5ORkRhZqGcbAAHEYC7UMgwHaG5icnMxIigHoQTYEvTxq4KiBw9JASouzIeDl5ORkRmpWAQArIxX92VSV8QAAAABJRU5ErkJggg==",
+                    "contentType": "image/svg+xml;base64",
+                    "imageData": "PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJ5ZXMiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMSIgaGVpZ2h0PSI2Ij4KPHBhdGggc3R5bGU9ImZpbGw6I2ViZWJlYjsgc3Ryb2tlOm5vbmU7IiBkPSJNMCAwTDEgMUwwIDB6Ii8+CjxwYXRoIHN0eWxlPSJmaWxsOiNkN2Q3ZDc7IHN0cm9rZTpub25lOyIgZD0iTTEgMEwxIDFMMzAgMUwxIDB6Ii8+CjxwYXRoIHN0eWxlPSJmaWxsOiNlYmViZWI7IHN0cm9rZTpub25lOyIgZD0iTTMwIDBMMzEgMUwzMCAweiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojYzNjM2MzOyBzdHJva2U6bm9uZTsiIGQ9Ik0wIDFDMS4zNDkyMyA5LjA4NDc4IDI5LjY1MDggOS4wODQ3NyAzMSAxTDMwIDFMMzAgNUwxIDVMMCAxeiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojODc4Nzg3OyBzdHJva2U6bm9uZTsiIGQ9Ik0xIDFMMSA1TDMwIDVMMzAgMUwxIDF6Ii8+CjxwYXRoIHN0eWxlPSJmaWxsOiNlMWUxZTE7IHN0cm9rZTpub25lOyIgZD0iTTAgNUwxIDZMMCA1TTMwIDVMMzEgNkwzMCA1eiIvPgo8L3N2Zz4K",
                     "label": "2-digit HU"
                 }]
             },
@@ -823,8 +827,8 @@ configuration.overlayedLayers = {
                 "layerName": "Subregion",
                 "layerId": 2,
                 "legend": [{                        
-                    "contentType": "image/png",
-                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAElJREFUOI3t1DEKACAMA8AI/jTvylvrVEFwqpmkmTpdM2XCnAkAkuIVIjk26IikIDkOML9UsLxtDRtssMGPQccu2hoeA1vdwVsWQMARe7k7EAEAAAAASUVORK5CYII=",
+                    "contentType": "image/svg+xml;base64",
+                    "imageData": "PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJ5ZXMiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMSIgaGVpZ2h0PSI2Ij4KPHBhdGggc3R5bGU9ImZpbGw6I2ZmZmZmZjsgc3Ryb2tlOm5vbmU7IiBkPSJNMCAwTDAgNkwzMSA2TDMxIDBMMCAweiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojYTVhNWE1OyBzdHJva2U6bm9uZTsiIGQ9Ik0xLjMzMzMzIDIuNjY2NjdMMS42NjY2NyAzLjMzMzMzTDEuMzMzMzMgMi42NjY2N3oiLz4KPHBhdGggc3R5bGU9ImZpbGw6Izg3ODc4Nzsgc3Ryb2tlOm5vbmU7IiBkPSJNMiAyTDIgNEwyOSA0TDI5IDJMMiAyeiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojZTFlMWUxOyBzdHJva2U6bm9uZTsiIGQ9Ik0yOS4zMzMzIDIuNjY2NjdMMjkuNjY2NyAzLjMzMzMzTDI5LjMzMzMgMi42NjY2N3oiLz4KPC9zdmc+Cg==",
                     "label": "4-digit HU"
                 }]
             },
@@ -832,8 +836,8 @@ configuration.overlayedLayers = {
                 "layerName": "Basin",
                 "layerId": 3,
                 "legend": [{                        
-                    "contentType": "image/png",
-                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAElJREFUOI3t1DEKACAMA8AI/jTvylvrVEFwqpmkmTpdM2XCnAkAkuIVIjk26IikIDkOML9UsLxtDRtssMGPQccu2hoeA1vdwVsWQMARe7k7EAEAAAAASUVORK5CYII=",
+                    "contentType": "image/svg+xml;base64",
+                    "imageData": "PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJ5ZXMiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMSIgaGVpZ2h0PSI2Ij4KPHBhdGggc3R5bGU9ImZpbGw6I2ZmZmZmZjsgc3Ryb2tlOm5vbmU7IiBkPSJNMCAwTDAgNkwzMSA2TDMxIDBMMCAweiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojYTVhNWE1OyBzdHJva2U6bm9uZTsiIGQ9Ik0xLjMzMzMzIDIuNjY2NjdMMS42NjY2NyAzLjMzMzMzTDEuMzMzMzMgMi42NjY2N3oiLz4KPHBhdGggc3R5bGU9ImZpbGw6Izg3ODc4Nzsgc3Ryb2tlOm5vbmU7IiBkPSJNMiAyTDIgNEwyOSA0TDI5IDJMMiAyeiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojZTFlMWUxOyBzdHJva2U6bm9uZTsiIGQ9Ik0yOS4zMzMzIDIuNjY2NjdMMjkuNjY2NyAzLjMzMzMzTDI5LjMzMzMgMi42NjY2N3oiLz4KPC9zdmc+Cg==",
                     "label": "6-digit HU"
                 }]
             },
@@ -841,8 +845,8 @@ configuration.overlayedLayers = {
                 "layerName": "Subbasin",
                 "layerId": 4,
                 "legend": [{                        
-                    "contentType": "image/png",
-                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAElJREFUOI3t1DEKACAMA8AI/jTvylvrVEFwqpmkmTpdM2XCnAkAkuIVIjk26IikIDkOML9UsLxtDRtssMGPQccu2hoeA1vdwVsWQMARe7k7EAEAAAAASUVORK5CYII=",
+                    "contentType": "image/svg+xml;base64",
+                    "imageData": "PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJ5ZXMiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMSIgaGVpZ2h0PSI2Ij4KPHBhdGggc3R5bGU9ImZpbGw6I2ZmZmZmZjsgc3Ryb2tlOm5vbmU7IiBkPSJNMCAwTDAgNkwzMSA2TDMxIDBMMCAweiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojYTVhNWE1OyBzdHJva2U6bm9uZTsiIGQ9Ik0xLjMzMzMzIDIuNjY2NjdMMS42NjY2NyAzLjMzMzMzTDEuMzMzMzMgMi42NjY2N3oiLz4KPHBhdGggc3R5bGU9ImZpbGw6Izg3ODc4Nzsgc3Ryb2tlOm5vbmU7IiBkPSJNMiAyTDIgNEwyOSA0TDI5IDJMMiAyeiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojZTFlMWUxOyBzdHJva2U6bm9uZTsiIGQ9Ik0yOS4zMzMzIDIuNjY2NjdMMjkuNjY2NyAzLjMzMzMzTDI5LjMzMzMgMi42NjY2N3oiLz4KPC9zdmc+Cg==",
                     "label": "8-digit HU"
                 }]
             },
@@ -850,8 +854,8 @@ configuration.overlayedLayers = {
                 "layerName": "Watershed",
                 "layerId": 5,
                 "legend": [{                        
-                    "contentType": "image/png",
-                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAElJREFUOI3t1DEKACAMA8AI/jTvylvrVEFwqpmkmTpdM2XCnAkAkuIVIjk26IikIDkOML9UsLxtDRtssMGPQccu2hoeA1vdwVsWQMARe7k7EAEAAAAASUVORK5CYII=",
+                    "contentType": "image/svg+xml;base64",
+                    "imageData": "PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJ5ZXMiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMSIgaGVpZ2h0PSI2Ij4KPHBhdGggc3R5bGU9ImZpbGw6I2ZmZmZmZjsgc3Ryb2tlOm5vbmU7IiBkPSJNMCAwTDAgNkwzMSA2TDMxIDBMMCAweiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojYTVhNWE1OyBzdHJva2U6bm9uZTsiIGQ9Ik0xLjMzMzMzIDIuNjY2NjdMMS42NjY2NyAzLjMzMzMzTDEuMzMzMzMgMi42NjY2N3oiLz4KPHBhdGggc3R5bGU9ImZpbGw6Izg3ODc4Nzsgc3Ryb2tlOm5vbmU7IiBkPSJNMiAyTDIgNEwyOSA0TDI5IDJMMiAyeiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojZTFlMWUxOyBzdHJva2U6bm9uZTsiIGQ9Ik0yOS4zMzMzIDIuNjY2NjdMMjkuNjY2NyAzLjMzMzMzTDI5LjMzMzMgMi42NjY2N3oiLz4KPC9zdmc+Cg==",
                     "label": "10-digit HU"
                 }]
             },
@@ -859,8 +863,8 @@ configuration.overlayedLayers = {
                 "layerName": "Subwatershed",
                 "layerId": 6,
                 "legend": [{                        
-                    "contentType": "image/png",
-                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAElJREFUOI3t1DEKACAMA8AI/jTvylvrVEFwqpmkmTpdM2XCnAkAkuIVIjk26IikIDkOML9UsLxtDRtssMGPQccu2hoeA1vdwVsWQMARe7k7EAEAAAAASUVORK5CYII=",
+                    "contentType": "image/svg+xml;base64",
+                    "imageData": "PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJ5ZXMiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMSIgaGVpZ2h0PSI2Ij4KPHBhdGggc3R5bGU9ImZpbGw6I2ZmZmZmZjsgc3Ryb2tlOm5vbmU7IiBkPSJNMCAwTDAgNkwzMSA2TDMxIDBMMCAweiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojYTVhNWE1OyBzdHJva2U6bm9uZTsiIGQ9Ik0xLjMzMzMzIDIuNjY2NjdMMS42NjY2NyAzLjMzMzMzTDEuMzMzMzMgMi42NjY2N3oiLz4KPHBhdGggc3R5bGU9ImZpbGw6Izg3ODc4Nzsgc3Ryb2tlOm5vbmU7IiBkPSJNMiAyTDIgNEwyOSA0TDI5IDJMMiAyeiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojZTFlMWUxOyBzdHJva2U6bm9uZTsiIGQ9Ik0yOS4zMzMzIDIuNjY2NjdMMjkuNjY2NyAzLjMzMzMzTDI5LjMzMzMgMi42NjY2N3oiLz4KPC9zdmc+Cg==",
                     "label": "12-digit HU"
                 }]
             },
@@ -868,8 +872,8 @@ configuration.overlayedLayers = {
                 "layerName": "",
                 "layerId": 7,
                 "legend": [{                        
-                    "contentType": "image/png",
-                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAElJREFUOI3t1DEKACAMA8AI/jTvylvrVEFwqpmkmTpdM2XCnAkAkuIVIjk26IikIDkOML9UsLxtDRtssMGPQccu2hoeA1vdwVsWQMARe7k7EAEAAAAASUVORK5CYII=",
+                    "contentType": "image/svg+xml;base64",
+                    "imageData": "PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJ5ZXMiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMSIgaGVpZ2h0PSI2Ij4KPHBhdGggc3R5bGU9ImZpbGw6I2ZmZmZmZjsgc3Ryb2tlOm5vbmU7IiBkPSJNMCAwTDAgNkwzMSA2TDMxIDBMMCAweiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojYTVhNWE1OyBzdHJva2U6bm9uZTsiIGQ9Ik0xLjMzMzMzIDIuNjY2NjdMMS42NjY2NyAzLjMzMzMzTDEuMzMzMzMgMi42NjY2N3oiLz4KPHBhdGggc3R5bGU9ImZpbGw6Izg3ODc4Nzsgc3Ryb2tlOm5vbmU7IiBkPSJNMiAyTDIgNEwyOSA0TDI5IDJMMiAyeiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojZTFlMWUxOyBzdHJva2U6bm9uZTsiIGQ9Ik0yOS4zMzMzIDIuNjY2NjdMMjkuNjY2NyAzLjMzMzMzTDI5LjMzMzMgMi42NjY2N3oiLz4KPC9zdmc+Cg==",
                     "label": "14-digit HU"
                 }]
             },
@@ -877,8 +881,8 @@ configuration.overlayedLayers = {
                 "layerName": "",
                 "layerId": 8,
                 "legend": [{                        
-                    "contentType": "image/png",
-                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAElJREFUOI3t1DEKACAMA8AI/jTvylvrVEFwqpmkmTpdM2XCnAkAkuIVIjk26IikIDkOML9UsLxtDRtssMGPQccu2hoeA1vdwVsWQMARe7k7EAEAAAAASUVORK5CYII=",
+                    "contentType": "image/svg+xml;base64",
+                    "imageData": "PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJ5ZXMiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMSIgaGVpZ2h0PSI2Ij4KPHBhdGggc3R5bGU9ImZpbGw6I2ZmZmZmZjsgc3Ryb2tlOm5vbmU7IiBkPSJNMCAwTDAgNkwzMSA2TDMxIDBMMCAweiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojYTVhNWE1OyBzdHJva2U6bm9uZTsiIGQ9Ik0xLjMzMzMzIDIuNjY2NjdMMS42NjY2NyAzLjMzMzMzTDEuMzMzMzMgMi42NjY2N3oiLz4KPHBhdGggc3R5bGU9ImZpbGw6Izg3ODc4Nzsgc3Ryb2tlOm5vbmU7IiBkPSJNMiAyTDIgNEwyOSA0TDI5IDJMMiAyeiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojZTFlMWUxOyBzdHJva2U6bm9uZTsiIGQ9Ik0yOS4zMzMzIDIuNjY2NjdMMjkuNjY2NyAzLjMzMzMzTDI5LjMzMzMgMi42NjY2N3oiLz4KPC9zdmc+Cg==",
                     "label": "16-digit HU"
                 }]
             }

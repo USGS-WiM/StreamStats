@@ -1,4 +1,4 @@
-﻿'use strict';
+'use strict';
 
 //load dependencies
 var gulp = require('gulp'),

@@ -3,47 +3,50 @@
     "name": "StreamStats",
     "organization": "U.S. Geological Survey",
     "description": "StreamStats client application",
-    "version": "v4.7.0",
-    "statusOptionsURL":"https://github.com/GSA/code-gov-web/blob/master/src/assets/schemas/2.0.0.json#L144-L152",
-	"status": "Production",	
+    "version": "4.12.0",
+    "status": "Production",	
 
     "permissions": {
       "usageType": "openSource",
       "licenses": [
         {
           "name": "Public Domain, CC0-1.0",
-          "URL": "https://github.com/usgs/best-practices/blob/master/LICENSE.md"
+          "URL": "https://raw.githubusercontent.com/USGS-WiM/StreamStats/master/LICENSE.md"
         }
       ]
     },
 
-    "homepageURL": "https://streamstats.usgs.gov",
+    "homepageURL": "https://streamstats.usgs.gov/ss",
     "downloadURL": "https://github.com/USGS-WiM/StreamStats/archive/master.zip",
-    "disclaimerURL": "https://github.com/USGS-WiM/StreamStats/blob/master/DISCLAIMER.md",
+    "disclaimerURL": "https://raw.githubusercontent.com/USGS-WiM/StreamStats/master/DISCLAIMER.md",
     "repositoryUrl": "https://github.com/USGS-WiM/StreamStats",
     "vcs": "git",
 
-    "laborHours": null,
+    "laborHours": 0,
 
     "tags": [
-      "Streamstats", "interactive map",
-	    "flow statistics",
-      "client"
+      "StreamStats", 
+      "interactive map",
+      "watershed delineation",
+      "basin characteristics",
+      "flow statistics",
+      "client",
+      "doi|https://doi.org/10.5066/F7BP01QF"
     ],
 
     "languages": [
-	    "typescript",
-	    "javascript",
-	    "AngularJS"
+      "typescript",
+      "javascript",
+      "AngularJS"
     ],
 
     "contact": {
-      "name": "Jeremy Newson",
-      "email": "jknewson@usgs.gov"
+      "name": "Harper Wavra",
+      "email": "hwavra@usgs.gov"
     },
 
     "date": {
-      "metadataLastUpdated": "2019-04-19"
+      "metadataLastUpdated": "2022-01-11"
     }
   }
 ]

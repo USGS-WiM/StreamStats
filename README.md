@@ -7,8 +7,8 @@ StreamStats client application
 ### Prerequisites
 
 ##### required software
-[node.js](http://nodejs.org)  
-[git](https://git-scm.com/)  
+- [node.js](http://nodejs.org) version 10.15.0
+- [git](https://git-scm.com/)  
 
 Install global dependencies
 ```bash
@@ -90,14 +90,7 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 **Make sure you have the latest dependencies by running `npm install`**
 
 ##### Step 1.
-Bump the version.  Run only one of the below commands.  
-This creates a local commit with the package.json, bower.json and tsd.json updated to the new version number
-
-```
-gulp patch     # makes v0.1.0 → v0.1.1
-gulp feature   # makes v0.1.1 → v0.2.0
-gulp release   # makes v0.2.1 → v1.0.0
-```
+Update version number. Search for the current version number in the code, replace all instances of old version number with new version number.
 
 ##### Step 2.   
  Push the commit that contains the json files with bumped versions to your personal github repo 
