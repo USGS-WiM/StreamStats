@@ -573,8 +573,36 @@ module StreamStats.Controllers {
         // Gage Analysis Plots methods
 
         public getGagePlots() {
-            this.getPeakInfo(); // Annual Peak Streamflow plot
+            this.getDischargeInfo(); // Annual Peak Streamflow plot
         }
+
+        public getDischargeInfo() {
+            const url = 'https://waterdata.usgs.gov/nwisweb/get_ratings?site_no=' + this.gage.code + '&file_type=exsa'
+            console.log('getDischargeInfo', url)
+            const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+            this.Execute(request).then(
+                (response: any) => {
+                    console.log('response?', response)
+                    const dischargeValue = [];
+                    const data = response.data.split('\n').filter(r => { return (!r.startsWith("#") && r != "") });
+                    data.shift().split('\t');
+                    data.shift();
+                    let dataRow = data.shift().split('\t');
+                    console.log('data', dataRow)  // delete some of the data.shifts so I get all data, not just first row of data.
+                    do {
+                        let dataColumn = data.shift().split('\t');
+                        const dischargeObj = {
+                            stage: dataColumn[0], 
+                            discharge: dataColumn[2]
+                        };
+                        dischargeValue.push(dischargeObj)
+                        console.log('dischargeObj', dischargeValue)
+                    } while (data.length > 0); // execute between the 2 brackets if any data is greater then 0
+                }, (error) => {
+                }).finally(() => {
+                    this.getPeakInfo();
+                });
+        }       
 
         //Get peak values from NWIS
         public getPeakInfo() {

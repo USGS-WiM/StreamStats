@@ -392,7 +392,34 @@ var StreamStats;
                 }
             };
             GagePageController.prototype.getGagePlots = function () {
-                this.getPeakInfo();
+                this.getDischargeInfo();
+            };
+            GagePageController.prototype.getDischargeInfo = function () {
+                var _this_1 = this;
+                var url = 'https://waterdata.usgs.gov/nwisweb/get_ratings?site_no=' + this.gage.code + '&file_type=exsa';
+                console.log('getDischargeInfo', url);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+                this.Execute(request).then(function (response) {
+                    console.log('response?', response);
+                    var dischargeValue = [];
+                    var data = response.data.split('\n').filter(function (r) { return (!r.startsWith("#") && r != ""); });
+                    data.shift().split('\t');
+                    data.shift();
+                    var dataRow = data.shift().split('\t');
+                    console.log('data', dataRow);
+                    do {
+                        var dataColumn = data.shift().split('\t');
+                        var dischargeObj = {
+                            stage: dataColumn[0],
+                            discharge: dataColumn[2]
+                        };
+                        dischargeValue.push(dischargeObj);
+                        console.log('dischargeObj', dischargeValue);
+                    } while (data.length > 0);
+                }, function (error) {
+                }).finally(function () {
+                    _this_1.getPeakInfo();
+                });
             };
             GagePageController.prototype.getPeakInfo = function () {
                 var _this_1 = this;
