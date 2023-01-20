@@ -45,6 +45,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bug that shows out of range parameter warning after parameters have been edited to be within range and report is reopened
 - Printed gage page now shows all table content instead of cutting of scrolling tables
 - Disclaimers on report are now not delimited by commas when downloaded as a CSV
+- Spelling error in the Google Analytics (DraingeArea to DrainageArea)
 
 ## [v4.11.1](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.11.1) - 2022-10-14
 
