@@ -196,14 +196,14 @@ module StreamStats.Controllers {
         public estPeakDates = undefined;
         public dailyFlow = undefined;
         public formattedFloodFreq = undefined;
-        public formattedPeakDates = undefined;
-        public formattedEstPeakDates = undefined;
-        public formattedDailyFlow = undefined;
+        public formattedPeakDates = [];
+        public formattedEstPeakDates = [];
+        public formattedDailyFlow = [];
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance'];
-        chartConfig: {  chart: {height: number, width: number, zooming: {type: string}},
+        chartConfig: {  chart: { height: number, width: number, zooming: {type: string} },
                         title: { text: string, align: string},
                         subtitle: { text: string, align: string},  
                         xAxis: {  type: string, title: {text: string}},
@@ -223,7 +223,6 @@ module StreamStats.Controllers {
             this.statCitationList = [];
             this.charCitationList = [];
             this.showPreferred = false;
-
             this.print = function () {
                 //ga event
                 gtag('event', 'Download', { 'Category': 'GagePage', "Type": 'Print' });
@@ -698,19 +697,16 @@ module StreamStats.Controllers {
         //Get data into (x, y) format and convert to dates in order to add it to the plot
         public formatData(): void {
             if (this.peakDates) {
-                this.formattedPeakDates = [];
                 this.peakDates.forEach(peakObj => {
                     this.formattedPeakDates.push({x: new Date(peakObj.peak_dt), y: peakObj.peak_va})
                 });
-            }
+            } 
             if (this.estPeakDates) {
-                this.formattedEstPeakDates = [];
                 this.estPeakDates.forEach(estPeakObj => {
                     this.formattedEstPeakDates.push({x: new Date(estPeakObj.peak_dt), y: estPeakObj.peak_va})
                 });
             }
             if (this.dailyFlow) {
-                this.formattedDailyFlow = [];
                 this.dailyFlow.forEach(dailyObj => {
                     if (dailyObj.qualifiers[0] === 'A') {
                     this.formattedDailyFlow.push({x: new Date(dailyObj.dateTime), y: parseInt(dailyObj.value)})
@@ -752,9 +748,9 @@ module StreamStats.Controllers {
 
         //Create chart
         public createAnnualFlowPlot(): void {
-            // console.log('peak value plot data', this.formattedPeakDates);
-            // console.log('estimated peak plot data', this.formattedEstPeakDates);
-            // console.log('daily flow plot data', this.formattedDailyFlow);
+            //console.log('peak value plot data', this.formattedPeakDates);
+            //console.log('estimated peak plot data', this.formattedEstPeakDates);
+            //console.log('daily flow plot data', this.formattedDailyFlow);
             this.chartConfig = {
                 chart: {
                     height: 450,
@@ -781,7 +777,7 @@ module StreamStats.Controllers {
                     title: {
                         text: 'Discharge (Q), in ft³/s'
                     },
-                    plotLines: []
+                    plotLines: [{value: null, color: null, width: null, zIndex: null, label: {text: null}}]
                 },
                 series  : [
                 {
@@ -807,7 +803,7 @@ module StreamStats.Controllers {
                         symbol: '',
                         radius: 3
                     },
-                    showInLegend: this.formattedDailyFlow != undefined
+                    showInLegend: this.formattedDailyFlow.length > 0
                 },
                 {
                     name    : 'Annual Peak Streamflow',

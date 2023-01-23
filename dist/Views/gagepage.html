@@ -200,23 +200,36 @@
                 <div style="padding-top: 10px;">
                     <div class="panel panel-default">
                         <div class="panel-heading">Gage Information</div>
-                            <table class="table">
+                        <div class="panel-body">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th >Name</th>
+                                        <th >Value</th>
+                                    </tr>
+                                </thead>
                                 <tbody>
                                     <tr>
-                                        <th scope="row">USGS Station ID: </th>
-                                            <td>{{vm.gage.code}}</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">Station Name:</th>
-                                            <td>{{vm.gage.name}}</td>
-                                    </tr>
+                                        <th scope="row">USGS Station Number</th>
+                                        <td><a href="https://waterdata.usgs.gov/monitoring-location/{{vm.gage.code}}">{{vm.gage.code}}</a></td>
+                                        </tr>
+                                        <tr>
+                                        <th scope="row">Station Name</th>
+                                        <td>{{vm.gage.name}}</td>
+                                        </tr>
                                 </tbody>
                             </table>
+                        </div>
                     </div>
-                    <div class="panel panel-default">
+                    <center>
+                    <div ng-if="!vm.chartConfig" class="panel panel-default reportSpinner">
+                        &nbsp;<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
+                    </div>
+                    <div class="panel panel-default" ng-if="vm.chartConfig">
                         <!-- <div class="panel-heading">Annual Peak Streamflow</div> -->
-                        <highchart id="chart1" config="vm.chartConfig"></highchart>
+                        <highchart config="vm.chartConfig"></highchart>
                     </div>
+                    </center>
                 </div>
             </div>
         </div>
