@@ -199,6 +199,7 @@ module StreamStats.Controllers {
         public formattedPeakDates = [];
         public formattedEstPeakDates = [];
         public formattedDailyFlow = [];
+        public dailyRange = [];
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -216,7 +217,7 @@ module StreamStats.Controllers {
                         subtitle: { text: string, align: string},  
                         xAxis: { type: string, tickPositions: any[], title: {text: string}},
                         yAxis: { title: {text: string}, custom: { allowNegativeLog: boolean}},
-                        colorAxis: { type: string, stops: any[], startOnTick: boolean, endOnTick: boolean, allowNegativeLog: boolean}
+                        colorAxis: { type: string, min: number, max: number, stops: any[], startOnTick: boolean, endOnTick: boolean, allowNegativeLog: boolean}
                         series: { name: string, type: string, data: number[], tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number}[]; };
         constructor($scope: IGagePageControllerScope, $http: ng.IHttpService, modalService: Services.IModalService, modal:ng.ui.bootstrap.IModalServiceInstance) {
             super($http, configuration.baseurls.StreamStats);
@@ -597,8 +598,10 @@ module StreamStats.Controllers {
                     data.shift().split('\t');
                     //remove extra random line
                     data.shift();
+                    console.log('before', data);
                     do {
                         let dataRow = data.shift().split('\t');
+                        console.log('after', dataRow);
                         const peakObj = {
                             agency_cd: dataRow[0], 
                             site_no: dataRow[1],
@@ -703,6 +706,7 @@ module StreamStats.Controllers {
                     if (dailyHeatObj.qualifiers[0] === 'A') {
                         this.formattedDailyHeat.push({x: daysIntoYear(now), y: new Date(dailyHeatObj.dateTime).getUTCFullYear(), value: parseInt(dailyHeatObj.value)})
                     }
+                    this.dailyRange.push(dailyHeatObj.value);
                 });
             }
             if (this.floodFreq) { //set up AEP plotLines
@@ -862,8 +866,55 @@ module StreamStats.Controllers {
             });
         }
 
+
         public createDailyRasterPlot(): void {
-            console.log('daily values for heatmap', this.formattedDailyHeat);
+            // let dailyMax  = this.dailyRange.reduce(function (accumulatedValue, currentValue) {
+            //     return Math.max(accumulatedValue, currentValue);
+            // }); console.log('Daily Max', dailyMax);
+            // let dailyMin  = this.dailyRange.reduce(function (accumulatedValue, currentValue) {
+            //     return Math.min(accumulatedValue, currentValue);
+            // }); console.log('Daily Min', dailyMin);
+
+            //                 // sort array ascending
+            //     const asc = arr => this.dailyRange.sort((a, b) => a - b);
+            //     console.log('sorted range', asc(this.dailyRange))
+
+            //     const sum = arr => this.dailyRange.reduce((a, b) => a + b, 0);
+            //     //console.log('sum', sum(this.dailyRange))
+
+            //     const mean = arr => sum(this.dailyRange) / this.dailyRange.length;
+                //console.log('mean', mean(this.dailyRange))
+
+
+                // sample standard deviation
+                // const std = (arr) => {
+                //     const mu = mean(arr);
+                //     const diffArr = arr.map(a => (a - mu) ** 2);
+                //     return Math.sqrt(sum(diffArr) / (arr.length - 1));
+                // };
+
+                // const quantile = (arr, q) => {
+                //     const sorted = asc(this.dailyRange);
+                //     const pos = (sorted.length - 1) * q;
+                //     const base = Math.floor(pos);
+                //     const rest = pos - base;
+                //     if (sorted[base + 1] !== undefined) {
+                //         return sorted[base] + rest * (sorted[base + 1] - sorted[base]);
+                //     } else {
+                //         return sorted[base];
+                //     }
+                // };
+
+                // const q25 = arr => quantile(arr, .25);
+
+                // const q50 = arr => quantile(arr, .50);
+
+                // const q75 = arr => quantile(arr, .75);
+
+                // const median = arr => q50(arr);
+
+                //console.log('quartiles', q25(this.dailyRange), q50(this.dailyRange), q75(this.dailyRange));
+
             this.heatChartConfig = {
                 // data: {
                 //     array: this.formattedDailyHeat
@@ -900,6 +951,8 @@ module StreamStats.Controllers {
                 },
                 colorAxis: {
                     type: 'logarithmic',
+                    min: null,
+                    max: null,
                     stops: [
                         [0 ,   '#FF0000'],
                         [0.3, '#FFCC33'],
@@ -940,6 +993,26 @@ module StreamStats.Controllers {
             }
         };
 
+        //color axis stops
+        public defineColorStops() {
+            this.heatChartConfig.colorAxis
+    //         colorAxis: {
+    //   dataClasses: [{
+    //     from: 0,
+    //     to: 50,
+    //     color: 'red'
+    //   }, {
+    //     from: 50,
+    //     to: 90,
+    //     color: 'green'
+    //   }, {
+    //     from: 90,
+    //     color: 'yellow'
+
+    //   }]
+    // },
+
+        }
         
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-

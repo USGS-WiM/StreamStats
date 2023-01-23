@@ -96,6 +96,7 @@ var StreamStats;
                 _this_1.formattedPeakDates = [];
                 _this_1.formattedEstPeakDates = [];
                 _this_1.formattedDailyFlow = [];
+                _this_1.dailyRange = [];
                 $scope.vm = _this_1;
                 _this_1.modalInstance = modal;
                 _this_1.modalService = modalService;
@@ -405,8 +406,10 @@ var StreamStats;
                     var data = response.data.split('\n').filter(function (r) { return (!r.startsWith("#") && r != ""); });
                     data.shift().split('\t');
                     data.shift();
+                    console.log('before', data);
                     do {
                         var dataRow = data.shift().split('\t');
+                        console.log('after', dataRow);
                         var peakObj = {
                             agency_cd: dataRow[0],
                             site_no: dataRow[1],
@@ -502,6 +505,7 @@ var StreamStats;
                         if (dailyHeatObj.qualifiers[0] === 'A') {
                             _this_1.formattedDailyHeat.push({ x: daysIntoYear(now), y: new Date(dailyHeatObj.dateTime).getUTCFullYear(), value: parseInt(dailyHeatObj.value) });
                         }
+                        _this_1.dailyRange.push(dailyHeatObj.value);
                     });
                 }
                 if (this.floodFreq) {
@@ -661,7 +665,6 @@ var StreamStats;
                 });
             };
             GagePageController.prototype.createDailyRasterPlot = function () {
-                console.log('daily values for heatmap', this.formattedDailyHeat);
                 this.heatChartConfig = {
                     chart: {
                         height: 450,
@@ -695,6 +698,8 @@ var StreamStats;
                     },
                     colorAxis: {
                         type: 'logarithmic',
+                        min: null,
+                        max: null,
                         stops: [
                             [0, '#FF0000'],
                             [0.3, '#FFCC33'],
@@ -734,6 +739,9 @@ var StreamStats;
                 };
             };
             ;
+            GagePageController.prototype.defineColorStops = function () {
+                this.heatChartConfig.colorAxis;
+            };
             GagePageController.prototype.init = function () {
                 this.AppVersion = configuration.version;
                 this.getGagePage();
