@@ -87,6 +87,7 @@ var StreamStats;
                     displayProp: 'id'
                 };
                 _this_1.URLsToDisplay = [];
+                _this_1.dischargeValues = undefined;
                 _this_1.floodFreq = undefined;
                 _this_1.peakDates = undefined;
                 _this_1.estPeakDates = undefined;
@@ -416,6 +417,7 @@ var StreamStats;
                         dischargeValue.push(dischargeObj);
                         console.log('dischargeObj', dischargeValue);
                     } while (data.length > 0);
+                    _this_1.dischargeValues = dischargeValue;
                 }, function (error) {
                 }).finally(function () {
                     _this_1.getPeakInfo();

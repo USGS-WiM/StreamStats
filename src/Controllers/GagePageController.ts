@@ -190,6 +190,7 @@ module StreamStats.Controllers {
         public peakValuePlot: any;
         public annualFlowPlot: any;
         public peakValues: any;
+        public dischargeValues = undefined;
         public floodFreq = undefined;
         public peakDates = undefined;
         public estPeakDates = undefined;
@@ -598,6 +599,7 @@ module StreamStats.Controllers {
                         dischargeValue.push(dischargeObj)
                         console.log('dischargeObj', dischargeValue)
                     } while (data.length > 0); // execute between the 2 brackets if any data is greater then 0
+                    this.dischargeValues = dischargeValue
                 }, (error) => {
                 }).finally(() => {
                     this.getPeakInfo();
