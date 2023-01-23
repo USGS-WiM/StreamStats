@@ -632,7 +632,7 @@ module StreamStats.Controllers {
                 (response: any) => {
                     const data = response.data
                     // create a lookup array for desired AEP IDs
-                    const lookup = [9, 852, 8, 4, 7, 3, 6, 1, 501, 5, 2, 500, 851, 1438, 818];
+                    const lookup = [9, 852, 8, 4, 7, 3, 6, 1, 501, 5, 2, 500, 851, 1438, 818, 2311, 2312, 2313, 2314, 2315, 2316, 2317, 2318];
                     let chartData = [];
                     do {
                         var IDs = data.statistics
@@ -703,7 +703,15 @@ module StreamStats.Controllers {
                         2: '#911eb4',
                         500: '#dcbeff',
                         851: '#fabed4',
-                        1438: '#469990'
+                        1438: '#469990',
+                        2311: '#f58231',
+                        2312: '#3cb44b',
+                        2313: '#e6194B',
+                        2314: '#bfef45',
+                        2315: '#911eb4',
+                        2316: '#9A6324',
+                        2317: '#ffe119',
+                        2318: '#42d4f4'
                     };
                 this.floodFreq.forEach((floodFreqItem) => {
                     let colorIndex = floodFreqItem.regressionTypeID;
