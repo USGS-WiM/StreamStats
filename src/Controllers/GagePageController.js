@@ -412,18 +412,40 @@ var StreamStats;
                     };
                     data.forEach(function (row) {
                         var dataRow = row.split('\t');
-                        console.log(dataRow);
                         dischargeObj.stage.push(dataRow[0]);
                         dischargeObj.discharge.push(dataRow[2]);
                     });
-                    console.log(dischargeObj);
                 }, function (error) {
-                    console.log(error);
                 }).finally(function () {
                     _this_1.getUSGSMeasured();
                 });
             };
             GagePageController.prototype.getUSGSMeasured = function () {
+                var _this_1 = this;
+                var url = 'https://waterdata.usgs.gov/nwis/measurements?site_no=' + this.gage.code + '&agency_cd=USGS&format=rdb_expanded';
+                console.log('usgsMeasuredURL', url);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+                this.Execute(request).then(function (response) {
+                    console.log('response usgsmeasured', response);
+                    var data = response.data.split('\n').filter(function (r) { return (!r.startsWith("#") && r != ""); });
+                    data.shift().split('\t');
+                    data.shift();
+                    var measuredObj = {
+                        stage: [],
+                        discharge: []
+                    };
+                    data.forEach(function (row) {
+                        var dataRow = row.split('\t');
+                        console.log(dataRow);
+                        measuredObj.stage.push(dataRow[10]);
+                        measuredObj.discharge.push(dataRow[11]);
+                    });
+                    console.log(measuredObj);
+                }, function (error) {
+                    console.log(error);
+                }).finally(function () {
+                    _this_1.getUSGSMeasured();
+                });
             };
             GagePageController.prototype.getPeakInfo = function () {
                 var _this_1 = this;

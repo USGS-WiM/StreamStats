@@ -599,20 +599,52 @@ module StreamStats.Controllers {
                     };
                     data.forEach(row => {
                         let dataRow = row.split('\t')
-                        console.log(dataRow)
+                        // console.log(dataRow)
                         dischargeObj.stage.push(dataRow[0])
                         dischargeObj.discharge.push(dataRow[2])
                     });
-                    console.log(dischargeObj)
+                    // console.log(dischargeObj)
                         // console.log('dischargeObj', dischargeValue)
                 }, (error) => {
-                    console.log(error)
+                    // console.log(error)
                 }).finally(() => {
                     this.getUSGSMeasured()
                 });
         }       
 
         public getUSGSMeasured() {
+            const url = 'https://waterdata.usgs.gov/nwis/measurements?site_no=' + this.gage.code + '&agency_cd=USGS&format=rdb_expanded'
+            console.log('usgsMeasuredURL', url)
+            const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+            this.Execute(request).then(
+                (response: any) => {
+                    console.log('response usgsmeasured', response)
+                    const data = response.data.split('\n').filter(r => { return (!r.startsWith("#") && r != "") });
+                    //console.log('data', data)
+                    data.shift().split('\t');
+                    //console.log('data with shift', data)
+                    data.shift();
+                    //console.log('another data shift', data)
+                    // let dataRow = data.shift().split('\t');
+                    // console.log('datarow splits', dataRow)
+                    // debugger;
+                    let measuredObj = {
+                        stage: [],
+                        discharge: []
+                    };
+                    data.forEach(row => {
+                        let dataRow = row.split('\t')
+                        console.log(dataRow)
+                        measuredObj.stage.push(dataRow[10])
+                        measuredObj.discharge.push(dataRow[11])
+                    });
+                    console.log(measuredObj)
+                        // console.log('dischargeObj', dischargeValue)
+                }, (error) => {
+                    console.log(error)
+                }).finally(() => {
+                    this.getUSGSMeasured()
+                });
 
         } 
 
