@@ -393,35 +393,37 @@ var StreamStats;
                 }
             };
             GagePageController.prototype.getGagePlots = function () {
-                this.getDischargeInfo();
+                this.getRatingCurve();
+                this.getPeakInfo();
             };
-            GagePageController.prototype.getDischargeInfo = function () {
+            GagePageController.prototype.getRatingCurve = function () {
                 var _this_1 = this;
                 var url = 'https://waterdata.usgs.gov/nwisweb/get_ratings?site_no=' + this.gage.code + '&file_type=exsa';
                 console.log('getDischargeInfo', url);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
                     console.log('response?', response);
-                    var dischargeValue = [];
                     var data = response.data.split('\n').filter(function (r) { return (!r.startsWith("#") && r != ""); });
                     data.shift().split('\t');
                     data.shift();
-                    var dataRow = data.shift().split('\t');
-                    console.log('data', dataRow);
-                    do {
-                        var dataColumn = data.shift().split('\t');
-                        var dischargeObj = {
-                            stage: dataColumn[0],
-                            discharge: dataColumn[2]
-                        };
-                        dischargeValue.push(dischargeObj);
-                        console.log('dischargeObj', dischargeValue);
-                    } while (data.length > 0);
-                    _this_1.dischargeValues = dischargeValue;
+                    var dischargeObj = {
+                        stage: [],
+                        discharge: []
+                    };
+                    data.forEach(function (row) {
+                        var dataRow = row.split('\t');
+                        console.log(dataRow);
+                        dischargeObj.stage.push(dataRow[0]);
+                        dischargeObj.discharge.push(dataRow[2]);
+                    });
+                    console.log(dischargeObj);
                 }, function (error) {
+                    console.log(error);
                 }).finally(function () {
-                    _this_1.getPeakInfo();
+                    _this_1.getUSGSMeasured();
                 });
+            };
+            GagePageController.prototype.getUSGSMeasured = function () {
             };
             GagePageController.prototype.getPeakInfo = function () {
                 var _this_1 = this;

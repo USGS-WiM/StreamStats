@@ -573,38 +573,50 @@ module StreamStats.Controllers {
         // Gage Analysis Plots methods
 
         public getGagePlots() {
-            this.getDischargeInfo(); // Annual Peak Streamflow plot
+            this.getRatingCurve(); // Annual Peak Streamflow plot
+            this.getPeakInfo();
         }
 
-        public getDischargeInfo() {
+        public getRatingCurve() {
             const url = 'https://waterdata.usgs.gov/nwisweb/get_ratings?site_no=' + this.gage.code + '&file_type=exsa'
             console.log('getDischargeInfo', url)
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             this.Execute(request).then(
                 (response: any) => {
                     console.log('response?', response)
-                    const dischargeValue = [];
                     const data = response.data.split('\n').filter(r => { return (!r.startsWith("#") && r != "") });
+                    //console.log('data', data)
                     data.shift().split('\t');
+                    //console.log('data with shift', data)
                     data.shift();
-                    let dataRow = data.shift().split('\t');
-                    console.log('data', dataRow)  // delete some of the data.shifts so I get all data, not just first row of data.
-                    do {
-                        let dataColumn = data.shift().split('\t');
-                        const dischargeObj = {
-                            stage: dataColumn[0], 
-                            discharge: dataColumn[2]
-                        };
-                        dischargeValue.push(dischargeObj)
-                        console.log('dischargeObj', dischargeValue)
-                    } while (data.length > 0); // execute between the 2 brackets if any data is greater then 0
-                    this.dischargeValues = dischargeValue
+                    //console.log('another data shift', data)
+                    // let dataRow = data.shift().split('\t');
+                    // console.log('datarow splits', dataRow)
+                    // debugger;
+                    let dischargeObj = {
+                        stage: [],
+                        discharge: []
+                    };
+                    data.forEach(row => {
+                        let dataRow = row.split('\t')
+                        console.log(dataRow)
+                        dischargeObj.stage.push(dataRow[0])
+                        dischargeObj.discharge.push(dataRow[2])
+                    });
+                    console.log(dischargeObj)
+                        // console.log('dischargeObj', dischargeValue)
                 }, (error) => {
+                    console.log(error)
                 }).finally(() => {
-                    this.getPeakInfo();
+                    this.getUSGSMeasured()
                 });
         }       
 
+        public getUSGSMeasured() {
+
+        } 
+
+        
         //Get peak values from NWIS
         public getPeakInfo() {
             const url = 'https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no=' + this.gage.code
