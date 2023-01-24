@@ -503,7 +503,9 @@ var StreamStats;
                         if (dailyHeatObj.qualifiers[0] === 'A') {
                             _this_1.formattedDailyHeat.push({ x: daysIntoYear(now), y: new Date(dailyHeatObj.dateTime).getUTCFullYear(), value: parseInt(dailyHeatObj.value) });
                         }
-                        _this_1.dailyRange.push(dailyHeatObj.value);
+                        if (dailyHeatObj.qualifiers[0] === 'A') {
+                            _this_1.dailyRange.push(dailyHeatObj.value);
+                        }
                     });
                 }
                 if (this.floodFreq) {
@@ -663,26 +665,39 @@ var StreamStats;
                 });
             };
             GagePageController.prototype.createDailyRasterPlot = function () {
-                var dailyMax = this.dailyRange.reduce(function (accumulatedValue, currentValue) {
-                    return Math.max(accumulatedValue, currentValue);
-                });
-                console.log('Daily Max', dailyMax);
-                var dailyMin = this.dailyRange.reduce(function (accumulatedValue, currentValue) {
-                    return Math.min(accumulatedValue, currentValue);
-                });
-                console.log('Daily Min', dailyMin);
-                var asc = this.dailyRange.sort(function (a, b) { return a - b; });
-                console.log('sorted range', asc);
-                var twentiethPercentile = asc[Math.floor(asc.length * 0.2)];
-                var fortiethPercentile = asc[Math.floor(asc.length * 0.4)];
-                var sixtiethPercentile = asc[Math.floor(asc.length * 0.6)];
-                var eightiethPercentile = asc[Math.floor(asc.length * 0.8)];
-                console.log('percentiles', twentiethPercentile, fortiethPercentile, sixtiethPercentile, eightiethPercentile);
-                var firstStop = Math.abs(twentiethPercentile / dailyMax);
-                var secondStop = Math.abs(fortiethPercentile / dailyMax);
-                var thirdStop = Math.abs(sixtiethPercentile / dailyMax);
-                var fourthStop = Math.abs(eightiethPercentile / dailyMax);
-                console.log('color stops', firstStop, secondStop, thirdStop, fourthStop);
+                if (this.dailyRange.length > 0) {
+                    var dailyMax = this.dailyRange.reduce(function (accumulatedValue, currentValue) {
+                        return Math.max(accumulatedValue, currentValue);
+                    });
+                    console.log('Daily Max', dailyMax);
+                    var dailyMin = this.dailyRange.reduce(function (accumulatedValue, currentValue) {
+                        return Math.min(accumulatedValue, currentValue);
+                    });
+                    console.log('Daily Min', dailyMin);
+                    var asc = this.dailyRange.sort(function (a, b) { return a - b; });
+                    console.log('sorted range', asc);
+                    var tenthPercentile = asc[Math.floor(asc.length * 0.1)];
+                    var twentiethPercentile = asc[Math.floor(asc.length * 0.2)];
+                    var thirtiethPercentile = asc[Math.floor(asc.length * 0.3)];
+                    var fortiethPercentile = asc[Math.floor(asc.length * 0.4)];
+                    var fiftiethPercentile = asc[Math.floor(asc.length * 0.5)];
+                    var sixtiethPercentile = asc[Math.floor(asc.length * 0.6)];
+                    var seventiethPercentile = asc[Math.floor(asc.length * 0.7)];
+                    var eightiethPercentile = asc[Math.floor(asc.length * 0.8)];
+                    var ninetiethPercentile = asc[Math.floor(asc.length * 0.9)];
+                    console.log('percentiles', tenthPercentile, twentiethPercentile, thirtiethPercentile, fortiethPercentile, fiftiethPercentile, sixtiethPercentile, seventiethPercentile, eightiethPercentile, ninetiethPercentile);
+                    var firstStop = (tenthPercentile - (dailyMin)) / (dailyMax - (dailyMin));
+                    var secondStop = (twentiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
+                    var thirdStop = (thirtiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
+                    var fourthStop = (fortiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
+                    var fifthStop = (fiftiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
+                    var sixthStop = (sixtiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
+                    var seventhStop = (seventiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
+                    var eigthStop = (eightiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
+                    var ninthStop = (ninetiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
+                    console.log('color stops', firstStop, secondStop, thirdStop, fourthStop, fifthStop, sixthStop, seventhStop, eigthStop, ninthStop);
+                }
+                ;
                 this.heatChartConfig = {
                     chart: {
                         height: 450,
@@ -719,10 +734,15 @@ var StreamStats;
                         min: null,
                         max: null,
                         stops: [
-                            [firstStop, '#FF0000'],
-                            [secondStop, '#FFCC33'],
-                            [thirdStop, '#66CCFF'],
-                            [fourthStop, '#3300CC']
+                            [firstStop, '#F40000'],
+                            [secondStop, '#F64D00'],
+                            [thirdStop, '#F9A10B'],
+                            [fourthStop, '#ECCC2D'],
+                            [fifthStop, '#C3CB76'],
+                            [sixthStop, '#99CCC2'],
+                            [seventhStop, '#74C5FF'],
+                            [eigthStop, '#5C7CED'],
+                            [ninthStop, '#370CD0']
                         ],
                         startOnTick: false,
                         endOnTick: false,
@@ -757,9 +777,6 @@ var StreamStats;
                 };
             };
             ;
-            GagePageController.prototype.defineColorStops = function () {
-                this.heatChartConfig.colorAxis;
-            };
             GagePageController.prototype.init = function () {
                 this.AppVersion = configuration.version;
                 this.getGagePage();
