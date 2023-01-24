@@ -579,17 +579,17 @@ module StreamStats.Controllers {
 
         public getRatingCurve() {
             const url = 'https://waterdata.usgs.gov/nwisweb/get_ratings?site_no=' + this.gage.code + '&file_type=exsa'
-            console.log('getDischargeInfo', url)
+            // console.log('getDischargeInfo', url)
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             this.Execute(request).then(
                 (response: any) => {
-                    console.log('response?', response)
+                    // console.log('response?', response)
                     const data = response.data.split('\n').filter(r => { return (!r.startsWith("#") && r != "") });
                     //console.log('data', data)
                     data.shift().split('\t');
                     //console.log('data with shift', data)
                     data.shift();
-                    //console.log('another data shift', data)
+                    // console.log('another data shift', data)
                     // let dataRow = data.shift().split('\t');
                     // console.log('datarow splits', dataRow)
                     // debugger;
@@ -599,10 +599,11 @@ module StreamStats.Controllers {
                     };
                     data.forEach(row => {
                         let dataRow = row.split('\t')
-                        // console.log(dataRow)
+                        // console.log('all data', allData)
                         dischargeObj.stage.push(dataRow[0])
                         dischargeObj.discharge.push(dataRow[2])
-                    });
+                   });
+                   // console.log('discharge obj', dischargeObj)
                     // console.log(dischargeObj)
                         // console.log('dischargeObj', dischargeValue)
                 }, (error) => {
@@ -618,11 +619,11 @@ module StreamStats.Controllers {
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             this.Execute(request).then(
                 (response: any) => {
-                    console.log('response usgsmeasured', response)
+                    // console.log('response usgsmeasured', response)
                     const data = response.data.split('\n').filter(r => { return (!r.startsWith("#") && r != "") });
-                    //console.log('data', data)
+                    console.log('data', data)
                     data.shift().split('\t');
-                    //console.log('data with shift', data)
+                    console.log('data with shift', data)
                     data.shift();
                     //console.log('another data shift', data)
                     // let dataRow = data.shift().split('\t');
@@ -634,20 +635,19 @@ module StreamStats.Controllers {
                     };
                     data.forEach(row => {
                         let dataRow = row.split('\t')
-                        console.log(dataRow)
-                        measuredObj.stage.push(dataRow[10])
-                        measuredObj.discharge.push(dataRow[11])
+                        console.log('datarow', dataRow)
+                        measuredObj.stage.push(dataRow[11])
+                        measuredObj.discharge.push(dataRow[12])
                     });
-                    console.log(measuredObj)
+                    console.log('measured obj', measuredObj)
                         // console.log('dischargeObj', dischargeValue)
                 }, (error) => {
-                    console.log(error)
+                    // console.log(error)
                 }).finally(() => {
-                    this.getUSGSMeasured()
+                    this.getPeakInfo()
                 });
 
         } 
-
         
         //Get peak values from NWIS
         public getPeakInfo() {

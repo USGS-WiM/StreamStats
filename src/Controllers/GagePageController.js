@@ -399,10 +399,8 @@ var StreamStats;
             GagePageController.prototype.getRatingCurve = function () {
                 var _this_1 = this;
                 var url = 'https://waterdata.usgs.gov/nwisweb/get_ratings?site_no=' + this.gage.code + '&file_type=exsa';
-                console.log('getDischargeInfo', url);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
-                    console.log('response?', response);
                     var data = response.data.split('\n').filter(function (r) { return (!r.startsWith("#") && r != ""); });
                     data.shift().split('\t');
                     data.shift();
@@ -426,9 +424,10 @@ var StreamStats;
                 console.log('usgsMeasuredURL', url);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
-                    console.log('response usgsmeasured', response);
                     var data = response.data.split('\n').filter(function (r) { return (!r.startsWith("#") && r != ""); });
+                    console.log('data', data);
                     data.shift().split('\t');
+                    console.log('data with shift', data);
                     data.shift();
                     var measuredObj = {
                         stage: [],
@@ -436,15 +435,14 @@ var StreamStats;
                     };
                     data.forEach(function (row) {
                         var dataRow = row.split('\t');
-                        console.log(dataRow);
-                        measuredObj.stage.push(dataRow[10]);
-                        measuredObj.discharge.push(dataRow[11]);
+                        console.log('datarow', dataRow);
+                        measuredObj.stage.push(dataRow[11]);
+                        measuredObj.discharge.push(dataRow[12]);
                     });
-                    console.log(measuredObj);
+                    console.log('measured obj', measuredObj);
                 }, function (error) {
-                    console.log(error);
                 }).finally(function () {
-                    _this_1.getUSGSMeasured();
+                    _this_1.getPeakInfo();
                 });
             };
             GagePageController.prototype.getPeakInfo = function () {
