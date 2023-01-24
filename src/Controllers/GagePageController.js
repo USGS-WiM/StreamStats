@@ -406,10 +406,8 @@ var StreamStats;
                     var data = response.data.split('\n').filter(function (r) { return (!r.startsWith("#") && r != ""); });
                     data.shift().split('\t');
                     data.shift();
-                    console.log('before', data);
                     do {
                         var dataRow = data.shift().split('\t');
-                        console.log('after', dataRow);
                         var peakObj = {
                             agency_cd: dataRow[0],
                             site_no: dataRow[1],
@@ -665,6 +663,26 @@ var StreamStats;
                 });
             };
             GagePageController.prototype.createDailyRasterPlot = function () {
+                var dailyMax = this.dailyRange.reduce(function (accumulatedValue, currentValue) {
+                    return Math.max(accumulatedValue, currentValue);
+                });
+                console.log('Daily Max', dailyMax);
+                var dailyMin = this.dailyRange.reduce(function (accumulatedValue, currentValue) {
+                    return Math.min(accumulatedValue, currentValue);
+                });
+                console.log('Daily Min', dailyMin);
+                var asc = this.dailyRange.sort(function (a, b) { return a - b; });
+                console.log('sorted range', asc);
+                var twentiethPercentile = asc[Math.floor(asc.length * 0.2)];
+                var fortiethPercentile = asc[Math.floor(asc.length * 0.4)];
+                var sixtiethPercentile = asc[Math.floor(asc.length * 0.6)];
+                var eightiethPercentile = asc[Math.floor(asc.length * 0.8)];
+                console.log('percentiles', twentiethPercentile, fortiethPercentile, sixtiethPercentile, eightiethPercentile);
+                var firstStop = Math.abs(twentiethPercentile / dailyMax);
+                var secondStop = Math.abs(fortiethPercentile / dailyMax);
+                var thirdStop = Math.abs(sixtiethPercentile / dailyMax);
+                var fourthStop = Math.abs(eightiethPercentile / dailyMax);
+                console.log('color stops', firstStop, secondStop, thirdStop, fourthStop);
                 this.heatChartConfig = {
                     chart: {
                         height: 450,
@@ -697,14 +715,14 @@ var StreamStats;
                         }
                     },
                     colorAxis: {
-                        type: 'logarithmic',
+                        type: 'linear',
                         min: null,
                         max: null,
                         stops: [
-                            [0, '#FF0000'],
-                            [0.3, '#FFCC33'],
-                            [0.8, '#66CCFF'],
-                            [1, '#3300CC']
+                            [firstStop, '#FF0000'],
+                            [secondStop, '#FFCC33'],
+                            [thirdStop, '#66CCFF'],
+                            [fourthStop, '#3300CC']
                         ],
                         startOnTick: false,
                         endOnTick: false,

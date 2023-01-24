@@ -598,10 +598,8 @@ module StreamStats.Controllers {
                     data.shift().split('\t');
                     //remove extra random line
                     data.shift();
-                    console.log('before', data);
                     do {
                         let dataRow = data.shift().split('\t');
-                        console.log('after', dataRow);
                         const peakObj = {
                             agency_cd: dataRow[0], 
                             site_no: dataRow[1],
@@ -868,52 +866,27 @@ module StreamStats.Controllers {
 
 
         public createDailyRasterPlot(): void {
-            // let dailyMax  = this.dailyRange.reduce(function (accumulatedValue, currentValue) {
-            //     return Math.max(accumulatedValue, currentValue);
-            // }); console.log('Daily Max', dailyMax);
-            // let dailyMin  = this.dailyRange.reduce(function (accumulatedValue, currentValue) {
-            //     return Math.min(accumulatedValue, currentValue);
-            // }); console.log('Daily Min', dailyMin);
+            let dailyMax  = this.dailyRange.reduce(function (accumulatedValue, currentValue) {
+                return Math.max(accumulatedValue, currentValue);
+            }); console.log('Daily Max', dailyMax);
+            let dailyMin  = this.dailyRange.reduce(function (accumulatedValue, currentValue) {
+                return Math.min(accumulatedValue, currentValue);
+            }); console.log('Daily Min', dailyMin);
 
-            //                 // sort array ascending
-            //     const asc = arr => this.dailyRange.sort((a, b) => a - b);
-            //     console.log('sorted range', asc(this.dailyRange))
+            // sort array ascending
+            const asc = this.dailyRange.sort((a, b) => a - b);
+            console.log('sorted range', asc)
+            var twentiethPercentile = asc[Math.floor(asc.length * 0.2)];
+            var fortiethPercentile = asc[Math.floor(asc.length * 0.4)];
+            var sixtiethPercentile = asc[Math.floor(asc.length * 0.6)];
+            var eightiethPercentile = asc[Math.floor(asc.length * 0.8)];
+            console.log('percentiles', twentiethPercentile, fortiethPercentile, sixtiethPercentile, eightiethPercentile);
 
-            //     const sum = arr => this.dailyRange.reduce((a, b) => a + b, 0);
-            //     //console.log('sum', sum(this.dailyRange))
-
-            //     const mean = arr => sum(this.dailyRange) / this.dailyRange.length;
-                //console.log('mean', mean(this.dailyRange))
-
-
-                // sample standard deviation
-                // const std = (arr) => {
-                //     const mu = mean(arr);
-                //     const diffArr = arr.map(a => (a - mu) ** 2);
-                //     return Math.sqrt(sum(diffArr) / (arr.length - 1));
-                // };
-
-                // const quantile = (arr, q) => {
-                //     const sorted = asc(this.dailyRange);
-                //     const pos = (sorted.length - 1) * q;
-                //     const base = Math.floor(pos);
-                //     const rest = pos - base;
-                //     if (sorted[base + 1] !== undefined) {
-                //         return sorted[base] + rest * (sorted[base + 1] - sorted[base]);
-                //     } else {
-                //         return sorted[base];
-                //     }
-                // };
-
-                // const q25 = arr => quantile(arr, .25);
-
-                // const q50 = arr => quantile(arr, .50);
-
-                // const q75 = arr => quantile(arr, .75);
-
-                // const median = arr => q50(arr);
-
-                //console.log('quartiles', q25(this.dailyRange), q50(this.dailyRange), q75(this.dailyRange));
+            var firstStop = Math.abs(twentiethPercentile / dailyMax);
+            var secondStop = Math.abs(fortiethPercentile / dailyMax);
+            var thirdStop = Math.abs(sixtiethPercentile / dailyMax);
+            var fourthStop = Math.abs(eightiethPercentile / dailyMax); 
+            console.log('color stops', firstStop, secondStop, thirdStop, fourthStop);
 
             this.heatChartConfig = {
                 // data: {
@@ -950,14 +923,14 @@ module StreamStats.Controllers {
                     }
                 },
                 colorAxis: {
-                    type: 'logarithmic',
+                    type: 'linear',
                     min: null,
                     max: null,
                     stops: [
-                        [0 ,   '#FF0000'],
-                        [0.3, '#FFCC33'],
-                        [0.8, '#66CCFF'],
-                        [1 ,   '#3300CC']
+                        [firstStop ,   '#FF0000'],
+                        [secondStop, '#FFCC33'],
+                        [thirdStop, '#66CCFF'],
+                        [fourthStop ,   '#3300CC']
                     ],
                     startOnTick: false,
                     endOnTick: false,
