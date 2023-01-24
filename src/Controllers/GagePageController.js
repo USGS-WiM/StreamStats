@@ -500,8 +500,12 @@ var StreamStats;
                         function daysIntoYear(now) {
                             return (Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(now.getFullYear(), 0, 0)) / 24 / 60 / 60 / 1000;
                         }
+                        var doy = daysIntoYear(now);
+                        if (doy < 274) {
+                            doy += 366;
+                        }
                         if (dailyHeatObj.qualifiers[0] === 'A') {
-                            _this_1.formattedDailyHeat.push({ x: daysIntoYear(now), y: new Date(dailyHeatObj.dateTime).getUTCFullYear(), value: parseInt(dailyHeatObj.value) });
+                            _this_1.formattedDailyHeat.push({ x: doy, y: new Date(dailyHeatObj.dateTime).getUTCFullYear(), value: parseInt(dailyHeatObj.value) });
                         }
                         if (dailyHeatObj.qualifiers[0] === 'A') {
                             _this_1.dailyRange.push(dailyHeatObj.value);
@@ -716,10 +720,21 @@ var StreamStats;
                     },
                     xAxis: {
                         type: 'datetime',
-                        tickPositions: [1, 32, 62, 93, 124, 152, 183, 213, 244, 274, 305, 336, 380],
+                        tickPositions: [274, 305, 335, 367, 397, 425, 456, 486, 516, 547, 578, 609],
                         title: {
                             text: 'Day of the Year'
                         },
+                        threshold: 273,
+                        labels: {
+                            formatter: function () {
+                                if (this.value > 366) {
+                                    this.value -= 365;
+                                }
+                                if (this.value == 370)
+                                    return 'Annual';
+                                return moment("2015 " + this.value, "YYYY DDD").format("MMM");
+                            }
+                        }
                     },
                     yAxis: {
                         title: {
@@ -734,6 +749,7 @@ var StreamStats;
                         min: null,
                         max: null,
                         stops: [
+                            [0, '#990000'],
                             [firstStop, '#F40000'],
                             [secondStop, '#F64D00'],
                             [thirdStop, '#F9A10B'],
@@ -742,7 +758,8 @@ var StreamStats;
                             [sixthStop, '#99CCC2'],
                             [seventhStop, '#74C5FF'],
                             [eigthStop, '#5C7CED'],
-                            [ninthStop, '#370CD0']
+                            [ninthStop, '#370CD0'],
+                            [1, '#333399']
                         ],
                         startOnTick: false,
                         endOnTick: false,

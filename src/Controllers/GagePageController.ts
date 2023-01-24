@@ -215,7 +215,7 @@ module StreamStats.Controllers {
                         chart: { height: number, width: number, zooming: {type: string} },
                         title: { text: string, align: string},
                         subtitle: { text: string, align: string},  
-                        xAxis: { type: string, tickPositions: any[], title: {text: string}},
+                        xAxis: { type: string, tickPositions: any[], threshold: number, title: {text: string}, labels: {formatter: Function}},
                         yAxis: { title: {text: string}, custom: { allowNegativeLog: boolean}},
                         colorAxis: { type: string, min: number, max: number, stops: any[], startOnTick: boolean, endOnTick: boolean, allowNegativeLog: boolean}
                         series: { name: string, type: string, data: number[], tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number}[]; };
@@ -701,8 +701,12 @@ module StreamStats.Controllers {
                     function daysIntoYear(now){
                         return (Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(now.getFullYear(), 0, 0)) / 24 / 60 / 60 / 1000;
                     }
+                    var doy = daysIntoYear(now);
+                    if (doy < 274) {
+                        doy += 366
+                    }
                     if (dailyHeatObj.qualifiers[0] === 'A') {
-                        this.formattedDailyHeat.push({x: daysIntoYear(now), y: new Date(dailyHeatObj.dateTime).getUTCFullYear(), value: parseInt(dailyHeatObj.value)})
+                        this.formattedDailyHeat.push({x: doy, y: new Date(dailyHeatObj.dateTime).getUTCFullYear(), value: parseInt(dailyHeatObj.value)})
                     }
                     if (dailyHeatObj.qualifiers[0] === 'A') {
                     this.dailyRange.push(dailyHeatObj.value);
@@ -902,7 +906,6 @@ module StreamStats.Controllers {
             var ninthStop = (ninetiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
             console.log('color stops', firstStop, secondStop, thirdStop, fourthStop, fifthStop, sixthStop, seventhStop, eigthStop, ninthStop);
             };
-
             this.heatChartConfig = {
                 chart: {
                         height: 450,
@@ -921,10 +924,20 @@ module StreamStats.Controllers {
                 },
                 xAxis: {
                     type: 'datetime',
-                    tickPositions: [1, 32, 62, 93, 124, 152, 183, 213, 244, 274, 305, 336, 380],
+                    tickPositions: [274, 305, 335, 367, 397, 425, 456, 486, 516, 547, 578, 609],
                     title: {
                         text: 'Day of the Year'
                     },
+                    threshold: 273,
+                    labels: {
+                        formatter: function() {
+                            if (this.value > 366) {
+                                this.value -= 365
+                            }
+                            if(this.value == 370) return 'Annual';
+                            return moment("2015 "+this.value, "YYYY DDD").format("MMM");
+                        }
+                    }
                 },
                 yAxis: {
                     title: {
@@ -936,9 +949,16 @@ module StreamStats.Controllers {
                 },
                 colorAxis: {
                     type: 'linear',
-                    min: null,
+                    min: null, 
                     max: null,
+                    // min: tenthPercentile,
+                    // max: ninetiethPercentile,
                     stops: [
+                    //     [0 ,   '#FF0000'],
+                    // [0.3, '#FFCC33'],
+                    // [0.8, '#66CCFF'],
+                    // [1 ,   '#3300CC']
+                        [0, '#990000'],
                         [firstStop, '#F40000'],
                         [secondStop, '#F64D00'],
                         [thirdStop, '#F9A10B'],
@@ -947,7 +967,8 @@ module StreamStats.Controllers {
                         [sixthStop, '#99CCC2'],
                         [seventhStop, '#74C5FF'],
                         [eigthStop, '#5C7CED'],
-                        [ninthStop, '#370CD0']
+                        [ninthStop, '#370CD0'],
+                        [1, '#333399']
                     ],
                     startOnTick: false,
                     endOnTick: false,
