@@ -870,42 +870,8 @@ module StreamStats.Controllers {
             });
         }
 
-
         public createDailyRasterPlot(): void {
-            if (this.dailyRange.length > 0) {
-            let dailyMax  = this.dailyRange.reduce(function (accumulatedValue, currentValue) {
-                return Math.max(accumulatedValue, currentValue);
-            }); console.log('Daily Max', dailyMax);
-            let dailyMin  = this.dailyRange.reduce(function (accumulatedValue, currentValue) {
-                return Math.min(accumulatedValue, currentValue);
-            }); console.log('Daily Min', dailyMin);
-
-            // sort array ascending
-            const asc = this.dailyRange.sort((a, b) => a - b);
-            console.log('sorted range', asc)
-            //caluculate percentile values
-            var tenthPercentile = asc[Math.floor(asc.length * 0.1)];
-            var twentiethPercentile = asc[Math.floor(asc.length * 0.2)];
-            var thirtiethPercentile = asc[Math.floor(asc.length * 0.3)];
-            var fortiethPercentile = asc[Math.floor(asc.length * 0.4)];
-            var fiftiethPercentile = asc[Math.floor(asc.length * 0.5)];
-            var sixtiethPercentile = asc[Math.floor(asc.length * 0.6)];
-            var seventiethPercentile = asc[Math.floor(asc.length * 0.7)];
-            var eightiethPercentile = asc[Math.floor(asc.length * 0.8)];
-            var ninetiethPercentile = asc[Math.floor(asc.length * 0.9)];
-            console.log('percentiles', tenthPercentile, twentiethPercentile, thirtiethPercentile, fortiethPercentile, fiftiethPercentile, sixtiethPercentile, seventiethPercentile, eightiethPercentile, ninetiethPercentile);
-            //convert percentile values to percentages for color stops
-            var firstStop = (tenthPercentile - (dailyMin)) / (dailyMax - (dailyMin));
-            var secondStop = (twentiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
-            var thirdStop = (thirtiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
-            var fourthStop = (fortiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
-            var fifthStop = (fiftiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
-            var sixthStop = (sixtiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
-            var seventhStop = (seventiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
-            var eigthStop = (eightiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
-            var ninthStop = (ninetiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
-            console.log('color stops', firstStop, secondStop, thirdStop, fourthStop, fifthStop, sixthStop, seventhStop, eigthStop, ninthStop);
-            };
+            
             this.heatChartConfig = {
                 chart: {
                         height: 450,
@@ -948,31 +914,18 @@ module StreamStats.Controllers {
                     }
                 },
                 colorAxis: {
-                    type: 'linear',
+                    type: null,
                     min: null, 
                     max: null,
-                    // min: tenthPercentile,
-                    // max: ninetiethPercentile,
                     stops: [
-                    //     [0 ,   '#FF0000'],
-                    // [0.3, '#FFCC33'],
-                    // [0.8, '#66CCFF'],
-                    // [1 ,   '#3300CC']
-                        [0, '#990000'],
-                        [firstStop, '#F40000'],
-                        [secondStop, '#F64D00'],
-                        [thirdStop, '#F9A10B'],
-                        [fourthStop, '#ECCC2D'],
-                        [fifthStop, '#C3CB76'],
-                        [sixthStop, '#99CCC2'],
-                        [seventhStop, '#74C5FF'],
-                        [eigthStop, '#5C7CED'],
-                        [ninthStop, '#370CD0'],
-                        [1, '#333399']
+                        [0 ,   '#FF0000'],
+                        [0.3, '#FFCC33'],
+                        [0.8, '#66CCFF'],
+                        [1 ,   '#3300CC']
                     ],
                     startOnTick: false,
                     endOnTick: false,
-                    allowNegativeLog: true
+                    allowNegativeLog: null
                 },
                 series: [{
                     name: 'Daily Streamflow',
@@ -1003,7 +956,54 @@ module StreamStats.Controllers {
                 }]
             }
         };
-        
+
+        //checkbox for change log to linear scale
+        public logScale = true; 
+        public logToLinear () {
+            let chart = $('#chart2').highcharts();
+        //     // if (this.dailyRange.length > 0) {
+        //     //     let dailyMax  = this.dailyRange.reduce(function (accumulatedValue, currentValue) {
+        //     //         return Math.max(accumulatedValue, currentValue);
+        //     //     }); console.log('Daily Max', dailyMax);
+        //     //     let dailyMin  = this.dailyRange.reduce(function (accumulatedValue, currentValue) {
+        //     //         return Math.min(accumulatedValue, currentValue);
+        //     //     }); console.log('Daily Min', dailyMin);
+        //     //     // sort array ascending
+        //     //     const asc = this.dailyRange.sort((a, b) => a - b);
+        //     //     console.log('sorted range', asc)
+        //     //     //caluculate percentile values
+        //     //     var tenthPercentile = asc[Math.floor(asc.length * 0.1)];
+        //     //     var twentiethPercentile = asc[Math.floor(asc.length * 0.2)];
+        //     //     var thirtiethPercentile = asc[Math.floor(asc.length * 0.3)];
+        //     //     var fortiethPercentile = asc[Math.floor(asc.length * 0.4)];
+        //     //     var fiftiethPercentile = asc[Math.floor(asc.length * 0.5)];
+        //     //     var sixtiethPercentile = asc[Math.floor(asc.length * 0.6)];
+        //     //     var seventiethPercentile = asc[Math.floor(asc.length * 0.7)];
+        //     //     var eightiethPercentile = asc[Math.floor(asc.length * 0.8)];
+        //     //     var ninetiethPercentile = asc[Math.floor(asc.length * 0.9)];
+        //     //     console.log('percentiles', tenthPercentile, twentiethPercentile, thirtiethPercentile, fortiethPercentile, fiftiethPercentile, sixtiethPercentile, seventiethPercentile, eightiethPercentile, ninetiethPercentile);
+        //     //     //convert percentile values to percentages for color stops
+        //     //     var firstStop = (tenthPercentile - (dailyMin)) / (dailyMax - (dailyMin));
+        //     //     var secondStop = (twentiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
+        //     //     var thirdStop = (thirtiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
+        //     //     var fourthStop = (fortiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
+        //     //     var fifthStop = (fiftiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
+        //     //     var sixthStop = (sixtiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
+        //     //     var seventhStop = (seventiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
+        //     //     var eigthStop = (eightiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
+        //     //     var ninthStop = (ninetiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
+        //     //     console.log('color stops', firstStop, secondStop, thirdStop, fourthStop, fifthStop, sixthStop, seventhStop, eigthStop, ninthStop);
+        //     //     };
+            if (this.logScale) {
+                chart.colorAxis[0].update({ type: 'logarithmic' });
+                console.log('log');
+            } else {
+                chart.colorAxis[0].update({ type: 'linear' });
+                console.log('linear');
+            }
+        };
+
+
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {   
