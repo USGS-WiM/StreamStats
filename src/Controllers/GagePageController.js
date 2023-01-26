@@ -558,43 +558,12 @@ var StreamStats;
                     },
                     rangeSelector: {
                         enabled: true,
-                        buttons: [{
-                                type: 'month',
-                                count: 1,
-                                text: '1m',
-                                title: 'View 1 month'
-                            }, {
-                                type: 'month',
-                                count: 3,
-                                text: '3m',
-                                title: 'View 3 months'
-                            }, {
-                                type: 'month',
-                                count: 6,
-                                text: '6m',
-                                title: 'View 6 months'
-                            }, {
-                                type: 'year',
-                                count: 1,
-                                text: '1y',
-                                title: 'View 1 year'
-                            }, {
-                                type: 'ytd',
-                                count: null,
-                                text: 'YTD',
-                                title: 'View year to date'
-                            }, {
-                                type: 'all',
-                                count: null,
-                                text: 'All',
-                                title: 'View all'
-                            }],
-                        selected: 5,
                         inputPosition: {
                             align: 'left',
                             x: 0,
                             y: 0
                         },
+                        selected: 5,
                         buttonPosition: {
                             align: 'right',
                             x: 0,
@@ -625,6 +594,7 @@ var StreamStats;
                     series: [
                         {
                             name: 'Daily Streamflow',
+                            showInNavigator: true,
                             tooltip: {
                                 headerFormat: '<b>Daily Streamflow</b>',
                                 pointFormatter: function () {
@@ -650,6 +620,7 @@ var StreamStats;
                         },
                         {
                             name: 'Annual Peak Streamflow',
+                            showInNavigator: true,
                             tooltip: {
                                 headerFormat: '<b>Annual Peak Streamflow</b>',
                                 pointFormatter: function () {
@@ -680,6 +651,7 @@ var StreamStats;
                         },
                         {
                             name: 'Annual Peak Streamflow (Date Estimated)',
+                            showInNavigator: true,
                             tooltip: {
                                 headerFormat: '<b>Annual Peak Streamflow</b>',
                                 pointFormatter: function () {
