@@ -206,7 +206,7 @@ module StreamStats.Controllers {
         chartConfig: {  chart: { height: number, width: number, zooming: {type: string} },
                         title: { text: string, align: string},
                         subtitle: { text: string, align: string},
-                        rangeSelector: { enabled: boolean, inputPosition: {align: string, x: number, y: number}, buttonPosition: {align: string, x: number, y: number}},
+                        rangeSelector: { enabled: boolean, buttons: {type: string, count: number, text: string, title: string}[], selected: any, inputPosition: {align: string, x: number, y: number}, buttonPosition: {align: string, x: number, y: number}},
                         navigator: { enabled: boolean},  
                         xAxis: {  type: string, title: {text: string}, custom: { allowNegativeLog: Boolean }},
                         yAxis: { title: {text: string}, custom: { allowNegativeLog: Boolean }, plotLines: [{value: number, color: string, width: number, zIndex: number, label: {text: string}, id: string}]},
@@ -788,7 +788,39 @@ module StreamStats.Controllers {
                     align: 'center'
                 },
                 rangeSelector: {
-                    enabled: true, 
+                    enabled: true,
+                    buttons: [{
+                        type: 'month',
+                        count: 1,
+                        text: '1m',
+                        title: 'View 1 month'
+                    }, {
+                        type: 'month',
+                        count: 3,
+                        text: '3m',
+                        title: 'View 3 months'
+                    }, {
+                        type: 'month',
+                        count: 6,
+                        text: '6m',
+                        title: 'View 6 months'
+                    },{
+                        type: 'year',
+                        count: 1,
+                        text: '1y',
+                        title: 'View 1 year'
+                    },  {
+                        type: 'ytd',
+                        count: null,
+                        text: 'YTD',
+                        title: 'View year to date'
+                    }, {
+                        type: 'all',
+                        count: null,
+                        text: 'All',
+                        title: 'View all'
+                    }],
+                    selected: 5, 
                     inputPosition: {
                         align: 'left',
                         x: 0,
@@ -908,7 +940,7 @@ module StreamStats.Controllers {
             } 
             this.formattedFloodFreq.forEach((formattedFloodFreqItem) => {
                 this.chartConfig.yAxis.plotLines.push(formattedFloodFreqItem)
-            });
+            }); console.log('range sel', this.chartConfig.rangeSelector)
         }
 
         //checkbox for turning plotLines on and off
@@ -925,18 +957,18 @@ module StreamStats.Controllers {
                 }
             };
 
-                    //checkbox for change log to linear scale
-        public logScale = true; 
+        //checkbox for change linear to log scale
+        public logScale = false; 
         public logToLinear () {
             let chart = $('#chart1').highcharts();
             if (this.logScale) {
-                chart.yAxis[0].update({ type: 'linear' });
-                //chart.xAxis[0].update({ type: 'linear' });
-                console.log('linear');
-            } else {
                 chart.yAxis[0].update({ type: 'logarithmic' });
-                //chart.xAxis[0].update({ type: 'logarithmic' });
+                //chart.xAxis[0].update({ type: 'linear' });
                 console.log('log');
+            } else {
+                chart.yAxis[0].update({ type: 'linear' });
+                //chart.xAxis[0].update({ type: 'logarithmic' });
+                console.log('linear');
             }
         };
         

@@ -96,7 +96,7 @@ var StreamStats;
                 _this_1.formattedEstPeakDates = [];
                 _this_1.formattedDailyFlow = [];
                 _this_1.plotlines = true;
-                _this_1.logScale = true;
+                _this_1.logScale = false;
                 $scope.vm = _this_1;
                 _this_1.modalInstance = modal;
                 _this_1.modalService = modalService;
@@ -558,6 +558,38 @@ var StreamStats;
                     },
                     rangeSelector: {
                         enabled: true,
+                        buttons: [{
+                                type: 'month',
+                                count: 1,
+                                text: '1m',
+                                title: 'View 1 month'
+                            }, {
+                                type: 'month',
+                                count: 3,
+                                text: '3m',
+                                title: 'View 3 months'
+                            }, {
+                                type: 'month',
+                                count: 6,
+                                text: '6m',
+                                title: 'View 6 months'
+                            }, {
+                                type: 'year',
+                                count: 1,
+                                text: '1y',
+                                title: 'View 1 year'
+                            }, {
+                                type: 'ytd',
+                                count: null,
+                                text: 'YTD',
+                                title: 'View year to date'
+                            }, {
+                                type: 'all',
+                                count: null,
+                                text: 'All',
+                                title: 'View all'
+                            }],
+                        selected: 5,
                         inputPosition: {
                             align: 'left',
                             x: 0,
@@ -681,6 +713,7 @@ var StreamStats;
                 this.formattedFloodFreq.forEach(function (formattedFloodFreqItem) {
                     _this_1.chartConfig.yAxis.plotLines.push(formattedFloodFreqItem);
                 });
+                console.log('range sel', this.chartConfig.rangeSelector);
             };
             GagePageController.prototype.removePlotLines = function () {
                 var chart = $('#chart1').highcharts();
@@ -697,12 +730,12 @@ var StreamStats;
             GagePageController.prototype.logToLinear = function () {
                 var chart = $('#chart1').highcharts();
                 if (this.logScale) {
-                    chart.yAxis[0].update({ type: 'linear' });
-                    console.log('linear');
-                }
-                else {
                     chart.yAxis[0].update({ type: 'logarithmic' });
                     console.log('log');
+                }
+                else {
+                    chart.yAxis[0].update({ type: 'linear' });
+                    console.log('linear');
                 }
             };
             ;
