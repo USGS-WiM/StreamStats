@@ -399,7 +399,6 @@ var StreamStats;
             GagePageController.prototype.getPeakInfo = function () {
                 var _this_1 = this;
                 var url = 'https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no=' + this.gage.code;
-                console.log('GetPeakURL', url);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
                     var peakValues = [];
@@ -539,7 +538,6 @@ var StreamStats;
             };
             GagePageController.prototype.createAnnualFlowPlot = function () {
                 var _this_1 = this;
-                console.log('estimated peak plot data', this.formattedEstPeakDates);
                 this.chartConfig = {
                     chart: {
                         height: 550,
@@ -685,7 +683,6 @@ var StreamStats;
                 this.formattedFloodFreq.forEach(function (formattedFloodFreqItem) {
                     _this_1.chartConfig.yAxis.plotLines.push(formattedFloodFreqItem);
                 });
-                console.log('range sel', this.chartConfig.rangeSelector);
             };
             GagePageController.prototype.removePlotLines = function () {
                 var chart = $('#chart1').highcharts();
@@ -703,11 +700,9 @@ var StreamStats;
                 var chart = $('#chart1').highcharts();
                 if (this.logScale) {
                     chart.yAxis[0].update({ type: 'logarithmic' });
-                    console.log('log');
                 }
                 else {
                     chart.yAxis[0].update({ type: 'linear' });
-                    console.log('linear');
                 }
             };
             ;

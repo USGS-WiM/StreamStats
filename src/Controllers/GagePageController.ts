@@ -581,7 +581,7 @@ module StreamStats.Controllers {
         //Get peak values from NWIS
         public getPeakInfo() {
             const url = 'https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no=' + this.gage.code
-            console.log('GetPeakURL', url)
+            //console.log('GetPeakURL', url)
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             this.Execute(request).then(
                 (response: any) => {
@@ -726,50 +726,12 @@ module StreamStats.Controllers {
                         });
                     });
             this.createAnnualFlowPlot();
-            //this.converterFunction();
         }}
-
-
-        // public converterFunction (H) {
-        //     H.addEvent(H.Axis, 'afterInit', function () {
-        //         const logarithmic = this.logarithmic;
-        
-        //         if (logarithmic && this.options.custom.allowNegativeLog) {
-        
-        //             // Avoid errors on negative numbers on a log axis
-        //             this.positiveValuesOnly = false;
-        
-        //             // Override the converter functions
-        //             logarithmic.log2lin = num => {
-        //                 const isNegative = num < 0;
-        
-        //                 let adjustedNum = Math.abs(num);
-        
-        //                 if (adjustedNum < 10) {
-        //                     adjustedNum += (10 - adjustedNum) / 10;
-        //                 }
-        
-        //                 const result = Math.log(adjustedNum) / Math.LN10;
-        //                 return isNegative ? -result : result;
-        //             };
-        
-        //             logarithmic.lin2log = num => {
-        //                 const isNegative = num < 0;
-        
-        //                 let result = Math.pow(10, Math.abs(num));
-        //                 if (result < 10) {
-        //                     result = (10 * (result - 1)) / (10 - 1);
-        //                 }
-        //                 return isNegative ? -result : result;
-        //             };
-        //         }
-        //     }); this.createAnnualFlowPlot();
-        // };
 
         //Create chart
         public createAnnualFlowPlot(): void {
             //console.log('peak value plot data', this.formattedPeakDates);
-            console.log('estimated peak plot data', this.formattedEstPeakDates);
+            //console.log('estimated peak plot data', this.formattedEstPeakDates);
             //console.log('daily flow plot data', this.formattedDailyFlow);
             this.chartConfig = {
                 chart: {
@@ -912,7 +874,7 @@ module StreamStats.Controllers {
             } 
             this.formattedFloodFreq.forEach((formattedFloodFreqItem) => {
                 this.chartConfig.yAxis.plotLines.push(formattedFloodFreqItem)
-            }); console.log('range sel', this.chartConfig.rangeSelector)
+            });
         }
 
         //checkbox for turning plotLines on and off
@@ -935,12 +897,8 @@ module StreamStats.Controllers {
             let chart = $('#chart1').highcharts();
             if (this.logScale) {
                 chart.yAxis[0].update({ type: 'logarithmic' });
-                //chart.xAxis[0].update({ type: 'linear' });
-                console.log('log');
             } else {
                 chart.yAxis[0].update({ type: 'linear' });
-                //chart.xAxis[0].update({ type: 'logarithmic' });
-                console.log('linear');
             }
         };
         
