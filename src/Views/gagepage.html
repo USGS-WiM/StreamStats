@@ -229,6 +229,8 @@
                         <highchart id="chart1" config="vm.chartConfig"></highchart> <br>
                         <input type="checkbox" ng-if="vm.formattedFloodFreq.length > 0" id="yesAEPLines" name="yesAEPLines" ng-model="vm.plotlines" ng-change="vm.removePlotLines()" checked>
                         <label for="yesAEPLines" ng-if="vm.formattedFloodFreq.length > 0"> AEP Plot Lines</label><br>
+                        <input type="checkbox" ng-if="vm.formattedDailyFlow.length > 0" id="logScale" name="logScale" ng-model="vm.logScale" ng-change="vm.logToLinear()" checked>
+                        <label for="logScale" ng-if="vm.formattedDailyFlow.length > 0"> Log Scale</label><br>
                     </div>
                     </center>
                 </div>

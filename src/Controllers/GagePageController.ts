@@ -208,8 +208,8 @@ module StreamStats.Controllers {
                         subtitle: { text: string, align: string},
                         rangeSelector: { enabled: boolean, inputPosition: {align: string, x: number, y: number}, buttonPosition: {align: string, x: number, y: number}},
                         navigator: { enabled: boolean},  
-                        xAxis: {  type: string, title: {text: string}},
-                        yAxis: { title: {text: string}, plotLines: [{value: number, color: string, width: number, zIndex: number, label: {text: string}, id: string}]},
+                        xAxis: {  type: string, title: {text: string}, custom: { allowNegativeLog: Boolean }},
+                        yAxis: { title: {text: string}, custom: { allowNegativeLog: Boolean }, plotLines: [{value: number, color: string, width: number, zIndex: number, label: {text: string}, id: string}]},
                         series: { name: string; tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number; type: string, color: string, 
                         data: number[], marker: {symbol: string, radius: number}, showInLegend: boolean; }[]; };
         constructor($scope: IGagePageControllerScope, $http: ng.IHttpService, modalService: Services.IModalService, modal:ng.ui.bootstrap.IModalServiceInstance) {
@@ -726,7 +726,45 @@ module StreamStats.Controllers {
                         });
                     });
             this.createAnnualFlowPlot();
+            //this.converterFunction();
         }}
+
+
+        // public converterFunction (H) {
+        //     H.addEvent(H.Axis, 'afterInit', function () {
+        //         const logarithmic = this.logarithmic;
+        
+        //         if (logarithmic && this.options.custom.allowNegativeLog) {
+        
+        //             // Avoid errors on negative numbers on a log axis
+        //             this.positiveValuesOnly = false;
+        
+        //             // Override the converter functions
+        //             logarithmic.log2lin = num => {
+        //                 const isNegative = num < 0;
+        
+        //                 let adjustedNum = Math.abs(num);
+        
+        //                 if (adjustedNum < 10) {
+        //                     adjustedNum += (10 - adjustedNum) / 10;
+        //                 }
+        
+        //                 const result = Math.log(adjustedNum) / Math.LN10;
+        //                 return isNegative ? -result : result;
+        //             };
+        
+        //             logarithmic.lin2log = num => {
+        //                 const isNegative = num < 0;
+        
+        //                 let result = Math.pow(10, Math.abs(num));
+        //                 if (result < 10) {
+        //                     result = (10 * (result - 1)) / (10 - 1);
+        //                 }
+        //                 return isNegative ? -result : result;
+        //             };
+        //         }
+        //     }); this.createAnnualFlowPlot();
+        // };
 
         //Create chart
         public createAnnualFlowPlot(): void {
@@ -770,10 +808,16 @@ module StreamStats.Controllers {
                     title: {
                         text: 'Date'
                     },
+                    custom: {
+                        allowNegativeLog: true
+                    }
                 },
                 yAxis: {
                     title: {
                         text: 'Discharge (Q), in ft³/s'
+                    },
+                    custom: {
+                        allowNegativeLog: true
                     },
                     plotLines: [{value: null, color: null, width: null, zIndex: null, label: {text: null}, id: 'plotlines'}]
                 },
@@ -880,6 +924,21 @@ module StreamStats.Controllers {
                 chart.yAxis[0].removePlotLine('plotlines'); // all plot lines have id: 'plotlines'
                 }
             };
+
+                    //checkbox for change log to linear scale
+        public logScale = true; 
+        public logToLinear () {
+            let chart = $('#chart1').highcharts();
+            if (this.logScale) {
+                chart.yAxis[0].update({ type: 'linear' });
+                //chart.xAxis[0].update({ type: 'linear' });
+                console.log('linear');
+            } else {
+                chart.yAxis[0].update({ type: 'logarithmic' });
+                //chart.xAxis[0].update({ type: 'logarithmic' });
+                console.log('log');
+            }
+        };
         
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-

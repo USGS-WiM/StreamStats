@@ -96,6 +96,7 @@ var StreamStats;
                 _this_1.formattedEstPeakDates = [];
                 _this_1.formattedDailyFlow = [];
                 _this_1.plotlines = true;
+                _this_1.logScale = true;
                 $scope.vm = _this_1;
                 _this_1.modalInstance = modal;
                 _this_1.modalService = modalService;
@@ -576,10 +577,16 @@ var StreamStats;
                         title: {
                             text: 'Date'
                         },
+                        custom: {
+                            allowNegativeLog: true
+                        }
                     },
                     yAxis: {
                         title: {
                             text: 'Discharge (Q), in ft³/s'
+                        },
+                        custom: {
+                            allowNegativeLog: true
                         },
                         plotLines: [{ value: null, color: null, width: null, zIndex: null, label: { text: null }, id: 'plotlines' }]
                     },
@@ -684,6 +691,18 @@ var StreamStats;
                 }
                 else {
                     chart.yAxis[0].removePlotLine('plotlines');
+                }
+            };
+            ;
+            GagePageController.prototype.logToLinear = function () {
+                var chart = $('#chart1').highcharts();
+                if (this.logScale) {
+                    chart.yAxis[0].update({ type: 'linear' });
+                    console.log('linear');
+                }
+                else {
+                    chart.yAxis[0].update({ type: 'logarithmic' });
+                    console.log('log');
                 }
             };
             ;
