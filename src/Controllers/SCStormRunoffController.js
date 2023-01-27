@@ -13,6 +13,15 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
 var StreamStats;
 (function (StreamStats) {
     var Controllers;
@@ -28,7 +37,7 @@ var StreamStats;
         }());
         var SCStormRunoffController = (function (_super) {
             __extends(SCStormRunoffController, _super);
-            function SCStormRunoffController($scope, $analytics, toaster, $http, studyAreaService, modal, $timeout, EventManager) {
+            function SCStormRunoffController($scope, toaster, $http, studyAreaService, modal, $timeout, EventManager) {
                 var _this = _super.call(this, $http, configuration.baseurls.StormRunoffServices) || this;
                 _this.$timeout = $timeout;
                 _this.EventManager = EventManager;
@@ -448,7 +457,6 @@ var StreamStats;
                 $scope.greaterThanOrEqualToZero = _this.greaterThanOrEqualToZero;
                 $scope.betweenZeroOneHundred = _this.betweenZeroOneHundred;
                 _this.AppVersion = configuration.version;
-                _this.angulartics = $analytics;
                 _this.toaster = toaster;
                 _this.modalInstance = modal;
                 _this.StudyArea = studyAreaService.selectedStudyArea;
@@ -1038,9 +1046,12 @@ var StreamStats;
                                 "X-warning": true
                             };
                             var formattedSegments = _this.getFormattedFlowSegments();
+                            var allWatershedGeometry = __spreadArray([], _this.studyAreaService.selectedStudyArea.FeatureCollection.features, true);
+                            var watershedFeatures = __spreadArray(__spreadArray([], allWatershedGeometry.slice(1, 2), true), allWatershedGeometry.slice(2), true);
                             data = {
                                 "lat": _this.studyAreaService.selectedStudyArea.Pourpoint.Latitude,
                                 "lon": _this.studyAreaService.selectedStudyArea.Pourpoint.Longitude,
+                                "watershedFeatures": watershedFeatures,
                                 "prfData": _this.prfSegments,
                                 "AEP": (_a = _this._selectedAEPSynthetic) === null || _a === void 0 ? void 0 : _a.value,
                                 "curveNumberMethod": (_b = _this._selectedStandardCurve) === null || _b === void 0 ? void 0 : _b.endpointValue,
@@ -1438,7 +1449,7 @@ var StreamStats;
                     return $text.replace('"', '""');
                 }
             };
-            SCStormRunoffController.$inject = ['$scope', '$analytics', 'toaster', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance', '$timeout', 'WiM.Event.EventManager'];
+            SCStormRunoffController.$inject = ['$scope', 'toaster', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance', '$timeout', 'WiM.Event.EventManager'];
             return SCStormRunoffController;
         }(WiM.Services.HTTPServiceBase));
         var SCStormRunoffType;

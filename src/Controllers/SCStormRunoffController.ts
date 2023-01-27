@@ -688,15 +688,14 @@ module StreamStats.Controllers {
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$analytics', 'toaster', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance', '$timeout', 'WiM.Event.EventManager'];
-        constructor($scope: ISCStormRunoffControllerScope, $analytics, toaster, $http: ng.IHttpService, studyAreaService: StreamStats.Services.IStudyAreaService, modal: ng.ui.bootstrap.IModalServiceInstance, public $timeout: ng.ITimeoutService, private EventManager: WiM.Event.IEventManager) {
+        static $inject = ['$scope', 'toaster', '$http', 'StreamStats.Services.StudyAreaService', '$modalInstance', '$timeout', 'WiM.Event.EventManager'];
+        constructor($scope: ISCStormRunoffControllerScope, toaster, $http: ng.IHttpService, studyAreaService: StreamStats.Services.IStudyAreaService, modal: ng.ui.bootstrap.IModalServiceInstance, public $timeout: ng.ITimeoutService, private EventManager: WiM.Event.IEventManager) {
             super($http, configuration.baseurls.StormRunoffServices);
             $scope.vm = this;
             $scope.greaterThanZero = this.greaterThanZero;
             $scope.greaterThanOrEqualToZero = this.greaterThanOrEqualToZero;
             $scope.betweenZeroOneHundred = this.betweenZeroOneHundred; 
             this.AppVersion = configuration.version;
-            this.angulartics = $analytics;
             this.toaster = toaster;
             this.modalInstance = modal;
             this.StudyArea = studyAreaService.selectedStudyArea;
@@ -1241,10 +1240,13 @@ module StreamStats.Controllers {
                                 "X-warning": true
                             };
                             let formattedSegments = this.getFormattedFlowSegments();
+                            let allWatershedGeometry = [...this.studyAreaService.selectedStudyArea.FeatureCollection.features]
+                            let watershedFeatures = [...allWatershedGeometry.slice(1,2), ...allWatershedGeometry.slice(2)];
                             // master data endpoing
                             data = {
                                 "lat": this.studyAreaService.selectedStudyArea.Pourpoint.Latitude,
                                 "lon": this.studyAreaService.selectedStudyArea.Pourpoint.Longitude,
+                                "watershedFeatures": watershedFeatures,
                                 "prfData": this.prfSegments,
                                 "AEP": this._selectedAEPSynthetic?.value,
                                 "curveNumberMethod": this._selectedStandardCurve?.endpointValue,
