@@ -55,6 +55,10 @@ module StreamStats.Controllers {
         public ReportData: ISCStormRunoffReportable;
         public drainageArea: number;
 
+        // BOHMAN URBAN TAB
+        public region3Percent = 0;
+        public region4Percent = 0;
+
         // SYNTHETIC TAB
         public drainageAreaSynthetic: number;
         public timeOfConcentrationMin: number;
@@ -730,24 +734,13 @@ module StreamStats.Controllers {
             this.Execute(request).then((response: any) => {
                     //make sure there are some results
                     if (response.data[0].regressionRegions.length > 0 && response.data[0].regressionRegions[0].results && response.data[0].regressionRegions[0].results.length > 0) {
-                        var region3Percent = 0;
-                        var region4Percent = 0;
-                        var region3AEP = 0;
-                        var region4AEP = 0;
+                        var weightedAEP = 0;
 
                         response.data[0].regressionRegions.forEach(regressionregion => {
-                            if (regressionregion.code == 'GC1585') {
-                                region3Percent = regressionregion.percentWeight;
+                            if (regressionregion.code == 'GC1583' || regressionregion.code == 'GC1584' || regressionregion.code == 'GC1585' || regressionregion.code == 'GC1586') {
                                 regressionregion.results.forEach(result => {
                                     if (result.name.indexOf(this.SelectedAEP.value) !== -1){
-                                        region3AEP = result.value;
-                                    }
-                                })
-                            } else if (regressionregion.code == 'GC1586') {
-                                region4Percent = regressionregion.percentWeight;
-                                regressionregion.results.forEach(result => {
-                                    if (result.name.indexOf(this.SelectedAEP.value) !== -1){
-                                        region4AEP = result.value;
+                                        weightedAEP += (result.value * (regressionregion.percentWeight / 100.0));
                                     }
                                 })
                             }
@@ -757,10 +750,9 @@ module StreamStats.Controllers {
                         var data = {
                             "lat": this.studyAreaService.selectedStudyArea.Pourpoint.Latitude,
                             "lon": this.studyAreaService.selectedStudyArea.Pourpoint.Longitude,
-                            "region3PercentArea": region3Percent,
-                            "region4PercentArea": region4Percent, 
-                            "region3Qp": region3AEP, 
-                            "region4Qp": region4AEP, 
+                            "region3PercentArea": this.region3Percent,
+                            "region4PercentArea": this.region4Percent, 
+                            "Qp": weightedAEP, 
                             "A": this.drainageArea,
                             "L": this.mainChannelLength, 
                             "S": this.mainChannelSlope, 
@@ -970,13 +962,19 @@ module StreamStats.Controllers {
                         this.toaster.pop('error', "No regression regions were returned", "Regression based scenario computation not allowed", 0);
                     }
                     if (response.data.length > 0) {
-                        response.data.forEach(p => { p.code = p.code.toUpperCase().split(",") });       
-                        this. loadParametersByStatisticsGroup(response.data.map(function (elem) {
+                        response.data.forEach(regressionRegion => {
+                            if (regressionRegion.code == "GC1585") {
+                                this.region3Percent = regressionRegion.percentWeight;
+                            } else if (regressionRegion.code == "GC1586") {
+                                this.region4Percent = regressionRegion.percentWeight;
+                            } 
+                        });       
+                        this.loadParametersByStatisticsGroup(response.data.map(function (elem) {
                             return elem.code;
                         }).join(","), response.data)
                     }
                 },(error) => {
-                    this.toaster.pop('error', "There was an HTTP error querying Regression regions", "Please retry", 0);
+                    this.toaster.pop('error', "There was an HTTP error querying Regression Regions", "Please retry", 0);
                 }).finally(() => {
             });
         }

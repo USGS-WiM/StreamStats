@@ -41,6 +41,8 @@ var StreamStats;
                 var _this = _super.call(this, $http, configuration.baseurls.StormRunoffServices) || this;
                 _this.$timeout = $timeout;
                 _this.EventManager = EventManager;
+                _this.region3Percent = 0;
+                _this.region4Percent = 0;
                 _this.isSyntheticUHOpen = false;
                 _this.AEPOptions = [{
                         "name": "50%",
@@ -576,24 +578,12 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, 1, 'json', JSON.stringify(data));
                 this.Execute(request).then(function (response) {
                     if (response.data[0].regressionRegions.length > 0 && response.data[0].regressionRegions[0].results && response.data[0].regressionRegions[0].results.length > 0) {
-                        var region3Percent = 0;
-                        var region4Percent = 0;
-                        var region3AEP = 0;
-                        var region4AEP = 0;
+                        var weightedAEP = 0;
                         response.data[0].regressionRegions.forEach(function (regressionregion) {
-                            if (regressionregion.code == 'GC1585') {
-                                region3Percent = regressionregion.percentWeight;
+                            if (regressionregion.code == 'GC1583' || regressionregion.code == 'GC1584' || regressionregion.code == 'GC1585' || regressionregion.code == 'GC1586') {
                                 regressionregion.results.forEach(function (result) {
                                     if (result.name.indexOf(_this.SelectedAEP.value) !== -1) {
-                                        region3AEP = result.value;
-                                    }
-                                });
-                            }
-                            else if (regressionregion.code == 'GC1586') {
-                                region4Percent = regressionregion.percentWeight;
-                                regressionregion.results.forEach(function (result) {
-                                    if (result.name.indexOf(_this.SelectedAEP.value) !== -1) {
-                                        region4AEP = result.value;
+                                        weightedAEP += (result.value * (regressionregion.percentWeight / 100.0));
                                     }
                                 });
                             }
@@ -601,10 +591,9 @@ var StreamStats;
                         var data = {
                             "lat": _this.studyAreaService.selectedStudyArea.Pourpoint.Latitude,
                             "lon": _this.studyAreaService.selectedStudyArea.Pourpoint.Longitude,
-                            "region3PercentArea": region3Percent,
-                            "region4PercentArea": region4Percent,
-                            "region3Qp": region3AEP,
-                            "region4Qp": region4AEP,
+                            "region3PercentArea": _this.region3Percent,
+                            "region4PercentArea": _this.region4Percent,
+                            "Qp": weightedAEP,
                             "A": _this.drainageArea,
                             "L": _this.mainChannelLength,
                             "S": _this.mainChannelSlope,
@@ -789,13 +778,20 @@ var StreamStats;
                         _this.toaster.pop('error', "No regression regions were returned", "Regression based scenario computation not allowed", 0);
                     }
                     if (response.data.length > 0) {
-                        response.data.forEach(function (p) { p.code = p.code.toUpperCase().split(","); });
+                        response.data.forEach(function (regressionRegion) {
+                            if (regressionRegion.code == "GC1585") {
+                                _this.region3Percent = regressionRegion.percentWeight;
+                            }
+                            else if (regressionRegion.code == "GC1586") {
+                                _this.region4Percent = regressionRegion.percentWeight;
+                            }
+                        });
                         _this.loadParametersByStatisticsGroup(response.data.map(function (elem) {
                             return elem.code;
                         }).join(","), response.data);
                     }
                 }, function (error) {
-                    _this.toaster.pop('error', "There was an HTTP error querying Regression regions", "Please retry", 0);
+                    _this.toaster.pop('error', "There was an HTTP error querying Regression Regions", "Please retry", 0);
                 }).finally(function () {
                 });
             };
