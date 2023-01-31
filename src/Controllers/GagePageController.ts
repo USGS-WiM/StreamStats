@@ -190,7 +190,6 @@ module StreamStats.Controllers {
         public peakValuePlot: any;
         public annualFlowPlot: any;
         public peakValues: any;
-        public removeAEPLines: boolean;
         public floodFreq = undefined;
         public peakDates = undefined;
         public estPeakDates = undefined;
@@ -208,7 +207,7 @@ module StreamStats.Controllers {
                         subtitle: { text: string, align: string},
                         rangeSelector: { enabled: boolean, inputPosition: {align: string, x: number, y: number}, selected: number, buttonPosition: {align: string, x: number, y: number}},
                         navigator: { enabled: boolean},  
-                        xAxis: {  type: string, title: {text: string}, custom: { allowNegativeLog: Boolean }},
+                        xAxis: {  type: string, min: number, max: number, title: {text: string}, custom: { allowNegativeLog: Boolean }},
                         yAxis: { title: {text: string}, custom: { allowNegativeLog: Boolean }, plotLines: [{value: number, color: string, width: number, zIndex: number, label: {text: string}, id: string}]},
                         series: { name: string; showInNavigator: boolean, tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number; type: string, color: string, 
                         data: number[], marker: {symbol: string, radius: number}, showInLegend: boolean; }[]; };
@@ -613,6 +612,7 @@ module StreamStats.Controllers {
                     } while (data.length > 0);
                     const filteredArray = peakValues.filter(item => {
                         return (item.peak_dt[8] + item.peak_dt[9] !== '00' || item.peak_dt[8] + item.peak_dt[9] !== '00') //filtering out invalid dates from main array
+                        //return (item.pead_va !== NaN)
                     });
                     this.peakDates = filteredArray;
                     this.estPeakDates = estPeakValues;
@@ -626,7 +626,7 @@ module StreamStats.Controllers {
         //This will be used to plot x-percent AEP flood values as horizontal plotLines
         public getFloodFreq() {
             var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + this.gage.code;
-            // console.log('GetFloodFreqURL', url)
+            //console.log('GetFloodFreqURL', url)
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             this.Execute(request).then(
                 (response: any) => {
@@ -645,7 +645,7 @@ module StreamStats.Controllers {
                 this.floodFreq = chartData
             }).finally(() => {
                 this.getDailyFlow();
-            }); 
+            });
         }
 
         //Pull in data for daily flow values
@@ -671,12 +671,16 @@ module StreamStats.Controllers {
         public formatData(): void {
             if (this.peakDates) {
                 this.peakDates.forEach(peakObj => {
+                    if (!isNaN(peakObj.peak_va)) {
                     this.formattedPeakDates.push({x: new Date(peakObj.peak_dt), y: peakObj.peak_va})
+                    }
                 });
             } 
             if (this.estPeakDates) {
                 this.estPeakDates.forEach(estPeakObj => {
+                    if (!isNaN(estPeakObj.peak_va)) {
                     this.formattedEstPeakDates.push({x: new Date(estPeakObj.peak_dt), y: estPeakObj.peak_va})
+                    }
                 });
             }
             if (this.dailyFlow) {
@@ -731,7 +735,7 @@ module StreamStats.Controllers {
         //Create chart
         public createAnnualFlowPlot(): void {
             //console.log('peak value plot data', this.formattedPeakDates);
-            //console.log('estimated peak plot data', this.formattedEstPeakDates);
+            //onsole.log('estimated peak plot data', this.formattedEstPeakDates);
             //console.log('daily flow plot data', this.formattedDailyFlow);
             this.chartConfig = {
                 chart: {
@@ -768,6 +772,8 @@ module StreamStats.Controllers {
                 },
                 xAxis: {
                     type: 'datetime',
+                    min: 1875,
+                    max: 2050,
                     title: {
                         text: 'Date'
                     },
@@ -813,7 +819,7 @@ module StreamStats.Controllers {
                 },
                 {
                     name    : 'Annual Peak Streamflow',
-                    showInNavigator: true,
+                    showInNavigator: false,
                     tooltip: {
                         headerFormat:'<b>Annual Peak Streamflow</b>',
                         pointFormatter: function(){
@@ -869,7 +875,7 @@ module StreamStats.Controllers {
                         symbol: 'square',
                         radius: 3
                     },
-                    showInLegend: this.formattedEstPeakDates.length > 0
+                    showInLegend: this.formattedEstPeakDates.length > 0 //still showing up in legend if y is NaN
                 }] 
             } 
             this.formattedFloodFreq.forEach((formattedFloodFreqItem) => {
@@ -879,7 +885,7 @@ module StreamStats.Controllers {
 
         //checkbox for turning plotLines on and off
         public plotlines = true;
-            public removePlotLines () {
+            public togglePlotLines () {
                 let chart = $('#chart1').highcharts();
                 if (this.plotlines) {
                 this.chartConfig.yAxis.plotLines.forEach((plotLine) => {
@@ -893,14 +899,14 @@ module StreamStats.Controllers {
 
         //checkbox for change linear to log scale
         public logScale = false; 
-        public logToLinear () {
-            let chart = $('#chart1').highcharts();
-            if (this.logScale) {
-                chart.yAxis[0].update({ type: 'logarithmic' });
-            } else {
-                chart.yAxis[0].update({ type: 'linear' });
-            }
-        };
+            public toggleLogLinear () {
+                let chart = $('#chart1').highcharts();
+                if (this.logScale) {
+                    chart.yAxis[0].update({ type: 'logarithmic' });
+                } else {
+                    chart.yAxis[0].update({ type: 'linear' });
+                }
+            };
         
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-

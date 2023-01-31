@@ -479,12 +479,16 @@ var StreamStats;
                 var _this_1 = this;
                 if (this.peakDates) {
                     this.peakDates.forEach(function (peakObj) {
-                        _this_1.formattedPeakDates.push({ x: new Date(peakObj.peak_dt), y: peakObj.peak_va });
+                        if (!isNaN(peakObj.peak_va)) {
+                            _this_1.formattedPeakDates.push({ x: new Date(peakObj.peak_dt), y: peakObj.peak_va });
+                        }
                     });
                 }
                 if (this.estPeakDates) {
                     this.estPeakDates.forEach(function (estPeakObj) {
-                        _this_1.formattedEstPeakDates.push({ x: new Date(estPeakObj.peak_dt), y: estPeakObj.peak_va });
+                        if (!isNaN(estPeakObj.peak_va)) {
+                            _this_1.formattedEstPeakDates.push({ x: new Date(estPeakObj.peak_dt), y: estPeakObj.peak_va });
+                        }
                     });
                 }
                 if (this.dailyFlow) {
@@ -573,6 +577,8 @@ var StreamStats;
                     },
                     xAxis: {
                         type: 'datetime',
+                        min: 1875,
+                        max: 2050,
                         title: {
                             text: 'Date'
                         },
@@ -618,7 +624,7 @@ var StreamStats;
                         },
                         {
                             name: 'Annual Peak Streamflow',
-                            showInNavigator: true,
+                            showInNavigator: false,
                             tooltip: {
                                 headerFormat: '<b>Annual Peak Streamflow</b>',
                                 pointFormatter: function () {
@@ -684,7 +690,7 @@ var StreamStats;
                     _this_1.chartConfig.yAxis.plotLines.push(formattedFloodFreqItem);
                 });
             };
-            GagePageController.prototype.removePlotLines = function () {
+            GagePageController.prototype.togglePlotLines = function () {
                 var chart = $('#chart1').highcharts();
                 if (this.plotlines) {
                     this.chartConfig.yAxis.plotLines.forEach(function (plotLine) {
@@ -696,7 +702,7 @@ var StreamStats;
                 }
             };
             ;
-            GagePageController.prototype.logToLinear = function () {
+            GagePageController.prototype.toggleLogLinear = function () {
                 var chart = $('#chart1').highcharts();
                 if (this.logScale) {
                     chart.yAxis[0].update({ type: 'logarithmic' });
