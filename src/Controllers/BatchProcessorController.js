@@ -32,23 +32,6 @@ var StreamStats;
             BatchProcessorController.prototype.Close = function () {
                 this.modalInstance.dismiss('cancel');
             };
-            BatchProcessorController.prototype.selectAboutTab = function (tabname) {
-                if (this.selectedBatchProcessorTabName == tabname)
-                    return;
-                this.selectedBatchProcessorTabName = tabname;
-            };
-            BatchProcessorController.prototype.getSubmitBatchInfo = function () {
-                var ;
-                if (this.modalService.modalOptions) {
-                    if (this.modalService.modalOptions.tabName)
-                        this.selectAboutTab(this.modalService.modalOptions.tabName);
-                    regionID = this.modalService.modalOptions.regionID;
-                }
-            };
-            BatchProcessorController.prototype.convertUnsafe = function (x) {
-                return this.sce.trustAsHtml(x);
-            };
-            ;
             BatchProcessorController.prototype.readCookie = function (name) {
                 var nameEQ = name + "=";
                 var ca = document.cookie.split(';');
