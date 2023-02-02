@@ -104,7 +104,10 @@ module StreamStats.Controllers {
                 self.checkActiveNews();
             })
         }
-
+        public openBatchProcessor(): void {
+            this.modalService.openModal(Services.SSModalType.e_batchprocessor);
+        }
+        
         public openReport(): void {
             this.modalService.openModal(Services.SSModalType.e_report);
         }
