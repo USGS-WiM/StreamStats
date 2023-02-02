@@ -91,10 +91,12 @@ var StreamStats;
                 _this_1.peakDates = undefined;
                 _this_1.estPeakDates = undefined;
                 _this_1.dailyFlow = undefined;
-                _this_1.formattedFloodFreq = undefined;
+                _this_1.formattedFloodFreq = [];
                 _this_1.formattedPeakDates = [];
                 _this_1.formattedEstPeakDates = [];
                 _this_1.formattedDailyFlow = [];
+                _this_1.plotlines = true;
+                _this_1.logScale = false;
                 $scope.vm = _this_1;
                 _this_1.modalInstance = modal;
                 _this_1.modalService = modalService;
@@ -440,7 +442,7 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
                     var data = response.data;
-                    var lookup = [9, 852, 8, 4, 7, 3, 6, 1, 501, 5, 2, 500, 851, 1438, 818];
+                    var lookup = [9, 852, 8, 4, 7, 3, 6, 1, 501, 5, 2, 500, 851, 1438, 818, 2311, 2312, 2313, 2314, 2315, 2316, 2317, 2318];
                     var chartData = [];
                     do {
                         var IDs = data.statistics;
@@ -477,12 +479,16 @@ var StreamStats;
                 var _this_1 = this;
                 if (this.peakDates) {
                     this.peakDates.forEach(function (peakObj) {
-                        _this_1.formattedPeakDates.push({ x: new Date(peakObj.peak_dt), y: peakObj.peak_va });
+                        if (!isNaN(peakObj.peak_va)) {
+                            _this_1.formattedPeakDates.push({ x: new Date(peakObj.peak_dt), y: peakObj.peak_va });
+                        }
                     });
                 }
                 if (this.estPeakDates) {
                     this.estPeakDates.forEach(function (estPeakObj) {
-                        _this_1.formattedEstPeakDates.push({ x: new Date(estPeakObj.peak_dt), y: estPeakObj.peak_va });
+                        if (!isNaN(estPeakObj.peak_va)) {
+                            _this_1.formattedEstPeakDates.push({ x: new Date(estPeakObj.peak_dt), y: estPeakObj.peak_va });
+                        }
                     });
                 }
                 if (this.dailyFlow) {
@@ -509,7 +515,15 @@ var StreamStats;
                         2: '#911eb4',
                         500: '#dcbeff',
                         851: '#fabed4',
-                        1438: '#469990'
+                        1438: '#469990',
+                        2311: '#f58231',
+                        2312: '#3cb44b',
+                        2313: '#e6194B',
+                        2314: '#bfef45',
+                        2315: '#911eb4',
+                        2316: '#9A6324',
+                        2317: '#ffe119',
+                        2318: '#42d4f4'
                     };
                     this.floodFreq.forEach(function (floodFreqItem) {
                         var colorIndex = floodFreqItem.regressionTypeID;
@@ -519,7 +533,8 @@ var StreamStats;
                             color: AEPColors_1[colorIndex],
                             width: 1.5,
                             zIndex: 4,
-                            label: { text: formattedName + '% AEP' }
+                            label: { text: formattedName + '% AEP' },
+                            id: 'plotlines'
                         });
                     });
                     this.createAnnualFlowPlot();
@@ -529,7 +544,7 @@ var StreamStats;
                 var _this_1 = this;
                 this.chartConfig = {
                     chart: {
-                        height: 450,
+                        height: 550,
                         width: 800,
                         zooming: {
                             type: 'xy'
@@ -543,21 +558,47 @@ var StreamStats;
                         text: 'Click and drag in the plot area to zoom in<br>AEP = Annual Exceedance Probability',
                         align: 'center'
                     },
+                    rangeSelector: {
+                        enabled: true,
+                        inputPosition: {
+                            align: 'left',
+                            x: 0,
+                            y: 0
+                        },
+                        selected: 5,
+                        buttonPosition: {
+                            align: 'right',
+                            x: 0,
+                            y: 0
+                        },
+                    },
+                    navigator: {
+                        enabled: true
+                    },
                     xAxis: {
                         type: 'datetime',
+                        min: 1875,
+                        max: 2050,
                         title: {
                             text: 'Date'
                         },
+                        custom: {
+                            allowNegativeLog: true
+                        }
                     },
                     yAxis: {
                         title: {
                             text: 'Discharge (Q), in ft³/s'
                         },
-                        plotLines: [{ value: null, color: null, width: null, zIndex: null, label: { text: null } }]
+                        custom: {
+                            allowNegativeLog: true
+                        },
+                        plotLines: [{ value: null, color: null, width: null, zIndex: null, label: { text: null }, id: 'plotlines' }]
                     },
                     series: [
                         {
                             name: 'Daily Streamflow',
+                            showInNavigator: true,
                             tooltip: {
                                 headerFormat: '<b>Daily Streamflow</b>',
                                 pointFormatter: function () {
@@ -583,6 +624,7 @@ var StreamStats;
                         },
                         {
                             name: 'Annual Peak Streamflow',
+                            showInNavigator: false,
                             tooltip: {
                                 headerFormat: '<b>Annual Peak Streamflow</b>',
                                 pointFormatter: function () {
@@ -613,6 +655,7 @@ var StreamStats;
                         },
                         {
                             name: 'Annual Peak Streamflow (Date Estimated)',
+                            showInNavigator: true,
                             tooltip: {
                                 headerFormat: '<b>Annual Peak Streamflow</b>',
                                 pointFormatter: function () {
@@ -647,6 +690,28 @@ var StreamStats;
                     _this_1.chartConfig.yAxis.plotLines.push(formattedFloodFreqItem);
                 });
             };
+            GagePageController.prototype.togglePlotLines = function () {
+                var chart = $('#chart1').highcharts();
+                if (this.plotlines) {
+                    this.chartConfig.yAxis.plotLines.forEach(function (plotLine) {
+                        chart.yAxis[0].addPlotLine(plotLine);
+                    });
+                }
+                else {
+                    chart.yAxis[0].removePlotLine('plotlines');
+                }
+            };
+            ;
+            GagePageController.prototype.toggleLogLinear = function () {
+                var chart = $('#chart1').highcharts();
+                if (this.logScale) {
+                    chart.yAxis[0].update({ type: 'logarithmic' });
+                }
+                else {
+                    chart.yAxis[0].update({ type: 'linear' });
+                }
+            };
+            ;
             GagePageController.prototype.init = function () {
                 this.AppVersion = configuration.version;
                 this.getGagePage();
