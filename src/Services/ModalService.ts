@@ -218,7 +218,7 @@ export enum SSModalType {
         e_gagepage = 10,
         e_nearestgages = 11,
         e_scstormrunnoff = 12,
-        e_flowanywhere = 13   
+        e_flowanywhere = 13
     }
 
     factory.$inject = ['$modal'];

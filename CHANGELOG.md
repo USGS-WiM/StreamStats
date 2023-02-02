@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Begin Drainage Area and End Drainage Area attributes to Indiana Coordinated Discharge report
 - Ability to download gage pages as a CSV
+- Gage Page now has 2 tabs: Gage Information and Gage Analysis Plots
 
 ### Changed  
 

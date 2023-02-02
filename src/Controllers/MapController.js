@@ -1051,7 +1051,6 @@ var StreamStats;
                         },
                         onEachFeature: function (feature, layer) {
                             var siteNo = feature.properties['Code'];
-                            var NWISpage = 'https://waterdata.usgs.gov/monitoring-location/' + siteNo;
                             var gageButtonDiv = L.DomUtil.create('div', 'innerDiv');
                             gageButtonDiv.innerHTML = '<strong>Station ID: </strong>' + siteNo + '</br><strong>Station Name: </strong>' + feature.properties['Name'] + '</br><strong>Latitude: </strong>' + feature.geometry.coordinates[1] + '</br><strong>Longitude: </strong>' + feature.geometry.coordinates[0] + '</br><strong>Station Type</strong>: ' + feature.properties.StationType.name +
                                 '</br><br><button id="gagePageLink" type="button" class="btn-blue fullwidth">Open StreamStats Gage Page</button>';
