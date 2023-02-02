@@ -208,6 +208,21 @@ module StreamStats.Controllers {
             this.NSSServicesVersion = this.studyAreaService.NSSServicesVersion;
         }
 
+        public setStream(stream) {
+            this.studyAreaService.selectedStudyArea.NHDStream = stream;
+            const input = document.getElementById(stream.GNIS_NAME) as HTMLInputElement;
+            if (input != null) {
+                input.checked = true;
+            } else { // for first selection, need to wait for report to be created
+                setTimeout(() => {
+                    const input = document.getElementById(stream.GNIS_NAME) as HTMLInputElement;
+                    if (input != null) {
+                        input.checked = true;
+                    }
+                  }, 1000)
+            }
+        }
+
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         public selectFDCTMTab(tabname: string): void {
@@ -287,6 +302,19 @@ module StreamStats.Controllers {
 
             //main file header with site information
             var csvFile = 'StreamStats Output Report\n\n' + 'State/Region ID,' + this.studyAreaService.selectedStudyArea.RegionID.toUpperCase() + '\nWorkspace ID,' + this.studyAreaService.selectedStudyArea.WorkspaceID + '\nLatitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + '\nLongitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5) + '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n';
+            if (this.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID) {
+                csvFile += '\nNHD Stream GNIS ID,' + this.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID;
+            }
+            if (this.studyAreaService.selectedStudyArea.NHDStream.GNIS_NAME) {
+                csvFile += '\nNHD Stream GNIS Name,' + this.studyAreaService.selectedStudyArea.NHDStream.GNIS_NAME;
+            }
+            if (this.studyAreaService.selectedStudyArea.WBDHUC8.huc8) {
+                csvFile += '\nHUC 8,' + this.studyAreaService.selectedStudyArea.WBDHUC8.huc8;
+            }
+            if (this.studyAreaService.selectedStudyArea.WBDHUC8.name) {
+                csvFile += ' (' + this.studyAreaService.selectedStudyArea.WBDHUC8.name + ')';
+            }
+            csvFile += '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n';
 
             //first write main parameter table
             csvFile += processMainParameterTable(this.studyAreaService.studyAreaParameterList);
@@ -389,6 +417,23 @@ module StreamStats.Controllers {
                 }
                 
                 csvFile += extVal;
+
+                // add Hydrologic Features content to CSV
+                if (self.applications) {
+                    var isHydrologicFeatures = self.applications.indexOf('HydrologicFeatures') != -1;
+                    if (isHydrologicFeatures) {
+                        extVal += 'National Hydrography Dataset (NHD) Hydrologic Features\n';
+                        extVal += 'Intersecting NHD Streams\n';
+                        if (self.studyAreaService.selectedStudyArea.NHDStreamIntersections.length > 0){
+                            extVal += self.tableToCSV($('#hydrologicFeaturesTable'));
+                        } else if (!self.studyAreaService.selectedStudyArea.NHDStreamIntersections) {
+                            extVal += 'No NHD streams were loaded.'
+                        } else if (self.studyAreaService.selectedStudyArea.NHDStreamIntersections.length == 0) {
+                            extVal += 'No NHD streams intersect the delineated basin.'
+                        }
+                        csvFile += extVal + '\n\n';
+                    }
+                }
 
                 //disclaimer
                 csvFile += self.disclaimer + 'Application Version: ' + self.AppVersion;

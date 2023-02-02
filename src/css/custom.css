@@ -89,6 +89,11 @@
 .orange {
     color: orange;
 }
+
+.red {
+    color: red
+}
+
 .daterangepicker {
     z-index: 30000 !important;
 }
@@ -109,6 +114,16 @@
 
 #nearestGages h3 {
     padding-left: 10px;
+}
+
+.panel {
+    background-color: #ebf0f5;
+    color: #10152C;
+    /* margin: 10px 0px 20px 0px; */
+    padding: 10px 5px 20px 5px;
+    margin: 10px 0px;
+    max-height: 400px;
+    overflow-y: scroll;
 }
 
 .selectedGage {
@@ -141,6 +156,20 @@ text.nv-axislabel {
     letter-spacing: -0.2px;
 }
 
+.hydrologicFeaturesTable{
+	width: 100%;
+	overflow: auto;
+}
+
+.hydrologicFeaturesTable .table th{
+	line-height: 12px !important;
+    font-weight: 500;
+}
+.hydrologicFeaturesTable .table *{
+	line-height: 14px !important;
+    letter-spacing: -0.2px;
+}
+
 .overflow-auto{
 	overflow: auto !important;
 }
@@ -155,6 +184,20 @@ text.nv-axislabel {
     width: unset;
     border: unset;
     border-bottom: 2px solid #e0e3e6;
+}
+
+.SCStormRunoffInput input.ng-dirty.ng-invalid-pattern {
+    border-color: red !important;
+}
+.SCStormRunoffInput input:required {
+    border-color: #d6d9de;
+}
+.SCStormRunoffInput select:required {
+    border-color: #d6d9de;
+}
+
+#applications .btn-black {
+    margin-bottom: 4px;
 }
 
 .panel {

@@ -1,0 +1,546 @@
+    <!-- Modal -->
+    <div id="print-content">
+        <div class="modal-header">
+            <div class="visible-print identifier">
+                <img src="images/usgs-logo-black.png" alt="USGS Identifier" title="USGS Science for a Changing World" />
+            </div>
+            <button type="button" class="close hidden-print" ng-click="vm.Close()"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title hidden-print">Study Area Storm Event Runoff Summary</h4>
+        </div>
+        <div class="modal-body">
+            <div ng-hide="vm.StudyArea">A study area is needed before viewing the report</div>
+            <div ng-show="vm.StudyArea">
+                <div class="form-group">
+                    <ul class="nav nav-tabs wateruseTabs hidden-print">
+                        <li ng-class="{'active': vm.SelectedTab == 3}"><a ng-click="vm.SelectedTab=3">SC Synthetic Unit Hydrograph</a></li>
+                        <li ng-class="{'active': vm.SelectedTab == 2}"><a ng-click="vm.SelectedTab=2">USGS SC Flood Hydrograph for Urban Watersheds</a></li>
+                        <li ng-class="{'active': vm.SelectedTab == 1}"><a ng-click="vm.SelectedTab=1">USGS SC Flood Hydrograph for Rural Watersheds</a></li>
+                    </ul>
+                    <div id="printArea" class="SCStormRunoffInput">
+                        <!-- Bohman Rural (1989) tab -->
+                        <div ng-if="vm.SelectedTab == 1" style="position:relative;">
+                            <!-- <form id="BohmanRuralForm" name="BohmanRuralForm" class="hidden-print" novalidate>
+                                <label for="AEPOptions">Select an Annual Exceedance Probability (AEP):</label>
+                                <select name="AEPOptions" ng-model="vm.SelectedAEP" ng-options="precip.name for precip in vm.AEPOptions track by precip.value"></select>
+
+                                <label for="DrainageArea">Drainage Area (square miles):</label>
+                                <input type="number" ng-model="vm.drainageArea" required/>
+
+                                
+                                <label class="fullwidth alignc" ng-if="vm.validateForm(BohmanRuralForm) && !vm.hideAlerts"><span class="fa fa-check"></span>&nbsp;Parameters Have Been Calculated</label>
+                                <label class="fullwidth" ng-if="!vm.validateForm(BohmanRuralForm) || (vm.validateForm(BohmanRuralForm) && vm.hideAlerts)">&nbsp;&nbsp;</label>
+                                <div class="hidden-print">
+                                    <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.calculateParameters('DRNAREA')" ng-hide="vm.validateForm(BohmanRuralForm)"><span ng-class="vm.canContinue ? 'fa fa-calculator' : 'fa fa-refresh fa-spin'"></span>&nbsp;&nbsp;Calculate Missing Parameters</button>
+                                    <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-red" ng-click="vm.clearResults(BohmanRuralForm)" ng-hide="!vm.validateForm(BohmanRuralForm)"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;Clear All</button>
+                                    <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.queryRegressionRegions()" ng-hide="!vm.validateForm(BohmanRuralForm)"><span ng-class="vm.canContinue ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></span>{{ vm.showResults ? '&nbsp;&nbsp;Recalculate Results' : '&nbsp;&nbsp;Continue' }}</button>
+                                </div>
+                                <label class="fullwidth alignc orange" ng-if="!vm.validateForm(BohmanRuralForm)"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Parameters Must Be Entered Before Results Can Be Calculated</label>
+                                <label ng-if="vm.validateForm(BohmanRuralForm)">&nbsp;&nbsp;</label> 
+                            </form>  -->
+                            <div> Coming Soon. </div>
+                            <br>
+                        </div>
+                        <!-- Bohman Urban (1992) tab -->
+                        <div ng-if="vm.SelectedTab == 2" style="position:relative;">
+                            <div class="wim-alert hidden-print">Fill out required<span style="color: #ffcc00">*</span> fields. Remaining inputs will be calculated with <b>Calculate Missing Parameters</b> based on delineated basin. Then click <b>Continue</b> to view peak discharge and hydrograph.</div>
+                            <form id="BohmanUrbanForm" name="BohmanUrbanForm" class="hidden-print" novalidate>
+                                <label for="AEPOptions">Annual Exceedance Probability (AEP):<span style="color: #ffcc00">*</span></label>
+                                <select name="AEPOptions" ng-model="vm.SelectedAEP" ng-options="precip.name for precip in vm.AEPOptions track by precip.value" required></select>
+
+                                <label for="DrainageArea">Drainage Area (square miles):</label> <span ng-if="BohmanUrbanForm.DrainageArea.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
+                                <input type="number" name="DrainageArea" ng-model="vm.drainageArea" required readonly/>
+                                <label for="MainChannelLength">Main Channel Length (miles):</label> <span ng-if="BohmanUrbanForm.MainChannelLength.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
+                                <input type="number" name="MainChannelLength" ng-model="vm.mainChannelLength" required readonly/>
+                                <label for="MainChannelSlope">Main Channel Slope (feet per mile):</label>  <span ng-if="BohmanUrbanForm.MainChannelSlope.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
+                                <input type="number" name="MainChannelSlope" ng-model="vm.mainChannelSlope" required readonly/>
+                                <label for="TotalImperviousArea">Total impervious area (%):</label>  <span ng-if="BohmanUrbanForm.TotalImperviousArea.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be between 0 and 100</span>
+                                <input type="number" name="TotalImperviousArea" ng-model="vm.totalImperviousArea" required readonly/>
+
+                                <label class="fullwidth alignc" ng-if="vm.validateForm(BohmanUrbanForm) && !vm.hideAlerts"><span class="fa fa-check"></span>&nbsp;Parameters Have Been Calculated</label>
+                                <label class="fullwidth" ng-if="!vm.validateForm(BohmanUrbanForm) || (vm.validateForm(BohmanUrbanForm) && vm.hideAlerts)">&nbsp;&nbsp;</label>
+                                <div class="hidden-print">
+                                    <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.calculateParameters('DRNAREA,LFPLENGTH,CSL10_85fm,LC06IMP')" ng-hide="vm.validateForm(BohmanUrbanForm)"><span ng-class="vm.canContinue ? 'fa fa-calculator' : 'fa fa-refresh fa-spin'"></span>&nbsp;&nbsp;Calculate Missing Parameters</button>
+                                    <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-red" ng-click="vm.clearResults(BohmanUrbanForm.$name)" ng-hide="!vm.validateForm(BohmanUrbanForm)"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;Clear All</button>
+                                    <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.queryRegressionRegions()" ng-hide="!vm.validateForm(BohmanUrbanForm)"><span ng-class="vm.canContinue ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></span>{{ vm.showResults ? '&nbsp;&nbsp;Recalculate Results' : '&nbsp;&nbsp;Continue' }}</button>
+                                </div>
+                                <label class="fullwidth alignc orange" ng-if="!vm.validateForm(BohmanUrbanForm)"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Parameters Must Be Entered Before Results Can Be Computed</label>
+                                <label ng-if="vm.validateForm(BohmanUrbanForm)">&nbsp;&nbsp;</label> 
+                            </form> 
+                            <div ng-if="vm.showResults">
+                                <div style="position:relative;">
+                                    <p class="fullwidth alignc hidden-print" style="font-size: 16px;"><b>USGS SC Flood Hydrograph for Urban Watersheds using {{vm.SelectedAEP.name}} AEP</b></p>
+                                    <div class="wim-alert-warning">{{vm.warningMessages}}</div>
+                                    <div class="well">
+                                        <h3>Parameters</h3>
+                                        <table id="BohmanUrbanParameterTable" class="table table-condensed smalltext">
+                                            <tbody>
+                                                <tr>
+                                                    <td>Clicked Point (Latitude, Longitude):</td>
+                                                    <td><b>{{vm.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toUSGSvalue()}}, {{vm.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toUSGSvalue()}}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Drainage Area (square miles):</td>
+                                                    <td><b>{{vm.drainageArea}}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Main Channel Length (miles):</td>
+                                                    <td><b>{{vm.mainChannelLength}}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Main Channel Slope (feet per mile):</td>
+                                                    <td><b>{{vm.mainChannelSlope}}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Total impervious area (%):</td>
+                                                    <td><b>{{vm.totalImperviousArea}}</b></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <h3>Summary</h3>
+                                        <table id="BohmanUrbanSummaryTable" class="table table-condensed smalltext">
+                                            <tbody>
+                                                <tr>
+                                                    <td>Weighted Runoff Volume (inches):</td>
+                                                    <td><b>{{vm.ReportData.BohmanUrban1992.WeightedRunoff.toUSGSvalue()}}</b></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+        
+                                        <div style='width:650px; margin:auto;' class="page_break" id="legend">
+                                            <nvd3 options='vm.ReportOptions' data='vm.ReportData.BohmanUrban1992.Graph'></nvd3>
+                                        </div>
+        
+                                        <h3>Tabular Hydrograph</h3>
+                                        <table id="BohmanUrbanHydrograph" class="table table-condensed" style="page-break-inside:avoid; font-size: 11px;">
+                                            <thead>
+                                                <tr>
+                                                    <th>Time (hours)</th>
+                                                    <th>Q (cubic feet per second)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="item in vm.reportData.time_coordinates">
+                                                    <td>{{item.toUSGSvalue()}}</td>
+                                                    <td>{{vm.reportData.discharge_coordinates[$index].toUSGSvalue()}}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table> 
+                                        <h4>Citation</h4>
+                                        <a href="https://pubs.er.usgs.gov/publication/wri924040" target="_blank">Bohman, L.R., 1992, Determination of flood hydrographs for streams in South Carolina: Volume 2. Estimation of peak-discharge frequency, runoff volumes, and flood hydrographs for urban watersheds: U.S. Geological Survey Water-Resources Investigations Report 92-4040, 79 p.</a><br /><br />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Synthetic Urban Hydrograph tab -->
+                        <div ng-if="vm.SelectedTab == 3" style="position:relative;">
+                            <div>&nbsp;</div>
+                            <div class="wim-alert hidden-print">Fill out required<span style="color: #ffcc00">*</span> fields. Remaining inputs will be calculated with <b>Calculate Missing Parameters</b> based on delineated basin. Then click <b>Continue</b> to view peak discharge and hydrograph.</div>
+                            <form id="SyntheticUrbanHydrograph" name="SyntheticUrbanHydrograph" class="hidden-print" novalidate>
+                                <label for="AEPOptionsSynthetic">Annual Exceedance Probability (AEP) / Design Storm Return Period:<span style="color: #ffcc00">*</span></label>
+                                <select name="AEPOptionsSynthetic" ng-model="vm.SelectedAEPSynthetic" ng-options="precip.name for precip in vm.AEPOptionsSynthetic track by precip.value" required></select>
+                                <label for="RainfallDistribution">Rainfall Distribution Curve:</label>
+                                <select style="pointer-events: none;" name="RainfallDistribution" ng-model="vm.SelectedRainfallDistribution" ng-options="distr.name for distr in vm.RainfallDistributionOptions track by distr.value" required readonly></select>
+                                
+                                <div class="form-row">
+                                    <div class="form-column-left">
+                                        <label for="DrainageAreaSynthetic">Drainage Area (acres):</label> <span ng-if="SyntheticUrbanHydrograph.DrainageAreaSynthetic.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
+                                        <input type="number" name="DrainageAreaSynthetic" ng-model="vm.drainageAreaSynthetic" ng-minlength="1" ng-pattern="greaterThanZero" required readonly/>
+                                    </div>
+                                    <div class="form-column-right">
+                                        <label for="InitialAbstraction">Initial Abstraction, Ia:</label> <span ng-if="SyntheticUrbanHydrograph.InitialAbstraction.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
+                                        <input type="number" name="InitialAbstraction" ng-model="vm.initialAbstraction" ng-minlength="0" ng-pattern="greaterThanOrEqualToZero" required readonly/>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-column-left">
+                                        <label for="WatershedRetention">Watershed Retention, S:</label> <span ng-if="SyntheticUrbanHydrograph.WatershedRetention.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
+                                        <input type="number" name="WatershedRetention" ng-model="vm.watershedRetention" ng-minlength="0" ng-pattern="greaterThanOrEqualToZero" required readonly/>
+                                    </div>
+                                    <div class="form-column-right">
+                                        
+                                    </div>
+                                </div>
+
+
+                                <!-- Curve Number -->
+                                <h3 class="center-div">Curve Number</h3>
+                                <div class="wim-alert hidden-print">Select a 'Standard Curve Number Value' and a 'Curve Number Modification Method'. Once selected, 'Standard Curve Number' will be calculated with <b>Calculate Missing Parameters</b>.</div>
+                                <label for="StandardCurve">Select a Standard Curve Number Value:<span style="color: #ffcc00">*</span></label>
+                                <select name="StandardCurve" ng-model="vm.SelectedStandardCurve" ng-options="curve.name for curve in vm.StandardCurveOptions track by curve.value" required></select>
+                                <label for="CNModification">Select a Curve Number Modification Method:<span style="color: #ffcc00">*</span></label>
+                                <select name="CNModification" ng-model="vm.SelectedCNModification" ng-options="cnmod.name for cnmod in vm.CNModificationOptions track by cnmod.value" required></select>
+                                <label for="StandardCurveNumber">Standard Curve Number, CN:</label> <span ng-if="SyntheticUrbanHydrograph.StandardCurveNumber.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
+                                <input type="number" name="StandardCurveNumber" ng-model="vm.standardCurveNumber" required readonly/>
+
+                                <!-- Peak Rate Factor -->
+                                <h3 class="center-div">Peak Rate Factor</h3>
+                                <div>
+                                    <div class="wim-alert hidden-print">Fill out 'Peak Rate Factor Input Form'. Once form is filled out 'Peak Rate Factor' will be calculated automatically <b>Calculate Missing Parameters</b>.</div>
+                                    <div class="flow-form-row">                                    
+                                        <label for="PeakRateFactor">Peak Rate Factor Input Form:<span style="color: #ffcc00">*</span></label>
+                                        <div class="flow-form-accordion">
+                                            <accordion id="PRF">
+                                                <accordion-group is-open="PRF.accordionOpen" style="overflow:auto">
+                                                    <accordion-heading><i ng-class="PRF.accordionOpen ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i> PRF Inputs ({{vm.prfSegments.length}})</accordion-heading>
+                                                        <ng-form ng-repeat="segment in vm.prfSegments" name="{{'PRF' + 'key' + $index}}" class="hidden-print">
+                                                            <h4>Input {{$index + 1}}</h4>
+                                                                <label>Land Use: {{vm.prfSegments[$index].landUse}}</label><br>
+                                                                <label>PRF:  {{vm.prfSegments[$index].PRF}}</label><br>
+                                                                <label>Area (ac):  {{vm.prfSegments[$index].Area}}</label><br>
+                                                            <div>&nbsp;</div>
+                                                            <button ng-click="vm.removeFlowSegment('PRF', $index)"><i class="fa fa-trash"></i> Remove Input </button>
+                                                            <div>&nbsp;</div>
+                                                        </ng-form>
+                                                </accordion-group>
+                                            </accordion>
+                                        </div>
+                                        <div class="flow-form-button">
+                                            <button ng-click="vm.openAddFlowSegment('PRF')"><i class="fa fa-arrow-left"></i> Add Input</button>
+                                        </div>
+                                    </div>
+
+                                    <div ng-if="vm.chosenFlowTypeIndex == 'PRF'">
+                                        <h4 class="modal-title">New PRF Input</h4>
+                                        <ng-form name="PRF" class="hidden-print">
+                                            <label for="landUse">Land Use<span style="color: #ffcc00">*</span></label>
+                                            <select name="landUse" ng-model="vm.prfForm.landUse" ng-options="item.name for item in vm.prfTypes" ng-change="vm.setPRF(vm.prfForm.landUse)" required></select>                                                                          
+
+                                            <label for="prfValue">PRF<span style="color: #ffcc00">*</span></label>
+                                            <input type="number" name="prfValue" ng-model="vm.prfForm.prfValue" required/>
+                                            <label for="area">Area (acres)<span style="color: #ffcc00">*</span></label>
+                                            <input type="number" name="area" ng-model="vm.prfForm.area" required/>
+                                            <div>&nbsp;</div>
+                                            <div class="form-row-extremes">
+                                                <div class="button-column-left">
+                                                    <button ng-click="vm.closeAddFlowSegment()"><i class="fa fa-times"></i> Cancel</button>
+                                                </div>
+                                                <div class="button-column-right">
+                                                    <button ng-disabled="PRF.$invalid" ng-click="vm.addFlowSegment()"><i class="fa fa-plus"></i> Add</button>
+                                                </div>
+                                            </div>
+                                            <div>&nbsp;</div>
+                                        </ng-form>
+                                    </div>
+                                </div>
+                                <label for="PeakRateFactor">Peak Rate Factor, PRF:</label> <span ng-if="SyntheticUrbanHydrograph.PeakRateFactor.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
+                                <input type="number" name="PeakRateFactor" ng-model="vm.peakRateFactor" required readonly/>&nbsp;&nbsp;
+
+
+                                <!-- Time of Concentration -->
+                                <h3 class="center-div">Time of Concentration</h3>
+                                <div class="wim-alert hidden-print">Select a 'Time of Concentration'. If 'Lag Time Equation' is selected, no additional user input is needed. If 'Travel Time Method' is selected, add at least one flow segment. Once filled out, 'Time of Concentration' will be calculated automatically with <b>Calculate Missing Parameters</b>.</div>
+                                <label for="TimeOfConcentration">Select Time of Concentration:<span style="color: #ffcc00">*</span></label>
+                                <select name="TimeOfConcentration" ng-model="vm.SelectedTimeOfConcentration" ng-options="time.name for time in vm.TimeOfConcentrationOptions track by time.value" required></select>
+                                <label for="TimeOfConcentrationMin">Time of Concentration, Tc (minutes):</label> <span ng-if="SyntheticUrbanHydrograph.TimeOfConcentrationMin.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
+                                <input type="number" name="TimeOfConcentrationMin" ng-model="vm.timeOfConcentrationMin" required readonly/>
+
+                                <div ng-if="vm.SelectedTimeOfConcentration.value == 1 || vm.SelectedTimeOfConcentration.value == 2" class="center-div">
+                                    <h4 class="center-title">{{vm.TimeOfConcentrationOptions[vm.SelectedTimeOfConcentration.value - 1].name}}
+                                        <span ng-if="vm.SelectedTimeOfConcentration.value == 1" style="color: #ffcc00">*</span>
+                                    </h4>
+                                </div>
+
+                                <!-- Lag Time Equation -->
+                                <div ng-if="vm.SelectedTimeOfConcentration.value == 2" class="form-row">
+                                    <div class="form-column-left">
+                                        <label for="LagTimeLength">Length (feet):</label> <span ng-if="SyntheticUrbanHydrograph.LagTimeLength.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
+                                        <input type="number" name="LagTimeLength" ng-model="vm.lagTimeLength" required readonly/>
+                                    </div>
+                                    <div class="form-column-right">
+                                        <label for="LagTimeSlope">Slope (%):</label> <span ng-if="SyntheticUrbanHydrograph.LagTimeSlope.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
+                                        <input type="number" name="LagTimeSlope" ng-model="vm.lagTimeSlope" required readonly/>
+                                    </div>
+                                </div>
+                                
+                                <!-- Travel Time Method -->
+                                <div ng-if="vm.SelectedTimeOfConcentration.value == 1">
+                                    <div ng-repeat="flowType in vm.TravelTimeFlowTypes">
+                                        <div class="flow-form-row">
+                                            <div class="flow-form-accordion">
+                                                <accordion id="flowType.id">
+                                                    <accordion-group is-open="flowType.accordionOpen" style="overflow:auto">
+                                                        <accordion-heading><i ng-class="flowType.accordionOpen ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i> {{flowType.displayName}} Segments ({{vm.TravelTimeFlowSegments[flowType.id].length}})</accordion-heading>
+                                                            <ng-form ng-repeat="segment in vm.TravelTimeFlowSegments[flowType.id]" name="{{flowType.id + 'key' + $index}}" class="hidden-print">
+                                                                <h4>Segment {{$index + 1}}</h4>
+                                                                <div ng-repeat="question in segment">
+                                                                    <label for="{{question.label}}">{{question.label}}</label>
+                                                                    <span ng-show="{{flowType.id + 'key' + $parent.$index}}.{{question.id}}.$error.pattern" class="red label">
+                                                                        <span class="fa fa-exclamation-triangle"></span>&nbsp;{{question.invalidMessage}}
+                                                                    </span>
+                                                                    <input ng-if="question.type != 'select' && question.pattern == 'greaterThanZero'" type="{{ question.type }}" name="{{ question.id }}" ng-model="question.value" ng-pattern="greaterThanZero" required/>
+                                                                    <input ng-if="question.type != 'select' && question.pattern == 'greaterThanOrEqualToZero'" type="{{ question.type }}" name="{{ question.id }}" ng-model="question.value" ng-pattern="greaterThanOrEqualToZero" required/>
+                                                                    <input ng-if="question.type != 'select' && question.pattern == null" type="{{ question.type }}" name="{{ question.id }}" ng-model="question.value" required/>
+                                                                    <select ng-if="question.type == 'select'" name="question.label" ng-model="question.value" ng-options="key for (key, value) in question.options track by value" required></select>                                                                          
+                                                                </div>
+                                                                <div>&nbsp;</div>
+                                                                <button ng-click="vm.removeFlowSegment(flowType.id, $index)"><i class="fa fa-trash"></i> Remove Segment </button>
+                                                                <div>&nbsp;</div>
+                                                            </ng-form>
+                                                    </accordion-group>
+                                                </accordion>
+                                            </div>
+                                            <div class="flow-form-button">
+                                                <button ng-click="vm.openAddFlowSegment(flowType.id)"><i class="fa fa-arrow-left"></i> Add Flow Segment</button>
+                                            </div>
+                                        </div>
+                                        <div ng-if="vm.chosenFlowTypeIndex == flowType.id">
+                                            <h4 class="modal-title">New {{flowType.displayName}} Segment</h4>
+                                            <ng-form name="{{flowType.id}}" class="hidden-print">
+                                                <div ng-repeat="question in flowType.questions">
+                                                    <label for="{{question.label}}">{{question.label}}<span style="color: #ffcc00">*</span></label>
+                                                    <span ng-show="{{flowType.id}}.{{question.id}}.$error.pattern" class="red label">
+                                                        <span class="fa fa-exclamation-triangle"></span>&nbsp;{{question.invalidMessage}}
+                                                    </span>
+                                                    <input ng-if="question.type != 'select' && question.pattern == 'greaterThanZero'" type="{{ question.type }}" name="{{question.id}}" ng-model="question.value" ng-pattern="greaterThanZero" required/>
+                                                    <input ng-if="question.type != 'select' && question.pattern == 'greaterThanOrEqualToZero'" type="{{ question.type }}" name="{{question.id}}" ng-model="question.value" ng-pattern="greaterThanOrEqualToZero" required/>
+                                                    <input ng-if="question.type != 'select' && question.pattern == null" type="{{ question.type }}" name="{{question.id}}" ng-model="question.value" required/>
+                                                    <select ng-if="question.type == 'select'" name="{{question.id}}" ng-model="question.value" ng-options="key for (key, value) in question.options track by value" required></select>                                                                              
+                                                </div>
+                                                <div>&nbsp;</div>
+                                                <div class="form-row-extremes">
+                                                    <div class="button-column-left">
+                                                        <button ng-click="vm.closeAddFlowSegment()"><i class="fa fa-times"></i> Cancel</button>
+                                                    </div>
+                                                    <div class="button-column-right">
+                                                        <button ng-disabled="{{flowType.id}}.$invalid" ng-click="vm.addFlowSegment($index)"><i class="fa fa-plus"></i> Add</button>
+                                                    </div>
+                                                </div>
+                                                <div>&nbsp;</div>
+                                            </ng-form>
+                                        </div>
+                                        <div style="clear:both"></div>
+                                    </div>
+                                </div>
+
+                                <label class="fullwidth alignc" ng-if="vm.validateForm(SyntheticUrbanHydrograph) && !vm.hideAlerts"><span class="fa fa-check"></span>&nbsp;Parameters Have Been Calculated</label>
+                                <label class="fullwidth" ng-if="!vm.validateForm(SyntheticUrbanHydrograph) || (vm.validateForm(SyntheticUrbanHydrograph) && vm.hideAlerts)">&nbsp;&nbsp;</label>
+                                <div class="hidden-print">
+                                    <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-disabled="vm.calculateSyntheticParamsDisabled()" ng-click="vm.calculateSyntheticParameters('DRNAREA,LFPLENGTH,CSL10_85fm')" ng-hide="vm.validateForm(SyntheticUrbanHydrograph)"><span ng-class="vm.canContinueSynthetic ? 'fa fa-calculator' : 'fa fa-refresh fa-spin'"></span>&nbsp;&nbsp;Calculate Missing Parameters</button>
+                                    <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-red" ng-click="vm.clearResults(SyntheticUrbanHydrograph.$name)" ng-hide="!vm.validateForm(SyntheticUrbanHydrograph)"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;Clear All</button>
+                                    <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.queryRegressionRegionsSynthetic()" ng-hide="!vm.validateForm(SyntheticUrbanHydrograph)"><span ng-class="vm.canContinueSynthetic ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></span>{{ vm.showResults ? '&nbsp;&nbsp;Recalculate Results' : '&nbsp;&nbsp;Continue' }}</button>
+                                </div>
+                                <label class="fullwidth alignc orange" ng-if="vm.calculateSyntheticParamsDisabled() == 1"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Must select 'AEP', 'Standard Curve Number Value', fill out 'Peak Rate Factor Input Form', and 'Time of Concentration' Before <b>Calculate Missing Parameters</b>.</label>
+                                <label class="fullwidth alignc orange" ng-if="vm.calculateSyntheticParamsDisabled() == 2"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Must select 'AEP', 'Standard Curve Number Value', fill out 'Peak Rate Factor Input Form', and at Least One Flow Segment Before <b>Calculate Missing Parameters</b>.</label>
+                                <label class="fullwidth alignc orange" ng-if="vm.calculateSyntheticParamsDisabled() == 3"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Must Add at Least One Flow Segment Before <b>Calculate Missing Parameters</b>.</label>
+                                <label class="fullwidth alignc orange" ng-if="!vm.validateForm(SyntheticUrbanHydrograph) && !vm.calculateSyntheticParamsDisabled()"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Parameters Must Be Entered Before Results Can Be Computed</label>
+                                <label ng-if="vm.validateForm(SyntheticUrbanHydrograph)">&nbsp;&nbsp;</label> 
+                            </form>
+                            <div ng-if="vm.showResultsSynthetic">
+                                <div style="position:relative;">
+                                    <p class="fullwidth alignc hidden-print" style="font-size: 16px;"><b>USGS SC Flood Hydrograph for Synthetic Units using {{vm.SelectedAEPSynthetic.name}}</b></p>
+                                    <div class="well">
+                                        <!-- <div class="wim-alert-warning">{{vm.warningMessagesSynthetic}}</div> -->
+                                        <h3>Watershed Data</h3>
+                                        <!-- <h4>Parameters</h4> -->
+                                        <table id="WatershedDataTable" class="table table-condensed smalltext">
+                                            <tbody>
+                                                <tr>
+                                                    <td>Clicked Point (Latitude, Longitude)</td>
+                                                    <td><b>{{vm.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5)}}, {{vm.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5)}}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Area (acres)</td>
+                                                    <td><b>{{vm.syntheticResponseData.watershed_data.Area}}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Time of Concentration, Tc (minutes)</td>
+                                                    <td><b>{{vm.syntheticResponseData.watershed_data.Tc}}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Peak Rate Factor, PRF</td>
+                                                    <td><b>{{vm.syntheticResponseData.watershed_data.PRF}}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Standard Curve Number, CN</td>
+                                                    <td><b>{{vm.syntheticResponseData.watershed_data["Standard CN"]}}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Watershed Retention, S</td>
+                                                    <td><b>{{vm.syntheticResponseData.watershed_data["Watershed Retention S"]}}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Initial Abstraction, Ia</td>
+                                                    <td><b>{{vm.syntheticResponseData.watershed_data["Initial Abstraction Ia"]}}</b></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <h3>Unit Hydrograph Data</h3>
+                                        <table id="UnitHydrographTable" class="table table-condensed smalltext">
+                                            <tbody>
+                                                <tr>
+                                                    <td>Annual Exceedance Probability, AEP (%)</td>
+                                                    <td><b>{{vm.syntheticResponseData.unit_hydrograph_data["Annual Exceedance Probability (AEP)"]}}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Design Storm Return Period (years)</td>
+                                                    <td><b>{{vm.syntheticResponseData.unit_hydrograph_data["Design Storm Return Period"]}}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Curve Number Modification Method</td>
+                                                    <td><b>{{vm.syntheticResponseData.unit_hydrograph_data["Curve Number Modification Method"]}}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Burst Duration (minutes)</td>
+                                                    <td><b>{{vm.syntheticResponseData.unit_hydrograph_data["Burst Duration"]}}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Gamma function shape parameter</td>
+                                                    <td><b>{{vm.syntheticResponseData.unit_hydrograph_data["Gamma_n"].toUSGSvalue()}}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Lag time (minutes)</td>
+                                                    <td><b>{{vm.syntheticResponseData.unit_hydrograph_data["Lag time"].toUSGSvalue()}}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Adjusted Time of Concentration, Adj Tc (minutes)</td>
+                                                    <td><b>{{vm.syntheticResponseData.unit_hydrograph_data["Adjusted Tc"].toUSGSvalue()}}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Unit Hydrograph Time to Peak, UH_Tp (minutes)</td>
+                                                    <td><b>{{vm.syntheticResponseData.unit_hydrograph_data["UH_Tp"].toUSGSvalue()}}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Unit Hydrograph Peak Flow Rate, UH_Qp (cubic feet per second)</td>
+                                                    <td><b>{{vm.syntheticResponseData.unit_hydrograph_data["UH_Qp"].toUSGSvalue()}}</b></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+
+                                        <h3>Runoff Results</h3>
+                                        <table id="SyntheticUnitHydrographRunoffTable" class="table table-condensed smalltext">
+                                            <thead>
+                                                <tr>
+                                                    <th>Storm Duration (hrs)</th>
+                                                    <th>Rainfall Depth (in)</th>
+                                                    <th>CN Adjusted for Rainfall Duration {{"<"}}24-hr</th>
+                                                    <th>Runoff Volume Q<sub>CN</sub> (WS-in)</th>
+                                                    <th>Peak Runoff, Q<sub>P</sub> (ft³/s)</th>
+                                                    <th>Time of Peak Runoff (min)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="option in vm.DHourStormOptions">
+                                                    <td>{{option.value}}</td>
+                                                    <td>{{vm.syntheticResponseData.runoff_results_table.rainfall_depth[$index].toUSGSvalue()}}</td>
+                                                    <td>{{vm.syntheticResponseData.runoff_results_table.CN_adjusted_for_rainfall_duration[$index].toUSGSvalue()}}</td>
+                                                    <td>{{vm.syntheticResponseData.runoff_results_table.runoff_volume_Q_CN[$index].toUSGSvalue()}}</td>
+                                                    <td>{{vm.syntheticResponseData.runoff_results_table.peak_runoff_Qp[$index].toUSGSvalue()}}</td>
+                                                    <td>{{vm.syntheticResponseData.runoff_results_table.time_of_peak_runoff[$index].toUSGSvalue()}}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+
+                                        <h3>Critical Durations</h3>
+                                        <table id="SyntheticUnitHydrographCriticalDurationsTable" class="table table-condensed smalltext">
+                                            <thead>
+                                                <tr>
+                                                    <th>Maximum Runoff Value</th>
+                                                    <th>Storm Duration (hrs)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Maximum Runoff Volume</td>
+                                                    <td>{{vm.syntheticResponseData.runoff_results_table.max_runoff_volume_storm_duration}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Maximum Peak Runoff</td>
+                                                    <td>{{vm.syntheticResponseData.runoff_results_table.max_peak_runoff_storm_duration}}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+
+                                        <h3>Hydrograph</h3>
+                                        <div id="SyntheticUnitHydrograph" class="form-row-centered">
+                                            <div class="form-column-center">
+                                                <label for="DHourStorm">D-Hour Storm:</label>
+                                            </div>
+                                            <div class="form-column-center" style="width:50%">
+                                                <select name="DHourStorm" ng-model="vm.SelectedDHourStorm" ng-change="vm.DHourStormChange()" ng-options="hour.name for hour in vm.DHourStormOptions track by hour.value"></select>
+                                            </div>
+                                        </div> 
+                                        <div style='width:650px; margin:auto;' class="page_break" id="legend">
+                                            <nvd3 options='vm.ReportOptionsSynthetic' data='vm.ReportData.SyntheticUrbanHydrograph.Graph'></nvd3>
+                                        </div>
+
+                                        <div class="form-row-centered">
+                                            <a ng-click="vm.isSyntheticUHOpen = !vm.isSyntheticUHOpen">
+                                                <span ng-show="vm.isSyntheticUHOpen">Hide</span>
+                                                <span ng-hide="vm.isSyntheticUHOpen">Show</span> D-Hour Strom Hydrograph Ordinates
+                                            </a>
+                                        </div>
+
+                                        <div ng-if="vm.isSyntheticUHOpen" class="well well-sm">
+                                            <table id="SyntheticUnitHydrographDataTable" class="table" style="font-size: 11px;">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Time (minutes)</th>
+                                                        <th>1 Hr</th>
+                                                        <th>2 Hr</th>
+                                                        <th>3 Hr</th>
+                                                        <th>6 Hr</th>
+                                                        <th>12 Hr</th>
+                                                        <th>24 Hr</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr ng-repeat="item in vm.syntheticResponseData.hydrograph_ordinates_table.time">
+                                                        <td>{{item.toUSGSvalue()}}</td>
+                                                        <td>{{vm.syntheticResponseData.hydrograph_ordinates_table.flow_1_hour[$index].toUSGSvalue()}}</td>
+                                                        <td>{{vm.syntheticResponseData.hydrograph_ordinates_table.flow_2_hour[$index].toUSGSvalue()}}</td>
+                                                        <td>{{vm.syntheticResponseData.hydrograph_ordinates_table.flow_3_hour[$index].toUSGSvalue()}}</td>
+                                                        <td>{{vm.syntheticResponseData.hydrograph_ordinates_table.flow_6_hour[$index].toUSGSvalue()}}</td>
+                                                        <td>{{vm.syntheticResponseData.hydrograph_ordinates_table.flow_12_hour[$index].toUSGSvalue()}}</td>
+                                                        <td>{{vm.syntheticResponseData.hydrograph_ordinates_table.flow_24_hour[$index].toUSGSvalue()}}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>         
+                                        </div>
+                        
+                                        <div id="SyntheticUnitHydrographDisclaimerReport"> 
+                                            <h3>Notes on Time of Concentration:</h3>
+                                            <h4>(1) McCuen-Spiess equation calculates the maximum sheet flow length for surface and slope. See Chapter 15 page 15-7 of the NRCS' National Engineering Handbook.<br><br>
+                                            (2) Guidance from the SC NRCS is to limit shallow concentrated flow to 1000 ft. except for areas of the sand hills with high infiltration sands without noticeable channels and in areas with rocky outcroppings or pavements that prevent the formation of channels.<br><br>
+                                            (3) The SCS method for watershed lag was developed by Mockus in 1961. It spans a broad set of conditions ranging from heavily forested watersheds with steep channels and a high percent of runoff resulting from subsurface flow, to meadows providing a high retardance to surface runoff, to smooth land surfaces and large paved areas.  The watershed lag equation was developed using data from 24 watersheds ranging in size from 1.3 acres to 9.2 square miles, with the majority of the watersheds being less than 2,000 acres (Mockus 1961). Folmar and Miller (2000) revisited the development of this equation using additional watershed data and found a reasonable upper limit may be as much as 19 square miles. See Chapter 15 pages 15-5 to 15-6 of the NRCS' National Engineering Handbook.<br><br>
+                                            (4) For additional questions, see Chapter 15 of the NRCS' National Engineering Handbook (https://www.wcc.nrcs.usda.gov/ftpref/wntsc/H&H/NEHhydrology/ch15.pdf).<br><br>
+                                            (5) For roadside ditches use guidance in HEC-15.  If HEC-15 does not apply, use the traditional guidance for using the Manning's Equation.<br><br>
+                                            (6) For ditches with variable channel slopes, side slopes, base width, depth, and Manning's n values, use the average n-value for each varable.<br><br></h4>
+                                        </div>
+
+                                        <h3>Citation</h3>
+                                        <a href="https://www.scdot.org/business/hydraulic-calculations.aspx" target="_blank">Meadows, M.E., 2020, South Carolina Unit Hydrograph Method Applications Manual, FHWA-SC-20-02, 139 p.</a><br /><br />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="disclaimerReport">
+                            <p>
+                                USGS Data Disclaimer:
+                                Unless otherwise stated, all data, metadata and related materials are considered to satisfy the quality standards relative to the purpose for which the data were collected. Although these data and associated metadata have been reviewed for accuracy and completeness and approved for release by the U.S. Geological Survey (USGS), no warranty expressed or implied is made regarding the display or utility of the data for other purposes, nor on all computer systems, nor shall the act of distribution constitute any such warranty.
+                            </p>
+                            <p>
+                                USGS Software Disclaimer:
+                                This software has been approved for release by the U.S. Geological Survey (USGS). Although the software has been subjected to rigorous review, the USGS reserves the right to update the software as needed pursuant to further analysis and review. No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty. Furthermore, the software is released on condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from its authorized or unauthorized use.
+                            </p>
+                            <p>
+                                USGS Product Names Disclaimer:
+                                Any use of trade, firm, or product names is for descriptive purposes only and does not imply endorsement by the U.S. Government.
+                            </p>
+                            <p>Application Version: {{vm.AppVersion}}</p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>        
+        </div>
+    
+        <div class="modal-footer hidden-print">
+            <div class="btn-group">
+                <button ng-if="(vm.showResults && vm.SelectedTab == 2) || (vm.showResultsSynthetic && vm.SelectedTab == 3)" type="button" class="btn-black" ng-click="vm.downloadCSV()"><span><i class="fa fa-download"></i>&nbsp;&nbsp;Download CSV</span></button>
+                <button ng-if="(vm.showResults && vm.SelectedTab == 2) || (vm.showResultsSynthetic && vm.SelectedTab == 3)" class="btn-blue" ng-click="vm.print()" analytics-on analytics-event="Print" analytics-category="Report" analytics-label="Print"><i class="fa fa-print"></i>&nbsp;&nbsp;Print</button>
+                <button class="btn-wim-default" ng-click="vm.Close()"><i class="fa fa-close"></i>&nbsp;&nbsp;Close</button>
+            </div>
+        </div>
+    
+    </div>
