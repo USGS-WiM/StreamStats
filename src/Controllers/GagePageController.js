@@ -498,15 +498,36 @@ var StreamStats;
                 if (this.dailyFlow) {
                     this.dailyFlow.forEach(function (dailyHeatObj) {
                         var now = new Date(dailyHeatObj.dateTime);
+                        var year = new Date(dailyHeatObj.dateTime).getUTCFullYear();
+                        if ((0 == year % 4) && (0 != year % 100) || (0 == year % 400)) {
+                        }
+                        else {
+                            _this_1.dailyFlow.push({ value: null, qualifiers: ['A'], dateTime: new Date(Date.UTC(year, 1, 29)) });
+                        }
                         function daysIntoYear(now) {
                             return (Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(now.getFullYear(), 0, 0)) / 24 / 60 / 60 / 1000;
                         }
                         var doy = daysIntoYear(now);
-                        if (doy < 274) {
-                            doy += 366;
+                        function isLeapYear(year) {
+                            if (year % 400 === 0)
+                                return true;
+                            if (year % 100 === 0)
+                                return false;
+                            return year % 4 === 0;
+                        }
+                        var fullDate = new Date(year, 0, doy);
+                        var UTCday = fullDate.getUTCDate();
+                        var month = fullDate.getUTCMonth();
+                        month += 1;
+                        var monthDay = month + '/' + UTCday;
+                        if (isLeapYear(year) == false && doy > 59) {
+                            doy += 1;
                         }
                         if (dailyHeatObj.qualifiers[0] === 'A') {
                             _this_1.formattedDailyHeat.push({ x: doy, y: new Date(dailyHeatObj.dateTime).getUTCFullYear(), value: parseInt(dailyHeatObj.value) });
+                        }
+                        if (isLeapYear(year) == false) {
+                            _this_1.formattedDailyHeat.push({ x: 60, y: year, value: null });
                         }
                         if (dailyHeatObj.qualifiers[0] === 'A') {
                             _this_1.dailyRange.push(dailyHeatObj.value);
@@ -670,6 +691,13 @@ var StreamStats;
                 });
             };
             GagePageController.prototype.createDailyRasterPlot = function () {
+                function isLeapYear(year) {
+                    if (year % 400 === 0)
+                        return true;
+                    if (year % 100 === 0)
+                        return false;
+                    return year % 4 === 0;
+                }
                 this.heatChartConfig = {
                     chart: {
                         height: 450,
@@ -687,8 +715,8 @@ var StreamStats;
                         align: 'center'
                     },
                     xAxis: {
-                        type: 'datetime',
-                        tickPositions: [274, 305, 335, 367, 397, 425, 456, 486, 516, 547, 578, 609],
+                        type: null,
+                        tickPositions: [274, 305, 335, 367, 397, 425, 456, 486, 518, 547, 578, 609],
                         title: {
                             text: 'Day of the Year'
                         },
@@ -713,7 +741,7 @@ var StreamStats;
                         }
                     },
                     colorAxis: {
-                        type: null,
+                        type: 'logarithmic',
                         min: null,
                         max: null,
                         stops: [
@@ -724,7 +752,7 @@ var StreamStats;
                         ],
                         startOnTick: false,
                         endOnTick: false,
-                        allowNegativeLog: null
+                        allowNegativeLog: true
                     },
                     series: [{
                             name: 'Daily Streamflow',
@@ -736,17 +764,22 @@ var StreamStats;
                                     if (this.formattedDailyHeat !== null) {
                                         var year = this.y;
                                         var doy = this.x;
+                                        if (isLeapYear(year) == false && doy > 59) {
+                                            doy -= 1;
+                                        }
+                                        ;
                                         var fullDate = new Date(year, 0, doy);
+                                        console.log('fullDate', fullDate);
                                         var UTCday = fullDate.getUTCDate();
                                         var month = fullDate.getUTCMonth();
                                         month += 1;
-                                        var formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                                        var formattedUTCDate = month + '/' + UTCday + '/' + year;
                                         var waterYear = this.y;
                                         if (month > 9) {
                                             waterYear += 1;
                                         }
                                         ;
-                                        return '<br>Date: <b>' + formattedUTCPeakDate + '</b><br>Value: <b>' + this.value + ' ft³/s</b><br>Water Year: <b>' + waterYear;
+                                        return '<br>Date: <b>' + formattedUTCDate + '</b><br>Value: <b>' + this.value + ' ft³/s</b><br>Water Year: <b>' + waterYear;
                                     }
                                 }
                             },
@@ -766,6 +799,7 @@ var StreamStats;
                     console.log('linear');
                 }
             };
+            ;
             GagePageController.prototype.init = function () {
                 this.AppVersion = configuration.version;
                 this.getGagePage();

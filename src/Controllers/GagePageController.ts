@@ -658,7 +658,7 @@ module StreamStats.Controllers {
         //Pull in data for daily flow values
         public getDailyFlow() {
             var url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01';
-            // console.log('GetDailyFlowURL', url);
+            //console.log('GetDailyFlowURL', url);
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             this.Execute(request).then(
                 (response: any) => {
@@ -695,25 +695,56 @@ module StreamStats.Controllers {
             }
             if (this.dailyFlow) {
                 this.dailyFlow.forEach(dailyHeatObj => {
+                    //console.log('dailyFlow', this.dailyFlow);
                     let now = new Date(dailyHeatObj.dateTime);
-                    //Getting Julian days - pulled from this exchange: https://stackoverflow.com/questions/8619879/javascript-calculate-the-day-of-the-year-1-366
+                    let year = new Date(dailyHeatObj.dateTime).getUTCFullYear();
+                    if ((0 == year % 4) && (0 != year % 100) || (0 == year % 400)) {
+
+                        //console.log(year + ' is a leap year');
+                    }
+                    else {
+                        this.dailyFlow.push({value: null, qualifiers: ['A'], dateTime: new Date( Date.UTC(year, 1, 29))});
+                    
+                    }
+                    //Getting dates in Julian days - pulled from this exchange: https://stackoverflow.com/questions/8619879/javascript-calculate-the-day-of-the-year-1-366
                     //to -do: dealing with leap years
                     function daysIntoYear(now){
                         return (Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(now.getFullYear(), 0, 0)) / 24 / 60 / 60 / 1000;
                     }
                     var doy = daysIntoYear(now);
-                    if (doy < 274) {
-                        doy += 366
+                    //console.log(doy);
+                    //if (doy == 60 )
+                    function isLeapYear(year) {
+                        if (year % 400 === 0) return true;
+                        if (year % 100 === 0) return false;
+                        return year % 4 === 0;
+                      }
+                    let fullDate = new Date(year, 0, doy);
+                    let UTCday = fullDate.getUTCDate();
+                    let month = fullDate.getUTCMonth();
+                        month += 1; // adding a month to the UTC months (which are zero-indexed)
+                    let monthDay = month + '/' + UTCday;
+                    //console.log('leap testing', monthDay);
+                    if (isLeapYear(year) == false && doy > 59) {
+                        doy += 1
                     }
+                    // if (doy < 274) {
+                    //     doy += 366 //making 274 (Oct 1) the lowest number so the x-axis can start at the beginning of the water year
+                    // }
+                    //console.log(monthDay)
+
                     if (dailyHeatObj.qualifiers[0] === 'A') {
                         this.formattedDailyHeat.push({x: doy, y: new Date(dailyHeatObj.dateTime).getUTCFullYear(), value: parseInt(dailyHeatObj.value)})
                     }
+                    if (isLeapYear(year) == false) {
+                        this.formattedDailyHeat.push({x: 60, y: year, value: null});
+                    }                    
                     if (dailyHeatObj.qualifiers[0] === 'A') {
                     this.dailyRange.push(dailyHeatObj.value);
                     }
                 });
             }
-            if (this.floodFreq) { //set up AEP plotLines
+            if (this.floodFreq) { //set up AEP plotLines, defining their colors
                 this.formattedFloodFreq = [];
                     const AEPColors = {
                         9: '#9A6324',
@@ -747,7 +778,6 @@ module StreamStats.Controllers {
             this.createDailyRasterPlot();
         }}
 
-        //Create chart
         public createAnnualFlowPlot(): void {
             //console.log('peak value plot data', this.formattedPeakDates);
             //console.log('estimated peak plot data', this.formattedEstPeakDates);
@@ -871,7 +901,11 @@ module StreamStats.Controllers {
         }
 
         public createDailyRasterPlot(): void {
-            
+            function isLeapYear(year) {
+                if (year % 400 === 0) return true;
+                if (year % 100 === 0) return false;
+                return year % 4 === 0;
+              }
             this.heatChartConfig = {
                 chart: {
                         height: 450,
@@ -889,8 +923,8 @@ module StreamStats.Controllers {
                     align: 'center'
                 },
                 xAxis: {
-                    type: 'datetime',
-                    tickPositions: [274, 305, 335, 367, 397, 425, 456, 486, 516, 547, 578, 609],
+                    type: null,
+                    tickPositions: [274, 305, 335, 367, 397, 425, 456, 486, 518, 547, 578, 609],
                     title: {
                         text: 'Day of the Year'
                     },
@@ -914,7 +948,7 @@ module StreamStats.Controllers {
                     }
                 },
                 colorAxis: {
-                    type: null,
+                    type: 'logarithmic',
                     min: null, 
                     max: null,
                     stops: [
@@ -925,7 +959,7 @@ module StreamStats.Controllers {
                     ],
                     startOnTick: false,
                     endOnTick: false,
-                    allowNegativeLog: null
+                    allowNegativeLog: true
                 },
                 series: [{
                     name: 'Daily Streamflow',
@@ -938,17 +972,23 @@ module StreamStats.Controllers {
                                 //let UTCday = this.x.getUTCDate();
                                 let year = this.y;
                                 let doy = this.x;
+                                //console.log(doy);
+                                if (isLeapYear(year) == false && doy > 59) {
+                                    doy -= 1
+                                };
                                 let fullDate = new Date(year, 0, doy)
+
+                                console.log('fullDate', fullDate);
                                 let UTCday = fullDate.getUTCDate();
                                 let month = fullDate.getUTCMonth();
                                     month += 1; // adding a month to the UTC months (which are zero-indexed)
-                                let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                                let formattedUTCDate = month + '/' + UTCday + '/' + year;
                                 let waterYear = this.y;
                                 if (month > 9) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
                                     waterYear += 1; // adding a year to dates that fall into the next water year
                                 };
                                 //return new Date(year, 0, doy); 
-                                return '<br>Date: <b>'  + formattedUTCPeakDate + '</b><br>Value: <b>' + this.value + ' ft³/s</b><br>Water Year: <b>' + waterYear
+                                return '<br>Date: <b>'  + formattedUTCDate + '</b><br>Value: <b>' + this.value + ' ft³/s</b><br>Water Year: <b>' + waterYear
                             }
                         }
                     },
