@@ -1097,7 +1097,7 @@ module StreamStats.Controllers {
                             response.data.parameters.forEach(param => {
                                 if (param.code.toLowerCase() == 'drnarea') this.drainageArea = param.value;
                                 if (param.code.toLowerCase() == 'csl10_85fm') this.mainChannelSlope = param.value;
-                                if (param.code.toLowerCase() == 'lc06imp') this.totalImperviousArea = param.value;
+                                if (param.code.toLowerCase() == 'lc19imp') this.totalImperviousArea = param.value;
                                 if (param.code.toLowerCase() == 'lfplength') this.mainChannelLength = param.value;
                             });
                         }

@@ -923,7 +923,7 @@ var StreamStats;
                                     _this.drainageArea = param.value;
                                 if (param.code.toLowerCase() == 'csl10_85fm')
                                     _this.mainChannelSlope = param.value;
-                                if (param.code.toLowerCase() == 'lc06imp')
+                                if (param.code.toLowerCase() == 'lc19imp')
                                     _this.totalImperviousArea = param.value;
                                 if (param.code.toLowerCase() == 'lfplength')
                                     _this.mainChannelLength = param.value;
