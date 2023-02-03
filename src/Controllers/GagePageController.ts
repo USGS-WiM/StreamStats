@@ -707,10 +707,9 @@ module StreamStats.Controllers {
                     
                     }
                     //Getting dates in Julian days - pulled from this exchange: https://stackoverflow.com/questions/8619879/javascript-calculate-the-day-of-the-year-1-366
-                    //to -do: dealing with leap years
                     function daysIntoYear(now){
                         return (Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(now.getFullYear(), 0, 0)) / 24 / 60 / 60 / 1000;
-                    }
+                    };
                     var doy = daysIntoYear(now);
                     //console.log(doy);
                     //if (doy == 60 )
@@ -719,29 +718,21 @@ module StreamStats.Controllers {
                         if (year % 100 === 0) return false;
                         return year % 4 === 0;
                     };
-                    //let fullDate = new Date(year, 0, doy);
-                    //let UTCday = fullDate.getUTCDate();
-                    // let month = fullDate.getUTCMonth();
-                    //     month += 1; // adding a month to the UTC months (which are zero-indexed)
-                    // let monthDay = month + '/' + UTCday;
-                    //console.log('leap testing', monthDay);
                     if (isLeapYear(year) == false && doy > 59) {
-                        doy += 1
-                    }
+                        doy += 1; //add a day onto non-leap years so that dates after Feb 28 will line up with leap years
+                    };
                     if (doy < 275) {
-                        doy += 366 //making 275 (Oct 1) the lowest number so the x-axis can start at the beginning of the water year
-                    }
-                    //console.log(monthDay)
-
+                        doy += 366; //making 275 (Oct 1) the lowest number so the x-axis can start at the beginning of the water year
+                    };
                     if (dailyHeatObj.qualifiers[0] === 'A') {
-                        this.formattedDailyHeat.push({x: doy, y: new Date(dailyHeatObj.dateTime).getUTCFullYear(), value: parseInt(dailyHeatObj.value)})
-                    }
+                        this.formattedDailyHeat.push({x: doy, y: new Date(dailyHeatObj.dateTime).getUTCFullYear(), value: parseInt(dailyHeatObj.value)});
+                    };
                     if (isLeapYear(year) == false) {
-                        this.formattedDailyHeat.push({x: 60, y: year, value: null});
-                    }                    
-                    if (dailyHeatObj.qualifiers[0] === 'A') {
-                    this.dailyRange.push(dailyHeatObj.value);
-                    }
+                        this.formattedDailyHeat.push({x: 60, y: year, value: null}); //adding a blank cell on Feb 29 on non-leap years so that data will line up
+                    } ;                   
+                    // if (dailyHeatObj.qualifiers[0] === 'A') {
+                    // this.dailyRange.push(dailyHeatObj.value);
+                    // }
                 });
             }
             if (this.floodFreq) { //set up AEP plotLines, defining their colors
@@ -905,7 +896,7 @@ module StreamStats.Controllers {
                 if (year % 400 === 0) return true;
                 if (year % 100 === 0) return false;
                 return year % 4 === 0;
-              }
+            }
             this.heatChartConfig = {
                 chart: {
                         height: 450,
@@ -974,14 +965,12 @@ module StreamStats.Controllers {
                                 let year = this.y;
                                 let doy = this.x;
                                 if (doy > 275) {
-                                    doy -= 366 //making 275 (Oct 1) the lowest number so the x-axis can start at the beginning of the water year
-                                }
-                                if (isLeapYear(year) == false && doy > 59) {
-                                    doy -= 1
+                                    doy -= 366 //returning doy to 1-366 for labeling purposes
                                 };
-                                console.log(doy);
+                                if (isLeapYear(year) == false && doy > 59) {
+                                    doy -= 1 //subtracting a day off of non-leap years after Feb 28 so that the labels are accurate
+                                };
                                 let fullDate = new Date(year, 0, doy)
-                                console.log('fullDate', fullDate);
                                 let UTCday = fullDate.getUTCDate();
                                 let month = fullDate.getUTCMonth();
                                     month += 1; // adding a month to the UTC months (which are zero-indexed)
@@ -1000,10 +989,11 @@ module StreamStats.Controllers {
             }
         };
 
+//don't think a log - linear checkbox will work on the heatmap but leaving this code here for now as reference
         //checkbox for change log to linear scale
-        public logScale = true; 
-        public logToLinear () {
-            let chart = $('#chart2').highcharts();
+        // public logScale = true; 
+        // public logToLinear () {
+        //     let chart = $('#chart2').highcharts();
         //     // if (this.dailyRange.length > 0) {
         //     //     let dailyMax  = this.dailyRange.reduce(function (accumulatedValue, currentValue) {
         //     //         return Math.max(accumulatedValue, currentValue);
@@ -1037,14 +1027,14 @@ module StreamStats.Controllers {
         //     //     var ninthStop = (ninetiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
         //     //     console.log('color stops', firstStop, secondStop, thirdStop, fourthStop, fifthStop, sixthStop, seventhStop, eigthStop, ninthStop);
         //     //     };
-            if (this.logScale) {
-                chart.colorAxis[0].update({ type: 'logarithmic' });
-                console.log('log');
-            } else {
-                chart.colorAxis[0].update({ type: 'linear' });
-                console.log('linear');
-            }
-        };
+        //     if (this.logScale) {
+        //         chart.colorAxis[0].update({ type: 'logarithmic' });
+        //         console.log('log');
+        //     } else {
+        //         chart.colorAxis[0].update({ type: 'linear' });
+        //         console.log('linear');
+        //     }
+        // };
 
 
         //Helper Methods

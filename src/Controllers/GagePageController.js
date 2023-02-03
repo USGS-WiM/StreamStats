@@ -97,7 +97,6 @@ var StreamStats;
                 _this_1.formattedEstPeakDates = [];
                 _this_1.formattedDailyFlow = [];
                 _this_1.dailyRange = [];
-                _this_1.logScale = true;
                 $scope.vm = _this_1;
                 _this_1.modalInstance = modal;
                 _this_1.modalService = modalService;
@@ -507,6 +506,7 @@ var StreamStats;
                         function daysIntoYear(now) {
                             return (Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(now.getFullYear(), 0, 0)) / 24 / 60 / 60 / 1000;
                         }
+                        ;
                         var doy = daysIntoYear(now);
                         function isLeapYear(year) {
                             if (year % 400 === 0)
@@ -519,18 +519,19 @@ var StreamStats;
                         if (isLeapYear(year) == false && doy > 59) {
                             doy += 1;
                         }
+                        ;
                         if (doy < 275) {
                             doy += 366;
                         }
+                        ;
                         if (dailyHeatObj.qualifiers[0] === 'A') {
                             _this_1.formattedDailyHeat.push({ x: doy, y: new Date(dailyHeatObj.dateTime).getUTCFullYear(), value: parseInt(dailyHeatObj.value) });
                         }
+                        ;
                         if (isLeapYear(year) == false) {
                             _this_1.formattedDailyHeat.push({ x: 60, y: year, value: null });
                         }
-                        if (dailyHeatObj.qualifiers[0] === 'A') {
-                            _this_1.dailyRange.push(dailyHeatObj.value);
-                        }
+                        ;
                     });
                 }
                 if (this.floodFreq) {
@@ -767,13 +768,12 @@ var StreamStats;
                                         if (doy > 275) {
                                             doy -= 366;
                                         }
+                                        ;
                                         if (isLeapYear(year) == false && doy > 59) {
                                             doy -= 1;
                                         }
                                         ;
-                                        console.log(doy);
                                         var fullDate = new Date(year, 0, doy);
-                                        console.log('fullDate', fullDate);
                                         var UTCday = fullDate.getUTCDate();
                                         var month = fullDate.getUTCMonth();
                                         month += 1;
@@ -790,18 +790,6 @@ var StreamStats;
                             turboThreshold: 0
                         }]
                 };
-            };
-            ;
-            GagePageController.prototype.logToLinear = function () {
-                var chart = $('#chart2').highcharts();
-                if (this.logScale) {
-                    chart.colorAxis[0].update({ type: 'logarithmic' });
-                    console.log('log');
-                }
-                else {
-                    chart.colorAxis[0].update({ type: 'linear' });
-                    console.log('linear');
-                }
             };
             ;
             GagePageController.prototype.init = function () {
