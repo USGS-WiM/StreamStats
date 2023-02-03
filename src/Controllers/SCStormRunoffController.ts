@@ -47,17 +47,28 @@ module StreamStats.Controllers {
         public print: any;
         public StudyArea: StreamStats.Models.IStudyArea;
         private modalInstance: ng.ui.bootstrap.IModalServiceInstance;
-        public showResults: boolean;
         public hideAlerts: boolean;
         public toaster: any;
         private studyAreaService: Services.IStudyAreaService;
         public canContinue: boolean;
         public ReportData: ISCStormRunoffReportable;
         public drainageArea: number;
+        public methodType: string;
+
+        // BOHMAN RURAL TAB
+        public GC1939 = 0;
+        public GC1940 = 0;
+        public GC1941 = 0;
+        public GC1942 = 0;
+        public GC1943 = 0;
+        public showRuralResults: boolean = false;
+        public isBohmanRuralOpen = false;
 
         // BOHMAN URBAN TAB
         public region3Percent = 0;
         public region4Percent = 0;
+        public showUrbanResults: boolean = false;
+        public isBohmanUrbanOpen = false;
 
         // SYNTHETIC TAB
         public drainageAreaSynthetic: number;
@@ -68,7 +79,7 @@ module StreamStats.Controllers {
         public initialAbstraction: number;
         public lagTimeLength: number;
         public lagTimeSlope: number;
-        public showResultsSynthetic: boolean;
+        public showResultsSynthetic: boolean = false;
         public warningMessagesSynthetic: any;
         public syntheticResponseData: any;
         public ReportOptionsSynthetic: any;
@@ -84,7 +95,6 @@ module StreamStats.Controllers {
         public ReportOptions: any;
         public regressionRegions;
         public reportData;
-        public angulartics: any;
 
         private _selectedTab: SCStormRunoffType;
         public get SelectedTab(): SCStormRunoffType {
@@ -709,6 +719,9 @@ module StreamStats.Controllers {
 
             this.print = function () {
                 if (this.SelectedTab == 3) this.isSyntheticUHOpen = true;
+                if (this.SelectedTab == 2) this.isBohmanUrbanOpen = true;
+                if (this.SelectedTab == 1) this.isBohmanRuralOpen = true;
+
                 setTimeout(function() {
                     window.print();
                 }, 300);
@@ -718,16 +731,29 @@ module StreamStats.Controllers {
         //Methods  
         //-+-+-+-+-+-+-+-+-+-+-+-
         public estimateFlows(statisticGroup) {
-            // Bohman Urban (1992)            
-            var data = [{  // Urban Peak Flow Statistics for Bohman Urban (1992)
-                "id": 31,
-                "name": "Urban Peak-Flow Statistics",
-                "code": "UPFS",
-                "defType": "FS",
-                "statisticGroupName": "Urban Peak-Flow Statistics",
-                "statisticGroupID": "31", 
-                "regressionRegions" : statisticGroup[0].regressionRegions
-            }];
+            if (this.methodType == 'Urban') {
+                // Bohman Urban (1992)        
+                var data = [{  // Urban Peak Flow Statistics for Bohman Urban (1992)
+                    "id": 31,
+                    "name": "Urban Peak-Flow Statistics",
+                    "code": "UPFS",
+                    "defType": "FS",
+                    "statisticGroupName": "Urban Peak-Flow Statistics",
+                    "statisticGroupID": "31", 
+                    "regressionRegions" : statisticGroup[0].regressionRegions
+                }];
+            } else if (this.methodType == 'Rural') {
+                // Bohman Rural (1989)            
+                var data = [{  // Peak Flow Statistics for Bohman Rural (1989) 
+                    "id": 2,
+                    "name": "Peak-Flow Statistics",
+                    "code": "PFS",
+                    "defType": "FS",
+                    "statisticGroupName": "Peak-Flow Statistics",
+                    "statisticGroupID": "2", 
+                    "regressionRegions" : statisticGroup[0].regressionRegions
+                }];
+            }
             
             var url = configuration.baseurls['NSS'] + configuration.queryparams['estimateFlows'].format('SC');
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, 1, 'json', JSON.stringify(data));
@@ -736,30 +762,51 @@ module StreamStats.Controllers {
                     if (response.data[0].regressionRegions.length > 0 && response.data[0].regressionRegions[0].results && response.data[0].regressionRegions[0].results.length > 0) {
                         var weightedAEP = 0;
 
-                        response.data[0].regressionRegions.forEach(regressionregion => {
-                            if (regressionregion.code == 'GC1583' || regressionregion.code == 'GC1584' || regressionregion.code == 'GC1585' || regressionregion.code == 'GC1586') {
-                                regressionregion.results.forEach(result => {
-                                    if (result.name.indexOf(this.SelectedAEP.value) !== -1){
-                                        weightedAEP += (result.value * (regressionregion.percentWeight / 100.0));
-                                    }
-                                })
-                            }
-                        });
-
-                        // set up data for request 
-                        var data = {
-                            "lat": this.studyAreaService.selectedStudyArea.Pourpoint.Latitude,
-                            "lon": this.studyAreaService.selectedStudyArea.Pourpoint.Longitude,
-                            "region3PercentArea": this.region3Percent,
-                            "region4PercentArea": this.region4Percent, 
-                            "Qp": weightedAEP, 
-                            "A": this.drainageArea,
-                            "L": this.mainChannelLength, 
-                            "S": this.mainChannelSlope, 
-                            "TIA": this.totalImperviousArea
-                        };
-
-                        this.getStormRunoffResults(data);
+                        if (this.methodType == 'Urban') {
+                            response.data[0].regressionRegions.forEach(regressionregion => {
+                                if (regressionregion.code == 'GC1583' || regressionregion.code == 'GC1584' || regressionregion.code == 'GC1585' || regressionregion.code == 'GC1586') {
+                                    regressionregion.results.forEach(result => {
+                                        if (result.name.indexOf(this.SelectedAEP.value) !== -1){
+                                            weightedAEP += (result.value * (regressionregion.percentWeight / 100.0));
+                                        }
+                                    })
+                                }
+                            });
+                            // set up data for request
+                            var urbanData = {
+                                "lat": this.studyAreaService.selectedStudyArea.Pourpoint.Latitude,
+                                "lon": this.studyAreaService.selectedStudyArea.Pourpoint.Longitude,
+                                "region3PercentArea": this.region3Percent,
+                                "region4PercentArea": this.region4Percent,
+                                "Qp": weightedAEP,
+                                "A": this.drainageArea,
+                                "L": this.mainChannelLength,
+                                "S": this.mainChannelSlope, 
+                                "TIA": this.totalImperviousArea
+                            };
+                            this.getUrbanStormRunoffResults(urbanData);
+                        } else if (this.methodType == 'Rural') {
+                            response.data[0].regressionRegions.forEach(regressionregion => {
+                                if (regressionregion.citationID == 191) { //2022, Magnitude and Frequency of Floods for Rural Streams in Georgia, South Carolina, and North Carolina, 2017--Results
+                                    regressionregion.results.forEach(result => {
+                                        if (result.name.indexOf(this.SelectedAEP.value) !== -1){
+                                            weightedAEP += (result.value * (regressionregion.percentWeight / 100.0));
+                                        }
+                                    })
+                                }
+                            });
+                            // set up data for request 
+                            var ruralData = {
+                                "regionBlueRidgePercentArea": this.GC1943,
+                                "regionPiedmontPercentArea": this.GC1942,
+                                "regionUpperCoastalPlainPercentArea": this.GC1941,
+                                "regionLowerCoastalPlain1PercentArea": this.GC1939,
+                                "regionLowerCoastalPlain2PercentArea": this.GC1940,
+                                "Qp": weightedAEP,
+                                "A": this.drainageArea
+                            };
+                            this.getRuralStormRunoffResults(ruralData);
+                        }
                     }
                     else {
                         this.toaster.clear();
@@ -778,10 +825,8 @@ module StreamStats.Controllers {
         }
 
 
-        public getStormRunoffResults(data){
+        public getUrbanStormRunoffResults(data) {
             var url = configuration.baseurls['SCStormRunoffServices'] + configuration.queryparams['SCStormRunoffBohman1992']
-            
-            
             var headers = {
                 "Content-Type": "application/json",
                 "X-warning": true
@@ -792,7 +837,31 @@ module StreamStats.Controllers {
                     this.ReportData.BohmanUrban1992.Graph = this.loadGraphData();
                     this.ReportData.BohmanUrban1992.WeightedRunoff = this.reportData.weighted_runoff_volume;
                     this.setGraphOptions();
-                    this.showResults = true;
+                    this.showUrbanResults = true;
+                    if (response.headers()['x-warning']) {
+                        this.warningMessages = response.headers()['x-warning'];
+                    }
+                },(error) => {
+                    this.toaster.pop('error', "Error", error["data"]["detail"], 0);
+                }).finally(() => { 
+                    this.canContinue = true;   
+            });
+
+        }
+
+        public getRuralStormRunoffResults(data) {
+            var url = configuration.baseurls['SCStormRunoffServices'] + configuration.queryparams['SCStormRunoffBohman1989']
+            var headers = {
+                "Content-Type": "application/json",
+                "X-warning": true
+            };
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(data), headers);
+            this.Execute(request).then((response: any) => {
+                    this.reportData = response.data;
+                    this.ReportData.BohmanRural1989.Graph = this.loadGraphData();
+                    this.ReportData.BohmanRural1989.WeightedRunoff = this.reportData.weighted_runoff_volume;
+                    this.setGraphOptions();
+                    this.showRuralResults = true;
                     if (response.headers()['x-warning']) {
                         this.warningMessages = response.headers()['x-warning'];
                     }
@@ -867,8 +936,13 @@ module StreamStats.Controllers {
         }
 
         public loadParametersByStatisticsGroup(regressionregions: string, percentWeights: any) {
+            if (this.methodType == 'Urban') {
+                var statGroup = 31;
+            } else if (this.methodType == 'Rural') {
+                var statGroup = 2;
+            }
             var url = configuration.baseurls['NSS'] + configuration.queryparams['statisticsGroupParameterLookup'];
-            url = url.format('SC', 31, regressionregions); // Urban Peak Flow Statistics for Bohman Urban (1992)
+            url = url.format('SC', statGroup, regressionregions); // Urban Peak Flow Statistics for Bohman Urban (1992)
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
 
             this.Execute(request).then(
@@ -932,7 +1006,7 @@ module StreamStats.Controllers {
                 },
                 title: {
                     enable: true,
-                    text: 'USGS SC Flood Hydrograph for Urban Watersheds using ' + this.SelectedAEP.name + ' AEP',
+                    text: 'USGS SC Flood Hydrograph for ' + this.methodType + ' Watersheds using ' + this.SelectedAEP.name + ' AEP',
                     css: {
                         'font-size': '10pt',
                         'font-weight': 'bold'
@@ -942,7 +1016,8 @@ module StreamStats.Controllers {
             };
         }
 
-        public queryRegressionRegions() {
+        public queryRegressionRegions(methodType) {
+            this.methodType = methodType;
             this.canContinue = false;
             var headers = {
                 "Content-Type": "application/json",
@@ -967,8 +1042,18 @@ module StreamStats.Controllers {
                                 this.region3Percent = regressionRegion.percentWeight;
                             } else if (regressionRegion.code == "GC1586") {
                                 this.region4Percent = regressionRegion.percentWeight;
-                            } 
-                        });       
+                            } else if (regressionRegion.code == "GC1939") {
+                                this.GC1939 = regressionRegion.percentWeight;
+                            } else if (regressionRegion.code == "GC1940") {
+                                this.GC1940 = regressionRegion.percentWeight;
+                            } else if (regressionRegion.code == "GC1941") {
+                                this.GC1941 = regressionRegion.percentWeight;
+                            } else if (regressionRegion.code == "GC1942") {
+                                this.GC1942 = regressionRegion.percentWeight;
+                            } else if (regressionRegion.code == "GC1943") {
+                                this.GC1943 = regressionRegion.percentWeight;
+                            }
+                        });  
                         this.loadParametersByStatisticsGroup(response.data.map(function (elem) {
                             return elem.code;
                         }).join(","), response.data)
@@ -1460,7 +1545,8 @@ module StreamStats.Controllers {
                         }
                     }
                     if(!atLeastOneSegment) {
-                        this.showResults = false;
+                        this.showRuralResults = false;
+                        this.showUrbanResults = false;
                         this.hideAlerts = false;
                         return false;
                     }
@@ -1470,14 +1556,15 @@ module StreamStats.Controllers {
                 return true;
             }
             else {
-                this.showResults = false;
+                this.showRuralResults = false;
+                this.showUrbanResults = false;
                 this.hideAlerts = false;
                 return false;
             }
         }
 
-        public clearResults(name) {
-            if (name == "BohmanUrbanForm") {
+        public clearResults(form) {
+            if (form.$name == "BohmanUrbanForm" || form.$name == "BohmanRuralForm") {
                 this.drainageArea = null;
                 this.timeOfConcentrationMin = null;
                 this.peakRateFactor = null;
@@ -1492,9 +1579,11 @@ module StreamStats.Controllers {
                 this.totalImperviousArea = null;
                 this.SelectedAEP = null;
                 this.SelectedAEPSynthetic = null;
-                this.showResults = false;
+                this.showUrbanResults = false;
+                this.showRuralResults = false;
                 this.warningMessages = null;
-            } else if(name == "SyntheticUrbanHydrograph"){
+                this.methodType = null;
+            } else if(form.$name == "SyntheticUrbanHydrograph"){
                 this._selectedAEPSynthetic = null;
                 this._selectedStandardCurve = null;
                 this._selectedCNModification = null;
@@ -1520,8 +1609,6 @@ module StreamStats.Controllers {
                     "maxTimeMinutes": 500
                 }
                 this.prfSegments = []
-            } else if(name == "BohmanRuralForm"){
-
             }
         }
 
@@ -1542,27 +1629,39 @@ module StreamStats.Controllers {
                 setTimeout(() => {
                     this.formatCSV();
                 }, 300);
-            } else {
-                this.formatCSV();
+            } else if (this.SelectedTab == 2) {
+                this.isBohmanUrbanOpen = true;
+                setTimeout(() => {
+                    this.formatCSV();
+                }, 300);
+            } else if (this.SelectedTab == 1) {
+                this.isBohmanRuralOpen = true;
+                setTimeout(() => {
+                    this.formatCSV();
+                }, 300);
             }
         }
 
         private formatCSV() {
-            //ga event
-            this.angulartics.eventTrack('Download', { category: 'Report', label: 'CSV' });
-
             var filename = 'data.csv';
 
             var BohmanRural1989 = () => {
-
+                var finalVal = 'USGS SC Flood Hydrograph for Rural Watersheds using ' + this.SelectedAEP.name + ' AEP\n';
+                finalVal += '\n' + 'Warning Messages:,"' + this.warningMessages + '"\n';
+                finalVal += this.tableToCSV($('#BohmanRuralParameterTable'));
+                finalVal += '\n' + this.tableToCSV($('#BohmanRuralSummaryTable'));
+                finalVal += '\n\nTabular Hydrograph';
+                finalVal += '\n' + this.tableToCSV($('#BohmanRuralHydrograph'));
+                return  finalVal + '\r\n';
             };
 
             var BohmanUrban1992 = () => {
                 var finalVal = 'USGS SC Flood Hydrograph for Urban Watersheds using ' + this.SelectedAEP.name + ' AEP\n';
-                finalVal += '\n' + "Warning Messages:," + this.warningMessages + '\n';
+                finalVal += '\n' + 'Warning Messages:,"' + this.warningMessages + '"\n';
                 finalVal += this.tableToCSV($('#BohmanUrbanParameterTable'));
                 finalVal += '\n' + this.tableToCSV($('#BohmanUrbanSummaryTable'));
-                finalVal += '\n\n' + this.tableToCSV($('#BohmanUrbanHydrograph'));
+                finalVal += '\n\nTabular Hydrograph';
+                finalVal += '\n' + this.tableToCSV($('#BohmanUrbanHydrograph'));
                 return  finalVal + '\r\n';
             };
 
@@ -1570,7 +1669,7 @@ module StreamStats.Controllers {
                 let warning = this.warningMessagesSynthetic ? this.warningMessagesSynthetic : null
                 var finalVal = 'USGS SC Synthetic Unit Hydrograph using ' + this.SelectedAEPSynthetic.name + '\n';
                 if (warning) {
-                    finalVal += '\n' + "Warning Messages:," + warning + '\n';
+                    finalVal += '\n' + 'Warning Messages:,"' + warning + '"\n';
                 }
                 let WatershedDataTable = (this.tableToCSV($('#WatershedDataTable')).slice(3)) // Needed to splice because there are no table headers
                 let UnitHydrographTable = (this.tableToCSV($('#UnitHydrographTable')).slice(3)) // Needed to splice because there are no table headers
@@ -1579,7 +1678,8 @@ module StreamStats.Controllers {
                 finalVal += '\n\n' + "Unit Hydrograph Data" + UnitHydrographTable;
                 finalVal += '\n\n' + "Runoff Results" + '\n' + this.tableToCSV($('#SyntheticUnitHydrographRunoffTable'));
                 finalVal += '\n\n' + "Critical Durations" + '\n' + this.tableToCSV($('#SyntheticUnitHydrographCriticalDurationsTable'));
-                finalVal += '\n\n' + "D-Hour Storm Hydrograph Ordinates" + '\n' + this.tableToCSV($('#SyntheticUnitHydrographDataTable'));
+                finalVal += '\n\nTabular Hydrograph';
+                finalVal += '\n' + "D-Hour Storm Hydrograph Ordinates" + '\n' + this.tableToCSV($('#SyntheticUnitHydrographDataTable'));
                 finalVal += '\n\n' + this.tableToCSV($('#SyntheticUnitHydrographDisclaimerReport'));
                 var node = document.getElementById('SyntheticUnitHydrographDisclaimerReport');
                 var string = node.textContent.replace(/\s+/g, ' ').trim();
@@ -1629,7 +1729,6 @@ module StreamStats.Controllers {
         private init(): void { 
             this.ReportData = new SCStormRunoffReportable();           
             this.SelectedTab = SCStormRunoffType.BohmanRural1989;
-            this.showResults = false;
             this.hideAlerts = false;
             this.canContinue = true;
             this.canContinueSynthetic = true;

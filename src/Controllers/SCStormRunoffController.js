@@ -41,8 +41,18 @@ var StreamStats;
                 var _this = _super.call(this, $http, configuration.baseurls.StormRunoffServices) || this;
                 _this.$timeout = $timeout;
                 _this.EventManager = EventManager;
+                _this.GC1939 = 0;
+                _this.GC1940 = 0;
+                _this.GC1941 = 0;
+                _this.GC1942 = 0;
+                _this.GC1943 = 0;
+                _this.showRuralResults = false;
+                _this.isBohmanRuralOpen = false;
                 _this.region3Percent = 0;
                 _this.region4Percent = 0;
+                _this.showUrbanResults = false;
+                _this.isBohmanUrbanOpen = false;
+                _this.showResultsSynthetic = false;
                 _this.isSyntheticUHOpen = false;
                 _this.AEPOptions = [{
                         "name": "50%",
@@ -467,6 +477,10 @@ var StreamStats;
                 _this.print = function () {
                     if (this.SelectedTab == 3)
                         this.isSyntheticUHOpen = true;
+                    if (this.SelectedTab == 2)
+                        this.isBohmanUrbanOpen = true;
+                    if (this.SelectedTab == 1)
+                        this.isBohmanRuralOpen = true;
                     setTimeout(function () {
                         window.print();
                     }, 300);
@@ -565,41 +579,77 @@ var StreamStats;
             });
             SCStormRunoffController.prototype.estimateFlows = function (statisticGroup) {
                 var _this = this;
-                var data = [{
-                        "id": 31,
-                        "name": "Urban Peak-Flow Statistics",
-                        "code": "UPFS",
-                        "defType": "FS",
-                        "statisticGroupName": "Urban Peak-Flow Statistics",
-                        "statisticGroupID": "31",
-                        "regressionRegions": statisticGroup[0].regressionRegions
-                    }];
+                if (this.methodType == 'Urban') {
+                    var data = [{
+                            "id": 31,
+                            "name": "Urban Peak-Flow Statistics",
+                            "code": "UPFS",
+                            "defType": "FS",
+                            "statisticGroupName": "Urban Peak-Flow Statistics",
+                            "statisticGroupID": "31",
+                            "regressionRegions": statisticGroup[0].regressionRegions
+                        }];
+                }
+                else if (this.methodType == 'Rural') {
+                    var data = [{
+                            "id": 2,
+                            "name": "Peak-Flow Statistics",
+                            "code": "PFS",
+                            "defType": "FS",
+                            "statisticGroupName": "Peak-Flow Statistics",
+                            "statisticGroupID": "2",
+                            "regressionRegions": statisticGroup[0].regressionRegions
+                        }];
+                }
                 var url = configuration.baseurls['NSS'] + configuration.queryparams['estimateFlows'].format('SC');
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, 1, 'json', JSON.stringify(data));
                 this.Execute(request).then(function (response) {
                     if (response.data[0].regressionRegions.length > 0 && response.data[0].regressionRegions[0].results && response.data[0].regressionRegions[0].results.length > 0) {
                         var weightedAEP = 0;
-                        response.data[0].regressionRegions.forEach(function (regressionregion) {
-                            if (regressionregion.code == 'GC1583' || regressionregion.code == 'GC1584' || regressionregion.code == 'GC1585' || regressionregion.code == 'GC1586') {
-                                regressionregion.results.forEach(function (result) {
-                                    if (result.name.indexOf(_this.SelectedAEP.value) !== -1) {
-                                        weightedAEP += (result.value * (regressionregion.percentWeight / 100.0));
-                                    }
-                                });
-                            }
-                        });
-                        var data = {
-                            "lat": _this.studyAreaService.selectedStudyArea.Pourpoint.Latitude,
-                            "lon": _this.studyAreaService.selectedStudyArea.Pourpoint.Longitude,
-                            "region3PercentArea": _this.region3Percent,
-                            "region4PercentArea": _this.region4Percent,
-                            "Qp": weightedAEP,
-                            "A": _this.drainageArea,
-                            "L": _this.mainChannelLength,
-                            "S": _this.mainChannelSlope,
-                            "TIA": _this.totalImperviousArea
-                        };
-                        _this.getStormRunoffResults(data);
+                        if (_this.methodType == 'Urban') {
+                            response.data[0].regressionRegions.forEach(function (regressionregion) {
+                                if (regressionregion.code == 'GC1583' || regressionregion.code == 'GC1584' || regressionregion.code == 'GC1585' || regressionregion.code == 'GC1586') {
+                                    regressionregion.results.forEach(function (result) {
+                                        if (result.name.indexOf(_this.SelectedAEP.value) !== -1) {
+                                            weightedAEP += (result.value * (regressionregion.percentWeight / 100.0));
+                                        }
+                                    });
+                                }
+                            });
+                            var urbanData = {
+                                "lat": _this.studyAreaService.selectedStudyArea.Pourpoint.Latitude,
+                                "lon": _this.studyAreaService.selectedStudyArea.Pourpoint.Longitude,
+                                "region3PercentArea": _this.region3Percent,
+                                "region4PercentArea": _this.region4Percent,
+                                "Qp": weightedAEP,
+                                "A": _this.drainageArea,
+                                "L": _this.mainChannelLength,
+                                "S": _this.mainChannelSlope,
+                                "TIA": _this.totalImperviousArea
+                            };
+                            _this.getUrbanStormRunoffResults(urbanData);
+                        }
+                        else if (_this.methodType == 'Rural') {
+                            response.data[0].regressionRegions.forEach(function (regressionregion) {
+                                if (regressionregion.citationID == 191) {
+                                    regressionregion.results.forEach(function (result) {
+                                        if (result.name.indexOf(_this.SelectedAEP.value) !== -1) {
+                                            weightedAEP += (result.value * (regressionregion.percentWeight / 100.0));
+                                        }
+                                    });
+                                }
+                            });
+                            var ruralData = {
+                                "regionBlueRidgePercentArea": _this.GC1943,
+                                "regionPiedmontPercentArea": _this.GC1942,
+                                "regionUpperCoastalPlainPercentArea": _this.GC1941,
+                                "regionLowerCoastalPlain1PercentArea": _this.GC1939,
+                                "regionLowerCoastalPlain2PercentArea": _this.GC1940,
+                                "Qp": weightedAEP,
+                                "A": _this.drainageArea
+                            };
+                            _this.getRuralStormRunoffResults(ruralData);
+                        }
                     }
                     else {
                         _this.toaster.clear();
@@ -611,7 +661,7 @@ var StreamStats;
                 }).finally(function () {
                 });
             };
-            SCStormRunoffController.prototype.getStormRunoffResults = function (data) {
+            SCStormRunoffController.prototype.getUrbanStormRunoffResults = function (data) {
                 var _this = this;
                 var url = configuration.baseurls['SCStormRunoffServices'] + configuration.queryparams['SCStormRunoffBohman1992'];
                 var headers = {
@@ -624,7 +674,30 @@ var StreamStats;
                     _this.ReportData.BohmanUrban1992.Graph = _this.loadGraphData();
                     _this.ReportData.BohmanUrban1992.WeightedRunoff = _this.reportData.weighted_runoff_volume;
                     _this.setGraphOptions();
-                    _this.showResults = true;
+                    _this.showUrbanResults = true;
+                    if (response.headers()['x-warning']) {
+                        _this.warningMessages = response.headers()['x-warning'];
+                    }
+                }, function (error) {
+                    _this.toaster.pop('error', "Error", error["data"]["detail"], 0);
+                }).finally(function () {
+                    _this.canContinue = true;
+                });
+            };
+            SCStormRunoffController.prototype.getRuralStormRunoffResults = function (data) {
+                var _this = this;
+                var url = configuration.baseurls['SCStormRunoffServices'] + configuration.queryparams['SCStormRunoffBohman1989'];
+                var headers = {
+                    "Content-Type": "application/json",
+                    "X-warning": true
+                };
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(data), headers);
+                this.Execute(request).then(function (response) {
+                    _this.reportData = response.data;
+                    _this.ReportData.BohmanRural1989.Graph = _this.loadGraphData();
+                    _this.ReportData.BohmanRural1989.WeightedRunoff = _this.reportData.weighted_runoff_volume;
+                    _this.setGraphOptions();
+                    _this.showRuralResults = true;
                     if (response.headers()['x-warning']) {
                         _this.warningMessages = response.headers()['x-warning'];
                     }
@@ -691,8 +764,14 @@ var StreamStats;
             };
             SCStormRunoffController.prototype.loadParametersByStatisticsGroup = function (regressionregions, percentWeights) {
                 var _this = this;
+                if (this.methodType == 'Urban') {
+                    var statGroup = 31;
+                }
+                else if (this.methodType == 'Rural') {
+                    var statGroup = 2;
+                }
                 var url = configuration.baseurls['NSS'] + configuration.queryparams['statisticsGroupParameterLookup'];
-                url = url.format('SC', 31, regressionregions);
+                url = url.format('SC', statGroup, regressionregions);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     if (response.data[0].regressionRegions[0].parameters && response.data[0].regressionRegions[0].parameters.length > 0) {
@@ -751,7 +830,7 @@ var StreamStats;
                     },
                     title: {
                         enable: true,
-                        text: 'USGS SC Flood Hydrograph for Urban Watersheds using ' + this.SelectedAEP.name + ' AEP',
+                        text: 'USGS SC Flood Hydrograph for ' + this.methodType + ' Watersheds using ' + this.SelectedAEP.name + ' AEP',
                         css: {
                             'font-size': '10pt',
                             'font-weight': 'bold'
@@ -759,8 +838,9 @@ var StreamStats;
                     }
                 };
             };
-            SCStormRunoffController.prototype.queryRegressionRegions = function () {
+            SCStormRunoffController.prototype.queryRegressionRegions = function (methodType) {
                 var _this = this;
+                this.methodType = methodType;
                 this.canContinue = false;
                 var headers = {
                     "Content-Type": "application/json",
@@ -784,6 +864,21 @@ var StreamStats;
                             }
                             else if (regressionRegion.code == "GC1586") {
                                 _this.region4Percent = regressionRegion.percentWeight;
+                            }
+                            else if (regressionRegion.code == "GC1939") {
+                                _this.GC1939 = regressionRegion.percentWeight;
+                            }
+                            else if (regressionRegion.code == "GC1940") {
+                                _this.GC1940 = regressionRegion.percentWeight;
+                            }
+                            else if (regressionRegion.code == "GC1941") {
+                                _this.GC1941 = regressionRegion.percentWeight;
+                            }
+                            else if (regressionRegion.code == "GC1942") {
+                                _this.GC1942 = regressionRegion.percentWeight;
+                            }
+                            else if (regressionRegion.code == "GC1943") {
+                                _this.GC1943 = regressionRegion.percentWeight;
                             }
                         });
                         _this.loadParametersByStatisticsGroup(response.data.map(function (elem) {
@@ -1253,7 +1348,8 @@ var StreamStats;
                             }
                         }
                         if (!atLeastOneSegment) {
-                            this.showResults = false;
+                            this.showRuralResults = false;
+                            this.showUrbanResults = false;
                             this.hideAlerts = false;
                             return false;
                         }
@@ -1263,13 +1359,14 @@ var StreamStats;
                     return true;
                 }
                 else {
-                    this.showResults = false;
+                    this.showRuralResults = false;
+                    this.showUrbanResults = false;
                     this.hideAlerts = false;
                     return false;
                 }
             };
-            SCStormRunoffController.prototype.clearResults = function (name) {
-                if (name == "BohmanUrbanForm") {
+            SCStormRunoffController.prototype.clearResults = function (form) {
+                if (form.$name == "BohmanUrbanForm" || form.$name == "BohmanRuralForm") {
                     this.drainageArea = null;
                     this.timeOfConcentrationMin = null;
                     this.peakRateFactor = null;
@@ -1284,10 +1381,12 @@ var StreamStats;
                     this.totalImperviousArea = null;
                     this.SelectedAEP = null;
                     this.SelectedAEPSynthetic = null;
-                    this.showResults = false;
+                    this.showUrbanResults = false;
+                    this.showRuralResults = false;
                     this.warningMessages = null;
+                    this.methodType = null;
                 }
-                else if (name == "SyntheticUrbanHydrograph") {
+                else if (form.$name == "SyntheticUrbanHydrograph") {
                     this._selectedAEPSynthetic = null;
                     this._selectedStandardCurve = null;
                     this._selectedCNModification = null;
@@ -1314,8 +1413,6 @@ var StreamStats;
                     };
                     this.prfSegments = [];
                 }
-                else if (name == "BohmanRuralForm") {
-                }
             };
             SCStormRunoffController.prototype.Close = function () {
                 this.modalInstance.dismiss('cancel');
@@ -1331,29 +1428,45 @@ var StreamStats;
                         _this.formatCSV();
                     }, 300);
                 }
-                else {
-                    this.formatCSV();
+                else if (this.SelectedTab == 2) {
+                    this.isBohmanUrbanOpen = true;
+                    setTimeout(function () {
+                        _this.formatCSV();
+                    }, 300);
+                }
+                else if (this.SelectedTab == 1) {
+                    this.isBohmanRuralOpen = true;
+                    setTimeout(function () {
+                        _this.formatCSV();
+                    }, 300);
                 }
             };
             SCStormRunoffController.prototype.formatCSV = function () {
                 var _this = this;
-                this.angulartics.eventTrack('Download', { category: 'Report', label: 'CSV' });
                 var filename = 'data.csv';
                 var BohmanRural1989 = function () {
+                    var finalVal = 'USGS SC Flood Hydrograph for Rural Watersheds using ' + _this.SelectedAEP.name + ' AEP\n';
+                    finalVal += '\n' + 'Warning Messages:,"' + _this.warningMessages + '"\n';
+                    finalVal += _this.tableToCSV($('#BohmanRuralParameterTable'));
+                    finalVal += '\n' + _this.tableToCSV($('#BohmanRuralSummaryTable'));
+                    finalVal += '\n\nTabular Hydrograph';
+                    finalVal += '\n' + _this.tableToCSV($('#BohmanRuralHydrograph'));
+                    return finalVal + '\r\n';
                 };
                 var BohmanUrban1992 = function () {
                     var finalVal = 'USGS SC Flood Hydrograph for Urban Watersheds using ' + _this.SelectedAEP.name + ' AEP\n';
-                    finalVal += '\n' + "Warning Messages:," + _this.warningMessages + '\n';
+                    finalVal += '\n' + 'Warning Messages:,"' + _this.warningMessages + '"\n';
                     finalVal += _this.tableToCSV($('#BohmanUrbanParameterTable'));
                     finalVal += '\n' + _this.tableToCSV($('#BohmanUrbanSummaryTable'));
-                    finalVal += '\n\n' + _this.tableToCSV($('#BohmanUrbanHydrograph'));
+                    finalVal += '\n\nTabular Hydrograph';
+                    finalVal += '\n' + _this.tableToCSV($('#BohmanUrbanHydrograph'));
                     return finalVal + '\r\n';
                 };
                 var SyntheticUrbanHydrograph = function () {
                     var warning = _this.warningMessagesSynthetic ? _this.warningMessagesSynthetic : null;
                     var finalVal = 'USGS SC Synthetic Unit Hydrograph using ' + _this.SelectedAEPSynthetic.name + '\n';
                     if (warning) {
-                        finalVal += '\n' + "Warning Messages:," + warning + '\n';
+                        finalVal += '\n' + 'Warning Messages:,"' + warning + '"\n';
                     }
                     var WatershedDataTable = (_this.tableToCSV($('#WatershedDataTable')).slice(3));
                     var UnitHydrographTable = (_this.tableToCSV($('#UnitHydrographTable')).slice(3));
@@ -1361,7 +1474,8 @@ var StreamStats;
                     finalVal += '\n\n' + "Unit Hydrograph Data" + UnitHydrographTable;
                     finalVal += '\n\n' + "Runoff Results" + '\n' + _this.tableToCSV($('#SyntheticUnitHydrographRunoffTable'));
                     finalVal += '\n\n' + "Critical Durations" + '\n' + _this.tableToCSV($('#SyntheticUnitHydrographCriticalDurationsTable'));
-                    finalVal += '\n\n' + "D-Hour Storm Hydrograph Ordinates" + '\n' + _this.tableToCSV($('#SyntheticUnitHydrographDataTable'));
+                    finalVal += '\n\nTabular Hydrograph';
+                    finalVal += '\n' + "D-Hour Storm Hydrograph Ordinates" + '\n' + _this.tableToCSV($('#SyntheticUnitHydrographDataTable'));
                     finalVal += '\n\n' + _this.tableToCSV($('#SyntheticUnitHydrographDisclaimerReport'));
                     var node = document.getElementById('SyntheticUnitHydrographDisclaimerReport');
                     var string = node.textContent.replace(/\s+/g, ' ').trim();
@@ -1403,7 +1517,6 @@ var StreamStats;
             SCStormRunoffController.prototype.init = function () {
                 this.ReportData = new SCStormRunoffReportable();
                 this.SelectedTab = SCStormRunoffType.BohmanRural1989;
-                this.showResults = false;
                 this.hideAlerts = false;
                 this.canContinue = true;
                 this.canContinueSynthetic = true;

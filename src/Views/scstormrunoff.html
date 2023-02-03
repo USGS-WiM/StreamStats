@@ -19,8 +19,9 @@
                     <div id="printArea" class="SCStormRunoffInput">
                         <!-- Bohman Rural (1989) tab -->
                         <div ng-if="vm.SelectedTab == 1" style="position:relative;">
-                            <!-- <form id="BohmanRuralForm" name="BohmanRuralForm" class="hidden-print" novalidate>
-                                <label for="AEPOptions">Select an Annual Exceedance Probability (AEP):</label>
+                            <div class="wim-alert hidden-print">Fill out required<span style="color: #ffcc00">*</span> fields. Remaining inputs will be calculated with <b>Calculate Missing Parameters</b> based on delineated basin. Then click <b>Continue</b> to view peak discharge and hydrograph.</div>
+                            <form id="BohmanRuralForm" name="BohmanRuralForm" class="hidden-print" novalidate>
+                                <label for="AEPOptions">Select an Annual Exceedance Probability (AEP):<span style="color: #ffcc00">*</span></label>
                                 <select name="AEPOptions" ng-model="vm.SelectedAEP" ng-options="precip.name for precip in vm.AEPOptions track by precip.value"></select>
 
                                 <label for="DrainageArea">Drainage Area (square miles):</label>
@@ -32,13 +33,71 @@
                                 <div class="hidden-print">
                                     <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.calculateParameters('DRNAREA')" ng-hide="vm.validateForm(BohmanRuralForm)"><span ng-class="vm.canContinue ? 'fa fa-calculator' : 'fa fa-refresh fa-spin'"></span>&nbsp;&nbsp;Calculate Missing Parameters</button>
                                     <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-red" ng-click="vm.clearResults(BohmanRuralForm)" ng-hide="!vm.validateForm(BohmanRuralForm)"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;Clear All</button>
-                                    <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.queryRegressionRegions()" ng-hide="!vm.validateForm(BohmanRuralForm)"><span ng-class="vm.canContinue ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></span>{{ vm.showResults ? '&nbsp;&nbsp;Recalculate Results' : '&nbsp;&nbsp;Continue' }}</button>
+                                    <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.queryRegressionRegions('Rural')" ng-hide="!vm.validateForm(BohmanRuralForm)"><span ng-class="vm.canContinue ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></span>{{ vm.showRuralResults ? '&nbsp;&nbsp;Recalculate Results' : '&nbsp;&nbsp;Continue' }}</button>
                                 </div>
                                 <label class="fullwidth alignc orange" ng-if="!vm.validateForm(BohmanRuralForm)"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Parameters Must Be Entered Before Results Can Be Calculated</label>
                                 <label ng-if="vm.validateForm(BohmanRuralForm)">&nbsp;&nbsp;</label> 
-                            </form>  -->
-                            <div> Coming Soon. </div>
-                            <br>
+                            </form>
+                            <div ng-if="vm.showRuralResults">
+                                <div style="position:relative;">
+                                    <p class="fullwidth alignc hidden-print" style="font-size: 16px;"><b>USGS SC Flood Hydrograph for Rural Watersheds using {{vm.SelectedAEP.name}} AEP</b></p>
+                                    <div class="wim-alert-warning">{{vm.warningMessages}}</div>
+                                    <div class="well">
+                                        <h3>Parameters</h3>
+                                        <table id="BohmanRuralParameterTable" class="table table-condensed smalltext">
+                                            <tbody>
+                                                <tr>
+                                                    <td>Clicked Point (Latitude, Longitude):</td>
+                                                    <td><b>{{vm.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5)}}, {{vm.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5)}}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Drainage Area (square miles):</td>
+                                                    <td><b>{{vm.drainageArea}}</b></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <h3>Summary</h3>
+                                        <table id="BohmanRuralSummaryTable" class="table table-condensed smalltext">
+                                            <tbody>
+                                                <tr>
+                                                    <td>Weighted Runoff Volume (inches):</td>
+                                                    <td><b>{{vm.ReportData.BohmanRural1989.WeightedRunoff.toUSGSvalue()}}</b></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <!-- Graph -->
+                                        <div style='width:650px; margin:auto;' class="page_break" id="legend">
+                                            <nvd3 options='vm.ReportOptions' data='vm.ReportData.BohmanRural1989.Graph'></nvd3>
+                                        </div>
+                                        <!-- Hydrograph -->
+                                        <div class="form-row-centered">
+                                            <a ng-click="vm.isBohmanRuralOpen = !vm.isBohmanRuralOpen">
+                                                <span ng-show="vm.isBohmanRuralOpen">Hide</span>
+                                                <span ng-hide="vm.isBohmanRuralOpen">Show</span> Tabular Hydrograph
+                                            </a>
+                                        </div>
+                                        <div ng-if="vm.isBohmanRuralOpen" class="well well-sm">
+                                            <table id="BohmanRuralHydrograph" class="table" style="font-size: 11px;">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Time (hours)</th>
+                                                        <th>Q (cubic feet per second)</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr ng-repeat="item in vm.reportData.time_coordinates">
+                                                        <td>{{item.toUSGSvalue()}}</td>
+                                                        <td>{{vm.reportData.discharge_coordinates[$index].toUSGSvalue()}}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>         
+                                        </div>                                        
+                                        </table> 
+                                        <h4>Citation</h4>
+                                        <a href="https://pubs.er.usgs.gov/publication/wri894087" target="_blank">Bohman, L.R., 1989, Determination of flood hydrographs for streams in South Carolina: Volume 1. Simulation of flood hydrographs for rural watersheds in South Carolina: U.S. Geological Survey Water-Resources Investigations Report 89-4087, 79 p.</a><br /><br />
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <!-- Bohman Urban (1992) tab -->
                         <div ng-if="vm.SelectedTab == 2" style="position:relative;">
@@ -59,14 +118,14 @@
                                 <label class="fullwidth alignc" ng-if="vm.validateForm(BohmanUrbanForm) && !vm.hideAlerts"><span class="fa fa-check"></span>&nbsp;Parameters Have Been Calculated</label>
                                 <label class="fullwidth" ng-if="!vm.validateForm(BohmanUrbanForm) || (vm.validateForm(BohmanUrbanForm) && vm.hideAlerts)">&nbsp;&nbsp;</label>
                                 <div class="hidden-print">
-                                    <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.calculateParameters('DRNAREA,LFPLENGTH,CSL10_85fm,LC06IMP')" ng-hide="vm.validateForm(BohmanUrbanForm)"><span ng-class="vm.canContinue ? 'fa fa-calculator' : 'fa fa-refresh fa-spin'"></span>&nbsp;&nbsp;Calculate Missing Parameters</button>
+                                    <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.calculateParameters('DRNAREA,LFPLENGTH,CSL10_85fm,LC19IMP')" ng-hide="vm.validateForm(BohmanUrbanForm)"><span ng-class="vm.canContinue ? 'fa fa-calculator' : 'fa fa-refresh fa-spin'"></span>&nbsp;&nbsp;Calculate Missing Parameters</button>
                                     <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-red" ng-click="vm.clearResults(BohmanUrbanForm.$name)" ng-hide="!vm.validateForm(BohmanUrbanForm)"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;Clear All</button>
-                                    <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.queryRegressionRegions()" ng-hide="!vm.validateForm(BohmanUrbanForm)"><span ng-class="vm.canContinue ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></span>{{ vm.showResults ? '&nbsp;&nbsp;Recalculate Results' : '&nbsp;&nbsp;Continue' }}</button>
+                                    <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.queryRegressionRegions('Urban')" ng-hide="!vm.validateForm(BohmanUrbanForm)"><span ng-class="vm.canContinue ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></span>{{ vm.showUrbanResults ? '&nbsp;&nbsp;Recalculate Results' : '&nbsp;&nbsp;Continue' }}</button>
                                 </div>
                                 <label class="fullwidth alignc orange" ng-if="!vm.validateForm(BohmanUrbanForm)"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Parameters Must Be Entered Before Results Can Be Computed</label>
                                 <label ng-if="vm.validateForm(BohmanUrbanForm)">&nbsp;&nbsp;</label> 
                             </form> 
-                            <div ng-if="vm.showResults">
+                            <div ng-if="vm.showUrbanResults">
                                 <div style="position:relative;">
                                     <p class="fullwidth alignc hidden-print" style="font-size: 16px;"><b>USGS SC Flood Hydrograph for Urban Watersheds using {{vm.SelectedAEP.name}} AEP</b></p>
                                     <div class="wim-alert-warning">{{vm.warningMessages}}</div>
@@ -76,7 +135,7 @@
                                             <tbody>
                                                 <tr>
                                                     <td>Clicked Point (Latitude, Longitude):</td>
-                                                    <td><b>{{vm.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toUSGSvalue()}}, {{vm.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toUSGSvalue()}}</b></td>
+                                                    <td><b>{{vm.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5)}}, {{vm.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5)}}</b></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Drainage Area (square miles):</td>
@@ -105,26 +164,33 @@
                                                 </tr>
                                             </tbody>
                                         </table>
-        
+                                        <!-- Graph -->
                                         <div style='width:650px; margin:auto;' class="page_break" id="legend">
                                             <nvd3 options='vm.ReportOptions' data='vm.ReportData.BohmanUrban1992.Graph'></nvd3>
                                         </div>
-        
-                                        <h3>Tabular Hydrograph</h3>
-                                        <table id="BohmanUrbanHydrograph" class="table table-condensed" style="page-break-inside:avoid; font-size: 11px;">
-                                            <thead>
-                                                <tr>
-                                                    <th>Time (hours)</th>
-                                                    <th>Q (cubic feet per second)</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr ng-repeat="item in vm.reportData.time_coordinates">
-                                                    <td>{{item.toUSGSvalue()}}</td>
-                                                    <td>{{vm.reportData.discharge_coordinates[$index].toUSGSvalue()}}</td>
-                                                </tr>
-                                            </tbody>
-                                        </table> 
+                                        <!-- Hydrograph -->
+                                        <div class="form-row-centered">
+                                            <a ng-click="vm.isBohmanUrbanOpen = !vm.isBohmanUrbanOpen">
+                                                <span ng-show="vm.isBohmanUrbanOpen">Hide</span>
+                                                <span ng-hide="vm.isBohmanUrbanOpen">Show</span> Tabular Hydrograph
+                                            </a>
+                                        </div>
+                                        <div ng-if="vm.isBohmanUrbanOpen" class="well well-sm">
+                                            <table id="BohmanUrbanHydrograph" class="table" style="font-size: 11px;">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Time (hours)</th>
+                                                        <th>Q (cubic feet per second)</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr ng-repeat="item in vm.reportData.time_coordinates">
+                                                        <td>{{item.toUSGSvalue()}}</td>
+                                                        <td>{{vm.reportData.discharge_coordinates[$index].toUSGSvalue()}}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>         
+                                        </div>
                                         <h4>Citation</h4>
                                         <a href="https://pubs.er.usgs.gov/publication/wri924040" target="_blank">Bohman, L.R., 1992, Determination of flood hydrographs for streams in South Carolina: Volume 2. Estimation of peak-discharge frequency, runoff volumes, and flood hydrographs for urban watersheds: U.S. Geological Survey Water-Resources Investigations Report 92-4040, 79 p.</a><br /><br />
                                     </div>
@@ -317,7 +383,7 @@
                                 <div class="hidden-print">
                                     <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-disabled="vm.calculateSyntheticParamsDisabled()" ng-click="vm.calculateSyntheticParameters('DRNAREA,LFPLENGTH,CSL10_85fm')" ng-hide="vm.validateForm(SyntheticUrbanHydrograph)"><span ng-class="vm.canContinueSynthetic ? 'fa fa-calculator' : 'fa fa-refresh fa-spin'"></span>&nbsp;&nbsp;Calculate Missing Parameters</button>
                                     <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-red" ng-click="vm.clearResults(SyntheticUrbanHydrograph.$name)" ng-hide="!vm.validateForm(SyntheticUrbanHydrograph)"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;Clear All</button>
-                                    <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.queryRegressionRegionsSynthetic()" ng-hide="!vm.validateForm(SyntheticUrbanHydrograph)"><span ng-class="vm.canContinueSynthetic ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></span>{{ vm.showResults ? '&nbsp;&nbsp;Recalculate Results' : '&nbsp;&nbsp;Continue' }}</button>
+                                    <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.queryRegressionRegionsSynthetic()" ng-hide="!vm.validateForm(SyntheticUrbanHydrograph)"><span ng-class="vm.canContinueSynthetic ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></span>{{ vm.showResultsSynthetic ? '&nbsp;&nbsp;Recalculate Results' : '&nbsp;&nbsp;Continue' }}</button>
                                 </div>
                                 <label class="fullwidth alignc orange" ng-if="vm.calculateSyntheticParamsDisabled() == 1"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Must select 'AEP', 'Standard Curve Number Value', fill out 'Peak Rate Factor Input Form', and 'Time of Concentration' Before <b>Calculate Missing Parameters</b>.</label>
                                 <label class="fullwidth alignc orange" ng-if="vm.calculateSyntheticParamsDisabled() == 2"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Must select 'AEP', 'Standard Curve Number Value', fill out 'Peak Rate Factor Input Form', and at Least One Flow Segment Before <b>Calculate Missing Parameters</b>.</label>
@@ -537,8 +603,8 @@
     
         <div class="modal-footer hidden-print">
             <div class="btn-group">
-                <button ng-if="(vm.showResults && vm.SelectedTab == 2) || (vm.showResultsSynthetic && vm.SelectedTab == 3)" type="button" class="btn-black" ng-click="vm.downloadCSV()"><span><i class="fa fa-download"></i>&nbsp;&nbsp;Download CSV</span></button>
-                <button ng-if="(vm.showResults && vm.SelectedTab == 2) || (vm.showResultsSynthetic && vm.SelectedTab == 3)" class="btn-blue" ng-click="vm.print()" analytics-on analytics-event="Print" analytics-category="Report" analytics-label="Print"><i class="fa fa-print"></i>&nbsp;&nbsp;Print</button>
+                <button ng-if="(vm.showRuralResults && vm.SelectedTab == 1) || (vm.showUrbanResults && vm.SelectedTab == 2) || (vm.showResultsSynthetic && vm.SelectedTab == 3)" type="button" class="btn-black" ng-click="vm.downloadCSV()"><span><i class="fa fa-download"></i>&nbsp;&nbsp;Download CSV</span></button>
+                <button ng-if="(vm.showRuralResults && vm.SelectedTab == 1) || (vm.showUrbanResults && vm.SelectedTab == 2) || (vm.showResultsSynthetic && vm.SelectedTab == 3)" class="btn-blue" ng-click="vm.print()" analytics-on analytics-event="Print" analytics-category="Report" analytics-label="Print"><i class="fa fa-print"></i>&nbsp;&nbsp;Print</button>
                 <button class="btn-wim-default" ng-click="vm.Close()"><i class="fa fa-close"></i>&nbsp;&nbsp;Close</button>
             </div>
         </div>
