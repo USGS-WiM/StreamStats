@@ -38,28 +38,25 @@ module StreamStats.Controllers {
     class BatchProcessorController extends WiM.Services.HTTPServiceBase implements IBatchProcessorController {
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
-        public sce: any;
         public http: any;
         private modalInstance: ng.ui.bootstrap.IModalServiceInstance;
         private modalService: Services.IModalService;
         public selectedBatchProcessorTabName: string;
         public displayMessage: string;
         public isValid: boolean;
-        public AppVersion: string;
-        // private freshdeskCreds: Object;
+        public AppVersion: string;  
         public submitBatchInfo: string;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$http', '$sce', 'StreamStats.Services.ModalService', '$modalInstance'];
-        constructor($scope: IBatchProcessorControllerScope, $http: ng.IHttpService, $sce: any, modalService: Services.IModalService, modal:ng.ui.bootstrap.IModalServiceInstance) {
+        static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance'];
+        constructor($scope: IBatchProcessorControllerScope, $http: ng.IHttpService, modalService: Services.IModalService, modal:ng.ui.bootstrap.IModalServiceInstance) {
             super($http, configuration.baseurls.StreamStats);
             $scope.vm = this;
-            this.sce = $sce;
             this.modalInstance = modal;
             this.modalService = modalService;
             this.selectedBatchProcessorTabName = "submitBatch";
-            // this.init();  
+            this.init();  
         }  
         
         //Methods  
@@ -69,47 +66,20 @@ module StreamStats.Controllers {
             this.modalInstance.dismiss('cancel')
         }
        
-
-        // public convertUnsafe(x: string) {
-        //     return this.sce.trustAsHtml(x);
-        // };
+        // used for switching between tabs
+        public selectBatchProcessorTab(tabname: string): void {
+            // if (this.selectedBatchProcessorTabName == tabname) return;
+            this.selectedBatchProcessorTabName = tabname;
+            // console.log('selected tab: '+tabname);
+        }
+        // Helper Methods
+        // -+-+-+-+-+-+-+-+-+-+-+-
+        private init(): void {   
+            //console.log("in about controller");
+            this.AppVersion = configuration.version;
+            }
         
-        //Helper Methods
-        //-+-+-+-+-+-+-+-+-+-+-+-
-        // private init(): void {   
-        //     //console.log("in about controller");
-        //     this.AppVersion = configuration.version;
-        //     this.freshdeskCreds = this.StudyAreaService.freshdeskCredentials;
-        //     if (this.freshdeskCreds) {
-        //         this.getAboutArticle();
-        //         this.getRegionHelpArticle();
-        //         this.getActiveNews();
-        //         this.getPastNews();
-        //         this.getDisclaimersArticle();
-        //     }
-        // }
 
-        public readCookie(name) {
-            var nameEQ = name + "=";
-            var ca = document.cookie.split(';');
-            for (var i = 0; i < ca.length; i++) {
-                var c = ca[i];
-                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
-            }
-            return null;
-        }
-
-        public createCookie(name, value, days) {
-            if (days) {
-                var date = new Date();
-                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-                var expires = "; expires=" + date.toUTCString();
-            }
-            else var expires = "";
-            document.cookie = name + "=" + value + expires + "; path=/";
-        }
-      
     }//end  class
 
     angular.module('StreamStats.Controllers')

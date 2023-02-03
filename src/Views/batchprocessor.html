@@ -9,8 +9,8 @@
 </div>
 <div class="modal-body">
     <ul id="aboutTabs" class="nav nav-tabs">
-        <li ng-class="{'active':vm.selectedBatchProcessorTabName == 'submitBatch'}"><a ng-click="vm.selectedBatchProcessorTabName = 'submitBatch'"><i class="fa fa-question-circle"></i>&nbsp;Submit Batch</a></li>
-        <li ng-class="{'active':vm.selectedBatchProcessorTabName == 'batchStatus'}"><a ng-click="vm.selectedBatchProcessorTabName = 'batchStatus'"><i class="fa fa-info-circle"></i>&nbsp;Batch Status</a></li>
+        <li ng-class="{'active':vm.selectedBatchProcessorTabName == 'submitBatch'}"><a ng-click="vm.selectBatchProcessorTab('submitBatch')"><i class="fa fa-question-circle"></i>&nbsp;Submit Batch</a></li>
+        <li ng-class="{'active':vm.selectedBatchProcessorTabName == 'batchStatus'}"><a ng-click="vm.selectBatchProcessorTab('batchStatus')"><i class="fa fa-info-circle"></i>&nbsp;Batch Status</a></li>
     </ul>
     <div style="padding-top: 10px;">
 
