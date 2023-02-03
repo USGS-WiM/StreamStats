@@ -62,11 +62,13 @@ module StreamStats.Controllers {
         public GC1942 = 0;
         public GC1943 = 0;
         public showRuralResults: boolean = false;
+        public isBohmanRuralOpen = false;
 
         // BOHMAN URBAN TAB
         public region3Percent = 0;
         public region4Percent = 0;
         public showUrbanResults: boolean = false;
+        public isBohmanUrbanOpen = false;
 
         // SYNTHETIC TAB
         public drainageAreaSynthetic: number;
@@ -717,6 +719,9 @@ module StreamStats.Controllers {
 
             this.print = function () {
                 if (this.SelectedTab == 3) this.isSyntheticUHOpen = true;
+                if (this.SelectedTab == 2) this.isBohmanUrbanOpen = true;
+                if (this.SelectedTab == 1) this.isBohmanRuralOpen = true;
+
                 setTimeout(function() {
                     window.print();
                 }, 300);
@@ -1624,8 +1629,16 @@ module StreamStats.Controllers {
                 setTimeout(() => {
                     this.formatCSV();
                 }, 300);
-            } else {
-                this.formatCSV();
+            } else if (this.SelectedTab == 2) {
+                this.isBohmanUrbanOpen = true;
+                setTimeout(() => {
+                    this.formatCSV();
+                }, 300);
+            } else if (this.SelectedTab == 1) {
+                this.isBohmanRuralOpen = true;
+                setTimeout(() => {
+                    this.formatCSV();
+                }, 300);
             }
         }
 
@@ -1634,19 +1647,21 @@ module StreamStats.Controllers {
 
             var BohmanRural1989 = () => {
                 var finalVal = 'USGS SC Flood Hydrograph for Rural Watersheds using ' + this.SelectedAEP.name + ' AEP\n';
-                finalVal += '\n' + "Warning Messages:," + this.warningMessages + '\n';
+                finalVal += '\n' + 'Warning Messages:,"' + this.warningMessages + '"\n';
                 finalVal += this.tableToCSV($('#BohmanRuralParameterTable'));
                 finalVal += '\n' + this.tableToCSV($('#BohmanRuralSummaryTable'));
-                finalVal += '\n\n' + this.tableToCSV($('#BohmanRuralHydrograph'));
+                finalVal += '\n\nTabular Hydrograph';
+                finalVal += '\n' + this.tableToCSV($('#BohmanRuralHydrograph'));
                 return  finalVal + '\r\n';
             };
 
             var BohmanUrban1992 = () => {
                 var finalVal = 'USGS SC Flood Hydrograph for Urban Watersheds using ' + this.SelectedAEP.name + ' AEP\n';
-                finalVal += '\n' + "Warning Messages:," + this.warningMessages + '\n';
+                finalVal += '\n' + 'Warning Messages:,"' + this.warningMessages + '"\n';
                 finalVal += this.tableToCSV($('#BohmanUrbanParameterTable'));
                 finalVal += '\n' + this.tableToCSV($('#BohmanUrbanSummaryTable'));
-                finalVal += '\n\n' + this.tableToCSV($('#BohmanUrbanHydrograph'));
+                finalVal += '\n\nTabular Hydrograph';
+                finalVal += '\n' + this.tableToCSV($('#BohmanUrbanHydrograph'));
                 return  finalVal + '\r\n';
             };
 
@@ -1654,7 +1669,7 @@ module StreamStats.Controllers {
                 let warning = this.warningMessagesSynthetic ? this.warningMessagesSynthetic : null
                 var finalVal = 'USGS SC Synthetic Unit Hydrograph using ' + this.SelectedAEPSynthetic.name + '\n';
                 if (warning) {
-                    finalVal += '\n' + "Warning Messages:," + warning + '\n';
+                    finalVal += '\n' + 'Warning Messages:,"' + warning + '"\n';
                 }
                 let WatershedDataTable = (this.tableToCSV($('#WatershedDataTable')).slice(3)) // Needed to splice because there are no table headers
                 let UnitHydrographTable = (this.tableToCSV($('#UnitHydrographTable')).slice(3)) // Needed to splice because there are no table headers
@@ -1663,7 +1678,8 @@ module StreamStats.Controllers {
                 finalVal += '\n\n' + "Unit Hydrograph Data" + UnitHydrographTable;
                 finalVal += '\n\n' + "Runoff Results" + '\n' + this.tableToCSV($('#SyntheticUnitHydrographRunoffTable'));
                 finalVal += '\n\n' + "Critical Durations" + '\n' + this.tableToCSV($('#SyntheticUnitHydrographCriticalDurationsTable'));
-                finalVal += '\n\n' + "D-Hour Storm Hydrograph Ordinates" + '\n' + this.tableToCSV($('#SyntheticUnitHydrographDataTable'));
+                finalVal += '\n\nTabular Hydrograph';
+                finalVal += '\n' + "D-Hour Storm Hydrograph Ordinates" + '\n' + this.tableToCSV($('#SyntheticUnitHydrographDataTable'));
                 finalVal += '\n\n' + this.tableToCSV($('#SyntheticUnitHydrographDisclaimerReport'));
                 var node = document.getElementById('SyntheticUnitHydrographDisclaimerReport');
                 var string = node.textContent.replace(/\s+/g, ' ').trim();

@@ -47,9 +47,11 @@ var StreamStats;
                 _this.GC1942 = 0;
                 _this.GC1943 = 0;
                 _this.showRuralResults = false;
+                _this.isBohmanRuralOpen = false;
                 _this.region3Percent = 0;
                 _this.region4Percent = 0;
                 _this.showUrbanResults = false;
+                _this.isBohmanUrbanOpen = false;
                 _this.showResultsSynthetic = false;
                 _this.isSyntheticUHOpen = false;
                 _this.AEPOptions = [{
@@ -475,6 +477,10 @@ var StreamStats;
                 _this.print = function () {
                     if (this.SelectedTab == 3)
                         this.isSyntheticUHOpen = true;
+                    if (this.SelectedTab == 2)
+                        this.isBohmanUrbanOpen = true;
+                    if (this.SelectedTab == 1)
+                        this.isBohmanRuralOpen = true;
                     setTimeout(function () {
                         window.print();
                     }, 300);
@@ -1422,8 +1428,17 @@ var StreamStats;
                         _this.formatCSV();
                     }, 300);
                 }
-                else {
-                    this.formatCSV();
+                else if (this.SelectedTab == 2) {
+                    this.isBohmanUrbanOpen = true;
+                    setTimeout(function () {
+                        _this.formatCSV();
+                    }, 300);
+                }
+                else if (this.SelectedTab == 1) {
+                    this.isBohmanRuralOpen = true;
+                    setTimeout(function () {
+                        _this.formatCSV();
+                    }, 300);
                 }
             };
             SCStormRunoffController.prototype.formatCSV = function () {
@@ -1431,25 +1446,27 @@ var StreamStats;
                 var filename = 'data.csv';
                 var BohmanRural1989 = function () {
                     var finalVal = 'USGS SC Flood Hydrograph for Rural Watersheds using ' + _this.SelectedAEP.name + ' AEP\n';
-                    finalVal += '\n' + "Warning Messages:," + _this.warningMessages + '\n';
+                    finalVal += '\n' + 'Warning Messages:,"' + _this.warningMessages + '"\n';
                     finalVal += _this.tableToCSV($('#BohmanRuralParameterTable'));
                     finalVal += '\n' + _this.tableToCSV($('#BohmanRuralSummaryTable'));
-                    finalVal += '\n\n' + _this.tableToCSV($('#BohmanRuralHydrograph'));
+                    finalVal += '\n\nTabular Hydrograph';
+                    finalVal += '\n' + _this.tableToCSV($('#BohmanRuralHydrograph'));
                     return finalVal + '\r\n';
                 };
                 var BohmanUrban1992 = function () {
                     var finalVal = 'USGS SC Flood Hydrograph for Urban Watersheds using ' + _this.SelectedAEP.name + ' AEP\n';
-                    finalVal += '\n' + "Warning Messages:," + _this.warningMessages + '\n';
+                    finalVal += '\n' + 'Warning Messages:,"' + _this.warningMessages + '"\n';
                     finalVal += _this.tableToCSV($('#BohmanUrbanParameterTable'));
                     finalVal += '\n' + _this.tableToCSV($('#BohmanUrbanSummaryTable'));
-                    finalVal += '\n\n' + _this.tableToCSV($('#BohmanUrbanHydrograph'));
+                    finalVal += '\n\nTabular Hydrograph';
+                    finalVal += '\n' + _this.tableToCSV($('#BohmanUrbanHydrograph'));
                     return finalVal + '\r\n';
                 };
                 var SyntheticUrbanHydrograph = function () {
                     var warning = _this.warningMessagesSynthetic ? _this.warningMessagesSynthetic : null;
                     var finalVal = 'USGS SC Synthetic Unit Hydrograph using ' + _this.SelectedAEPSynthetic.name + '\n';
                     if (warning) {
-                        finalVal += '\n' + "Warning Messages:," + warning + '\n';
+                        finalVal += '\n' + 'Warning Messages:,"' + warning + '"\n';
                     }
                     var WatershedDataTable = (_this.tableToCSV($('#WatershedDataTable')).slice(3));
                     var UnitHydrographTable = (_this.tableToCSV($('#UnitHydrographTable')).slice(3));
@@ -1457,7 +1474,8 @@ var StreamStats;
                     finalVal += '\n\n' + "Unit Hydrograph Data" + UnitHydrographTable;
                     finalVal += '\n\n' + "Runoff Results" + '\n' + _this.tableToCSV($('#SyntheticUnitHydrographRunoffTable'));
                     finalVal += '\n\n' + "Critical Durations" + '\n' + _this.tableToCSV($('#SyntheticUnitHydrographCriticalDurationsTable'));
-                    finalVal += '\n\n' + "D-Hour Storm Hydrograph Ordinates" + '\n' + _this.tableToCSV($('#SyntheticUnitHydrographDataTable'));
+                    finalVal += '\n\nTabular Hydrograph';
+                    finalVal += '\n' + "D-Hour Storm Hydrograph Ordinates" + '\n' + _this.tableToCSV($('#SyntheticUnitHydrographDataTable'));
                     finalVal += '\n\n' + _this.tableToCSV($('#SyntheticUnitHydrographDisclaimerReport'));
                     var node = document.getElementById('SyntheticUnitHydrographDisclaimerReport');
                     var string = node.textContent.replace(/\s+/g, ' ').trim();

@@ -48,7 +48,7 @@
                                             <tbody>
                                                 <tr>
                                                     <td>Clicked Point (Latitude, Longitude):</td>
-                                                    <td><b>{{vm.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toUSGSvalue()}}, {{vm.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toUSGSvalue()}}</b></td>
+                                                    <td><b>{{vm.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5)}}, {{vm.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5)}}</b></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Drainage Area (square miles):</td>
@@ -65,25 +65,33 @@
                                                 </tr>
                                             </tbody>
                                         </table>
-        
+                                        <!-- Graph -->
                                         <div style='width:650px; margin:auto;' class="page_break" id="legend">
                                             <nvd3 options='vm.ReportOptions' data='vm.ReportData.BohmanRural1989.Graph'></nvd3>
                                         </div>
-        
-                                        <h3>Tabular Hydrograph</h3>
-                                        <table id="BohmanRuralHydrograph" class="table table-condensed" style="page-break-inside:avoid; font-size: 11px;">
-                                            <thead>
-                                                <tr>
-                                                    <th>Time (hours)</th>
-                                                    <th>Q (cubic feet per second)</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr ng-repeat="item in vm.reportData.time_coordinates">
-                                                    <td>{{item.toUSGSvalue()}}</td>
-                                                    <td>{{vm.reportData.discharge_coordinates[$index].toUSGSvalue()}}</td>
-                                                </tr>
-                                            </tbody>
+                                        <!-- Hydrograph -->
+                                        <div class="form-row-centered">
+                                            <a ng-click="vm.isBohmanRuralOpen = !vm.isBohmanRuralOpen">
+                                                <span ng-show="vm.isBohmanRuralOpen">Hide</span>
+                                                <span ng-hide="vm.isBohmanRuralOpen">Show</span> Tabular Hydrograph
+                                            </a>
+                                        </div>
+                                        <div ng-if="vm.isBohmanRuralOpen" class="well well-sm">
+                                            <table id="BohmanRuralHydrograph" class="table" style="font-size: 11px;">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Time (hours)</th>
+                                                        <th>Q (cubic feet per second)</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr ng-repeat="item in vm.reportData.time_coordinates">
+                                                        <td>{{item.toUSGSvalue()}}</td>
+                                                        <td>{{vm.reportData.discharge_coordinates[$index].toUSGSvalue()}}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>         
+                                        </div>                                        
                                         </table> 
                                         <h4>Citation</h4>
                                         <a href="https://pubs.er.usgs.gov/publication/wri894087" target="_blank">Bohman, L.R., 1989, Determination of flood hydrographs for streams in South Carolina: Volume 1. Simulation of flood hydrographs for rural watersheds in South Carolina: U.S. Geological Survey Water-Resources Investigations Report 89-4087, 79 p.</a><br /><br />
@@ -127,7 +135,7 @@
                                             <tbody>
                                                 <tr>
                                                     <td>Clicked Point (Latitude, Longitude):</td>
-                                                    <td><b>{{vm.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toUSGSvalue()}}, {{vm.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toUSGSvalue()}}</b></td>
+                                                    <td><b>{{vm.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5)}}, {{vm.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5)}}</b></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Drainage Area (square miles):</td>
@@ -156,26 +164,33 @@
                                                 </tr>
                                             </tbody>
                                         </table>
-        
+                                        <!-- Graph -->
                                         <div style='width:650px; margin:auto;' class="page_break" id="legend">
                                             <nvd3 options='vm.ReportOptions' data='vm.ReportData.BohmanUrban1992.Graph'></nvd3>
                                         </div>
-        
-                                        <h3>Tabular Hydrograph</h3>
-                                        <table id="BohmanUrbanHydrograph" class="table table-condensed" style="page-break-inside:avoid; font-size: 11px;">
-                                            <thead>
-                                                <tr>
-                                                    <th>Time (hours)</th>
-                                                    <th>Q (cubic feet per second)</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr ng-repeat="item in vm.reportData.time_coordinates">
-                                                    <td>{{item.toUSGSvalue()}}</td>
-                                                    <td>{{vm.reportData.discharge_coordinates[$index].toUSGSvalue()}}</td>
-                                                </tr>
-                                            </tbody>
-                                        </table> 
+                                        <!-- Hydrograph -->
+                                        <div class="form-row-centered">
+                                            <a ng-click="vm.isBohmanUrbanOpen = !vm.isBohmanUrbanOpen">
+                                                <span ng-show="vm.isBohmanUrbanOpen">Hide</span>
+                                                <span ng-hide="vm.isBohmanUrbanOpen">Show</span> Tabular Hydrograph
+                                            </a>
+                                        </div>
+                                        <div ng-if="vm.isBohmanUrbanOpen" class="well well-sm">
+                                            <table id="BohmanUrbanHydrograph" class="table" style="font-size: 11px;">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Time (hours)</th>
+                                                        <th>Q (cubic feet per second)</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr ng-repeat="item in vm.reportData.time_coordinates">
+                                                        <td>{{item.toUSGSvalue()}}</td>
+                                                        <td>{{vm.reportData.discharge_coordinates[$index].toUSGSvalue()}}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>         
+                                        </div>
                                         <h4>Citation</h4>
                                         <a href="https://pubs.er.usgs.gov/publication/wri924040" target="_blank">Bohman, L.R., 1992, Determination of flood hydrographs for streams in South Carolina: Volume 2. Estimation of peak-discharge frequency, runoff volumes, and flood hydrographs for urban watersheds: U.S. Geological Survey Water-Resources Investigations Report 92-4040, 79 p.</a><br /><br />
                                     </div>
