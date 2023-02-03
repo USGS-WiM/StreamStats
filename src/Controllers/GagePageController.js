@@ -515,13 +515,12 @@ var StreamStats;
                                 return false;
                             return year % 4 === 0;
                         }
-                        var fullDate = new Date(year, 0, doy);
-                        var UTCday = fullDate.getUTCDate();
-                        var month = fullDate.getUTCMonth();
-                        month += 1;
-                        var monthDay = month + '/' + UTCday;
+                        ;
                         if (isLeapYear(year) == false && doy > 59) {
                             doy += 1;
+                        }
+                        if (doy < 275) {
+                            doy += 366;
                         }
                         if (dailyHeatObj.qualifiers[0] === 'A') {
                             _this_1.formattedDailyHeat.push({ x: doy, y: new Date(dailyHeatObj.dateTime).getUTCFullYear(), value: parseInt(dailyHeatObj.value) });
@@ -716,7 +715,8 @@ var StreamStats;
                     },
                     xAxis: {
                         type: null,
-                        tickPositions: [274, 305, 335, 367, 397, 425, 456, 486, 518, 547, 578, 609],
+                        min: 275,
+                        tickPositions: [275, 306, 336, 368, 398, 426, 457, 487, 519, 548, 579, 610],
                         title: {
                             text: 'Day of the Year'
                         },
@@ -764,10 +764,14 @@ var StreamStats;
                                     if (this.formattedDailyHeat !== null) {
                                         var year = this.y;
                                         var doy = this.x;
+                                        if (doy > 275) {
+                                            doy -= 366;
+                                        }
                                         if (isLeapYear(year) == false && doy > 59) {
                                             doy -= 1;
                                         }
                                         ;
+                                        console.log(doy);
                                         var fullDate = new Date(year, 0, doy);
                                         console.log('fullDate', fullDate);
                                         var UTCday = fullDate.getUTCDate();

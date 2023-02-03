@@ -215,7 +215,7 @@ module StreamStats.Controllers {
                         chart: { height: number, width: number, zooming: {type: string} },
                         title: { text: string, align: string},
                         subtitle: { text: string, align: string},  
-                        xAxis: { type: string, tickPositions: any[], threshold: number, title: {text: string}, labels: {formatter: Function}},
+                        xAxis: { type: string, min: number, tickPositions: any[], threshold: number, title: {text: string}, labels: {formatter: Function}},
                         yAxis: { title: {text: string}, custom: { allowNegativeLog: boolean}},
                         colorAxis: { type: string, min: number, max: number, stops: any[], startOnTick: boolean, endOnTick: boolean, allowNegativeLog: boolean}
                         series: { name: string, type: string, data: number[], tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number}[]; };
@@ -718,19 +718,19 @@ module StreamStats.Controllers {
                         if (year % 400 === 0) return true;
                         if (year % 100 === 0) return false;
                         return year % 4 === 0;
-                      }
-                    let fullDate = new Date(year, 0, doy);
-                    let UTCday = fullDate.getUTCDate();
-                    let month = fullDate.getUTCMonth();
-                        month += 1; // adding a month to the UTC months (which are zero-indexed)
-                    let monthDay = month + '/' + UTCday;
+                    };
+                    //let fullDate = new Date(year, 0, doy);
+                    //let UTCday = fullDate.getUTCDate();
+                    // let month = fullDate.getUTCMonth();
+                    //     month += 1; // adding a month to the UTC months (which are zero-indexed)
+                    // let monthDay = month + '/' + UTCday;
                     //console.log('leap testing', monthDay);
                     if (isLeapYear(year) == false && doy > 59) {
                         doy += 1
                     }
-                    // if (doy < 274) {
-                    //     doy += 366 //making 274 (Oct 1) the lowest number so the x-axis can start at the beginning of the water year
-                    // }
+                    if (doy < 275) {
+                        doy += 366 //making 275 (Oct 1) the lowest number so the x-axis can start at the beginning of the water year
+                    }
                     //console.log(monthDay)
 
                     if (dailyHeatObj.qualifiers[0] === 'A') {
@@ -924,7 +924,8 @@ module StreamStats.Controllers {
                 },
                 xAxis: {
                     type: null,
-                    tickPositions: [274, 305, 335, 367, 397, 425, 456, 486, 518, 547, 578, 609],
+                    min: 275,
+                    tickPositions: [275, 306, 336, 368, 398, 426, 457, 487, 519, 548, 579, 610],
                     title: {
                         text: 'Day of the Year'
                     },
@@ -972,12 +973,14 @@ module StreamStats.Controllers {
                                 //let UTCday = this.x.getUTCDate();
                                 let year = this.y;
                                 let doy = this.x;
-                                //console.log(doy);
+                                if (doy > 275) {
+                                    doy -= 366 //making 275 (Oct 1) the lowest number so the x-axis can start at the beginning of the water year
+                                }
                                 if (isLeapYear(year) == false && doy > 59) {
                                     doy -= 1
                                 };
+                                console.log(doy);
                                 let fullDate = new Date(year, 0, doy)
-
                                 console.log('fullDate', fullDate);
                                 let UTCday = fullDate.getUTCDate();
                                 let month = fullDate.getUTCMonth();
