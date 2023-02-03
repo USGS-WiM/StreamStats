@@ -125,6 +125,14 @@ var StreamStats;
                                 backdrop: 'static',
                                 windowClass: 'windowZ',
                             };
+                        case SSModalType.e_batchprocessor:
+                            return {
+                                templateUrl: 'Views/batchprocessor.html',
+                                controller: 'StreamStats.Controllers.BatchProcessorController',
+                                size: 'lg',
+                                backdropClass: 'backdropZ',
+                                windowClass: 'windowZ',
+                            };
                         default:
                             return null;
                     }
@@ -149,6 +157,7 @@ var StreamStats;
             SSModalType[SSModalType["e_gagepage"] = 10] = "e_gagepage";
             SSModalType[SSModalType["e_nearestgages"] = 11] = "e_nearestgages";
             SSModalType[SSModalType["e_flowanywhere"] = 12] = "e_flowanywhere";
+            SSModalType[SSModalType["e_batchprocessor"] = 13] = "e_batchprocessor";
         })(SSModalType = Services.SSModalType || (Services.SSModalType = {}));
         factory.$inject = ['$modal'];
         function factory($modal) {

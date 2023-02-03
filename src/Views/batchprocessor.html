@@ -1,0 +1,29 @@
+﻿<!-- Modal -->
+
+<div class="modal-header">
+    <button class="close"
+            ng-click="vm.Close()">
+        &times;
+    </button>
+    <h4 class="modal-title">StreamStats Batch Processor</h4>
+</div>
+<div class="modal-body">
+    <ul id="aboutTabs" class="nav nav-tabs">
+        <li ng-class="{'active':vm.selectedBatchProcessorTabName == 'submitBatch'}"><a ng-click="vm.selectBatchProcessorTab('submitBatch')"><i class="fa fa-question-circle"></i>&nbsp;Submit Batch</a></li>
+        <li ng-class="{'active':vm.selectedBatchProcessorTabName == 'batchStatus'}"><a ng-click="vm.selectBatchProcessorTab('batchStatus')"><i class="fa fa-info-circle"></i>&nbsp;Batch Status</a></li>
+    </ul>
+    <div style="padding-top: 10px;">
+
+        <div id="submitBatch" ng-if="vm.selectedBatchProcessorTabName==='submitBatch'">
+            <p>This is the submit batch processor tab</p>
+        </div>
+
+        <div id="batchStatus" ng-if="vm.selectedBatchProcessorTabName==='batchStatus'">
+            <p>This is the batch status tab</p>
+        </div>
+
+</div> 
+
+<div class="modal-footer">
+    <button ng-click="vm.Close()" class="btn-black"><i class="fa fa-close"></i><span>&nbsp;&nbsp;Close</span></button>
+</div>

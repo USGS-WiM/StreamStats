@@ -66,6 +66,9 @@ var StreamStats;
                     self.checkActiveNews();
                 });
             };
+            NavbarController.prototype.openBatchProcessor = function () {
+                this.modalService.openModal(StreamStats.Services.SSModalType.e_batchprocessor);
+            };
             NavbarController.prototype.openReport = function () {
                 this.modalService.openModal(StreamStats.Services.SSModalType.e_report);
             };
