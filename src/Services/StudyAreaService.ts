@@ -822,14 +822,14 @@ module StreamStats.Services {
                     this.selectedStudyArea.NHDStreamIntersections = [];
                 } else if (results && results.features.length > 0) {
                     results.features.forEach((feature) => {
-                        if (feature.properties.GNIS_ID) {
+                        if (feature.properties["gnis_id"]) {
                             var stream = turf.lineString(feature.geometry.coordinates);
                             var distanceToPourPoint = turf.pointToLineDistance(snappedDelineationPoint, stream) * 1000 * 3.28084; // distance in feet
-                            if (Object.keys(NHDStreamIntersections).indexOf(feature.properties.GNIS_ID) == -1) {
-                                NHDStreamIntersections[feature.properties.GNIS_ID] = {"GNIS_ID":feature.properties.GNIS_ID, "GNIS_NAME":feature.properties.GNIS_NAME, "distanceToPourPoint":distanceToPourPoint};
+                            if (Object.keys(NHDStreamIntersections).indexOf(feature.properties["gnis_id"]) == -1) {
+                                NHDStreamIntersections[feature.properties["gnis_id"]] = {"GNIS_ID":feature.properties["gnis_id"], "GNIS_NAME":feature.properties["gnis_name"], "distanceToPourPoint":distanceToPourPoint};
                             } else {
-                                if (distanceToPourPoint < NHDStreamIntersections[feature.properties.GNIS_ID]["distanceToPourPoint"]) {
-                                    NHDStreamIntersections[feature.properties.GNIS_ID]["distanceToPourPoint"] = distanceToPourPoint;
+                                if (distanceToPourPoint < NHDStreamIntersections[feature.properties["gnis_id"]]["distanceToPourPoint"]) {
+                                    NHDStreamIntersections[feature.properties["gnis_id"]]["distanceToPourPoint"] = distanceToPourPoint;
                                 }
                             }
                         }
