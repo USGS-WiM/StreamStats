@@ -591,12 +591,12 @@ module StreamStats.Controllers {
                         if (item.layerId !== queryResult.layerId) return;
                         if (["StreamGrid", "ExcludePolys", "Region", "Subregion", "Basin", "Subbasin", "Watershed", "Subwatershed"].indexOf(item.layerName) > -1) return;                
                         if (item.layerName == "NHD Streams") {
-                            if (queryResult.properties["GNIS_ID"] && queryResult.properties["GNIS_NAME"]) {
-                                if (uniqueNHDStreamGNISIDs.indexOf(queryResult.properties["GNIS_ID"]) == -1) {
-                                    uniqueNHDStreamGNISIDs.push(queryResult.properties["GNIS_ID"]);
+                            if (queryResult.properties["gnis_id"] && queryResult.properties["gnis_name"]) {
+                                if (uniqueNHDStreamGNISIDs.indexOf(queryResult.properties["gnis_id"]) == -1) {
+                                    uniqueNHDStreamGNISIDs.push(queryResult.properties["gnis_id"]);
                                     querylayers.append('<h5> NHD Streams <i ng-mouseover="showTooltip = true" ng-mouseleave="showTooltip = false" class="fa fa-info-circle"></i><span ng-show="showTooltip" class="popup-tooltip">NHD streams within 100 meters of clicked point.</span></h5>');
-                                    querylayers.append('<strong> GNIS ID: </strong>' + queryResult.properties["GNIS_ID"] + '</br>');
-                                    querylayers.append('<strong> GNIS Name: </strong>' + queryResult.properties["GNIS_NAME"] + '</br>');
+                                    querylayers.append('<strong> GNIS ID: </strong>' + queryResult.properties["gnis_id"] + '</br>');
+                                    querylayers.append('<strong> GNIS Name: </strong>' + queryResult.properties["gnis_name"] + '</br>');
                                     this.queryContent.responseCount++;
                                 } 
                             }
