@@ -711,7 +711,7 @@ module StreamStats.Controllers {
                     if (isLeapYear(year) == false && doy > 59) {
                         doy += 1; //add a day onto non-leap years so that dates after Feb 28 will line up with leap years
                     };
-                    if (doy > 275) {
+                    if (doy > 274) {
                         year += 1
                     };
                     if (doy < 275) {
@@ -911,7 +911,7 @@ module StreamStats.Controllers {
                     min: 275,
                     tickPositions: [275, 306, 336, 368, 398, 426, 457, 487, 519, 548, 579, 610],
                     title: {
-                        text: 'Day of the Year'
+                        text: 'Date'
                     },
                     threshold: 273,
                     labels: {
