@@ -4,7 +4,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
-## [Unreleased](https://github.com/USGS-WiM/StreamStats/tree/dev)
+## [Unreleased](https://github.com/USGS-WiM/StreamStats/tree/SC-Runoff)
+  
+### Added 
+
+### Changed  
+
+### Deprecated 
+
+### Removed 
+  
+### Fixed  
+
+### Security  
+
+## [v4.12.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.12.0) - 2023-01-11
   
 ### Added 
 
@@ -19,10 +33,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - StreamStats Gage Page link in gage popups to a button
 - Updated to Google Analytics 4
 - Updated code.json
-
-### Deprecated 
-
--
+- Updated favicon
 
 ### Removed 
 
@@ -36,10 +47,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Printed gage page now shows all table content instead of cutting of scrolling tables
 - Disclaimers on report are now not delimited by commas when downloaded as a CSV
 
-### Security  
-
-
-
 ## [v4.11.1](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.11.1) - 2022-10-14
 
 ### Added 
@@ -50,64 +57,63 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Issue where state layers were not showing up 
 
-
-
 ## [v4.11.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.11.0) - 2022-10-14
 
-  ### Added
-  - Flow Anywhere Method from StreamEst
+### Added
+- Flow Anywhere Method from StreamEst
 
-  ### Changed
-  - Channel Weighting services URL 
-  - NWIS Page link from legacy real-time page to Next Generation Monitoring Location page
-  - Replaced "NWIS Page" with "Monitoring Location Page"
-  - FlowAnywhereMapServices to StreamStatsMapServices because IowaStreamEst map services were moved from gis.wim.usgs.gov to gis.streamstats.usgs.gov
-  - Flow Anywhere application shows published NWIS Drainage Area instead of GIS-calculated drainage area
-  - SSstormwaterDelineation url in appconfig
-  - Mystic configuration in appconfig
-  - DRB configuration in appconfig
-  - StreamGrid is not visible by default for StormDrain applications
-  ## [v4.10.1](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.10.1) - 2022-07-20
-  
-  ### Added
-  - Added Channel-width Methods Weighting results to downloaded CSV
+### Changed
+- Channel Weighting services URL 
+- NWIS Page link from legacy real-time page to Next Generation Monitoring Location page
+- Replaced "NWIS Page" with "Monitoring Location Page"
+- FlowAnywhereMapServices to StreamStatsMapServices because IowaStreamEst map services were moved from gis.wim.usgs.gov to gis.streamstats.usgs.gov
+- Flow Anywhere application shows published NWIS Drainage Area instead of GIS-calculated drainage area
+- SSstormwaterDelineation url in appconfig
+- Mystic configuration in appconfig
+- DRB configuration in appconfig
+- StreamGrid is not visible by default for StormDrain applications
+
+## [v4.10.1](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.10.1) - 2022-07-20
+
+### Added
+- Added Channel-width Methods Weighting results to downloaded CSV
 
 ## [v4.10.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.10.0) - 2022-06-16
   
-  ### Added
-  - Added loader and disabled download button until longest flow path is downloaded
-  - Added Maine August Baseflow layer
-  - QPPQ additions
-    - Added line to CSV download that states which Regression Region's results are shown
-    - Added collapsible functionality to section in report
-    - Added citation to report section
+### Added
+- Added loader and disabled download button until longest flow path is downloaded
+- Added Maine August Baseflow layer
+- QPPQ additions
+- Added line to CSV download that states which Regression Region's results are shown
+- Added collapsible functionality to section in report
+- Added citation to report section
     
-  ### Changed
-  - Changed URL for IA and NC supplemental gage pages to new location on S3
-  - Renamed "New Streamstats Gage Modal" to "Streamstats Gage Modal"
-  - Shows Longest Flow Path automatically on the main map if returned from the services
-  - Changes to QPPQ
-    - The exceedance probabilities table in report is now sorted from greatest to least exceedance
-    - If the "Flow-Duration Curve Transfer Method" scenario is selected, the "Flow-Duration Statistics" scenario button is now selected by default and cannot be unselected while the "Flow-Duration Curve Transfer Method" scenario button is selected.
-    - The "Flow-Duration Curve Transfer Method" statistics group does not show up in the Report anymore. Instead, the same information appears in the "Flow-Duration Statistics" statistics group.
+### Changed
+- Changed URL for IA and NC supplemental gage pages to new location on S3
+- Renamed "New Streamstats Gage Modal" to "Streamstats Gage Modal"
+- Shows Longest Flow Path automatically on the main map if returned from the services
+- Changes to QPPQ
+- The exceedance probabilities table in report is now sorted from greatest to least exceedance
+- If the "Flow-Duration Curve Transfer Method" scenario is selected, the "Flow-Duration Statistics" scenario button is now selected by default and cannot be unselected while the "Flow-Duration Curve Transfer Method" scenario button is selected.
+- The "Flow-Duration Curve Transfer Method" statistics group does not show up in the Report anymore. Instead, the same information appears in the "Flow-Duration Statistics" statistics group.
 
-  ### Removed
-  - Removed "StreamStats Gage page" link
+### Removed
+- Removed "StreamStats Gage page" link
 
 ## [v4.9.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.9.0) - 2022-05-19
 
- ### Added
- -  Added ability to collapse report sections
- -  Added MT equation weighting functionality
- -  Added ability to switch between QPPQ results if there is more than one result
- -  Added CHANGELOG.md
- 
- ### Changed
- -  Updated Readme
- -  Separated the ExcludePolys and StreamGrid layers so they can be toggled separately 
+### Added
+-  Added ability to collapse report sections
+-  Added MT equation weighting functionality
+-  Added ability to switch between QPPQ results if there is more than one result
+-  Added CHANGELOG.md
 
- ### Fixed
- -  Replaced broken marker-creator link in index.html
+### Changed
+-  Updated Readme
+-  Separated the ExcludePolys and StreamGrid layers so they can be toggled separately 
+
+### Fixed
+-  Replaced broken marker-creator link in index.html
 
 ## [v4.8.1](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.8.1) - 2022-03-29
 ## [v4.8.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.8.0) - 2022-03-24

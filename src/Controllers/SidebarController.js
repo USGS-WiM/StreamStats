@@ -389,6 +389,9 @@ var StreamStats;
                 gtag('event', 'AdditionalFunctionality', { 'Category': 'StormRunoff' });
                 this.modalService.openModal(StreamStats.Services.SSModalType.e_stormrunnoff);
             };
+            SidebarController.prototype.OpenSCStormRunoff = function () {
+                this.modalService.openModal(StreamStats.Services.SSModalType.e_scstormrunnoff);
+            };
             SidebarController.prototype.OpenNearestGages = function () {
                 gtag('event', 'AdditionalFunctionality', { 'Category': 'NearestGages' });
                 this.modalService.openModal(StreamStats.Services.SSModalType.e_nearestgages);

@@ -207,10 +207,12 @@ module StreamStats.Controllers {
         static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance'];
         chartConfig: {  chart: { height: number, width: number, zooming: {type: string} },
                         title: { text: string, align: string},
-                        subtitle: { text: string, align: string},  
-                        xAxis: {  type: string, title: {text: string}},
-                        yAxis: { title: {text: string}, plotLines: [{value: number, color: string, width: number, zIndex: number, label: {text: string}}]},
-                        series: { name: string; tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number; type: string, color: string, 
+                        subtitle: { text: string, align: string},
+                        rangeSelector: { enabled: boolean, inputPosition: {align: string, x: number, y: number}, selected: number, buttonPosition: {align: string, x: number, y: number}},
+                        navigator: { enabled: boolean},  
+                        xAxis: {  type: string, min: number, max: number, title: {text: string}, custom: { allowNegativeLog: Boolean }},
+                        yAxis: { title: {text: string}, custom: { allowNegativeLog: Boolean }, plotLines: [{value: number, color: string, width: number, zIndex: number, label: {text: string}, id: string}]},
+                        series: { name: string; showInNavigator: boolean, tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number; type: string, color: string, 
                         data: number[], marker: {symbol: string, radius: number}, showInLegend: boolean; }[]; };
         heatChartConfig: { 
                         chart: { height: number, width: number, zooming: {type: string} },
@@ -589,7 +591,7 @@ module StreamStats.Controllers {
         //Get peak values from NWIS
         public getPeakInfo() {
             const url = 'https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no=' + this.gage.code
-            // console.log('GetPeakURL', url)
+            //console.log('GetPeakURL', url)
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             this.Execute(request).then(
                 (response: any) => {
@@ -621,6 +623,7 @@ module StreamStats.Controllers {
                     } while (data.length > 0);
                     const filteredArray = peakValues.filter(item => {
                         return (item.peak_dt[8] + item.peak_dt[9] !== '00' || item.peak_dt[8] + item.peak_dt[9] !== '00') //filtering out invalid dates from main array
+                        //return (item.pead_va !== NaN)
                     });
                     this.peakDates = filteredArray;
                     this.estPeakDates = estPeakValues;
@@ -634,13 +637,13 @@ module StreamStats.Controllers {
         //This will be used to plot x-percent AEP flood values as horizontal plotLines
         public getFloodFreq() {
             var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + this.gage.code;
-            // console.log('GetFloodFreqURL', url)
+            //console.log('GetFloodFreqURL', url)
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             this.Execute(request).then(
                 (response: any) => {
                     const data = response.data
                     // create a lookup array for desired AEP IDs
-                    const lookup = [9, 852, 8, 4, 7, 3, 6, 1, 501, 5, 2, 500, 851, 1438, 818];
+                    const lookup = [9, 852, 8, 4, 7, 3, 6, 1, 501, 5, 2, 500, 851, 1438, 818, 2311, 2312, 2313, 2314, 2315, 2316, 2317, 2318];
                     let chartData = [];
                     do {
                         var IDs = data.statistics
@@ -653,7 +656,7 @@ module StreamStats.Controllers {
                 this.floodFreq = chartData
             }).finally(() => {
                 this.getDailyFlow();
-            }); 
+            });
         }
 
         //Pull in data for daily flow values
@@ -679,12 +682,16 @@ module StreamStats.Controllers {
         public formatData(): void {
             if (this.peakDates) {
                 this.peakDates.forEach(peakObj => {
+                    if (!isNaN(peakObj.peak_va)) {
                     this.formattedPeakDates.push({x: new Date(peakObj.peak_dt), y: peakObj.peak_va})
+                    }
                 });
             } 
             if (this.estPeakDates) {
                 this.estPeakDates.forEach(estPeakObj => {
+                    if (!isNaN(estPeakObj.peak_va)) {
                     this.formattedEstPeakDates.push({x: new Date(estPeakObj.peak_dt), y: estPeakObj.peak_va})
+                    }
                 });
             }
             if (this.dailyFlow) {
@@ -745,7 +752,15 @@ module StreamStats.Controllers {
                         2: '#911eb4',
                         500: '#dcbeff',
                         851: '#fabed4',
-                        1438: '#469990'
+                        1438: '#469990',
+                        2311: '#f58231',
+                        2312: '#3cb44b',
+                        2313: '#e6194B',
+                        2314: '#bfef45',
+                        2315: '#911eb4',
+                        2316: '#9A6324',
+                        2317: '#ffe119',
+                        2318: '#42d4f4'
                     };
                 this.floodFreq.forEach((floodFreqItem) => {
                     let colorIndex = floodFreqItem.regressionTypeID;
@@ -755,7 +770,8 @@ module StreamStats.Controllers {
                         color: AEPColors[colorIndex],
                         width: 1.5,
                         zIndex: 4,
-                        label: {text: formattedName + '% AEP'}
+                        label: {text: formattedName + '% AEP'},
+                        id: 'plotlines'
                         });
                     });
             this.createAnnualFlowPlot();
@@ -764,11 +780,11 @@ module StreamStats.Controllers {
 
         public createAnnualFlowPlot(): void {
             //console.log('peak value plot data', this.formattedPeakDates);
-            //console.log('estimated peak plot data', this.formattedEstPeakDates);
+            //onsole.log('estimated peak plot data', this.formattedEstPeakDates);
             //console.log('daily flow plot data', this.formattedDailyFlow);
             this.chartConfig = {
                 chart: {
-                    height: 450,
+                    height: 550,
                     width: 800,
                     zooming: {
                         type: 'xy'
@@ -782,21 +798,47 @@ module StreamStats.Controllers {
                     text: 'Click and drag in the plot area to zoom in<br>AEP = Annual Exceedance Probability',
                     align: 'center'
                 },
+                rangeSelector: {
+                    enabled: true,
+                    inputPosition: {
+                        align: 'left',
+                        x: 0,
+                        y: 0
+                    },
+                    selected: 5,
+                    buttonPosition: {
+                        align: 'right',
+                        x: 0,
+                        y: 0
+                    },
+                },
+                navigator: {
+                    enabled: true
+                },
                 xAxis: {
                     type: 'datetime',
+                    min: 1875,
+                    max: 2050,
                     title: {
                         text: 'Date'
                     },
+                    custom: {
+                        allowNegativeLog: true
+                    }
                 },
                 yAxis: {
                     title: {
                         text: 'Discharge (Q), in ft³/s'
                     },
-                    plotLines: [{value: null, color: null, width: null, zIndex: null, label: {text: null}}]
+                    custom: {
+                        allowNegativeLog: true
+                    },
+                    plotLines: [{value: null, color: null, width: null, zIndex: null, label: {text: null}, id: 'plotlines'}]
                 },
                 series  : [
                 {
                     name    : 'Daily Streamflow',
+                    showInNavigator: true,
                     tooltip: {
                         headerFormat:'<b>Daily Streamflow</b>',
                         pointFormatter: function(){
@@ -822,6 +864,7 @@ module StreamStats.Controllers {
                 },
                 {
                     name    : 'Annual Peak Streamflow',
+                    showInNavigator: false,
                     tooltip: {
                         headerFormat:'<b>Annual Peak Streamflow</b>',
                         pointFormatter: function(){
@@ -851,6 +894,7 @@ module StreamStats.Controllers {
                 },
                 {
                     name    : 'Annual Peak Streamflow (Date Estimated)',
+                    showInNavigator: true,
                     tooltip: {
                         headerFormat:'<b>Annual Peak Streamflow</b>',
                         pointFormatter: function(){
@@ -876,7 +920,7 @@ module StreamStats.Controllers {
                         symbol: 'square',
                         radius: 3
                     },
-                    showInLegend: this.formattedEstPeakDates.length > 0
+                    showInLegend: this.formattedEstPeakDates.length > 0 //still showing up in legend if y is NaN
                 }] 
             } 
             this.formattedFloodFreq.forEach((formattedFloodFreqItem) => {
@@ -1035,6 +1079,31 @@ module StreamStats.Controllers {
         // };
 
 
+        //checkbox for turning plotLines on and off
+        public plotlines = true;
+            public togglePlotLines () {
+                let chart = $('#chart1').highcharts();
+                if (this.plotlines) {
+                this.chartConfig.yAxis.plotLines.forEach((plotLine) => {
+                    chart.yAxis[0].addPlotLine(plotLine);
+                });
+            }
+                else {
+                chart.yAxis[0].removePlotLine('plotlines'); // all plot lines have id: 'plotlines'
+                }
+            };
+
+        //checkbox for change linear to log scale
+        public logScale = false; 
+            public toggleLogLinear () {
+                let chart = $('#chart1').highcharts();
+                if (this.logScale) {
+                    chart.yAxis[0].update({ type: 'logarithmic' });
+                } else {
+                    chart.yAxis[0].update({ type: 'linear' });
+                }
+            };
+        
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {   

@@ -593,7 +593,9 @@ module StreamStats.Controllers {
             gtag('event', 'AdditionalFunctionality', { 'Category': 'StormRunoff' });
             this.modalService.openModal(Services.SSModalType.e_stormrunnoff);
         }
-
+        public OpenSCStormRunoff() {
+            this.modalService.openModal(Services.SSModalType.e_scstormrunnoff);
+        }
         public OpenNearestGages() {
             //ga event
             gtag('event', 'AdditionalFunctionality', { 'Category': 'NearestGages' });
