@@ -659,7 +659,7 @@ module StreamStats.Controllers {
         //Pull in data for daily flow values
         public getDailyFlow() {
             var url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01';
-            console.log('GetDailyFlowURL', url);
+            //console.log('GetDailyFlowURL', url);
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             this.Execute(request).then(
                 (response: any) => {
@@ -961,7 +961,7 @@ module StreamStats.Controllers {
                                 if (doy > 366) {
                                     doy -= 366; //returning doy to 1-366 for labeling purposes
                                 };
-                                console.log(doy);
+                                //console.log(doy);
                                 if (doy > 274) {
                                     year -= 1;
                                 };
@@ -969,7 +969,6 @@ module StreamStats.Controllers {
                                     doy -= 1 //subtracting a day off of non-leap years after Feb 28 so that the labels are accurate
                                 };
                                 let fullDate = new Date(year, 0, doy)
-                                console.log(fullDate);
                                 let UTCday = fullDate.getUTCDate();
                                 let month = fullDate.getUTCMonth();
                                     month += 1; // adding a month to the UTC months (which are zero-indexed)
