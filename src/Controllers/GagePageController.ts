@@ -197,6 +197,7 @@ module StreamStats.Controllers {
         public formattedFloodFreq = undefined;
         public formattedDailyHeat = [];
         public formattedPeakDates = [];
+        public formattedAvgAnnual = [];
         public formattedEstPeakDates = [];
         public formattedDailyFlow = [];
         public dailyRange = [];
@@ -658,7 +659,7 @@ module StreamStats.Controllers {
         //Pull in data for daily flow values
         public getDailyFlow() {
             var url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01';
-            //console.log('GetDailyFlowURL', url);
+            console.log('GetDailyFlowURL', url);
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             this.Execute(request).then(
                 (response: any) => {
@@ -695,24 +696,13 @@ module StreamStats.Controllers {
             }
             if (this.dailyFlow) {
                 this.dailyFlow.forEach(dailyHeatObj => {
-                    //console.log('dailyFlow', this.dailyFlow);
                     let now = new Date(dailyHeatObj.dateTime);
                     let year = new Date(dailyHeatObj.dateTime).getUTCFullYear();
-                    if ((0 == year % 4) && (0 != year % 100) || (0 == year % 400)) {
-
-                        //console.log(year + ' is a leap year');
-                    }
-                    else {
-                        this.dailyFlow.push({value: null, qualifiers: ['A'], dateTime: new Date( Date.UTC(year, 1, 29))});
-                    
-                    }
                     //Getting dates in Julian days - pulled from this exchange: https://stackoverflow.com/questions/8619879/javascript-calculate-the-day-of-the-year-1-366
                     function daysIntoYear(now){
                         return (Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(now.getFullYear(), 0, 0)) / 24 / 60 / 60 / 1000;
                     };
                     var doy = daysIntoYear(now);
-                    //console.log(doy);
-                    //if (doy == 60 )
                     function isLeapYear(year) {
                         if (year % 400 === 0) return true;
                         if (year % 100 === 0) return false;
@@ -721,15 +711,18 @@ module StreamStats.Controllers {
                     if (isLeapYear(year) == false && doy > 59) {
                         doy += 1; //add a day onto non-leap years so that dates after Feb 28 will line up with leap years
                     };
+                    if (doy > 275) {
+                        year += 1
+                    };
                     if (doy < 275) {
                         doy += 366; //making 275 (Oct 1) the lowest number so the x-axis can start at the beginning of the water year
                     };
                     if (dailyHeatObj.qualifiers[0] === 'A') {
-                        this.formattedDailyHeat.push({x: doy, y: new Date(dailyHeatObj.dateTime).getUTCFullYear(), value: parseInt(dailyHeatObj.value)});
+                        this.formattedDailyHeat.push({x: doy, y: year, value: parseInt(dailyHeatObj.value)});
                     };
                     if (isLeapYear(year) == false) {
                         this.formattedDailyHeat.push({x: 60, y: year, value: null}); //adding a blank cell on Feb 29 on non-leap years so that data will line up
-                    } ;                   
+                    };                   
                     // if (dailyHeatObj.qualifiers[0] === 'A') {
                     // this.dailyRange.push(dailyHeatObj.value);
                     // }
@@ -933,7 +926,7 @@ module StreamStats.Controllers {
                 },
                 yAxis: {
                     title: {
-                        text: 'Year'
+                        text: 'Water Year'
                     },
                     custom: {
                         allowNegativeLog: true
@@ -964,18 +957,24 @@ module StreamStats.Controllers {
                                 //let UTCday = this.x.getUTCDate();
                                 let year = this.y;
                                 let doy = this.x;
-                                if (doy > 275) {
-                                    doy -= 366 //returning doy to 1-366 for labeling purposes
+
+                                if (doy > 366) {
+                                    doy -= 366; //returning doy to 1-366 for labeling purposes
+                                };
+                                console.log(doy);
+                                if (doy > 274) {
+                                    year -= 1;
                                 };
                                 if (isLeapYear(year) == false && doy > 59) {
                                     doy -= 1 //subtracting a day off of non-leap years after Feb 28 so that the labels are accurate
                                 };
                                 let fullDate = new Date(year, 0, doy)
+                                console.log(fullDate);
                                 let UTCday = fullDate.getUTCDate();
                                 let month = fullDate.getUTCMonth();
                                     month += 1; // adding a month to the UTC months (which are zero-indexed)
                                 let formattedUTCDate = month + '/' + UTCday + '/' + year;
-                                let waterYear = this.y;
+                                let waterYear = year;
                                 if (month > 9) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
                                     waterYear += 1; // adding a year to dates that fall into the next water year
                                 };

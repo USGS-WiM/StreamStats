@@ -94,6 +94,7 @@ var StreamStats;
                 _this_1.formattedFloodFreq = undefined;
                 _this_1.formattedDailyHeat = [];
                 _this_1.formattedPeakDates = [];
+                _this_1.formattedAvgAnnual = [];
                 _this_1.formattedEstPeakDates = [];
                 _this_1.formattedDailyFlow = [];
                 _this_1.dailyRange = [];
@@ -461,6 +462,7 @@ var StreamStats;
             GagePageController.prototype.getDailyFlow = function () {
                 var _this_1 = this;
                 var url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01';
+                console.log('GetDailyFlowURL', url);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
                     var data = response.data.value.timeSeries;
@@ -498,11 +500,6 @@ var StreamStats;
                     this.dailyFlow.forEach(function (dailyHeatObj) {
                         var now = new Date(dailyHeatObj.dateTime);
                         var year = new Date(dailyHeatObj.dateTime).getUTCFullYear();
-                        if ((0 == year % 4) && (0 != year % 100) || (0 == year % 400)) {
-                        }
-                        else {
-                            _this_1.dailyFlow.push({ value: null, qualifiers: ['A'], dateTime: new Date(Date.UTC(year, 1, 29)) });
-                        }
                         function daysIntoYear(now) {
                             return (Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(now.getFullYear(), 0, 0)) / 24 / 60 / 60 / 1000;
                         }
@@ -520,12 +517,16 @@ var StreamStats;
                             doy += 1;
                         }
                         ;
+                        if (doy > 275) {
+                            year += 1;
+                        }
+                        ;
                         if (doy < 275) {
                             doy += 366;
                         }
                         ;
                         if (dailyHeatObj.qualifiers[0] === 'A') {
-                            _this_1.formattedDailyHeat.push({ x: doy, y: new Date(dailyHeatObj.dateTime).getUTCFullYear(), value: parseInt(dailyHeatObj.value) });
+                            _this_1.formattedDailyHeat.push({ x: doy, y: year, value: parseInt(dailyHeatObj.value) });
                         }
                         ;
                         if (isLeapYear(year) == false) {
@@ -735,7 +736,7 @@ var StreamStats;
                     },
                     yAxis: {
                         title: {
-                            text: 'Year'
+                            text: 'Water Year'
                         },
                         custom: {
                             allowNegativeLog: true
@@ -765,8 +766,13 @@ var StreamStats;
                                     if (this.formattedDailyHeat !== null) {
                                         var year = this.y;
                                         var doy = this.x;
-                                        if (doy > 275) {
+                                        if (doy > 366) {
                                             doy -= 366;
+                                        }
+                                        ;
+                                        console.log(doy);
+                                        if (doy > 274) {
+                                            year -= 1;
                                         }
                                         ;
                                         if (isLeapYear(year) == false && doy > 59) {
@@ -774,11 +780,12 @@ var StreamStats;
                                         }
                                         ;
                                         var fullDate = new Date(year, 0, doy);
+                                        console.log(fullDate);
                                         var UTCday = fullDate.getUTCDate();
                                         var month = fullDate.getUTCMonth();
                                         month += 1;
                                         var formattedUTCDate = month + '/' + UTCday + '/' + year;
-                                        var waterYear = this.y;
+                                        var waterYear = year;
                                         if (month > 9) {
                                             waterYear += 1;
                                         }
