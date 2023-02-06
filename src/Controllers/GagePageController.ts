@@ -719,7 +719,7 @@ module StreamStats.Controllers {
                         doy += 1; //add a day onto non-leap years so that dates after Feb 28 will line up with leap years
                     };
                     if (doy > 274) {
-                        year += 1
+                        year += 1 //lining up rows into water years
                     };
                     if (doy < 275) {
                         doy += 366; //making 275 (Oct 1) the lowest number so the x-axis can start at the beginning of the water year
