@@ -800,6 +800,9 @@ var StreamStats;
                     },
                     series: [{
                             name: 'Daily Streamflow',
+                            pixelSpacing: null,
+                            borderWidth: 0.05,
+                            borderColor: 'white',
                             type: 'heatmap',
                             data: this.formattedDailyHeat,
                             tooltip: {

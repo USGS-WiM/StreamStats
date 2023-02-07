@@ -221,7 +221,7 @@ module StreamStats.Controllers {
                         xAxis: { type: string, min: number, tickPositions: any[], threshold: number, title: {text: string}, labels: {formatter: Function}},
                         yAxis: { title: {text: string}, custom: { allowNegativeLog: boolean}},
                         colorAxis: { type: string, min: number, max: number, stops: any[], startOnTick: boolean, endOnTick: boolean, allowNegativeLog: boolean}
-                        series: { name: string, type: string, data: number[], tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number}[]; };
+                        series: { name: string, pixelSpacing: number[], borderWidth: number, borderColor: string, type: string, data: number[], tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number}[]; };
         constructor($scope: IGagePageControllerScope, $http: ng.IHttpService, modalService: Services.IModalService, modal:ng.ui.bootstrap.IModalServiceInstance) {
             super($http, configuration.baseurls.StreamStats);
             $scope.vm = this;
@@ -719,7 +719,7 @@ module StreamStats.Controllers {
                         doy += 1; //add a day onto non-leap years so that dates after Feb 28 will line up with leap years
                     };
                     if (doy > 274) {
-                        year += 1 //lining up rows into water years
+                        year += 1 //converting years into water years for plotting (adjusted in tooltip to show real dates)
                     };
                     if (doy < 275) {
                         doy += 366; //making 275 (Oct 1) the lowest number so the x-axis can start at the beginning of the water year
@@ -727,9 +727,31 @@ module StreamStats.Controllers {
                     if (dailyHeatObj.qualifiers[0] === 'A') {
                         this.formattedDailyHeat.push({x: doy, y: year, value: parseInt(dailyHeatObj.value)});
                     };
+                    //this.formattedAvgAnnual.push({x: 700, y: year, value: yearlyAvg})
+                    //console.log('data', this.formattedDailyHeat);
                     if (isLeapYear(year) == false) {
                         this.formattedDailyHeat.push({x: 60, y: year, value: null}); //adding a blank cell on Feb 29 on non-leap years so that data will line up
-                    };                   
+                    };
+                    // function groupBy(objectArray, property) {
+                    //     return objectArray.reduce((acc, obj) => {
+                    //     const key = obj[property];
+                    //     const curGroup = acc[key] ?? [];
+                    //     return { ...acc, [key]: [...curGroup, obj] };
+                    //     }, {});
+                    // }
+                    
+                    // const groupedYears = groupBy(this.formattedDailyHeat, "year");
+                    // console.log(groupedYears);
+                    // const yearlySum = this.formattedDailyHeat.reduce((year, value) => {
+                    //     year[value.year] = (year[value.year] || 0) + value.value || 1;
+                    //     return year;
+                    // }, {})
+                    // const noNulls = this.formattedDailyHeat.filter(item => {
+                    //     return(item.value != null)
+                    // });
+                    // const yearlyAvg = yearlySum / noNulls.length
+
+                    //console.log('sum', output);
                     // if (dailyHeatObj.qualifiers[0] === 'A') {
                     // this.dailyRange.push(dailyHeatObj.value);
                     // }
@@ -992,6 +1014,9 @@ module StreamStats.Controllers {
                 },
                 series: [{
                     name: 'Daily Streamflow',
+                    pixelSpacing: null,
+                    borderWidth: 0.05,
+                    borderColor: 'white',
                     type: 'heatmap',
                     data: this.formattedDailyHeat,
                     tooltip: {
