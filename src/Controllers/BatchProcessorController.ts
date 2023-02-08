@@ -41,6 +41,7 @@ module StreamStats.Controllers {
         public http: any;
         private modalInstance: ng.ui.bootstrap.IModalServiceInstance;
         private modalService: Services.IModalService;
+        private nssService: Services.InssService;
         public selectedBatchProcessorTabName: string;
         public displayMessage: string;
         public isValid: boolean;
@@ -51,13 +52,14 @@ module StreamStats.Controllers {
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance'];
-        constructor($scope: IBatchProcessorControllerScope, $http: ng.IHttpService, modalService: Services.IModalService, modal:ng.ui.bootstrap.IModalServiceInstance) {
+        static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService', '$modalInstance'];
+        constructor($scope: IBatchProcessorControllerScope, $http: ng.IHttpService, nssService: Services.InssService, modalService: Services.IModalService, modal:ng.ui.bootstrap.IModalServiceInstance) {
             super($http, configuration.baseurls.StreamStats);
             $scope.vm = this;
             this.modalInstance = modal;
             this.modalService = modalService;
             this.selectedBatchProcessorTabName = "submitBatch";
+            this.nssService = nssService;
             this.init();  
         }  
         
@@ -76,10 +78,14 @@ module StreamStats.Controllers {
         }
 
         // get region list form nssservices/regions
+        // public getRegionList(): void {
+        //     this.$http.get("https://streamstats.usgs.gov/nssservices/regions")
+        //         .then((data) => this.regionList = data);
+            // console.log(this.regionList);
+        // }
+
         public getRegionList(): void {
-            this.$http.get("https://streamstats.usgs.gov/nssservices/regions")
-                .success((data) => this.regionList = data)
-            console.log(this.regionList)
+            this.nssService.getRegionList()
         }
 
         // Helper Methods

@@ -41,6 +41,7 @@ module StreamStats.Services {
         queriedRegions: boolean;
         getflattenNSSTable(name: string): Array<INSSResultTable>
         reportGenerated: boolean;  
+        getRegionList();
     }
     export interface IStatisticsGroup {
         id: string;
@@ -158,6 +159,7 @@ module StreamStats.Services {
         public isDone: boolean;
         public reportGenerated: boolean;
         private modalService: Services.IModalService;
+        public regionList: any;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -787,6 +789,25 @@ module StreamStats.Services {
             }
             return result;
         }
+
+        // get region list form nssservices/regions
+        public getRegionList(): void {
+            var url = configuration.baseurls['NSS'] + configuration.queryparams['NSSRegions'];
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
+            this.Execute(request).then(
+                (response: any) => {
+                    this.regionList = response.data;
+                    return (this.regionList);
+                }, (error) => {
+                    this.toaster.pop('error', "There was an HTTP error returning the regions list.", "Please retry", 0);
+                }).finally(() => {
+                }
+                );
+            // this.$http.get("https://streamstats.usgs.gov/nssservices/regions")
+            //     .then((data) => this.regionList = data);
+            // console.log(this.regionList);
+        }
+
         //HelperMethods
         //-+-+-+-+-+-+-+-+-+-+-+-
         private cleanRegressionRegions(RegressionRegions:Array<any>): void {

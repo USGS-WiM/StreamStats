@@ -20,12 +20,13 @@ var StreamStats;
         'use string';
         var BatchProcessorController = (function (_super) {
             __extends(BatchProcessorController, _super);
-            function BatchProcessorController($scope, $http, modalService, modal) {
+            function BatchProcessorController($scope, $http, nssService, modalService, modal) {
                 var _this = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
                 $scope.vm = _this;
                 _this.modalInstance = modal;
                 _this.modalService = modalService;
                 _this.selectedBatchProcessorTabName = "submitBatch";
+                _this.nssService = nssService;
                 _this.init();
                 return _this;
             }
@@ -36,15 +37,12 @@ var StreamStats;
                 this.selectedBatchProcessorTabName = tabname;
             };
             BatchProcessorController.prototype.getRegionList = function () {
-                var _this = this;
-                this.$http.get("https://streamstats.usgs.gov/nssservices/regions")
-                    .success(function (data) { return _this.regionList = data; });
-                console.log(this.regionList);
+                this.nssService.getRegionList();
             };
             BatchProcessorController.prototype.init = function () {
                 this.AppVersion = configuration.version;
             };
-            BatchProcessorController.$inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance'];
+            BatchProcessorController.$inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService', '$modalInstance'];
             return BatchProcessorController;
         }(WiM.Services.HTTPServiceBase));
         angular.module('StreamStats.Controllers')
