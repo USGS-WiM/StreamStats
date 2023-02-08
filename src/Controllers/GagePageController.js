@@ -87,7 +87,10 @@ var StreamStats;
                     displayProp: 'id'
                 };
                 _this_1.URLsToDisplay = [];
-                _this_1.dischargeValues = undefined;
+                _this_1.dischargeObj = undefined;
+                _this_1.ratingCurve = undefined;
+                _this_1.measuredObj = undefined;
+                _this_1.USGSMeasured = undefined;
                 _this_1.floodFreq = undefined;
                 _this_1.peakDates = undefined;
                 _this_1.estPeakDates = undefined;
@@ -96,6 +99,9 @@ var StreamStats;
                 _this_1.formattedPeakDates = [];
                 _this_1.formattedEstPeakDates = [];
                 _this_1.formattedDailyFlow = [];
+                _this_1.formattedDischargeObj = [];
+                _this_1.formattedRatingCurve = [];
+                _this_1.formattedUSGSMeasured = [];
                 $scope.vm = _this_1;
                 _this_1.modalInstance = modal;
                 _this_1.modalService = modalService;
@@ -399,19 +405,20 @@ var StreamStats;
             GagePageController.prototype.getRatingCurve = function () {
                 var _this_1 = this;
                 var url = 'https://waterdata.usgs.gov/nwisweb/get_ratings?site_no=' + this.gage.code + '&file_type=exsa';
+                console.log('getDischargeInfo', url);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+                this.dischargeObj = [];
                 this.Execute(request).then(function (response) {
                     var data = response.data.split('\n').filter(function (r) { return (!r.startsWith("#") && r != ""); });
                     data.shift().split('\t');
                     data.shift();
-                    var dischargeObj = {
-                        stage: [],
-                        discharge: []
-                    };
                     data.forEach(function (row) {
                         var dataRow = row.split('\t');
-                        dischargeObj.stage.push(dataRow[0]);
-                        dischargeObj.discharge.push(dataRow[2]);
+                        var object = {
+                            x: parseFloat(dataRow[2]),
+                            y: parseFloat(dataRow[0])
+                        };
+                        _this_1.dischargeObj.push(object);
                     });
                 }, function (error) {
                 }).finally(function () {
@@ -423,26 +430,157 @@ var StreamStats;
                 var url = 'https://waterdata.usgs.gov/nwis/measurements?site_no=' + this.gage.code + '&agency_cd=USGS&format=rdb_expanded';
                 console.log('usgsMeasuredURL', url);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+                this.measuredObj = [];
                 this.Execute(request).then(function (response) {
                     var data = response.data.split('\n').filter(function (r) { return (!r.startsWith("#") && r != ""); });
-                    console.log('data', data);
                     data.shift().split('\t');
-                    console.log('data with shift', data);
                     data.shift();
-                    var measuredObj = {
-                        stage: [],
-                        discharge: []
-                    };
                     data.forEach(function (row) {
                         var dataRow = row.split('\t');
-                        console.log('datarow', dataRow);
-                        measuredObj.stage.push(dataRow[11]);
-                        measuredObj.discharge.push(dataRow[12]);
+                        var object = {
+                            dateTime: dataRow[3],
+                            x: parseFloat(dataRow[9]),
+                            y: parseFloat(dataRow[8])
+                        };
+                        _this_1.measuredObj.push(object);
                     });
-                    console.log('measured obj', measuredObj);
+                    console.log('measured obj', _this_1.measuredObj);
                 }, function (error) {
                 }).finally(function () {
-                    _this_1.getPeakInfo();
+                    _this_1.formatDischargeData();
+                });
+            };
+            GagePageController.prototype.formatDischargeData = function () {
+                var _this_1 = this;
+                if (this.peakDates) {
+                    this.peakDates.forEach(function (peakObj) {
+                        _this_1.formattedPeakDates.push({ x: new Date(peakObj.peak_dt), y: peakObj.peak_va });
+                    });
+                }
+                if (this.estPeakDates) {
+                    this.estPeakDates.forEach(function (estPeakObj) {
+                        _this_1.formattedEstPeakDates.push({ x: new Date(estPeakObj.peak_dt), y: estPeakObj.peak_va });
+                    });
+                }
+                if (this.dailyFlow) {
+                    this.dailyFlow.forEach(function (dailyObj) {
+                        if (dailyObj.qualifiers[0] === 'A') {
+                            _this_1.formattedDailyFlow.push({ x: new Date(dailyObj.dateTime), y: parseInt(dailyObj.value) });
+                        }
+                    });
+                }
+                if (this.USGSMeasured) {
+                    this.USGSMeasured.forEach(function (dailyObj) {
+                        if (dailyObj.qualifiers[0] === 'A') {
+                            _this_1.formattedUSGSMeasured.push({ x: new Date(dailyObj.dateTime), y: parseInt(dailyObj.value) });
+                        }
+                    });
+                    console.log('formatted usgs dates', this.USGSMeasured);
+                }
+                if (this.floodFreq) {
+                    this.formattedFloodFreq = [];
+                    var AEPColors_1 = {
+                        9: '#9A6324',
+                        852: '#800000',
+                        8: '#e6194B',
+                        818: '#ffd8b1',
+                        7: '#f58231',
+                        6: '#ffe119',
+                        5: '#bfef45',
+                        4: '#3cb44b',
+                        3: '#42d4f4',
+                        1: '#4363d8',
+                        501: '#000075',
+                        2: '#911eb4',
+                        500: '#dcbeff',
+                        851: '#fabed4',
+                        1438: '#469990'
+                    };
+                    this.floodFreq.forEach(function (floodFreqItem) {
+                        var colorIndex = floodFreqItem.regressionTypeID;
+                        var formattedName = floodFreqItem.regressionType.name.substring(0, floodFreqItem.regressionType.name.length - 18);
+                        _this_1.formattedFloodFreq.push({
+                            value: floodFreqItem.value,
+                            color: AEPColors_1[colorIndex],
+                            width: 1.5,
+                            zIndex: 4,
+                            label: { text: formattedName + '% AEP' }
+                        });
+                    });
+                    this.createDischargePlot();
+                }
+            };
+            GagePageController.prototype.createDischargePlot = function () {
+                var _this_1 = this;
+                console.log('this.discharge obj 2nd one', this.dischargeObj);
+                this.chartConfig = {
+                    chart: {
+                        height: 450,
+                        width: 800,
+                        zooming: {
+                            type: 'xy'
+                        }
+                    },
+                    title: {
+                        text: 'Stage vs. Discharge',
+                        align: 'center'
+                    },
+                    subtitle: {
+                        text: 'Click and drag in the plot area to zoom in',
+                        align: 'center'
+                    },
+                    xAxis: {
+                        type: null,
+                        title: {
+                            text: 'River Discharge (cfs)'
+                        },
+                    },
+                    yAxis: {
+                        title: {
+                            text: 'River Stage (ft)'
+                        },
+                        plotLines: [{ value: null, color: null, width: null, zIndex: null, label: { text: null } }]
+                    },
+                    series: [
+                        {
+                            name: 'USGS Rating Curve',
+                            tooltip: { headerFormat: '<b>USGS Rating Curve</b>',
+                                pointFormatter: function () {
+                                    if (this.dischargeObj !== null) {
+                                        var discharge = this.x.getDischarge();
+                                        var stage = this.x.getStage();
+                                        var formattedRatingCurve = discharge + '/' + stage;
+                                        return '<br>Gage Height: <b>' + formattedRatingCurve + '</b><br>Discharge: <b>' + this.y + ' cfs';
+                                    }
+                                }
+                            },
+                            turboThreshold: 0,
+                            type: 'spline',
+                            color: 'black ',
+                            data: this.dischargeObj,
+                            marker: {
+                                symbol: 'square',
+                                radius: 2.5
+                            },
+                            showInLegend: this.dischargeObj.length > 0
+                        },
+                        {
+                            name: 'USGS Measured',
+                            tooltip: null,
+                            turboThreshold: 0,
+                            type: 'scatter',
+                            color: '#1b75ac ',
+                            data: this.measuredObj,
+                            marker: {
+                                symbol: 'diamond',
+                                radius: 3
+                            },
+                            showInLegend: this.measuredObj.length > 0
+                        }
+                    ]
+                };
+                this.formattedFloodFreq.forEach(function (formattedFloodFreqItem) {
+                    _this_1.chartConfig.yAxis.plotLines.push(formattedFloodFreqItem);
                 });
             };
             GagePageController.prototype.getPeakInfo = function () {
@@ -545,7 +683,7 @@ var StreamStats;
                 }
                 if (this.floodFreq) {
                     this.formattedFloodFreq = [];
-                    var AEPColors_1 = {
+                    var AEPColors_2 = {
                         9: '#9A6324',
                         852: '#800000',
                         8: '#e6194B',
@@ -567,136 +705,13 @@ var StreamStats;
                         var formattedName = floodFreqItem.regressionType.name.substring(0, floodFreqItem.regressionType.name.length - 18);
                         _this_1.formattedFloodFreq.push({
                             value: floodFreqItem.value,
-                            color: AEPColors_1[colorIndex],
+                            color: AEPColors_2[colorIndex],
                             width: 1.5,
                             zIndex: 4,
                             label: { text: formattedName + '% AEP' }
                         });
                     });
-                    this.createAnnualFlowPlot();
                 }
-            };
-            GagePageController.prototype.createAnnualFlowPlot = function () {
-                var _this_1 = this;
-                this.chartConfig = {
-                    chart: {
-                        height: 450,
-                        width: 800,
-                        zooming: {
-                            type: 'xy'
-                        }
-                    },
-                    title: {
-                        text: 'Annual Peak Streamflow',
-                        align: 'center'
-                    },
-                    subtitle: {
-                        text: 'Click and drag in the plot area to zoom in<br>AEP = Annual Exceedance Probability',
-                        align: 'center'
-                    },
-                    xAxis: {
-                        type: 'datetime',
-                        title: {
-                            text: 'Date'
-                        },
-                    },
-                    yAxis: {
-                        title: {
-                            text: 'Discharge (Q), in ft³/s'
-                        },
-                        plotLines: [{ value: null, color: null, width: null, zIndex: null, label: { text: null } }]
-                    },
-                    series: [
-                        {
-                            name: 'Daily Streamflow',
-                            tooltip: {
-                                headerFormat: '<b>Daily Streamflow</b>',
-                                pointFormatter: function () {
-                                    if (this.formattedPeakDates !== null) {
-                                        var UTCday = this.x.getUTCDate();
-                                        var year = this.x.getUTCFullYear();
-                                        var month = this.x.getUTCMonth();
-                                        month += 1;
-                                        var formattedUTCDailyDate = month + '/' + UTCday + '/' + year;
-                                        return '<br>Date: <b>' + formattedUTCDailyDate + '</b><br>Value: <b>' + this.y + ' ft³/s';
-                                    }
-                                }
-                            },
-                            turboThreshold: 0,
-                            type: 'line',
-                            color: '#add8f2',
-                            data: this.formattedDailyFlow,
-                            marker: {
-                                symbol: '',
-                                radius: 3
-                            },
-                            showInLegend: this.formattedDailyFlow.length > 0
-                        },
-                        {
-                            name: 'Annual Peak Streamflow',
-                            tooltip: {
-                                headerFormat: '<b>Annual Peak Streamflow</b>',
-                                pointFormatter: function () {
-                                    if (this.formattedPeakDates !== null) {
-                                        var waterYear = this.x.getUTCFullYear();
-                                        if (this.x.getUTCMonth() > 8) {
-                                            waterYear += 1;
-                                        }
-                                        ;
-                                        var UTCday = this.x.getUTCDate();
-                                        var year = this.x.getUTCFullYear();
-                                        var month = this.x.getUTCMonth();
-                                        month += 1;
-                                        var formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
-                                        return '<br>Date: <b>' + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear;
-                                    }
-                                }
-                            },
-                            turboThreshold: 0,
-                            type: 'scatter',
-                            color: 'black',
-                            data: this.formattedPeakDates,
-                            marker: {
-                                symbol: 'circle',
-                                radius: 3
-                            },
-                            showInLegend: this.formattedPeakDates.length > 0
-                        },
-                        {
-                            name: 'Annual Peak Streamflow (Date Estimated)',
-                            tooltip: {
-                                headerFormat: '<b>Annual Peak Streamflow</b>',
-                                pointFormatter: function () {
-                                    if (this.formattedPeakDates !== null) {
-                                        var waterYear = this.x.getUTCFullYear();
-                                        if (this.x.getUTCMonth() > 8) {
-                                            waterYear += 1;
-                                        }
-                                        ;
-                                        var UTCday = this.x.getUTCDate();
-                                        var year = this.x.getUTCFullYear();
-                                        var month = this.x.getUTCMonth();
-                                        month += 1;
-                                        var formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
-                                        return '<br>Date (estimated): <b>' + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear;
-                                    }
-                                }
-                            },
-                            turboThreshold: 0,
-                            type: 'scatter',
-                            color: 'red',
-                            data: this.formattedEstPeakDates,
-                            marker: {
-                                symbol: 'square',
-                                radius: 3
-                            },
-                            showInLegend: this.formattedEstPeakDates.length > 0
-                        }
-                    ]
-                };
-                this.formattedFloodFreq.forEach(function (formattedFloodFreqItem) {
-                    _this_1.chartConfig.yAxis.plotLines.push(formattedFloodFreqItem);
-                });
             };
             GagePageController.prototype.init = function () {
                 this.AppVersion = configuration.version;
