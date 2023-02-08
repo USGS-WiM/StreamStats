@@ -35,6 +35,12 @@ var StreamStats;
             BatchProcessorController.prototype.selectBatchProcessorTab = function (tabname) {
                 this.selectedBatchProcessorTabName = tabname;
             };
+            BatchProcessorController.prototype.getRegionList = function () {
+                var _this = this;
+                this.$http.get("https://streamstats.usgs.gov/nssservices/regions")
+                    .success(function (data) { return _this.regionList = data; });
+                console.log(this.regionList);
+            };
             BatchProcessorController.prototype.init = function () {
                 this.AppVersion = configuration.version;
             };

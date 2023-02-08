@@ -46,6 +46,8 @@ module StreamStats.Controllers {
         public isValid: boolean;
         public AppVersion: string;  
         public submitBatchInfo: string;
+        public regionList: any;
+        // public regions: any;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -72,11 +74,20 @@ module StreamStats.Controllers {
             this.selectedBatchProcessorTabName = tabname;
             // console.log('selected tab: '+tabname);
         }
+
+        // get region list form nssservices/regions
+        public getRegionList(): void {
+            this.$http.get("https://streamstats.usgs.gov/nssservices/regions")
+                .success((data) => this.regionList = data)
+            console.log(this.regionList)
+        }
+
         // Helper Methods
         // -+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {   
             //console.log("in about controller");
             this.AppVersion = configuration.version;
+            // this.getRegionList();
             }
         
 

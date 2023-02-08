@@ -15,7 +15,13 @@
     <div style="padding-top: 10px;">
 
         <div id="submitBatch" ng-if="vm.selectedBatchProcessorTabName==='submitBatch'">
-            <p>This is the submit batch processor tab</p>
+            <div id="selectRegion">
+                <p>Select Region / State</p>
+                <!-- <select ng-model="selectRegion" ng-options="x for x in vm.regionList"></select> -->
+                <select ng-model="selectRegion">
+                    <option ng-repeat="x in vm.regionList" value="{{x.name}}"></option>
+                </select>
+            </div>
         </div>
 
         <div id="batchStatus" ng-if="vm.selectedBatchProcessorTabName==='batchStatus'">
