@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   
 ### Added 
 - Enabled scenarios for WI 
+- Added "Localres" application for DRB
 
 ### Changed  
 
