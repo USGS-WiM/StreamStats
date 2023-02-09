@@ -41,7 +41,7 @@ module StreamStats.Services {
         queriedRegions: boolean;
         getflattenNSSTable(name: string): Array<INSSResultTable>
         reportGenerated: boolean;  
-        getRegionList();
+        getRegionList(): ng.IPromise<any>;
     }
     export interface IStatisticsGroup {
         id: string;
@@ -791,22 +791,29 @@ module StreamStats.Services {
         }
 
         // get region list form nssservices/regions
-        public getRegionList(): any {
+        // referenced getFreshDeskArticles from HelpControllers
+        // keys: use ng.Ipromise<any> and return this.Execute 
+        public getRegionList(): ng.IPromise<any> {
+
             var url = configuration.baseurls['NSS'] + configuration.queryparams['NSSRegions'];
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
-            this.Execute(request).then(
+            
+            return this.Execute(request).then(
                 (response: any) => {
-                    console.log("region list" + response);
-                    this.regionList = response.data;
-                    // return (this.regionList);
+                    // create array to return
+                    var regions = []; 
+
+                    // loop through response and add data to regions array
+                    response.data.forEach(function (element) {
+                        regions.push(element);
+                    });
+
+                    // console.log("regionList_nssServices", response.data);
+                    return regions
                 }, (error) => {
                     this.toaster.pop('error', "There was an HTTP error returning the regions list.", "Please retry", 0);
                 }).finally(() => {
-                }
-                );
-            // this.$http.get("https://streamstats.usgs.gov/nssservices/regions")
-            //     .then((data) => this.regionList = data);
-            // console.log(this.regionList);
+                });
         }
 
         //HelperMethods

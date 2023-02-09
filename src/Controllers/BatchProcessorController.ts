@@ -47,13 +47,12 @@ module StreamStats.Controllers {
         public isValid: boolean;
         public AppVersion: string;  
         public submitBatchInfo: string;
-        public regions: any;
-        // public regions: any;
+        public regionList: Object;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService', '$modalInstance'];
-        constructor($scope: IBatchProcessorControllerScope, $http: ng.IHttpService, nssService: Services.InssService, modalService: Services.IModalService, modal:ng.ui.bootstrap.IModalServiceInstance) {
+        constructor($scope: IBatchProcessorControllerScope, $http: ng.IHttpService, modalService: Services.IModalService, nssService: Services.InssService, modal:ng.ui.bootstrap.IModalServiceInstance) {
             super($http, configuration.baseurls.StreamStats);
             $scope.vm = this;
             this.modalInstance = modal;
@@ -72,20 +71,18 @@ module StreamStats.Controllers {
        
         // used for switching between tabs
         public selectBatchProcessorTab(tabname: string): void {
-            // if (this.selectedBatchProcessorTabName == tabname) return;
             this.selectedBatchProcessorTabName = tabname;
             // console.log('selected tab: '+tabname);
         }
 
-        // get region list form nssservices/regions
-        // public getRegionList(): void {
-        //     this.$http.get("https://streamstats.usgs.gov/nssservices/regions")
-        //         .then((data) => this.regionList = data);
-            // console.log(this.regionList);
-        // }
-
-        public getRegions(): any {
-            this.nssService.getRegionList();
+        // get list of regions/stats from nssservices/regions
+        // Used getFreshDeskArticles from HelpController as template
+        public getRegions(): void {
+            // call an ng.IPromise first
+            this.nssService.getRegionList().then(
+                // set regionList to values of promised response
+                response => { this.regionList = response}
+            );
         }
 
         // Helper Methods
@@ -93,8 +90,8 @@ module StreamStats.Controllers {
         private init(): void {   
             //console.log("in about controller");
             this.AppVersion = configuration.version;
-            this.getRegions();
-            }
+            this.getRegions()
+        }
         
 
     }//end  class
