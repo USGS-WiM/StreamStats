@@ -36,11 +36,12 @@ var StreamStats;
             BatchProcessorController.prototype.selectBatchProcessorTab = function (tabname) {
                 this.selectedBatchProcessorTabName = tabname;
             };
-            BatchProcessorController.prototype.getRegionList = function () {
+            BatchProcessorController.prototype.getRegions = function () {
                 this.nssService.getRegionList();
             };
             BatchProcessorController.prototype.init = function () {
                 this.AppVersion = configuration.version;
+                this.getRegions();
             };
             BatchProcessorController.$inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService', '$modalInstance'];
             return BatchProcessorController;

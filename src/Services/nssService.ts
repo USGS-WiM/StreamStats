@@ -791,13 +791,14 @@ module StreamStats.Services {
         }
 
         // get region list form nssservices/regions
-        public getRegionList(): void {
+        public getRegionList(): any {
             var url = configuration.baseurls['NSS'] + configuration.queryparams['NSSRegions'];
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
             this.Execute(request).then(
                 (response: any) => {
+                    console.log("region list" + response);
                     this.regionList = response.data;
-                    return (this.regionList);
+                    // return (this.regionList);
                 }, (error) => {
                     this.toaster.pop('error', "There was an HTTP error returning the regions list.", "Please retry", 0);
                 }).finally(() => {

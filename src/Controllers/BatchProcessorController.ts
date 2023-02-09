@@ -47,7 +47,7 @@ module StreamStats.Controllers {
         public isValid: boolean;
         public AppVersion: string;  
         public submitBatchInfo: string;
-        public regionList: any;
+        public regions: any;
         // public regions: any;
 
         //Constructor
@@ -84,8 +84,8 @@ module StreamStats.Controllers {
             // console.log(this.regionList);
         // }
 
-        public getRegionList(): void {
-            this.nssService.getRegionList()
+        public getRegions(): any {
+            this.nssService.getRegionList();
         }
 
         // Helper Methods
@@ -93,7 +93,7 @@ module StreamStats.Controllers {
         private init(): void {   
             //console.log("in about controller");
             this.AppVersion = configuration.version;
-            // this.getRegionList();
+            this.getRegions();
             }
         
 

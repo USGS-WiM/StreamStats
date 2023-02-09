@@ -620,8 +620,8 @@ var StreamStats;
                 var url = configuration.baseurls['NSS'] + configuration.queryparams['NSSRegions'];
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
+                    console.log("region list" + response);
                     _this.regionList = response.data;
-                    return (_this.regionList);
                 }, function (error) {
                     _this.toaster.pop('error', "There was an HTTP error returning the regions list.", "Please retry", 0);
                 }).finally(function () {
