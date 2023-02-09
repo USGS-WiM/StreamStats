@@ -853,7 +853,7 @@ var StreamStats;
                                 var daValue = val.value;
                                 if (val.unit.toLowerCase().trim() == 'square kilometers')
                                     daValue = daValue / 2.59;
-                                gtag('event', 'Calculate', { 'Category': 'DraingeArea', 'Location': latLong, 'Value': daValue.toFixed(0) });
+                                gtag('event', 'Calculate', { 'Category': 'DrainageArea', 'Location': latLong, 'Value': daValue.toFixed(0) });
                             }
                             value.value = val.value;
                             value.loaded = val.loaded;
