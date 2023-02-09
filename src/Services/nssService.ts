@@ -792,7 +792,7 @@ module StreamStats.Services {
 
         // get region list form nssservices/regions
         // referenced getFreshDeskArticles from HelpControllers
-        // keys: use ng.Ipromise<any> and return this.Execute 
+        // keys to success: use ng.Ipromise<any> and return this.Execute 
         public getRegionList(): ng.IPromise<any> {
 
             var url = configuration.baseurls['NSS'] + configuration.queryparams['NSSRegions'];
@@ -801,15 +801,23 @@ module StreamStats.Services {
             return this.Execute(request).then(
                 (response: any) => {
                     // create array to return
-                    var regions = []; 
+                    var regionsRaw = []; 
 
                     // loop through response and add data to regions array
                     response.data.forEach(function (element) {
-                        regions.push(element);
+                        regionsRaw.push(element);
                     });
 
-                    // console.log("regionList_nssServices", response.data);
-                    return regions
+                    // add filter for unwanted values, additional values can be added with &&
+                    function filterRegions(element, index, array) {
+                        return element.name !== "Undefined";
+                    }
+
+                    var regions = regionsRaw.filter(filterRegions);
+                    
+                    // console.log("regionList_nssServices", regions);
+
+                    return regions;
                 }, (error) => {
                     this.toaster.pop('error', "There was an HTTP error returning the regions list.", "Please retry", 0);
                 }).finally(() => {

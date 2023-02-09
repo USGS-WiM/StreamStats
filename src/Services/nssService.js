@@ -620,10 +620,14 @@ var StreamStats;
                 var url = configuration.baseurls['NSS'] + configuration.queryparams['NSSRegions'];
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 return this.Execute(request).then(function (response) {
-                    var regions = [];
+                    var regionsRaw = [];
                     response.data.forEach(function (element) {
-                        regions.push(element);
+                        regionsRaw.push(element);
                     });
+                    function filterRegions(element, index, array) {
+                        return element.name !== "Undefined";
+                    }
+                    var regions = regionsRaw.filter(filterRegions);
                     return regions;
                 }, function (error) {
                     _this.toaster.pop('error', "There was an HTTP error returning the regions list.", "Please retry", 0);

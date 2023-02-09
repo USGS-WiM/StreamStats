@@ -16,14 +16,8 @@
 
         <div id="submitBatch" ng-if="vm.selectedBatchProcessorTabName==='submitBatch'">
             <div id="selectRegionID">
-                <p>Select Region / State</p>
-                <select ng-model="selectRegion" ng-options="x.name for x in vm.regionList"></select>
-                <!-- <select ng-model="selectedRegion">
-                    <option ng-repeat="x in vm.regionList" value="{{x.name}}"></option>
-                </select> -->
-                <!-- <select>
-                    <option ng-repeat="x in vm.regionList">{{x}}</option>
-                </select> -->
+                <label>Select Region / State</label>
+                <select ng-model="selectRegion" ng-options="x.name for x in vm.regionList | orderBy: 'name'"></select>
             </div>
         </div>
 
