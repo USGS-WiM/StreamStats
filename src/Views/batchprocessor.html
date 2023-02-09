@@ -17,7 +17,29 @@
         <div id="submitBatch" ng-if="vm.selectedBatchProcessorTabName==='submitBatch'">
             <div id="selectRegionID">
                 <label>Select Region / State</label>
-                <select ng-model="selectRegion" ng-options="x.name for x in vm.regionList | orderBy: 'name'"></select>
+                <select ng-model="selectedRegion" ng-options="x.name for x in vm.regionList | orderBy: 'name'"></select>
+            </div>
+            <div>
+                <span>
+                    <label class="chx">
+                        <input id="cbDelineate", type="checkbox" ng-checked="selectedRegion">
+                        <span>&nbsp;&nbsp;Basin Delineation&nbsp;&nbsp;&nbsp;</span>
+                    </label>
+                </span>
+                <span>
+                    <label class="chx">
+                        <input type="checkbox">
+                        <span>&nbsp;&nbsp;Compute Basin Characteristics&nbsp;&nbsp;&nbsp;</span>
+                    </label>
+                </span>
+                
+                <span>
+                    <label class="chx">
+                        <input type="checkbox">
+                        <span>&nbsp;&nbsp;Compute Flow Statistics</span>
+                    </label>
+                </span>
+                
             </div>
         </div>
 
