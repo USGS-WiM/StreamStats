@@ -732,31 +732,61 @@ module StreamStats.Controllers {
                     if (isLeapYear(year) == false) {
                         this.formattedDailyHeat.push({x: 60, y: year, value: null}); //adding a blank cell on Feb 29 on non-leap years so that data will line up
                     };
-                    // function groupBy(objectArray, property) {
-                    //     return objectArray.reduce((acc, obj) => {
-                    //     const key = obj[property];
-                    //     const curGroup = acc[key] ?? [];
-                    //     return { ...acc, [key]: [...curGroup, obj] };
-                    //     }, {});
-                    // }
                     
-                    // const groupedYears = groupBy(this.formattedDailyHeat, "year");
-                    // console.log(groupedYears);
                     // const yearlySum = this.formattedDailyHeat.reduce((year, value) => {
                     //     year[value.year] = (year[value.year] || 0) + value.value || 1;
                     //     return year;
                     // }, {})
-                    // const noNulls = this.formattedDailyHeat.filter(item => {
-                    //     return(item.value != null)
-                    // });
-                    // const yearlyAvg = yearlySum / noNulls.length
 
-                    //console.log('sum', output);
-                    // if (dailyHeatObj.qualifiers[0] === 'A') {
-                    // this.dailyRange.push(dailyHeatObj.value);
-                    // }
+                    //const yearlyAvg = yearlySum / noNulls.length
+
+                    //console.log('sum', yearlySum);
+                    //if (dailyHeatObj.qualifiers[0] === 'A') {
+                    //this.dailyRange.push(dailyHeatObj.value);
+                    //}
                 });
+
             }
+//Sum and average daily values
+            const noNulls = this.formattedDailyHeat.filter(item => {
+                return(item.value != null)
+            });
+            // const waterData = [
+            //     // {x: 70, y: 1919, value: 50},
+            //     // {x: 70, y: 1919, value: 100},
+            //     // {x: 70, y: 1920, value: 150},
+            //     // {x: 70, y: 1920, value: 50},
+            //     // {x: 70, y: 1920, value: 50},
+            //     // {x: 70, y: 1921, value: 100},
+            //     // {x: 70, y: 1921, value: 150},
+            //     {x: 70, y: 1922, value: 50},
+            //     {x: 70, y: 1922, value: 100},
+            //     {x: 70, y: 1922, value: 300},
+            // ];
+
+
+            let previousYear = noNulls[0].y
+            let sum = 0;
+            let listOfSummations = [];
+            for (let i=0; i<noNulls.length; i++){
+                let currentData = noNulls[i]
+                let currentYear = currentData.y
+                if (previousYear == currentYear){
+                sum += currentData.value
+                }
+                else {
+                listOfSummations.push({x: sum, y: currentYear -1})
+                sum = currentData.value
+                }
+                if (i == noNulls.length - 1){
+                    listOfSummations.push({x: sum, y: currentYear})
+                    }
+                previousYear = currentYear;
+            }
+            console.log(listOfSummations);
+            
+//console.log(this.formattedDailyHeat);
+    
             if (this.floodFreq) { //set up AEP plotLines, defining their colors
                 this.formattedFloodFreq = [];
                     const AEPColors = {

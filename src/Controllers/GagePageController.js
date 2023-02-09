@@ -540,6 +540,28 @@ var StreamStats;
                         ;
                     });
                 }
+                var noNulls = this.formattedDailyHeat.filter(function (item) {
+                    return (item.value != null);
+                });
+                var previousYear = noNulls[0].y;
+                var sum = 0;
+                var listOfSummations = [];
+                for (var i = 0; i < noNulls.length; i++) {
+                    var currentData = noNulls[i];
+                    var currentYear = currentData.y;
+                    if (previousYear == currentYear) {
+                        sum += currentData.value;
+                    }
+                    else {
+                        listOfSummations.push({ x: sum, y: currentYear - 1 });
+                        sum = currentData.value;
+                    }
+                    if (i == noNulls.length - 1) {
+                        listOfSummations.push({ x: sum, y: currentYear });
+                    }
+                    previousYear = currentYear;
+                }
+                console.log(listOfSummations);
                 if (this.floodFreq) {
                     this.formattedFloodFreq = [];
                     var AEPColors_1 = {
