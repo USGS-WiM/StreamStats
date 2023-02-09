@@ -7,8 +7,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased](https://github.com/USGS-WiM/StreamStats/tree/dev)
   
 ### Added 
-- Enabled scenarios for WI 
-- Added "Localres" application for DRB
 
 ### Changed  
 
@@ -19,6 +17,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed  
 
 ### Security  
+
+## [v4.13.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.13.0) - 2023-02-09
+
+### Added 
+- Enabled scenarios for WI 
+- Added "Localres" application for DRB
 
 ## [v4.12.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.12.0) - 2023-01-11
   
