@@ -94,7 +94,7 @@ var StreamStats;
                 _this_1.formattedFloodFreq = undefined;
                 _this_1.formattedDailyHeat = [];
                 _this_1.formattedPeakDates = [];
-                _this_1.formattedAvgAnnual = [];
+                _this_1.formattedDailyPlusAvg = [];
                 _this_1.formattedEstPeakDates = [];
                 _this_1.formattedDailyFlow = [];
                 _this_1.dailyRange = [];
@@ -555,16 +555,18 @@ var StreamStats;
                         length += currentData.length;
                     }
                     else {
-                        listOfSummations.push({ x: 700, y: currentYear - 1, value: sum / length, sum: sum, length: length });
+                        listOfSummations.push({ x: 650, y: currentYear - 1, value: sum / length, sum: sum, length: length });
                         sum = currentData.value;
                         length = currentData.length;
                     }
                     if (i == noNulls.length - 1) {
-                        listOfSummations.push({ x: 700, y: currentYear, value: sum / length, sum: sum, length: length });
+                        listOfSummations.push({ x: 650, y: currentYear, value: sum / length, sum: sum, length: length });
                     }
                     previousYear = currentYear;
                 }
                 console.log(listOfSummations);
+                var addAvg = this.formattedDailyHeat.concat(listOfSummations);
+                this.formattedDailyPlusAvg.push(addAvg);
                 if (this.floodFreq) {
                     this.formattedFloodFreq = [];
                     var AEPColors_1 = {
@@ -759,6 +761,8 @@ var StreamStats;
                 });
             };
             GagePageController.prototype.createDailyRasterPlot = function () {
+                console.log('daily heat', this.formattedDailyHeat);
+                console.log('daily and avg', this.formattedDailyPlusAvg);
                 function isLeapYear(year) {
                     if (year % 400 === 0)
                         return true;
@@ -785,7 +789,7 @@ var StreamStats;
                     xAxis: {
                         type: null,
                         min: 275,
-                        tickPositions: [275, 306, 336, 367, 398, 427, 458, 488, 519, 549, 580, 611, 700],
+                        tickPositions: [275, 306, 336, 367, 398, 427, 458, 488, 519, 549, 580, 611, 650],
                         title: {
                             text: 'Date'
                         },
@@ -795,8 +799,8 @@ var StreamStats;
                                 if (this.value > 366) {
                                     this.value -= 365;
                                 }
-                                if (this.value == 700)
-                                    return 'Annual';
+                                if (this.value == 285)
+                                    return 'Annual Average';
                                 return moment("2015 " + this.value, "YYYY DDD").format("MMM");
                             }
                         }
@@ -829,17 +833,18 @@ var StreamStats;
                             borderWidth: 0.05,
                             borderColor: 'white',
                             type: 'heatmap',
-                            data: this.formattedDailyHeat,
+                            data: this.formattedDailyPlusAvg[0],
                             tooltip: {
                                 headerFormat: '<b>Daily Streamflow</b>',
                                 pointFormatter: function () {
-                                    if (this.formattedDailyHeat !== null) {
+                                    if (this.formattedDailyPlusAvg !== null) {
                                         var year = this.y;
                                         var doy = this.x;
                                         if (doy > 366) {
                                             doy -= 366;
                                         }
                                         ;
+                                        console.log(doy);
                                         if (doy > 274) {
                                             year -= 1;
                                         }

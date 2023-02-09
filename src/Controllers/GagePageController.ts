@@ -197,7 +197,7 @@ module StreamStats.Controllers {
         public formattedFloodFreq = undefined;
         public formattedDailyHeat = [];
         public formattedPeakDates = [];
-        public formattedAvgAnnual = [];
+        public formattedDailyPlusAvg = [];
         public formattedEstPeakDates = [];
         public formattedDailyFlow = [];
         public dailyRange = [];
@@ -214,8 +214,7 @@ module StreamStats.Controllers {
                         yAxis: { title: {text: string}, custom: { allowNegativeLog: Boolean }, plotLines: [{value: number, color: string, width: number, zIndex: number, label: {text: string}, id: string}]},
                         series: { name: string; showInNavigator: boolean, tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number; type: string, color: string, 
                         data: number[], marker: {symbol: string, radius: number}, showInLegend: boolean; }[]; };
-        heatChartConfig: { 
-                        chart: { height: number, width: number, zooming: {type: string} },
+        heatChartConfig: { chart: { height: number, width: number, zooming: {type: string} },
                         title: { text: string, align: string},
                         subtitle: { text: string, align: string},  
                         xAxis: { type: string, min: number, tickPositions: any[], threshold: number, title: {text: string}, labels: {formatter: Function}},
@@ -340,7 +339,7 @@ module StreamStats.Controllers {
                     }
 
                     // Citation options for filtering chars by citation
-                     if (!this.checkForStatOrCharCitation(char.citation.id, this.charCitationList)) {
+                    if (!this.checkForStatOrCharCitation(char.citation.id, this.charCitationList)) {
                         this.charCitationList.push(char.citation)
                     }
                 }
@@ -743,23 +742,24 @@ module StreamStats.Controllers {
             for (let i=0; i<noNulls.length; i++){
                 let currentData = noNulls[i];
                 let currentYear = currentData.y;
-                //let currentLength = currentData.length;
                 if (previousYear == currentYear){
                 sum += currentData.value
                 length += currentData.length
                 }
                 else {
-                listOfSummations.push({x: 700, y: currentYear -1, value: sum / length, sum: sum, length: length})
+                listOfSummations.push({x: 650, y: currentYear -1, value: sum / length, sum: sum, length: length})
                 sum = currentData.value;
                 length = currentData.length;
                 }
                 if (i == noNulls.length - 1){
-                    listOfSummations.push({x: 700, y: currentYear, value: sum / length, sum: sum, length: length})
+                    listOfSummations.push({x: 650, y: currentYear, value: sum / length, sum: sum, length: length})
                     }
                 previousYear = currentYear;
             }
             console.log(listOfSummations);
-            
+            var addAvg = this.formattedDailyHeat.concat(listOfSummations);
+            this.formattedDailyPlusAvg.push(addAvg);
+        
             
 //console.log(this.formattedDailyHeat);
     
@@ -957,6 +957,8 @@ module StreamStats.Controllers {
         }
 
         public createDailyRasterPlot(): void {
+            console.log('daily heat', this.formattedDailyHeat);
+            console.log('daily and avg', this.formattedDailyPlusAvg);
             function isLeapYear(year) {
                 if (year % 400 === 0) return true;
                 if (year % 100 === 0) return false;
@@ -981,7 +983,7 @@ module StreamStats.Controllers {
                 xAxis: {
                     type: null,
                     min: 275,
-                    tickPositions: [275, 306, 336, 367, 398, 427, 458, 488, 519, 549, 580, 611, 700],
+                    tickPositions: [275, 306, 336, 367, 398, 427, 458, 488, 519, 549, 580, 611, 650],
                     title: {
                         text: 'Date'
                     },
@@ -991,7 +993,7 @@ module StreamStats.Controllers {
                             if (this.value > 366) {
                                 this.value -= 365
                             }
-                            if(this.value == 700) return 'Annual';
+                            if(this.value == 285) return 'Annual Average';
                             return moment("2015 "+this.value, "YYYY DDD").format("MMM");
                         }
                     }
@@ -1024,11 +1026,11 @@ module StreamStats.Controllers {
                     borderWidth: 0.05,
                     borderColor: 'white',
                     type: 'heatmap',
-                    data: this.formattedDailyHeat,
+                    data: this.formattedDailyPlusAvg[0],
                     tooltip: {
                         headerFormat:'<b>Daily Streamflow</b>',
                         pointFormatter: function(){
-                            if (this.formattedDailyHeat !== null){
+                            if (this.formattedDailyPlusAvg !== null){
                                 //let UTCday = this.x.getUTCDate();
                                 let year = this.y;
                                 let doy = this.x;
@@ -1036,7 +1038,7 @@ module StreamStats.Controllers {
                                 if (doy > 366) {
                                     doy -= 366; //returning doy to 1-366 for labeling purposes
                                 };
-                                //console.log(doy);
+                                console.log(doy);
                                 if (doy > 274) {
                                     year -= 1;
                                 };
