@@ -747,12 +747,12 @@ module StreamStats.Controllers {
                 length += currentData.length
                 }
                 else {
-                listOfSummations.push({x: 650, y: currentYear -1, value: sum / length, sum: sum, length: length})
+                listOfSummations.push({x: 650, y: currentYear -1, value: sum / length, sum: sum, length: length}, {x: 651, y: currentYear -1, value: sum / length, sum: sum, length: length}, {x: 652, y: currentYear -1, value: sum / length, sum: sum, length: length})
                 sum = currentData.value;
                 length = currentData.length;
                 }
                 if (i == noNulls.length - 1){
-                    listOfSummations.push({x: 650, y: currentYear, value: sum / length, sum: sum, length: length})
+                    listOfSummations.push({x: 650, y: currentYear, value: sum / length, sum: sum, length: length}, {x: 651, y: currentYear -1, value: sum / length, sum: sum, length: length}, {x: 652, y: currentYear -1, value: sum / length, sum: sum, length: length})
                     }
                 previousYear = currentYear;
             }
@@ -1020,7 +1020,7 @@ module StreamStats.Controllers {
                 series: [{
                     name: 'Daily Streamflow',
                     pixelSpacing: null,
-                    borderWidth: 0.05,
+                    borderWidth: 0.00,
                     borderColor: 'white',
                     type: 'heatmap',
                     data: this.formattedDailyPlusAvg[0],
@@ -1051,8 +1051,8 @@ module StreamStats.Controllers {
                                     waterYear += 1; // adding a year to dates that fall into the next water year
                                 };
                                 //console.log(doy);
-                                if (doy === 283 || doy === 284) return '</b><br>Water Year Average Value: <b>' + this.value + ' ft³/s</b><br>Water Year: <b>' + waterYear
-                                if (doy !== 283 || doy !== 284) return '<br>Date: <b>'  + formattedUTCDate + '</b><br>Value: <b>' + this.value + ' ft³/s</b><br>Water Year: <b>' + waterYear
+                                if (doy > 282 && doy < 287) return '</b><br>Water Year Average Value: <b>' + this.value + ' ft³/s</b><br>Water Year: <b>' + waterYear
+                                if (doy !== 283 && doy !== 284 && doy !== 285 && doy !== 286) return '<br>Date: <b>'  + formattedUTCDate + '</b><br>Value: <b>' + this.value + ' ft³/s</b><br>Water Year: <b>' + waterYear
                             }
                         }
                     },
