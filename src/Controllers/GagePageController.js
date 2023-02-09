@@ -531,11 +531,11 @@ var StreamStats;
                         }
                         ;
                         if (dailyHeatObj.qualifiers[0] === 'A') {
-                            _this_1.formattedDailyHeat.push({ x: doy, y: year, value: parseInt(dailyHeatObj.value) });
+                            _this_1.formattedDailyHeat.push({ x: doy, y: year, value: parseInt(dailyHeatObj.value), length: 1 });
                         }
                         ;
                         if (isLeapYear(year) == false) {
-                            _this_1.formattedDailyHeat.push({ x: 60, y: year, value: null });
+                            _this_1.formattedDailyHeat.push({ x: 60, y: year, value: null, length: 1 });
                         }
                         ;
                     });
@@ -545,19 +545,22 @@ var StreamStats;
                 });
                 var previousYear = noNulls[0].y;
                 var sum = 0;
+                var length = 0;
                 var listOfSummations = [];
                 for (var i = 0; i < noNulls.length; i++) {
                     var currentData = noNulls[i];
                     var currentYear = currentData.y;
                     if (previousYear == currentYear) {
                         sum += currentData.value;
+                        length += currentData.length;
                     }
                     else {
-                        listOfSummations.push({ x: sum, y: currentYear - 1 });
+                        listOfSummations.push({ x: 700, y: currentYear - 1, value: sum / length, sum: sum, length: length });
                         sum = currentData.value;
+                        length = currentData.length;
                     }
                     if (i == noNulls.length - 1) {
-                        listOfSummations.push({ x: sum, y: currentYear });
+                        listOfSummations.push({ x: 700, y: currentYear, value: sum / length, sum: sum, length: length });
                     }
                     previousYear = currentYear;
                 }
@@ -782,7 +785,7 @@ var StreamStats;
                     xAxis: {
                         type: null,
                         min: 275,
-                        tickPositions: [275, 306, 336, 368, 398, 426, 457, 487, 519, 548, 579, 610],
+                        tickPositions: [275, 306, 336, 367, 398, 427, 458, 488, 519, 549, 580, 611, 700],
                         title: {
                             text: 'Date'
                         },
@@ -792,7 +795,7 @@ var StreamStats;
                                 if (this.value > 366) {
                                     this.value -= 365;
                                 }
-                                if (this.value == 370)
+                                if (this.value == 700)
                                     return 'Annual';
                                 return moment("2015 " + this.value, "YYYY DDD").format("MMM");
                             }

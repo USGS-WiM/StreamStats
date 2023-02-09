@@ -725,65 +725,41 @@ module StreamStats.Controllers {
                         doy += 366; //making 275 (Oct 1) the lowest number so the x-axis can start at the beginning of the water year
                     };
                     if (dailyHeatObj.qualifiers[0] === 'A') {
-                        this.formattedDailyHeat.push({x: doy, y: year, value: parseInt(dailyHeatObj.value)});
+                        this.formattedDailyHeat.push({x: doy, y: year, value: parseInt(dailyHeatObj.value), length: 1});
                     };
-                    //this.formattedAvgAnnual.push({x: 700, y: year, value: yearlyAvg})
-                    //console.log('data', this.formattedDailyHeat);
                     if (isLeapYear(year) == false) {
-                        this.formattedDailyHeat.push({x: 60, y: year, value: null}); //adding a blank cell on Feb 29 on non-leap years so that data will line up
+                        this.formattedDailyHeat.push({x: 60, y: year, value: null, length: 1}); //adding a blank cell on Feb 29 on non-leap years so that data will line up
                     };
-                    
-                    // const yearlySum = this.formattedDailyHeat.reduce((year, value) => {
-                    //     year[value.year] = (year[value.year] || 0) + value.value || 1;
-                    //     return year;
-                    // }, {})
-
-                    //const yearlyAvg = yearlySum / noNulls.length
-
-                    //console.log('sum', yearlySum);
-                    //if (dailyHeatObj.qualifiers[0] === 'A') {
-                    //this.dailyRange.push(dailyHeatObj.value);
-                    //}
                 });
-
             }
 //Sum and average daily values
             const noNulls = this.formattedDailyHeat.filter(item => {
                 return(item.value != null)
             });
-            // const waterData = [
-            //     // {x: 70, y: 1919, value: 50},
-            //     // {x: 70, y: 1919, value: 100},
-            //     // {x: 70, y: 1920, value: 150},
-            //     // {x: 70, y: 1920, value: 50},
-            //     // {x: 70, y: 1920, value: 50},
-            //     // {x: 70, y: 1921, value: 100},
-            //     // {x: 70, y: 1921, value: 150},
-            //     {x: 70, y: 1922, value: 50},
-            //     {x: 70, y: 1922, value: 100},
-            //     {x: 70, y: 1922, value: 300},
-            // ];
-
-
             let previousYear = noNulls[0].y
             let sum = 0;
+            let length = 0;
             let listOfSummations = [];
             for (let i=0; i<noNulls.length; i++){
-                let currentData = noNulls[i]
-                let currentYear = currentData.y
+                let currentData = noNulls[i];
+                let currentYear = currentData.y;
+                //let currentLength = currentData.length;
                 if (previousYear == currentYear){
                 sum += currentData.value
+                length += currentData.length
                 }
                 else {
-                listOfSummations.push({x: sum, y: currentYear -1})
-                sum = currentData.value
+                listOfSummations.push({x: 700, y: currentYear -1, value: sum / length, sum: sum, length: length})
+                sum = currentData.value;
+                length = currentData.length;
                 }
                 if (i == noNulls.length - 1){
-                    listOfSummations.push({x: sum, y: currentYear})
+                    listOfSummations.push({x: 700, y: currentYear, value: sum / length, sum: sum, length: length})
                     }
                 previousYear = currentYear;
             }
             console.log(listOfSummations);
+            
             
 //console.log(this.formattedDailyHeat);
     
@@ -1005,7 +981,7 @@ module StreamStats.Controllers {
                 xAxis: {
                     type: null,
                     min: 275,
-                    tickPositions: [275, 306, 336, 368, 398, 426, 457, 487, 519, 548, 579, 610],
+                    tickPositions: [275, 306, 336, 367, 398, 427, 458, 488, 519, 549, 580, 611, 700],
                     title: {
                         text: 'Date'
                     },
@@ -1015,7 +991,7 @@ module StreamStats.Controllers {
                             if (this.value > 366) {
                                 this.value -= 365
                             }
-                            if(this.value == 370) return 'Annual';
+                            if(this.value == 700) return 'Annual';
                             return moment("2015 "+this.value, "YYYY DDD").format("MMM");
                         }
                     }
