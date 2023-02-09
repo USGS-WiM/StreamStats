@@ -217,7 +217,7 @@ module StreamStats.Controllers {
         heatChartConfig: { chart: { height: number, width: number, zooming: {type: string} },
                         title: { text: string, align: string},
                         subtitle: { text: string, align: string},  
-                        xAxis: { type: string, min: number, tickPositions: any[], threshold: number, title: {text: string}, labels: {formatter: Function}},
+                        xAxis: { type: string, min: number, max: number, tickPositions: any[], threshold: number, title: {text: string}, labels: {formatter: Function}},
                         yAxis: { title: {text: string}, custom: { allowNegativeLog: boolean}},
                         colorAxis: { type: string, min: number, max: number, stops: any[], startOnTick: boolean, endOnTick: boolean, allowNegativeLog: boolean}
                         series: { name: string, pixelSpacing: number[], borderWidth: number, borderColor: string, type: string, data: number[], tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number}[]; };
@@ -731,9 +731,9 @@ module StreamStats.Controllers {
                     };
                 });
             }
-//Sum and average daily values
+            //Sum and average daily values by year
             const noNulls = this.formattedDailyHeat.filter(item => {
-                return(item.value != null)
+                return(item.value != null) // getting rid of any objects with null values so they don't affect average
             });
             let previousYear = noNulls[0].y
             let sum = 0;
@@ -756,12 +756,8 @@ module StreamStats.Controllers {
                     }
                 previousYear = currentYear;
             }
-            console.log(listOfSummations);
-            var addAvg = this.formattedDailyHeat.concat(listOfSummations);
+            var addAvg = this.formattedDailyHeat.concat(listOfSummations); //adding the averages into the daily value array so they can be plotted
             this.formattedDailyPlusAvg.push(addAvg);
-        
-            
-//console.log(this.formattedDailyHeat);
     
             if (this.floodFreq) { //set up AEP plotLines, defining their colors
                 this.formattedFloodFreq = [];
@@ -957,8 +953,8 @@ module StreamStats.Controllers {
         }
 
         public createDailyRasterPlot(): void {
-            console.log('daily heat', this.formattedDailyHeat);
-            console.log('daily and avg', this.formattedDailyPlusAvg);
+            //console.log('daily heat', this.formattedDailyHeat);
+            //console.log('daily and avg', this.formattedDailyPlusAvg);
             function isLeapYear(year) {
                 if (year % 400 === 0) return true;
                 if (year % 100 === 0) return false;
@@ -983,6 +979,7 @@ module StreamStats.Controllers {
                 xAxis: {
                     type: null,
                     min: 275,
+                    max: 665,
                     tickPositions: [275, 306, 336, 367, 398, 427, 458, 488, 519, 549, 580, 611, 650],
                     title: {
                         text: 'Date'
@@ -1038,7 +1035,6 @@ module StreamStats.Controllers {
                                 if (doy > 366) {
                                     doy -= 366; //returning doy to 1-366 for labeling purposes
                                 };
-                                console.log(doy);
                                 if (doy > 274) {
                                     year -= 1;
                                 };
@@ -1054,8 +1050,9 @@ module StreamStats.Controllers {
                                 if (month > 9) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
                                     waterYear += 1; // adding a year to dates that fall into the next water year
                                 };
-                                //return new Date(year, 0, doy); 
-                                return '<br>Date: <b>'  + formattedUTCDate + '</b><br>Value: <b>' + this.value + ' ft³/s</b><br>Water Year: <b>' + waterYear
+                                //console.log(doy);
+                                if (doy === 283 || doy === 284) return '</b><br>Water Year Average Value: <b>' + this.value + ' ft³/s</b><br>Water Year: <b>' + waterYear
+                                if (doy !== 283 || doy !== 284) return '<br>Date: <b>'  + formattedUTCDate + '</b><br>Value: <b>' + this.value + ' ft³/s</b><br>Water Year: <b>' + waterYear
                             }
                         }
                     },

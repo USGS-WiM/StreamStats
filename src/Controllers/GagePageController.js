@@ -564,7 +564,6 @@ var StreamStats;
                     }
                     previousYear = currentYear;
                 }
-                console.log(listOfSummations);
                 var addAvg = this.formattedDailyHeat.concat(listOfSummations);
                 this.formattedDailyPlusAvg.push(addAvg);
                 if (this.floodFreq) {
@@ -761,8 +760,6 @@ var StreamStats;
                 });
             };
             GagePageController.prototype.createDailyRasterPlot = function () {
-                console.log('daily heat', this.formattedDailyHeat);
-                console.log('daily and avg', this.formattedDailyPlusAvg);
                 function isLeapYear(year) {
                     if (year % 400 === 0)
                         return true;
@@ -789,6 +786,7 @@ var StreamStats;
                     xAxis: {
                         type: null,
                         min: 275,
+                        max: 665,
                         tickPositions: [275, 306, 336, 367, 398, 427, 458, 488, 519, 549, 580, 611, 650],
                         title: {
                             text: 'Date'
@@ -844,7 +842,6 @@ var StreamStats;
                                             doy -= 366;
                                         }
                                         ;
-                                        console.log(doy);
                                         if (doy > 274) {
                                             year -= 1;
                                         }
@@ -863,7 +860,10 @@ var StreamStats;
                                             waterYear += 1;
                                         }
                                         ;
-                                        return '<br>Date: <b>' + formattedUTCDate + '</b><br>Value: <b>' + this.value + ' ft³/s</b><br>Water Year: <b>' + waterYear;
+                                        if (doy === 283 || doy === 284)
+                                            return '</b><br>Water Year Average Value: <b>' + this.value + ' ft³/s</b><br>Water Year: <b>' + waterYear;
+                                        if (doy !== 283 || doy !== 284)
+                                            return '<br>Date: <b>' + formattedUTCDate + '</b><br>Value: <b>' + this.value + ' ft³/s</b><br>Water Year: <b>' + waterYear;
                                     }
                                 }
                             },
