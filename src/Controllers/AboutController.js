@@ -31,6 +31,7 @@ var StreamStats;
                 _this.regionService = region;
                 _this.selectedAboutTabName = "about";
                 _this.regionArticle = '<h3>No State or Region Selected</h3>';
+                _this.regionURL = "https://www.usgs.gov/streamstats/state-and-region-based-info";
                 _this.init();
                 return _this;
             }
@@ -41,69 +42,6 @@ var StreamStats;
                 if (this.selectedAboutTabName == tabname)
                     return;
                 this.selectedAboutTabName = tabname;
-            };
-            AboutController.prototype.getActiveNews = function () {
-                var _this = this;
-                var headers = {
-                    "Authorization": "Basic " + btoa(this.freshdeskCreds['Token'] + ":" + 'X'),
-                };
-                var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.ActiveNewsFolder;
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
-                this.Execute(request).then(function (response) {
-                    var publishedArticles = [];
-                    if (response.data.folder.articles.length) {
-                        if (window.location.host == 'test.streamstats.usgs.gov') {
-                            _this.activeNewsArticles = response.data.folder.articles;
-                        }
-                        else {
-                            response.data.folder.articles.forEach(function (element) {
-                                if (element.status == 2)
-                                    publishedArticles.push(element);
-                            });
-                            _this.activeNewsArticles = publishedArticles;
-                        }
-                    }
-                }, function (error) {
-                }).finally(function () {
-                });
-            };
-            AboutController.prototype.getPastNews = function () {
-                var _this = this;
-                var headers = {
-                    "Authorization": "Basic " + btoa(this.freshdeskCreds['Token'] + ":" + 'X'),
-                };
-                var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.PastNewsFolder;
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
-                this.Execute(request).then(function (response) {
-                    var publishedArticles = [];
-                    if (response.data.folder.articles.length) {
-                        if (window.location.host.indexOf('test.streamstats.usgs.gov') > -1) {
-                            _this.pastNewsArticles = response.data.folder.articles;
-                        }
-                        else {
-                            response.data.folder.articles.forEach(function (element) {
-                                if (element.status == 2)
-                                    publishedArticles.push(element);
-                            });
-                            _this.pastNewsArticles = publishedArticles;
-                        }
-                    }
-                }, function (error) {
-                }).finally(function () {
-                });
-            };
-            AboutController.prototype.getAboutArticle = function () {
-                var _this = this;
-                var headers = {
-                    "Authorization": "Basic " + btoa(this.freshdeskCreds['Token'] + ":" + 'X'),
-                };
-                var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.AboutArticle;
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
-                this.Execute(request).then(function (response) {
-                    _this.aboutArticle = response.data.article.description;
-                }, function (error) {
-                }).finally(function () {
-                });
             };
             AboutController.prototype.getRegionHelpArticle = function () {
                 var _this = this;
@@ -117,66 +55,16 @@ var StreamStats;
                     regionID = this.regionService.selectedRegion.Name;
                 if (!regionID)
                     return;
-                var headers = {
-                    "Authorization": "Basic " + btoa(this.freshdeskCreds['Token'] + ":" + 'X'),
-                };
-                var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.RegionInfoFolder;
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
-                configuration.regions.forEach(function (value, index) {
+                configuration.regions.forEach(function (value) {
                     if (value.Name === regionID) {
                         if (!value.regionEnabled) {
                             _this.regionArticle = '<div class="wim-alert">StreamStats has not been developed for <strong>' + value.Name + '</strong>.  Please contact the <a href="mailto:support@streamstats.freshdesk.com">streamstats team</a> if you would like StreamStats enabled for this State/Region.</div>';
                         }
                         else {
-                            _this.regionArticle = '<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>';
-                            _this.Execute(request).then(function (response) {
-                                response.data.folder.articles.forEach(function (article) {
-                                    if (article.title == regionID) {
-                                        if (window.location.host.indexOf('test.streamstats.usgs.gov') > -1) {
-                                            _this.regionArticle = article.description;
-                                        }
-                                        else if (article.status == 2) {
-                                            _this.regionArticle = article.description;
-                                        }
-                                        return;
-                                    }
-                                });
-                            }, function (error) {
-                            }).finally(function () {
-                            });
+                            _this.regionArticle = null;
+                            _this.regionURL = value.URL;
                         }
                     }
-                });
-            };
-            AboutController.prototype.getDisclaimersArticle = function () {
-                var _this = this;
-                console.log("Trying to open disclaimers article");
-                var headers = {
-                    "Authorization": "Basic " + btoa(this.freshdeskCreds['Token'] + ":" + 'X'),
-                };
-                var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.DisclaimersArticle;
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
-                this.Execute(request).then(function (response) {
-                    console.log('Successfully retrieved disclaimers article');
-                    _this.disclaimersArticle = response.data.article.description;
-                }, function (error) {
-                }).finally(function () {
-                    _this.getCreditsArticle();
-                });
-            };
-            AboutController.prototype.getCreditsArticle = function () {
-                var _this = this;
-                console.log("Trying to open credits article");
-                var headers = {
-                    "Authorization": "Basic " + btoa(this.freshdeskCreds['Token'] + ":" + 'X'),
-                };
-                var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.CreditsArticle;
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
-                this.Execute(request).then(function (response) {
-                    console.log('Successfully retrieved credits article');
-                    _this.disclaimersArticle += response.data.article.description;
-                }, function (error) {
-                }).finally(function () {
                 });
             };
             AboutController.prototype.convertUnsafe = function (x) {
@@ -185,36 +73,7 @@ var StreamStats;
             ;
             AboutController.prototype.init = function () {
                 this.AppVersion = configuration.version;
-                this.freshdeskCreds = this.StudyAreaService.freshdeskCredentials;
-                if (this.freshdeskCreds) {
-                    this.getAboutArticle();
-                    this.getRegionHelpArticle();
-                    this.getActiveNews();
-                    this.getPastNews();
-                    this.getDisclaimersArticle();
-                }
-            };
-            AboutController.prototype.readCookie = function (name) {
-                var nameEQ = name + "=";
-                var ca = document.cookie.split(';');
-                for (var i = 0; i < ca.length; i++) {
-                    var c = ca[i];
-                    while (c.charAt(0) == ' ')
-                        c = c.substring(1, c.length);
-                    if (c.indexOf(nameEQ) == 0)
-                        return c.substring(nameEQ.length, c.length);
-                }
-                return null;
-            };
-            AboutController.prototype.createCookie = function (name, value, days) {
-                if (days) {
-                    var date = new Date();
-                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-                    var expires = "; expires=" + date.toUTCString();
-                }
-                else
-                    var expires = "";
-                document.cookie = name + "=" + value + expires + "; path=/";
+                this.getRegionHelpArticle();
             };
             AboutController.$inject = ['$scope', '$http', '$sce', 'StreamStats.Services.ModalService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', '$modalInstance'];
             return AboutController;

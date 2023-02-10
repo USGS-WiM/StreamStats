@@ -20,47 +20,72 @@
             <!--<div class="banner">
                 These data are preliminary or provisional and are subject to revision. They are being provided to meet the need for timely best science. The data have not received final approval by the U.S. Geological Survey (USGS) and are provided on the condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from the authorized or unauthorized use of the data.
             </div>-->
-            <div ng-hide="vm.aboutArticle"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
-            <div id="aboutContent" ng-bind-html="vm.convertUnsafe(vm.aboutArticle)"></div>
+            <div id="aboutContent">
+                <p>
+                    StreamStats is a Web application that provides access to an assortment of Geographic Information Systems (GIS) analytical tools that are useful for water-resources planning and management, and for 
+                    engineering and design purposes. The map-based user interface can be used to delineate drainage areas for user-selected sites on streams, and then get basin characteristics and estimates of flow 
+                    statistics for the selected sites anywhere this functionality is available. StreamStats users also can select the locations of U.S. Geological Survey data-collection stations, shown as triangles 
+                    on the StreamStats map, and get flow statistics and other information for the stations. The types of flow statistics that are available vary from state to state. A variety of additional tools are 
+                    available for discovering information about streams and the activities along them. <br><br>
+
+                    StreamStats works within Web browser software on personal computers and mobile devices, and is best viewed using the latest versions of Internet Explorer, Microsoft Edge, Chrome, or Firefox. The 
+                    browser must allow HTML5 asynchronous script execution. The application is being continually improved and expanded. The News link in our left-hand menu will provide notices of any new enhancements. <br>
+
+                    The <a href="https://www.usgs.gov/streamstats">StreamStats home page</a> provides links to a more detailed description of the program, a user's manual, descriptions of the outputs, definitions of basin 
+                    characteristics and streamflow statistics, limitations for use of the application, and other information. The user's manual also can be accessed by clicking on the Help link on the user interface. Users 
+                    should read the user's manual before attempting to use the application. <br><br>
+
+                    <img src="https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/media/images/NationalStatusMap2.3.23_0.png" alt="StreamStats Status Map" />
+
+                    The map above indicates the status of StreamStats nationally. Green states are available with full functionality. Purple states allow basin delineations and computing basin characteristics, but estimates 
+                    of flow statistics from regression equations are not available. Blue states are currently in development. Orange states are not implemented because no other agency has agreed to partner with the USGS to 
+                    cover implementation costs. <br><br>
+
+                    The U.S. Geological Survey StreamStats interface was developed in cooperation with many agency (federal, state, and local) partners by the Web Informatics and Mapping (WiM) group in collaboration with 
+                    the USGS Office of Surface Water StreamStats team, working with USGS Water Science Centers across the nation. USGS thanks the cooperators and collaborators that have helped to make full or partial implementation 
+                    of StreamStats possible within their states and regions.
+                </p>
+            </div>
         </div>
 
         <div id="regionInfo" ng-show="vm.selectedAboutTabName==='regionInfo'">
             <div id="supportContent">
                 <div ng-show="vm.regionArticle" ng-bind-html="vm.convertUnsafe(vm.regionArticle)"></div>
+                <p>
+                    StreamStats is developed on a state by state or regional basis. To find information about the data used for your area of interest. See our <a href="{{vm.regionURL}}">State and Region</a> pages.
+                </p>
             </div>
         </div>
 
         <div id="news" ng-show="vm.selectedAboutTabName==='news'">
-            <div id="activeNewsContent" ng-hide="vm.activeNewsArticles == 0">
-                <h3>Active News</h3>
-                <div ng-hide="vm.activeNewsArticles"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
-                <accordion id="activeNewsArticles" close-others="false">
-                    <accordion-group ng-repeat="article in vm.activeNewsArticles" ng-init="article.open = true" is-open="article.open">
-                        <accordion-heading><i ng-class="vm.activeNewsArticles[$index].open ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i> {{article.title}}</accordion-heading>
-                        <div class="row">
-                            <div class="col-sm-12" ng-bind-html="vm.convertUnsafe(article.description)"> </div>
-                        </div>
-                    </accordion-group>
-                </accordion>
-            </div>
-
-            <div id="pastNewsContent" ng-hide="vm.pastNewsArticles == 0">
-                <h3>Past News</h3>
-                <div ng-hide="vm.pastNewsArticles"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
-                <accordion id="pastNewsArticles">
-                    <accordion-group ng-repeat="article in vm.pastNewsArticles" is-open="article.open">
-                        <accordion-heading><i ng-class="vm.pastNewsArticles[$index].open ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i> {{article.title}}</accordion-heading>
-                        <div class="row">
-                            <div ng-hide="article.description"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
-                            <div class="col-sm-12" ng-bind-html="vm.convertUnsafe(article.description)"></div>
-                        </div>
-                    </accordion-group>
-                </accordion>
-            </div>
+            <p>
+                In an effort to keep users apprised of important changes to StreamStats, we release news articles periodically. See our <a href="https://www.usgs.gov/streamstats/news">News webpage</a> for articles.
+            </p>
         </div>
 
         <div id="disclaimers" ng-if="vm.selectedAboutTabName==='disclaimers'">
-            <div id="disclaimersContent" ng-bind-html="vm.convertUnsafe(vm.disclaimersArticle)"></div>
+            <div id="disclaimersContent">
+                <p>
+                    <b>USGS Data Disclaimer:<br></b>
+                    Unless otherwise stated, all data, metadata and related materials are considered to satisfy the quality standards relative to the purpose for which the data were collected. Although these data and 
+                    associated metadata have been reviewed for accuracy and completeness and approved for release by the U.S. Geological Survey (USGS), no warranty expressed or implied is made regarding the display or 
+                    utility of the data for other purposes, nor on all computer systems, nor shall the act of distribution constitute any such warranty.<br><br>
+                    
+                    <b>USGS Software Disclaimer:<br></b>
+                    This <a href="https://github.com/USGS-WiM/StreamStats">software</a> has been approved for release by the U.S. Geological Survey (USGS). Although the software has been subjected to rigorous review, 
+                    the USGS reserves the right to update the software as needed pursuant to further analysis and review. No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality 
+                    of the software and related material nor shall the fact of release constitute any such warranty. Furthermore, the software is released on condition that neither the USGS nor the U.S. Government shall be 
+                    held liable for any damages resulting from its authorized or unauthorized use.<br><br>
+
+                    <b>USGS Product Names Disclaimer:</b><br>
+                    Any use of trade, firm, or product names is for descriptive purposes only and does not imply endorsement by the U.S. Government.<br><br>
+
+                    <b>This web application has been made possible by several open-source projects: <br></b>
+                    - <a href="https://angularjs.org/">AngularJS</a><br>
+                    - <a href="https://leafletjs.com/">Leaflet</a><br>
+                    - <a href="https://github.com/tombatossals/angular-leaflet-directive">Angular Leftlet Directive</a>
+                </p>
+            </div>
         </div>
     </div>
 </div>
