@@ -800,19 +800,17 @@ module StreamStats.Services {
             return this.Execute(request).then(
                 (response: any) => {
                     // create array to return
-                    var regionsRaw = []; 
+                    var regions = response.data;
 
-                    // loop through response and add data to regions array
-                    response.data.forEach(function (element) {
-                        regionsRaw.push(element);
-                    });
+                    /* uncomment to implement filter
+                    var regionsRaw = response.data; 
 
                     // add filter for unwanted values, additional values can be added with &&
                     function filterRegions(element, index, array) {
                         return element.name !== "Undefined";
                     }
 
-                    var regions = regionsRaw.filter(filterRegions);
+                    var regions = regionsRaw.filter(filterRegions); */
                     
                     // console.log("regionList_nssServices", regions);
 

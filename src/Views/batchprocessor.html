@@ -20,27 +20,18 @@
 
                 <select ng-model="selectedRegion" ng-options="x.name for x in vm.regionList | orderBy: 'name'"></select>
             </div>
-            <div>
-                <span>
-                    <label class="chx">
-                        <input id="cbDelineate", type="checkbox" ng-checked="selectedRegion">
-                        <span>&nbsp;&nbsp;Basin Delineation&nbsp;&nbsp;&nbsp;</span>
-                    </label>
+            <div>                
+                <span>                
+                    <input id="cbDelineate" , type="checkbox" ng-checked="selectedRegion" onclick="return false;"
+                        display="inline-block">
+                    <label class="chx" for="cbDelineate">&nbsp;&nbsp;&nbsp;Basin Delineation&nbsp;&nbsp;&nbsp;</label>
+                    
+                    <input id="cbBasinChar" type="checkbox" display="inline-block">
+                    <label class="chx" for="cbBasinChar">&nbsp;&nbsp;&nbsp;Compute Basin Characteristics&nbsp;&nbsp;&nbsp;</label>
+
+                    <input id="cbFlowStats" type="checkbox" display="inline-block">
+                    <label class="chx" for="cbFlowStats">&nbsp;&nbsp;&nbsp;Compute Flow Statistics</label>
                 </span>
-                <span>
-                    <label class="chx">
-                        <input type="checkbox">
-                        <span>&nbsp;&nbsp;Compute Basin Characteristics&nbsp;&nbsp;&nbsp;</span>
-                    </label>
-                </span>
-                
-                <span>
-                    <label class="chx">
-                        <input type="checkbox">
-                        <span>&nbsp;&nbsp;Compute Flow Statistics</span>
-                    </label>
-                </span>
-                
             </div>
         </div>
 
