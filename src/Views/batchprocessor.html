@@ -16,7 +16,8 @@
 
         <div id="submitBatch" ng-if="vm.selectedBatchProcessorTabName==='submitBatch'">
             <div id="selectRegionID">
-                <label>Select Region / State</label>
+                <label>Select State / Region:</label>
+
                 <select ng-model="selectedRegion" ng-options="x.name for x in vm.regionList | orderBy: 'name'"></select>
             </div>
             <div>
