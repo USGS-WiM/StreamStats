@@ -100,9 +100,13 @@ var StreamStats;
                 _this_1.formattedPeakDates = [];
                 _this_1.formattedEstPeakDates = [];
                 _this_1.formattedDailyFlow = [];
+                _this_1.dailyRange = [];
                 _this_1.formattedDischargeObj = [];
                 _this_1.formattedRatingCurve = [];
                 _this_1.formattedUSGSMeasured = [];
+                _this_1.logScale = true;
+                _this_1.plotlines = true;
+                _this_1.logScale = false;
                 $scope.vm = _this_1;
                 _this_1.modalInstance = modal;
                 _this_1.modalService = modalService;
@@ -518,6 +522,9 @@ var StreamStats;
                         var dataRow = row.split('\t');
                         var object = {
                             dateTime: dataRow[3],
+                            timeZone: dataRow[4],
+                            quality: dataRow[10],
+                            control: dataRow[13],
                             x: parseFloat(dataRow[9]),
                             y: parseFloat(dataRow[8])
                         };
@@ -656,7 +663,6 @@ var StreamStats;
                         });
                     });
                     this.createDischargePlot();
-                    this.createDailyRasterPlot();
                     this.createAnnualFlowPlot();
                 }
             };
@@ -810,107 +816,6 @@ var StreamStats;
                     _this_1.chartConfig.yAxis.plotLines.push(formattedFloodFreqItem);
                 });
             };
-            GagePageController.prototype.createDailyRasterPlot = function () {
-                function isLeapYear(year) {
-                    if (year % 400 === 0)
-                        return true;
-                    if (year % 100 === 0)
-                        return false;
-                    return year % 4 === 0;
-                }
-                this.heatChartConfig = {
-                    chart: {
-                        height: 450,
-                        width: 800,
-                        zooming: {
-                            type: 'xy'
-                        }
-                    },
-                    title: {
-                        text: 'Daily Streamflow',
-                        align: 'center'
-                    },
-                    subtitle: {
-                        text: 'Click and drag in the plot area to zoom in',
-                        align: 'center'
-                    },
-                    xAxis: {
-                        type: null,
-                        min: 275,
-                        tickPositions: [275, 306, 336, 367, 398, 427, 458, 488, 519, 549, 580, 611, 700],
-                        title: {
-                            text: 'Date'
-                        },
-                        threshold: 273,
-                        labels: { null: ,
-                        }
-                    },
-                    yAxis: {
-                        title: {
-                            text: 'Water Year'
-                        },
-                        custom: {
-                            allowNegativeLog: true
-                        }
-                    },
-                    colorAxis: {
-                        type: 'logarithmic',
-                        min: null,
-                        max: null,
-                        stops: [
-                            [0, '#FF0000'],
-                            [0.3, '#FFCC33'],
-                            [0.8, '#66CCFF'],
-                            [1, '#3300CC']
-                        ],
-                        startOnTick: false,
-                        endOnTick: false,
-                        allowNegativeLog: true
-                    },
-                    series: [{
-                            name: 'Daily Streamflow',
-                            pixelSpacing: null,
-                            borderWidth: 0.05,
-                            borderColor: 'white',
-                            type: 'heatmap',
-                            data: this.formattedDailyHeat,
-                            tooltip: {
-                                headerFormat: '<b>Daily Streamflow</b>',
-                                pointFormatter: function () {
-                                    if (this.formattedDailyHeat !== null) {
-                                        var year = this.y;
-                                        var doy = this.x;
-                                        if (doy > 366) {
-                                            doy -= 366;
-                                        }
-                                        ;
-                                        if (doy > 274) {
-                                            year -= 1;
-                                        }
-                                        ;
-                                        if (isLeapYear(year) == false && doy > 59) {
-                                            doy -= 1;
-                                        }
-                                        ;
-                                        var fullDate = new Date(year, 0, doy);
-                                        var UTCday = fullDate.getUTCDate();
-                                        var month = fullDate.getUTCMonth();
-                                        month += 1;
-                                        var formattedUTCDate = month + '/' + UTCday + '/' + year;
-                                        var waterYear = year;
-                                        if (month > 9) {
-                                            waterYear += 1;
-                                        }
-                                        ;
-                                        return '<br>Date: <b>' + formattedUTCDate + '</b><br>Value: <b>' + this.value + ' ft³/s</b><br>Water Year: <b>' + waterYear;
-                                    }
-                                }
-                            },
-                            turboThreshold: 0
-                        }]
-                };
-            };
-            ;
             GagePageController.prototype.createDischargePlot = function () {
                 var _this_1 = this;
                 console.log('this.discharge obj 2nd one', this.dischargeObj);
@@ -935,24 +840,29 @@ var StreamStats;
                         title: {
                             text: 'River Discharge (cfs)'
                         },
-                        type1: 'logarithmic',
+                        custom: {
+                            allowNegativeLog: true
+                        }
                     },
                     yAxis: {
                         title: {
                             text: 'River Stage (ft)'
                         },
-                        plotLines: [{ value: null, color: null, width: null, zIndex: null, label: { text: null } }]
+                        custom: {
+                            allowNegativeLog: true
+                        },
+                        plotLines: [{ value: null, color: null, width: null, zIndex: null, label: { text: null }, id: 'plotlines' }]
                     },
                     series: [
                         {
                             name: 'USGS Rating Curve',
+                            showInNavigator: false,
                             tooltip: { headerFormat: '<b>USGS Rating Curve</b>',
                                 pointFormatter: function () {
                                     if (this.dischargeObj !== null) {
-                                        var discharge = this.x.getDischarge();
-                                        var stage = this.x.getStage();
-                                        var formattedRatingCurve = discharge + '/' + stage;
-                                        return '<br>Gage Height: <b>' + formattedRatingCurve + '</b><br>Discharge: <b>' + this.y + ' cfs';
+                                        var discharge = this.x;
+                                        var stage = this.y;
+                                        return '<br>Gage Height: <b>' + stage + ' ft' + '</b><br>Discharge: <b>' + discharge + ' cfs';
                                     }
                                 }
                             },
@@ -967,8 +877,44 @@ var StreamStats;
                             showInLegend: this.dischargeObj.length > 0
                         },
                         {
+                            name: 'Annual Peaks',
+                            showInNavigator: false,
+                            tooltip: {
+                                headerFormat: '<b>Annual Peaks</b>',
+                                pointFormatter: function () {
+                                    if (this.formattedDailyFlow !== null) {
+                                        var date = this.x;
+                                        var stage = this.y;
+                                        return '<br>Date <b>' + date + '<br>Peak <b>' + stage + ' cfs' + '<br>at stage <b>' + stage + ' ft';
+                                    }
+                                }
+                            },
+                            turboThreshold: 0,
+                            type: 'scatter',
+                            color: 'black',
+                            data: this.formattedDailyFlow,
+                            marker: {
+                                symbol: 'circle',
+                                radius: 3
+                            },
+                            showInLegend: this.formattedDailyFlow.length > 0
+                        },
+                        {
                             name: 'USGS Measured',
-                            tooltip: null,
+                            showInNavigator: false,
+                            tooltip: { headerFormat: '<b>USGS Measured</b>',
+                                pointFormatter: function () {
+                                    if (this.measuredObj !== null) {
+                                        var dateTime = this.dateTime;
+                                        var timeZone = this.timeZone;
+                                        var quality = this.quality;
+                                        var control = this.control;
+                                        var discharge = this.x;
+                                        var stage = this.y;
+                                        return '<br><b>' + dateTime + ' ' + timeZone + '<br>Gage Height: <b>' + stage + ' ft' + '<br>Discharge: <b>' + discharge + ' cfs' + '<br>Quality: <b>' + quality + '<br>Control: <b>' + control;
+                                    }
+                                }
+                            },
                             turboThreshold: 0,
                             type: 'scatter',
                             color: '#1b75ac ',
@@ -985,6 +931,73 @@ var StreamStats;
                     _this_1.chartConfig.yAxis.plotLines.push(formattedFloodFreqItem);
                 });
             };
+            GagePageController.prototype.logToLinear = function () {
+                var chart = $('#chart3').highcharts();
+                if (this.dailyRange.length > 0) {
+                    var dailyMax = this.dailyRange.reduce(function (accumulatedValue, currentValue) {
+                        return Math.max(accumulatedValue, currentValue);
+                    });
+                    console.log('Daily Max', dailyMax);
+                    var dailyMin = this.dailyRange.reduce(function (accumulatedValue, currentValue) {
+                        return Math.min(accumulatedValue, currentValue);
+                    });
+                    console.log('Daily Min', dailyMin);
+                    var asc = this.dailyRange.sort(function (a, b) { return a - b; });
+                    console.log('sorted range', asc);
+                    var tenthPercentile = asc[Math.floor(asc.length * 0.1)];
+                    var twentiethPercentile = asc[Math.floor(asc.length * 0.2)];
+                    var thirtiethPercentile = asc[Math.floor(asc.length * 0.3)];
+                    var fortiethPercentile = asc[Math.floor(asc.length * 0.4)];
+                    var fiftiethPercentile = asc[Math.floor(asc.length * 0.5)];
+                    var sixtiethPercentile = asc[Math.floor(asc.length * 0.6)];
+                    var seventiethPercentile = asc[Math.floor(asc.length * 0.7)];
+                    var eightiethPercentile = asc[Math.floor(asc.length * 0.8)];
+                    var ninetiethPercentile = asc[Math.floor(asc.length * 0.9)];
+                    console.log('percentiles', tenthPercentile, twentiethPercentile, thirtiethPercentile, fortiethPercentile, fiftiethPercentile, sixtiethPercentile, seventiethPercentile, eightiethPercentile, ninetiethPercentile);
+                    var firstStop = (tenthPercentile - (dailyMin)) / (dailyMax - (dailyMin));
+                    var secondStop = (twentiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
+                    var thirdStop = (thirtiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
+                    var fourthStop = (fortiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
+                    var fifthStop = (fiftiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
+                    var sixthStop = (sixtiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
+                    var seventhStop = (seventiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
+                    var eigthStop = (eightiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
+                    var ninthStop = (ninetiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
+                    console.log('color stops', firstStop, secondStop, thirdStop, fourthStop, fifthStop, sixthStop, seventhStop, eigthStop, ninthStop);
+                }
+                ;
+                if (this.logScale) {
+                    chart.colorAxis[0].update({ type: 'logarithmic' });
+                    console.log('log');
+                }
+                else {
+                    chart.colorAxis[0].update({ type: 'linear' });
+                    console.log('linear');
+                }
+            };
+            ;
+            GagePageController.prototype.togglePlotLines = function () {
+                var chart = $('#chart3').highcharts();
+                if (this.plotlines) {
+                    this.chartConfig.yAxis.plotLines.forEach(function (plotLine) {
+                        chart.yAxis[0].addPlotLine(plotLine);
+                    });
+                }
+                else {
+                    chart.yAxis[0].removePlotLine('plotlines');
+                }
+            };
+            ;
+            GagePageController.prototype.toggleLogLinear = function () {
+                var chart = $('#chart3').highcharts();
+                if (this.logScale) {
+                    chart.yAxis[0].update({ type: 'logarithmic' });
+                }
+                else {
+                    chart.yAxis[0].update({ type: 'linear' });
+                }
+            };
+            ;
             GagePageController.prototype.init = function () {
                 this.AppVersion = configuration.version;
                 this.getGagePage();
