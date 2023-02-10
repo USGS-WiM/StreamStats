@@ -20,12 +20,13 @@ var StreamStats;
         'use string';
         var BatchProcessorController = (function (_super) {
             __extends(BatchProcessorController, _super);
-            function BatchProcessorController($scope, $http, modalService, modal) {
+            function BatchProcessorController($scope, $http, modalService, nssService, modal) {
                 var _this = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
                 $scope.vm = _this;
                 _this.modalInstance = modal;
                 _this.modalService = modalService;
                 _this.selectedBatchProcessorTabName = "submitBatch";
+                _this.nssService = nssService;
                 _this.init();
                 return _this;
             }
@@ -35,10 +36,15 @@ var StreamStats;
             BatchProcessorController.prototype.selectBatchProcessorTab = function (tabname) {
                 this.selectedBatchProcessorTabName = tabname;
             };
+            BatchProcessorController.prototype.getRegions = function () {
+                var _this = this;
+                this.nssService.getRegionList().then(function (response) { _this.regionList = response; });
+            };
             BatchProcessorController.prototype.init = function () {
                 this.AppVersion = configuration.version;
+                this.getRegions();
             };
-            BatchProcessorController.$inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance'];
+            BatchProcessorController.$inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService', '$modalInstance'];
             return BatchProcessorController;
         }(WiM.Services.HTTPServiceBase));
         angular.module('StreamStats.Controllers')

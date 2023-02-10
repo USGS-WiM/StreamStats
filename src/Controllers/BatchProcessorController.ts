@@ -41,21 +41,24 @@ module StreamStats.Controllers {
         public http: any;
         private modalInstance: ng.ui.bootstrap.IModalServiceInstance;
         private modalService: Services.IModalService;
+        private nssService: Services.InssService;
         public selectedBatchProcessorTabName: string;
         public displayMessage: string;
         public isValid: boolean;
         public AppVersion: string;  
         public submitBatchInfo: string;
+        public regionList: Object;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance'];
-        constructor($scope: IBatchProcessorControllerScope, $http: ng.IHttpService, modalService: Services.IModalService, modal:ng.ui.bootstrap.IModalServiceInstance) {
+        static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService', '$modalInstance'];
+        constructor($scope: IBatchProcessorControllerScope, $http: ng.IHttpService, modalService: Services.IModalService, nssService: Services.InssService, modal:ng.ui.bootstrap.IModalServiceInstance) {
             super($http, configuration.baseurls.StreamStats);
             $scope.vm = this;
             this.modalInstance = modal;
             this.modalService = modalService;
             this.selectedBatchProcessorTabName = "submitBatch";
+            this.nssService = nssService;
             this.init();  
         }  
         
@@ -68,16 +71,27 @@ module StreamStats.Controllers {
        
         // used for switching between tabs
         public selectBatchProcessorTab(tabname: string): void {
-            // if (this.selectedBatchProcessorTabName == tabname) return;
             this.selectedBatchProcessorTabName = tabname;
             // console.log('selected tab: '+tabname);
         }
+
+        // get list of regions/stats from nssservices/regions
+        // Used getFreshDeskArticles from HelpController as template
+        public getRegions(): void {
+            // call an ng.IPromise first
+            this.nssService.getRegionList().then(
+                // set regionList to values of promised response
+                response => { this.regionList = response}
+            );
+        }
+
         // Helper Methods
         // -+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {   
             //console.log("in about controller");
             this.AppVersion = configuration.version;
-            }
+            this.getRegions()
+        }
         
 
     }//end  class

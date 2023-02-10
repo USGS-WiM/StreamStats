@@ -15,7 +15,26 @@
     <div style="padding-top: 10px;">
 
         <div id="submitBatch" ng-if="vm.selectedBatchProcessorTabName==='submitBatch'">
-            <p>This is the submit batch processor tab</p>
+            <div id="selectRegionID">
+                <label>Select State / Region:</label>
+
+                                <select ng-model="selectedRegion" ng-options="region.code as region.name for region in vm.regionList track by region.code"></select>
+
+
+            </div>
+            <div>                
+                <span>                
+
+                    <input id="cbDelineate" , type="checkbox" ng-checked="selectedRegion" display="inline-block" ng-disabled="selectedRegion">
+                    <label class="chx" for="cbDelineate">&nbsp;&nbsp;&nbsp;Basin Delineation&nbsp;&nbsp;&nbsp;</label>
+                    
+                    <input id="cbBasinChar" type="checkbox" display="inline-block">
+                    <label class="chx" for="cbBasinChar">&nbsp;&nbsp;&nbsp;Compute Basin Characteristics&nbsp;&nbsp;&nbsp;</label>
+
+                    <input id="cbFlowStats" type="checkbox" display="inline-block">
+                    <label class="chx" for="cbFlowStats">&nbsp;&nbsp;&nbsp;Compute Flow Statistics</label>
+                </span>
+            </div>
         </div>
 
         <div id="batchStatus" ng-if="vm.selectedBatchProcessorTabName==='batchStatus'">

@@ -615,6 +615,18 @@ var StreamStats;
                 }
                 return result;
             };
+            nssService.prototype.getRegionList = function () {
+                var _this = this;
+                var url = configuration.baseurls['NSS'] + configuration.queryparams['NSSRegions'];
+                var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                return this.Execute(request).then(function (response) {
+                    var regions = response.data;
+                    return regions;
+                }, function (error) {
+                    _this.toaster.pop('error', "There was an HTTP error returning the regions list.", "Please retry", 0);
+                }).finally(function () {
+                });
+            };
             nssService.prototype.cleanRegressionRegions = function (RegressionRegions) {
                 for (var i = 0; i < RegressionRegions.length; i++) {
                     var regRegion = RegressionRegions[i];

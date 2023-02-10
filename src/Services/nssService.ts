@@ -41,6 +41,7 @@ module StreamStats.Services {
         queriedRegions: boolean;
         getflattenNSSTable(name: string): Array<INSSResultTable>
         reportGenerated: boolean;  
+        getRegionList(): ng.IPromise<any>;
     }
     export interface IStatisticsGroup {
         id: string;
@@ -787,6 +788,39 @@ module StreamStats.Services {
             }
             return result;
         }
+
+        // get region list form nssservices/regions
+        // referenced getFreshDeskArticles from HelpControllers
+        // keys to success: use ng.Ipromise<any> and return this.Execute 
+        public getRegionList(): ng.IPromise<any> {
+
+            var url = configuration.baseurls['NSS'] + configuration.queryparams['NSSRegions'];
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
+            
+            return this.Execute(request).then(
+                (response: any) => {
+                    // create array to return
+                    var regions = response.data;
+
+                    /* uncomment to implement filter
+                    var regionsRaw = response.data; 
+
+                    // add filter for unwanted values, additional values can be added with &&
+                    function filterRegions(element, index, array) {
+                        return element.name !== "Undefined";
+                    }
+
+                    var regions = regionsRaw.filter(filterRegions); */
+                    
+                    // console.log("regionList_nssServices", regions);
+
+                    return regions;
+                }, (error) => {
+                    this.toaster.pop('error', "There was an HTTP error returning the regions list.", "Please retry", 0);
+                }).finally(() => {
+                });
+        }
+
         //HelperMethods
         //-+-+-+-+-+-+-+-+-+-+-+-
         private cleanRegressionRegions(RegressionRegions:Array<any>): void {
