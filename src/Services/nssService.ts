@@ -159,7 +159,6 @@ module StreamStats.Services {
         public isDone: boolean;
         public reportGenerated: boolean;
         private modalService: Services.IModalService;
-        public regionList: any;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
