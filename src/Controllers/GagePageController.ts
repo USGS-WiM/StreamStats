@@ -747,12 +747,28 @@ module StreamStats.Controllers {
                 length += currentData.length
                 }
                 else {
-                listOfSummations.push({x: 650, y: currentYear -1, value: sum / length, sum: sum, length: length}, {x: 651, y: currentYear -1, value: sum / length, sum: sum, length: length}, {x: 652, y: currentYear -1, value: sum / length, sum: sum, length: length})
+                listOfSummations.push({x: 650, y: currentYear -1, value: sum / length, sum: sum, length: length}, 
+                                    {x: 651, y: currentYear -1, value: sum / length, sum: sum, length: length}, 
+                                    {x: 652, y: currentYear -1, value: sum / length, sum: sum, length: length}, 
+                                    {x: 653, y: currentYear -1, value: sum / length, sum: sum, length: length}, 
+                                    {x: 654, y: currentYear -1, value: sum / length, sum: sum, length: length}, 
+                                    {x: 655, y: currentYear -1, value: sum / length, sum: sum, length: length}, 
+                                    {x: 656, y: currentYear -1, value: sum / length, sum: sum, length: length}, 
+                                    {x: 657, y: currentYear -1, value: sum / length, sum: sum, length: length}, 
+                                    {x: 658, y: currentYear -1, value: sum / length, sum: sum, length: length});
                 sum = currentData.value;
                 length = currentData.length;
                 }
                 if (i == noNulls.length - 1){
-                    listOfSummations.push({x: 650, y: currentYear, value: sum / length, sum: sum, length: length}, {x: 651, y: currentYear -1, value: sum / length, sum: sum, length: length}, {x: 652, y: currentYear -1, value: sum / length, sum: sum, length: length})
+                    listOfSummations.push({x: 650, y: currentYear, value: sum / length, sum: sum, length: length}, 
+                                        {x: 651, y: currentYear, value: sum / length, sum: sum, length: length}, 
+                                        {x: 652, y: currentYear, value: sum / length, sum: sum, length: length}, 
+                                        {x: 653, y: currentYear, value: sum / length, sum: sum, length: length}, 
+                                        {x: 654, y: currentYear, value: sum / length, sum: sum, length: length}, 
+                                        {x: 655, y: currentYear, value: sum / length, sum: sum, length: length},
+                                        {x: 656, y: currentYear, value: sum / length, sum: sum, length: length}, 
+                                        {x: 657, y: currentYear, value: sum / length, sum: sum, length: length}, 
+                                        {x: 658, y: currentYear, value: sum / length, sum: sum, length: length},)
                     }
                 previousYear = currentYear;
             }
@@ -1051,8 +1067,8 @@ module StreamStats.Controllers {
                                     waterYear += 1; // adding a year to dates that fall into the next water year
                                 };
                                 //console.log(doy);
-                                if (doy > 282 && doy < 287) return '</b><br>Water Year Average Value: <b>' + this.value + ' ft³/s</b><br>Water Year: <b>' + waterYear
-                                if (doy !== 283 && doy !== 284 && doy !== 285 && doy !== 286) return '<br>Date: <b>'  + formattedUTCDate + '</b><br>Value: <b>' + this.value + ' ft³/s</b><br>Water Year: <b>' + waterYear
+                                if (doy > 282 && doy < 293) return '</b><br>Water Year Average Value: <b>' + this.value.toFixed(2) + ' ft³/s</b><br>Water Year: <b>' + waterYear
+                                if (doy !== 283 && doy !== 284 && doy !== 285 && doy !== 286 && doy !== 287 && doy !== 288 && doy !== 289 && doy !== 290 && doy !== 291 && doy !== 292) return '<br>Date: <b>'  + formattedUTCDate + '</b><br>Value: <b>' + this.value + ' ft³/s</b><br>Water Year: <b>' + waterYear
                             }
                         }
                     },
