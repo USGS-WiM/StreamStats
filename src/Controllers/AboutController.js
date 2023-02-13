@@ -31,7 +31,7 @@ var StreamStats;
                 _this.regionService = region;
                 _this.selectedAboutTabName = "about";
                 _this.regionURL = "https://www.usgs.gov/streamstats/state-and-region-based-info";
-                _this.regionArticle = "<p>StreamStats is developed on a state by state or regional basis. To find information about the data used for your area of interest, see our <a href=" + _this.regionURL + ">State and Region</a> pages.</p>";
+                _this.regionArticle = "<p>StreamStats is developed on a state-by-state or regional basis. To find information about the data used for your area of interest, see our <a href=" + _this.regionURL + ">State and Region</a> pages.</p>";
                 _this.init();
                 return _this;
             }
@@ -65,7 +65,8 @@ var StreamStats;
                                 _this.regionArticle = '<div class="wim-alert">There is currently no information page for <strong>' + value.Name + '</strong>.  Please contact the <a href="mailto:support@streamstats.freshdesk.com">streamstats team</a> with any questions.</div>';
                             }
                             else {
-                                _this.regionArticle = "<p>To find information about the data used for <strong>" + value.Name + "</strong>, see our <a href=" + _this.regionURL + ">" + value.Name + " information </a> page.</p>";
+                                _this.regionURL = value.URL;
+                                _this.regionArticle = "<p>To find information about the data used for <strong>" + value.Name + "</strong>, see our<a href=" + _this.regionURL + ">" + value.Name + " information</a>page.</p>";
                             }
                         }
                     }
