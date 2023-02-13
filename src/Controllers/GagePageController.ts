@@ -690,7 +690,8 @@ module StreamStats.Controllers {
                     }
                 });
             }
-            if (this.floodFreq) { //set up AEP plotLines
+            if (this.floodFreq) {
+                //set up AEP plotLines
                 this.formattedFloodFreq = [];
                     const AEPColors = {
                         9: '#9A6324',
@@ -717,17 +718,49 @@ module StreamStats.Controllers {
                         2317: '#ffe119',
                         2318: '#42d4f4'
                     };
-                this.floodFreq.forEach((floodFreqItem) => {
-                    let colorIndex = floodFreqItem.regressionTypeID;
-                    let formattedName = floodFreqItem.regressionType.name.substring(0, floodFreqItem.regressionType.name.length-18);
-                    this.formattedFloodFreq.push({
-                        value: floodFreqItem.value,
-                        color: AEPColors[colorIndex],
-                        width: 1.5,
-                        zIndex: 4,
-                        label: {text: formattedName + '% AEP'},
-                        id: 'plotlines'
-                        });
+                    var finalYearIndex = this.formattedPeakDates.length-1;
+                    var endWY = this.formattedPeakDates[finalYearIndex].x;
+                    var startWY = this.formattedPeakDates[0].x
+                    this.formattedFloodFreq = [];
+                    this.floodFreq.forEach((floodFreqItem) => {
+                        let colorIndex = floodFreqItem.regressionTypeID;
+                        this.formattedFloodFreq.push({
+                            name: floodFreqItem.regressionType.name,
+                            tooltip: {
+                                headerFormat:'<b>Annual Exceedance Percentage (AEP)</b><br>',
+                                pointFormatter: function(){
+                                    if (this.formattedPeakDates !== null){
+                                        return '<b>'  + floodFreqItem.regressionType.name + '</b><br>Value: <b>' + floodFreqItem.value + ' ft³/s<br>'
+                                    }
+                                }
+                            },
+                            turboThreshold: 0, 
+                            type: 'line',
+                            color: AEPColors[colorIndex],
+                            data:
+                            [
+                                {
+                                    x: startWY,
+                                    y: floodFreqItem.value
+                                },{
+                                    x: endWY,
+                                    y: floodFreqItem.value
+                                }
+                            ],
+                            marker: {
+                                symbol: 'circle',
+                                radius: 0.1
+                            },
+                            })
+                    // let formattedName = floodFreqItem.regressionType.name.substring(0, floodFreqItem.regressionType.name.length-18);
+                    // this.formattedFloodFreq.push({
+                    //     value: floodFreqItem.value,
+                    //     color: AEPColors[colorIndex],
+                    //     width: 1.5,
+                    //     zIndex: 4,
+                    //     label: {text: formattedName + '% AEP'},
+                    //     id: 'plotlines'
+                    //     });
                     });
             this.createAnnualFlowPlot();
         }}
@@ -878,24 +911,26 @@ module StreamStats.Controllers {
                     showInLegend: this.formattedEstPeakDates.length > 0 //still showing up in legend if y is NaN
                 }] 
             } 
+            // this.formattedFloodFreq.forEach((formattedFloodFreqItem) => {
+            //     this.chartConfig.yAxis.plotLines.push(formattedFloodFreqItem)
             this.formattedFloodFreq.forEach((formattedFloodFreqItem) => {
-                this.chartConfig.yAxis.plotLines.push(formattedFloodFreqItem)
+                this.chartConfig.series.push(formattedFloodFreqItem)
             });
         }
 
         //checkbox for turning plotLines on and off
-        public plotlines = true;
-            public togglePlotLines () {
-                let chart = $('#chart1').highcharts();
-                if (this.plotlines) {
-                this.chartConfig.yAxis.plotLines.forEach((plotLine) => {
-                    chart.yAxis[0].addPlotLine(plotLine);
-                });
-            }
-                else {
-                chart.yAxis[0].removePlotLine('plotlines'); // all plot lines have id: 'plotlines'
-                }
-            };
+        // public plotlines = true;
+        //     public togglePlotLines () {
+        //         let chart = $('#chart1').highcharts();
+        //         if (this.plotlines) {
+        //         this.chartConfig.yAxis.plotLines.forEach((plotLine) => {
+        //             chart.yAxis[0].addPlotLine(plotLine);
+        //         });
+        //     }
+        //         else {
+        //         chart.yAxis[0].removePlotLine('plotlines'); // all plot lines have id: 'plotlines'
+        //         }
+        //     };
 
         //checkbox for change linear to log scale
         public logScale = false; 
