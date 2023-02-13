@@ -35,11 +35,11 @@
                     characteristics and streamflow statistics, limitations for use of the application, and other information. The user's manual also can be accessed by clicking on the Help link on the user interface. Users 
                     should read the user's manual before attempting to use the application. <br><br>
 
-                    <img src="https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/media/images/NationalStatusMap2.3.23_0.png" alt="StreamStats Status Map" />
+                    <img src="https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/media/images/NationalStatusMap.230208.png" alt="StreamStats Status Map" />
 
-                    The map above indicates the status of StreamStats nationally. Green states are available with full functionality. Purple states allow basin delineations and computing basin characteristics, but estimates 
-                    of flow statistics from regression equations are not available. Blue states are currently in development. Orange states are not implemented because no other agency has agreed to partner with the USGS to 
-                    cover implementation costs. <br><br>
+                    The map above indicates the status of StreamStats nationally. Green states are available with full functionality. Purple regions are basin specific and/or storm drain implementations. Blue  
+                    indicates regions that are currently in development. Orange are regions that have limited functionality for delineating basins and computing basin characteristics but have no flow estimates.
+                    Regions in grey are not implemented.<br><br>
 
                     The U.S. Geological Survey StreamStats interface was developed in cooperation with many agency (federal, state, and local) partners by the Web Informatics and Mapping (WiM) group in collaboration with 
                     the USGS Office of Surface Water StreamStats team, working with USGS Water Science Centers across the nation. USGS thanks the cooperators and collaborators that have helped to make full or partial implementation 
@@ -51,9 +51,6 @@
         <div id="regionInfo" ng-show="vm.selectedAboutTabName==='regionInfo'">
             <div id="supportContent">
                 <div ng-show="vm.regionArticle" ng-bind-html="vm.convertUnsafe(vm.regionArticle)"></div>
-                <p>
-                    StreamStats is developed on a state by state or regional basis. To find information about the data used for your area of interest. See our <a href="{{vm.regionURL}}">State and Region</a> pages.
-                </p>
             </div>
         </div>
 

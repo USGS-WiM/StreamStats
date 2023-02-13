@@ -62,8 +62,8 @@ module StreamStats.Controllers {
             this.StudyAreaService = studyAreaService;
             this.regionService = region;
             this.selectedAboutTabName = "about";
-            this.regionArticle = '<h3>No State or Region Selected</h3>';
             this.regionURL = "https://www.usgs.gov/streamstats/state-and-region-based-info"
+            this.regionArticle = "<p>StreamStats is developed on a state by state or regional basis. To find information about the data used for your area of interest, see our <a href="+ this.regionURL +">State and Region</a> pages.</p>";
             this.init();  
         }  
         
@@ -104,10 +104,9 @@ module StreamStats.Controllers {
                     //otherwise get region help url
                     else {
                         if (value.URL == null) { // Doesnt have state webpage
-                            this.regionArticle = '<div class="wim-alert">There is currently no state/region page for <strong>' + value.Name + '</strong>.  Please contact the <a href="mailto:support@streamstats.freshdesk.com">streamstats team</a> with any questions.</div>';
+                            this.regionArticle = '<div class="wim-alert">There is currently no information page for <strong>' + value.Name + '</strong>.  Please contact the <a href="mailto:support@streamstats.freshdesk.com">streamstats team</a> with any questions.</div>';
                         } else { // Has state webpage
-                            this.regionArticle = null;
-                            this.regionURL = value.URL
+                            this.regionArticle = "<p>To find information about the data used for <strong>"+ value.Name + "</strong>, see our <a href="+this.regionURL+">"+ value.Name + " information </a> page.</p>";
                         }
                     }
                 }
