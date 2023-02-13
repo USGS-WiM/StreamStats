@@ -103,8 +103,12 @@ module StreamStats.Controllers {
                     }
                     //otherwise get region help url
                     else {
-                        this.regionArticle = null;
-                        this.regionURL = value.URL
+                        if (value.URL == null) { // Doesnt have state webpage
+                            this.regionArticle = '<div class="wim-alert">There is currently no state/region page for <strong>' + value.Name + '</strong>.  Please contact the <a href="mailto:support@streamstats.freshdesk.com">streamstats team</a> with any questions.</div>';
+                        } else { // Has state webpage
+                            this.regionArticle = null;
+                            this.regionURL = value.URL
+                        }
                     }
                 }
             });

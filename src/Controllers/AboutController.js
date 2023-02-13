@@ -61,8 +61,13 @@ var StreamStats;
                             _this.regionArticle = '<div class="wim-alert">StreamStats has not been developed for <strong>' + value.Name + '</strong>.  Please contact the <a href="mailto:support@streamstats.freshdesk.com">streamstats team</a> if you would like StreamStats enabled for this State/Region.</div>';
                         }
                         else {
-                            _this.regionArticle = null;
-                            _this.regionURL = value.URL;
+                            if (value.URL == null) {
+                                _this.regionArticle = '<div class="wim-alert">There is currently no state/region page for <strong>' + value.Name + '</strong>.  Please contact the <a href="mailto:support@streamstats.freshdesk.com">streamstats team</a> with any questions.</div>';
+                            }
+                            else {
+                                _this.regionArticle = null;
+                                _this.regionURL = value.URL;
+                            }
                         }
                     }
                 });
