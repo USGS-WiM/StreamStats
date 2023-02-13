@@ -736,6 +736,7 @@ module StreamStats.Controllers {
                             },
                             turboThreshold: 0, 
                             type: 'line',
+                            id: 'AEP',
                             color: AEPColors[colorIndex],
                             data:
                             [
@@ -747,6 +748,7 @@ module StreamStats.Controllers {
                                     y: floodFreqItem.value
                                 }
                             ],
+                            linkedTo: ':previous',
                             marker: {
                                 symbol: 'circle',
                                 radius: 0.1
@@ -842,6 +844,7 @@ module StreamStats.Controllers {
                     },
                     turboThreshold: 0, 
                     type    : 'line',
+                    //id: 'daily',
                     color   : '#add8f2',
                     data    : this.formattedDailyFlow,
                     marker: {
@@ -872,6 +875,7 @@ module StreamStats.Controllers {
                     },
                     turboThreshold: 0, 
                     type    : 'scatter',
+                    //id: 'annual',
                     color   : 'black',
                     data    : this.formattedPeakDates,
                     marker: {
@@ -902,6 +906,7 @@ module StreamStats.Controllers {
                     },
                     turboThreshold: 0, 
                     type    : 'scatter',
+                    //id: 'estAnnual',
                     color   : 'red',
                     data    : this.formattedEstPeakDates,
                     marker: {
@@ -909,7 +914,33 @@ module StreamStats.Controllers {
                         radius: 3
                     },
                     showInLegend: this.formattedEstPeakDates.length > 0 //still showing up in legend if y is NaN
-                }] 
+                },
+                {
+                    name: 'Annual Exceedance Probability',
+                    showInNavigator: false,
+                    tooltip: {
+                        headerFormat: null,
+                        pointFormatter: function(){
+                        }
+                    },
+                    turboThreshold: 0, 
+                    type: null,
+                    //id: 'AEPlines',
+                    color: '#911eb4',
+                    data: null,
+                    // label: {
+                    //     enabled: true,
+                    //     align: 'left',
+                    //     format: {text: formattedName + '% AEP'},
+                    //     allowOverlap: true
+                    // },
+                    marker: {
+                        symbol: 'line',
+                        radius: 0.1
+                    },
+                    showInLegend: true
+                }
+            ] 
             } 
             // this.formattedFloodFreq.forEach((formattedFloodFreqItem) => {
             //     this.chartConfig.yAxis.plotLines.push(formattedFloodFreqItem)

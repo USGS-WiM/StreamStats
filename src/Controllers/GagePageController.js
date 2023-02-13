@@ -542,6 +542,7 @@ var StreamStats;
                             },
                             turboThreshold: 0,
                             type: 'line',
+                            id: 'AEP',
                             color: AEPColors_1[colorIndex],
                             data: [
                                 {
@@ -552,6 +553,7 @@ var StreamStats;
                                     y: floodFreqItem.value
                                 }
                             ],
+                            linkedTo: ':previous',
                             marker: {
                                 symbol: 'circle',
                                 radius: 0.1
@@ -704,6 +706,24 @@ var StreamStats;
                                 radius: 3
                             },
                             showInLegend: this.formattedEstPeakDates.length > 0
+                        },
+                        {
+                            name: 'Annual Exceedance Probability',
+                            showInNavigator: false,
+                            tooltip: {
+                                headerFormat: null,
+                                pointFormatter: function () {
+                                }
+                            },
+                            turboThreshold: 0,
+                            type: null,
+                            color: '#911eb4',
+                            data: null,
+                            marker: {
+                                symbol: 'line',
+                                radius: 0.1
+                            },
+                            showInLegend: true
                         }
                     ]
                 };
