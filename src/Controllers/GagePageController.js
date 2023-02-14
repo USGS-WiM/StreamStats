@@ -525,34 +525,52 @@ var StreamStats;
                         2318: '#42d4f4'
                     };
                     var startDate_1 = 0;
+                    var endDate_1 = 0;
                     var peakStart = 0;
                     var dailyStart = 0;
                     var estStart = 0;
+                    var peakEnd = 0;
+                    var dailyEnd = 0;
+                    var estEnd = 0;
                     if (this.formattedPeakDates.length > 0) {
                         peakStart = this.formattedPeakDates[0].x;
+                        var finalPeakIndex = this.formattedPeakDates.length - 1;
+                        peakEnd = this.formattedPeakDates[finalPeakIndex].x;
                     }
                     if (this.formattedDailyFlow.length > 0) {
                         dailyStart = this.formattedDailyFlow[0].x;
+                        var finalDailyIndex = this.formattedPeakDates.length - 1;
+                        dailyEnd = this.formattedDailyFlow[finalDailyIndex].x;
                     }
                     if (this.formattedEstPeakDates.length > 0) {
                         estStart = this.formattedEstPeakDates[0].x;
+                        var finalEstIndex = this.formattedEstPeakDates.length - 1;
+                        estEnd = this.formattedEstPeakDates[finalEstIndex].x;
                     }
+                    console.log(peakEnd, dailyEnd, estEnd);
                     if (peakStart < dailyStart && peakStart < estStart) {
-                        console.log('one');
                         startDate_1 = peakStart;
                     }
                     if (dailyStart < peakStart && dailyStart < estStart) {
-                        console.log('two');
                         startDate_1 = dailyStart;
                     }
                     if (estStart < peakStart && estStart < dailyStart) {
-                        console.log('three');
                         startDate_1 = estStart;
                     }
+                    if (peakEnd > dailyEnd && peakEnd > estEnd) {
+                        console.log('1');
+                        endDate_1 = peakEnd;
+                    }
+                    if (dailyEnd > peakEnd && dailyEnd > estEnd) {
+                        console.log('2');
+                        endDate_1 = dailyEnd;
+                    }
+                    if (estEnd > peakEnd && estEnd > dailyEnd) {
+                        console.log('3');
+                        endDate_1 = estEnd;
+                    }
                     console.log(startDate_1);
-                    var finalYearIndex = this.formattedPeakDates.length - 1;
-                    var endWY = this.formattedPeakDates[finalYearIndex].x;
-                    var startWY = this.formattedPeakDates[0].x;
+                    console.log(endDate_1);
                     this.formattedFloodFreq = [];
                     this.floodFreq.forEach(function (floodFreqItem) {
                         var colorIndex = floodFreqItem.regressionTypeID;
@@ -574,7 +592,7 @@ var StreamStats;
                                     x: startDate_1,
                                     y: floodFreqItem.value
                                 }, {
-                                    x: endWY,
+                                    x: endDate_1,
                                     y: floodFreqItem.value
                                 }
                             ],
