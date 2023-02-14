@@ -788,6 +788,12 @@ public formatData(): void {
             this.formattedPeakDates.push({x: new Date(peakObj.peak_dt), y: peakObj.peak_va})
             }
         });
+        // if (this.peakDates) {  // work here to have x axis call not from date
+        //     this.peakDates.forEach(peakObj => {
+        //         if (!isNaN(peakObj.peak_va)) {
+        // // work here        this.formattedPeakDates.push({x: new Date(peakObj.peak_dt), y: peakObj.peak_va})
+        //         }
+        //     });
     } 
     if (this.estPeakDates) {
         this.estPeakDates.forEach(estPeakObj => {
@@ -903,6 +909,7 @@ public formatData(): void {
                 label: {text: formattedName + '% AEP'},
                 id: 'plotlines'
                 });
+                console.log(this.formattedFloodFreq)
             });        
         this.createDischargePlot();
         this.createAnnualFlowPlot();
@@ -1149,43 +1156,13 @@ public formatData(): void {
                     turboThreshold: 0, 
                     type    : 'scatter',
                     color   : 'black',
-                    data    : this.formattedDailyFlow,
+                    data    : this.formattedPeakDates,
                     marker: {
                         symbol: 'circle',
                         radius: 3
                     },
-                    showInLegend: this.formattedDailyFlow.length > 0
+                    showInLegend: this.formattedPeakDates.length > 0
                 },
-                // {
-                //     name    : 'Annual Peak Streamflow (Date Estimated)',
-                //     showInNavigator: true,
-                //     tooltip: {
-                //         headerFormat:'<b>Annual Peak Streamflow</b>',
-                //         pointFormatter: function(){
-                //             if (this.formattedPeakDates !== null){
-                //                 let waterYear = this.x.getUTCFullYear();
-                //                 if (this.x.getUTCMonth() > 8) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
-                //                     waterYear += 1; // adding a year to dates that fall into the next water year
-                //                 };
-                //                 let UTCday = this.x.getUTCDate();
-                //                 let year = this.x.getUTCFullYear();
-                //                 let month = this.x.getUTCMonth();
-                //                     month += 1; // adding a month to the UTC months (which are zero-indexed)
-                //                 let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
-                //                 return '<br>Date (estimated): <b>'  + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear
-                //             }
-                //         }
-                //     },
-                //     turboThreshold: 0, 
-                //     type    : 'scatter',
-                //     color   : 'red',
-                //     data    : this.formattedEstPeakDates,
-                //     marker: {
-                //         symbol: 'square',
-                //         radius: 3
-                //     },
-                //     showInLegend: this.formattedEstPeakDates.length > 0 //still showing up in legend if y is NaN
-                // }, 
                 {
                     name    : 'USGS Measured',
                     showInNavigator: false,
@@ -1213,9 +1190,6 @@ public formatData(): void {
                     showInLegend: this.measuredObj.length > 0
                 }] 
             } 
-            this.formattedFloodFreq.forEach((formattedFloodFreqItem) => {
-                this.chartConfig.yAxis.plotLines.push(formattedFloodFreqItem)
-            });
         }
 
 //don't think a log - linear checkbox will work on the heatmap but leaving this code here for now as reference

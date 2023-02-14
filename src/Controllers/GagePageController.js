@@ -661,6 +661,7 @@ var StreamStats;
                             label: { text: formattedName + '% AEP' },
                             id: 'plotlines'
                         });
+                        console.log(_this_1.formattedFloodFreq);
                     });
                     this.createDischargePlot();
                     this.createAnnualFlowPlot();
@@ -817,7 +818,6 @@ var StreamStats;
                 });
             };
             GagePageController.prototype.createDischargePlot = function () {
-                var _this_1 = this;
                 console.log('this.discharge obj 2nd one', this.dischargeObj);
                 this.dischargeChartConfig = {
                     chart: {
@@ -892,12 +892,12 @@ var StreamStats;
                             turboThreshold: 0,
                             type: 'scatter',
                             color: 'black',
-                            data: this.formattedDailyFlow,
+                            data: this.formattedPeakDates,
                             marker: {
                                 symbol: 'circle',
                                 radius: 3
                             },
-                            showInLegend: this.formattedDailyFlow.length > 0
+                            showInLegend: this.formattedPeakDates.length > 0
                         },
                         {
                             name: 'USGS Measured',
@@ -927,9 +927,6 @@ var StreamStats;
                         }
                     ]
                 };
-                this.formattedFloodFreq.forEach(function (formattedFloodFreqItem) {
-                    _this_1.chartConfig.yAxis.plotLines.push(formattedFloodFreqItem);
-                });
             };
             GagePageController.prototype.logToLinear = function () {
                 var chart = $('#chart3').highcharts();
