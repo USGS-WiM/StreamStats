@@ -718,6 +718,34 @@ module StreamStats.Controllers {
                         2317: '#ffe119',
                         2318: '#42d4f4'
                     };
+                    //set something up to find the earliest date out of the three series
+                    //same thing for the most recent date
+                    let startDate = 0
+                    let peakStart = 0
+                    let dailyStart = 0
+                    let estStart = 0
+                    if (this.formattedPeakDates.length > 0) {
+                        peakStart = this.formattedPeakDates[0].x
+                    }
+                    if (this.formattedDailyFlow.length > 0) {
+                        dailyStart = this.formattedDailyFlow[0].x
+                    }
+                    if (this.formattedEstPeakDates.length >0) {
+                        estStart = this.formattedEstPeakDates[0].x
+                    }
+                    if (peakStart < dailyStart && peakStart < estStart) {
+                        console.log('one');
+                        startDate = peakStart
+                    }
+                    if (dailyStart < peakStart && dailyStart < estStart) {
+                        console.log('two');
+                        startDate = dailyStart
+                    }
+                    if (estStart < peakStart && estStart < dailyStart) {
+                        console.log('three');
+                        startDate = estStart
+                    }
+                    console.log(startDate)
                     var finalYearIndex = this.formattedPeakDates.length-1;
                     var endWY = this.formattedPeakDates[finalYearIndex].x;
                     var startWY = this.formattedPeakDates[0].x
@@ -740,7 +768,7 @@ module StreamStats.Controllers {
                             data:
                             [
                                 {
-                                    x: startWY,
+                                    x: startDate,
                                     y: floodFreqItem.value
                                 },{
                                     x: endWY,

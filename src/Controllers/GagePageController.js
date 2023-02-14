@@ -524,6 +524,32 @@ var StreamStats;
                         2317: '#ffe119',
                         2318: '#42d4f4'
                     };
+                    var startDate_1 = 0;
+                    var peakStart = 0;
+                    var dailyStart = 0;
+                    var estStart = 0;
+                    if (this.formattedPeakDates.length > 0) {
+                        peakStart = this.formattedPeakDates[0].x;
+                    }
+                    if (this.formattedDailyFlow.length > 0) {
+                        dailyStart = this.formattedDailyFlow[0].x;
+                    }
+                    if (this.formattedEstPeakDates.length > 0) {
+                        estStart = this.formattedEstPeakDates[0].x;
+                    }
+                    if (peakStart < dailyStart && peakStart < estStart) {
+                        console.log('one');
+                        startDate_1 = peakStart;
+                    }
+                    if (dailyStart < peakStart && dailyStart < estStart) {
+                        console.log('two');
+                        startDate_1 = dailyStart;
+                    }
+                    if (estStart < peakStart && estStart < dailyStart) {
+                        console.log('three');
+                        startDate_1 = estStart;
+                    }
+                    console.log(startDate_1);
                     var finalYearIndex = this.formattedPeakDates.length - 1;
                     var endWY = this.formattedPeakDates[finalYearIndex].x;
                     var startWY = this.formattedPeakDates[0].x;
@@ -545,7 +571,7 @@ var StreamStats;
                             color: AEPColors_1[colorIndex],
                             data: [
                                 {
-                                    x: startWY,
+                                    x: startDate_1,
                                     y: floodFreqItem.value
                                 }, {
                                     x: endWY,
