@@ -85,6 +85,15 @@ var StreamStats;
                     area: null
                 };
                 _this.AEPOptionsSynthetic = [{
+                        "name": "100% AEP / 1 Year Return Period",
+                        "value": 100
+                    }, {
+                        "name": "50% AEP / 2 Year Return Period",
+                        "value": 50
+                    }, {
+                        "name": "20% AEP / 5 Year Return Period",
+                        "value": 20
+                    }, {
                         "name": "10% AEP / 10 Year Return Period",
                         "value": 10
                     }, {
