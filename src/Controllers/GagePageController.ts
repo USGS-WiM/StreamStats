@@ -1,4 +1,4 @@
-﻿//------------------------------------------------------------------------------
+﻿﻿//------------------------------------------------------------------------------
 //----- GagePage ---------------------------------------------------------------
 //------------------------------------------------------------------------------
 
@@ -736,7 +736,6 @@ module StreamStats.Controllers {
                             },
                             turboThreshold: 0, 
                             type: 'line',
-                            id: 'AEP',
                             color: AEPColors[colorIndex],
                             data:
                             [
@@ -754,15 +753,6 @@ module StreamStats.Controllers {
                                 radius: 0.1
                             },
                             })
-                    // let formattedName = floodFreqItem.regressionType.name.substring(0, floodFreqItem.regressionType.name.length-18);
-                    // this.formattedFloodFreq.push({
-                    //     value: floodFreqItem.value,
-                    //     color: AEPColors[colorIndex],
-                    //     width: 1.5,
-                    //     zIndex: 4,
-                    //     label: {text: formattedName + '% AEP'},
-                    //     id: 'plotlines'
-                    //     });
                     });
             this.createAnnualFlowPlot();
         }}
@@ -844,7 +834,6 @@ module StreamStats.Controllers {
                     },
                     turboThreshold: 0, 
                     type    : 'line',
-                    //id: 'daily',
                     color   : '#add8f2',
                     data    : this.formattedDailyFlow,
                     marker: {
@@ -875,7 +864,6 @@ module StreamStats.Controllers {
                     },
                     turboThreshold: 0, 
                     type    : 'scatter',
-                    //id: 'annual',
                     color   : 'black',
                     data    : this.formattedPeakDates,
                     marker: {
@@ -906,7 +894,6 @@ module StreamStats.Controllers {
                     },
                     turboThreshold: 0, 
                     type    : 'scatter',
-                    //id: 'estAnnual',
                     color   : 'red',
                     data    : this.formattedEstPeakDates,
                     marker: {
@@ -926,7 +913,7 @@ module StreamStats.Controllers {
                     turboThreshold: 0, 
                     type: null,
                     //id: 'AEPlines',
-                    color: '#911eb4',
+                    color: 'black',
                     data: null,
                     // label: {
                     //     enabled: true,
@@ -938,9 +925,8 @@ module StreamStats.Controllers {
                         symbol: 'line',
                         radius: 0.1
                     },
-                    showInLegend: true
-                }
-            ] 
+                    showInLegend: this.formattedFloodFreq.length > 0 
+                }] 
             } 
             // this.formattedFloodFreq.forEach((formattedFloodFreqItem) => {
             //     this.chartConfig.yAxis.plotLines.push(formattedFloodFreqItem)

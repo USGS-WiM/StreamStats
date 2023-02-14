@@ -542,7 +542,6 @@ var StreamStats;
                             },
                             turboThreshold: 0,
                             type: 'line',
-                            id: 'AEP',
                             color: AEPColors_1[colorIndex],
                             data: [
                                 {
@@ -717,13 +716,13 @@ var StreamStats;
                             },
                             turboThreshold: 0,
                             type: null,
-                            color: '#911eb4',
+                            color: 'black',
                             data: null,
                             marker: {
                                 symbol: 'line',
                                 radius: 0.1
                             },
-                            showInLegend: true
+                            showInLegend: this.formattedFloodFreq.length > 0
                         }
                     ]
                 };
