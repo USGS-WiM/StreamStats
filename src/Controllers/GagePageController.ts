@@ -718,59 +718,36 @@ module StreamStats.Controllers {
                         2317: '#ffe119',
                         2318: '#42d4f4'
                     };
-                    //set something up to find the earliest date out of the three series
-                    //same thing for the most recent date
-                    let startDate = 0
-                    let endDate = 0
-                    let peakStart = 0
-                    let dailyStart = 0
-                    let estStart = 0
-                    let peakEnd = 0
-                    let dailyEnd = 0
-                    let estEnd = 0
+                    //finding the earliest and latest dates out of all three data series
+                    let startDate = new Date('January 1, 3000')  // assign way in future
+                    let endDate = new Date('January 1, 1800') // assign way in past
                     if (this.formattedPeakDates.length > 0) {
-                        peakStart = this.formattedPeakDates[0].x
+                        if (this.formattedPeakDates[0].x < startDate) {
+                            startDate = this.formattedPeakDates[0].x
+                        }
                         var finalPeakIndex = this.formattedPeakDates.length-1;
-                        peakEnd = this.formattedPeakDates[finalPeakIndex].x
+                        if (this.formattedPeakDates[finalPeakIndex].x > endDate) {
+                            endDate = this.formattedPeakDates[finalPeakIndex].x
+                        }
                     }
                     if (this.formattedDailyFlow.length > 0) {
-                        dailyStart = this.formattedDailyFlow[0].x
-                        var finalDailyIndex = this.formattedPeakDates.length-1;
-                        dailyEnd = this.formattedDailyFlow[finalDailyIndex].x
+                        if (this.formattedDailyFlow[0].x < startDate) {
+                            startDate = this.formattedDailyFlow[0].x 
+                        }
+                        var finalDailyIndex = this.formattedDailyFlow.length-1;
+                        if (this.formattedDailyFlow[finalDailyIndex].x > endDate) {
+                            endDate = this.formattedDailyFlow[finalDailyIndex].x
+                        }
                     }
-                    if (this.formattedEstPeakDates.length >0) {
-                        estStart = this.formattedEstPeakDates[0].x
-                        var finalEstIndex = this.formattedEstPeakDates.length-1
-                        estEnd = this.formattedEstPeakDates[finalEstIndex].x
+                    if (this.formattedEstPeakDates.length > 0) {
+                        if (this.formattedEstPeakDates[0].x < startDate) {
+                            startDate = this.formattedEstPeakDates[0].x
+                        }
+                        var finalEstIndex = this.formattedEstPeakDates.length-1;
+                        if (this.formattedEstPeakDates[finalEstIndex].x > endDate) {
+                            endDate = this.formattedEstPeakDates[finalEstIndex].x
+                        }
                     }
-                    console.log(peakEnd, dailyEnd, estEnd);
-                    //assigning start date
-                    if (peakStart < dailyStart && peakStart < estStart) {
-                        startDate = peakStart
-                    }
-                    if (dailyStart < peakStart && dailyStart < estStart) {
-                        startDate = dailyStart
-                    }
-                    if (estStart < peakStart && estStart < dailyStart) {
-                        startDate = estStart
-                    }
-                    //assigning end date
-                    if (peakEnd > dailyEnd && peakEnd > estEnd) {
-                        console.log('1')
-                        endDate = peakEnd
-                    }
-                    if (dailyEnd > peakEnd && dailyEnd > estEnd) {
-                        console.log('2')
-                        endDate = dailyEnd
-                    }
-                    if (estEnd > peakEnd && estEnd > dailyEnd) {
-                        console.log('3')
-                        endDate = estEnd
-                    }
-                    console.log(startDate)
-                    console.log(endDate)
-                    // var endWY = this.formattedPeakDates[finalYearIndex].x;
-                    // var startWY = this.formattedPeakDates[0].x
                     this.formattedFloodFreq = [];
                     this.floodFreq.forEach((floodFreqItem) => {
                         let colorIndex = floodFreqItem.regressionTypeID;
