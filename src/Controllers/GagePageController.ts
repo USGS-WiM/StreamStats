@@ -204,6 +204,7 @@ module StreamStats.Controllers {
         public formattedEstPeakDates = [];
         public formattedDailyFlow = [];
         public dailyRange = [];
+        public formattedDischargePeakDates = []; // ethan
         public formattedDischargeObj = []; // ethan
         public formattedRatingCurve = []; // ethan
         public formattedUSGSMeasured = []; // ethan
@@ -606,7 +607,7 @@ module StreamStats.Controllers {
         //Get peak values from NWIS
         public getPeakInfo() {
             const url = 'https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no=' + this.gage.code
-            //console.log('GetPeakURL', url)
+            // console.log('GetPeakURL', url)
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             this.Execute(request).then(
                 (response: any) => {
@@ -622,15 +623,18 @@ module StreamStats.Controllers {
                             agency_cd: dataRow[0], 
                             site_no: dataRow[1],
                             peak_dt: dataRow[2],
-                            peak_va: parseInt(dataRow[4])
+                            peak_va: parseInt(dataRow[4]),
+                            peak_stage: parseFloat(dataRow[6])
                         };
+                        console.log('peak obj', peakObj)
                         peakValues.push(peakObj)
                         //making a new array of invalid dates (dates with month or day of '00') that will be 'estimated' (changed to '01')
                         const estPeakObj = {
                             agency_cd: dataRow[0], 
                             site_no: dataRow[1],
                             peak_dt: dataRow[2].replaceAll('-00','-01'),
-                            peak_va: parseInt(dataRow[4])
+                            peak_va: parseInt(dataRow[4]),
+                            peak_stage: parseFloat(dataRow[6])
                         };
                         if (peakObj.peak_dt[8] + peakObj.peak_dt[9] === '00' || peakObj.peak_dt[5] + peakObj.peak_dt[6] === '00') {
                             estPeakValues.push(estPeakObj) //pushing invalid dates to a new array
@@ -788,12 +792,12 @@ public formatData(): void {
             this.formattedPeakDates.push({x: new Date(peakObj.peak_dt), y: peakObj.peak_va})
             }
         });
-        // if (this.peakDates) {  // work here to have x axis call not from date
-        //     this.peakDates.forEach(peakObj => {
-        //         if (!isNaN(peakObj.peak_va)) {
-        // // work here        this.formattedPeakDates.push({x: new Date(peakObj.peak_dt), y: peakObj.peak_va})
-        //         }
-        //     });
+        if (this.peakDates) {  // format data for stage vs discharge plot
+            this.peakDates.forEach(peakObj => {
+                if (!isNaN(peakObj.peak_va)) {
+                this.formattedDischargePeakDates.push({x: peakObj.peak_va, y: peakObj.peak_stage})
+                }
+            });
     } 
     if (this.estPeakDates) {
         this.estPeakDates.forEach(estPeakObj => {
@@ -1133,35 +1137,31 @@ public formatData(): void {
                     tooltip: {
                         headerFormat:'<b>Annual Peaks</b>',
                         pointFormatter: function(){
-                            if (this.formattedDailyFlow !== null){
-                                let date = this.x;
+                            if (this.formattedDischargePeakDates !== null){
+                                let waterYear = this.getUTCFullYear;
+                                if (this.getUTCMonth > 8) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
+                                    waterYear += 1; // adding a year to dates that fall into the next water year
+                                };
+                                let UTCday = this.getUTCDate;
+                                let year = this.getUTCFullYear;
+                                let month = this.getUTCMonth;
+                                    month += 1; // adding a month to the UTC months (which are zero-indexed)
+                                let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                                let discharge = this.x;
                                 let stage = this.y;
-                                return '<br>Date <b>' + date +  '<br>Peak <b>' + stage + ' cfs' + '<br>at stage <b>' + stage + ' ft'
+                                return '<br>Date <b>' + formattedUTCPeakDate +  '<br>Peak <b>' + discharge + ' cfs' + '<br>at stage <b>' + stage + ' ft'
                             }
                         }
-                            
-                            // {
-                            //     let waterYear = this.x.getUTCFullYear();
-                            //     if (this.x.getUTCMonth() > 8) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
-                            //         waterYear += 1; // adding a year to dates that fall into the next water year
-                            //     };
-                            //     let UTCday = this.x.getUTCDate();
-                            //     let year = this.x.getUTCFullYear();
-                            //     let month = this.x.getUTCMonth();
-                            //         month += 1; // adding a month to the UTC months (which are zero-indexed)
-                            //     let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
-                            //     return '<br>Date: <b>'  + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + this.x
-                            // }
                     },
                     turboThreshold: 0, 
                     type    : 'scatter',
                     color   : 'black',
-                    data    : this.formattedPeakDates,
+                    data    : this.formattedDischargePeakDates,
                     marker: {
                         symbol: 'circle',
                         radius: 3
                     },
-                    showInLegend: this.formattedPeakDates.length > 0
+                    showInLegend: this.formattedDischargePeakDates.length > 0
                 },
                 {
                     name    : 'USGS Measured',

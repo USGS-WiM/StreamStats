@@ -101,6 +101,7 @@ var StreamStats;
                 _this_1.formattedEstPeakDates = [];
                 _this_1.formattedDailyFlow = [];
                 _this_1.dailyRange = [];
+                _this_1.formattedDischargePeakDates = [];
                 _this_1.formattedDischargeObj = [];
                 _this_1.formattedRatingCurve = [];
                 _this_1.formattedUSGSMeasured = [];
@@ -422,14 +423,17 @@ var StreamStats;
                             agency_cd: dataRow[0],
                             site_no: dataRow[1],
                             peak_dt: dataRow[2],
-                            peak_va: parseInt(dataRow[4])
+                            peak_va: parseInt(dataRow[4]),
+                            peak_stage: parseFloat(dataRow[6])
                         };
+                        console.log('peak obj', peakObj);
                         peakValues.push(peakObj);
                         var estPeakObj = {
                             agency_cd: dataRow[0],
                             site_no: dataRow[1],
                             peak_dt: dataRow[2].replaceAll('-00', '-01'),
-                            peak_va: parseInt(dataRow[4])
+                            peak_va: parseInt(dataRow[4]),
+                            peak_stage: parseFloat(dataRow[6])
                         };
                         if (peakObj.peak_dt[8] + peakObj.peak_dt[9] === '00' || peakObj.peak_dt[5] + peakObj.peak_dt[6] === '00') {
                             estPeakValues.push(estPeakObj);
@@ -544,127 +548,134 @@ var StreamStats;
                             _this_1.formattedPeakDates.push({ x: new Date(peakObj.peak_dt), y: peakObj.peak_va });
                         }
                     });
-                }
-                if (this.estPeakDates) {
-                    this.estPeakDates.forEach(function (estPeakObj) {
-                        if (!isNaN(estPeakObj.peak_va)) {
-                            _this_1.formattedEstPeakDates.push({ x: new Date(estPeakObj.peak_dt), y: estPeakObj.peak_va });
-                        }
-                    });
-                }
-                if (this.dailyFlow) {
-                    this.dailyFlow.forEach(function (dailyObj) {
-                        if (dailyObj.qualifiers[0] === 'A') {
-                            _this_1.formattedDailyFlow.push({ x: new Date(dailyObj.dateTime), y: parseInt(dailyObj.value) });
-                        }
-                    });
-                }
-                if (this.dailyFlow) {
-                    this.dailyFlow.forEach(function (dailyHeatObj) {
-                        var now = new Date(dailyHeatObj.dateTime);
-                        var year = new Date(dailyHeatObj.dateTime).getUTCFullYear();
-                        function daysIntoYear(now) {
-                            return (Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(now.getFullYear(), 0, 0)) / 24 / 60 / 60 / 1000;
-                        }
-                        ;
-                        var doy = daysIntoYear(now);
-                        function isLeapYear(year) {
-                            if (year % 400 === 0)
-                                return true;
-                            if (year % 100 === 0)
-                                return false;
-                            return year % 4 === 0;
-                        }
-                        ;
-                        if (isLeapYear(year) == false && doy > 59) {
-                            doy += 1;
-                        }
-                        ;
-                        if (doy > 274) {
-                            year += 1;
-                        }
-                        ;
-                        if (doy < 275) {
-                            doy += 366;
-                        }
-                        ;
-                        if (dailyHeatObj.qualifiers[0] === 'A') {
-                            _this_1.formattedDailyHeat.push({ x: doy, y: year, value: parseInt(dailyHeatObj.value), length: 1 });
-                        }
-                        ;
-                        if (isLeapYear(year) == false) {
-                            _this_1.formattedDailyHeat.push({ x: 60, y: year, value: null, length: 1 });
-                        }
-                        ;
-                    });
-                }
-                var noNulls = this.formattedDailyHeat.filter(function (item) {
-                    return (item.value != null);
-                });
-                var previousYear = noNulls[0].y;
-                var sum = 0;
-                var length = 0;
-                var listOfSummations = [];
-                for (var i = 0; i < noNulls.length; i++) {
-                    var currentData = noNulls[i];
-                    var currentYear = currentData.y;
-                    if (previousYear == currentYear) {
-                        sum += currentData.value;
-                        length += currentData.length;
-                    }
-                    else {
-                        listOfSummations.push({ x: 700, y: currentYear - 1, value: sum / length, sum: sum, length: length });
-                        sum = currentData.value;
-                        length = currentData.length;
-                    }
-                    if (i == noNulls.length - 1) {
-                        listOfSummations.push({ x: 700, y: currentYear, value: sum / length, sum: sum, length: length });
-                    }
-                    previousYear = currentYear;
-                }
-                console.log(listOfSummations);
-                if (this.floodFreq) {
-                    this.formattedFloodFreq = [];
-                    var AEPColors_1 = {
-                        9: '#9A6324',
-                        852: '#800000',
-                        8: '#e6194B',
-                        818: '#ffd8b1',
-                        7: '#f58231',
-                        6: '#ffe119',
-                        5: '#bfef45',
-                        4: '#3cb44b',
-                        3: '#42d4f4',
-                        1: '#4363d8',
-                        501: '#000075',
-                        2: '#911eb4',
-                        500: '#dcbeff',
-                        851: '#fabed4',
-                        1438: '#469990',
-                        2311: '#f58231',
-                        2312: '#3cb44b',
-                        2313: '#e6194B',
-                        2314: '#bfef45',
-                        2315: '#911eb4',
-                        2316: '#9A6324',
-                        2317: '#ffe119',
-                        2318: '#42d4f4'
-                    };
-                    this.floodFreq.forEach(function (floodFreqItem) {
-                        var colorIndex = floodFreqItem.regressionTypeID;
-                        var formattedName = floodFreqItem.regressionType.name.substring(0, floodFreqItem.regressionType.name.length - 18);
-                        _this_1.formattedFloodFreq.push({
-                            value: floodFreqItem.value,
-                            color: AEPColors_1[colorIndex],
-                            width: 1.5,
-                            zIndex: 4,
-                            label: { text: formattedName + '% AEP' },
-                            id: 'plotlines'
+                    if (this.peakDates) {
+                        this.peakDates.forEach(function (peakObj) {
+                            if (!isNaN(peakObj.peak_va)) {
+                                _this_1.formattedDischargePeakDates.push({ x: peakObj.peak_va, y: peakObj.peak_stage });
+                            }
                         });
-                        console.log(_this_1.formattedFloodFreq);
+                    }
+                    if (this.estPeakDates) {
+                        this.estPeakDates.forEach(function (estPeakObj) {
+                            if (!isNaN(estPeakObj.peak_va)) {
+                                _this_1.formattedEstPeakDates.push({ x: new Date(estPeakObj.peak_dt), y: estPeakObj.peak_va });
+                            }
+                        });
+                    }
+                    if (this.dailyFlow) {
+                        this.dailyFlow.forEach(function (dailyObj) {
+                            if (dailyObj.qualifiers[0] === 'A') {
+                                _this_1.formattedDailyFlow.push({ x: new Date(dailyObj.dateTime), y: parseInt(dailyObj.value) });
+                            }
+                        });
+                    }
+                    if (this.dailyFlow) {
+                        this.dailyFlow.forEach(function (dailyHeatObj) {
+                            var now = new Date(dailyHeatObj.dateTime);
+                            var year = new Date(dailyHeatObj.dateTime).getUTCFullYear();
+                            function daysIntoYear(now) {
+                                return (Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(now.getFullYear(), 0, 0)) / 24 / 60 / 60 / 1000;
+                            }
+                            ;
+                            var doy = daysIntoYear(now);
+                            function isLeapYear(year) {
+                                if (year % 400 === 0)
+                                    return true;
+                                if (year % 100 === 0)
+                                    return false;
+                                return year % 4 === 0;
+                            }
+                            ;
+                            if (isLeapYear(year) == false && doy > 59) {
+                                doy += 1;
+                            }
+                            ;
+                            if (doy > 274) {
+                                year += 1;
+                            }
+                            ;
+                            if (doy < 275) {
+                                doy += 366;
+                            }
+                            ;
+                            if (dailyHeatObj.qualifiers[0] === 'A') {
+                                _this_1.formattedDailyHeat.push({ x: doy, y: year, value: parseInt(dailyHeatObj.value), length: 1 });
+                            }
+                            ;
+                            if (isLeapYear(year) == false) {
+                                _this_1.formattedDailyHeat.push({ x: 60, y: year, value: null, length: 1 });
+                            }
+                            ;
+                        });
+                    }
+                    var noNulls = this.formattedDailyHeat.filter(function (item) {
+                        return (item.value != null);
                     });
-                    this.createDischargePlot();
-                    this.createAnnualFlowPlot();
+                    var previousYear = noNulls[0].y;
+                    var sum = 0;
+                    var length_1 = 0;
+                    var listOfSummations = [];
+                    for (var i = 0; i < noNulls.length; i++) {
+                        var currentData = noNulls[i];
+                        var currentYear = currentData.y;
+                        if (previousYear == currentYear) {
+                            sum += currentData.value;
+                            length_1 += currentData.length;
+                        }
+                        else {
+                            listOfSummations.push({ x: 700, y: currentYear - 1, value: sum / length_1, sum: sum, length: length_1 });
+                            sum = currentData.value;
+                            length_1 = currentData.length;
+                        }
+                        if (i == noNulls.length - 1) {
+                            listOfSummations.push({ x: 700, y: currentYear, value: sum / length_1, sum: sum, length: length_1 });
+                        }
+                        previousYear = currentYear;
+                    }
+                    console.log(listOfSummations);
+                    if (this.floodFreq) {
+                        this.formattedFloodFreq = [];
+                        var AEPColors_1 = {
+                            9: '#9A6324',
+                            852: '#800000',
+                            8: '#e6194B',
+                            818: '#ffd8b1',
+                            7: '#f58231',
+                            6: '#ffe119',
+                            5: '#bfef45',
+                            4: '#3cb44b',
+                            3: '#42d4f4',
+                            1: '#4363d8',
+                            501: '#000075',
+                            2: '#911eb4',
+                            500: '#dcbeff',
+                            851: '#fabed4',
+                            1438: '#469990',
+                            2311: '#f58231',
+                            2312: '#3cb44b',
+                            2313: '#e6194B',
+                            2314: '#bfef45',
+                            2315: '#911eb4',
+                            2316: '#9A6324',
+                            2317: '#ffe119',
+                            2318: '#42d4f4'
+                        };
+                        this.floodFreq.forEach(function (floodFreqItem) {
+                            var colorIndex = floodFreqItem.regressionTypeID;
+                            var formattedName = floodFreqItem.regressionType.name.substring(0, floodFreqItem.regressionType.name.length - 18);
+                            _this_1.formattedFloodFreq.push({
+                                value: floodFreqItem.value,
+                                color: AEPColors_1[colorIndex],
+                                width: 1.5,
+                                zIndex: 4,
+                                label: { text: formattedName + '% AEP' },
+                                id: 'plotlines'
+                            });
+                            console.log(_this_1.formattedFloodFreq);
+                        });
+                        this.createDischargePlot();
+                        this.createAnnualFlowPlot();
+                    }
                 }
             };
             GagePageController.prototype.createAnnualFlowPlot = function () {
@@ -882,22 +893,32 @@ var StreamStats;
                             tooltip: {
                                 headerFormat: '<b>Annual Peaks</b>',
                                 pointFormatter: function () {
-                                    if (this.formattedDailyFlow !== null) {
-                                        var date = this.x;
+                                    if (this.formattedDischargePeakDates !== null) {
+                                        var waterYear = this.getUTCFullYear;
+                                        if (this.getUTCMonth > 8) {
+                                            waterYear += 1;
+                                        }
+                                        ;
+                                        var UTCday = this.getUTCDate;
+                                        var year = this.getUTCFullYear;
+                                        var month = this.getUTCMonth;
+                                        month += 1;
+                                        var formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                                        var discharge = this.x;
                                         var stage = this.y;
-                                        return '<br>Date <b>' + date + '<br>Peak <b>' + stage + ' cfs' + '<br>at stage <b>' + stage + ' ft';
+                                        return '<br>Date <b>' + formattedUTCPeakDate + '<br>Peak <b>' + discharge + ' cfs' + '<br>at stage <b>' + stage + ' ft';
                                     }
                                 }
                             },
                             turboThreshold: 0,
                             type: 'scatter',
                             color: 'black',
-                            data: this.formattedPeakDates,
+                            data: this.formattedDischargePeakDates,
                             marker: {
                                 symbol: 'circle',
                                 radius: 3
                             },
-                            showInLegend: this.formattedPeakDates.length > 0
+                            showInLegend: this.formattedDischargePeakDates.length > 0
                         },
                         {
                             name: 'USGS Measured',
