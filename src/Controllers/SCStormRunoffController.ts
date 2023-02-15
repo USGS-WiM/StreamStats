@@ -1047,9 +1047,9 @@ module StreamStats.Controllers {
                     }
                     if (response.data.length > 0) {
                         response.data.forEach(regressionRegion => {
-                            if (regressionRegion.code == "GC1585") {
+                            if (regressionRegion.code == "GC1938") {
                                 this.region3Percent = regressionRegion.percentWeight;
-                            } else if (regressionRegion.code == "GC1586") {
+                            } else if (regressionRegion.code == "GC1937") {
                                 this.region4Percent = regressionRegion.percentWeight;
                             } else if (regressionRegion.code == "GC1939") {
                                 this.GC1939 = regressionRegion.percentWeight;

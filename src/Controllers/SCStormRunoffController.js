@@ -868,10 +868,10 @@ var StreamStats;
                     }
                     if (response.data.length > 0) {
                         response.data.forEach(function (regressionRegion) {
-                            if (regressionRegion.code == "GC1585") {
+                            if (regressionRegion.code == "GC1938") {
                                 _this.region3Percent = regressionRegion.percentWeight;
                             }
-                            else if (regressionRegion.code == "GC1586") {
+                            else if (regressionRegion.code == "GC1937") {
                                 _this.region4Percent = regressionRegion.percentWeight;
                             }
                             else if (regressionRegion.code == "GC1939") {
