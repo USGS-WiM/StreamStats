@@ -206,8 +206,8 @@ module StreamStats.Controllers {
                         title: { text: string, align: string},
                         subtitle: { text: string, align: string},
                         rangeSelector: { enabled: boolean, inputPosition: {align: string, x: number, y: number}, selected: number, buttonPosition: {align: string, x: number, y: number}},
-                        navigator: { enabled: boolean},  
-                        xAxis: {  type: string, min: number, max: number, title: {text: string}, custom: { allowNegativeLog: Boolean }},
+                        navigator: { enabled: boolean}, 
+                        xAxis: {  type: string, title: {text: string}, custom: { allowNegativeLog: Boolean }},
                         yAxis: { title: {text: string}, custom: { allowNegativeLog: Boolean }, plotLines: [{value: number, color: string, width: number, zIndex: number, label: {text: string}, id: string}]},
                         series: { name: string; showInNavigator: boolean, tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number; type: string, color: string, 
                         data: number[], marker: {symbol: string, radius: number}, showInLegend: boolean; }[]; };
@@ -805,7 +805,7 @@ module StreamStats.Controllers {
                     width: 800,
                     zooming: {
                         type: 'xy'
-                    }
+                    },
                 },
                 title: {
                     text: 'Annual Peak Streamflow',
@@ -834,8 +834,8 @@ module StreamStats.Controllers {
                 },
                 xAxis: {
                     type: 'datetime',
-                    min: 1875,
-                    max: 2050,
+                    // min: 1875,
+                    // max: 2050,
                     title: {
                         text: 'Date'
                     },
@@ -965,11 +965,13 @@ module StreamStats.Controllers {
                     showInLegend: this.formattedFloodFreq.length > 0 
                 }] 
             } 
+
             // this.formattedFloodFreq.forEach((formattedFloodFreqItem) => {
             //     this.chartConfig.yAxis.plotLines.push(formattedFloodFreqItem)
             this.formattedFloodFreq.forEach((formattedFloodFreqItem) => {
                 this.chartConfig.series.push(formattedFloodFreqItem)
             });
+
         }
 
         //checkbox for turning plotLines on and off

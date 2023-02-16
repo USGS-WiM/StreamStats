@@ -606,7 +606,7 @@ var StreamStats;
                         width: 800,
                         zooming: {
                             type: 'xy'
-                        }
+                        },
                     },
                     title: {
                         text: 'Annual Peak Streamflow',
@@ -635,8 +635,6 @@ var StreamStats;
                     },
                     xAxis: {
                         type: 'datetime',
-                        min: 1875,
-                        max: 2050,
                         title: {
                             text: 'Date'
                         },
