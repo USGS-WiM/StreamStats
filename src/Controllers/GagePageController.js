@@ -556,19 +556,29 @@ var StreamStats;
                     this.formattedFloodFreq = [];
                     this.floodFreq.forEach(function (floodFreqItem) {
                         var colorIndex = floodFreqItem.regressionTypeID;
+                        var formattedName = floodFreqItem.regressionType.name.substring(0, floodFreqItem.regressionType.name.length - 18);
                         _this_1.formattedFloodFreq.push({
                             name: floodFreqItem.regressionType.name,
                             tooltip: {
-                                headerFormat: '<b>Annual Exceedance Percentage (AEP)</b><br>',
+                                headerFormat: '<b>Annual Exceedance Probability (AEP)',
                                 pointFormatter: function () {
                                     if (this.formattedPeakDates !== null) {
-                                        return '<b>' + floodFreqItem.regressionType.name + '</b><br>Value: <b>' + floodFreqItem.value + ' ft³/s<br>';
+                                        return '</b><br>AEP: <b>' + formattedName + '%' + '</b><br>Value: <b>' + floodFreqItem.value + ' ft³/s<br>';
                                     }
                                 }
                             },
                             turboThreshold: 0,
                             type: 'line',
                             color: AEPColors_1[colorIndex],
+                            dataLabels: {
+                                enabled: true,
+                                zIndex: 3,
+                                pointFormatter: function () {
+                                    if (this.x.getUTCFullYear() == startDate_1.getUTCFullYear()) {
+                                        return formattedName + '% AEP';
+                                    }
+                                }
+                            },
                             data: [
                                 {
                                     x: startDate_1,

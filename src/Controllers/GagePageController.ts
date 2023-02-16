@@ -751,19 +751,29 @@ module StreamStats.Controllers {
                     this.formattedFloodFreq = [];
                     this.floodFreq.forEach((floodFreqItem) => {
                         let colorIndex = floodFreqItem.regressionTypeID;
+                        let formattedName = floodFreqItem.regressionType.name.substring(0, floodFreqItem.regressionType.name.length-18);
                         this.formattedFloodFreq.push({
                             name: floodFreqItem.regressionType.name,
                             tooltip: {
-                                headerFormat:'<b>Annual Exceedance Percentage (AEP)</b><br>',
+                                headerFormat:'<b>Annual Exceedance Probability (AEP)',
                                 pointFormatter: function(){
                                     if (this.formattedPeakDates !== null){
-                                        return '<b>'  + floodFreqItem.regressionType.name + '</b><br>Value: <b>' + floodFreqItem.value + ' ft³/s<br>'
+                                        return '</b><br>AEP: <b>'  + formattedName + '%' + '</b><br>Value: <b>' + floodFreqItem.value + ' ft³/s<br>'
                                     }
                                 }
                             },
                             turboThreshold: 0, 
                             type: 'line',
                             color: AEPColors[colorIndex],
+                            dataLabels: {
+                                enabled: true,
+                                zIndex: 3,
+                                pointFormatter: function() { 
+                                    if (this.x.getUTCFullYear() == startDate.getUTCFullYear()) {
+                                        return formattedName + '% AEP'
+                                    }
+                                } 
+                            },
                             data:
                             [
                                 {
