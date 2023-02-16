@@ -13,15 +13,6 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
-};
 var StreamStats;
 (function (StreamStats) {
     var Controllers;
@@ -988,7 +979,7 @@ var StreamStats;
                 }
                 return formattedSegments;
             };
-            SCStormRunoffController.prototype.queryRegressionRegionsSynthetic = function () {
+            SCStormRunoffController.prototype.calculateSynthetic = function () {
                 var _this = this;
                 this.canContinueSynthetic = false;
                 var headers = {
@@ -1146,12 +1137,18 @@ var StreamStats;
                                 "X-warning": true
                             };
                             var formattedSegments = _this.getFormattedFlowSegments();
-                            var allWatershedGeometry = __spreadArray([], _this.studyAreaService.selectedStudyArea.FeatureCollection.features, true);
-                            var watershedFeatures = __spreadArray(__spreadArray([], allWatershedGeometry.slice(1, 2), true), allWatershedGeometry.slice(2), true);
+                            var studyArea = _this.studyAreaService.simplify(angular.fromJson(angular.toJson(_this.studyAreaService.selectedStudyArea.FeatureCollection.features.filter(function (f) { return (f.id).toLowerCase() == "globalwatershed"; })[0])));
+                            var studyAreaGeom = studyArea.geometry;
+                            var watershedFeature = [
+                                {
+                                    "type": "Feature",
+                                    "geometry": studyAreaGeom
+                                }
+                            ];
                             data = {
                                 "lat": _this.studyAreaService.selectedStudyArea.Pourpoint.Latitude,
                                 "lon": _this.studyAreaService.selectedStudyArea.Pourpoint.Longitude,
-                                "watershedFeatures": watershedFeatures,
+                                "watershedFeatures": watershedFeature,
                                 "prfData": _this.prfSegments,
                                 "AEP": (_a = _this._selectedAEPSynthetic) === null || _a === void 0 ? void 0 : _a.value,
                                 "curveNumberMethod": (_b = _this._selectedStandardCurve) === null || _b === void 0 ? void 0 : _b.endpointValue,

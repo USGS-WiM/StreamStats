@@ -1163,15 +1163,13 @@ module StreamStats.Controllers {
             return formattedSegments;
         }
 
-        public queryRegressionRegionsSynthetic() {
+        public calculateSynthetic() {
             this.canContinueSynthetic = false;
             var headers = {
                 "Content-Type": "application/json",
                 "X-Is-StreamStats": true
             };
             var url = configuration.baseurls['SCStormRunoffServices'] + configuration.queryparams['SCStormRunoffSyntheticUnitComputerGraphResults'];
-            // var studyArea = this.studyAreaService.simplify(angular.fromJson(angular.toJson(this.studyAreaService.selectedStudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).toLowerCase() == "globalwatershed" })[0])));
-            // var studyAreaGeom = studyArea.geometry; 
             let data = {
                 "lat": this.studyAreaService.selectedStudyArea.Pourpoint.Latitude,
                 "lon": this.studyAreaService.selectedStudyArea.Pourpoint.Longitude,
@@ -1332,13 +1330,19 @@ module StreamStats.Controllers {
                                 "X-warning": true
                             };
                             let formattedSegments = this.getFormattedFlowSegments();
-                            let allWatershedGeometry = [...this.studyAreaService.selectedStudyArea.FeatureCollection.features]
-                            let watershedFeatures = [...allWatershedGeometry.slice(1,2), ...allWatershedGeometry.slice(2)];
-                            // master data endpoing
+                            var studyArea = this.studyAreaService.simplify(angular.fromJson(angular.toJson(this.studyAreaService.selectedStudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).toLowerCase() == "globalwatershed" })[0])));
+                            var studyAreaGeom = studyArea.geometry; 
+                            var watershedFeature = [
+                                {
+                                  "type": "Feature",
+                                  "geometry": studyAreaGeom
+                                }
+                            ]
+                            // master data endpoint
                             data = {
                                 "lat": this.studyAreaService.selectedStudyArea.Pourpoint.Latitude,
                                 "lon": this.studyAreaService.selectedStudyArea.Pourpoint.Longitude,
-                                "watershedFeatures": watershedFeatures,
+                                "watershedFeatures": watershedFeature,
                                 "prfData": this.prfSegments,
                                 "AEP": this._selectedAEPSynthetic?.value,
                                 "curveNumberMethod": this._selectedStandardCurve?.endpointValue,
