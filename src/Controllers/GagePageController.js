@@ -494,8 +494,11 @@ var StreamStats;
                 }
                 if (this.peakDates) {
                     this.peakDates.forEach(function (peakOnYear) {
+                        var finalPeakIndex = _this_1.formattedPeakDates.length - 1;
+                        var finalYear = (_this_1.formattedPeakDates[finalPeakIndex].x).getUTCFullYear();
+                        console.log(finalYear);
                         var adjustedDate = new Date(peakOnYear.peak_dt);
-                        adjustedDate.setUTCFullYear(2022);
+                        adjustedDate.setUTCFullYear(finalYear);
                         var currentYear = new Date(adjustedDate.toUTCString());
                         if (!isNaN(peakOnYear.peak_va)) {
                             _this_1.formattedPeakDatesOnYear.push({ x: currentYear, y: peakOnYear.peak_va, realDate: new Date(peakOnYear.peak_dt) });
@@ -563,6 +566,16 @@ var StreamStats;
                         var finalEstIndex = this.formattedEstPeakDates.length - 1;
                         if (this.formattedEstPeakDates[finalEstIndex].x > endDate_1) {
                             endDate_1 = this.formattedEstPeakDates[finalEstIndex].x;
+                        }
+                    }
+                    if (this.formattedPeakDatesOnYear.length > 0) {
+                        this.formattedPeakDatesOnYear.sort(function (a, b) { return a.x - b.x; });
+                        if (this.formattedPeakDatesOnYear[0].x < startDate_1) {
+                            startDate_1 = this.formattedPeakDatesOnYear[0].x;
+                        }
+                        var finalPeakOnYearIndex = this.formattedPeakDatesOnYear.length - 1;
+                        if (this.formattedPeakDatesOnYear[finalPeakOnYearIndex].x > endDate_1) {
+                            endDate_1 = this.formattedPeakDatesOnYear[finalPeakOnYearIndex].x;
                         }
                     }
                     this.formattedFloodFreq = [];
@@ -791,6 +804,7 @@ var StreamStats;
                 console.log(chart.series[1]);
                 if (this.peaksOnYear) {
                     chart.series[1].update({ data: this.formattedPeakDatesOnYear });
+                    chart.rangeSelector.update({ selected: 3 });
                     chart.series[1].update({ tooltip: {
                             headerFormat: '<b>Annual Peak Streamflow (On Recent Year)</b>',
                             pointFormatter: function () {
@@ -812,6 +826,7 @@ var StreamStats;
                 }
                 else {
                     chart.series[1].update({ data: this.formattedPeakDates });
+                    chart.rangeSelector.update({ selected: 5 });
                     chart.series[1].update({ tooltip: {
                             headerFormat: '<b>Annual Peak Streamflow (On Recent Year)</b>',
                             pointFormatter: function () {

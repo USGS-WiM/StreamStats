@@ -206,12 +206,14 @@ module StreamStats.Controllers {
         chartConfig: {  chart: { height: number, width: number, zooming: {type: string} },
                         title: { text: string, align: string},
                         subtitle: { text: string, align: string},
-                        rangeSelector: { enabled: boolean, inputPosition: {align: string, x: number, y: number}, selected: number, buttonPosition: {align: string, x: number, y: number}},
+                        rangeSelector: { enabled: boolean, inputPosition: {align: string, x: number, y: number}, 
+                        //buttons: {type: string, count: number, text: string, title: string }[], 
+                                        selected: number, buttonPosition: {align: string, x: number, y: number}},
                         navigator: { enabled: boolean}, 
                         xAxis: {  type: string, title: {text: string}, custom: { allowNegativeLog: Boolean }},
                         yAxis: { title: {text: string}, custom: { allowNegativeLog: Boolean }, plotLines: [{value: number, color: string, width: number, zIndex: number, label: {text: string}, id: string}]},
                         series: { name: string; showInNavigator: boolean, tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number; type: string, color: string, 
-                        data: number[], marker: {symbol: string, radius: number}, showInLegend: boolean; }[]; };
+                                data: number[], marker: {symbol: string, radius: number}, showInLegend: boolean; }[]; };
         constructor($scope: IGagePageControllerScope, $http: ng.IHttpService, modalService: Services.IModalService, modal:ng.ui.bootstrap.IModalServiceInstance) {
             super($http, configuration.baseurls.StreamStats);
             $scope.vm = this;
@@ -330,7 +332,7 @@ module StreamStats.Controllers {
                     }
 
                     // Citation options for filtering chars by citation
-                     if (!this.checkForStatOrCharCitation(char.citation.id, this.charCitationList)) {
+                    if (!this.checkForStatOrCharCitation(char.citation.id, this.charCitationList)) {
                         this.charCitationList.push(char.citation)
                     }
                 }
@@ -686,8 +688,10 @@ module StreamStats.Controllers {
             }
             if (this.peakDates) {
                 this.peakDates.forEach(peakOnYear => {
+                    var finalPeakIndex = this.formattedPeakDates.length-1;
+                    var finalYear = (this.formattedPeakDates[finalPeakIndex].x).getUTCFullYear();
                     let adjustedDate = new Date(peakOnYear.peak_dt);
-                    adjustedDate.setUTCFullYear(2022)
+                    adjustedDate.setUTCFullYear(finalYear);
                     let currentYear = new Date(adjustedDate.toUTCString())
                     //console.log(now, now.toUTCString());
                     //let year = new Date(peakOnYear.peak_dt).getUTCFullYear();
@@ -766,6 +770,16 @@ module StreamStats.Controllers {
                             endDate = this.formattedEstPeakDates[finalEstIndex].x
                         }
                     }
+                    if (this.formattedPeakDatesOnYear.length > 0) {
+                        this.formattedPeakDatesOnYear.sort((a, b) => a.x - b.x);
+                        if (this.formattedPeakDatesOnYear[0].x < startDate) {
+                            startDate = this.formattedPeakDatesOnYear[0].x 
+                        }
+                        var finalPeakOnYearIndex = this.formattedPeakDatesOnYear.length-1;
+                        if (this.formattedPeakDatesOnYear[finalPeakOnYearIndex].x > endDate) {
+                            endDate = this.formattedPeakDatesOnYear[finalPeakOnYearIndex].x
+                        }
+                    }
                     this.formattedFloodFreq = [];
                     this.floodFreq.forEach((floodFreqItem) => {
                         let colorIndex = floodFreqItem.regressionTypeID;
@@ -841,6 +855,37 @@ module StreamStats.Controllers {
                         x: 0,
                         y: 0
                     },
+                    // buttons: [{
+                    //     type: 'month',
+                    //     count: 1,
+                    //     text: '1m',
+                    //     title: 'View 1 month'
+                    // }, {
+                    //     type: 'month',
+                    //     count: 3,
+                    //     text: '3m',
+                    //     title: 'View 3 months'
+                    // }, {
+                    //     type: 'month',
+                    //     count: 6,
+                    //     text: '6m',
+                    //     title: 'View 6 months'
+                    // }, {
+                    //     type: 'ytd',
+                    //     count: null,
+                    //     text: 'YTD',
+                    //     title: 'View year to date'
+                    // }, {
+                    //     type: 'year',
+                    //     count: 1,
+                    //     text: '1y',
+                    //     title: 'View 1 year'
+                    // }, {
+                    //     type: 'all',
+                    //     count: null,
+                    //     text: 'All',
+                    //     title: 'View all'
+                    // }],
                     selected: 5,
                     buttonPosition: {
                         align: 'right',
@@ -853,7 +898,7 @@ module StreamStats.Controllers {
                 },
                 xAxis: {
                     type: 'datetime',
-                    // min: 1875,
+                    //min: 1875,
                     // max: 2050,
                     title: {
                         text: 'Date'
@@ -1051,9 +1096,9 @@ module StreamStats.Controllers {
         public peaksOnYear = false; 
         public togglePeakYear () {
             let chart = $('#chart1').highcharts();
-            console.log(chart.series[1])
             if (this.peaksOnYear) {
                 chart.series[1].update({ data: this.formattedPeakDatesOnYear });
+                chart.rangeSelector.update({ selected: 3 });
                 chart.series[1].update( {tooltip: {
                     headerFormat:'<b>Annual Peak Streamflow (On Recent Year)</b>',
                     pointFormatter: function(){
@@ -1073,6 +1118,7 @@ module StreamStats.Controllers {
                 } })
             } else {
                 chart.series[1].update({ data: this.formattedPeakDates });
+                chart.rangeSelector.update({ selected: 5 });
                 chart.series[1].update({ tooltip: {
                     headerFormat:'<b>Annual Peak Streamflow (On Recent Year)</b>',
                     pointFormatter: function(){
