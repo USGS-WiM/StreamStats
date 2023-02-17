@@ -928,36 +928,36 @@ module StreamStats.Controllers {
                     },
                     showInLegend: this.formattedPeakDates.length > 0
                 },
-                {
-                    name    : 'Annual Peak Streamflow',
-                    showInNavigator: false,
-                    tooltip: {
-                        headerFormat:'<b>Annual Peak Streamflow (On Recent Year)</b>',
-                        pointFormatter: function(){
-                            if (this.formattedPeakDatesOnYear !== null){
-                                let waterYear = this.realDate.getUTCFullYear();
-                                if (this.realDate.getUTCMonth() > 8) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
-                                    waterYear += 1; // adding a year to dates that fall into the next water year
-                                };
-                                let UTCday = this.realDate.getUTCDate();
-                                let year = this.realDate.getUTCFullYear();
-                                let month = this.realDate.getUTCMonth();
-                                    month += 1; // adding a month to the UTC months (which are zero-indexed)
-                                let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
-                                return '<br>Date: <b>'  + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear
-                            }
-                        }
-                    },
-                    turboThreshold: 0, 
-                    type    : 'scatter',
-                    color   : 'green',
-                    data    : this.formattedPeakDatesOnYear,
-                    marker: {
-                        symbol: 'circle',
-                        radius: 3
-                    },
-                    showInLegend: this.formattedPeakDates.length > 0
-                },
+                // {
+                //     name    : 'Annual Peak Streamflow',
+                //     showInNavigator: false,
+                //     tooltip: {
+                //         headerFormat:'<b>Annual Peak Streamflow (On Recent Year)</b>',
+                //         pointFormatter: function(){
+                //             if (this.formattedPeakDatesOnYear !== null){
+                //                 let waterYear = this.realDate.getUTCFullYear();
+                //                 if (this.realDate.getUTCMonth() > 8) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
+                //                     waterYear += 1; // adding a year to dates that fall into the next water year
+                //                 };
+                //                 let UTCday = this.realDate.getUTCDate();
+                //                 let year = this.realDate.getUTCFullYear();
+                //                 let month = this.realDate.getUTCMonth();
+                //                     month += 1; // adding a month to the UTC months (which are zero-indexed)
+                //                 let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                //                 return '<br>Date: <b>'  + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear
+                //             }
+                //         }
+                //     },
+                //     turboThreshold: 0, 
+                //     type    : 'scatter',
+                //     color   : 'green',
+                //     data    : this.formattedPeakDatesOnYear,
+                //     marker: {
+                //         symbol: 'circle',
+                //         radius: 3
+                //     },
+                //     showInLegend: this.formattedPeakDates.length > 0
+                // },
                 {
                     name    : 'Annual Peak Streamflow (Date Estimated)',
                     showInNavigator: true,
@@ -1047,6 +1047,51 @@ module StreamStats.Controllers {
                     chart.yAxis[0].update({ type: 'linear' });
                 }
             };
+        //checkbox to plot peaks on one year (2022 for now)
+        public peaksOnYear = false; 
+        public togglePeakYear () {
+            let chart = $('#chart1').highcharts();
+            console.log(chart.series[1])
+            if (this.peaksOnYear) {
+                chart.series[1].update({ data: this.formattedPeakDatesOnYear });
+                chart.series[1].update( {tooltip: {
+                    headerFormat:'<b>Annual Peak Streamflow (On Recent Year)</b>',
+                    pointFormatter: function(){
+                        if (this.formattedPeakDatesOnYear !== null){
+                            let waterYear = this.realDate.getUTCFullYear();
+                            if (this.realDate.getUTCMonth() > 8) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
+                                waterYear += 1; // adding a year to dates that fall into the next water year
+                            };
+                            let UTCday = this.realDate.getUTCDate();
+                            let year = this.realDate.getUTCFullYear();
+                            let month = this.realDate.getUTCMonth();
+                                month += 1; // adding a month to the UTC months (which are zero-indexed)
+                            let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                            return '<br>Date: <b>'  + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear
+                        }
+                    }
+                } })
+            } else {
+                chart.series[1].update({ data: this.formattedPeakDates });
+                chart.series[1].update({ tooltip: {
+                    headerFormat:'<b>Annual Peak Streamflow (On Recent Year)</b>',
+                    pointFormatter: function(){
+                        if (this.formattedPeakDatesOnYear !== null){
+                            let waterYear = this.realDate.getUTCFullYear();
+                            if (this.realDate.getUTCMonth() > 8) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
+                                waterYear += 1; // adding a year to dates that fall into the next water year
+                            };
+                            let UTCday = this.realDate.getUTCDate();
+                            let year = this.realDate.getUTCFullYear();
+                            let month = this.realDate.getUTCMonth();
+                                month += 1; // adding a month to the UTC months (which are zero-indexed)
+                            let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                            return '<br>Date: <b>'  + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear
+                        }
+                    }
+                }})
+            }
+        };
         
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
