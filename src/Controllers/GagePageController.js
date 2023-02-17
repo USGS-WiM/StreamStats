@@ -496,7 +496,6 @@ var StreamStats;
                     this.peakDates.forEach(function (peakOnYear) {
                         var finalPeakIndex = _this_1.formattedPeakDates.length - 1;
                         var finalYear = (_this_1.formattedPeakDates[finalPeakIndex].x).getUTCFullYear();
-                        console.log(finalYear);
                         var adjustedDate = new Date(peakOnYear.peak_dt);
                         adjustedDate.setUTCFullYear(finalYear);
                         var currentYear = new Date(adjustedDate.toUTCString());
@@ -801,12 +800,11 @@ var StreamStats;
             ;
             GagePageController.prototype.togglePeakYear = function () {
                 var chart = $('#chart1').highcharts();
-                console.log(chart.series[1]);
                 if (this.peaksOnYear) {
                     chart.series[1].update({ data: this.formattedPeakDatesOnYear });
                     chart.rangeSelector.update({ selected: 3 });
                     chart.series[1].update({ tooltip: {
-                            headerFormat: '<b>Annual Peak Streamflow (On Recent Year)</b>',
+                            headerFormat: '<b>Annual Peak Streamflow</b><br> (Plotted on Most Recent Year)',
                             pointFormatter: function () {
                                 if (this.formattedPeakDatesOnYear !== null) {
                                     var waterYear = this.realDate.getUTCFullYear();
@@ -828,17 +826,17 @@ var StreamStats;
                     chart.series[1].update({ data: this.formattedPeakDates });
                     chart.rangeSelector.update({ selected: 5 });
                     chart.series[1].update({ tooltip: {
-                            headerFormat: '<b>Annual Peak Streamflow (On Recent Year)</b>',
+                            headerFormat: '<b>Annual Peak Streamflow</b>',
                             pointFormatter: function () {
-                                if (this.formattedPeakDatesOnYear !== null) {
-                                    var waterYear = this.realDate.getUTCFullYear();
-                                    if (this.realDate.getUTCMonth() > 8) {
+                                if (this.formattedPeakDates !== null) {
+                                    var waterYear = this.x.getUTCFullYear();
+                                    if (this.x.getUTCMonth() > 8) {
                                         waterYear += 1;
                                     }
                                     ;
-                                    var UTCday = this.realDate.getUTCDate();
-                                    var year = this.realDate.getUTCFullYear();
-                                    var month = this.realDate.getUTCMonth();
+                                    var UTCday = this.x.getUTCDate();
+                                    var year = this.x.getUTCFullYear();
+                                    var month = this.x.getUTCMonth();
                                     month += 1;
                                     var formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
                                     return '<br>Date: <b>' + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear;
