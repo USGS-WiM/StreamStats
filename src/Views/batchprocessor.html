@@ -20,27 +20,29 @@
                 <select ng-model="vm.selectedRegion" ng-options="region.code as region.name for region in vm.regionList track by region.code"
                 ng-change="vm.getFlowStats(vm.selectedRegion)"></select>
             </div>
-            <!-- ng-class="{'active':vm.selectedRegionCode == region.code}" -->
+            
             <div>                
                 <span>                
 
                     <input id="cbDelineate" , type="checkbox" ng-checked="vm.selectedRegion" display="inline-block" ng-disabled="vm.selectedRegion">
-                    <label class="chx" for="cbDelineate">&nbsp;&nbsp;&nbsp;Basin Delineation&nbsp;&nbsp;&nbsp;</label>
+                    <label class="chx" for="cbDelineate">&nbsp;Basin Delineation&nbsp;&nbsp;&nbsp;&nbsp;</label>
                     
                     <input id="cbBasinChar" type="checkbox" display="inline-block">
-                    <label class="chx" for="cbBasinChar">&nbsp;&nbsp;&nbsp;Compute Basin Characteristics&nbsp;&nbsp;&nbsp;</label>
+                    <label class="chx" for="cbBasinChar">&nbsp;Compute Basin Characteristics&nbsp;&nbsp;&nbsp;&nbsp;</label>
 
                     <input id="cbFlowStats" type="checkbox" display="inline-block" ng-model="cbFlowStats">
-                    <label class="chx" for="cbFlowStats">&nbsp;&nbsp;&nbsp;Compute Flow Statistics</label>
+                    <label class="chx" for="cbFlowStats">&nbsp;Compute Flow Statistics</label>
                 </span>
             </div>
+            <!-- select flow statistics -->
             <div ng-if="cbFlowStats">
-                <label for="selectFlowStatistics">Select Flow Statistics</label>
-                <div id="selectFlowStatistics"  ng-repeat="flowStat.statisticGroupID as flowStat.statisticGroupName for flowStat in vm.flowStatList track by flowStat.code">
-                    <label><input type="checkbox" ng-model="selectedFlowStatics" ng-true-value="'{{flowStat.statisticGroupName}}'"
-                            ng-false-value="''">{{flowStat.statisticGroupName}}</label>
+                <label>Select Flow Statistics</label>
+                <div ng-repeat="flowStat in vm.flowStatsList">
+                    <input id="{{flowStat.statisticGroupName}}" , type="checkbox" display="inline-block">
+                    <label class="chx" for="{{flowStat.statisticGroupName}}"> {{flowStat.statisticGroupName}}</label>
                 </div>
             </div>
+            
         </div>
         <!-- End submit batch -->
         <div id="batchStatus" ng-if="vm.selectedBatchProcessorTabName==='batchStatus'">

@@ -99,6 +99,9 @@ module StreamStats.Controllers {
             );
         }
 
+        // possiblemethod for check/uncheck all
+        // https://makitweb.com/check-uncheck-all-multiple-checkboxes-with-angularjs/
+
         // Helper Methods
         // -+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {   
