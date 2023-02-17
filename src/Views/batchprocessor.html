@@ -18,12 +18,11 @@
             <div id="selectRegionID">
                 <label>Select State / Region:</label>
                 <select ng-model="vm.selectedRegion" ng-options="region.code as region.name for region in vm.regionList track by region.code"
-                ng-change="vm.getFlowStats(vm.selectedRegion)"></select>
+                ng-change="vm.getFlowStats(vm.selectedRegion); vm.flowStatsAllChecked=false"></select>
             </div>
-            
+            <!-- checkboxes for different work -->
             <div>                
                 <span>                
-
                     <input id="cbDelineate" , type="checkbox" ng-checked="vm.selectedRegion" display="inline-block" ng-disabled="vm.selectedRegion">
                     <label class="chx" for="cbDelineate">&nbsp;Basin Delineation&nbsp;&nbsp;&nbsp;&nbsp;</label>
                     
@@ -36,19 +35,23 @@
             </div>
             <!-- select flow statistics -->
             <div ng-if="cbFlowStats">
-                <label>Select Flow Statistics</label>
+                <h3>Select Flow Statistics</h3>
+                <!-- button to check/uncheck all -->
+                <input type="button" id="but_flowStatsCheckUncheckAll" value="Check/Uncheck All" ng-click="vm.toggleflowStatsAllChecked()">
+                <!-- create list of flow stats checkboxes -->
                 <div ng-repeat="flowStat in vm.flowStatsList">
-                    <input id="{{flowStat.statisticGroupName}}" , type="checkbox" display="inline-block">
+                    <input id="{{flowStat.statisticGroupName}}" ng-checked="vm.flowStatsAllChecked" type="checkbox" display="inline-block">
                     <label class="chx" for="{{flowStat.statisticGroupName}}"> {{flowStat.statisticGroupName}}</label>
                 </div>
             </div>
             
         </div>
         <!-- End submit batch -->
+        <!-- Start batch status -->
         <div id="batchStatus" ng-if="vm.selectedBatchProcessorTabName==='batchStatus'">
             <p>This is the batch status tab</p>
         </div>
-
+        <!-- End batch status -->
 </div> 
 
 <div class="modal-footer">

@@ -44,6 +44,9 @@ var StreamStats;
                 var _this = this;
                 this.nssService.getFlowStatsList(rcode).then(function (response) { _this.flowStatsList = response; });
             };
+            BatchProcessorController.prototype.toggleflowStatsAllChecked = function () {
+                this.flowStatsAllChecked = !this.flowStatsAllChecked;
+            };
             BatchProcessorController.prototype.init = function () {
                 this.AppVersion = configuration.version;
                 this.getRegions();

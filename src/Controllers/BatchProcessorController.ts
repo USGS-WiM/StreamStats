@@ -50,6 +50,7 @@ module StreamStats.Controllers {
         public regionList: Object;
         public flowStatsList: Object;
         public selectedRegion: any;
+        public flowStatsAllChecked: boolean;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -99,9 +100,10 @@ module StreamStats.Controllers {
             );
         }
 
-        // possiblemethod for check/uncheck all
-        // https://makitweb.com/check-uncheck-all-multiple-checkboxes-with-angularjs/
-
+        // uncheck/check all flow statistics
+        public toggleflowStatsAllChecked(): void {
+            this.flowStatsAllChecked = !this.flowStatsAllChecked
+        }
         // Helper Methods
         // -+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {   
