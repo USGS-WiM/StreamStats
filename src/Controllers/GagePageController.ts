@@ -196,6 +196,7 @@ module StreamStats.Controllers {
         public dailyFlow = undefined;
         public formattedFloodFreq = [];
         public formattedPeakDates = [];
+        public formattedPeakDatesOnYear = [];
         public formattedEstPeakDates = [];
         public formattedDailyFlow = [];
 
@@ -683,6 +684,23 @@ module StreamStats.Controllers {
                     }
                 });
             }
+            if (this.peakDates) {
+                this.peakDates.forEach(peakOnYear => {
+                    let adjustedDate = new Date(peakOnYear.peak_dt);
+                    adjustedDate.setUTCFullYear(2022)
+                    let currentYear = new Date(adjustedDate.toUTCString())
+                    //console.log(now, now.toUTCString());
+                    //let year = new Date(peakOnYear.peak_dt).getUTCFullYear();
+                    //Getting dates in Julian days - pulled from this exchange: https://stackoverflow.com/questions/8619879/javascript-calculate-the-day-of-the-year-1-366
+                    // function daysIntoYear(now){
+                    //     return (Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(now.getFullYear(), 0, 0)) / 24 / 60 / 60 / 1000;
+                    // };
+                    //var doy = daysIntoYear(now);
+                    if (!isNaN(peakOnYear.peak_va)) {
+                        this.formattedPeakDatesOnYear.push({x: currentYear, y: peakOnYear.peak_va, realDate: new Date(peakOnYear.peak_dt)})
+                        }
+                });
+            }
             if (this.dailyFlow) {
                 this.dailyFlow.forEach(dailyObj => {
                     if (dailyObj.qualifiers[0] === 'A') {
@@ -799,6 +817,7 @@ module StreamStats.Controllers {
             //console.log('peak value plot data', this.formattedPeakDates);
             //onsole.log('estimated peak plot data', this.formattedEstPeakDates);
             //console.log('daily flow plot data', this.formattedDailyFlow);
+            //console.log(this.formattedPeakDatesOnYear)
             this.chartConfig = {
                 chart: {
                     height: 550,
@@ -903,6 +922,36 @@ module StreamStats.Controllers {
                     type    : 'scatter',
                     color   : 'black',
                     data    : this.formattedPeakDates,
+                    marker: {
+                        symbol: 'circle',
+                        radius: 3
+                    },
+                    showInLegend: this.formattedPeakDates.length > 0
+                },
+                {
+                    name    : 'Annual Peak Streamflow',
+                    showInNavigator: false,
+                    tooltip: {
+                        headerFormat:'<b>Annual Peak Streamflow (On Recent Year)</b>',
+                        pointFormatter: function(){
+                            if (this.formattedPeakDatesOnYear !== null){
+                                let waterYear = this.realDate.getUTCFullYear();
+                                if (this.realDate.getUTCMonth() > 8) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
+                                    waterYear += 1; // adding a year to dates that fall into the next water year
+                                };
+                                let UTCday = this.realDate.getUTCDate();
+                                let year = this.realDate.getUTCFullYear();
+                                let month = this.realDate.getUTCMonth();
+                                    month += 1; // adding a month to the UTC months (which are zero-indexed)
+                                let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                                return '<br>Date: <b>'  + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear
+                            }
+                        }
+                    },
+                    turboThreshold: 0, 
+                    type    : 'scatter',
+                    color   : 'green',
+                    data    : this.formattedPeakDatesOnYear,
                     marker: {
                         symbol: 'circle',
                         radius: 3

@@ -93,6 +93,7 @@ var StreamStats;
                 _this_1.dailyFlow = undefined;
                 _this_1.formattedFloodFreq = [];
                 _this_1.formattedPeakDates = [];
+                _this_1.formattedPeakDatesOnYear = [];
                 _this_1.formattedEstPeakDates = [];
                 _this_1.formattedDailyFlow = [];
                 _this_1.logScale = false;
@@ -490,6 +491,16 @@ var StreamStats;
                         }
                     });
                 }
+                if (this.peakDates) {
+                    this.peakDates.forEach(function (peakOnYear) {
+                        var adjustedDate = new Date(peakOnYear.peak_dt);
+                        adjustedDate.setUTCFullYear(2022);
+                        var currentYear = new Date(adjustedDate.toUTCString());
+                        if (!isNaN(peakOnYear.peak_va)) {
+                            _this_1.formattedPeakDatesOnYear.push({ x: currentYear, y: peakOnYear.peak_va, realDate: new Date(peakOnYear.peak_dt) });
+                        }
+                    });
+                }
                 if (this.dailyFlow) {
                     this.dailyFlow.forEach(function (dailyObj) {
                         if (dailyObj.qualifiers[0] === 'A') {
@@ -703,6 +714,37 @@ var StreamStats;
                             type: 'scatter',
                             color: 'black',
                             data: this.formattedPeakDates,
+                            marker: {
+                                symbol: 'circle',
+                                radius: 3
+                            },
+                            showInLegend: this.formattedPeakDates.length > 0
+                        },
+                        {
+                            name: 'Annual Peak Streamflow',
+                            showInNavigator: false,
+                            tooltip: {
+                                headerFormat: '<b>Annual Peak Streamflow (On Recent Year)</b>',
+                                pointFormatter: function () {
+                                    if (this.formattedPeakDatesOnYear !== null) {
+                                        var waterYear = this.realDate.getUTCFullYear();
+                                        if (this.realDate.getUTCMonth() > 8) {
+                                            waterYear += 1;
+                                        }
+                                        ;
+                                        var UTCday = this.realDate.getUTCDate();
+                                        var year = this.realDate.getUTCFullYear();
+                                        var month = this.realDate.getUTCMonth();
+                                        month += 1;
+                                        var formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                                        return '<br>Date: <b>' + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear;
+                                    }
+                                }
+                            },
+                            turboThreshold: 0,
+                            type: 'scatter',
+                            color: 'green',
+                            data: this.formattedPeakDatesOnYear,
                             marker: {
                                 symbol: 'circle',
                                 radius: 3
