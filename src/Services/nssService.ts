@@ -42,6 +42,7 @@ module StreamStats.Services {
         getflattenNSSTable(name: string): Array<INSSResultTable>
         reportGenerated: boolean;  
         getRegionList(): ng.IPromise<any>;
+        getFlowStatsList(rcode: string): ng.IPromise<any>;
     }
     export interface IStatisticsGroup {
         id: string;
@@ -817,6 +818,28 @@ module StreamStats.Services {
                     return regions;
                 }, (error) => {
                     this.toaster.pop('error', "There was an HTTP error returning the regions list.", "Please retry", 0);
+                }).finally(() => {
+                });
+        }
+
+        // get flowstats list for region and nation
+        public getFlowStatsList(rcode: string): ng.IPromise<any> {
+            
+            if (!rcode) return;
+            var url = configuration.baseurls['NSS'] + configuration.queryparams['NSSRegionScenarios'].format(rcode);
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
+
+            console.log(request)
+            return this.Execute(request).then(
+                (response: any) => {
+                    // create array to return
+                    var flowStats = response.data;
+
+                    console.log("flowStatsList_nssServices", flowStats);
+
+                    return flowStats;
+                }, (error) => {
+                    this.toaster.pop('error', "There was an HTTP error returning the flow statistics list.", "Please retry", 0);
                 }).finally(() => {
                 });
         }

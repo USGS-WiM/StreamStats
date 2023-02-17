@@ -40,6 +40,10 @@ var StreamStats;
                 var _this = this;
                 this.nssService.getRegionList().then(function (response) { _this.regionList = response; });
             };
+            BatchProcessorController.prototype.getFlowStats = function (rcode) {
+                var _this = this;
+                this.nssService.getFlowStatsList(rcode).then(function (response) { _this.flowStatsList = response; });
+            };
             BatchProcessorController.prototype.init = function () {
                 this.AppVersion = configuration.version;
                 this.getRegions();

@@ -48,6 +48,8 @@ module StreamStats.Controllers {
         public AppVersion: string;  
         public submitBatchInfo: string;
         public regionList: Object;
+        public flowStatsList: Object;
+        public selectedRegion: any;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -81,7 +83,19 @@ module StreamStats.Controllers {
             // call an ng.IPromise first
             this.nssService.getRegionList().then(
                 // set regionList to values of promised response
-                response => { this.regionList = response}
+                response => { this.regionList = response }
+            );
+        }
+        
+        
+
+        // send selected region code and retrieve flows stats list
+        public getFlowStats(rcode:string): void {
+
+            // console.log(rcode)
+            this.nssService.getFlowStatsList(rcode).then(
+                // set flowStatsList to values of promised response
+                response => { this.flowStatsList = response}
             );
         }
 
@@ -90,7 +104,7 @@ module StreamStats.Controllers {
         private init(): void {   
             //console.log("in about controller");
             this.AppVersion = configuration.version;
-            this.getRegions()
+            this.getRegions();
         }
         
 

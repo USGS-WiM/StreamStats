@@ -627,6 +627,22 @@ var StreamStats;
                 }).finally(function () {
                 });
             };
+            nssService.prototype.getFlowStatsList = function (rcode) {
+                var _this = this;
+                if (!rcode)
+                    return;
+                var url = configuration.baseurls['NSS'] + configuration.queryparams['NSSRegionScenarios'].format(rcode);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                console.log(request);
+                return this.Execute(request).then(function (response) {
+                    var flowStats = response.data;
+                    console.log("flowStatsList_nssServices", flowStats);
+                    return flowStats;
+                }, function (error) {
+                    _this.toaster.pop('error', "There was an HTTP error returning the flow statistics list.", "Please retry", 0);
+                }).finally(function () {
+                });
+            };
             nssService.prototype.cleanRegressionRegions = function (RegressionRegions) {
                 for (var i = 0; i < RegressionRegions.length; i++) {
                     var regRegion = RegressionRegions[i];
