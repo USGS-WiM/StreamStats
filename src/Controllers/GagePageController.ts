@@ -203,7 +203,7 @@ module StreamStats.Controllers {
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance'];
-        chartConfig: {  chart: { height: number, width: number, zooming: {type: string} },
+        chartConfig: {  chart: { height: number, width: number, zooming: {type: string}, panning: boolean, panKey: string },
                         title: { text: string, align: string},
                         subtitle: { text: string, align: string},
                         rangeSelector: { enabled: boolean, inputPosition: {align: string, x: number, y: number}, 
@@ -700,13 +700,6 @@ module StreamStats.Controllers {
                     let adjustedDate = new Date(peakOnYear.peak_dt);
                     adjustedDate.setUTCFullYear(finalYear);
                     let currentYear = new Date(adjustedDate.toUTCString())
-                    //console.log(now, now.toUTCString());
-                    //let year = new Date(peakOnYear.peak_dt).getUTCFullYear();
-                    //Getting dates in Julian days - pulled from this exchange: https://stackoverflow.com/questions/8619879/javascript-calculate-the-day-of-the-year-1-366
-                    // function daysIntoYear(now){
-                    //     return (Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(now.getFullYear(), 0, 0)) / 24 / 60 / 60 / 1000;
-                    // };
-                    //var doy = daysIntoYear(now);
                     if (!isNaN(peakOnYear.peak_va)) {
                         this.formattedPeakDatesOnYear.push({x: currentYear, y: peakOnYear.peak_va, realDate: new Date(peakOnYear.peak_dt)})
                         }
@@ -839,13 +832,15 @@ module StreamStats.Controllers {
                     zooming: {
                         type: 'xy'
                     },
+                    panning: true, 
+                    panKey: 'shift'
                 },
                 title: {
                     text: 'Annual Peak Streamflow',
                     align: 'center'
                 },
                 subtitle: {
-                    text: 'Click and drag in the plot area to zoom in<br>AEP = Annual Exceedance Probability',
+                    text: 'Click and drag to zoom in. Hold down shift key to pan.<br>AEP = Annual Exceedance Probability',
                     align: 'center'
                 },
                 rangeSelector: {

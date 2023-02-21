@@ -631,13 +631,15 @@ var StreamStats;
                         zooming: {
                             type: 'xy'
                         },
+                        panning: true,
+                        panKey: 'shift'
                     },
                     title: {
                         text: 'Annual Peak Streamflow',
                         align: 'center'
                     },
                     subtitle: {
-                        text: 'Click and drag in the plot area to zoom in<br>AEP = Annual Exceedance Probability',
+                        text: 'Click and drag to zoom in. Hold down shift key to pan.<br>AEP = Annual Exceedance Probability',
                         align: 'center'
                     },
                     rangeSelector: {
