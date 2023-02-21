@@ -94,6 +94,7 @@ var StreamStats;
                 _this_1.formattedFloodFreq = [];
                 _this_1.formattedPeakDates = [];
                 _this_1.formattedPeakDatesOnYear = [];
+                _this_1.formattedEstPeakDatesOnYear = [];
                 _this_1.formattedEstPeakDates = [];
                 _this_1.formattedDailyFlow = [];
                 _this_1.logScale = false;
@@ -499,16 +500,24 @@ var StreamStats;
                         }
                     });
                 }
+                var finalIndex = this.formattedDailyFlow.length - 1;
+                var finalYear = (this.formattedDailyFlow[finalIndex].x).getUTCFullYear();
                 if (this.peakDates) {
                     this.peakDates.forEach(function (peakOnYear) {
-                        var finalIndex = _this_1.formattedDailyFlow.length - 1;
-                        var finalYear = (_this_1.formattedDailyFlow[finalIndex].x).getUTCFullYear();
                         var adjustedDate = new Date(peakOnYear.peak_dt);
                         adjustedDate.setUTCFullYear(finalYear);
                         var currentYear = new Date(adjustedDate.toUTCString());
                         if (!isNaN(peakOnYear.peak_va)) {
                             _this_1.formattedPeakDatesOnYear.push({ x: currentYear, y: peakOnYear.peak_va, realDate: new Date(peakOnYear.peak_dt) });
                         }
+                    });
+                }
+                if (this.estPeakDates) {
+                    this.estPeakDates.forEach(function (estPeakOnYear) {
+                        var adjustedDate = new Date(estPeakOnYear.peak_dt);
+                        adjustedDate.setUTCFullYear(finalYear);
+                        var currentYear = new Date(adjustedDate.toUTCString());
+                        _this_1.formattedEstPeakDatesOnYear.push({ x: currentYear, y: estPeakOnYear.peak_va, realDate: new Date(estPeakOnYear.peak_dt) });
                     });
                 }
                 if (this.floodFreq) {
@@ -804,9 +813,10 @@ var StreamStats;
                 var chart = $('#chart1').highcharts();
                 if (this.peaksOnYear) {
                     chart.series[1].update({ data: this.formattedPeakDatesOnYear });
+                    chart.series[2].update({ data: this.formattedEstPeakDatesOnYear });
                     chart.rangeSelector.update({ selected: 3 });
                     chart.series[1].update({ tooltip: {
-                            headerFormat: '<b>Annual Peak Streamflow</b><br> (Plotted on Most Recent Year)',
+                            headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on Latest Year',
                             pointFormatter: function () {
                                 if (this.formattedPeakDatesOnYear !== null) {
                                     var waterYear = this.realDate.getUTCFullYear();
@@ -823,9 +833,28 @@ var StreamStats;
                                 }
                             }
                         } });
+                    chart.series[2].update({ tooltip: {
+                            headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on Latest Year',
+                            pointFormatter: function () {
+                                if (this.formattedEstPeakDatesOnYear !== null) {
+                                    var waterYear = this.realDate.getUTCFullYear();
+                                    if (this.realDate.getUTCMonth() > 8) {
+                                        waterYear += 1;
+                                    }
+                                    ;
+                                    var UTCday = this.realDate.getUTCDate();
+                                    var year = this.realDate.getUTCFullYear();
+                                    var month = this.realDate.getUTCMonth();
+                                    month += 1;
+                                    var formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                                    return '<br>Date (estimated): <b>' + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear;
+                                }
+                            }
+                        } });
                 }
                 else {
                     chart.series[1].update({ data: this.formattedPeakDates });
+                    chart.series[2].update({ data: this.formattedEstPeakDates });
                     chart.rangeSelector.update({ selected: 5 });
                     chart.series[1].update({ tooltip: {
                             headerFormat: '<b>Annual Peak Streamflow</b>',
@@ -842,6 +871,24 @@ var StreamStats;
                                     month += 1;
                                     var formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
                                     return '<br>Date: <b>' + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear;
+                                }
+                            }
+                        } });
+                    chart.series[2].update({ tooltip: {
+                            headerFormat: '<b>Annual Peak Streamflow</b>',
+                            pointFormatter: function () {
+                                if (this.formattedEstPeakDates !== null) {
+                                    var waterYear = this.x.getUTCFullYear();
+                                    if (this.x.getUTCMonth() > 8) {
+                                        waterYear += 1;
+                                    }
+                                    ;
+                                    var UTCday = this.x.getUTCDate();
+                                    var year = this.x.getUTCFullYear();
+                                    var month = this.x.getUTCMonth();
+                                    month += 1;
+                                    var formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                                    return '<br>Date (estimated): <b>' + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear;
                                 }
                             }
                         } });

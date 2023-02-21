@@ -227,7 +227,7 @@
                     <div class="well well-sm" style="background-color:#EBF0F5;" ng-if="vm.chartConfig">
                         <center>
                         <input type="checkbox" ng-if="vm.formattedPeakDates.length > 0" id="togglePeaks" name="togglePeaks" ng-model="vm.peaksOnYear" ng-change="vm.togglePeakYear()" checked>
-                        <label for="togglePeaks" ng-if="vm.formattedPeakDates.length > 0"> Plot Peaks on Current Year&nbsp;&nbsp;</label>
+                        <label for="togglePeaks" ng-if="vm.formattedPeakDates.length > 0"> Plot Peaks on Latest Year&nbsp;&nbsp;</label>
                         <input type="checkbox" ng-if="vm.formattedDailyFlow.length > 0" id="logScale" name="logScale" ng-model="vm.logScale" ng-change="vm.toggleLogLinear()" checked>
                         <label for="logScale" ng-if="vm.formattedDailyFlow.length > 0"> Log Scale</label>
                         <br><highchart id="chart1" config="vm.chartConfig"></highchart><br>
