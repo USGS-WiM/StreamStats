@@ -85,7 +85,8 @@ module StreamStats.Controllers {
             // call an ng.IPromise first
             this.nssService.getRegionList().then(
                 // set regionList to values of promised response
-                response => { this.regionList = response }
+                response => { this.regionList = response; }
+
             );
         }
         
