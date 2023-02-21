@@ -795,7 +795,7 @@ module StreamStats.Services {
         // keys to success: use ng.Ipromise<any> and return this.Execute 
         public getRegionList(): ng.IPromise<any> {
 
-            var url = configuration.baseurls['NSS'] + configuration.queryparams['NSSRegions'];
+            var url = configuration.baseurls['NSS'] + configuration.queryparams['Regions'];
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
             
             return this.Execute(request).then(
@@ -826,14 +826,17 @@ module StreamStats.Services {
         public getFlowStatsList(rcode: string): ng.IPromise<any> {
             
             if (!rcode) return;
-            var url = configuration.baseurls['NSS'] + configuration.queryparams['NSSRegionScenarios'].format(rcode);
+            var url = configuration.baseurls['NSS'] + configuration.queryparams['statisticsGroupParameterLookup'].format(rcode, "", "");
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
 
-            console.log(request)
+            // console.log(request)
             return this.Execute(request).then(
                 (response: any) => {
                     // create array to return
                     var flowStats = response.data;
+                    flowStats.forEach((element) => {
+                        element.checked = false;
+                    });
 
                     console.log("flowStatsList_nssServices", flowStats);
 

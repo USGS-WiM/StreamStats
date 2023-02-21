@@ -40,7 +40,7 @@
                 <input type="button" id="but_flowStatsCheckUncheckAll" value="Check/Uncheck All" ng-click="vm.toggleflowStatsAllChecked()">
                 <!-- create list of flow stats checkboxes -->
                 <div ng-repeat="flowStat in vm.flowStatsList">
-                    <input id="{{flowStat.statisticGroupName}}" ng-checked="vm.flowStatsAllChecked" type="checkbox" display="inline-block">
+                    <input id="{{flowStat.statisticGroupName}}" ng-model="flowStat.checked" ng-change="vm.updateRegionStatsList(flowStat)" type="checkbox" display="inline-block">
                     <label class="chx" for="{{flowStat.statisticGroupName}}"> {{flowStat.statisticGroupName}}</label>
                 </div>
             </div>

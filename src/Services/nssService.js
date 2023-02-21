@@ -617,7 +617,7 @@ var StreamStats;
             };
             nssService.prototype.getRegionList = function () {
                 var _this = this;
-                var url = configuration.baseurls['NSS'] + configuration.queryparams['NSSRegions'];
+                var url = configuration.baseurls['NSS'] + configuration.queryparams['Regions'];
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 return this.Execute(request).then(function (response) {
                     var regions = response.data;
@@ -631,11 +631,13 @@ var StreamStats;
                 var _this = this;
                 if (!rcode)
                     return;
-                var url = configuration.baseurls['NSS'] + configuration.queryparams['NSSRegionScenarios'].format(rcode);
+                var url = configuration.baseurls['NSS'] + configuration.queryparams['statisticsGroupParameterLookup'].format(rcode, "", "");
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
-                console.log(request);
                 return this.Execute(request).then(function (response) {
                     var flowStats = response.data;
+                    flowStats.forEach(function (element) {
+                        element.checked = false;
+                    });
                     console.log("flowStatsList_nssServices", flowStats);
                     return flowStats;
                 }, function (error) {

@@ -48,10 +48,10 @@ module StreamStats.Controllers {
         public AppVersion: string;  
         public submitBatchInfo: string;
         public regionList: Object;
-        public flowStatsList: Object;
-        public selectedRegion: str;
-
+        public flowStatsList: Array<any>;
+        public selectedRegion: string;
         public flowStatsAllChecked: boolean;
+        public regionStatsList: Array<any>;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -63,6 +63,8 @@ module StreamStats.Controllers {
             this.modalService = modalService;
             this.selectedBatchProcessorTabName = "submitBatch";
             this.nssService = nssService;
+            this.regionStatsList = [];
+            this.flowStatsAllChecked = false;
             this.init();  
         }  
         
@@ -90,8 +92,6 @@ module StreamStats.Controllers {
             );
         }
         
-        
-
         // send selected region code and retrieve flows stats list
         public getFlowStats(rcode:string): void {
 
@@ -105,8 +105,70 @@ module StreamStats.Controllers {
 
         // uncheck/check all flow statistics
         public toggleflowStatsAllChecked(): void {
-            this.flowStatsAllChecked = !this.flowStatsAllChecked
+
+            this.flowStatsList.forEach((parameter) => {
+
+                //console.log('length of configuration.alwaysSelectedParameters: ', configuration.alwaysSelectedParameters.length);
+                var statisticGroupID = parameter.statisticGroupID
+
+                var paramCheck = this.checkArrayForObj(this.regionStatsList, statisticGroupID);
+
+                if (this.flowStatsAllChecked) {
+
+                    //if its not there add it
+                    if (paramCheck == -1) this.regionStatsList.push(statisticGroupID);
+                    parameter.checked = true;
+                }
+                else {
+
+                    //remove it only if toggleable
+                    if (paramCheck > -1) {
+                        this.regionStatsList.splice(paramCheck, 1);
+                        //this.toaster.pop('warning', parameter.code + " is required by one of the selected scenarios", "It cannot be unselected");
+                        parameter.checked = false;
+                    }
+                }
+
+
+            });
+
+            // add/remove each stat from list
+            // this.flowStatsList.forEach((element) => this.updateRegionStatsList(element)
+            // )
+            console.log(this.regionStatsList);
+            // toggle switch
+            this.flowStatsAllChecked = !this.flowStatsAllChecked;
         }
+
+        public updateRegionStatsList(parameter: any) {
+
+            //console.log('in updatestudyarea parameter', parameter);
+
+            //dont mess with certain parameters
+            // if (parameter.toggleable == false) {
+            //     this.toaster.pop('warning', parameter.code + " is required by one of the selected scenarios", "It cannot be unselected");
+            //     parameter.checked = true;
+            //     return;
+            // }
+            console.log(parameter.checked);
+            var statisticGroupID = parameter.statisticGroupID;
+
+            var index = this.regionStatsList.indexOf(statisticGroupID);
+
+            if (index > -1) {
+                //remove it
+                parameter.checked = false;
+                this.regionStatsList.splice(index, 1);
+            }
+            else if (index == -1) {
+                //add it
+                parameter.checked = true;
+                console.log("inside push", statisticGroupID)
+                this.regionStatsList.push(statisticGroupID);
+            }
+            console.log(this.regionStatsList)
+        }
+
         // Helper Methods
         // -+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {   
@@ -115,6 +177,14 @@ module StreamStats.Controllers {
             this.getRegions();
         }
         
+        private checkArrayForObj(arr, obj) {
+            for (var i = 0; i < arr.length; i++) {
+                if (angular.equals(arr[i], obj)) {
+                    return i;
+                }
+            };
+            return -1;
+        }
 
     }//end  class
 
