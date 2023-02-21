@@ -98,7 +98,8 @@ module StreamStats.Controllers {
             // console.log(rcode)
             this.nssService.getFlowStatsList(rcode).then(
                 // set flowStatsList to values of promised response
-                response => { this.flowStatsList = response}
+                response => { this.flowStatsList = response; }
+
             );
         }
 
