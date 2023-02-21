@@ -139,6 +139,21 @@ var StreamStats;
                 enumerable: false,
                 configurable: true
             });
+            ReportController.prototype.setStream = function (stream) {
+                this.studyAreaService.selectedStudyArea.NHDStream = stream;
+                var input = document.getElementById(stream.GNIS_NAME);
+                if (input != null) {
+                    input.checked = true;
+                }
+                else {
+                    setTimeout(function () {
+                        var input = document.getElementById(stream.GNIS_NAME);
+                        if (input != null) {
+                            input.checked = true;
+                        }
+                    }, 1000);
+                }
+            };
             ReportController.prototype.selectFDCTMTab = function (tabname) {
                 if (this.selectedFDCTMTabName == tabname)
                     return;
@@ -190,6 +205,19 @@ var StreamStats;
                     return finalVal + '\n';
                 };
                 var csvFile = 'StreamStats Output Report\n\n' + 'State/Region ID,' + this.studyAreaService.selectedStudyArea.RegionID.toUpperCase() + '\nWorkspace ID,' + this.studyAreaService.selectedStudyArea.WorkspaceID + '\nLatitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + '\nLongitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5) + '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n';
+                if (this.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID) {
+                    csvFile += '\nNHD Stream GNIS ID,' + this.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID;
+                }
+                if (this.studyAreaService.selectedStudyArea.NHDStream.GNIS_NAME) {
+                    csvFile += '\nNHD Stream GNIS Name,' + this.studyAreaService.selectedStudyArea.NHDStream.GNIS_NAME;
+                }
+                if (this.studyAreaService.selectedStudyArea.WBDHUC8.huc8) {
+                    csvFile += '\nHUC 8,' + this.studyAreaService.selectedStudyArea.WBDHUC8.huc8;
+                }
+                if (this.studyAreaService.selectedStudyArea.WBDHUC8.name) {
+                    csvFile += ' (' + this.studyAreaService.selectedStudyArea.WBDHUC8.name + ')';
+                }
+                csvFile += '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n';
                 csvFile += processMainParameterTable(this.studyAreaService.studyAreaParameterList);
                 this.nssService.selectedStatisticsGroupList.forEach(function (statGroup) {
                     csvFile += processScenarioParamTable(statGroup);
@@ -264,6 +292,23 @@ var StreamStats;
                         }
                     }
                     csvFile += extVal;
+                    if (self.applications) {
+                        var isHydrologicFeatures = self.applications.indexOf('HydrologicFeatures') != -1;
+                        if (isHydrologicFeatures) {
+                            extVal += 'National Hydrography Dataset (NHD) Hydrologic Features\n';
+                            extVal += 'Intersecting NHD Streams\n';
+                            if (self.studyAreaService.selectedStudyArea.NHDStreamIntersections.length > 0) {
+                                extVal += self.tableToCSV($('#hydrologicFeaturesTable'));
+                            }
+                            else if (!self.studyAreaService.selectedStudyArea.NHDStreamIntersections) {
+                                extVal += 'No NHD streams were loaded.';
+                            }
+                            else if (self.studyAreaService.selectedStudyArea.NHDStreamIntersections.length == 0) {
+                                extVal += 'No NHD streams intersect the delineated basin.';
+                            }
+                            csvFile += extVal + '\n\n';
+                        }
+                    }
                     csvFile += self.disclaimer + 'Application Version: ' + self.AppVersion;
                     if (self.SSServicesVersion)
                         csvFile += '\nStreamStats Services Version: ' + self.SSServicesVersion;
