@@ -492,22 +492,22 @@ var StreamStats;
                         }
                     });
                 }
+                if (this.dailyFlow) {
+                    this.dailyFlow.forEach(function (dailyObj) {
+                        if (parseInt(dailyObj.value) !== -999999) {
+                            _this_1.formattedDailyFlow.push({ x: new Date(dailyObj.dateTime), y: parseInt(dailyObj.value) });
+                        }
+                    });
+                }
                 if (this.peakDates) {
                     this.peakDates.forEach(function (peakOnYear) {
-                        var finalPeakIndex = _this_1.formattedPeakDates.length - 1;
-                        var finalYear = (_this_1.formattedPeakDates[finalPeakIndex].x).getUTCFullYear();
+                        var finalIndex = _this_1.formattedDailyFlow.length - 1;
+                        var finalYear = (_this_1.formattedDailyFlow[finalIndex].x).getUTCFullYear();
                         var adjustedDate = new Date(peakOnYear.peak_dt);
                         adjustedDate.setUTCFullYear(finalYear);
                         var currentYear = new Date(adjustedDate.toUTCString());
                         if (!isNaN(peakOnYear.peak_va)) {
                             _this_1.formattedPeakDatesOnYear.push({ x: currentYear, y: peakOnYear.peak_va, realDate: new Date(peakOnYear.peak_dt) });
-                        }
-                    });
-                }
-                if (this.dailyFlow) {
-                    this.dailyFlow.forEach(function (dailyObj) {
-                        if (dailyObj.qualifiers[0] === 'A') {
-                            _this_1.formattedDailyFlow.push({ x: new Date(dailyObj.dateTime), y: parseInt(dailyObj.value) });
                         }
                     });
                 }

@@ -1,4 +1,4 @@
-﻿﻿//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //----- GagePage ---------------------------------------------------------------
 //------------------------------------------------------------------------------
 
@@ -686,10 +686,17 @@ module StreamStats.Controllers {
                     }
                 });
             }
+            if (this.dailyFlow) {
+                this.dailyFlow.forEach(dailyObj => {
+                    if (parseInt(dailyObj.value) !== -999999) {
+                    this.formattedDailyFlow.push({x: new Date(dailyObj.dateTime), y: parseInt(dailyObj.value)})
+                    }
+                });
+            }
             if (this.peakDates) {
                 this.peakDates.forEach(peakOnYear => {
-                    var finalPeakIndex = this.formattedPeakDates.length-1;
-                    var finalYear = (this.formattedPeakDates[finalPeakIndex].x).getUTCFullYear();
+                    var finalIndex = this.formattedDailyFlow.length-1;
+                    var finalYear = (this.formattedDailyFlow[finalIndex].x).getUTCFullYear();
                     let adjustedDate = new Date(peakOnYear.peak_dt);
                     adjustedDate.setUTCFullYear(finalYear);
                     let currentYear = new Date(adjustedDate.toUTCString())
@@ -703,13 +710,6 @@ module StreamStats.Controllers {
                     if (!isNaN(peakOnYear.peak_va)) {
                         this.formattedPeakDatesOnYear.push({x: currentYear, y: peakOnYear.peak_va, realDate: new Date(peakOnYear.peak_dt)})
                         }
-                });
-            }
-            if (this.dailyFlow) {
-                this.dailyFlow.forEach(dailyObj => {
-                    if (dailyObj.qualifiers[0] === 'A') {
-                    this.formattedDailyFlow.push({x: new Date(dailyObj.dateTime), y: parseInt(dailyObj.value)})
-                    }
                 });
             }
             if (this.floodFreq) {
