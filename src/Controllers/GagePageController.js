@@ -426,7 +426,6 @@ var StreamStats;
                             peak_va: parseInt(dataRow[4]),
                             peak_stage: parseFloat(dataRow[6])
                         };
-                        console.log('peak obj', peakObj);
                         peakValues.push(peakObj);
                         var estPeakObj = {
                             agency_cd: dataRow[0],
@@ -492,7 +491,6 @@ var StreamStats;
             GagePageController.prototype.getRatingCurve = function () {
                 var _this_1 = this;
                 var url = 'https://waterdata.usgs.gov/nwisweb/get_ratings?site_no=' + this.gage.code + '&file_type=exsa';
-                console.log('getDischargeInfo', url);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.dischargeObj = [];
                 this.Execute(request).then(function (response) {
@@ -515,7 +513,6 @@ var StreamStats;
             GagePageController.prototype.getUSGSMeasured = function () {
                 var _this_1 = this;
                 var url = 'https://waterdata.usgs.gov/nwis/measurements?site_no=' + this.gage.code + '&agency_cd=USGS&format=rdb_expanded';
-                console.log('usgsMeasuredURL', url);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.measuredObj = [];
                 this.Execute(request).then(function (response) {
@@ -530,8 +527,10 @@ var StreamStats;
                             quality: dataRow[10],
                             control: dataRow[13],
                             x: parseFloat(dataRow[9]),
-                            y: parseFloat(dataRow[8])
+                            y: parseFloat(dataRow[8]),
+                            color: _this_1.getCorrectColor(new Date(dataRow[3]))
                         };
+                        console.log(object);
                         _this_1.measuredObj.push(object);
                     });
                     console.log('measured obj', _this_1.measuredObj);
@@ -551,7 +550,7 @@ var StreamStats;
                     if (this.peakDates) {
                         this.peakDates.forEach(function (peakObj) {
                             if (!isNaN(peakObj.peak_va)) {
-                                _this_1.formattedDischargePeakDates.push({ x: peakObj.peak_va, y: peakObj.peak_stage });
+                                _this_1.formattedDischargePeakDates.push({ x: peakObj.peak_va, y: peakObj.peak_stage, date: peakObj.peak_dt });
                             }
                         });
                     }
@@ -632,7 +631,6 @@ var StreamStats;
                         }
                         previousYear = currentYear;
                     }
-                    console.log(listOfSummations);
                     if (this.floodFreq) {
                         this.formattedFloodFreq = [];
                         var AEPColors_1 = {
@@ -671,7 +669,6 @@ var StreamStats;
                                 label: { text: formattedName + '% AEP' },
                                 id: 'plotlines'
                             });
-                            console.log(_this_1.formattedFloodFreq);
                         });
                         this.createDischargePlot();
                         this.createAnnualFlowPlot();
@@ -828,8 +825,22 @@ var StreamStats;
                     _this_1.chartConfig.yAxis.plotLines.push(formattedFloodFreqItem);
                 });
             };
+            GagePageController.prototype.getCorrectColor = function (date) {
+                var days = (new Date().getTime() - new Date(date).getTime()) / (1000 * 60 * 60 * 24);
+                if (days <= 365) {
+                    console.log("first year", days);
+                    return '#FFA500';
+                }
+                else if (days <= 730) {
+                    console.log("second year", days);
+                    return '#1357a6';
+                }
+                else {
+                    console.log("any other year", days);
+                    return '#1b7ced';
+                }
+            };
             GagePageController.prototype.createDischargePlot = function () {
-                console.log('this.discharge obj 2nd one', this.dischargeObj);
                 this.dischargeChartConfig = {
                     chart: {
                         height: 450,
@@ -893,12 +904,7 @@ var StreamStats;
                             tooltip: {
                                 headerFormat: '<b>Annual Peaks</b>',
                                 pointFormatter: function () {
-                                    if (this.formattedDischargePeakDates !== null) {
-                                        var waterYear = this.getUTCFullYear;
-                                        if (this.getUTCMonth > 8) {
-                                            waterYear += 1;
-                                        }
-                                        ;
+                                    if (this.formattedPeakDates !== null) {
                                         var UTCday = this.getUTCDate;
                                         var year = this.getUTCFullYear;
                                         var month = this.getUTCMonth;
@@ -906,7 +912,8 @@ var StreamStats;
                                         var formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
                                         var discharge = this.x;
                                         var stage = this.y;
-                                        return '<br>Date <b>' + formattedUTCPeakDate + '<br>Peak <b>' + discharge + ' cfs' + '<br>at stage <b>' + stage + ' ft';
+                                        var peakDate = this.date;
+                                        return '<br>Date <b>' + peakDate + '<br>Peak <b>' + discharge + ' cfs' + '<br>at stage <b>' + stage + ' ft';
                                     }
                                 }
                             },
@@ -938,7 +945,7 @@ var StreamStats;
                             },
                             turboThreshold: 0,
                             type: 'scatter',
-                            color: '#1b75ac ',
+                            color: null,
                             data: this.measuredObj,
                             marker: {
                                 symbol: 'diamond',
@@ -955,13 +962,10 @@ var StreamStats;
                     var dailyMax = this.dailyRange.reduce(function (accumulatedValue, currentValue) {
                         return Math.max(accumulatedValue, currentValue);
                     });
-                    console.log('Daily Max', dailyMax);
                     var dailyMin = this.dailyRange.reduce(function (accumulatedValue, currentValue) {
                         return Math.min(accumulatedValue, currentValue);
                     });
-                    console.log('Daily Min', dailyMin);
                     var asc = this.dailyRange.sort(function (a, b) { return a - b; });
-                    console.log('sorted range', asc);
                     var tenthPercentile = asc[Math.floor(asc.length * 0.1)];
                     var twentiethPercentile = asc[Math.floor(asc.length * 0.2)];
                     var thirtiethPercentile = asc[Math.floor(asc.length * 0.3)];
@@ -971,7 +975,6 @@ var StreamStats;
                     var seventiethPercentile = asc[Math.floor(asc.length * 0.7)];
                     var eightiethPercentile = asc[Math.floor(asc.length * 0.8)];
                     var ninetiethPercentile = asc[Math.floor(asc.length * 0.9)];
-                    console.log('percentiles', tenthPercentile, twentiethPercentile, thirtiethPercentile, fortiethPercentile, fiftiethPercentile, sixtiethPercentile, seventiethPercentile, eightiethPercentile, ninetiethPercentile);
                     var firstStop = (tenthPercentile - (dailyMin)) / (dailyMax - (dailyMin));
                     var secondStop = (twentiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
                     var thirdStop = (thirtiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
@@ -981,16 +984,13 @@ var StreamStats;
                     var seventhStop = (seventiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
                     var eigthStop = (eightiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
                     var ninthStop = (ninetiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
-                    console.log('color stops', firstStop, secondStop, thirdStop, fourthStop, fifthStop, sixthStop, seventhStop, eigthStop, ninthStop);
                 }
                 ;
                 if (this.logScale) {
                     chart.colorAxis[0].update({ type: 'logarithmic' });
-                    console.log('log');
                 }
                 else {
                     chart.colorAxis[0].update({ type: 'linear' });
-                    console.log('linear');
                 }
             };
             ;

@@ -626,7 +626,7 @@ module StreamStats.Controllers {
                             peak_va: parseInt(dataRow[4]),
                             peak_stage: parseFloat(dataRow[6])
                         };
-                        console.log('peak obj', peakObj)
+                        // console.log('peak obj', peakObj)
                         peakValues.push(peakObj)
                         //making a new array of invalid dates (dates with month or day of '00') that will be 'estimated' (changed to '01')
                         const estPeakObj = {
@@ -699,7 +699,7 @@ module StreamStats.Controllers {
 
         public getRatingCurve() {
             const url = 'https://waterdata.usgs.gov/nwisweb/get_ratings?site_no=' + this.gage.code + '&file_type=exsa'
-            console.log('getDischargeInfo', url)
+            // console.log('getDischargeInfo', url)
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             
             this.dischargeObj = [];
@@ -744,7 +744,7 @@ module StreamStats.Controllers {
 
         public getUSGSMeasured() {
             const url = 'https://waterdata.usgs.gov/nwis/measurements?site_no=' + this.gage.code + '&agency_cd=USGS&format=rdb_expanded'
-            console.log('usgsMeasuredURL', url)
+            // console.log('usgsMeasuredURL', url)
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             
             this.measuredObj = [];
@@ -764,14 +764,16 @@ module StreamStats.Controllers {
                     data.forEach(row => {
                         let dataRow = row.split('\t')
                         // console.log('datarow', dataRow)
-                        const object = {
+                        const object = { 
                             dateTime: dataRow[3],
                             timeZone: dataRow[4],
                             quality: dataRow[10],
                             control: dataRow[13],
                             x: parseFloat(dataRow[9]),
-                            y: parseFloat(dataRow[8])
+                            y: parseFloat(dataRow[8]),
+                            color: this.getCorrectColor (new Date(dataRow[3]))
                         };
+                        console.log(object)
                         this.measuredObj.push(object) 
                     });
                     console.log('measured obj', this.measuredObj)
@@ -795,7 +797,7 @@ public formatData(): void {
         if (this.peakDates) {  // format data for stage vs discharge plot
             this.peakDates.forEach(peakObj => {
                 if (!isNaN(peakObj.peak_va)) {
-                this.formattedDischargePeakDates.push({x: peakObj.peak_va, y: peakObj.peak_stage})
+                this.formattedDischargePeakDates.push({x: peakObj.peak_va, y: peakObj.peak_stage, date: peakObj.peak_dt})
                 }
             });
     } 
@@ -870,7 +872,7 @@ public formatData(): void {
             }
         previousYear = currentYear;
     }
-    console.log(listOfSummations);
+    // console.log(listOfSummations);
     
     
 //console.log(this.formattedDailyHeat);
@@ -913,7 +915,7 @@ public formatData(): void {
                 label: {text: formattedName + '% AEP'},
                 id: 'plotlines'
                 });
-                console.log(this.formattedFloodFreq)
+                // console.log(this.formattedFloodFreq)
             });        
         this.createDischargePlot();
         this.createAnnualFlowPlot();
@@ -1069,11 +1071,35 @@ public formatData(): void {
             });
         }
 
+
+        
+
+        public getCorrectColor(date): string {
+            let days = (new Date().getTime() - new Date(date).getTime()) / (1000 * 60 * 60 * 24)
+
+
+        //     measuredObj.map(obj => (new Date().getTime() - new Date(obj.dateTime).getTime()) / (1000 * 60 * 60 * 24))
+        //     .map(days => {
+                if (days <= 365) {
+                    console.log("first year", days)
+                    return '#FFA500'; // orange
+                } else if (days <= 730) {
+                    console.log("second year", days)
+                    return '#1357a6'; // blue
+                } else {
+                    console.log("any other year", days)
+                    return '#1b7ced'; // light blue
+                }
+                
+        //     });
+        }
+
+        
         //Create discharge and rating curve chart
         public createDischargePlot(): void {
             // console.log('peak value plot data', this.formattedPeakDates);
             // console.log('estimated peak plot data', this.formattedEstPeakDates);
-            console.log('this.discharge obj 2nd one', this.dischargeObj)
+            // console.log('this.discharge obj 2nd one', this.dischargeObj)
             this.dischargeChartConfig = {
                 chart: {
                     height: 450,
@@ -1137,11 +1163,7 @@ public formatData(): void {
                     tooltip: {
                         headerFormat:'<b>Annual Peaks</b>',
                         pointFormatter: function(){
-                            if (this.formattedDischargePeakDates !== null){
-                                let waterYear = this.getUTCFullYear;
-                                if (this.getUTCMonth > 8) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
-                                    waterYear += 1; // adding a year to dates that fall into the next water year
-                                };
+                            if (this.formattedPeakDates !== null){
                                 let UTCday = this.getUTCDate;
                                 let year = this.getUTCFullYear;
                                 let month = this.getUTCMonth;
@@ -1149,7 +1171,8 @@ public formatData(): void {
                                 let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
                                 let discharge = this.x;
                                 let stage = this.y;
-                                return '<br>Date <b>' + formattedUTCPeakDate +  '<br>Peak <b>' + discharge + ' cfs' + '<br>at stage <b>' + stage + ' ft'
+                                let peakDate = this.date
+                                return '<br>Date <b>' + peakDate +  '<br>Peak <b>' + discharge + ' cfs' + '<br>at stage <b>' + stage + ' ft'
                             }
                         }
                     },
@@ -1179,9 +1202,27 @@ public formatData(): void {
                             }
                         }
                     },
+                    //color   : this.measuredObj.some(obj => ((+new Date())- (+new Date(obj.dateTime))) / (1000 * 60 * 60 * 24) <= 365) ? '#FFA500' : '#1b75ac',
                     turboThreshold: 0, 
-                    type    : 'scatter',
-                    color   : '#1b75ac ',
+                    type    : 'scatter',  
+                    color: null,
+                    
+                //     color:
+                //     this.measuredObj.map(obj => (new Date().getTime() - new Date(obj.dateTime).getTime()) / (1000 * 60 * 60 * 24))
+                //    .map(days => {
+                //        if (days <= 365) {
+                //            console.log("first year", days)
+                //            return '#FFA500'; // orange
+                //        } else if (days <= 730) {
+                //            console.log("second year", days)
+                //            return '#1357a6'; // blue
+                //        } else {
+                //            console.log("any other year", days)
+                //            return '#1b7ced'; // light blue
+                //        }
+                       
+                //    }),
+                   
                     data    : this.measuredObj,
                     marker: {
                         symbol: 'diamond',
@@ -1200,13 +1241,13 @@ public formatData(): void {
             if (this.dailyRange.length > 0) {
                 let dailyMax  = this.dailyRange.reduce(function (accumulatedValue, currentValue) {
                     return Math.max(accumulatedValue, currentValue);
-                }); console.log('Daily Max', dailyMax);
+                }); // console.log('Daily Max', dailyMax);
                 let dailyMin  = this.dailyRange.reduce(function (accumulatedValue, currentValue) {
                     return Math.min(accumulatedValue, currentValue);
-                }); console.log('Daily Min', dailyMin);
+                }); // console.log('Daily Min', dailyMin);
                 // sort array ascending
                 const asc = this.dailyRange.sort((a, b) => a - b);
-                console.log('sorted range', asc)
+                //  console.log('sorted range', asc)
                 //caluculate percentile values
                 var tenthPercentile = asc[Math.floor(asc.length * 0.1)];
                 var twentiethPercentile = asc[Math.floor(asc.length * 0.2)];
@@ -1217,7 +1258,7 @@ public formatData(): void {
                 var seventiethPercentile = asc[Math.floor(asc.length * 0.7)];
                 var eightiethPercentile = asc[Math.floor(asc.length * 0.8)];
                 var ninetiethPercentile = asc[Math.floor(asc.length * 0.9)];
-                console.log('percentiles', tenthPercentile, twentiethPercentile, thirtiethPercentile, fortiethPercentile, fiftiethPercentile, sixtiethPercentile, seventiethPercentile, eightiethPercentile, ninetiethPercentile);
+                // console.log('percentiles', tenthPercentile, twentiethPercentile, thirtiethPercentile, fortiethPercentile, fiftiethPercentile, sixtiethPercentile, seventiethPercentile, eightiethPercentile, ninetiethPercentile);
                 //convert percentile values to percentages for color stops
                 var firstStop = (tenthPercentile - (dailyMin)) / (dailyMax - (dailyMin));
                 var secondStop = (twentiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
@@ -1228,14 +1269,14 @@ public formatData(): void {
                 var seventhStop = (seventiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
                 var eigthStop = (eightiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
                 var ninthStop = (ninetiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
-                console.log('color stops', firstStop, secondStop, thirdStop, fourthStop, fifthStop, sixthStop, seventhStop, eigthStop, ninthStop);
+                // console.log('color stops', firstStop, secondStop, thirdStop, fourthStop, fifthStop, sixthStop, seventhStop, eigthStop, ninthStop);
                 };
             if (this.logScale) {
                 chart.colorAxis[0].update({ type: 'logarithmic' });
-                console.log('log');
+                // console.log('log');
             } else {
                 chart.colorAxis[0].update({ type: 'linear' });
-                console.log('linear');
+                // console.log('linear');
             }
         };
 
