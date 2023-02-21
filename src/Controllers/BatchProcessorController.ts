@@ -49,7 +49,8 @@ module StreamStats.Controllers {
         public submitBatchInfo: string;
         public regionList: Object;
         public flowStatsList: Object;
-        public selectedRegion: any;
+        public selectedRegion: str;
+
         public flowStatsAllChecked: boolean;
 
         //Constructor
