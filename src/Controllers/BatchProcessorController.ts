@@ -64,7 +64,7 @@ module StreamStats.Controllers {
             this.selectedBatchProcessorTabName = "submitBatch";
             this.nssService = nssService;
             this.regionStatsList = [];
-            this.flowStatsAllChecked = false;
+            this.flowStatsAllChecked = true;
             this.init();  
         }  
         
@@ -78,7 +78,6 @@ module StreamStats.Controllers {
         // used for switching between tabs
         public selectBatchProcessorTab(tabname: string): void {
             this.selectedBatchProcessorTabName = tabname;
-            // console.log('selected tab: '+tabname);
         }
 
         // get list of regions/stats from nssservices/regions
@@ -90,12 +89,12 @@ module StreamStats.Controllers {
                 response => { this.regionList = response; }
 
             );
+            this.flowStatsAllChecked = true;
         }
         
         // send selected region code and retrieve flows stats list
         public getFlowStats(rcode:string): void {
-
-            // console.log(rcode)
+            
             this.nssService.getFlowStatsList(rcode).then(
                 // set flowStatsList to values of promised response
                 response => { this.flowStatsList = response; }
@@ -108,7 +107,6 @@ module StreamStats.Controllers {
 
             this.flowStatsList.forEach((parameter) => {
 
-                //console.log('length of configuration.alwaysSelectedParameters: ', configuration.alwaysSelectedParameters.length);
                 var statisticGroupID = parameter.statisticGroupID
 
                 var paramCheck = this.checkArrayForObj(this.regionStatsList, statisticGroupID);
@@ -132,17 +130,11 @@ module StreamStats.Controllers {
 
             });
 
-            // add/remove each stat from list
-            // this.flowStatsList.forEach((element) => this.updateRegionStatsList(element)
-            // )
-            console.log(this.regionStatsList);
             // toggle switch
             this.flowStatsAllChecked = !this.flowStatsAllChecked;
         }
 
         public updateRegionStatsList(parameter: any) {
-
-            //console.log('in updatestudyarea parameter', parameter);
 
             //dont mess with certain parameters
             // if (parameter.toggleable == false) {
@@ -150,29 +142,42 @@ module StreamStats.Controllers {
             //     parameter.checked = true;
             //     return;
             // }
-            console.log(parameter.checked);
             var statisticGroupID = parameter.statisticGroupID;
 
             var index = this.regionStatsList.indexOf(statisticGroupID);
 
-            if (index > -1) {
+            if (!parameter.checked && index > -1) {
                 //remove it
                 parameter.checked = false;
                 this.regionStatsList.splice(index, 1);
             }
-            else if (index == -1) {
+            else if (parameter.checked && index == -1) {
                 //add it
                 parameter.checked = true;
-                console.log("inside push", statisticGroupID)
                 this.regionStatsList.push(statisticGroupID);
             }
-            console.log(this.regionStatsList)
+            // calling this makes select all the default when any are unchecked
+            this.checkParameters();
+        }
+
+        public checkParameters() {
+            // change select all parameters toggle to match if all params are checked or not
+            let allChecked = true;
+            for (let param of this.regionStatsList) {
+                if (!param.checked) {
+                    allChecked = false;
+                }
+            }
+            if (allChecked) {
+                this.flowStatsAllChecked = false;
+            } else {
+                this.flowStatsAllChecked = true;
+            }
         }
 
         // Helper Methods
         // -+-+-+-+-+-+-+-+-+-+-+-
-        private init(): void {   
-            //console.log("in about controller");
+        private init(): void {
             this.AppVersion = configuration.version;
             this.getRegions();
         }

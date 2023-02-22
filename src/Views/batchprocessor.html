@@ -34,10 +34,14 @@
                 </span>
             </div>
             <!-- select flow statistics -->
-            <div ng-if="cbFlowStats">
+            <div ng-if="cbFlowStats" ng-init="vm.flowStatsAllChecked = true">
                 <h3>Select Flow Statistics</h3>
                 <!-- button to check/uncheck all -->
-                <input type="button" id="but_flowStatsCheckUncheckAll" value="Check/Uncheck All" ng-click="vm.toggleflowStatsAllChecked()">
+                <button class="btn-blue fullwidth" ng-class="!vm.flowStatsAllChecked ? 'btn-black': 'btn-blue'"
+                    ng-click="vm.toggleflowStatsAllChecked()">
+                    <span ng-if="vm.flowStatsAllChecked">Select All Flow Statistics</span>
+                    <span ng-if="!vm.flowStatsAllChecked">Unselect All Flow Statistics</span>
+                </button>
                 <!-- create list of flow stats checkboxes -->
                 <div ng-repeat="flowStat in vm.flowStatsList">
                     <input id="{{flowStat.statisticGroupName}}" ng-model="flowStat.checked" ng-change="vm.updateRegionStatsList(flowStat)" type="checkbox" display="inline-block">
