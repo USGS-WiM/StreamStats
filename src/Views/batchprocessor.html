@@ -13,34 +13,49 @@
         <li ng-class="{'active':vm.selectedBatchProcessorTabName == 'batchStatus'}"><a ng-click="vm.selectBatchProcessorTab('batchStatus')"><i class="fa fa-info-circle"></i>&nbsp;Batch Status</a></li>
     </ul>
     <div style="padding-top: 10px;">
-
+        <!-- Start submit batch -->
         <div id="submitBatch" ng-if="vm.selectedBatchProcessorTabName==='submitBatch'">
             <div id="selectRegionID">
                 <label>Select State / Region:</label>
-
-                                <select ng-model="selectedRegion" ng-options="region.code as region.name for region in vm.regionList track by region.code"></select>
-
-
+                <select ng-model="vm.selectedRegion" ng-options="region.code as region.name for region in vm.regionList track by region.code"
+                ng-change="vm.getFlowStats(vm.selectedRegion); vm.flowStatsAllChecked=false"></select>
             </div>
+            <!-- checkboxes for different work -->
             <div>                
                 <span>                
-
-                    <input id="cbDelineate" , type="checkbox" ng-checked="selectedRegion" display="inline-block" ng-disabled="selectedRegion">
-                    <label class="chx" for="cbDelineate">&nbsp;&nbsp;&nbsp;Basin Delineation&nbsp;&nbsp;&nbsp;</label>
+                    <input id="cbDelineate" , type="checkbox" ng-checked="vm.selectedRegion" display="inline-block" ng-disabled="vm.selectedRegion">
+                    <label class="chx" for="cbDelineate">&nbsp;Basin Delineation&nbsp;&nbsp;&nbsp;&nbsp;</label>
                     
                     <input id="cbBasinChar" type="checkbox" display="inline-block">
-                    <label class="chx" for="cbBasinChar">&nbsp;&nbsp;&nbsp;Compute Basin Characteristics&nbsp;&nbsp;&nbsp;</label>
+                    <label class="chx" for="cbBasinChar">&nbsp;Compute Basin Characteristics&nbsp;&nbsp;&nbsp;&nbsp;</label>
 
-                    <input id="cbFlowStats" type="checkbox" display="inline-block">
-                    <label class="chx" for="cbFlowStats">&nbsp;&nbsp;&nbsp;Compute Flow Statistics</label>
+                    <input id="cbFlowStats" type="checkbox" display="inline-block" ng-model="cbFlowStats">
+                    <label class="chx" for="cbFlowStats">&nbsp;Compute Flow Statistics</label>
                 </span>
             </div>
+            <!-- select flow statistics -->
+            <div ng-if="cbFlowStats" ng-init="vm.flowStatsAllChecked = true">
+                <h3>Select Flow Statistics</h3>
+                <!-- button to check/uncheck all -->
+                <button class="btn-blue fullwidth" ng-class="!vm.flowStatsAllChecked ? 'btn-black': 'btn-blue'"
+                    ng-click="vm.toggleflowStatsAllChecked()">
+                    <span ng-if="vm.flowStatsAllChecked">Select All Flow Statistics</span>
+                    <span ng-if="!vm.flowStatsAllChecked">Unselect All Flow Statistics</span>
+                </button>
+                <!-- create list of flow stats checkboxes -->
+                <div ng-repeat="flowStat in vm.flowStatsList">
+                    <input id="{{flowStat.statisticGroupName}}" ng-model="flowStat.checked" ng-change="vm.updateRegionStatsList(flowStat)" type="checkbox" display="inline-block">
+                    <label class="chx" for="{{flowStat.statisticGroupName}}"> {{flowStat.statisticGroupName}}</label>
+                </div>
+            </div>
+            
         </div>
-
+        <!-- End submit batch -->
+        <!-- Start batch status -->
         <div id="batchStatus" ng-if="vm.selectedBatchProcessorTabName==='batchStatus'">
             <p>This is the batch status tab</p>
         </div>
-
+        <!-- End batch status -->
 </div> 
 
 <div class="modal-footer">

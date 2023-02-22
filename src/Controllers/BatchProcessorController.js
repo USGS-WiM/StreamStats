@@ -27,6 +27,8 @@ var StreamStats;
                 _this.modalService = modalService;
                 _this.selectedBatchProcessorTabName = "submitBatch";
                 _this.nssService = nssService;
+                _this.regionStatsList = [];
+                _this.flowStatsAllChecked = true;
                 _this.init();
                 return _this;
             }
@@ -39,10 +41,71 @@ var StreamStats;
             BatchProcessorController.prototype.getRegions = function () {
                 var _this = this;
                 this.nssService.getRegionList().then(function (response) { _this.regionList = response; });
+                this.flowStatsAllChecked = true;
+            };
+            BatchProcessorController.prototype.getFlowStats = function (rcode) {
+                var _this = this;
+                this.nssService.getFlowStatsList(rcode).then(function (response) { _this.flowStatsList = response; });
+            };
+            BatchProcessorController.prototype.toggleflowStatsAllChecked = function () {
+                var _this = this;
+                this.flowStatsList.forEach(function (parameter) {
+                    var statisticGroupID = parameter.statisticGroupID;
+                    var paramCheck = _this.checkArrayForObj(_this.regionStatsList, statisticGroupID);
+                    if (_this.flowStatsAllChecked) {
+                        if (paramCheck == -1)
+                            _this.regionStatsList.push(statisticGroupID);
+                        parameter.checked = true;
+                    }
+                    else {
+                        if (paramCheck > -1) {
+                            _this.regionStatsList.splice(paramCheck, 1);
+                            parameter.checked = false;
+                        }
+                    }
+                });
+                this.flowStatsAllChecked = !this.flowStatsAllChecked;
+            };
+            BatchProcessorController.prototype.updateRegionStatsList = function (parameter) {
+                var statisticGroupID = parameter.statisticGroupID;
+                var index = this.regionStatsList.indexOf(statisticGroupID);
+                if (!parameter.checked && index > -1) {
+                    parameter.checked = false;
+                    this.regionStatsList.splice(index, 1);
+                }
+                else if (parameter.checked && index == -1) {
+                    parameter.checked = true;
+                    this.regionStatsList.push(statisticGroupID);
+                }
+                this.checkParameters();
+            };
+            BatchProcessorController.prototype.checkParameters = function () {
+                var allChecked = true;
+                for (var _i = 0, _a = this.regionStatsList; _i < _a.length; _i++) {
+                    var param = _a[_i];
+                    if (!param.checked) {
+                        allChecked = false;
+                    }
+                }
+                if (allChecked) {
+                    this.flowStatsAllChecked = false;
+                }
+                else {
+                    this.flowStatsAllChecked = true;
+                }
             };
             BatchProcessorController.prototype.init = function () {
                 this.AppVersion = configuration.version;
                 this.getRegions();
+            };
+            BatchProcessorController.prototype.checkArrayForObj = function (arr, obj) {
+                for (var i = 0; i < arr.length; i++) {
+                    if (angular.equals(arr[i], obj)) {
+                        return i;
+                    }
+                }
+                ;
+                return -1;
             };
             BatchProcessorController.$inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService', '$modalInstance'];
             return BatchProcessorController;

@@ -48,6 +48,10 @@ module StreamStats.Controllers {
         public AppVersion: string;  
         public submitBatchInfo: string;
         public regionList: Object;
+        public flowStatsList: Array<any>;
+        public selectedRegion: string;
+        public flowStatsAllChecked: boolean;
+        public regionStatsList: Array<any>;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -59,6 +63,8 @@ module StreamStats.Controllers {
             this.modalService = modalService;
             this.selectedBatchProcessorTabName = "submitBatch";
             this.nssService = nssService;
+            this.regionStatsList = [];
+            this.flowStatsAllChecked = true;
             this.init();  
         }  
         
@@ -72,7 +78,6 @@ module StreamStats.Controllers {
         // used for switching between tabs
         public selectBatchProcessorTab(tabname: string): void {
             this.selectedBatchProcessorTabName = tabname;
-            // console.log('selected tab: '+tabname);
         }
 
         // get list of regions/stats from nssservices/regions
@@ -81,18 +86,110 @@ module StreamStats.Controllers {
             // call an ng.IPromise first
             this.nssService.getRegionList().then(
                 // set regionList to values of promised response
-                response => { this.regionList = response}
+                response => { this.regionList = response; }
+
             );
+            this.flowStatsAllChecked = true;
+        }
+        
+        // send selected region code and retrieve flows stats list
+        public getFlowStats(rcode:string): void {
+            
+            this.nssService.getFlowStatsList(rcode).then(
+                // set flowStatsList to values of promised response
+                response => { this.flowStatsList = response; }
+
+            );
+        }
+
+        // uncheck/check all flow statistics
+        public toggleflowStatsAllChecked(): void {
+
+            this.flowStatsList.forEach((parameter) => {
+
+                var statisticGroupID = parameter.statisticGroupID
+
+                var paramCheck = this.checkArrayForObj(this.regionStatsList, statisticGroupID);
+
+                if (this.flowStatsAllChecked) {
+
+                    //if its not there add it
+                    if (paramCheck == -1) this.regionStatsList.push(statisticGroupID);
+                    parameter.checked = true;
+                }
+                else {
+
+                    //remove it only if toggleable
+                    if (paramCheck > -1) {
+                        this.regionStatsList.splice(paramCheck, 1);
+                        //this.toaster.pop('warning', parameter.code + " is required by one of the selected scenarios", "It cannot be unselected");
+                        parameter.checked = false;
+                    }
+                }
+
+
+            });
+
+            // toggle switch
+            this.flowStatsAllChecked = !this.flowStatsAllChecked;
+        }
+
+        public updateRegionStatsList(parameter: any) {
+
+            //dont mess with certain parameters
+            // if (parameter.toggleable == false) {
+            //     this.toaster.pop('warning', parameter.code + " is required by one of the selected scenarios", "It cannot be unselected");
+            //     parameter.checked = true;
+            //     return;
+            // }
+            var statisticGroupID = parameter.statisticGroupID;
+
+            var index = this.regionStatsList.indexOf(statisticGroupID);
+
+            if (!parameter.checked && index > -1) {
+                //remove it
+                parameter.checked = false;
+                this.regionStatsList.splice(index, 1);
+            }
+            else if (parameter.checked && index == -1) {
+                //add it
+                parameter.checked = true;
+                this.regionStatsList.push(statisticGroupID);
+            }
+            // calling this makes select all the default when any are unchecked
+            this.checkParameters();
+        }
+
+        public checkParameters() {
+            // change select all parameters toggle to match if all params are checked or not
+            let allChecked = true;
+            for (let param of this.regionStatsList) {
+                if (!param.checked) {
+                    allChecked = false;
+                }
+            }
+            if (allChecked) {
+                this.flowStatsAllChecked = false;
+            } else {
+                this.flowStatsAllChecked = true;
+            }
         }
 
         // Helper Methods
         // -+-+-+-+-+-+-+-+-+-+-+-
-        private init(): void {   
-            //console.log("in about controller");
+        private init(): void {
             this.AppVersion = configuration.version;
-            this.getRegions()
+            this.getRegions();
         }
         
+        private checkArrayForObj(arr, obj) {
+            for (var i = 0; i < arr.length; i++) {
+                if (angular.equals(arr[i], obj)) {
+                    return i;
+                }
+            };
+            return -1;
+        }
 
     }//end  class
 
