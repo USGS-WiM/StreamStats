@@ -97,7 +97,6 @@ var StreamStats;
                 _this_1.formattedDailyPlusAvg = [];
                 _this_1.formattedEstPeakDates = [];
                 _this_1.formattedDailyFlow = [];
-                _this_1.dailyRange = [];
                 _this_1.dailyValuesOnly = [];
                 _this_1.plotlines = true;
                 _this_1.logScale = false;
@@ -497,7 +496,7 @@ var StreamStats;
                 }
                 if (this.dailyFlow) {
                     this.dailyFlow.forEach(function (dailyObj) {
-                        if (dailyObj.qualifiers[0] === 'A') {
+                        if (parseInt(dailyObj.value) !== -999999) {
                             _this_1.formattedDailyFlow.push({ x: new Date(dailyObj.dateTime), y: parseInt(dailyObj.value) });
                             _this_1.dailyValuesOnly.push(parseInt(dailyObj.value));
                         }
@@ -532,7 +531,7 @@ var StreamStats;
                             doy += 366;
                         }
                         ;
-                        if (dailyHeatObj.qualifiers[0] === 'A') {
+                        if (parseInt(dailyHeatObj.value) !== -999999) {
                             _this_1.formattedDailyHeat.push({ x: doy, y: year, value: parseInt(dailyHeatObj.value), length: 1 });
                         }
                         ;
@@ -542,32 +541,34 @@ var StreamStats;
                         ;
                     });
                 }
-                var noNulls = this.formattedDailyHeat.filter(function (item) {
-                    return (item.value != null);
-                });
-                var previousYear = noNulls[0].y;
-                var sum = 0;
-                var length = 0;
-                var listOfSummations = [];
-                for (var i = 0; i < noNulls.length; i++) {
-                    var currentData = noNulls[i];
-                    var currentYear = currentData.y;
-                    if (previousYear == currentYear) {
-                        sum += currentData.value;
-                        length += currentData.length;
+                if (this.formattedDailyHeat.length > 0) {
+                    var noNulls = this.formattedDailyHeat.filter(function (item) {
+                        return (item.value != null);
+                    });
+                    var previousYear = noNulls[0].y;
+                    var sum = 0;
+                    var length_1 = 0;
+                    var listOfSummations = [];
+                    for (var i = 0; i < noNulls.length; i++) {
+                        var currentData = noNulls[i];
+                        var currentYear = currentData.y;
+                        if (previousYear == currentYear) {
+                            sum += currentData.value;
+                            length_1 += currentData.length;
+                        }
+                        else {
+                            listOfSummations.push({ x: 650, y: currentYear - 1, value: sum / length_1, sum: sum, length: length_1 }, { x: 651, y: currentYear - 1, value: sum / length_1, sum: sum, length: length_1 }, { x: 652, y: currentYear - 1, value: sum / length_1, sum: sum, length: length_1 }, { x: 653, y: currentYear - 1, value: sum / length_1, sum: sum, length: length_1 }, { x: 654, y: currentYear - 1, value: sum / length_1, sum: sum, length: length_1 }, { x: 655, y: currentYear - 1, value: sum / length_1, sum: sum, length: length_1 }, { x: 656, y: currentYear - 1, value: sum / length_1, sum: sum, length: length_1 }, { x: 657, y: currentYear - 1, value: sum / length_1, sum: sum, length: length_1 }, { x: 658, y: currentYear - 1, value: sum / length_1, sum: sum, length: length_1 });
+                            sum = currentData.value;
+                            length_1 = currentData.length;
+                        }
+                        if (i == noNulls.length - 1) {
+                            listOfSummations.push({ x: 650, y: currentYear, value: sum / length_1, sum: sum, length: length_1 }, { x: 651, y: currentYear, value: sum / length_1, sum: sum, length: length_1 }, { x: 652, y: currentYear, value: sum / length_1, sum: sum, length: length_1 }, { x: 653, y: currentYear, value: sum / length_1, sum: sum, length: length_1 }, { x: 654, y: currentYear, value: sum / length_1, sum: sum, length: length_1 }, { x: 655, y: currentYear, value: sum / length_1, sum: sum, length: length_1 }, { x: 656, y: currentYear, value: sum / length_1, sum: sum, length: length_1 }, { x: 657, y: currentYear, value: sum / length_1, sum: sum, length: length_1 }, { x: 658, y: currentYear, value: sum / length_1, sum: sum, length: length_1 });
+                        }
+                        previousYear = currentYear;
                     }
-                    else {
-                        listOfSummations.push({ x: 650, y: currentYear - 1, value: sum / length, sum: sum, length: length }, { x: 651, y: currentYear - 1, value: sum / length, sum: sum, length: length }, { x: 652, y: currentYear - 1, value: sum / length, sum: sum, length: length }, { x: 653, y: currentYear - 1, value: sum / length, sum: sum, length: length }, { x: 654, y: currentYear - 1, value: sum / length, sum: sum, length: length }, { x: 655, y: currentYear - 1, value: sum / length, sum: sum, length: length }, { x: 656, y: currentYear - 1, value: sum / length, sum: sum, length: length }, { x: 657, y: currentYear - 1, value: sum / length, sum: sum, length: length }, { x: 658, y: currentYear - 1, value: sum / length, sum: sum, length: length });
-                        sum = currentData.value;
-                        length = currentData.length;
-                    }
-                    if (i == noNulls.length - 1) {
-                        listOfSummations.push({ x: 650, y: currentYear, value: sum / length, sum: sum, length: length }, { x: 651, y: currentYear, value: sum / length, sum: sum, length: length }, { x: 652, y: currentYear, value: sum / length, sum: sum, length: length }, { x: 653, y: currentYear, value: sum / length, sum: sum, length: length }, { x: 654, y: currentYear, value: sum / length, sum: sum, length: length }, { x: 655, y: currentYear, value: sum / length, sum: sum, length: length }, { x: 656, y: currentYear, value: sum / length, sum: sum, length: length }, { x: 657, y: currentYear, value: sum / length, sum: sum, length: length }, { x: 658, y: currentYear, value: sum / length, sum: sum, length: length });
-                    }
-                    previousYear = currentYear;
+                    var addAvg = this.formattedDailyHeat.concat(listOfSummations);
+                    this.formattedDailyPlusAvg.push(addAvg);
                 }
-                var addAvg = this.formattedDailyHeat.concat(listOfSummations);
-                this.formattedDailyPlusAvg.push(addAvg);
                 if (this.floodFreq) {
                     this.formattedFloodFreq = [];
                     var AEPColors_1 = {
@@ -648,8 +649,8 @@ var StreamStats;
                     },
                     xAxis: {
                         type: 'datetime',
-                        min: 1875,
-                        max: 2050,
+                        min: null,
+                        max: null,
                         title: {
                             text: 'Date'
                         },
@@ -726,7 +727,7 @@ var StreamStats;
                         },
                         {
                             name: 'Annual Peak Streamflow (Date Estimated)',
-                            showInNavigator: true,
+                            showInNavigator: false,
                             tooltip: {
                                 headerFormat: '<b>Annual Peak Streamflow</b>',
                                 pointFormatter: function () {
@@ -762,12 +763,44 @@ var StreamStats;
                 });
             };
             GagePageController.prototype.createDailyRasterPlot = function () {
-                function hasNegative(dailyValuesOnly) {
+                if (this.dailyValuesOnly.length > 0) {
+                    var asc = this.dailyValuesOnly.sort(function (a, b) { return a - b; });
+                    var fifthPercentile = asc[Math.floor(asc.length * 0.05)];
+                    var ninetyfifthPercentile = asc[Math.floor(asc.length * 0.95)];
+                }
+                ;
+                function logOrLinear(dailyValuesOnly) {
                     if (dailyValuesOnly.some(function (v) { return v <= 0; })) {
-                        return 'linear';
+                        return {
+                            type: 'linear',
+                            min: fifthPercentile,
+                            max: ninetyfifthPercentile,
+                            stops: [
+                                [0, '#FF0000'],
+                                [0.3, '#FFCC33'],
+                                [0.8, '#66CCFF'],
+                                [1, '#3300CC']
+                            ],
+                            startOnTick: false,
+                            endOnTick: false,
+                            allowNegativeLog: true
+                        };
                     }
                     if (dailyValuesOnly.some(function (v) { return v > 0; })) {
-                        return 'logarithmic';
+                        return {
+                            type: 'logarithmic',
+                            min: null,
+                            max: null,
+                            stops: [
+                                [0, '#FF0000'],
+                                [0.3, '#FFCC33'],
+                                [0.8, '#66CCFF'],
+                                [1, '#3300CC']
+                            ],
+                            startOnTick: false,
+                            endOnTick: false,
+                            allowNegativeLog: true
+                        };
                     }
                 }
                 function isLeapYear(year) {
@@ -821,20 +854,7 @@ var StreamStats;
                             allowNegativeLog: true
                         }
                     },
-                    colorAxis: {
-                        type: hasNegative(this.dailyValuesOnly),
-                        min: null,
-                        max: null,
-                        stops: [
-                            [0, '#FF0000'],
-                            [0.3, '#FFCC33'],
-                            [0.8, '#66CCFF'],
-                            [1, '#3300CC']
-                        ],
-                        startOnTick: false,
-                        endOnTick: false,
-                        allowNegativeLog: true
-                    },
+                    colorAxis: logOrLinear(this.dailyValuesOnly),
                     series: [{
                             name: 'Daily Streamflow',
                             pixelSpacing: null,

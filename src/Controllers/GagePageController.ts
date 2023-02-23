@@ -200,7 +200,6 @@ module StreamStats.Controllers {
         public formattedDailyPlusAvg = [];
         public formattedEstPeakDates = [];
         public formattedDailyFlow = [];
-        public dailyRange = [];
         public dailyValuesOnly = [];
 
         //Constructor
@@ -678,7 +677,7 @@ module StreamStats.Controllers {
                 }); 
             }
 
-        //Get data into (x, y) format and convert to dates in order to add it to the plot
+        //Get data into format necessary for plotting in Highcharts
         public formatData(): void {
             if (this.peakDates) {
                 this.peakDates.forEach(peakObj => {
@@ -696,7 +695,7 @@ module StreamStats.Controllers {
             }
             if (this.dailyFlow) {
                 this.dailyFlow.forEach(dailyObj => {
-                    if (dailyObj.qualifiers[0] === 'A') {
+                    if (parseInt(dailyObj.value) !== -999999) {
                     this.formattedDailyFlow.push({x: new Date(dailyObj.dateTime), y: parseInt(dailyObj.value)})
                     this.dailyValuesOnly.push(parseInt(dailyObj.value));
                     }
@@ -706,7 +705,7 @@ module StreamStats.Controllers {
                 this.dailyFlow.forEach(dailyHeatObj => {
                     let now = new Date(dailyHeatObj.dateTime);
                     let year = new Date(dailyHeatObj.dateTime).getUTCFullYear();
-                    //Getting dates in Julian days - pulled from this exchange: https://stackoverflow.com/questions/8619879/javascript-calculate-the-day-of-the-year-1-366
+                    //Getting dates in Julian days
                     function daysIntoYear(now){
                         return (Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(now.getFullYear(), 0, 0)) / 24 / 60 / 60 / 1000;
                     };
@@ -725,7 +724,7 @@ module StreamStats.Controllers {
                     if (doy < 275) {
                         doy += 366; //making 275 (Oct 1) the lowest number so the x-axis can start at the beginning of the water year
                     };
-                    if (dailyHeatObj.qualifiers[0] === 'A') {
+                    if (parseInt(dailyHeatObj.value) !== -999999) {
                         this.formattedDailyHeat.push({x: doy, y: year, value: parseInt(dailyHeatObj.value), length: 1});
                     };
                     if (isLeapYear(year) == false) {
@@ -734,6 +733,7 @@ module StreamStats.Controllers {
                 });
             }
             //Sum and average daily values by year
+            if (this.formattedDailyHeat.length >0) {
             const noNulls = this.formattedDailyHeat.filter(item => {
                 return(item.value != null) // getting rid of any objects with null values so they don't affect average
             });
@@ -747,8 +747,7 @@ module StreamStats.Controllers {
                 if (previousYear == currentYear){
                 sum += currentData.value
                 length += currentData.length
-                }
-                else {
+                } else {
                 listOfSummations.push({x: 650, y: currentYear -1, value: sum / length, sum: sum, length: length}, 
                                     {x: 651, y: currentYear -1, value: sum / length, sum: sum, length: length}, 
                                     {x: 652, y: currentYear -1, value: sum / length, sum: sum, length: length}, 
@@ -776,7 +775,7 @@ module StreamStats.Controllers {
             }
             var addAvg = this.formattedDailyHeat.concat(listOfSummations); //adding the averages into the daily value array so they can be plotted
             this.formattedDailyPlusAvg.push(addAvg);
-    
+            }
             if (this.floodFreq) { //set up AEP plotLines, defining their colors
                 this.formattedFloodFreq = [];
                     const AEPColors = {
@@ -859,8 +858,8 @@ module StreamStats.Controllers {
                 },
                 xAxis: {
                     type: 'datetime',
-                    min: 1875,
-                    max: 2050,
+                    min: null,
+                    max: null,
                     title: {
                         text: 'Date'
                     },
@@ -936,7 +935,7 @@ module StreamStats.Controllers {
                 },
                 {
                     name    : 'Annual Peak Streamflow (Date Estimated)',
-                    showInNavigator: true,
+                    showInNavigator: false,
                     tooltip: {
                         headerFormat:'<b>Annual Peak Streamflow</b>',
                         pointFormatter: function(){
@@ -971,12 +970,45 @@ module StreamStats.Controllers {
         }
 
         public createDailyRasterPlot(): void {
-            function hasNegative(dailyValuesOnly) {
+            if (this.dailyValuesOnly.length > 0) {
+                // sort array ascending
+                const asc = this.dailyValuesOnly.sort((a, b) => a - b);
+                //caluculate percentile values
+                var fifthPercentile = asc[Math.floor(asc.length * 0.05)];
+                var ninetyfifthPercentile = asc[Math.floor(asc.length * 0.95)];
+            };
+            function logOrLinear(dailyValuesOnly) {
                 if (dailyValuesOnly.some(v => v <= 0)) {
-                    return 'linear';
+                    return {
+                        type: 'linear',
+                        min: fifthPercentile, 
+                        max: ninetyfifthPercentile,
+                        stops: [                     
+                        [0 ,   '#FF0000'],
+                        [0.3, '#FFCC33'],
+                        [0.8, '#66CCFF'],
+                        [1 ,   '#3300CC']
+                        ],
+                        startOnTick: false,
+                        endOnTick: false,
+                        allowNegativeLog: true
+                    }
                 }
                 if (dailyValuesOnly.some(v => v > 0)) {
-                    return 'logarithmic'
+                    return {
+                        type: 'logarithmic',
+                        min: null, 
+                        max: null,
+                        stops: [                     
+                        [0 ,   '#FF0000'],
+                        [0.3, '#FFCC33'],
+                        [0.8, '#66CCFF'],
+                        [1 ,   '#3300CC']
+                        ],
+                        startOnTick: false,
+                        endOnTick: false,
+                        allowNegativeLog: true
+                    }
                 }
             }
             function isLeapYear(year) {
@@ -1027,20 +1059,7 @@ module StreamStats.Controllers {
                         allowNegativeLog: true
                     }
                 },
-                colorAxis: {
-                    type: hasNegative(this.dailyValuesOnly),
-                    min: null, 
-                    max: null,
-                    stops: [
-                        [0 ,   '#FF0000'],
-                        [0.3, '#FFCC33'],
-                        [0.8, '#66CCFF'],
-                        [1 ,   '#3300CC']
-                    ],
-                    startOnTick: false,
-                    endOnTick: false,
-                    allowNegativeLog: true
-                },
+                colorAxis: logOrLinear(this.dailyValuesOnly),
                 series: [{
                     name: 'Daily Streamflow',
                     pixelSpacing: null,
@@ -1052,15 +1071,13 @@ module StreamStats.Controllers {
                         headerFormat:'<b>Daily Streamflow</b>',
                         pointFormatter: function(){
                             if (this.formattedDailyPlusAvg !== null){
-                                //let UTCday = this.x.getUTCDate();
                                 let year = this.y;
                                 let doy = this.x;
-
                                 if (doy > 366) {
                                     doy -= 366; //returning doy to 1-366 for labeling purposes
                                 };
                                 if (doy > 274) {
-                                    year -= 1;
+                                    year -= 1; //subracting a year from Oct-Dec dates to get the cal year vs water year
                                 };
                                 if (isLeapYear(year) == false && doy > 59) {
                                     doy -= 1 //subtracting a day off of non-leap years after Feb 28 so that the labels are accurate
@@ -1074,7 +1091,6 @@ module StreamStats.Controllers {
                                 if (month > 9) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
                                     waterYear += 1; // adding a year to dates that fall into the next water year
                                 };
-                                //console.log(doy);
                                 if (doy > 282 && doy < 293) return '</b><br>Water Year Average Value: <b>' + this.value.toFixed(2) + ' ft³/s</b><br>Water Year: <b>' + waterYear
                                 if (doy !== 283 && doy !== 284 && doy !== 285 && doy !== 286 && doy !== 287 && doy !== 288 && doy !== 289 && doy !== 290 && doy !== 291 && doy !== 292) return '<br>Date: <b>'  + formattedUTCDate + '</b><br>Value: <b>' + this.value + ' ft³/s</b><br>Water Year: <b>' + waterYear
                             }
@@ -1085,53 +1101,6 @@ module StreamStats.Controllers {
             }
         };
 
-
-//don't think a log - linear checkbox will work on the heatmap but leaving this code here for now as reference
-        //checkbox for change log to linear scale
-        // public logScale = true; 
-        // public logToLinear () {
-        //     let chart = $('#chart2').highcharts();
-        //     // if (this.dailyRange.length > 0) {
-        //     //     let dailyMax  = this.dailyRange.reduce(function (accumulatedValue, currentValue) {
-        //     //         return Math.max(accumulatedValue, currentValue);
-        //     //     }); console.log('Daily Max', dailyMax);
-        //     //     let dailyMin  = this.dailyRange.reduce(function (accumulatedValue, currentValue) {
-        //     //         return Math.min(accumulatedValue, currentValue);
-        //     //     }); console.log('Daily Min', dailyMin);
-        //     //     // sort array ascending
-        //     //     const asc = this.dailyRange.sort((a, b) => a - b);
-        //     //     console.log('sorted range', asc)
-        //     //     //caluculate percentile values
-        //     //     var tenthPercentile = asc[Math.floor(asc.length * 0.1)];
-        //     //     var twentiethPercentile = asc[Math.floor(asc.length * 0.2)];
-        //     //     var thirtiethPercentile = asc[Math.floor(asc.length * 0.3)];
-        //     //     var fortiethPercentile = asc[Math.floor(asc.length * 0.4)];
-        //     //     var fiftiethPercentile = asc[Math.floor(asc.length * 0.5)];
-        //     //     var sixtiethPercentile = asc[Math.floor(asc.length * 0.6)];
-        //     //     var seventiethPercentile = asc[Math.floor(asc.length * 0.7)];
-        //     //     var eightiethPercentile = asc[Math.floor(asc.length * 0.8)];
-        //     //     var ninetiethPercentile = asc[Math.floor(asc.length * 0.9)];
-        //     //     console.log('percentiles', tenthPercentile, twentiethPercentile, thirtiethPercentile, fortiethPercentile, fiftiethPercentile, sixtiethPercentile, seventiethPercentile, eightiethPercentile, ninetiethPercentile);
-        //     //     //convert percentile values to percentages for color stops
-        //     //     var firstStop = (tenthPercentile - (dailyMin)) / (dailyMax - (dailyMin));
-        //     //     var secondStop = (twentiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
-        //     //     var thirdStop = (thirtiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
-        //     //     var fourthStop = (fortiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
-        //     //     var fifthStop = (fiftiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
-        //     //     var sixthStop = (sixtiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
-        //     //     var seventhStop = (seventiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
-        //     //     var eigthStop = (eightiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
-        //     //     var ninthStop = (ninetiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
-        //     //     console.log('color stops', firstStop, secondStop, thirdStop, fourthStop, fifthStop, sixthStop, seventhStop, eigthStop, ninthStop);
-        //     //     };
-        //     if (this.logScale) {
-        //         chart.colorAxis[0].update({ type: 'logarithmic' });
-        //         console.log('log');
-        //     } else {
-        //         chart.colorAxis[0].update({ type: 'linear' });
-        //         console.log('linear');
-        //     }
-        // };
         //checkbox for turning plotLines on and off
         public plotlines = true;
             public togglePlotLines () {
