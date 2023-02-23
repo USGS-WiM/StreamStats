@@ -1071,6 +1071,8 @@ module StreamStats.Controllers {
         public togglePeakYear () {
             let chart = $('#chart1').highcharts();
             if (this.peaksOnYear) {
+                var finalIndex = this.formattedDailyFlow.length-1;
+                var finalYear = (this.formattedDailyFlow[finalIndex].x).getUTCFullYear();
                 chart.series[1].update({ data: this.formattedPeakDatesOnYear });
                 chart.series[2].update({ data: this.formattedEstPeakDatesOnYear});
                 chart.rangeSelector.update({ selected: 3 });
