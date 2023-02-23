@@ -201,6 +201,7 @@ module StreamStats.Controllers {
         public formattedEstPeakDates = [];
         public formattedDailyFlow = [];
         public dailyRange = [];
+        public dailyValuesOnly = [];
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -697,6 +698,7 @@ module StreamStats.Controllers {
                 this.dailyFlow.forEach(dailyObj => {
                     if (dailyObj.qualifiers[0] === 'A') {
                     this.formattedDailyFlow.push({x: new Date(dailyObj.dateTime), y: parseInt(dailyObj.value)})
+                    this.dailyValuesOnly.push(parseInt(dailyObj.value));
                     }
                 });
             }
@@ -969,8 +971,14 @@ module StreamStats.Controllers {
         }
 
         public createDailyRasterPlot(): void {
-            //console.log('daily heat', this.formattedDailyHeat);
-            //console.log('daily and avg', this.formattedDailyPlusAvg);
+            function hasNegative(dailyValuesOnly) {
+                if (dailyValuesOnly.some(v => v <= 0)) {
+                    return 'linear';
+                }
+                if (dailyValuesOnly.some(v => v > 0)) {
+                    return 'logarithmic'
+                }
+            }
             function isLeapYear(year) {
                 if (year % 400 === 0) return true;
                 if (year % 100 === 0) return false;
@@ -1020,7 +1028,7 @@ module StreamStats.Controllers {
                     }
                 },
                 colorAxis: {
-                    type: 'logarithmic',
+                    type: hasNegative(this.dailyValuesOnly),
                     min: null, 
                     max: null,
                     stops: [
@@ -1036,7 +1044,7 @@ module StreamStats.Controllers {
                 series: [{
                     name: 'Daily Streamflow',
                     pixelSpacing: null,
-                    borderWidth: 0.00,
+                    borderWidth: 0,
                     borderColor: 'white',
                     type: 'heatmap',
                     data: this.formattedDailyPlusAvg[0],
@@ -1076,6 +1084,7 @@ module StreamStats.Controllers {
                 }]
             }
         };
+
 
 //don't think a log - linear checkbox will work on the heatmap but leaving this code here for now as reference
         //checkbox for change log to linear scale
@@ -1123,8 +1132,6 @@ module StreamStats.Controllers {
         //         console.log('linear');
         //     }
         // };
-
-
         //checkbox for turning plotLines on and off
         public plotlines = true;
             public togglePlotLines () {

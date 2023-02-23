@@ -98,6 +98,7 @@ var StreamStats;
                 _this_1.formattedEstPeakDates = [];
                 _this_1.formattedDailyFlow = [];
                 _this_1.dailyRange = [];
+                _this_1.dailyValuesOnly = [];
                 _this_1.plotlines = true;
                 _this_1.logScale = false;
                 $scope.vm = _this_1;
@@ -498,6 +499,7 @@ var StreamStats;
                     this.dailyFlow.forEach(function (dailyObj) {
                         if (dailyObj.qualifiers[0] === 'A') {
                             _this_1.formattedDailyFlow.push({ x: new Date(dailyObj.dateTime), y: parseInt(dailyObj.value) });
+                            _this_1.dailyValuesOnly.push(parseInt(dailyObj.value));
                         }
                     });
                 }
@@ -760,6 +762,14 @@ var StreamStats;
                 });
             };
             GagePageController.prototype.createDailyRasterPlot = function () {
+                function hasNegative(dailyValuesOnly) {
+                    if (dailyValuesOnly.some(function (v) { return v <= 0; })) {
+                        return 'linear';
+                    }
+                    if (dailyValuesOnly.some(function (v) { return v > 0; })) {
+                        return 'logarithmic';
+                    }
+                }
                 function isLeapYear(year) {
                     if (year % 400 === 0)
                         return true;
@@ -812,7 +822,7 @@ var StreamStats;
                         }
                     },
                     colorAxis: {
-                        type: 'logarithmic',
+                        type: hasNegative(this.dailyValuesOnly),
                         min: null,
                         max: null,
                         stops: [
@@ -828,7 +838,7 @@ var StreamStats;
                     series: [{
                             name: 'Daily Streamflow',
                             pixelSpacing: null,
-                            borderWidth: 0.00,
+                            borderWidth: 0,
                             borderColor: 'white',
                             type: 'heatmap',
                             data: this.formattedDailyPlusAvg[0],
