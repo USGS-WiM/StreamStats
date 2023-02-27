@@ -97,6 +97,7 @@ var StreamStats;
                 _this_1.formattedEstPeakDatesOnYear = [];
                 _this_1.formattedEstPeakDates = [];
                 _this_1.formattedDailyFlow = [];
+                _this_1.dailyDatesOnly = [];
                 _this_1.logScale = false;
                 _this_1.peaksOnYear = false;
                 $scope.vm = _this_1;
@@ -497,11 +498,26 @@ var StreamStats;
                     this.dailyFlow.forEach(function (dailyObj) {
                         if (parseInt(dailyObj.value) !== -999999) {
                             _this_1.formattedDailyFlow.push({ x: new Date(dailyObj.dateTime), y: parseInt(dailyObj.value) });
+                            _this_1.dailyDatesOnly.push(new Date(dailyObj.dateTime));
                         }
                     });
                 }
                 var finalIndex = this.formattedDailyFlow.length - 1;
                 var finalYear = (this.formattedDailyFlow[finalIndex].x).getUTCFullYear();
+                function dateRange(startDate, endDate, steps) {
+                    if (steps === void 0) { steps = 1; }
+                    var dateArray = [];
+                    var currentDate = new Date(startDate);
+                    while (currentDate <= new Date(endDate)) {
+                        dateArray.push(new Date(currentDate));
+                        currentDate.setUTCDate(currentDate.getUTCDate() + steps);
+                    }
+                    return dateArray;
+                }
+                var dates = dateRange(this.formattedDailyFlow[0].x, this.formattedDailyFlow[finalIndex].x);
+                dates.forEach(function (date) {
+                    _this_1.formattedDailyFlow.push({ x: date, y: null });
+                });
                 if (this.peakDates) {
                     this.peakDates.forEach(function (peakOnYear) {
                         var adjustedDate = new Date(peakOnYear.peak_dt);
@@ -633,6 +649,7 @@ var StreamStats;
             };
             GagePageController.prototype.createAnnualFlowPlot = function () {
                 var _this_1 = this;
+                console.log('daily flow plot data', this.formattedDailyFlow);
                 this.chartConfig = {
                     chart: {
                         height: 550,

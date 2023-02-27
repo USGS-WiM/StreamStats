@@ -200,6 +200,7 @@ module StreamStats.Controllers {
         public formattedEstPeakDatesOnYear = [];
         public formattedEstPeakDates = [];
         public formattedDailyFlow = [];
+        public dailyDatesOnly = [];
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -691,11 +692,30 @@ module StreamStats.Controllers {
                 this.dailyFlow.forEach(dailyObj => {
                     if (parseInt(dailyObj.value) !== -999999) {
                     this.formattedDailyFlow.push({x: new Date(dailyObj.dateTime), y: parseInt(dailyObj.value)})
-                    }
+                    this.dailyDatesOnly.push(new Date(dailyObj.dateTime))
+                }
                 });
             }
             var finalIndex = this.formattedDailyFlow.length-1;
-            var finalYear = (this.formattedDailyFlow[finalIndex].x).getUTCFullYear();
+            var finalYear = (this.formattedDailyFlow[finalIndex].x).getUTCFullYear(); //currently using the final daily flow point as latest year, but sometimes gage has more recent peaks
+            function dateRange(startDate, endDate, steps = 1) {
+                const dateArray = [];
+                let currentDate = new Date(startDate);
+                while (currentDate <= new Date(endDate)) {
+                    dateArray.push(new Date(currentDate));
+                  // Use UTC date to prevent problems with time zones and DST
+                currentDate.setUTCDate(currentDate.getUTCDate() + steps);
+                }
+                return dateArray;
+            }
+            const dates = dateRange(this.formattedDailyFlow[0].x, this.formattedDailyFlow[finalIndex].x);
+            dates.forEach(date => {
+                this.formattedDailyFlow.push({x: date, y: null});
+            });
+            //console.log('all dates', dates);
+            //Finding all unique dates between the actual data and all dates in the range
+            //var array3 = dates.concat(this.dailyDatesOnly);
+
             if (this.peakDates) {
                 this.peakDates.forEach(peakOnYear => {
                     let adjustedDate = new Date(peakOnYear.peak_dt);
@@ -831,9 +851,10 @@ module StreamStats.Controllers {
         //Create chart
         public createAnnualFlowPlot(): void {
             //console.log('peak value plot data', this.formattedPeakDates);
-            //onsole.log('estimated peak plot data', this.formattedEstPeakDates);
-            //console.log('daily flow plot data', this.formattedDailyFlow);
+            //console.log('estimated peak plot data', this.formattedEstPeakDates);
+            console.log('daily flow plot data', this.formattedDailyFlow);
             //console.log(this.formattedPeakDatesOnYear)
+            //console.log(this.dailyDatesOnly);
             this.chartConfig = {
                 chart: {
                     height: 550,
