@@ -515,9 +515,20 @@ var StreamStats;
                     return dateArray;
                 }
                 var dates = dateRange(this.formattedDailyFlow[0].x, this.formattedDailyFlow[finalIndex].x);
-                dates.forEach(function (date) {
-                    _this_1.formattedDailyFlow.push({ x: date, y: null });
-                });
+                dates = dates.map(function (date) { return (date.getUTCMonth() + 1) + "/" + date.getUTCDate() + "/" + date.getUTCFullYear(); });
+                var observedDates = this.dailyDatesOnly.map(function (observedDate) { return (observedDate.getUTCMonth() + 1) + "/" + observedDate.getUTCDate() + "/" + observedDate.getUTCFullYear(); });
+                function difference(a1, a2) {
+                    var result = [];
+                    for (var i = 0; i < a1.length; i++) {
+                        if (a2.indexOf(a1[i]) === -1) {
+                            result.push(new Date(a1[i]));
+                        }
+                    }
+                    return result;
+                }
+                var differences = difference(dates, observedDates);
+                differences.forEach(function (date) { return _this_1.formattedDailyFlow.push({ x: date, y: null }); });
+                this.formattedDailyFlow.sort(function (a, b) { return a.x - b.x; });
                 if (this.peakDates) {
                     this.peakDates.forEach(function (peakOnYear) {
                         var adjustedDate = new Date(peakOnYear.peak_dt);
@@ -649,7 +660,6 @@ var StreamStats;
             };
             GagePageController.prototype.createAnnualFlowPlot = function () {
                 var _this_1 = this;
-                console.log('daily flow plot data', this.formattedDailyFlow);
                 this.chartConfig = {
                     chart: {
                         height: 550,

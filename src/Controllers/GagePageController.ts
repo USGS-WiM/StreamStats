@@ -698,6 +698,8 @@ module StreamStats.Controllers {
             }
             var finalIndex = this.formattedDailyFlow.length-1;
             var finalYear = (this.formattedDailyFlow[finalIndex].x).getUTCFullYear(); //currently using the final daily flow point as latest year, but sometimes gage has more recent peaks
+            
+            //return an array with a date each day between first recording and last
             function dateRange(startDate, endDate, steps = 1) {
                 const dateArray = [];
                 let currentDate = new Date(startDate);
@@ -708,13 +710,24 @@ module StreamStats.Controllers {
                 }
                 return dateArray;
             }
-            const dates = dateRange(this.formattedDailyFlow[0].x, this.formattedDailyFlow[finalIndex].x);
-            dates.forEach(date => {
-                this.formattedDailyFlow.push({x: date, y: null});
-            });
-            //console.log('all dates', dates);
-            //Finding all unique dates between the actual data and all dates in the range
-            //var array3 = dates.concat(this.dailyDatesOnly);
+            let dates = dateRange(this.formattedDailyFlow[0].x, this.formattedDailyFlow[finalIndex].x);
+            //format the arrays (all dates in range and all dates with a recorded value) to be compared to each other
+            dates = dates.map(date => (date.getUTCMonth() + 1) + "/" + date.getUTCDate() + "/" + date.getUTCFullYear());
+            let observedDates = this.dailyDatesOnly.map(observedDate => (observedDate.getUTCMonth() + 1) + "/" + observedDate.getUTCDate() + "/" + observedDate.getUTCFullYear());
+            //find the difference between the two arrays (which dates are in the dates array but not the observedDates array)
+            function difference(a1, a2) {
+                var result = [];
+                for (var i = 0; i < a1.length; i++) {
+                    if (a2.indexOf(a1[i]) === -1) {
+                    result.push(new Date(a1[i]));
+                    }
+                }
+                return result;
+            }
+            let differences = difference(dates, observedDates)
+            //add the difference dates to the plot data with null values so that there can be breaks in the line when there are no recordings
+            differences.forEach(date => this.formattedDailyFlow.push({x: date, y: null}))
+            this.formattedDailyFlow.sort((a, b) => a.x - b.x);
 
             if (this.peakDates) {
                 this.peakDates.forEach(peakOnYear => {
@@ -852,9 +865,8 @@ module StreamStats.Controllers {
         public createAnnualFlowPlot(): void {
             //console.log('peak value plot data', this.formattedPeakDates);
             //console.log('estimated peak plot data', this.formattedEstPeakDates);
-            console.log('daily flow plot data', this.formattedDailyFlow);
-            //console.log(this.formattedPeakDatesOnYear)
-            //console.log(this.dailyDatesOnly);
+            //console.log('daily flow plot data', this.formattedDailyFlow);
+            //console.log('peak value plot data plotted on one year', this.formattedPeakDatesOnYear)
             this.chartConfig = {
                 chart: {
                     height: 550,
