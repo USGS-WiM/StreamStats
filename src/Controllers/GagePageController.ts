@@ -818,6 +818,8 @@ module StreamStats.Controllers {
                     this.formattedFloodFreq = [];
                     this.floodFreq.forEach((floodFreqItem) => {
                         let colorIndex = floodFreqItem.regressionTypeID;
+                        let endYear = endDate.getUTCFullYear();
+                        let endOfFinalYear = new Date(12 + '/' + 31 + '/' + endYear)
                         let formattedName = floodFreqItem.regressionType.name.substring(0, floodFreqItem.regressionType.name.length-18);
                         this.formattedFloodFreq.push({
                             name: floodFreqItem.regressionType.name,
@@ -847,7 +849,7 @@ module StreamStats.Controllers {
                                     x: startDate,
                                     y: floodFreqItem.value
                                 },{
-                                    x: endDate,
+                                    x: endOfFinalYear,
                                     y: floodFreqItem.value
                                 }
                             ],
@@ -1074,20 +1076,6 @@ module StreamStats.Controllers {
             });
 
         }
-
-        //checkbox for turning plotLines on and off
-        // public plotlines = true;
-        //     public togglePlotLines () {
-        //         let chart = $('#chart1').highcharts();
-        //         if (this.plotlines) {
-        //         this.chartConfig.yAxis.plotLines.forEach((plotLine) => {
-        //             chart.yAxis[0].addPlotLine(plotLine);
-        //         });
-        //     }
-        //         else {
-        //         chart.yAxis[0].removePlotLine('plotlines'); // all plot lines have id: 'plotlines'
-        //         }
-        //     };
 
         //checkbox for change linear to log scale
         public logScale = false; 

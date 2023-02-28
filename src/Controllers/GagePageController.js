@@ -616,6 +616,8 @@ var StreamStats;
                     this.formattedFloodFreq = [];
                     this.floodFreq.forEach(function (floodFreqItem) {
                         var colorIndex = floodFreqItem.regressionTypeID;
+                        var endYear = endDate_1.getUTCFullYear();
+                        var endOfFinalYear = new Date(12 + '/' + 31 + '/' + endYear);
                         var formattedName = floodFreqItem.regressionType.name.substring(0, floodFreqItem.regressionType.name.length - 18);
                         _this_1.formattedFloodFreq.push({
                             name: floodFreqItem.regressionType.name,
@@ -644,7 +646,7 @@ var StreamStats;
                                     x: startDate_1,
                                     y: floodFreqItem.value
                                 }, {
-                                    x: endDate_1,
+                                    x: endOfFinalYear,
                                     y: floodFreqItem.value
                                 }
                             ],
