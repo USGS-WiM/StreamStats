@@ -1071,27 +1071,21 @@ public formatData(): void {
             });
         }
 
-
-        
-
         public getCorrectColor(date): string {
             let days = (new Date().getTime() - new Date(date).getTime()) / (1000 * 60 * 60 * 24)
-
-
-        //     measuredObj.map(obj => (new Date().getTime() - new Date(obj.dateTime).getTime()) / (1000 * 60 * 60 * 24))
-        //     .map(days => {
-                if (days <= 365) {
+                if (days <= 31) {
+                    console.log("first month", days)
+                    return 'red'; // orange
+                } else if (days <= 365) {
                     console.log("first year", days)
-                    return '#FFA500'; // orange
+                    return 'orange'; // orange    
                 } else if (days <= 730) {
                     console.log("second year", days)
-                    return '#1357a6'; // blue
+                    return "#0000cdcc"; // blue
                 } else {
                     console.log("any other year", days)
-                    return '#1b7ced'; // light blue
+                    return "#0000cd4d"; // light blue
                 }
-                
-        //     });
         }
 
         
@@ -1202,27 +1196,9 @@ public formatData(): void {
                             }
                         }
                     },
-                    //color   : this.measuredObj.some(obj => ((+new Date())- (+new Date(obj.dateTime))) / (1000 * 60 * 60 * 24) <= 365) ? '#FFA500' : '#1b75ac',
                     turboThreshold: 0, 
                     type    : 'scatter',  
                     color: null,
-                    
-                //     color:
-                //     this.measuredObj.map(obj => (new Date().getTime() - new Date(obj.dateTime).getTime()) / (1000 * 60 * 60 * 24))
-                //    .map(days => {
-                //        if (days <= 365) {
-                //            console.log("first year", days)
-                //            return '#FFA500'; // orange
-                //        } else if (days <= 730) {
-                //            console.log("second year", days)
-                //            return '#1357a6'; // blue
-                //        } else {
-                //            console.log("any other year", days)
-                //            return '#1b7ced'; // light blue
-                //        }
-                       
-                //    }),
-                   
                     data    : this.measuredObj,
                     marker: {
                         symbol: 'diamond',
@@ -1233,58 +1209,11 @@ public formatData(): void {
             } 
         }
 
-//don't think a log - linear checkbox will work on the heatmap but leaving this code here for now as reference
-        //checkbox for change log to linear scale
-        public logScale = true; 
-        public logToLinear () {
-            let chart = $('#chart3').highcharts();
-            if (this.dailyRange.length > 0) {
-                let dailyMax  = this.dailyRange.reduce(function (accumulatedValue, currentValue) {
-                    return Math.max(accumulatedValue, currentValue);
-                }); // console.log('Daily Max', dailyMax);
-                let dailyMin  = this.dailyRange.reduce(function (accumulatedValue, currentValue) {
-                    return Math.min(accumulatedValue, currentValue);
-                }); // console.log('Daily Min', dailyMin);
-                // sort array ascending
-                const asc = this.dailyRange.sort((a, b) => a - b);
-                //  console.log('sorted range', asc)
-                //caluculate percentile values
-                var tenthPercentile = asc[Math.floor(asc.length * 0.1)];
-                var twentiethPercentile = asc[Math.floor(asc.length * 0.2)];
-                var thirtiethPercentile = asc[Math.floor(asc.length * 0.3)];
-                var fortiethPercentile = asc[Math.floor(asc.length * 0.4)];
-                var fiftiethPercentile = asc[Math.floor(asc.length * 0.5)];
-                var sixtiethPercentile = asc[Math.floor(asc.length * 0.6)];
-                var seventiethPercentile = asc[Math.floor(asc.length * 0.7)];
-                var eightiethPercentile = asc[Math.floor(asc.length * 0.8)];
-                var ninetiethPercentile = asc[Math.floor(asc.length * 0.9)];
-                // console.log('percentiles', tenthPercentile, twentiethPercentile, thirtiethPercentile, fortiethPercentile, fiftiethPercentile, sixtiethPercentile, seventiethPercentile, eightiethPercentile, ninetiethPercentile);
-                //convert percentile values to percentages for color stops
-                var firstStop = (tenthPercentile - (dailyMin)) / (dailyMax - (dailyMin));
-                var secondStop = (twentiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
-                var thirdStop = (thirtiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
-                var fourthStop = (fortiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
-                var fifthStop = (fiftiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
-                var sixthStop = (sixtiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
-                var seventhStop = (seventiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
-                var eigthStop = (eightiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
-                var ninthStop = (ninetiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
-                // console.log('color stops', firstStop, secondStop, thirdStop, fourthStop, fifthStop, sixthStop, seventhStop, eigthStop, ninthStop);
-                };
-            if (this.logScale) {
-                chart.colorAxis[0].update({ type: 'logarithmic' });
-                // console.log('log');
-            } else {
-                chart.colorAxis[0].update({ type: 'linear' });
-                // console.log('linear');
-            }
-        };
-
-
+          
         //checkbox for turning plotLines on and off
         public plotlines = true;
             public togglePlotLines () {
-                let chart = $('#chart3').highcharts();
+                let chart = $('#chart1').highcharts();
                 if (this.plotlines) {
                 this.chartConfig.yAxis.plotLines.forEach((plotLine) => {
                     chart.yAxis[0].addPlotLine(plotLine);
@@ -1298,29 +1227,25 @@ public formatData(): void {
         //checkbox for change linear to log scale
         public logScale = false; 
             public toggleLogLinear () {
-                let chart = $('#chart3').highcharts();
+                let chart = $('#chart1').highcharts();
                 if (this.logScale) {
                     chart.yAxis[0].update({ type: 'logarithmic' });
                 } else {
                     chart.yAxis[0].update({ type: 'linear' });
                 }
             };        
-
-        // NWS code (if checkbox checked, show Log, if not show not)
-        // $('#ratingLog').change(function() {
-        //     if($(this).is(':checked')){
-        //           $('#ratinggraph').highcharts().yAxis[0].update({ type: 'logarithmic'});
-        //           $('#ratinggraph').highcharts().xAxis[0].update({ type: 'logarithmic'});
-        //           addQNotes('ratinggraph');
-        //       }
-        //       else
-        //       {
-        //           $('#ratinggraph').highcharts().yAxis[0].update({ type: 'linear'});
-        //           $('#ratinggraph').highcharts().xAxis[0].update({ type: 'linear'});
-        //           addQNotes('ratinggraph');
-          
-        //     }
-        //   });
+        //checkbox for change linear to log scale
+        public logScaleDischarge = false; // starts with it uncehcked
+            public toggleLogLinearDischarge () {
+                let chart = $('#chart3').highcharts();
+                if (this.logScaleDischarge) {
+                    chart.yAxis[0].update({ type: 'logarithmic' });
+                    chart.xAxis[0].update({ type: 'logarithmic' });
+                } else {
+                    chart.yAxis[0].update({ type: 'linear' });
+                    chart.xAxis[0].update({ type: 'linear' });
+                }
+            };     
 
         
         //Helper Methods

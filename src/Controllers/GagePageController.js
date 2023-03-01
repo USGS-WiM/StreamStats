@@ -105,9 +105,9 @@ var StreamStats;
                 _this_1.formattedDischargeObj = [];
                 _this_1.formattedRatingCurve = [];
                 _this_1.formattedUSGSMeasured = [];
-                _this_1.logScale = true;
                 _this_1.plotlines = true;
                 _this_1.logScale = false;
+                _this_1.logScaleDischarge = false;
                 $scope.vm = _this_1;
                 _this_1.modalInstance = modal;
                 _this_1.modalService = modalService;
@@ -827,17 +827,21 @@ var StreamStats;
             };
             GagePageController.prototype.getCorrectColor = function (date) {
                 var days = (new Date().getTime() - new Date(date).getTime()) / (1000 * 60 * 60 * 24);
-                if (days <= 365) {
+                if (days <= 31) {
+                    console.log("first month", days);
+                    return 'red';
+                }
+                else if (days <= 365) {
                     console.log("first year", days);
-                    return '#FFA500';
+                    return 'orange';
                 }
                 else if (days <= 730) {
                     console.log("second year", days);
-                    return '#1357a6';
+                    return "#0000cdcc";
                 }
                 else {
                     console.log("any other year", days);
-                    return '#1b7ced';
+                    return "#0000cd4d";
                 }
             };
             GagePageController.prototype.createDischargePlot = function () {
@@ -956,46 +960,8 @@ var StreamStats;
                     ]
                 };
             };
-            GagePageController.prototype.logToLinear = function () {
-                var chart = $('#chart3').highcharts();
-                if (this.dailyRange.length > 0) {
-                    var dailyMax = this.dailyRange.reduce(function (accumulatedValue, currentValue) {
-                        return Math.max(accumulatedValue, currentValue);
-                    });
-                    var dailyMin = this.dailyRange.reduce(function (accumulatedValue, currentValue) {
-                        return Math.min(accumulatedValue, currentValue);
-                    });
-                    var asc = this.dailyRange.sort(function (a, b) { return a - b; });
-                    var tenthPercentile = asc[Math.floor(asc.length * 0.1)];
-                    var twentiethPercentile = asc[Math.floor(asc.length * 0.2)];
-                    var thirtiethPercentile = asc[Math.floor(asc.length * 0.3)];
-                    var fortiethPercentile = asc[Math.floor(asc.length * 0.4)];
-                    var fiftiethPercentile = asc[Math.floor(asc.length * 0.5)];
-                    var sixtiethPercentile = asc[Math.floor(asc.length * 0.6)];
-                    var seventiethPercentile = asc[Math.floor(asc.length * 0.7)];
-                    var eightiethPercentile = asc[Math.floor(asc.length * 0.8)];
-                    var ninetiethPercentile = asc[Math.floor(asc.length * 0.9)];
-                    var firstStop = (tenthPercentile - (dailyMin)) / (dailyMax - (dailyMin));
-                    var secondStop = (twentiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
-                    var thirdStop = (thirtiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
-                    var fourthStop = (fortiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
-                    var fifthStop = (fiftiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
-                    var sixthStop = (sixtiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
-                    var seventhStop = (seventiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
-                    var eigthStop = (eightiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
-                    var ninthStop = (ninetiethPercentile - (dailyMin)) / (dailyMax - (dailyMin));
-                }
-                ;
-                if (this.logScale) {
-                    chart.colorAxis[0].update({ type: 'logarithmic' });
-                }
-                else {
-                    chart.colorAxis[0].update({ type: 'linear' });
-                }
-            };
-            ;
             GagePageController.prototype.togglePlotLines = function () {
-                var chart = $('#chart3').highcharts();
+                var chart = $('#chart1').highcharts();
                 if (this.plotlines) {
                     this.chartConfig.yAxis.plotLines.forEach(function (plotLine) {
                         chart.yAxis[0].addPlotLine(plotLine);
@@ -1007,12 +973,24 @@ var StreamStats;
             };
             ;
             GagePageController.prototype.toggleLogLinear = function () {
-                var chart = $('#chart3').highcharts();
+                var chart = $('#chart1').highcharts();
                 if (this.logScale) {
                     chart.yAxis[0].update({ type: 'logarithmic' });
                 }
                 else {
                     chart.yAxis[0].update({ type: 'linear' });
+                }
+            };
+            ;
+            GagePageController.prototype.toggleLogLinearDischarge = function () {
+                var chart = $('#chart3').highcharts();
+                if (this.logScaleDischarge) {
+                    chart.yAxis[0].update({ type: 'logarithmic' });
+                    chart.xAxis[0].update({ type: 'logarithmic' });
+                }
+                else {
+                    chart.yAxis[0].update({ type: 'linear' });
+                    chart.xAxis[0].update({ type: 'linear' });
                 }
             };
             ;
