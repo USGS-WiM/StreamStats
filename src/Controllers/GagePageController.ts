@@ -219,7 +219,7 @@ module StreamStats.Controllers {
                         subtitle: { text: string, align: string},  
                         xAxis: { type: string, min: number, max: number, tickPositions: any[], threshold: number, title: {text: string}, labels: {formatter: Function}},
                         yAxis: { title: {text: string}, custom: { allowNegativeLog: boolean}},
-                        colorAxis: { type: string, min: number, max: number, stops: any[], startOnTick: boolean, endOnTick: boolean, allowNegativeLog: boolean}
+                        colorAxis: { type: string, min: number, max: number, stops: any[], startOnTick: boolean, endOnTick: boolean, labels: {format: string}, allowNegativeLog: boolean}
                         series: { name: string, pixelSpacing: number[], borderWidth: number, borderColor: string, type: string, data: number[], tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number}[]; };
         constructor($scope: IGagePageControllerScope, $http: ng.IHttpService, modalService: Services.IModalService, modal:ng.ui.bootstrap.IModalServiceInstance) {
             super($http, configuration.baseurls.StreamStats);
@@ -991,6 +991,9 @@ module StreamStats.Controllers {
                         ],
                         startOnTick: false,
                         endOnTick: false,
+                        labels: {
+                            format: '{value} ft³/s'
+                        },
                         allowNegativeLog: true
                     }
                 }
@@ -1007,6 +1010,9 @@ module StreamStats.Controllers {
                         ],
                         startOnTick: false,
                         endOnTick: false,
+                        labels: {
+                            format: '{value} ft³/s'
+                        },
                         allowNegativeLog: true
                     }
                 }

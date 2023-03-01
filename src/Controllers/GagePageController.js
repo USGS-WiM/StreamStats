@@ -783,6 +783,9 @@ var StreamStats;
                             ],
                             startOnTick: false,
                             endOnTick: false,
+                            labels: {
+                                format: '{value} ft³/s'
+                            },
                             allowNegativeLog: true
                         };
                     }
@@ -799,6 +802,9 @@ var StreamStats;
                             ],
                             startOnTick: false,
                             endOnTick: false,
+                            labels: {
+                                format: '{value} ft³/s'
+                            },
                             allowNegativeLog: true
                         };
                     }
