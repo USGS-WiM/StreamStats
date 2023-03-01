@@ -1044,7 +1044,7 @@ module StreamStats.Controllers {
                     max: 665,
                     tickPositions: [275, 306, 336, 367, 398, 427, 458, 488, 519, 549, 580, 611, 650],
                     title: {
-                        text: 'Date'
+                        text: 'Day of Year'
                     },
                     threshold: 273,
                     labels: {
