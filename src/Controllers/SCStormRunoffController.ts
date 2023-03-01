@@ -660,6 +660,36 @@ module StreamStats.Controllers {
             return this._chosenFlowType;
         } 
 
+        // Storm Ponds
+        public stormponds: boolean = false;
+        public pondOption: number;
+        public pond_bottom_elev: number;
+        public Orif1_Coeff: number = 0.6
+        public Orif1_Dia: number
+        public Orif1_CtrEL: number
+        public Orif1_NumOpenings: number
+        public Orif2_Coeff: number = 0.6
+        public Orif2_Dia: number
+        public Orif2_CtrEL: number
+        public Orif2_NumOpenings: number
+        public Rec_Weir_Coeff: number = 3.3
+        public Rec_Weir_Ex: number = 1.5
+        public Rec_Weir_Length: number
+        public Rec_WeirCrest_EL: number
+        public Rec_Num_Weirs: number
+        public OS_BCWeir_Coeff: number = 3
+        public OS_Weir_Ex: number = 1.5
+        public OS_Length: number
+        public OS_Crest_EL: number
+        public Seepage_Bottom: number
+        public Seepage_Side: number
+        public length: number
+        public w1: number
+        public w2: number
+        public side_slope_z: number
+        public bottom_slope: number
+        public Elev_Area;
+
         // for synthetic graph options 
         public DHourStormOptions = [{
             "name": "1-Hour",
@@ -1569,6 +1599,9 @@ module StreamStats.Controllers {
                 return false;
             }
         }
+
+        // Storm Ponds
+        
 
         public clearResults(form) {
             if (form.$name == "BohmanUrbanForm" || form.$name == "BohmanRuralForm") {

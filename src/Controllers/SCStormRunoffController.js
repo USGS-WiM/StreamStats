@@ -423,6 +423,13 @@ var StreamStats;
                 _this.TravelTimeFlowSegments = JSON.parse(JSON.stringify(_this._defaultFlowSegments));
                 _this.prfSegments = [];
                 _this.addFlowSegmentOpen = false;
+                _this.stormponds = false;
+                _this.Orif1_Coeff = 0.6;
+                _this.Orif2_Coeff = 0.6;
+                _this.Rec_Weir_Coeff = 3.3;
+                _this.Rec_Weir_Ex = 1.5;
+                _this.OS_BCWeir_Coeff = 3;
+                _this.OS_Weir_Ex = 1.5;
                 _this.DHourStormOptions = [{
                         "name": "1-Hour",
                         "value": 1,

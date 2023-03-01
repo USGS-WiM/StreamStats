@@ -378,6 +378,241 @@
                                     </div>
                                 </div>
 
+                                <!-- Storm Ponding -->
+                                <div>
+                                    <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-if="!vm.stormponds" ng-click="vm.stormponds = !vm.stormponds"><i class="fa fa-tint"></i>&nbsp;&nbsp;Design Storm Ponds</button>
+                                    <div ng-if="vm.stormponds">
+                                        <h3 class="center-div">Design Storm Ponds</h3>
+                                        <label for="pondOption">Pond Option:<span style="color: #ffcc00">*</span></label>
+                                        <select name="pondOption" ng-model="vm.pondOption" required>
+                                            <option value="1">Pond Option 1 (Inverted Quadrilateral Frustum)</option>
+                                            <option value="2">Pond Option 2 (Elevation vs Surface Area)</option>
+                                        </select>
+
+                                        <div ng-if="vm.pondOption == 1">
+                                            <label>Inverted Quadrilateral Frustum</label>
+                                            <label for="length">Length (feet):<span style="color: #ffcc00">*</span></label>
+                                            <input  type="number" name="length" ng-model="vm.length" required/>
+                                            <label for="w1">W<sub>1</sub> (feet):<span style="color: #ffcc00">*</span></label>
+                                            <input  type="number" name="w1" ng-model="vm.w1" required/>
+                                            <label for="w2">W<sub>2</sub> (feet):<span style="color: #ffcc00">*</span></label>
+                                            <input  type="number" name="w2" ng-model="vm.w2" required/>
+                                            <label for="side_slope_z">Side Slope Z:<span style="color: #ffcc00">*</span></label>
+                                            <input  type="number" name="side_slope_z" ng-model="vm.side_slope_z" required/>
+                                            <label for="bottom_slope">Bottom Slope S<sub>O</sub> (%):<span style="color: #ffcc00">*</span></label>
+                                            <input  type="number" name="bottom_slope" ng-model="vm.bottom_slope" required/>
+                                        </div>
+
+                                        <div ng-if="vm.pondOption == 2">
+                                            <div class="form-row">
+                                                <div class="form-column-left">
+                                                    <label>Elevation (ft-MSL)<span style="color: #ffcc00">*</span></label>
+                                                </div>
+                                                <div class="form-column-right">
+                                                    <label>Surface Area (square feet)<span style="color: #ffcc00">*</span></label>
+                                                </div>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="form-column-left">
+                                                    <input type="number" value="{{vm.pond_bottom_elev}}" required readonly/>
+                                                </div>
+                                                <div class="form-column-right">
+                                                    <input type="number" required/>
+                                                </div>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="form-column-left">
+                                                    <input type="number" required/>
+                                                </div>
+                                                <div class="form-column-right">
+                                                    <input type="number" required/>
+                                                </div>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="form-column-left">
+                                                    <input type="number" required/>
+                                                </div>
+                                                <div class="form-column-right">
+                                                    <input type="number" required/>
+                                                </div>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="form-column-left">
+                                                    <input type="number" required/>
+                                                </div>
+                                                <div class="form-column-right">
+                                                    <input type="number" required/>
+                                                </div>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="form-column-left">
+                                                    <input type="number" required/>
+                                                </div>
+                                                <div class="form-column-right">
+                                                    <input type="number" required/>
+                                                </div>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="form-column-left">
+                                                    <input type="number" required/>
+                                                </div>
+                                                <div class="form-column-right">
+                                                    <input type="number" required/>
+                                                </div>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="form-column-left">
+                                                    <input type="number" required/>
+                                                </div>
+                                                <div class="form-column-right">
+                                                    <input type="number" required/>
+                                                </div>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="form-column-left">
+                                                    <input type="number" required/>
+                                                </div>
+                                                <div class="form-column-right">
+                                                    <input type="number" required/>
+                                                </div>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="form-column-left">
+                                                    <input type="number" required/>
+                                                </div>
+                                                <div class="form-column-right">
+                                                    <input type="number" required/>
+                                                </div>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="form-column-left">
+                                                    <input type="number" required/>
+                                                </div>
+                                                <div class="form-column-right">
+                                                    <input type="number" required/>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <br><br>
+                                        <label for="pond_bottom_elev">Bottom Elevation (feet):<span style="color: #ffcc00">*</span></label>
+                                        <input type="number" name="pond_bottom_elev" ng-model="vm.pond_bottom_elev" required/>
+                                        <br><br>
+                                        <div class="form-row">
+                                            <div class="form-column-left">
+                                                <label>1st Stage Circular Orifices</label>
+                                            </div>
+                                            <div class="form-column-right">
+                                                <label>2nd Stage Circular Orifices</label>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-column-left">
+                                                <label for="Orif1_Coeff">Coefficient:<span style="color: #ffcc00">*</span></label>
+                                                <input type="number" name="Orif1_Coeff" ng-model="vm.Orif1_Coeff" required/>
+                                            </div>
+                                            <div class="form-column-right">
+                                                <label for="Orif2_Coeff">Coefficient:<span style="color: #ffcc00">*</span></label>
+                                                <input type="number" name="Orif2_Coeff" ng-model="vm.Orif2_Coeff" required/>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-column-left">
+                                                <label for="Orif1_Dia">Diameter (inches):<span style="color: #ffcc00">*</span></label>
+                                                <input type="number" name="Orif1_Dia" ng-model="vm.Orif1_Dia" required/>
+                                            </div>
+                                            <div class="form-column-right">
+                                                <label for="Orif2_Dia">Diameter (inches):<span style="color: #ffcc00">*</span></label>
+                                                <input type="number" name="Orif2_Dia" ng-model="vm.Orif2_Dia" required/>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-column-left">
+                                                <label for="Orif1_CtrEL">Centerline Elevation Above Bottom of Pond (feet):<span style="color: #ffcc00">*</span></label>
+                                                <input type="number" name="Orif1_CtrEL" ng-model="vm.Orif1_CtrEL" required/>
+                                            </div>
+                                            <div class="form-column-right">
+                                                <label for="Orif2_CtrEL">Centerline Elevation Above Bottom of Pond (feet):<span style="color: #ffcc00">*</span></label>
+                                                <input type="number" name="Orif2_CtrEL" ng-model="vm.Orif2_CtrEL" required/>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-column-left">
+                                                <label for="Orif1_NumOpenings">Number of Openings:<span style="color: #ffcc00">*</span></label>
+                                                <input type="number" name="Orif1_NumOpenings" ng-model="vm.Orif1_NumOpenings" required/>
+                                            </div>
+                                            <div class="form-column-right">
+                                                <label for="Orif2_NumOpenings">Number of Openings:<span style="color: #ffcc00">*</span></label>
+                                                <input type="number" name="Orif2_NumOpenings" ng-model="vm.Orif2_NumOpenings" required/>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="form-row">
+                                            <div class="form-column-left">
+                                                <label>3rd Stage Rectangular Weir</label>
+                                            </div>
+                                            <div class="form-column-right">
+                                                <label>Overflow Spillway</label>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-column-left">
+                                                <label for="Rec_Weir_Coeff">Weir Coefficient:<span style="color: #ffcc00">*</span></label>
+                                                <input type="number" name="Rec_Weir_Coeff" ng-model="vm.Rec_Weir_Coeff" required/>
+                                            </div>
+                                            <div class="form-column-right">
+                                                <label for="OS_BCWeir_Coeff">Broad-Crested Weir Coefficient:<span style="color: #ffcc00">*</span></label>
+                                                <input type="number" name="OS_BCWeir_Coeff" ng-model="vm.OS_BCWeir_Coeff" required/>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-column-left">
+                                                <label for="Rec_Weir_Ex">Weir exponent:<span style="color: #ffcc00">*</span></label>
+                                                <input type="number" name="Rec_Weir_Ex" ng-model="vm.Rec_Weir_Ex" required/>
+                                            </div>
+                                            <div class="form-column-right">
+                                                <label for="OS_Weir_Ex">Weir exponent:<span style="color: #ffcc00">*</span></label>
+                                                <input type="number" name="OS_Weir_Ex" ng-model="vm.OS_Weir_Ex" required/>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-column-left">
+                                                <label for="Rec_Weir_Length">Length (feet):<span style="color: #ffcc00">*</span></label>
+                                                <input type="number" name="Rec_Weir_Length" ng-model="vm.Rec_Weir_Length" required/>
+                                            </div>
+                                            <div class="form-column-right">
+                                                <label for="OS_Length">Length (feet):<span style="color: #ffcc00">*</span></label>
+                                                <input type="number" name="OS_Length" ng-model="vm.OS_Length" required/>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-column-left">
+                                                <label for="Rec_WeirCrest_EL">Crest Elevation Above Pond Bottom (feet):<span style="color: #ffcc00">*</span></label>
+                                                <input type="number" name="Rec_WeirCrest_EL" ng-model="vm.Rec_WeirCrest_EL" required/>
+                                            </div>
+                                            <div class="form-column-right">
+                                                <label for="OS_Crest_EL">Crest Elevation Above Pond Bottom (feet):<span style="color: #ffcc00">*</span></label>
+                                                <input type="number" name="OS_Crest_EL" ng-model="vm.OS_Crest_EL" required/>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-column-left">
+                                                <label for="Rec_Num_Weirs">Number of Weirs:<span style="color: #ffcc00">*</span></label>
+                                                <input type="number" name="Rec_Num_Weirs" ng-model="vm.Rec_Num_Weirs" required/>
+                                            </div>
+                                            <div class="form-column-right">
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <label for="Seepage_Bottom">Seepage Through Pond Bottom (inches/hour):<span style="color: #ffcc00">*</span></label>
+                                        <input type="number" name="Seepage_Bottom" ng-model="vm.Seepage_Bottom" required/>
+                                        <label for="Seepage_Side">Seepage Through Pond Side Slopes (inches/hour): <span style="color: #ffcc00">*</span></label>
+                                        <input type="number" name="Seepage_Side" ng-model="vm.Seepage_Side" required/>
+
+                                    </div>
+                                    <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-if="vm.stormponds" ng-click="vm.stormponds = !vm.stormponds"><i class="fa fa-tint"></i>&nbsp;&nbsp;Remove Storm Ponds</button>
+                                </div>
+
                                 <label class="fullwidth alignc" ng-if="vm.validateForm(SyntheticUrbanHydrograph) && !vm.hideAlerts"><span class="fa fa-check"></span>&nbsp;Parameters Have Been Calculated</label>
                                 <label class="fullwidth" ng-if="!vm.validateForm(SyntheticUrbanHydrograph) || (vm.validateForm(SyntheticUrbanHydrograph) && vm.hideAlerts)">&nbsp;&nbsp;</label>
                                 <div class="hidden-print">
