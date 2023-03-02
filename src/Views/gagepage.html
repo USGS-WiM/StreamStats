@@ -224,13 +224,21 @@
                     <div ng-if="!vm.chartConfig" class="panel panel-default reportSpinner">
                         &nbsp;<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
                     </div>
-                    <div class="panel panel-default" ng-if="vm.chartConfig">
-                        <center>
+                    <center>
+                    <div class="well well-sm" style="background-color:#EBF0F5;" ng-if="vm.chartConfig">
                         <input type="checkbox" ng-if="vm.formattedFloodFreq.length > 0" id="yesAEPLines" name="yesAEPLines" ng-model="vm.plotlines" ng-change="vm.togglePlotLines()" checked>
                         <label for="yesAEPLines" ng-if="vm.formattedFloodFreq.length > 0"> AEP Plot Lines&nbsp;&nbsp;</label>
                         <input type="checkbox" ng-if="vm.formattedDailyFlow.length > 0" id="logScale" name="logScale" ng-model="vm.logScale" ng-change="vm.toggleLogLinear()" checked>
                         <label for="logScale" ng-if="vm.formattedDailyFlow.length > 0"> Log Scale</label>
-                        <br><highchart id="chart1" config="vm.chartConfig"></highchart><br>
+                        <highchart id="chart1" config="vm.chartConfig"></highchart>
+                    </div>
+                    </center>
+                    <center>
+                        <div ng-if="!vm.heatChartConfig" class="panel panel-default reportSpinner">
+                            &nbsp;<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
+                        </div>
+                        <div class="well well-sm" style="background-color:#EBF0F5;" ng-if="vm.heatChartConfig">
+                            <highchart id="chart2" config="vm.heatChartConfig"></highchart>
                         </center>
                     </div>
                 </div>
