@@ -174,7 +174,8 @@ module StreamStats.Controllers {
                 this.flowStatsAllChecked = true;
             }
         }
-
+        // write function to make service call to get parameters
+        
         // Helper Methods
         // -+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {
