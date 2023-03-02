@@ -496,16 +496,8 @@ var StreamStats;
                 }
                 if (this.dailyFlow) {
                     this.dailyFlow.forEach(function (dailyObj) {
-                        if (parseInt(dailyObj.value) !== -999999) {
-                            _this_1.formattedDailyFlow.push({ x: new Date(dailyObj.dateTime), y: parseInt(dailyObj.value) });
-                            _this_1.dailyValuesOnly.push(parseInt(dailyObj.value));
-                        }
-                    });
-                }
-                if (this.dailyFlow) {
-                    this.dailyFlow.forEach(function (dailyHeatObj) {
-                        var now = new Date(dailyHeatObj.dateTime);
-                        var year = new Date(dailyHeatObj.dateTime).getUTCFullYear();
+                        var now = new Date(dailyObj.dateTime);
+                        var year = new Date(dailyObj.dateTime).getUTCFullYear();
                         function daysIntoYear(now) {
                             return (Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(now.getFullYear(), 0, 0)) / 24 / 60 / 60 / 1000;
                         }
@@ -519,26 +511,30 @@ var StreamStats;
                             return year % 4 === 0;
                         }
                         ;
-                        if (isLeapYear(year) == false && doy > 59) {
-                            doy += 1;
+                        if (parseInt(dailyObj.value) !== -999999) {
+                            _this_1.formattedDailyFlow.push({ x: new Date(dailyObj.dateTime), y: parseInt(dailyObj.value) });
+                            _this_1.dailyValuesOnly.push(parseInt(dailyObj.value));
+                            if (isLeapYear(year) == false && doy > 59) {
+                                doy += 1;
+                            }
+                            ;
+                            if (doy > 274) {
+                                year += 1;
+                            }
+                            ;
+                            if (doy < 275) {
+                                doy += 366;
+                            }
+                            ;
+                            if (parseInt(dailyObj.value) !== -999999) {
+                                _this_1.formattedDailyHeat.push({ x: doy, y: year, value: parseInt(dailyObj.value), length: 1 });
+                            }
+                            ;
+                            if (isLeapYear(year) == false) {
+                                _this_1.formattedDailyHeat.push({ x: 60, y: year, value: null, length: 1 });
+                            }
+                            ;
                         }
-                        ;
-                        if (doy > 274) {
-                            year += 1;
-                        }
-                        ;
-                        if (doy < 275) {
-                            doy += 366;
-                        }
-                        ;
-                        if (parseInt(dailyHeatObj.value) !== -999999) {
-                            _this_1.formattedDailyHeat.push({ x: doy, y: year, value: parseInt(dailyHeatObj.value), length: 1 });
-                        }
-                        ;
-                        if (isLeapYear(year) == false) {
-                            _this_1.formattedDailyHeat.push({ x: 60, y: year, value: null, length: 1 });
-                        }
-                        ;
                     });
                 }
                 if (this.formattedDailyHeat.length > 0) {
@@ -838,7 +834,7 @@ var StreamStats;
                         max: 665,
                         tickPositions: [275, 306, 336, 367, 398, 427, 458, 488, 519, 549, 580, 611, 650],
                         title: {
-                            text: 'Date'
+                            text: 'Day of Year'
                         },
                         threshold: 273,
                         labels: {
@@ -897,7 +893,7 @@ var StreamStats;
                                         }
                                         ;
                                         if (doy > 282 && doy < 293)
-                                            return '</b><br>Water Year: <b>' + waterYear<br>Water Year Average Value: <b>' + this.value.toFixed(2) + ' ft³/s</b>;
+                                            return '</b><br>Water Year Average Value: <b>' + this.value.toFixed(2) + ' ft³/s</b><br>Water Year: <b>' + waterYear;
                                         if (doy !== 283 && doy !== 284 && doy !== 285 && doy !== 286 && doy !== 287 && doy !== 288 && doy !== 289 && doy !== 290 && doy !== 291 && doy !== 292)
                                             return '<br>Date: <b>' + formattedUTCDate + '</b><br>Value: <b>' + this.value + ' ft³/s</b><br>Water Year: <b>' + waterYear;
                                     }

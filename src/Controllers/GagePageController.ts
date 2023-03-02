@@ -695,16 +695,8 @@ module StreamStats.Controllers {
             }
             if (this.dailyFlow) {
                 this.dailyFlow.forEach(dailyObj => {
-                    if (parseInt(dailyObj.value) !== -999999) {
-                    this.formattedDailyFlow.push({x: new Date(dailyObj.dateTime), y: parseInt(dailyObj.value)})
-                    this.dailyValuesOnly.push(parseInt(dailyObj.value));
-                    }
-                });
-            }
-            if (this.dailyFlow) {
-                this.dailyFlow.forEach(dailyHeatObj => {
-                    let now = new Date(dailyHeatObj.dateTime);
-                    let year = new Date(dailyHeatObj.dateTime).getUTCFullYear();
+                    let now = new Date(dailyObj.dateTime);
+                    let year = new Date(dailyObj.dateTime).getUTCFullYear();
                     //Getting dates in Julian days
                     function daysIntoYear(now){
                         return (Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(now.getFullYear(), 0, 0)) / 24 / 60 / 60 / 1000;
@@ -715,6 +707,10 @@ module StreamStats.Controllers {
                         if (year % 100 === 0) return false;
                         return year % 4 === 0;
                     };
+                    if (parseInt(dailyObj.value) !== -999999) {
+                    this.formattedDailyFlow.push({x: new Date(dailyObj.dateTime), y: parseInt(dailyObj.value)})
+                    this.dailyValuesOnly.push(parseInt(dailyObj.value));
+
                     if (isLeapYear(year) == false && doy > 59) {
                         doy += 1; //add a day onto non-leap years so that dates after Feb 28 will line up with leap years
                     };
@@ -724,12 +720,13 @@ module StreamStats.Controllers {
                     if (doy < 275) {
                         doy += 366; //making 275 (Oct 1) the lowest number so the x-axis can start at the beginning of the water year
                     };
-                    if (parseInt(dailyHeatObj.value) !== -999999) {
-                        this.formattedDailyHeat.push({x: doy, y: year, value: parseInt(dailyHeatObj.value), length: 1});
+                    if (parseInt(dailyObj.value) !== -999999) {
+                        this.formattedDailyHeat.push({x: doy, y: year, value: parseInt(dailyObj.value), length: 1});
                     };
                     if (isLeapYear(year) == false) {
                         this.formattedDailyHeat.push({x: 60, y: year, value: null, length: 1}); //adding a blank cell on Feb 29 on non-leap years so that data will line up
                     };
+                }
                 });
             }
             //Sum and average daily values by year
