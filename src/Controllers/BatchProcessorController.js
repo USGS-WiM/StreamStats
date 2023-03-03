@@ -29,6 +29,7 @@ var StreamStats;
                 _this.nssService = nssService;
                 _this.regionStatsList = [];
                 _this.flowStatsAllChecked = true;
+                _this.flowStatChecked = true;
                 _this.init();
                 return _this;
             }
@@ -42,6 +43,7 @@ var StreamStats;
                 var _this = this;
                 this.nssService.getRegionList().then(function (response) { _this.regionList = response; });
                 this.flowStatsAllChecked = true;
+                this.flowStatChecked = false;
             };
             BatchProcessorController.prototype.getFlowStats = function (rcode) {
                 var _this = this;
@@ -56,45 +58,49 @@ var StreamStats;
                         if (paramCheck == -1)
                             _this.regionStatsList.push(statisticGroupID);
                         parameter.checked = true;
+                        _this.flowStatChecked = true;
                     }
                     else {
                         if (paramCheck > -1) {
                             _this.regionStatsList.splice(paramCheck, 1);
                             parameter.checked = false;
+                            _this.flowStatChecked = false;
                         }
                     }
                 });
                 this.flowStatsAllChecked = !this.flowStatsAllChecked;
             };
-            BatchProcessorController.prototype.updateRegionStatsList = function (parameter) {
-                var statisticGroupID = parameter.statisticGroupID;
+            BatchProcessorController.prototype.updateRegionStatsList = function (statistic) {
+                var statisticGroupID = statistic.statisticGroupID;
                 var index = this.regionStatsList.indexOf(statisticGroupID);
-                if (!parameter.checked && index > -1) {
-                    parameter.checked = false;
+                if (!statistic.checked && index > -1) {
+                    statistic.checked = false;
                     this.regionStatsList.splice(index, 1);
                 }
-                else if (parameter.checked && index == -1) {
-                    parameter.checked = true;
+                else if (statistic.checked && index == -1) {
+                    statistic.checked = true;
                     this.regionStatsList.push(statisticGroupID);
                 }
-                this.checkParameters();
+                this.checkStats();
             };
-            BatchProcessorController.prototype.checkParameters = function () {
+            BatchProcessorController.prototype.checkStats = function () {
                 var allChecked = true;
                 for (var _i = 0, _a = this.regionStatsList; _i < _a.length; _i++) {
-                    var param = _a[_i];
-                    if (!param.checked) {
+                    var stat = _a[_i];
+                    if (!stat.checked) {
                         allChecked = false;
                     }
                 }
                 if (allChecked) {
                     this.flowStatsAllChecked = false;
+                    this.flowStatChecked = false;
                 }
                 else {
                     this.flowStatsAllChecked = true;
+                    this.flowStatChecked = true;
                 }
             };
-            BatchProcessorController.prototype.loadParametersByRegionBP = function (rcode) {
+            BatchProcessorController.prototype.getRegionParameters = function (rcode) {
                 var _this = this;
                 this.getParametersByRegionBP(rcode).then(function (response) { _this.parameterListBP = response; });
             };

@@ -838,7 +838,7 @@ module StreamStats.Services {
                         element.checked = false;
                     });
 
-                    console.log("flowStatsList_nssServices", flowStats);
+                    // console.log("flowStatsList_nssServices", flowStats);
 
                     return flowStats;
                 }, (error) => {
