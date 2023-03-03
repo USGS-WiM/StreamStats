@@ -194,10 +194,13 @@ module StreamStats.Controllers {
         public peakDates = undefined;
         public estPeakDates = undefined;
         public dailyFlow = undefined;
-        public formattedFloodFreq = [];
+        public formattedFloodFreq = undefined;
+        public formattedDailyHeat = [];
         public formattedPeakDates = [];
+        public formattedDailyPlusAvg = [];
         public formattedEstPeakDates = [];
         public formattedDailyFlow = [];
+        public dailyValuesOnly = [];
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -211,6 +214,13 @@ module StreamStats.Controllers {
                         yAxis: { title: {text: string}, custom: { allowNegativeLog: Boolean }, plotLines: [{value: number, color: string, width: number, zIndex: number, label: {text: string}, id: string}]},
                         series: { name: string; showInNavigator: boolean, tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number; type: string, color: string, 
                         data: number[], marker: {symbol: string, radius: number}, showInLegend: boolean; }[]; };
+        heatChartConfig: { chart: { height: number, width: number, zooming: {type: string} },
+                        title: { text: string, align: string},
+                        subtitle: { text: string, align: string},  
+                        xAxis: { type: string, min: number, max: number, tickPositions: any[], threshold: number, title: {text: string}, labels: {formatter: Function}},
+                        yAxis: { title: {text: string}, custom: { allowNegativeLog: boolean}},
+                        colorAxis: { type: string, min: number, max: number, stops: any[], startOnTick: boolean, endOnTick: boolean, labels: {format: string}, allowNegativeLog: boolean}
+                        series: { name: string, pixelSpacing: number[], borderWidth: number, borderColor: string, type: string, data: number[], tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number}[]; };
         constructor($scope: IGagePageControllerScope, $http: ng.IHttpService, modalService: Services.IModalService, modal:ng.ui.bootstrap.IModalServiceInstance) {
             super($http, configuration.baseurls.StreamStats);
             $scope.vm = this;
@@ -329,7 +339,7 @@ module StreamStats.Controllers {
                     }
 
                     // Citation options for filtering chars by citation
-                     if (!this.checkForStatOrCharCitation(char.citation.id, this.charCitationList)) {
+                    if (!this.checkForStatOrCharCitation(char.citation.id, this.charCitationList)) {
                         this.charCitationList.push(char.citation)
                     }
                 }
@@ -651,7 +661,7 @@ module StreamStats.Controllers {
         //Pull in data for daily flow values
         public getDailyFlow() {
             var url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01';
-            // console.log('GetDailyFlowURL', url);
+            //console.log('GetDailyFlowURL', url);
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             this.Execute(request).then(
                 (response: any) => {
@@ -667,7 +677,7 @@ module StreamStats.Controllers {
                 }); 
             }
 
-        //Get data into (x, y) format and convert to dates in order to add it to the plot
+        //Get data into format necessary for plotting in Highcharts
         public formatData(): void {
             if (this.peakDates) {
                 this.peakDates.forEach(peakObj => {
@@ -685,12 +695,85 @@ module StreamStats.Controllers {
             }
             if (this.dailyFlow) {
                 this.dailyFlow.forEach(dailyObj => {
-                    if (dailyObj.qualifiers[0] === 'A') {
+                    let now = new Date(dailyObj.dateTime);
+                    let year = new Date(dailyObj.dateTime).getUTCFullYear();
+                    //Getting dates in Julian days
+                    function daysIntoYear(now){
+                        return (Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(now.getFullYear(), 0, 0)) / 24 / 60 / 60 / 1000;
+                    };
+                    var doy = daysIntoYear(now);
+                    function isLeapYear(year) {
+                        if (year % 400 === 0) return true;
+                        if (year % 100 === 0) return false;
+                        return year % 4 === 0;
+                    };
+                    if (parseInt(dailyObj.value) !== -999999) {
                     this.formattedDailyFlow.push({x: new Date(dailyObj.dateTime), y: parseInt(dailyObj.value)})
-                    }
+                    this.dailyValuesOnly.push(parseInt(dailyObj.value));
+
+                    if (isLeapYear(year) == false && doy > 59) {
+                        doy += 1; //add a day onto non-leap years so that dates after Feb 28 will line up with leap years
+                    };
+                    if (doy > 274) {
+                        year += 1 //converting years into water years for plotting (adjusted in tooltip to show real dates)
+                    };
+                    if (doy < 275) {
+                        doy += 366; //making 275 (Oct 1) the lowest number so the x-axis can start at the beginning of the water year
+                    };
+                    if (parseInt(dailyObj.value) !== -999999) {
+                        this.formattedDailyHeat.push({x: doy, y: year, value: parseInt(dailyObj.value), length: 1});
+                    };
+                    if (isLeapYear(year) == false) {
+                        this.formattedDailyHeat.push({x: 60, y: year, value: null, length: 1}); //adding a blank cell on Feb 29 on non-leap years so that data will line up
+                    };
+                }
                 });
             }
-            if (this.floodFreq) { //set up AEP plotLines
+            //Sum and average daily values by year
+            if (this.formattedDailyHeat.length >0) {
+            const noNulls = this.formattedDailyHeat.filter(item => {
+                return(item.value != null) // getting rid of any objects with null values so they don't affect average
+            });
+            let previousYear = noNulls[0].y
+            let sum = 0;
+            let length = 0;
+            let listOfSummations = [];
+            for (let i=0; i<noNulls.length; i++){
+                let currentData = noNulls[i];
+                let currentYear = currentData.y;
+                if (previousYear == currentYear){
+                sum += currentData.value
+                length += currentData.length
+                } else {
+                listOfSummations.push({x: 650, y: currentYear -1, value: sum / length, sum: sum, length: length}, 
+                                    {x: 651, y: currentYear -1, value: sum / length, sum: sum, length: length}, 
+                                    {x: 652, y: currentYear -1, value: sum / length, sum: sum, length: length}, 
+                                    {x: 653, y: currentYear -1, value: sum / length, sum: sum, length: length}, 
+                                    {x: 654, y: currentYear -1, value: sum / length, sum: sum, length: length}, 
+                                    {x: 655, y: currentYear -1, value: sum / length, sum: sum, length: length}, 
+                                    {x: 656, y: currentYear -1, value: sum / length, sum: sum, length: length}, 
+                                    {x: 657, y: currentYear -1, value: sum / length, sum: sum, length: length}, 
+                                    {x: 658, y: currentYear -1, value: sum / length, sum: sum, length: length});
+                sum = currentData.value;
+                length = currentData.length;
+                }
+                if (i == noNulls.length - 1){
+                    listOfSummations.push({x: 650, y: currentYear, value: sum / length, sum: sum, length: length}, 
+                                        {x: 651, y: currentYear, value: sum / length, sum: sum, length: length}, 
+                                        {x: 652, y: currentYear, value: sum / length, sum: sum, length: length}, 
+                                        {x: 653, y: currentYear, value: sum / length, sum: sum, length: length}, 
+                                        {x: 654, y: currentYear, value: sum / length, sum: sum, length: length}, 
+                                        {x: 655, y: currentYear, value: sum / length, sum: sum, length: length},
+                                        {x: 656, y: currentYear, value: sum / length, sum: sum, length: length}, 
+                                        {x: 657, y: currentYear, value: sum / length, sum: sum, length: length}, 
+                                        {x: 658, y: currentYear, value: sum / length, sum: sum, length: length},)
+                    }
+                previousYear = currentYear;
+            }
+            var addAvg = this.formattedDailyHeat.concat(listOfSummations); //adding the averages into the daily value array so they can be plotted
+            this.formattedDailyPlusAvg.push(addAvg);
+            }
+            if (this.floodFreq) { //set up AEP plotLines, defining their colors
                 this.formattedFloodFreq = [];
                     const AEPColors = {
                         9: '#9A6324',
@@ -730,9 +813,9 @@ module StreamStats.Controllers {
                         });
                     });
             this.createAnnualFlowPlot();
+            this.createDailyRasterPlot();
         }}
 
-        //Create chart
         public createAnnualFlowPlot(): void {
             //console.log('peak value plot data', this.formattedPeakDates);
             //onsole.log('estimated peak plot data', this.formattedEstPeakDates);
@@ -772,8 +855,8 @@ module StreamStats.Controllers {
                 },
                 xAxis: {
                     type: 'datetime',
-                    min: 1875,
-                    max: 2050,
+                    min: null,
+                    max: null,
                     title: {
                         text: 'Date'
                     },
@@ -797,7 +880,7 @@ module StreamStats.Controllers {
                     tooltip: {
                         headerFormat:'<b>Daily Streamflow</b>',
                         pointFormatter: function(){
-                            if (this.formattedPeakDates !== null){
+                            if (this.formattedDailyFlow !== null){
                                 let UTCday = this.x.getUTCDate();
                                 let year = this.x.getUTCFullYear();
                                 let month = this.x.getUTCMonth();
@@ -849,7 +932,7 @@ module StreamStats.Controllers {
                 },
                 {
                     name    : 'Annual Peak Streamflow (Date Estimated)',
-                    showInNavigator: true,
+                    showInNavigator: false,
                     tooltip: {
                         headerFormat:'<b>Annual Peak Streamflow</b>',
                         pointFormatter: function(){
@@ -882,6 +965,144 @@ module StreamStats.Controllers {
                 this.chartConfig.yAxis.plotLines.push(formattedFloodFreqItem)
             });
         }
+
+        public createDailyRasterPlot(): void {
+            if (this.dailyValuesOnly.length > 0) {
+                // sort array ascending
+                const asc = this.dailyValuesOnly.sort((a, b) => a - b);
+                //caluculate percentile values
+                var fifthPercentile = asc[Math.floor(asc.length * 0.05)];
+                var ninetyfifthPercentile = asc[Math.floor(asc.length * 0.95)];
+            };
+            function logOrLinear(dailyValuesOnly) {
+                if (dailyValuesOnly.some(v => v <= 0)) {
+                    return {
+                        type: 'linear',
+                        min: fifthPercentile, 
+                        max: ninetyfifthPercentile,
+                        stops: [                     
+                        [0 ,   '#FF0000'],
+                        [0.3, '#FFCC33'],
+                        [0.8, '#66CCFF'],
+                        [1 ,   '#3300CC']
+                        ],
+                        startOnTick: false,
+                        endOnTick: false,
+                        labels: {
+                            format: '{value} ft³/s'
+                        },
+                        allowNegativeLog: true
+                    }
+                }
+                if (dailyValuesOnly.some(v => v > 0)) {
+                    return {
+                        type: 'logarithmic',
+                        min: null, 
+                        max: null,
+                        stops: [                     
+                        [0 ,   '#FF0000'],
+                        [0.3, '#FFCC33'],
+                        [0.8, '#66CCFF'],
+                        [1 ,   '#3300CC']
+                        ],
+                        startOnTick: false,
+                        endOnTick: false,
+                        labels: {
+                            format: '{value} ft³/s'
+                        },
+                        allowNegativeLog: true
+                    }
+                }
+            }
+            function isLeapYear(year) {
+                if (year % 400 === 0) return true;
+                if (year % 100 === 0) return false;
+                return year % 4 === 0;
+            }
+            this.heatChartConfig = {
+                chart: {
+                        height: 450,
+                        width: 800,
+                        zooming: {
+                            type: 'xy'
+                        }
+                },
+                title: {
+                    text: 'Daily Streamflow',
+                    align: 'center'
+                },
+                subtitle: {
+                    text: 'Click and drag in the plot area to zoom in',
+                    align: 'center'
+                },
+                xAxis: {
+                    type: null,
+                    min: 275,
+                    max: 665,
+                    tickPositions: [275, 306, 336, 367, 398, 427, 458, 488, 519, 549, 580, 611, 650],
+                    title: {
+                        text: 'Day of Year'
+                    },
+                    threshold: 273,
+                    labels: {
+                        formatter: function() {
+                            if (this.value > 366) {
+                                this.value -= 365
+                            }
+                            if(this.value == 285) return 'Annual Average';
+                            return moment("2015 "+this.value, "YYYY DDD").format("MMM");
+                        }
+                    }
+                },
+                yAxis: {
+                    title: {
+                        text: 'Water Year'
+                    },
+                    custom: {
+                        allowNegativeLog: true
+                    }
+                },
+                colorAxis: logOrLinear(this.dailyValuesOnly),
+                series: [{
+                    name: 'Daily Streamflow',
+                    pixelSpacing: null,
+                    borderWidth: 0,
+                    borderColor: 'white',
+                    type: 'heatmap',
+                    data: this.formattedDailyPlusAvg[0],
+                    tooltip: {
+                        headerFormat:'<b>Daily Streamflow</b>',
+                        pointFormatter: function(){
+                            if (this.formattedDailyPlusAvg !== null){
+                                let year = this.y;
+                                let doy = this.x;
+                                if (doy > 366) {
+                                    doy -= 366; //returning doy to 1-366 for labeling purposes
+                                };
+                                if (doy > 274) {
+                                    year -= 1; //subracting a year from Oct-Dec dates to get the cal year vs water year
+                                };
+                                if (isLeapYear(year) == false && doy > 59) {
+                                    doy -= 1 //subtracting a day off of non-leap years after Feb 28 so that the labels are accurate
+                                };
+                                let fullDate = new Date(year, 0, doy)
+                                let UTCday = fullDate.getUTCDate();
+                                let month = fullDate.getUTCMonth();
+                                    month += 1; // adding a month to the UTC months (which are zero-indexed)
+                                let formattedUTCDate = month + '/' + UTCday + '/' + year;
+                                let waterYear = year;
+                                if (month > 9) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
+                                    waterYear += 1; // adding a year to dates that fall into the next water year
+                                };
+                                if (doy > 282 && doy < 293) return '</b><br>Water Year: <b>' + waterYear + '</b><br>Water Year Average Value: <b>' + this.value.toFixed(2) + ' ft³/s</b>';
+                                if (doy !== 283 && doy !== 284 && doy !== 285 && doy !== 286 && doy !== 287 && doy !== 288 && doy !== 289 && doy !== 290 && doy !== 291 && doy !== 292) return '<br>Date: <b>'  + formattedUTCDate + '</b><br>Value: <b>' + this.value + ' ft³/s</b><br>Water Year: <b>' + waterYear
+                            }
+                        }
+                    },
+                    turboThreshold: 0
+                }]
+            }
+        };
 
         //checkbox for turning plotLines on and off
         public plotlines = true;
