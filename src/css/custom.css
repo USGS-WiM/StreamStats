@@ -189,6 +189,9 @@ text.nv-axislabel {
 .SCStormRunoffInput input.ng-dirty.ng-invalid-pattern {
     border-color: red !important;
 }
+.SCStormRunoffInput input.ng-dirty:invalid {
+    border-color: red !important;
+}
 .SCStormRunoffInput input:required {
     border-color: #d6d9de;
 }

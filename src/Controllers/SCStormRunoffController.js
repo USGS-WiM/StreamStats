@@ -424,6 +424,7 @@ var StreamStats;
                 _this.prfSegments = [];
                 _this.addFlowSegmentOpen = false;
                 _this.stormponds = false;
+                _this.max_depth = 10;
                 _this.Orif1_Coeff = 0.6;
                 _this.Orif2_Coeff = 0.6;
                 _this.Rec_Weir_Coeff = 3.3;
@@ -983,42 +984,134 @@ var StreamStats;
             SCStormRunoffController.prototype.calculateSynthetic = function () {
                 var _this = this;
                 this.canContinueSynthetic = false;
-                var headers = {
-                    "Content-Type": "application/json",
-                    "X-Is-StreamStats": true
-                };
-                var url = configuration.baseurls['SCStormRunoffServices'] + configuration.queryparams['SCStormRunoffSyntheticUnitComputerGraphResults'];
-                var data = {
-                    "lat": this.studyAreaService.selectedStudyArea.Pourpoint.Latitude,
-                    "lon": this.studyAreaService.selectedStudyArea.Pourpoint.Longitude,
-                    "AEP": this._selectedAEPSynthetic.value,
-                    "CNModificationMethod": this._selectedCNModification.name,
-                    "Area": this.drainageAreaSynthetic,
-                    "Tc": this.timeOfConcentrationMin,
-                    "RainfallDistributionCurve": this._selectedRainfallDistribution.name.split(" ")[1],
-                    "PRF": this.peakRateFactor,
-                    "CN": this.standardCurveNumber,
-                    "S": this.watershedRetention,
-                    "Ia": this.initialAbstraction
-                };
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(data), headers);
-                this.Execute(request).then(function (response) {
-                    if (!response.data) {
+                if (this.pondOption) {
+                    console.log('stormponds');
+                    var headers = {
+                        "Content-Type": "application/json",
+                        "X-Is-StreamStats": true
+                    };
+                    var url = configuration.baseurls['SCStormRunoffServices'] + configuration.queryparams['SCStormPonds'];
+                    var data = {};
+                    if (this.pondOption == 1) {
+                        data = {
+                            "lat": this.studyAreaService.selectedStudyArea.Pourpoint.Latitude,
+                            "lon": this.studyAreaService.selectedStudyArea.Pourpoint.Longitude,
+                            "AEP": this._selectedAEPSynthetic.value,
+                            "CNModificationMethod": this._selectedCNModification.name,
+                            "Area": this.drainageAreaSynthetic,
+                            "Tc": this.timeOfConcentrationMin,
+                            "RainfallDistributionCurve": this._selectedRainfallDistribution.name.split(" ")[1],
+                            "PRF": this.peakRateFactor,
+                            "CN": this.standardCurveNumber,
+                            "S": this.watershedRetention,
+                            "Ia": this.initialAbstraction,
+                            "pondOption": this.pondOption,
+                            "pond_bottom_elev": this.pond_bottom_elev,
+                            "Orif1_Coeff": this.Orif1_Coeff,
+                            "Orif1_Dia": this.Orif1_Dia,
+                            "Orif1_CtrEL": this.Orif1_CtrEL,
+                            "Orif1_NumOpenings": this.Orif1_NumOpenings,
+                            "Orif2_Coeff": this.Orif2_Coeff,
+                            "Orif2_Dia": this.Orif2_Dia,
+                            "Orif2_CtrEL": this.Orif2_CtrEL,
+                            "Orif2_NumOpenings": this.Orif2_NumOpenings,
+                            "Rec_Weir_Coeff": this.Rec_Weir_Coeff,
+                            "Rec_Weir_Ex": this.Rec_Weir_Ex,
+                            "Rec_Weir_Length": this.Rec_Weir_Length,
+                            "Rec_WeirCrest_EL": this.Rec_WeirCrest_EL,
+                            "Rec_Num_Weirs": this.Rec_Num_Weirs,
+                            "OS_BCWeir_Coeff": this.OS_BCWeir_Coeff,
+                            "OS_Weir_Ex": this.OS_Weir_Ex,
+                            "OS_Length": this.OS_Length,
+                            "OS_Crest_EL": this.OS_Crest_EL,
+                            "Seepage_Bottom": this.Seepage_Bottom,
+                            "Seepage_Side": this.Seepage_Side,
+                            "length": this.length,
+                            "w1": this.w1,
+                            "w2": this.w2,
+                            "side_slope_z": this.side_slope_z,
+                            "bottom_slope": this.bottom_slope
+                        };
+                    }
+                    else {
+                        data = {
+                            "lat": this.studyAreaService.selectedStudyArea.Pourpoint.Latitude,
+                            "lon": this.studyAreaService.selectedStudyArea.Pourpoint.Longitude,
+                            "AEP": this._selectedAEPSynthetic.value,
+                            "CNModificationMethod": this._selectedCNModification.name,
+                            "Area": this.drainageAreaSynthetic,
+                            "Tc": this.timeOfConcentrationMin,
+                            "RainfallDistributionCurve": this._selectedRainfallDistribution.name.split(" ")[1],
+                            "PRF": this.peakRateFactor,
+                            "CN": this.standardCurveNumber,
+                            "S": this.watershedRetention,
+                            "Ia": this.initialAbstraction,
+                            "pondOption": this.pondOption,
+                            "pond_bottom_elev": this.pond_bottom_elev,
+                            "Orif1_Coeff": this.Orif1_Coeff,
+                            "Orif1_Dia": this.Orif1_Dia,
+                            "Orif1_CtrEL": this.Orif1_CtrEL,
+                            "Orif1_NumOpenings": this.Orif1_NumOpenings,
+                            "Orif2_Coeff": this.Orif2_Coeff,
+                            "Orif2_Dia": this.Orif2_Dia,
+                            "Orif2_CtrEL": this.Orif2_CtrEL,
+                            "Orif2_NumOpenings": this.Orif2_NumOpenings,
+                            "Rec_Weir_Coeff": this.Rec_Weir_Coeff,
+                            "Rec_Weir_Ex": this.Rec_Weir_Ex,
+                            "Rec_Weir_Length": this.Rec_Weir_Length,
+                            "Rec_WeirCrest_EL": this.Rec_WeirCrest_EL,
+                            "Rec_Num_Weirs": this.Rec_Num_Weirs,
+                            "OS_BCWeir_Coeff": this.OS_BCWeir_Coeff,
+                            "OS_Weir_Ex": this.OS_Weir_Ex,
+                            "OS_Length": this.OS_Length,
+                            "OS_Crest_EL": this.OS_Crest_EL,
+                            "Seepage_Bottom": this.Seepage_Bottom,
+                            "Seepage_Side": this.Seepage_Side,
+                            "Elev_Area": this.Elev_Area
+                        };
+                    }
+                    var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(data), headers);
+                    console.log(request);
+                }
+                else {
+                    console.log('noStormponds');
+                    var headers = {
+                        "Content-Type": "application/json",
+                        "X-Is-StreamStats": true
+                    };
+                    var url = configuration.baseurls['SCStormRunoffServices'] + configuration.queryparams['SCStormRunoffSyntheticUnitComputerGraphResults'];
+                    var data = {
+                        "lat": this.studyAreaService.selectedStudyArea.Pourpoint.Latitude,
+                        "lon": this.studyAreaService.selectedStudyArea.Pourpoint.Longitude,
+                        "AEP": this._selectedAEPSynthetic.value,
+                        "CNModificationMethod": this._selectedCNModification.name,
+                        "Area": this.drainageAreaSynthetic,
+                        "Tc": this.timeOfConcentrationMin,
+                        "RainfallDistributionCurve": this._selectedRainfallDistribution.name.split(" ")[1],
+                        "PRF": this.peakRateFactor,
+                        "CN": this.standardCurveNumber,
+                        "S": this.watershedRetention,
+                        "Ia": this.initialAbstraction
+                    };
+                    var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(data), headers);
+                    this.Execute(request).then(function (response) {
+                        if (!response.data) {
+                            _this.toaster.pop('error', "There was an HTTP error querying Regression regions", "Please retry", 0);
+                            return;
+                        }
+                        if (!response.data.hydrograph_ordinates_table || !response.data.runoff_results_table || !response.data.unit_hydrograph_data || !response.data.watershed_data) {
+                            _this.toaster.pop('error', "One or more of the expected data responses came back null.", "Please retry", 0);
+                            return;
+                        }
+                        _this.syntheticResponseData = response.data;
+                        _this.DHourStormChange();
+                        _this.showResultsSynthetic = true;
+                        _this.canContinueSynthetic = true;
+                    }, function (error) {
                         _this.toaster.pop('error', "There was an HTTP error querying Regression regions", "Please retry", 0);
-                        return;
-                    }
-                    if (!response.data.hydrograph_ordinates_table || !response.data.runoff_results_table || !response.data.unit_hydrograph_data || !response.data.watershed_data) {
-                        _this.toaster.pop('error', "One or more of the expected data responses came back null.", "Please retry", 0);
-                        return;
-                    }
-                    _this.syntheticResponseData = response.data;
-                    _this.DHourStormChange();
-                    _this.showResultsSynthetic = true;
-                    _this.canContinueSynthetic = true;
-                }, function (error) {
-                    _this.toaster.pop('error', "There was an HTTP error querying Regression regions", "Please retry", 0);
-                }).finally(function () {
-                });
+                    }).finally(function () {
+                    });
+                }
             };
             SCStormRunoffController.prototype.loadSyntheticGraphData = function () {
                 var _this = this;
