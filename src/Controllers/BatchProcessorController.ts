@@ -1,14 +1,15 @@
 ﻿//------------------------------------------------------------------------------
-//----- About ---------------------------------------------------------------
+//----- BatchProcessorController ---------------------------------------------------------------
 //------------------------------------------------------------------------------
 
 //-------1---------2---------3---------4---------5---------6---------7---------8
 //       01234567890123456789012345678901234567890123456789012345678901234567890
 //-------+---------+---------+---------+---------+---------+---------+---------+
 
-// copyright:   2016 WiM - USGS
+// copyright:   2023 USGS WIM
 
-//    authors:  Martyn J. Smith USGS Wisconsin Internet Mapping
+//    authors:  Andrew R Laws USGS Web Informatics and Mapping
+//              Martyn J. Smith USGS Wisconsin Internet Mapping
 //
 //
 //   purpose:
@@ -18,7 +19,7 @@
 
 //Comments
 //03.07.2016 mjs - Created
-//02.02.2023 arl - Adapted 
+//02.02.2023 arl - Adapted from AboutController
 
 //Import
 
@@ -52,6 +53,7 @@ module StreamStats.Controllers {
         public selectedRegion: string;
         public flowStatsAllChecked: boolean;
         public regionStatsList: Array<any>;
+        public parameterListBP: Array<any>;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -174,8 +176,45 @@ module StreamStats.Controllers {
                 this.flowStatsAllChecked = true;
             }
         }
-        // write function to make service call to get parameters
-        
+
+        // load parameters for regions once selected
+        public loadParametersByRegionBP(rcode: string): void {
+
+            this.getParametersByRegionBP(rcode).then(
+                // set flowStatsList to values of promised response
+                response => { this.parameterListBP = response; },
+                
+            );
+        }
+
+        // Service methods
+        // get flowstats list for region and nation
+        public getParametersByRegionBP(rcode: string): ng.IPromise<any> {
+
+            if (!rcode) return;
+            var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSAvailableParams'].format(rcode);
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
+
+            // console.log(request)
+            return this.Execute(request).then(
+                (response: any) => {
+                    // create array to return
+                    var paramRaw = [];
+
+                    response.data.parameters.forEach((parameter) => {
+                        parameter.checked = false;
+                        parameter.toggleable = true;
+
+                        paramRaw.push(parameter);
+                    });
+                    // console.log("paramRaw", paramRaw);
+
+                    return paramRaw;
+                }, (error) => {
+                    
+                }).finally(() => {
+                });
+        }
         // Helper Methods
         // -+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {

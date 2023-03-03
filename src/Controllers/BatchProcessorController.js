@@ -94,6 +94,27 @@ var StreamStats;
                     this.flowStatsAllChecked = true;
                 }
             };
+            BatchProcessorController.prototype.loadParametersByRegionBP = function (rcode) {
+                var _this = this;
+                this.getParametersByRegionBP(rcode).then(function (response) { _this.parameterListBP = response; });
+            };
+            BatchProcessorController.prototype.getParametersByRegionBP = function (rcode) {
+                if (!rcode)
+                    return;
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSAvailableParams'].format(rcode);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                return this.Execute(request).then(function (response) {
+                    var paramRaw = [];
+                    response.data.parameters.forEach(function (parameter) {
+                        parameter.checked = false;
+                        parameter.toggleable = true;
+                        paramRaw.push(parameter);
+                    });
+                    return paramRaw;
+                }, function (error) {
+                }).finally(function () {
+                });
+            };
             BatchProcessorController.prototype.init = function () {
                 this.AppVersion = configuration.version;
                 this.getRegions();

@@ -18,7 +18,7 @@
             <div id="selectRegionID">
                 <label>Select State / Region:</label>
                 <select ng-model="vm.selectedRegion" ng-options="region.code as region.name for region in vm.regionList track by region.code"
-                ng-change="vm.getFlowStats(vm.selectedRegion); vm.flowStatsAllChecked=false"></select>
+                ng-change="vm.getFlowStats(vm.selectedRegion); vm.flowStatsAllChecked=false; vm.loadParametersByRegionBP(vm.selectedRegion)"></select>
             </div>
             <!-- checkboxes for different work -->
             <div>                
