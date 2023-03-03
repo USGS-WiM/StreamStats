@@ -249,7 +249,7 @@ module StreamStats.Controllers {
             this._selectedRainfallDistribution = val;
         }
 
-        private greaterThanZero = /^([0-9]*[1-9][0-9]*(\.[0-9]+)?|[0]+\.[0-9]*[1-9][0-9]*)$/;
+        private greaterThanZero = /^\+?(\d*[1-9]\d*\.?|\d*\.\d*[1-9]\d*)$/;
         private gTZInvalidMessage = "Value must be greater than 0"
         private greaterThanOrEqualToZero = /0+|^([0-9]*[1-9][0-9]*(\.[0-9]+)?|[0]+\.[0-9]*[1-9][0-9]*)$/;
         private gTOETZInvalidMessage = "Value must be greater than or equal to 0"
@@ -1190,17 +1190,15 @@ module StreamStats.Controllers {
 
         public calculateSynthetic() {
             this.canContinueSynthetic = false;
+            var headers = {
+                "Content-Type": "application/json",
+                "X-Is-StreamStats": true
+            };
 
             if (this.pondOption) { // Calculate results with storm ponds
-                console.log('stormponds')
-
-                var headers = {
-                    "Content-Type": "application/json",
-                    "X-Is-StreamStats": true
-                };
                 var url = configuration.baseurls['SCStormRunoffServices'] + configuration.queryparams['SCStormPonds'];
                 let data = {}
-                if (this.pondOption == 1 ) {
+                if (this.pondOption == 1 ) { // pond option 1
                     data = {
                         "lat": this.studyAreaService.selectedStudyArea.Pourpoint.Latitude,
                         "lon": this.studyAreaService.selectedStudyArea.Pourpoint.Longitude,
@@ -1278,16 +1276,30 @@ module StreamStats.Controllers {
                     };
                 }
                 var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(data), headers);     
-
-                console.log(request)
+                
+                this.Execute(request).then(
+                    (response: any) => {
+                        console.log(response)
+                        if (!response.data) {
+                            this.toaster.pop('error', "There was an HTTP error calculating results.", "Please retry", 0);
+                            return;
+                        } 
+                        if(!response.data.pond_inflow_and_outflow_ordinates || !response.data.runoff_and_ponding_results) {
+                            this.toaster.pop('error', "One or more of the expected data responses came back null.", "Please retry", 0);
+                            return;
+                        }
+                        console.log(response.data)
+                        this.syntheticResponseData = response.data;
+                        // basically initializes a bunch of stuff
+                        this.DHourStormChange();
+                        this.showResultsSynthetic = true;
+                        this.canContinueSynthetic = true;
+                    },(error) => {
+                        this.toaster.pop('error', "There was an HTTP error calculating results.", "Please retry", 0);
+                    }).finally(() => {
+                });
 
             } else { // Calculate results without storm ponds
-                console.log('noStormponds')
-
-                var headers = {
-                    "Content-Type": "application/json",
-                    "X-Is-StreamStats": true
-                };
                 var url = configuration.baseurls['SCStormRunoffServices'] + configuration.queryparams['SCStormRunoffSyntheticUnitComputerGraphResults'];
                 let data = {
                     "lat": this.studyAreaService.selectedStudyArea.Pourpoint.Latitude,
@@ -1307,13 +1319,9 @@ module StreamStats.Controllers {
                 this.Execute(request).then(
                     (response: any) => {
                         if(!response.data) {
-                            this.toaster.pop('error', "There was an HTTP error querying Regression regions", "Please retry", 0);
+                            this.toaster.pop('error', "There was an HTTP error calculating results.", "Please retry", 0);
                             return;
                         }
-                            // hydrograph_ordinates_table:
-                            // runoff_results_table:
-                            // unit_hydrograph_data:
-                            // watershed_data:
                         if(!response.data.hydrograph_ordinates_table || !response.data.runoff_results_table || !response.data.unit_hydrograph_data || !response.data.watershed_data) {
                             this.toaster.pop('error', "One or more of the expected data responses came back null.", "Please retry", 0);
                             return;
@@ -1324,7 +1332,7 @@ module StreamStats.Controllers {
                         this.showResultsSynthetic = true;
                         this.canContinueSynthetic = true;
                     },(error) => {
-                        this.toaster.pop('error', "There was an HTTP error querying Regression regions", "Please retry", 0);
+                        this.toaster.pop('error', "There was an HTTP error  calculating results.", "Please retry", 0);
                     }).finally(() => {
                 });
             }
@@ -1385,9 +1393,13 @@ module StreamStats.Controllers {
         }
 
         public DHourStormChange() {
-            this.ReportData.SyntheticUrbanHydrograph.Graph = this.loadSyntheticGraphData();
-            this.ReportData.SyntheticUrbanHydrograph.WeightedRunoff = this.syntheticResponseData.runoff_results_table;
-            this.setSyntheticGraphOptions();
+            if (this.pondOption) { 
+
+            } else {
+                this.ReportData.SyntheticUrbanHydrograph.Graph = this.loadSyntheticGraphData();
+                this.ReportData.SyntheticUrbanHydrograph.WeightedRunoff = this.syntheticResponseData.runoff_results_table;
+                this.setSyntheticGraphOptions();
+            }
         }
 
         public isMaxRunoffVolume(index: number) {

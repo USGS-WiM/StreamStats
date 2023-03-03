@@ -411,7 +411,7 @@
                                         </div>
 
                                         
-                                        <!-- TODO: Check values -->
+                                        <!-- TODO: highlight input box in Elevation column if values are not within range -->
                                         <div ng-if="vm.pondOption == 2">
                                             <div class="form-row">
                                                 <div class="form-column-left">
@@ -638,6 +638,8 @@
                                     <p class="fullwidth alignc hidden-print" style="font-size: 16px;"><b>USGS SC Flood Hydrograph for Synthetic Units using {{vm.SelectedAEPSynthetic.name}}</b></p>
                                     <div class="well">
                                         <!-- <div class="wim-alert-warning">{{vm.warningMessagesSynthetic}}</div> -->
+                                        <div class="wim-alert-warning">No warranty is made as to the accuracy and functionality of the South Carolina Synthetic Unit Hydrograph Method. Please refer to the <a href="https://www.scdot.org/business/technicalPDFs/hydraulic/SPR-738-SC-UH-Method-Application-Manual-May-2020.pdf">South Carolina Unit Hydrograph Method Applications Manual</a> for more information.</div>
+
                                         <h3>Watershed Data</h3>
                                         <!-- <h4>Parameters</h4> -->
                                         <table id="WatershedDataTable" class="table table-condensed smalltext">
