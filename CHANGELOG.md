@@ -9,9 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added 
 
 ### Changed  
-  - Updated how About modal is filled. 
+- Updated how About modal is filled
 
 ### Deprecated 
+- Basin edit button is now disabled
 
 ### Removed 
   
