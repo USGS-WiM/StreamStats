@@ -87,7 +87,8 @@
                                     <button id="clearDelinationButton" type="button" class="btn-red fullwidth" ng-click="vm.resetWorkSpace()" ng-show="vm.studyAreaService.selectedStudyArea.FeatureCollection" ng-disabled="!vm.studyAreaService.canUpdate"><span><i class="fa fa-trash-o"></i>&nbsp;&nbsp;Clear Basin</span></button>
                                 </form>
                                 <form style="padding: 5px 0;">
-                                    <button type="button" class="btn-blue fullwidth" ng-click="vm.studyAreaService.showEditToolbar = !vm.studyAreaService.showEditToolbar" ng-disabled="!vm.studyAreaService.canUpdate || vm.studyAreaService.regressionRegionQueryComplete || vm.regionService.selectedRegion.RegionID == 'OK'"><span class="fa fa-edit"></span>&nbsp;&nbsp;Edit Basin</button>
+                                    <p class="p-info">Basin editing has been disabled, and this feature may be discontinued. If you use this feature, please click "Help" then "Submit a Support Request" to let us know!</p>
+                                    <button style="font-size:13px; line-height:16px; color:#808080;" type="button" class="btn-blue fullwidth" ng-click="vm.studyAreaService.showEditToolbar = !vm.studyAreaService.showEditToolbar" ng-disabled="true"><span class="fa fa-edit"></span>&nbsp;&nbsp;Edit Basin</button>
                                 </form>
 
 
