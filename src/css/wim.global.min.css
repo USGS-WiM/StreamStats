@@ -4049,6 +4049,12 @@ p {
         opacity: .8;
     }
 
+    p.p-info {
+        font-size: 13px;
+        line-height: 15px;
+        opacity: .8;
+    }
+
 label {
     font-size: 13px;
     font-weight: 600;

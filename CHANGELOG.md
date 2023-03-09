@@ -18,6 +18,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Security  
 
+## [v4.14.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.14.0) - 2023-03-09
+
+### Changed  
+- Updated how About modal is filled
+
+### Deprecated 
+- Basin edit button is now disabled
+
 ## [v4.13.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.13.0) - 2023-02-09
 
 ### Added 
