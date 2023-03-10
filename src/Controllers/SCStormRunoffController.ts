@@ -662,6 +662,15 @@ module StreamStats.Controllers {
             return this._chosenFlowType;
         } 
 
+        //USLE 
+        public usle: boolean = false;
+        public countyName: string;
+        public usleSoilName: string;
+        public slopeLength: number;
+        public slopeSteepness: number;
+        public coverName: string;
+        public practiceName: string;
+
         // Storm Ponds
         public stormponds: boolean = false;
         public max_depth: number = 10;
@@ -693,6 +702,28 @@ module StreamStats.Controllers {
         public bottom_slope: number
         public Elev_Area;
 
+        //Pond Sediment 
+        public pondsediment: boolean = false;
+        public psSoilName: string;
+
+        // TODO: grab these from services
+        public countyNames = [ 
+            "Abbeville",
+            "Aiken"
+        ]
+        public soilNames = [ 
+            "AILEY - TOP",
+            "AILEY - SUB"
+        ]
+        public coverNames = [ 
+            "Bare soil",
+            "Seeding"
+        ]
+        public practiceNames = [ 
+            "Terraces",
+            "Silt fences"
+        ]
+        
         // for synthetic graph options 
         public DHourStormOptions = [{
             "name": "1-Hour",
@@ -1689,8 +1720,14 @@ module StreamStats.Controllers {
             }
         }
 
-        // Storm Ponds
-        
+        public disableSediment(){
+            if (this.pondOption == 1) {
+                return false;
+            } else {
+                this.pondsediment = false;
+                return true;
+            }
+        }
 
         public clearResults(form) {
             if (form.$name == "BohmanUrbanForm" || form.$name == "BohmanRuralForm") {

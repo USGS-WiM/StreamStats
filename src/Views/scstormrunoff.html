@@ -378,14 +378,35 @@
                                     </div>
                                 </div>
 
+                                 <!-- USLE & MUSLE -->
+                                 <div>
+                                    <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-if="!vm.usle" ng-click="vm.usle = !vm.usle">Calculate USLE & MUSLE</button>
+                                    <div ng-if="vm.usle">
+                                        <h3 class="center-div">USLE & MUSLE</h3>
+                                        <label for="countyName">County Name<span style="color: #ffcc00">*</span></label>
+                                        <select name="countyName" ng-model="vm.countyName" ng-options="item for item in vm.countyNames" required></select> 
+                                        <label for="usleSoilName">Soil Name<span style="color: #ffcc00">*</span></label>
+                                        <select name="usleSoilName" ng-model="vm.usleSoilName" ng-options="item for item in vm.soilNames" required></select>
+                                        <label for="slopeLength">Slope Length<span style="color: #ffcc00">*</span></label>
+                                        <input type="number" name="slopeLength" ng-model="vm.slopeLength" required></input>
+                                        <label for="slopeSteepness">Slope Steepness<span style="color: #ffcc00">*</span></label>
+                                        <input type ="number" name="slopeSteepness" ng-model="vm.slopeSteepness" required></input>
+                                        <label for="coverName">Cover Name<span style="color: #ffcc00">*</span></label>
+                                        <select name="coverName" ng-model="vm.coverName" ng-options="item for item in vm.coverNames" required></select>     
+                                        <label for="practiceName">Practice Name<span style="color: #ffcc00">*</span></label>
+                                        <select name="practiceName" ng-model="vm.practiceName" ng-options="item for item in vm.practiceNames" required></select>                                                                      
+                                    </div>
+                                    <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-if="vm.usle" ng-click="vm.usle = !vm.usle">Remove USLE & MUSLE</button>
+                                </div>
+
                                 <!-- Storm Ponding -->
                                 <div>
-                                    <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-if="!vm.stormponds" ng-click="vm.stormponds = !vm.stormponds"><i class="fa fa-tint"></i>&nbsp;&nbsp;Design Storm Ponds</button>
+                                    <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-if="!vm.stormponds" ng-click="vm.stormponds = !vm.stormponds">Design Storm Ponds</button>
                                     <div ng-if="vm.stormponds">
                                         <h3 class="center-div">Design Storm Ponds</h3>
                                         <div class="wim-alert hidden-print">Select a 'Pond Option' and fill out all required fields.</div>
                                         <label for="pondOption">Pond Option:<span style="color: #ffcc00">*</span></label>
-                                        <select name="pondOption" ng-model="vm.pondOption" required>
+                                        <select name="pondOption" ng-model="vm.pondOption" ng-change="vm.disableSediment()" required>
                                             <option value="1">Pond Option 1 (Inverted Quadrilateral Frustum)</option>
                                             <option value="2">Pond Option 2 (Elevation vs Surface Area)</option>
                                         </select>
@@ -616,9 +637,24 @@
                                         <label for="Seepage_Side">Seepage Through Pond Side Slopes (inches/hour): <span style="color: #ffcc00">*</span></label><span ng-if="SyntheticUrbanHydrograph.Seepage_Side.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
                                         <input type="number" name="Seepage_Side" ng-model="vm.Seepage_Side" ng-minlength="1" ng-pattern="greaterThanZero" required/>
 
+
+                                        <!-- Pond Sediment -->
+                                        <div>
+                                            
+                                            <button style="line-height:unset" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-disabled="vm.disableSediment()" ng-if="!vm.pondsediment" ng-click="vm.pondsediment = !vm.pondsediment">&nbsp;&nbsp;Calculate Pond Sediment</button>
+                                            <div ng-if="vm.pondsediment">
+                                                <h3 class="center-div">Pond Sediment</h3>
+                                                <label for="psSoilName">Soil Name<span style="color: #ffcc00">*</span></label>
+                                                <select name="psSoilName" ng-model="vm.psSoilName" ng-options="item for item in vm.soilNames" required></select>
+                                            </div>
+                                            <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-if="vm.pondsediment" ng-click="vm.pondsediment = !vm.pondsediment">Remove Pond Sediment</button>
+                                        </div>
+
                                     </div>
-                                    <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-if="vm.stormponds" ng-click="vm.stormponds = !vm.stormponds"><i class="fa fa-tint"></i>&nbsp;&nbsp;Remove Storm Ponds</button>
+                                    <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-if="vm.stormponds" ng-click="vm.stormponds = !vm.stormponds">Remove Storm Ponds</button>
                                 </div>
+
+                                
 
                                 <label class="fullwidth alignc" ng-if="vm.validateForm(SyntheticUrbanHydrograph) && !vm.hideAlerts"><span class="fa fa-check"></span>&nbsp;Parameters Have Been Calculated</label>
                                 <label class="fullwidth" ng-if="!vm.validateForm(SyntheticUrbanHydrograph) || (vm.validateForm(SyntheticUrbanHydrograph) && vm.hideAlerts)">&nbsp;&nbsp;</label>

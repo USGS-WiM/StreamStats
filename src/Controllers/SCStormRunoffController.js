@@ -424,6 +424,7 @@ var StreamStats;
                 _this.TravelTimeFlowSegments = JSON.parse(JSON.stringify(_this._defaultFlowSegments));
                 _this.prfSegments = [];
                 _this.addFlowSegmentOpen = false;
+                _this.usle = false;
                 _this.stormponds = false;
                 _this.max_depth = 10;
                 _this.Orif1_Coeff = 0.6;
@@ -432,6 +433,23 @@ var StreamStats;
                 _this.Rec_Weir_Ex = 1.5;
                 _this.OS_BCWeir_Coeff = 3;
                 _this.OS_Weir_Ex = 1.5;
+                _this.pondsediment = false;
+                _this.countyNames = [
+                    "Abbeville",
+                    "Aiken"
+                ];
+                _this.soilNames = [
+                    "AILEY - TOP",
+                    "AILEY - SUB"
+                ];
+                _this.coverNames = [
+                    "Bare soil",
+                    "Seeding"
+                ];
+                _this.practiceNames = [
+                    "Terraces",
+                    "Silt fences"
+                ];
                 _this.DHourStormOptions = [{
                         "name": "1-Hour",
                         "value": 1,
@@ -1453,6 +1471,15 @@ var StreamStats;
                     this.showUrbanResults = false;
                     this.hideAlerts = false;
                     return false;
+                }
+            };
+            SCStormRunoffController.prototype.disableSediment = function () {
+                if (this.pondOption == 1) {
+                    return false;
+                }
+                else {
+                    this.pondsediment = false;
+                    return true;
                 }
             };
             SCStormRunoffController.prototype.clearResults = function (form) {
