@@ -105,6 +105,7 @@ var StreamStats;
                 _this_1.formattedDischargeObj = [];
                 _this_1.formattedRatingCurve = [];
                 _this_1.formattedUSGSMeasured = [];
+                _this_1.ageQualityData = 'age';
                 _this_1.plotlines = true;
                 _this_1.logScale = false;
                 _this_1.logScaleDischarge = false;
@@ -133,6 +134,37 @@ var StreamStats;
                     if (this._selectedTab != val) {
                         this._selectedTab = val;
                     }
+                },
+                enumerable: false,
+                configurable: true
+            });
+            Object.defineProperty(GagePageController.prototype, "StartYear", {
+                get: function () {
+                    return this._startYear;
+                },
+                set: function (val) {
+                    if (!this.spanYear)
+                        this.EndYear = val;
+                    if (val <= this.EndYear && val >= this.YearRange.floor)
+                        this._startYear = val;
+                },
+                enumerable: false,
+                configurable: true
+            });
+            Object.defineProperty(GagePageController.prototype, "EndYear", {
+                get: function () {
+                    return this._endYear;
+                },
+                set: function (val) {
+                    if (val >= this.StartYear && val <= this.YearRange.ceil)
+                        this._endYear = val;
+                },
+                enumerable: false,
+                configurable: true
+            });
+            Object.defineProperty(GagePageController.prototype, "YearRange", {
+                get: function () {
+                    return this._yearRange;
                 },
                 enumerable: false,
                 configurable: true
@@ -528,12 +560,12 @@ var StreamStats;
                             control: dataRow[13],
                             x: parseFloat(dataRow[9]),
                             y: parseFloat(dataRow[8]),
-                            color: _this_1.getCorrectColor(new Date(dataRow[3]))
+                            qualityColor: _this_1.getCorrectQualityColor(dataRow[10]),
+                            color: _this_1.getCorrectColor(new Date(dataRow[3])),
+                            ageColor: _this_1.getCorrectColor(new Date(dataRow[3]))
                         };
-                        console.log(object);
                         _this_1.measuredObj.push(object);
                     });
-                    console.log('measured obj', _this_1.measuredObj);
                 }, function (error) {
                 }).finally(function () {
                     _this_1.formatData();
@@ -673,6 +705,11 @@ var StreamStats;
                         this.createDischargePlot();
                         this.createAnnualFlowPlot();
                     }
+                }
+                {
+                    this.nwsStations = Object.keys('./src/Assets/StationCodes/StationCodes.json');
+                    ;
+                    console.log('nws station names', nwsStations);
                 }
             };
             GagePageController.prototype.createAnnualFlowPlot = function () {
@@ -844,6 +881,18 @@ var StreamStats;
                     return "#0000cd4d";
                 }
             };
+            GagePageController.prototype.getCorrectQualityColor = function (quality) {
+                if (quality === "Good") {
+                    return "#2ED017";
+                }
+                else if (quality === "Fair") {
+                    return "#E7F317";
+                }
+                else {
+                    (quality === "Poor");
+                }
+                return "#FFA200";
+            };
             GagePageController.prototype.createDischargePlot = function () {
                 this.dischargeChartConfig = {
                     chart: {
@@ -994,6 +1043,23 @@ var StreamStats;
                 }
             };
             ;
+            GagePageController.prototype.toggleData = function (dataType) {
+                console.log('this is age data');
+                var chart = $('#chart3').highcharts();
+                console.log('this is chart data', chart);
+                console.log('this is measuredObj data', this.measuredObj);
+                if (dataType === 'age') {
+                    this.measuredObj.forEach(function (row) {
+                        row.color = row.ageColor;
+                    });
+                }
+                else {
+                    this.measuredObj.forEach(function (row) {
+                        row.color = row.qualityColor;
+                    });
+                }
+                ;
+            };
             GagePageController.prototype.init = function () {
                 this.AppVersion = configuration.version;
                 this.getGagePage();

@@ -208,6 +208,32 @@ module StreamStats.Controllers {
         public formattedDischargeObj = []; // ethan
         public formattedRatingCurve = []; // ethan
         public formattedUSGSMeasured = []; // ethan
+        public ageQualityData = 'age'; //ethan
+
+
+        public spanYear: boolean;
+        private _startYear: number; 
+        public get StartYear(): number {
+            return this._startYear;
+        } 
+        public set StartYear(val: number) {
+            if (!this.spanYear) this.EndYear = val;
+            if (val <= this.EndYear && val >= this.YearRange.floor)
+                this._startYear = val;   
+        }
+           
+        private _endYear: number;  
+        public get EndYear(): number {
+            return this._endYear;
+        }
+        public set EndYear(val: number) {
+            if (val >= this.StartYear && val <= this.YearRange.ceil)
+                this._endYear = val;
+        }          
+        private _yearRange: any;
+        public get YearRange():any {
+            return this._yearRange;
+        }
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -771,12 +797,16 @@ module StreamStats.Controllers {
                             control: dataRow[13],
                             x: parseFloat(dataRow[9]),
                             y: parseFloat(dataRow[8]),
-                            color: this.getCorrectColor (new Date(dataRow[3]))
+                            qualityColor: this.getCorrectQualityColor(dataRow[10]),
+                            color: this.getCorrectColor (new Date(dataRow[3])),
+                            ageColor: this.getCorrectColor (new Date(dataRow[3]))
+                            // time: this.dateTime (dataRow[3]),
+                            // color: this.getQualityCorrectColor (dataRow[10])
                         };
-                        console.log(object)
+                        // console.log(object)
                         this.measuredObj.push(object) 
                     });
-                    console.log('measured obj', this.measuredObj)
+                    // console.log('measured obj', this.measuredObj)
                         // console.log('dischargeObj', dischargeValue)
                 }, (error) => {
                     // console.log(error)
@@ -785,6 +815,53 @@ module StreamStats.Controllers {
                 });
 
         } 
+
+        // public getFloodStage() {
+        //     const url = 'https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage=' + this.nwsStations
+        //     //console.log('flood stage data', url)
+        //     const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+            
+        //     this.measuredObj = [];
+
+        //     this.Execute(request).then(
+        //         (response: any) => {
+        //             // console.log('response usgsmeasured', response)
+        //             const data = response.data.split('\n').filter(r => { return (!r.startsWith("#") && r != "") });
+        //             // console.log('data', data)
+        //             data.shift().split('\t');
+        //             // console.log('data with shift', data)
+        //             data.shift();
+        //             //console.log('another data shift', data)
+        //             // let dataRow = data.shift().split('\t');
+        //             // console.log('datarow splits', dataRow)
+        //             // debugger;
+        //             data.forEach(row => {
+        //                 let dataRow = row.split('\t')
+        //                 // console.log('datarow', dataRow)
+        //                 const object = { 
+        //                     dateTime: dataRow[3],
+        //                     timeZone: dataRow[4],
+        //                     quality: dataRow[10],
+        //                     control: dataRow[13],
+        //                     x: parseFloat(dataRow[9]),
+        //                     y: parseFloat(dataRow[8]),
+        //                     qualityColor: this.getCorrectQualityColor(dataRow[10]),
+        //                     color: this.getCorrectColor (new Date(dataRow[3]))
+        //                     // time: this.dateTime (dataRow[3]),
+        //                     // color: this.getQualityCorrectColor (dataRow[10])
+        //                 };
+        //                 // console.log(object)
+        //                 this.measuredObj.push(object) 
+        //             });
+        //             // console.log('measured obj', this.measuredObj)
+        //                 // console.log('dischargeObj', dischargeValue)
+        //         }, (error) => {
+        //             // console.log(error)
+        //         }).finally(() => {
+        //             this.formatData()
+        //         });
+
+        // } 
 
 //Get data into (x, y) format and convert to dates in order to add it to the plot
 public formatData(): void {
@@ -920,6 +997,26 @@ public formatData(): void {
         this.createDischargePlot();
         this.createAnnualFlowPlot();
                 }}
+
+
+                {
+
+                // calling in the station codes as just the nsw station names
+                this.nwsStations = Object.keys('./src/Assets/StationCodes/StationCodes.json';);
+
+                // Print the keys
+                console.log('nws station names', nwsStations);
+
+                // get the nws station id into a variable name
+                // public get_nws_id(usgs_id: string): string {
+                //     for (station in listStations) {
+                //       if (station.usgsStationId === usgs_id) {
+                //         return station.nwsStationId;
+                //       }
+                //     }
+                //     return "";
+                //   }
+                // this.nws_id = get_nws_id(usgs_id);
 
         public createAnnualFlowPlot(): void {
             //console.log('peak value plot data', this.formattedPeakDates);
@@ -1087,8 +1184,18 @@ public formatData(): void {
                     return "#0000cd4d"; // light blue
                 }
         }
-
         
+        public getCorrectQualityColor(quality) {
+            if (quality === "Good") {
+              return "#2ED017";
+            } else if (quality === "Fair") {
+              return "#E7F317";
+            } else { (quality === "Poor") }
+              return "#FFA200";
+            } 
+
+
+
         //Create discharge and rating curve chart
         public createDischargePlot(): void {
             // console.log('peak value plot data', this.formattedPeakDates);
@@ -1233,8 +1340,10 @@ public formatData(): void {
                 } else {
                     chart.yAxis[0].update({ type: 'linear' });
                 }
-            };        
-        //checkbox for change linear to log scale
+            }; 
+            
+            
+        //checkbox to linear to log scale for discharge plot
         public logScaleDischarge = false; // starts with it uncehcked
             public toggleLogLinearDischarge () {
                 let chart = $('#chart3').highcharts();
@@ -1245,7 +1354,131 @@ public formatData(): void {
                     chart.yAxis[0].update({ type: 'linear' });
                     chart.xAxis[0].update({ type: 'linear' });
                 }
-            };     
+            };   
+
+
+        //radio to show age in discharge plot
+        // public ageQualityData = true; // starts with it checked
+        public toggleData (dataType) {
+            console.log('this is age data')
+            let chart = $('#chart3').highcharts();
+            console.log('this is chart data', chart)
+            console.log('this is measuredObj data', this.measuredObj)
+            if (dataType === 'age') {
+                this.measuredObj.forEach(row => {
+                    row.color = row.ageColor
+                });
+            }
+                else {
+                    this.measuredObj.forEach(row => {
+                        row.color = row.qualityColor
+                    });
+            };
+
+
+        // checkbox to show quality in discharge plot
+        // public qualityData = false; // starts with it unchecked
+        //     public toggleQualityData () {
+        //         console.log('this is quality data')
+        //         let chart = $('#chart3').highcharts();
+        //         if (this.getCorrectQualityColor) {
+        //         }
+        //             else {
+        //             this.getCorrectColor
+        //             }
+        //         };
+
+        // public ageMarker = false;
+        //     public toggleAgeMarker () {
+        //         let mType = 
+        //         let chart = $('#chart3').highcharts();
+        //         let series = chart.get('qMeasured');
+        //         if(this.mType == 'quality'){
+        //             add
+        //         }
+        //     }   
+        //             //checkbox to linear to log scale for discharge plot
+        // public logScaleDischarge = false; // starts with it uncehcked
+        // public toggleLogLinearDischarge () {
+        //     let chart = $('#chart3').highcharts();
+        //     if (this.logScaleDischarge) {
+        //         chart.yAxis[0].update({ type: 'logarithmic' });
+        //         chart.xAxis[0].update({ type: 'logarithmic' });
+        //     } else {
+        //         chart.yAxis[0].update({ type: 'linear' });
+        //         chart.xAxis[0].update({ type: 'linear' });
+        //     }
+        // }; 
+            
+            // $(":input[name= 'markerHighlights']").on('change', function(){
+            //     var mType = $("input[name='markerHighlights']:checked").val();
+            //     var chart = $('#ratinggraph').highcharts();
+            //     var series = chart.get('qMeasured');
+            //     if(mType == 'quality'){
+            //         addQNotes('ratinggraph');
+            //         $.each(series.data, function(i, point) {
+            //             if(typeof(point.graphic) == 'undefined') return true;
+            //             if(point.graphic == null) return true;
+            //             point.graphic.attr({
+            //                 fill: this.qColor
+            //             });
+            //         });
+            //         $.each(series.userOptions.originalData,function(){
+            //             this.color =  this.qColor;
+            //         });
+            //      }
+            //      else{
+            //         addQNotes('ratinggraph');
+            //         $.each(series.data, function(i, point) {
+            //             if(typeof(point.graphic) == 'undefined') return true;
+            //             if(point.graphic == null) return true;
+            //             point.graphic.attr({
+            //                 fill: this.aColor
+            //             });
+            //         });
+            //         $.each(series.userOptions.originalData,function(){
+            //             this.color =  this.aColor;
+            //         });
+            
+            //     }
+            
+            // });            
+        // //radio to change to age for discharge plot
+        // public ageDischarge = false; // starts with it uncehcked
+        //     public toggleAgeDischarge () {
+        //         let chart = $('#chart3').highcharts();
+        //         if (this.ageDischarge) {
+        //             chart.yAxis[0].update({ type: 'logarithmic' });
+        //             chart.xAxis[0].update({ type: 'logarithmic' });
+        //         } else {
+        //             chart.yAxis[0].update({ type: 'linear' });
+        //             chart.xAxis[0].update({ type: 'linear' });
+        //         }
+        //     };     
+
+                    // scope.slider_draggable_range = {
+            //     minValue: 1,
+            //     maxValue: 8,
+            //     options: {
+            //         ceil: 10,
+            //         floor: 0,
+            //         draggableRange: true
+            //     }
+            // };
+              
+
+        // public dischargeSlider = false;
+        //     public dischargeSliderSlides 
+        //     sliderValue: number = 1;
+        //     sliderOptions = {
+        //         minValue: 1,
+        //         maxValue: 8,
+        //         options: {
+        //           floor: 0,
+        //           ceil: 10,
+        //           draggableRange: true
+        //         }
+        //       };
 
         
         //Helper Methods
