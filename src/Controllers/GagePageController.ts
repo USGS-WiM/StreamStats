@@ -198,9 +198,10 @@ module StreamStats.Controllers {
         public peakDates = undefined;
         public estPeakDates = undefined;
         public dailyFlow = undefined;
+        public formattedFloodFreq = undefined;
         public formattedDailyHeat = [];
-        public formattedFloodFreq = [];
         public formattedPeakDates = [];
+        public formattedDailyPlusAvg = [];
         public formattedEstPeakDates = [];
         public formattedDailyFlow = [];
         public dailyRange = [];
@@ -234,6 +235,7 @@ module StreamStats.Controllers {
         public get YearRange():any {
             return this._yearRange;
         }
+        public dailyValuesOnly = [];
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -247,14 +249,6 @@ module StreamStats.Controllers {
                         yAxis: { title: {text: string}, custom: { allowNegativeLog: Boolean }, plotLines: [{value: number, color: string, width: number, zIndex: number, label: {text: string}, id: string}]},
                         series: { name: string; showInNavigator: boolean, tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number; type: string, color: string, 
                         data: number[], marker: {symbol: string, radius: number}, showInLegend: boolean; }[]; };
-        heatChartConfig: { 
-                        chart: { height: number, width: number, zooming: {type: string} },
-                        title: { text: string, align: string},
-                        subtitle: { text: string, align: string},  
-                        xAxis: { type: string, min: number, tickPositions: any[], threshold: number, title: {text: string}, labels: {formatter: Function}},
-                        yAxis: { title: {text: string}, custom: { allowNegativeLog: boolean}},
-                        colorAxis: { type: string, min: number, max: number, stops: any[], startOnTick: boolean, endOnTick: boolean, allowNegativeLog: boolean}
-                        series: { name: string, pixelSpacing: number[], borderWidth: number, borderColor: string, type: string, data: number[], tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number}[]; };    
         dischargeChartConfig: {  
                         chart: { height: number, width: number, zooming: {type: string} },
                         title: { text: string, align: string},
@@ -264,7 +258,15 @@ module StreamStats.Controllers {
                         series: { name: string; showInNavigator: boolean, tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number; type: string, color: string, 
                         data: number[], marker: {symbol: string, radius: number}, showInLegend: boolean; }[]; 
                     };
-        constructor($scope: IGagePageControllerScope, $http: ng.IHttpService, modalService: Services.IModalService, modal:ng.ui.bootstrap.IModalServiceInstance) {
+        heatChartConfig: { chart: { height: number, width: number, zooming: {type: string} },
+                        title: { text: string, align: string},
+                        subtitle: { text: string, align: string},  
+                        xAxis: { type: string, min: number, max: number, tickPositions: any[], threshold: number, title: {text: string}, labels: {formatter: Function}},
+                        yAxis: { title: {text: string}, custom: { allowNegativeLog: boolean}},
+                        colorAxis: { type: string, min: number, max: number, stops: any[], startOnTick: boolean, endOnTick: boolean, labels: {format: string}, allowNegativeLog: boolean}
+                        series: { name: string, pixelSpacing: number[], borderWidth: number, borderColor: string, type: string, data: number[], tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number}[]; };
+        
+                        constructor($scope: IGagePageControllerScope, $http: ng.IHttpService, modalService: Services.IModalService, modal:ng.ui.bootstrap.IModalServiceInstance) {
             super($http, configuration.baseurls.StreamStats);
             $scope.vm = this;
             this.modalInstance = modal;
@@ -382,7 +384,7 @@ module StreamStats.Controllers {
                     }
 
                     // Citation options for filtering chars by citation
-                     if (!this.checkForStatOrCharCitation(char.citation.id, this.charCitationList)) {
+                    if (!this.checkForStatOrCharCitation(char.citation.id, this.charCitationList)) {
                         this.charCitationList.push(char.citation)
                     }
                 }
@@ -863,160 +865,146 @@ module StreamStats.Controllers {
 
         // } 
 
-//Get data into (x, y) format and convert to dates in order to add it to the plot
-public formatData(): void {
-    if (this.peakDates) {
-        this.peakDates.forEach(peakObj => {
-            if (!isNaN(peakObj.peak_va)) {
-            this.formattedPeakDates.push({x: new Date(peakObj.peak_dt), y: peakObj.peak_va})
-            }
-        });
-        if (this.peakDates) {  // format data for stage vs discharge plot
-            this.peakDates.forEach(peakObj => {
-                if (!isNaN(peakObj.peak_va)) {
-                this.formattedDischargePeakDates.push({x: peakObj.peak_va, y: peakObj.peak_stage, date: peakObj.peak_dt})
+        //Get data into format necessary for plotting in Highcharts
+        public formatData(): void {
+            if (this.peakDates) {
+                this.peakDates.forEach(peakObj => {
+                    if (!isNaN(peakObj.peak_va)) {
+                    this.formattedPeakDates.push({x: new Date(peakObj.peak_dt), y: peakObj.peak_va})
+                    this.formattedDischargePeakDates.push({x: peakObj.peak_va, y: peakObj.peak_stage, date: peakObj.peak_dt})
                 }
-            });
-    } 
-    if (this.estPeakDates) {
-        this.estPeakDates.forEach(estPeakObj => {
-            if (!isNaN(estPeakObj.peak_va)) {
-            this.formattedEstPeakDates.push({x: new Date(estPeakObj.peak_dt), y: estPeakObj.peak_va})
-            }
-        });
-    }
-    if (this.dailyFlow) {
-        this.dailyFlow.forEach(dailyObj => {
-            if (dailyObj.qualifiers[0] === 'A') {
-            this.formattedDailyFlow.push({x: new Date(dailyObj.dateTime), y: parseInt(dailyObj.value)})
-            }
-        });
-    }
-    if (this.dailyFlow) {
-        this.dailyFlow.forEach(dailyHeatObj => {
-            let now = new Date(dailyHeatObj.dateTime);
-            let year = new Date(dailyHeatObj.dateTime).getUTCFullYear();
-            //Getting dates in Julian days - pulled from this exchange: https://stackoverflow.com/questions/8619879/javascript-calculate-the-day-of-the-year-1-366
-            function daysIntoYear(now){
-                return (Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(now.getFullYear(), 0, 0)) / 24 / 60 / 60 / 1000;
-            };
-            var doy = daysIntoYear(now);
-            function isLeapYear(year) {
-                if (year % 400 === 0) return true;
-                if (year % 100 === 0) return false;
-                return year % 4 === 0;
-            };
-            if (isLeapYear(year) == false && doy > 59) {
-                doy += 1; //add a day onto non-leap years so that dates after Feb 28 will line up with leap years
-            };
-            if (doy > 274) {
-                year += 1 //converting years into water years for plotting (adjusted in tooltip to show real dates)
-            };
-            if (doy < 275) {
-                doy += 366; //making 275 (Oct 1) the lowest number so the x-axis can start at the beginning of the water year
-            };
-            if (dailyHeatObj.qualifiers[0] === 'A') {
-                this.formattedDailyHeat.push({x: doy, y: year, value: parseInt(dailyHeatObj.value), length: 1});
-            };
-            if (isLeapYear(year) == false) {
-                this.formattedDailyHeat.push({x: 60, y: year, value: null, length: 1}); //adding a blank cell on Feb 29 on non-leap years so that data will line up
-            };
-        });
-    }
-//Sum and average daily values
-    const noNulls = this.formattedDailyHeat.filter(item => {
-        return(item.value != null)
-    });
-    let previousYear = noNulls[0].y
-    let sum = 0;
-    let length = 0;
-    let listOfSummations = [];
-    for (let i=0; i<noNulls.length; i++){
-        let currentData = noNulls[i];
-        let currentYear = currentData.y;
-        //let currentLength = currentData.length;
-        if (previousYear == currentYear){
-        sum += currentData.value
-        length += currentData.length
-        }
-        else {
-        listOfSummations.push({x: 700, y: currentYear -1, value: sum / length, sum: sum, length: length})
-        sum = currentData.value;
-        length = currentData.length;
-        }
-        if (i == noNulls.length - 1){
-            listOfSummations.push({x: 700, y: currentYear, value: sum / length, sum: sum, length: length})
-            }
-        previousYear = currentYear;
-    }
-    // console.log(listOfSummations);
-    
-    
-//console.log(this.formattedDailyHeat);
-
-    if (this.floodFreq) { //set up AEP plotLines, defining their colors
-        this.formattedFloodFreq = [];
-            const AEPColors = {
-                9: '#9A6324',
-                852: '#800000',
-                8: '#e6194B',
-                818: '#ffd8b1',
-                7: '#f58231',
-                6: '#ffe119', 
-                5: '#bfef45',
-                4: '#3cb44b',
-                3: '#42d4f4',
-                1: '#4363d8',
-                501: '#000075',
-                2: '#911eb4',
-                500: '#dcbeff',
-                851: '#fabed4',
-                1438: '#469990',
-                2311: '#f58231',
-                2312: '#3cb44b',
-                2313: '#e6194B',
-                2314: '#bfef45',
-                2315: '#911eb4',
-                2316: '#9A6324',
-                2317: '#ffe119',
-                2318: '#42d4f4'
-            };
-        this.floodFreq.forEach((floodFreqItem) => {
-            let colorIndex = floodFreqItem.regressionTypeID;
-            let formattedName = floodFreqItem.regressionType.name.substring(0, floodFreqItem.regressionType.name.length-18);
-            this.formattedFloodFreq.push({
-                value: floodFreqItem.value,
-                color: AEPColors[colorIndex],
-                width: 1.5,
-                zIndex: 4,
-                label: {text: formattedName + '% AEP'},
-                id: 'plotlines'
                 });
-                // console.log(this.formattedFloodFreq)
-            });        
-        this.createDischargePlot();
-        this.createAnnualFlowPlot();
-                }}
+            } 
+            if (this.estPeakDates) {
+                this.estPeakDates.forEach(estPeakObj => {
+                    if (!isNaN(estPeakObj.peak_va)) {
+                    this.formattedEstPeakDates.push({x: new Date(estPeakObj.peak_dt), y: estPeakObj.peak_va})
+                    }
+                });
+            }
+            if (this.dailyFlow) {
+                this.dailyFlow.forEach(dailyObj => {
+                    let now = new Date(dailyObj.dateTime);
+                    let year = new Date(dailyObj.dateTime).getUTCFullYear();
+                    //Getting dates in Julian days
+                    function daysIntoYear(now){
+                        return (Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(now.getFullYear(), 0, 0)) / 24 / 60 / 60 / 1000;
+                    };
+                    var doy = daysIntoYear(now);
+                    function isLeapYear(year) {
+                        if (year % 400 === 0) return true;
+                        if (year % 100 === 0) return false;
+                        return year % 4 === 0;
+                    };
+                    if (parseInt(dailyObj.value) !== -999999) {
+                    this.formattedDailyFlow.push({x: new Date(dailyObj.dateTime), y: parseInt(dailyObj.value)})
+                    this.dailyValuesOnly.push(parseInt(dailyObj.value));
 
-
-                {
-
-                // calling in the station codes as just the nsw station names
-                this.nwsStations = Object.keys('./src/Assets/StationCodes/StationCodes.json';);
-
-                // Print the keys
-                console.log('nws station names', nwsStations);
-
-                // get the nws station id into a variable name
-                // public get_nws_id(usgs_id: string): string {
-                //     for (station in listStations) {
-                //       if (station.usgsStationId === usgs_id) {
-                //         return station.nwsStationId;
-                //       }
-                //     }
-                //     return "";
-                //   }
-                // this.nws_id = get_nws_id(usgs_id);
+                    if (isLeapYear(year) == false && doy > 59) {
+                        doy += 1; //add a day onto non-leap years so that dates after Feb 28 will line up with leap years
+                    };
+                    if (doy > 274) {
+                        year += 1 //converting years into water years for plotting (adjusted in tooltip to show real dates)
+                    };
+                    if (doy < 275) {
+                        doy += 366; //making 275 (Oct 1) the lowest number so the x-axis can start at the beginning of the water year
+                    };
+                    if (parseInt(dailyObj.value) !== -999999) {
+                        this.formattedDailyHeat.push({x: doy, y: year, value: parseInt(dailyObj.value), length: 1});
+                    };
+                    if (isLeapYear(year) == false) {
+                        this.formattedDailyHeat.push({x: 60, y: year, value: null, length: 1}); //adding a blank cell on Feb 29 on non-leap years so that data will line up
+                    };
+                }
+                });
+            }
+            //Sum and average daily values by year
+            if (this.formattedDailyHeat.length >0) {
+            const noNulls = this.formattedDailyHeat.filter(item => {
+                return(item.value != null) // getting rid of any objects with null values so they don't affect average
+            });
+            let previousYear = noNulls[0].y
+            let sum = 0;
+            let length = 0;
+            let listOfSummations = [];
+            for (let i=0; i<noNulls.length; i++){
+                let currentData = noNulls[i];
+                let currentYear = currentData.y;
+                if (previousYear == currentYear){
+                sum += currentData.value
+                length += currentData.length
+                } else {
+                listOfSummations.push({x: 650, y: currentYear -1, value: sum / length, sum: sum, length: length}, 
+                                    {x: 651, y: currentYear -1, value: sum / length, sum: sum, length: length}, 
+                                    {x: 652, y: currentYear -1, value: sum / length, sum: sum, length: length}, 
+                                    {x: 653, y: currentYear -1, value: sum / length, sum: sum, length: length}, 
+                                    {x: 654, y: currentYear -1, value: sum / length, sum: sum, length: length}, 
+                                    {x: 655, y: currentYear -1, value: sum / length, sum: sum, length: length}, 
+                                    {x: 656, y: currentYear -1, value: sum / length, sum: sum, length: length}, 
+                                    {x: 657, y: currentYear -1, value: sum / length, sum: sum, length: length}, 
+                                    {x: 658, y: currentYear -1, value: sum / length, sum: sum, length: length});
+                sum = currentData.value;
+                length = currentData.length;
+                }
+                if (i == noNulls.length - 1){
+                    listOfSummations.push({x: 650, y: currentYear, value: sum / length, sum: sum, length: length}, 
+                                        {x: 651, y: currentYear, value: sum / length, sum: sum, length: length}, 
+                                        {x: 652, y: currentYear, value: sum / length, sum: sum, length: length}, 
+                                        {x: 653, y: currentYear, value: sum / length, sum: sum, length: length}, 
+                                        {x: 654, y: currentYear, value: sum / length, sum: sum, length: length}, 
+                                        {x: 655, y: currentYear, value: sum / length, sum: sum, length: length},
+                                        {x: 656, y: currentYear, value: sum / length, sum: sum, length: length}, 
+                                        {x: 657, y: currentYear, value: sum / length, sum: sum, length: length}, 
+                                        {x: 658, y: currentYear, value: sum / length, sum: sum, length: length},)
+                    }
+                previousYear = currentYear;
+            }
+            var addAvg = this.formattedDailyHeat.concat(listOfSummations); //adding the averages into the daily value array so they can be plotted
+            this.formattedDailyPlusAvg.push(addAvg);
+            }
+            if (this.floodFreq) { //set up AEP plotLines, defining their colors
+                this.formattedFloodFreq = [];
+                    const AEPColors = {
+                        9: '#9A6324',
+                        852: '#800000',
+                        8: '#e6194B',
+                        818: '#ffd8b1',
+                        7: '#f58231',
+                        6: '#ffe119', 
+                        5: '#bfef45',
+                        4: '#3cb44b',
+                        3: '#42d4f4',
+                        1: '#4363d8',
+                        501: '#000075',
+                        2: '#911eb4',
+                        500: '#dcbeff',
+                        851: '#fabed4',
+                        1438: '#469990',
+                        2311: '#f58231',
+                        2312: '#3cb44b',
+                        2313: '#e6194B',
+                        2314: '#bfef45',
+                        2315: '#911eb4',
+                        2316: '#9A6324',
+                        2317: '#ffe119',
+                        2318: '#42d4f4'
+                    };
+                this.floodFreq.forEach((floodFreqItem) => {
+                    let colorIndex = floodFreqItem.regressionTypeID;
+                    let formattedName = floodFreqItem.regressionType.name.substring(0, floodFreqItem.regressionType.name.length-18);
+                    this.formattedFloodFreq.push({
+                        value: floodFreqItem.value,
+                        color: AEPColors[colorIndex],
+                        width: 1.5,
+                        zIndex: 4,
+                        label: {text: formattedName + '% AEP'},
+                        id: 'plotlines'
+                        });
+                    });
+            this.createAnnualFlowPlot();
+            this.createDailyRasterPlot();
+            this.createDischargePlot();
+        }}
 
         public createAnnualFlowPlot(): void {
             //console.log('peak value plot data', this.formattedPeakDates);
@@ -1057,8 +1045,8 @@ public formatData(): void {
                 },
                 xAxis: {
                     type: 'datetime',
-                    min: 1875,
-                    max: 2050,
+                    min: null,
+                    max: null,
                     title: {
                         text: 'Date'
                     },
@@ -1134,7 +1122,7 @@ public formatData(): void {
                 },
                 {
                     name    : 'Annual Peak Streamflow (Date Estimated)',
-                    showInNavigator: true,
+                    showInNavigator: false,
                     tooltip: {
                         headerFormat:'<b>Annual Peak Streamflow</b>',
                         pointFormatter: function(){
@@ -1168,154 +1156,290 @@ public formatData(): void {
             });
         }
 
-        public getCorrectColor(date): string {
-            let days = (new Date().getTime() - new Date(date).getTime()) / (1000 * 60 * 60 * 24)
-                if (days <= 31) {
-                    console.log("first month", days)
-                    return 'red'; // orange
-                } else if (days <= 365) {
-                    console.log("first year", days)
-                    return 'orange'; // orange    
-                } else if (days <= 730) {
-                    console.log("second year", days)
-                    return "#0000cdcc"; // blue
-                } else {
-                    console.log("any other year", days)
-                    return "#0000cd4d"; // light blue
+public getCorrectColor(date): string {
+    let days = (new Date().getTime() - new Date(date).getTime()) / (1000 * 60 * 60 * 24)
+        if (days <= 31) {
+            console.log("first month", days)
+            return 'red'; // orange
+        } else if (days <= 365) {
+            console.log("first year", days)
+            return 'orange'; // orange    
+        } else if (days <= 730) {
+            console.log("second year", days)
+            return "#0000cdcc"; // blue
+        } else {
+            console.log("any other year", days)
+            return "#0000cd4d"; // light blue
+        }
+}
+
+public getCorrectQualityColor(quality) {
+    if (quality === "Good") {
+      return "#2ED017";
+    } else if (quality === "Fair") {
+      return "#E7F317";
+    } else { (quality === "Poor") }
+      return "#FFA200";
+    } 
+
+
+
+//Create discharge and rating curve chart
+public createDischargePlot(): void {
+    // console.log('peak value plot data', this.formattedPeakDates);
+    // console.log('estimated peak plot data', this.formattedEstPeakDates);
+    // console.log('this.discharge obj 2nd one', this.dischargeObj)
+    this.dischargeChartConfig = {
+        chart: {
+            height: 450,
+            width: 800,
+            zooming: {
+                type: 'xy'
+            }
+        },
+        title: {
+            text: 'Stage vs. Discharge',
+            align: 'center'
+        },
+        subtitle: {
+            text: 'Click and drag in the plot area to zoom in',
+            align: 'center'
+        },
+        xAxis: {
+            type: null,
+            title: {
+                text: 'River Discharge (cfs)'
+            },
+            custom: {
+                allowNegativeLog: true
+            }
+        },
+        yAxis: {
+            title: {
+                text: 'River Stage (ft)'
+            },
+            custom: {
+                allowNegativeLog: true
+            },
+            plotLines: [{value: null, color: null, width: null, zIndex: null, label: {text: null}, id: 'plotlines'}]
+        },
+        series  : [
+        {
+            name    : 'USGS Rating Curve',
+            showInNavigator: false,
+            tooltip: { headerFormat:'<b>USGS Rating Curve</b>',
+                pointFormatter: function(){
+                    if (this.dischargeObj !== null){
+                        let discharge = this.x;
+                        let stage = this.y;
+                        return '<br>Gage Height: <b>' + stage + ' ft' + '</b><br>Discharge: <b>' + discharge + ' cfs'
+                    }
                 }
-        }
-        
-        public getCorrectQualityColor(quality) {
-            if (quality === "Good") {
-              return "#2ED017";
-            } else if (quality === "Fair") {
-              return "#E7F317";
-            } else { (quality === "Poor") }
-              return "#FFA200";
-            } 
-
-
-
-        //Create discharge and rating curve chart
-        public createDischargePlot(): void {
-            // console.log('peak value plot data', this.formattedPeakDates);
-            // console.log('estimated peak plot data', this.formattedEstPeakDates);
-            // console.log('this.discharge obj 2nd one', this.dischargeObj)
-            this.dischargeChartConfig = {
-                chart: {
-                    height: 450,
-                    width: 800,
-                    zooming: {
-                        type: 'xy'
+            },
+            turboThreshold: 0, 
+            type    : 'spline',
+            color   : 'black ',
+            data    : this.dischargeObj,
+            marker: {
+                symbol: 'square',
+                radius: 2.5
+            },
+            showInLegend: this.dischargeObj.length > 0
+        },
+        {
+            name    : 'Annual Peaks',
+            showInNavigator: false,
+            tooltip: {
+                headerFormat:'<b>Annual Peaks</b>',
+                pointFormatter: function(){
+                    if (this.formattedPeakDates !== null){
+                        let UTCday = this.getUTCDate;
+                        let year = this.getUTCFullYear;
+                        let month = this.getUTCMonth;
+                            month += 1; // adding a month to the UTC months (which are zero-indexed)
+                        let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                        let discharge = this.x;
+                        let stage = this.y;
+                        let peakDate = this.date
+                        return '<br>Date <b>' + peakDate +  '<br>Peak <b>' + discharge + ' cfs' + '<br>at stage <b>' + stage + ' ft'
                     }
-                },
-                title: {
-                    text: 'Stage vs. Discharge',
-                    align: 'center'
-                },
-                subtitle: {
-                    text: 'Click and drag in the plot area to zoom in',
-                    align: 'center'
-                },
-                xAxis: {
-                    type: null,
-                    title: {
-                        text: 'River Discharge (cfs)'
-                    },
-                    custom: {
-                        allowNegativeLog: true
+                }
+            },
+            turboThreshold: 0, 
+            type    : 'scatter',
+            color   : 'black',
+            data    : this.formattedDischargePeakDates,
+            marker: {
+                symbol: 'circle',
+                radius: 3
+            },
+            showInLegend: this.formattedDischargePeakDates.length > 0
+        },
+        {
+            name    : 'USGS Measured',
+            showInNavigator: false,
+            tooltip: { headerFormat:'<b>USGS Measured</b>',
+                pointFormatter: function(){
+                    if (this.measuredObj !== null){
+                        let dateTime = this.dateTime;
+                        let timeZone = this.timeZone;
+                        let quality = this.quality;
+                        let control = this.control;
+                        let discharge = this.x;
+                        let stage = this.y;
+                        return '<br><b>' + dateTime + ' ' + timeZone + '<br>Gage Height: <b>' + stage + ' ft' + '<br>Discharge: <b>' + discharge + ' cfs' + '<br>Quality: <b>' + quality + '<br>Control: <b>' + control
                     }
+                }
+            },
+            turboThreshold: 0, 
+            type    : 'scatter',  
+            color: null,
+            data    : this.measuredObj,
+            marker: {
+                symbol: 'diamond',
+                radius: 3
+            },
+            showInLegend: this.measuredObj.length > 0
+        }] 
+    } 
+}
+public createDailyRasterPlot(): void {
+    if (this.dailyValuesOnly.length > 0) {
+        // sort array ascending
+        const asc = this.dailyValuesOnly.sort((a, b) => a - b);
+        //caluculate percentile values
+        var fifthPercentile = asc[Math.floor(asc.length * 0.05)];
+        var ninetyfifthPercentile = asc[Math.floor(asc.length * 0.95)];
+    };
+    function logOrLinear(dailyValuesOnly) {
+        if (dailyValuesOnly.some(v => v <= 0)) {
+            return {
+                type: 'linear',
+                min: fifthPercentile, 
+                max: ninetyfifthPercentile,
+                stops: [                     
+                [0 ,   '#FF0000'],
+                [0.3, '#FFCC33'],
+                [0.8, '#66CCFF'],
+                [1 ,   '#3300CC']
+                ],
+                startOnTick: false,
+                endOnTick: false,
+                labels: {
+                    format: '{value} ft³/s'
                 },
-                yAxis: {
-                    title: {
-                        text: 'River Stage (ft)'
-                    },
-                    custom: {
-                        allowNegativeLog: true
-                    },
-                    plotLines: [{value: null, color: null, width: null, zIndex: null, label: {text: null}, id: 'plotlines'}]
-                },
-                series  : [
-                {
-                    name    : 'USGS Rating Curve',
-                    showInNavigator: false,
-                    tooltip: { headerFormat:'<b>USGS Rating Curve</b>',
-                        pointFormatter: function(){
-                            if (this.dischargeObj !== null){
-                                let discharge = this.x;
-                                let stage = this.y;
-                                return '<br>Gage Height: <b>' + stage + ' ft' + '</b><br>Discharge: <b>' + discharge + ' cfs'
-                            }
-                        }
-                    },
-                    turboThreshold: 0, 
-                    type    : 'spline',
-                    color   : 'black ',
-                    data    : this.dischargeObj,
-                    marker: {
-                        symbol: 'square',
-                        radius: 2.5
-                    },
-                    showInLegend: this.dischargeObj.length > 0
-                },
-                {
-                    name    : 'Annual Peaks',
-                    showInNavigator: false,
-                    tooltip: {
-                        headerFormat:'<b>Annual Peaks</b>',
-                        pointFormatter: function(){
-                            if (this.formattedPeakDates !== null){
-                                let UTCday = this.getUTCDate;
-                                let year = this.getUTCFullYear;
-                                let month = this.getUTCMonth;
-                                    month += 1; // adding a month to the UTC months (which are zero-indexed)
-                                let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
-                                let discharge = this.x;
-                                let stage = this.y;
-                                let peakDate = this.date
-                                return '<br>Date <b>' + peakDate +  '<br>Peak <b>' + discharge + ' cfs' + '<br>at stage <b>' + stage + ' ft'
-                            }
-                        }
-                    },
-                    turboThreshold: 0, 
-                    type    : 'scatter',
-                    color   : 'black',
-                    data    : this.formattedDischargePeakDates,
-                    marker: {
-                        symbol: 'circle',
-                        radius: 3
-                    },
-                    showInLegend: this.formattedDischargePeakDates.length > 0
-                },
-                {
-                    name    : 'USGS Measured',
-                    showInNavigator: false,
-                    tooltip: { headerFormat:'<b>USGS Measured</b>',
-                        pointFormatter: function(){
-                            if (this.measuredObj !== null){
-                                let dateTime = this.dateTime;
-                                let timeZone = this.timeZone;
-                                let quality = this.quality;
-                                let control = this.control;
-                                let discharge = this.x;
-                                let stage = this.y;
-                                return '<br><b>' + dateTime + ' ' + timeZone + '<br>Gage Height: <b>' + stage + ' ft' + '<br>Discharge: <b>' + discharge + ' cfs' + '<br>Quality: <b>' + quality + '<br>Control: <b>' + control
-                            }
-                        }
-                    },
-                    turboThreshold: 0, 
-                    type    : 'scatter',  
-                    color: null,
-                    data    : this.measuredObj,
-                    marker: {
-                        symbol: 'diamond',
-                        radius: 3
-                    },
-                    showInLegend: this.measuredObj.length > 0
-                }] 
-            } 
+                allowNegativeLog: true
+            }
         }
-
+        if (dailyValuesOnly.some(v => v > 0)) {
+            return {
+                type: 'logarithmic',
+                min: null, 
+                max: null,
+                stops: [                     
+                [0 ,   '#FF0000'],
+                [0.3, '#FFCC33'],
+                [0.8, '#66CCFF'],
+                [1 ,   '#3300CC']
+                ],
+                startOnTick: false,
+                endOnTick: false,
+                labels: {
+                    format: '{value} ft³/s'
+                },
+                allowNegativeLog: true
+            }
+        }
+    }
+    function isLeapYear(year) {
+        if (year % 400 === 0) return true;
+        if (year % 100 === 0) return false;
+        return year % 4 === 0;
+    }
+    this.heatChartConfig = {
+        chart: {
+                height: 450,
+                width: 800,
+                zooming: {
+                    type: 'xy'
+                }
+        },
+        title: {
+            text: 'Daily Streamflow',
+            align: 'center'
+        },
+        subtitle: {
+            text: 'Click and drag in the plot area to zoom in',
+            align: 'center'
+        },
+        xAxis: {
+            type: null,
+            min: 275,
+            max: 665,
+            tickPositions: [275, 306, 336, 367, 398, 427, 458, 488, 519, 549, 580, 611, 650],
+            title: {
+                text: 'Day of Year'
+            },
+            threshold: 273,
+            labels: {
+                formatter: function() {
+                    if (this.value > 366) {
+                        this.value -= 365
+                    }
+                    if(this.value == 285) return 'Annual Average';
+                    return moment("2015 "+this.value, "YYYY DDD").format("MMM");
+                }
+            }
+        },
+        yAxis: {
+            title: {
+                text: 'Water Year'
+            },
+            custom: {
+                allowNegativeLog: true
+            }
+        },
+        colorAxis: logOrLinear(this.dailyValuesOnly),
+        series: [{
+            name: 'Daily Streamflow',
+            pixelSpacing: null,
+            borderWidth: 0,
+            borderColor: 'white',
+            type: 'heatmap',
+            data: this.formattedDailyPlusAvg[0],
+            tooltip: {
+                headerFormat:'<b>Daily Streamflow</b>',
+                pointFormatter: function(){
+                    if (this.formattedDailyPlusAvg !== null){
+                        let year = this.y;
+                        let doy = this.x;
+                        if (doy > 366) {
+                            doy -= 366; //returning doy to 1-366 for labeling purposes
+                        };
+                        if (doy > 274) {
+                            year -= 1; //subracting a year from Oct-Dec dates to get the cal year vs water year
+                        };
+                        if (isLeapYear(year) == false && doy > 59) {
+                            doy -= 1 //subtracting a day off of non-leap years after Feb 28 so that the labels are accurate
+                        };
+                        let fullDate = new Date(year, 0, doy)
+                        let UTCday = fullDate.getUTCDate();
+                        let month = fullDate.getUTCMonth();
+                            month += 1; // adding a month to the UTC months (which are zero-indexed)
+                        let formattedUTCDate = month + '/' + UTCday + '/' + year;
+                        let waterYear = year;
+                        if (month > 9) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
+                            waterYear += 1; // adding a year to dates that fall into the next water year
+                        };
+                        if (doy > 282 && doy < 293) return '</b><br>Water Year: <b>' + waterYear + '</b><br>Water Year Average Value: <b>' + this.value.toFixed(2) + ' ft³/s</b>';
+                        if (doy !== 283 && doy !== 284 && doy !== 285 && doy !== 286 && doy !== 287 && doy !== 288 && doy !== 289 && doy !== 290 && doy !== 291 && doy !== 292) return '<br>Date: <b>'  + formattedUTCDate + '</b><br>Value: <b>' + this.value + ' ft³/s</b><br>Water Year: <b>' + waterYear
+                    }
+                }
+            },
+            turboThreshold: 0
+        }]
+    }
+};
           
         //checkbox for turning plotLines on and off
         public plotlines = true;
