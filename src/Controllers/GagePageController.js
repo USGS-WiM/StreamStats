@@ -475,8 +475,42 @@ var StreamStats;
                     }
                     ;
                     _this_1.dailyFlow = dailyValues;
-                    _this_1.formatData();
+                    _this_1.getNWSForecast();
                 });
+            };
+            GagePageController.prototype.getNWSForecast = function () {
+                var crossWalk = 'https://www.weather.gov/source/aprfc/crossWalk.json';
+                var url = "https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage=" + this.gage.code;
+                this.getShadedDailyStats();
+            };
+            GagePageController.prototype.getShadedDailyStats = function () {
+                var url = 'https://waterservices.usgs.gov/nwis/stat/?format=rdb,1.0&indent=on&sites=' + this.gage.code + '&statReportType=daily&statTypeCd=all&parameterCd=00060';
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+                this.Execute(request).then(function (response) {
+                    var meanPercentileStats = [];
+                    var data = response.data.split('\n').filter(function (r) { return (!r.startsWith("#") && r != ""); });
+                    data.shift().split('\t');
+                    data.shift();
+                    do {
+                        var dataRow = data.shift().split('\t');
+                        var stringDate = parseInt(dataRow[5]) + '/' + parseInt(dataRow[6]) + '/' + parseInt(dataRow[8]);
+                        var date = new Date(stringDate);
+                        var meanPercentiles = {
+                            date: date.toUTCString(),
+                            begin_yr: parseInt(dataRow[7]),
+                            end_yr: parseInt(dataRow[8]),
+                            min_va: parseInt(dataRow[13]),
+                            p10_va: parseInt(dataRow[16]),
+                            p25_va: parseInt(dataRow[18]),
+                            p75_va: parseInt(dataRow[20]),
+                            p90_va: parseInt(dataRow[22]),
+                            max_va: parseInt(dataRow[11])
+                        };
+                        meanPercentileStats.push(meanPercentiles);
+                    } while (data.length > 0);
+                    console.log(meanPercentileStats);
+                });
+                this.formatData();
             };
             GagePageController.prototype.formatData = function () {
                 var _this_1 = this;
