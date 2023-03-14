@@ -83,11 +83,12 @@ module StreamStats.Controllers {
         public warningMessagesSynthetic: any;
         public unitHydrographResponseData: any;
         public stormPondsResponseData: any;
+        public USLEResponseData: any;
+        public stormSedimentResponseData: any;
         public ReportOptionsSynthetic: any;
         public canContinueSynthetic: boolean;
         public stormHydrographOrdinatesAccordionOpen: boolean;
         public isSyntheticUHOpen = false;
-        public isPondingOpen = false;
 
         public mainChannelLength: number;
         public mainChannelSlope: number;
@@ -665,7 +666,6 @@ module StreamStats.Controllers {
         //USLE 
         public usle: boolean = false;
         public countyName: string;
-        public usleSoilName: string;
         public slopeLength: number;
         public slopeSteepness: number;
         public coverName: string;
@@ -704,25 +704,13 @@ module StreamStats.Controllers {
 
         //Pond Sediment 
         public pondsediment: boolean = false;
-        public psSoilName: string;
+        public soilName: string;
 
         // TODO: grab these from services
-        public countyNames = [ 
-            "Abbeville",
-            "Aiken"
-        ]
-        public soilNames = [ 
-            "AILEY - TOP",
-            "AILEY - SUB"
-        ]
-        public coverNames = [ 
-            "Bare soil",
-            "Seeding"
-        ]
-        public practiceNames = [ 
-            "Terraces",
-            "Silt fences"
-        ]
+        public countyNames = []
+        public soilNames = []
+        public coverNames = []
+        public practiceNames = []
         
         // for synthetic graph options 
         public DHourStormOptions = [{
@@ -785,7 +773,7 @@ module StreamStats.Controllers {
             this.init();  
 
             this.print = function () {
-                if (this.SelectedTab == 3) this.isSyntheticUHOpen = true; this.isPondingOpen = true;
+                if (this.SelectedTab == 3) this.isSyntheticUHOpen = true;
                 if (this.SelectedTab == 2) this.isBohmanUrbanOpen = true;
                 if (this.SelectedTab == 1) this.isBohmanRuralOpen = true;
 
@@ -1224,6 +1212,8 @@ module StreamStats.Controllers {
         public calculateSpreedSheet() {
             var unitHydrograph = {}
             var stormPonding = {}
+            var USLE = {}
+            var stormSediment = {}
 
             this.canContinueSynthetic = false;
             var headers = {
@@ -1247,7 +1237,16 @@ module StreamStats.Controllers {
                 "Ia": this.initialAbstraction
             };
 
-            // TODO: set up USLE data
+            if (this.usle == true) { // set up USLE and MUSLE data 
+                USLE = {
+                    "county_name": this.countyName,
+                    "soil_name": this.soilName,
+                    "slope_length": this.slopeLength,
+                    "slope_steepness": this.slopeSteepness,
+                    "cover_name": this.coverName,
+                    "practice_name": this.practiceName
+                }
+            }
 
             if (this.stormponds == true) { // set up storm pond data
                 if (this.pondOption == 1) { // pond option 1
@@ -1307,13 +1306,20 @@ module StreamStats.Controllers {
                 }
             }
 
-            // TODO: set up pond sediment data 
+            if (this.pondsediment == true) { // set up pond sediment data 
+                stormSediment = {
+                    "soil_name": this.soilName
+                }
+            }
 
             // Format request data
             var data = {
                 unitHydrograph,
-                stormPonding
+                USLE,
+                stormPonding,
+                stormSediment
             }
+
             // request to calculateSpreedSheet
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(data), headers);     
             this.Execute(request).then(
@@ -1324,12 +1330,15 @@ module StreamStats.Controllers {
                     }
                     this.unitHydrographResponseData = response.data.unitHydrographResults;
                     this.stormPondsResponseData = response.data.stormPondingResults;
+                    this.USLEResponseData = response.data.USLEResults;
+                    this.stormSedimentResponseData = response.data.pondSedimentResults;
 
                     this.DHourStormChange();
                     this.showResultsSynthetic = true;
                     this.canContinueSynthetic = true;
                 },(error) => {
-                    this.toaster.pop('error', "There was an HTTP error  calculating results.", "Please retry", 0);
+                    console.log(error)
+                    this.toaster.pop('error', "There was an HTTP error calculating results.", error.data.detail , 0);
                 }).finally(() => {
             });
             
@@ -1689,6 +1698,28 @@ module StreamStats.Controllers {
             return counter;
         }
 
+
+        public getFactorData() {
+            var url = configuration.baseurls['SCStormRunoffServices'] + configuration.queryparams['SCFactorData']
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+
+            this.Execute(request).then(
+                (response: any) => {
+                    if (response.data) {
+                        this.countyNames = Object.keys(response.data.R_Factor)
+                        this.soilNames = Object.keys(response.data.K_Factor)
+                        this.coverNames = Object.keys(response.data.C_Factor)
+                        this.practiceNames = Object.keys(response.data.P_Factor)
+                    }
+                }, (error) => {
+                    //sm when error
+                    this.toaster.clear();
+                    this.toaster.pop("error", "There was an HTTP error getting factor data.", "Please retry", 0);
+
+                }).finally(() => {
+            });
+        }
+
         public validateForm(mainForm) {
             // if on synthetic tab, check if Travel Time was checked, and make sure there's at least one flow segment
             if(mainForm.$name == "SyntheticUrbanHydrograph") {
@@ -1792,7 +1823,6 @@ module StreamStats.Controllers {
         private downloadCSV() {
             if (this.SelectedTab == 3){
                 this.isSyntheticUHOpen = true;
-                this.isPondingOpen = true;
                 setTimeout(() => {
                     this.formatCSV();
                 }, 300);
@@ -1843,11 +1873,26 @@ module StreamStats.Controllers {
 
                 finalVal += '\n' + "Watershed Data" + WatershedDataTable;
                 finalVal += '\n\n' + "Unit Hydrograph Data" + UnitHydrographTable;
-                finalVal += '\n\n' + "Runoff Results" + '\n' + this.tableToCSV($('#SyntheticUnitHydrographRunoffTable'));
+                if (this.stormPondsResponseData) {
+                    finalVal += '\n\n' + "Runoff and Storm Ponding Results" + '\n' + this.tableToCSV($('#SyntheticUnitHydrographRunoffTable'));
+                } else {
+                    finalVal += '\n\n' + "Runoff Results" + '\n' + this.tableToCSV($('#SyntheticUnitHydrographRunoffTable'));
+                }
                 finalVal += '\n\n' + "Critical Durations" + '\n' + this.tableToCSV($('#SyntheticUnitHydrographCriticalDurationsTable'));
                 finalVal += '\n\nTabular Hydrograph';
                 finalVal += '\n' + "D-Hour Storm Hydrograph Ordinates" + '\n' + this.tableToCSV($('#SyntheticUnitHydrographDataTable'));
+                if (this.USLEResponseData) {
+                    let USLEDataTable = (this.tableToCSV($('#USLEDataTable')).slice(3))
+                    finalVal += '\n\n' + "USLE and MUSLE Data" + USLEDataTable;
+                    finalVal += '\n\n' + "USLE and MUSLE Results"  + '\n' + this.tableToCSV($('#USLEResultsTable'));
+                }
+                if (this.stormSedimentResponseData) {
+                    let stormSedimentDataTable = (this.tableToCSV($('#stormSedimentDataTable')).slice(3))
+                    finalVal += '\n\n' + "Storm Pond Sediment Data" + stormSedimentDataTable;
+                    finalVal += '\n\n' + "Storm Pond Sediment Results" + '\n' + this.tableToCSV($('#stormSedimentResultsTable'));
+                }
                 finalVal += '\n\n' + this.tableToCSV($('#SyntheticUnitHydrographDisclaimerReport'));
+                
                 var node = document.getElementById('SyntheticUnitHydrographDisclaimerReport');
                 var string = node.textContent.replace(/\s+/g, ' ').trim();
                 string = string.replace(/,/g, ' ');
@@ -1901,6 +1946,7 @@ module StreamStats.Controllers {
             this.canContinueSynthetic = true;
             this._chosenFlowType = null;
             this.stormHydrographOrdinatesAccordionOpen = false;
+            this.getFactorData()
         }
 
         private selectRunoffType() {

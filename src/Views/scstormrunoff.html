@@ -384,17 +384,17 @@
                                     <div ng-if="vm.usle">
                                         <h3 class="center-div">USLE & MUSLE</h3>
                                         <label for="countyName">County Name<span style="color: #ffcc00">*</span></label>
-                                        <select name="countyName" ng-model="vm.countyName" ng-options="item for item in vm.countyNames" required></select> 
-                                        <label for="usleSoilName">Soil Name<span style="color: #ffcc00">*</span></label>
-                                        <select name="usleSoilName" ng-model="vm.usleSoilName" ng-options="item for item in vm.soilNames" required></select>
+                                        <select name="countyName" ng-model="vm.countyName" ng-options="c for c in vm.countyNames" required></select> 
+                                        <label for="soilName">Soil Name<span style="color: #ffcc00">*</span></label>
+                                        <select name="soilName" ng-model="vm.soilName" ng-options="s for s in vm.soilNames" required></select>
                                         <label for="slopeLength">Slope Length<span style="color: #ffcc00">*</span></label>
                                         <input type="number" name="slopeLength" ng-model="vm.slopeLength" required></input>
                                         <label for="slopeSteepness">Slope Steepness<span style="color: #ffcc00">*</span></label>
-                                        <input type ="number" name="slopeSteepness" ng-model="vm.slopeSteepness" required></input>
+                                        <input type ="number" name="slopeSteepness" ng-model="vm.slopeSteepness" required></input> <!-- TODO: less than 25 -->
                                         <label for="coverName">Cover Name<span style="color: #ffcc00">*</span></label>
-                                        <select name="coverName" ng-model="vm.coverName" ng-options="item for item in vm.coverNames" required></select>     
+                                        <select name="coverName" ng-model="vm.coverName" ng-options="c for c in vm.coverNames" required></select>     
                                         <label for="practiceName">Practice Name<span style="color: #ffcc00">*</span></label>
-                                        <select name="practiceName" ng-model="vm.practiceName" ng-options="item for item in vm.practiceNames" required></select>                                                                      
+                                        <select name="practiceName" ng-model="vm.practiceName" ng-options="p for p in vm.practiceNames" required></select>                                                                      
                                     </div>
                                     <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-if="vm.usle" ng-click="vm.usle = !vm.usle">Remove USLE & MUSLE</button>
                                 </div>
@@ -644,8 +644,8 @@
                                             <button style="line-height:unset" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-disabled="vm.disableSediment()" ng-if="!vm.pondsediment" ng-click="vm.pondsediment = !vm.pondsediment">&nbsp;&nbsp;Calculate Pond Sediment</button>
                                             <div ng-if="vm.pondsediment">
                                                 <h3 class="center-div">Pond Sediment</h3>
-                                                <label for="psSoilName">Soil Name<span style="color: #ffcc00">*</span></label>
-                                                <select name="psSoilName" ng-model="vm.psSoilName" ng-options="item for item in vm.soilNames" required></select>
+                                                <label for="soilName">Soil Name<span style="color: #ffcc00">*</span></label>
+                                                <select name="soilName" ng-model="vm.soilName" ng-options="s for s in vm.soilNames" required></select>
                                             </div>
                                             <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-if="vm.pondsediment" ng-click="vm.pondsediment = !vm.pondsediment">Remove Pond Sediment</button>
                                         </div>
@@ -752,7 +752,7 @@
                                             </tbody>
                                         </table>
 
-                                        <h3>Runoff <span ng-if="vm.stormPondsResponseData">and Pond Routing </span>Results</h3>
+                                        <h3>Runoff <span ng-if="vm.stormPondsResponseData">and Storm Pond Routing </span>Results</h3>
                                         <table id="SyntheticUnitHydrographRunoffTable" class="table table-condensed smalltext">
                                             <thead>
                                                 <tr>
@@ -870,6 +870,121 @@
                                                 </tbody>
                                             </table>         
                                         </div>
+
+                                        <div ng-if="vm.USLEResponseData">
+                                            <h3>USLE & MUSLE Results</h3>
+                                            <table id="USLEDataTable" class="table table-condensed smalltext">
+                                                <tbody>
+                                                    <tr>
+                                                        <td>Texture</td>
+                                                        <td><b>{{vm.USLEResponseData.texture}}</b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>R Factor</td>
+                                                        <td><b>{{vm.USLEResponseData.R}}</b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>K Factor</td>
+                                                        <td><b>{{vm.USLEResponseData.K}}</b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>LS Factor</td>
+                                                        <td><b>{{vm.USLEResponseData.LS}}</b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>C Factor</td>
+                                                        <td><b>{{vm.USLEResponseData.C}}</b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>P Factor</td>
+                                                        <td><b>{{vm.USLEResponseData.P}}</b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Predicted Soil Loss</td>
+                                                        <td><b>{{vm.USLEResponseData.predicted_soil_loss}}</b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Gross Erosion</td>
+                                                        <td><b>{{vm.USLEResponseData.gross_erosion}}</b></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <table id="USLEResultsTable" class="table table-condensed smalltext">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Storm Duration (hrs)</th>
+                                                        <th>Runoff Volume (ac-ft)</th>
+                                                        <th>Peak Runoff (cfs)</th>
+                                                        <th>Gross Erosion (tons)</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr ng-repeat="option in vm.DHourStormOptions">
+                                                        <td>{{option.value}}</td>
+                                                        <td>{{vm.USLEResponseData.Q_CN_ac_ft[$index].toUSGSvalue()}}</td>
+                                                        <td>{{vm.USLEResponseData.Q_p[$index].toUSGSvalue()}}</td>
+                                                        <td>{{vm.USLEResponseData.MUSLE[$index].toUSGSvalue()}}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <div ng-if="vm.stormSedimentResponseData">
+                                            <h3>Storm Pond Sediment Results</h3>
+                                            <table id="stormSedimentDataTable" class="table table-condensed smalltext">
+                                                <tbody>
+                                                    <tr>
+                                                        <td>Texture</td>
+                                                        <td><b>{{vm.stormSedimentResponseData.texture}}</b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>a</td>
+                                                        <td><b>{{vm.stormSedimentResponseData.a}}</b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>b</td>
+                                                        <td><b>{{vm.stormSedimentResponseData.b}}</b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>c</td>
+                                                        <td><b>{{vm.stormSedimentResponseData.c}}</b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>d</td>
+                                                        <td><b>{{vm.stormSedimentResponseData.d}}</b></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <table id="stormSedimentResultsTable" class="table table-condensed smalltext">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Storm Duration (hrs)</th>
+                                                        <th>S*</th>
+                                                        <th>D*</th>
+                                                        <th>Q*</th>
+                                                        <th>F*</th>
+                                                        <th>q*</th>
+                                                        <th>Coastal TE</th>
+                                                        <th>DHEC TE</th>
+                                                        <th>UofSC TE</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr ng-repeat="option in vm.DHourStormOptions">
+                                                        <td>{{option.value}}</td>
+                                                        <td>{{vm.stormSedimentResponseData.S_star[$index].toUSGSvalue()}}</td>
+                                                        <td>{{vm.stormSedimentResponseData.D_star.toUSGSvalue()}}</td>
+                                                        <td>{{vm.stormSedimentResponseData.Q_star[$index].toUSGSvalue()}}</td>
+                                                        <td>{{vm.stormSedimentResponseData.F_star[$index].toUSGSvalue()}}</td>
+                                                        <td>{{vm.stormSedimentResponseData.q_star[$index].toUSGSvalue()}}</td>
+                                                        <td>{{vm.stormSedimentResponseData.Coastal_TE[$index].toUSGSvalue()}}</td>
+                                                        <td>{{vm.stormSedimentResponseData.DHEC_TE[$index].toUSGSvalue()}}</td>
+                                                        <td>{{vm.stormSedimentResponseData.UofSC_TEs[$index].toUSGSvalue()}}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
                         
                                         <div id="SyntheticUnitHydrographDisclaimerReport"> 
                                             <h3>Notes on Time of Concentration:</h3>
