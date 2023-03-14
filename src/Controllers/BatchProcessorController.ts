@@ -55,6 +55,7 @@ module StreamStats.Controllers {
         public regionStatsList: Array<any>;
         public parameterListBP: Array<any>;
         public flowStatChecked: boolean;
+        public requiredParamList: Array<any>
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -67,6 +68,7 @@ module StreamStats.Controllers {
             this.selectedBatchProcessorTabName = "submitBatch";
             this.nssService = nssService;
             this.regionStatsList = [];
+            this.requiredParamList = [];
             this.flowStatsAllChecked = true;
             this.flowStatChecked = true;
             this.init();  
@@ -104,7 +106,8 @@ module StreamStats.Controllers {
                 // set flowStatsList to values of promised response
                 response => { this.flowStatsList = response; }
 
-            );
+            )
+
         }
 
         // uncheck/check all flow statistics
@@ -159,7 +162,7 @@ module StreamStats.Controllers {
             }
             // calling this makes select all the default when any are unchecked
             this.checkStats();
-            // this.checkParams();
+
         }
 
         public checkStats() {
@@ -190,8 +193,38 @@ module StreamStats.Controllers {
             );
         }
 
+        // get count of how many times parameter shows up in selected flowStats
+        // build array of multiples for each required param
+        public buildRequiredParameters(statistic: any) {
+
+            var regressionRegions = statistic.regressionRegions;
+
+            // console.log(regressionRegions)
+
+            regressionRegions.forEach((regRegion) => {
+                
+                regRegion.parameters.forEach((parameter) => {
+
+                    var code = parameter.code;
+
+                    var index = this.requiredParamList.indexOf(code);
+
+                    if (!statistic.checked && index > -1) {
+                        //remove it
+                        this.requiredParamList.splice(index, 1);
+                    }
+                    else if (statistic.checked) {
+                        //add it
+                        this.requiredParamList.push(code);
+                    }
+                })
+            })
+
+            console.log(this.requiredParamList);
+        }
+
         // Service methods
-        // get flowstats list for region and nation
+        // get basin characteristics list for region and nation
         public getParametersByRegionBP(rcode: string): ng.IPromise<any> {
 
             if (!rcode) return;
@@ -219,6 +252,7 @@ module StreamStats.Controllers {
                 }).finally(() => {
                 });
         }
+
         // Helper Methods
         // -+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {

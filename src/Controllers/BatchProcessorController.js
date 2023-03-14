@@ -28,6 +28,7 @@ var StreamStats;
                 _this.selectedBatchProcessorTabName = "submitBatch";
                 _this.nssService = nssService;
                 _this.regionStatsList = [];
+                _this.requiredParamList = [];
                 _this.flowStatsAllChecked = true;
                 _this.flowStatChecked = true;
                 _this.init();
@@ -103,6 +104,23 @@ var StreamStats;
             BatchProcessorController.prototype.getRegionParameters = function (rcode) {
                 var _this = this;
                 this.getParametersByRegionBP(rcode).then(function (response) { _this.parameterListBP = response; });
+            };
+            BatchProcessorController.prototype.buildRequiredParameters = function (statistic) {
+                var _this = this;
+                var regressionRegions = statistic.regressionRegions;
+                regressionRegions.forEach(function (regRegion) {
+                    regRegion.parameters.forEach(function (parameter) {
+                        var code = parameter.code;
+                        var index = _this.requiredParamList.indexOf(code);
+                        if (!statistic.checked && index > -1) {
+                            _this.requiredParamList.splice(index, 1);
+                        }
+                        else if (statistic.checked) {
+                            _this.requiredParamList.push(code);
+                        }
+                    });
+                });
+                console.log(this.requiredParamList);
             };
             BatchProcessorController.prototype.getParametersByRegionBP = function (rcode) {
                 if (!rcode)

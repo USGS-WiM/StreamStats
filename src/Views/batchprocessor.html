@@ -29,7 +29,7 @@
                     <input id="cbFlowStats" type="checkbox" display="inline-block" ng-model="cbFlowStats">
                     <label class="chx" for="cbFlowStats">&nbsp;Compute Flow Statistics&nbsp;&nbsp;&nbsp;&nbsp;</label>
                     
-                    <input id="cbBasinChar" type="checkbox" display="inline-block" ng-model="cbBasinChar" ng-checked="vm.flowStatChecked"  ng-disabled="vm.flowStatChecked">
+                    <input id="cbBasinChar" type="checkbox" display="inline-block" ng-model="cbBasinChar" ng-checked="vm.flowStatChecked"  ng-disabled="vm.flowStatChecked" ng-click="vm.showBasinCharacterstics = !vm.showBasinCharacterstics">
                     <label class="chx" for="cbBasinChar">&nbsp;Compute Basin Characteristics</label>                  
                 </span>
             </div>
@@ -44,13 +44,13 @@
                 </button>
                 <!-- create list of flow stats checkboxes -->
                 <div ng-repeat="flowStat in vm.flowStatsList">
-                    <input id="{{flowStat.statisticGroupName}}" ng-model="flowStat.checked" ng-change="vm.updateRegionStatsList(flowStat)" type="checkbox" display="inline-block">
+                    <input id="{{flowStat.statisticGroupName}}" ng-model="flowStat.checked" ng-change="vm.updateRegionStatsList(flowStat); vm.buildRequiredParameters(flowStat)" type="checkbox" display="inline-block">
                     <label class="chx" for="{{flowStat.statisticGroupName}}"> {{flowStat.statisticGroupName}}</label>
                 </div>
             </div>
 
             <!-- select parameters -->
-            <div ng-if="vm.flowStatChecked || (cbBasinChar && !vm.flowStatChecked)"> 
+            <div ng-init="vm.showBasinCharacterstics = false" ng-show="vm.flowStatChecked || vm.showBasinCharacterstics"> 
                 <h3>Select Basin Characteristics</h3>
                 <!-- button to check/uncheck all -->
                 <!-- <button class="btn-blue fullwidth" ng-class="!vm.parameterAllChecked ? 'btn-black': 'btn-blue'"
