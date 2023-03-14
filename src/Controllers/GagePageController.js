@@ -91,6 +91,13 @@ var StreamStats;
                 _this_1.peakDates = undefined;
                 _this_1.estPeakDates = undefined;
                 _this_1.dailyFlow = undefined;
+                _this_1.meanPercentileStats = undefined;
+                _this_1.meanPercent = undefined;
+                _this_1.formattedP0to10 = [];
+                _this_1.formattedP10to25 = [];
+                _this_1.formattedP25to75 = [];
+                _this_1.formattedP75to90 = [];
+                _this_1.formattedP90to100 = [];
                 _this_1.formattedFloodFreq = [];
                 _this_1.formattedPeakDates = [];
                 _this_1.formattedPeakDatesOnYear = [];
@@ -475,16 +482,13 @@ var StreamStats;
                     }
                     ;
                     _this_1.dailyFlow = dailyValues;
-                    _this_1.getNWSForecast();
+                    _this_1.getShadedDailyStats();
                 });
             };
-            GagePageController.prototype.getNWSForecast = function () {
-                var crossWalk = 'https://www.weather.gov/source/aprfc/crossWalk.json';
-                var url = "https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage=" + this.gage.code;
-                this.getShadedDailyStats();
-            };
             GagePageController.prototype.getShadedDailyStats = function () {
+                var _this_1 = this;
                 var url = 'https://waterservices.usgs.gov/nwis/stat/?format=rdb,1.0&indent=on&sites=' + this.gage.code + '&statReportType=daily&statTypeCd=all&parameterCd=00060';
+                console.log('shaded url', url);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
                     var meanPercentileStats = [];
@@ -493,7 +497,7 @@ var StreamStats;
                     data.shift();
                     do {
                         var dataRow = data.shift().split('\t');
-                        var stringDate = parseInt(dataRow[5]) + '/' + parseInt(dataRow[6]) + '/' + parseInt(dataRow[8]);
+                        var stringDate = parseInt(dataRow[5]) + '/' + parseInt(dataRow[6]) + '/' + 2022;
                         var date = new Date(stringDate);
                         var meanPercentiles = {
                             date: date.toUTCString(),
@@ -508,9 +512,9 @@ var StreamStats;
                         };
                         meanPercentileStats.push(meanPercentiles);
                     } while (data.length > 0);
-                    console.log(meanPercentileStats);
+                    _this_1.meanPercent = meanPercentileStats;
+                    _this_1.formatData();
                 });
-                this.formatData();
             };
             GagePageController.prototype.formatData = function () {
                 var _this_1 = this;
@@ -526,6 +530,11 @@ var StreamStats;
                         if (!isNaN(estPeakObj.peak_va)) {
                             _this_1.formattedEstPeakDates.push({ x: new Date(estPeakObj.peak_dt), y: estPeakObj.peak_va });
                         }
+                    });
+                }
+                if (this.meanPercent) {
+                    this.meanPercent.forEach(function (stats) {
+                        _this_1.formattedP0to10.push({ x: new Date(stats.date), low: stats.min_va, high: stats.p10_va });
                     });
                 }
                 if (this.dailyFlow) {
@@ -696,6 +705,7 @@ var StreamStats;
             };
             GagePageController.prototype.createAnnualFlowPlot = function () {
                 var _this_1 = this;
+                console.log(this.formattedP0to10);
                 this.chartConfig = {
                     chart: {
                         height: 550,
@@ -769,6 +779,7 @@ var StreamStats;
                             turboThreshold: 0,
                             type: 'line',
                             color: '#add8f2',
+                            fillOpacity: null,
                             data: this.formattedDailyFlow,
                             marker: {
                                 symbol: '',
@@ -800,6 +811,7 @@ var StreamStats;
                             turboThreshold: 0,
                             type: 'scatter',
                             color: 'black',
+                            fillOpacity: null,
                             data: this.formattedPeakDates,
                             marker: {
                                 symbol: 'circle',
@@ -831,6 +843,7 @@ var StreamStats;
                             turboThreshold: 0,
                             type: 'scatter',
                             color: 'red',
+                            fillOpacity: null,
                             data: this.formattedEstPeakDates,
                             marker: {
                                 symbol: 'square',
@@ -849,12 +862,33 @@ var StreamStats;
                             turboThreshold: 0,
                             type: null,
                             color: 'black',
+                            fillOpacity: null,
                             data: null,
                             marker: {
                                 symbol: 'line',
                                 radius: 0.1
                             },
                             showInLegend: this.formattedFloodFreq.length > 0
+                        },
+                        {
+                            name: 'p 0-10 %',
+                            showInNavigator: false,
+                            tooltip: {
+                                headerFormat: null,
+                                pointFormatter: function () {
+                                    return '<br>Date: <b>' + this.x + '</b><br>Min: <b>' + this.low + ' ft³/s</b><br>10th percentile: <b>' + this.high;
+                                }
+                            },
+                            turboThreshold: 0,
+                            type: 'arearange',
+                            color: 'red',
+                            fillOpacity: 0.2,
+                            data: this.formattedP0to10,
+                            marker: {
+                                symbol: null,
+                                radius: null
+                            },
+                            showInLegend: this.formattedP0to10.length > 0
                         }
                     ]
                 };

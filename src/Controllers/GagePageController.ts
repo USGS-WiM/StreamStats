@@ -194,6 +194,13 @@ module StreamStats.Controllers {
         public peakDates = undefined;
         public estPeakDates = undefined;
         public dailyFlow = undefined;
+        public meanPercentileStats = undefined;
+        public meanPercent = undefined;
+        public formattedP0to10 = [];
+        public formattedP10to25 = [];
+        public formattedP25to75 = [];
+        public formattedP75to90 = [];
+        public formattedP90to100 = [];
         public formattedFloodFreq = [];
         public formattedPeakDates = [];
         public formattedPeakDatesOnYear = [];
@@ -215,7 +222,7 @@ module StreamStats.Controllers {
                         xAxis: {  type: string, title: {text: string}, custom: { allowNegativeLog: Boolean }},
                         yAxis: { title: {text: string}, custom: { allowNegativeLog: Boolean }, plotLines: [{value: number, color: string, width: number, zIndex: number, label: {text: string}, id: string}]},
                         series: { name: string; showInNavigator: boolean, tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number; type: string, color: string, 
-                                data: number[], marker: {symbol: string, radius: number}, showInLegend: boolean; }[]; };
+                                fillOpacity: number, data: number[], marker: {symbol: string, radius: number}, showInLegend: boolean; }[]; };
         constructor($scope: IGagePageControllerScope, $http: ng.IHttpService, modalService: Services.IModalService, modal:ng.ui.bootstrap.IModalServiceInstance) {
             super($http, configuration.baseurls.StreamStats);
             $scope.vm = this;
@@ -668,23 +675,24 @@ module StreamStats.Controllers {
                         dailyValues = 0
                     };
                     this.dailyFlow = dailyValues
-                    this.getNWSForecast();
+                    this.getShadedDailyStats();
                 }); 
             }
 
-        public getNWSForecast() {
-            var crossWalk = 'https://www.weather.gov/source/aprfc/crossWalk.json';
-            // const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(crossWalk, true, WiM.Services.Helpers.methodType.GET, 'json');
-            // this.Execute(request).then(
-            //     (response: any) => {
-            //         console.log(response);
-            //     }); 
-            var url =  "https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage="+ this.gage.code
-            this.getShadedDailyStats();
-        }
+        // public getNWSForecast() {
+        //     var crossWalk = 'https://www.weather.gov/source/aprfc/crossWalk.json';
+        //     // const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(crossWalk, true, WiM.Services.Helpers.methodType.GET, 'json');
+        //     // this.Execute(request).then(
+        //     //     (response: any) => {
+        //     //         console.log(response);
+        //     //     }); 
+        //     var url =  "https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage="+ this.gage.code
+        //     this.getShadedDailyStats();
+        // }
         
         public getShadedDailyStats() {
             var url = 'https://waterservices.usgs.gov/nwis/stat/?format=rdb,1.0&indent=on&sites=' + this.gage.code + '&statReportType=daily&statTypeCd=all&parameterCd=00060';
+            console.log('shaded url', url);
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             this.Execute(request).then(
                 (response: any) => {
@@ -694,7 +702,7 @@ module StreamStats.Controllers {
                     data.shift();
                     do {
                         let dataRow = data.shift().split('\t');
-                        let stringDate = parseInt(dataRow[5]) + '/' + parseInt(dataRow[6]) + '/' + parseInt(dataRow[8])
+                        let stringDate = parseInt(dataRow[5]) + '/' + parseInt(dataRow[6]) + '/' + 2022;
                         let date = new Date(stringDate);
                         //console.log(date);
                         const meanPercentiles = {
@@ -710,9 +718,12 @@ module StreamStats.Controllers {
                         }
                         meanPercentileStats.push(meanPercentiles);
                     } while (data.length > 0);
-                    console.log(meanPercentileStats);
+                    this.meanPercent = meanPercentileStats;
+                    //console.log('mean perc 1', meanPercentileStats);
+                    //console.log('xxx', this.meanPercent)
+                    this.formatData();
                 });
-            this.formatData();
+            
         }
 
         //Get data into (x, y) format and convert to dates in order to add it to the plot
@@ -730,6 +741,12 @@ module StreamStats.Controllers {
                     this.formattedEstPeakDates.push({x: new Date(estPeakObj.peak_dt), y: estPeakObj.peak_va})
                     }
                 });
+            }
+            if (this.meanPercent) {
+                this.meanPercent.forEach(stats => {
+                    this.formattedP0to10.push({x: new Date(stats.date), low: stats.min_va, high: stats.p10_va});
+
+                })
             }
             if (this.dailyFlow) {
                 this.dailyFlow.forEach(dailyObj => {
@@ -912,6 +929,7 @@ module StreamStats.Controllers {
             //console.log('estimated peak plot data', this.formattedEstPeakDates);
             //console.log('daily flow plot data', this.formattedDailyFlow);
             //console.log('peak value plot data plotted on one year', this.formattedPeakDatesOnYear)
+            console.log(this.formattedP0to10);
             this.chartConfig = {
                 chart: {
                     height: 550,
@@ -1018,6 +1036,7 @@ module StreamStats.Controllers {
                     turboThreshold: 0, 
                     type    : 'line',
                     color   : '#add8f2',
+                    fillOpacity: null, 
                     data    : this.formattedDailyFlow,
                     marker: {
                         symbol: '',
@@ -1048,6 +1067,7 @@ module StreamStats.Controllers {
                     turboThreshold: 0, 
                     type    : 'scatter',
                     color   : 'black',
+                    fillOpacity: null, 
                     data    : this.formattedPeakDates,
                     marker: {
                         symbol: 'circle',
@@ -1078,6 +1098,7 @@ module StreamStats.Controllers {
                     turboThreshold: 0, 
                     type    : 'scatter',
                     color   : 'red',
+                    fillOpacity: null, 
                     data    : this.formattedEstPeakDates,
                     marker: {
                         symbol: 'square',
@@ -1095,20 +1116,34 @@ module StreamStats.Controllers {
                     },
                     turboThreshold: 0, 
                     type: null,
-                    //id: 'AEPlines',
                     color: 'black',
+                    fillOpacity: null, 
                     data: null,
-                    // label: {
-                    //     enabled: true,
-                    //     align: 'left',
-                    //     format: {text: formattedName + '% AEP'},
-                    //     allowOverlap: true
-                    // },
                     marker: {
                         symbol: 'line',
                         radius: 0.1
                     },
                     showInLegend: this.formattedFloodFreq.length > 0 
+                },
+                {
+                    name: 'p 0-10 %',
+                    showInNavigator: false,
+                    tooltip: {
+                        headerFormat: null,
+                        pointFormatter: function(){
+                            return '<br>Date: <b>'  + this.x + '</b><br>Min: <b>' + this.low + ' ft³/s</b><br>10th percentile: <b>' + this.high
+                        }
+                    },
+                    turboThreshold: 0, 
+                    type: 'arearange',
+                    color: 'red',
+                    fillOpacity: 0.2, 
+                    data: this.formattedP0to10,
+                    marker: {
+                        symbol: null,
+                        radius: null
+                    },
+                    showInLegend: this.formattedP0to10.length > 0 
                 }] 
             } 
 
