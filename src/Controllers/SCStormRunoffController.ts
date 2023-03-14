@@ -670,6 +670,9 @@ module StreamStats.Controllers {
         public slopeSteepness: number;
         public coverName: string;
         public practiceName: string;
+        public countyNames = []
+        public coverNames = []
+        public practiceNames = []
 
         // Storm Ponds
         public stormponds: boolean = false;
@@ -705,13 +708,8 @@ module StreamStats.Controllers {
         //Pond Sediment 
         public pondsediment: boolean = false;
         public soilName: string;
-
-        // TODO: grab these from services
-        public countyNames = []
         public soilNames = []
-        public coverNames = []
-        public practiceNames = []
-        
+
         // for synthetic graph options 
         public DHourStormOptions = [{
             "name": "1-Hour",
@@ -1210,10 +1208,10 @@ module StreamStats.Controllers {
         }
 
         public calculateSpreedSheet() {
-            var unitHydrograph = {}
-            var stormPonding = {}
-            var USLE = {}
-            var stormSediment = {}
+            var unitHydrograph = {};
+            var stormPonding = {};
+            var USLE = {};
+            var stormSediment = {};
 
             this.canContinueSynthetic = false;
             var headers = {
@@ -1245,7 +1243,7 @@ module StreamStats.Controllers {
                     "slope_steepness": this.slopeSteepness,
                     "cover_name": this.coverName,
                     "practice_name": this.practiceName
-                }
+                };
             }
 
             if (this.stormponds == true) { // set up storm pond data
@@ -1277,7 +1275,7 @@ module StreamStats.Controllers {
                         "w2": this.w2,
                         "side_slope_z": this.side_slope_z,
                         "bottom_slope": this.bottom_slope
-                    }
+                    };
                 } else { // pond option 2
                     // format elevation area array for services
                     var elevation_area = [[this.pond_bottom_elev, this.Elev_Area[0][1]],
@@ -1289,7 +1287,7 @@ module StreamStats.Controllers {
                     [this.Elev_Area[6][0],this.Elev_Area[6][1]],
                     [this.Elev_Area[7][0],this.Elev_Area[7][1]],
                     [this.Elev_Area[8][0],this.Elev_Area[8][1]],
-                    [this.Elev_Area[9][0],this.Elev_Area[9][1]]]
+                    [this.Elev_Area[9][0],this.Elev_Area[9][1]]];
                     
                     stormPonding = {
                         "pondOption": 2,
@@ -1314,14 +1312,14 @@ module StreamStats.Controllers {
                         "Seepage_Bottom": this.Seepage_Bottom,
                         "Seepage_Side": this.Seepage_Side,
                         "Elev_Area": elevation_area
-                    }
+                    };
                 }
             }
 
             if (this.pondsediment == true) { // set up pond sediment data 
                 stormSediment = {
                     "soil_name": this.soilName
-                }
+                };
             }
 
             // Format request data
@@ -1330,7 +1328,7 @@ module StreamStats.Controllers {
                 USLE,
                 stormPonding,
                 stormSediment
-            }
+            };
 
             // request to calculateSpreedSheet
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(data), headers);     
@@ -1349,7 +1347,6 @@ module StreamStats.Controllers {
                     this.showResultsSynthetic = true;
                     this.canContinueSynthetic = true;
                 },(error) => {
-                    console.log(error)
                     this.toaster.pop('error', "There was an HTTP error calculating results.", error.data.detail , 0);
                 }).finally(() => {
             });
@@ -1712,16 +1709,16 @@ module StreamStats.Controllers {
 
 
         public getFactorData() {
-            var url = configuration.baseurls['SCStormRunoffServices'] + configuration.queryparams['SCFactorData']
+            var url = configuration.baseurls['SCStormRunoffServices'] + configuration.queryparams['SCFactorData'];
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
 
             this.Execute(request).then(
                 (response: any) => {
                     if (response.data) {
-                        this.countyNames = Object.keys(response.data.R_Factor)
-                        this.soilNames = Object.keys(response.data.K_Factor)
-                        this.coverNames = Object.keys(response.data.C_Factor)
-                        this.practiceNames = Object.keys(response.data.P_Factor)
+                        this.countyNames = Object.keys(response.data.R_Factor);
+                        this.soilNames = Object.keys(response.data.K_Factor);
+                        this.coverNames = Object.keys(response.data.C_Factor);
+                        this.practiceNames = Object.keys(response.data.P_Factor);
                     }
                 }, (error) => {
                     //sm when error
@@ -1880,8 +1877,8 @@ module StreamStats.Controllers {
                 if (warning) {
                     finalVal += '\n' + 'Warning Messages:,"' + warning + '"\n';
                 }
-                let WatershedDataTable = (this.tableToCSV($('#WatershedDataTable')).slice(3)) // Needed to splice because there are no table headers
-                let UnitHydrographTable = (this.tableToCSV($('#UnitHydrographTable')).slice(3)) // Needed to splice because there are no table headers
+                let WatershedDataTable = (this.tableToCSV($('#WatershedDataTable')).slice(3)); // Needed to splice because there are no table headers
+                let UnitHydrographTable = (this.tableToCSV($('#UnitHydrographTable')).slice(3)); // Needed to splice because there are no table headers
 
                 finalVal += '\n' + "Watershed Data" + WatershedDataTable;
                 finalVal += '\n\n' + "Unit Hydrograph Data" + UnitHydrographTable;
@@ -1894,12 +1891,12 @@ module StreamStats.Controllers {
                 finalVal += '\n\nTabular Hydrograph';
                 finalVal += '\n' + "D-Hour Storm Hydrograph Ordinates" + '\n' + this.tableToCSV($('#SyntheticUnitHydrographDataTable'));
                 if (this.USLEResponseData) {
-                    let USLEDataTable = (this.tableToCSV($('#USLEDataTable')).slice(3))
+                    let USLEDataTable = (this.tableToCSV($('#USLEDataTable')).slice(3));
                     finalVal += '\n\n' + "USLE and MUSLE Data" + USLEDataTable;
                     finalVal += '\n\n' + "USLE and MUSLE Results"  + '\n' + this.tableToCSV($('#USLEResultsTable'));
                 }
                 if (this.stormSedimentResponseData) {
-                    let stormSedimentDataTable = (this.tableToCSV($('#stormSedimentDataTable')).slice(3))
+                    let stormSedimentDataTable = (this.tableToCSV($('#stormSedimentDataTable')).slice(3));
                     finalVal += '\n\n' + "Storm Pond Sediment Data" + stormSedimentDataTable;
                     finalVal += '\n\n' + "Storm Pond Sediment Results" + '\n' + this.tableToCSV($('#stormSedimentResultsTable'));
                 }
@@ -1958,7 +1955,7 @@ module StreamStats.Controllers {
             this.canContinueSynthetic = true;
             this._chosenFlowType = null;
             this.stormHydrographOrdinatesAccordionOpen = false;
-            this.getFactorData()
+            this.getFactorData();
         }
 
         private selectRunoffType() {
