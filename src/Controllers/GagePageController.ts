@@ -745,6 +745,10 @@ module StreamStats.Controllers {
             if (this.meanPercent) {
                 this.meanPercent.forEach(stats => {
                     this.formattedP0to10.push({x: new Date(stats.date), low: stats.min_va, high: stats.p10_va});
+                    this.formattedP10to25.push({x: new Date(stats.date), low: stats.p10_va, high: stats.p25_va});
+                    this.formattedP25to75.push({x: new Date(stats.date), low: stats.p25_va, high: stats.p75_va});
+                    this.formattedP75to90.push({x: new Date(stats.date), low: stats.p75_va, high: stats.p90_va});
+                    this.formattedP90to100.push({x: new Date(stats.date), low: stats.p90_va, high: stats.max_va});
 
                 })
             }
@@ -1136,7 +1140,7 @@ module StreamStats.Controllers {
                     },
                     turboThreshold: 0, 
                     type: 'arearange',
-                    color: 'red',
+                    color: '#8B0000',
                     fillOpacity: 0.2, 
                     data: this.formattedP0to10,
                     marker: {
@@ -1144,7 +1148,88 @@ module StreamStats.Controllers {
                         radius: null
                     },
                     showInLegend: this.formattedP0to10.length > 0 
-                }] 
+                },
+                {
+                    name: 'p 10-25 %',
+                    showInNavigator: false,
+                    tooltip: {
+                        headerFormat: null,
+                        pointFormatter: function(){
+                            return '<br>Date: <b>'  + this.x + '</b><br>Min: <b>' + this.low + ' ft³/s</b><br>10th percentile: <b>' + this.high
+                        }
+                    },
+                    turboThreshold: 0, 
+                    type: 'arearange',
+                    color: '#B8860B',
+                    fillOpacity: 0.2, 
+                    data: this.formattedP10to25,
+                    marker: {
+                        symbol: null,
+                        radius: null
+                    },
+                    showInLegend: this.formattedP10to25.length > 0 
+                },
+                {
+                    name: 'p 25-75 %',
+                    showInNavigator: false,
+                    tooltip: {
+                        headerFormat: null,
+                        pointFormatter: function(){
+                            return '<br>Date: <b>'  + this.x + '</b><br>Min: <b>' + this.low + ' ft³/s</b><br>10th percentile: <b>' + this.high
+                        }
+                    },
+                    turboThreshold: 0, 
+                    type: 'arearange',
+                    color: '#006400',
+                    fillOpacity: 0.2, 
+                    data: this.formattedP25to75,
+                    marker: {
+                        symbol: null,
+                        radius: null
+                    },
+                    showInLegend: this.formattedP25to75.length > 0 
+                },
+                {
+                    name: 'p 75-90 %',
+                    showInNavigator: false,
+                    tooltip: {
+                        headerFormat: null,
+                        pointFormatter: function(){
+                            return '<br>Date: <b>'  + this.x + '</b><br>Min: <b>' + this.low + ' ft³/s</b><br>10th percentile: <b>' + this.high
+                        }
+                    },
+                    turboThreshold: 0, 
+                    type: 'arearange',
+                    color: '#008B8B',
+                    fillOpacity: 0.2, 
+                    data: this.formattedP75to90,
+                    marker: {
+                        symbol: null,
+                        radius: null
+                    },
+                    showInLegend: this.formattedP75to90.length > 0 
+                },
+                {
+                    name: 'p 90-100 %',
+                    showInNavigator: false,
+                    tooltip: {
+                        headerFormat: null,
+                        pointFormatter: function(){
+                            return '<br>Date: <b>'  + this.x + '</b><br>Min: <b>' + this.low + ' ft³/s</b><br>10th percentile: <b>' + this.high
+                        }
+                    },
+                    turboThreshold: 0, 
+                    type: 'arearange',
+                    color: '#0000FF',
+                    fillOpacity: 0.2, 
+                    data: this.formattedP90to100,
+                    marker: {
+                        symbol: null,
+                        radius: null
+                    },
+                    showInLegend: this.formattedP90to100.length > 0 
+                }
+            ] 
             } 
 
             // this.formattedFloodFreq.forEach((formattedFloodFreqItem) => {
