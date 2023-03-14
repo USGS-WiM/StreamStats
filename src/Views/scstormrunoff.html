@@ -389,8 +389,8 @@
                                         <select name="soilName" ng-model="vm.soilName" ng-options="s for s in vm.soilNames" required></select>
                                         <label for="slopeLength">Slope Length<span style="color: #ffcc00">*</span></label>
                                         <input type="number" name="slopeLength" ng-model="vm.slopeLength" required></input>
-                                        <label for="slopeSteepness">Slope Steepness<span style="color: #ffcc00">*</span></label>
-                                        <input type ="number" name="slopeSteepness" ng-model="vm.slopeSteepness" required></input> <!-- TODO: less than 25 -->
+                                        <label for="slopeSteepness">Slope Steepness (value should be less than 25%)<span style="color: #ffcc00">*</span></label>
+                                        <input type ="number" name="slopeSteepness" ng-model="vm.slopeSteepness" required></input>
                                         <label for="coverName">Cover Name<span style="color: #ffcc00">*</span></label>
                                         <select name="coverName" ng-model="vm.coverName" ng-options="c for c in vm.coverNames" required></select>     
                                         <label for="practiceName">Practice Name<span style="color: #ffcc00">*</span></label>
@@ -436,7 +436,7 @@
                                         <div ng-if="vm.pondOption == 2">
                                             <div class="form-row">
                                                 <div class="form-column-left">
-                                                    <label>Elevation (ft-MSL)<span style="color: #ffcc00">*</span></label>
+                                                    <label>Elevation (ft-MSL) (values should be between {{vm.pond_bottom_elev}} and {{vm.pond_bottom_elev + 10}})<span style="color: #ffcc00">*</span></label>
                                                 </div>
                                                 <div class="form-column-right">
                                                     <label for = "elevation">Surface Area (square feet)<span style="color: #ffcc00">*</span></label>
@@ -452,7 +452,7 @@
                                             </div>
                                             <div class="form-row">
                                                 <div class="form-column-left">
-                                                    <input type="number" ng-model="vm.Elev_Area[1][0]" min="{{vm.pond_bottom_elev}}" max="{{vm.pond_bottom_elev + vm.max_depth}}" required/>
+                                                    <input type="number" ng-model="vm.Elev_Area[1][0]" required/>
                                                 </div>
                                                 <div class="form-column-right">
                                                     <input type="number" name="elevation" ng-model="vm.Elev_Area[1][1]" ng-minlength="1" ng-pattern="greaterThanZero" required/>

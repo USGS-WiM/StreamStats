@@ -1279,6 +1279,18 @@ module StreamStats.Controllers {
                         "bottom_slope": this.bottom_slope
                     }
                 } else { // pond option 2
+                    // format elevation area array for services
+                    var elevation_area = [[this.pond_bottom_elev, this.Elev_Area[0][1]],
+                    [this.Elev_Area[1][0],this.Elev_Area[1][1]],
+                    [this.Elev_Area[2][0],this.Elev_Area[2][1]],
+                    [this.Elev_Area[3][0],this.Elev_Area[3][1]],
+                    [this.Elev_Area[4][0],this.Elev_Area[4][1]],
+                    [this.Elev_Area[5][0],this.Elev_Area[5][1]],
+                    [this.Elev_Area[6][0],this.Elev_Area[6][1]],
+                    [this.Elev_Area[7][0],this.Elev_Area[7][1]],
+                    [this.Elev_Area[8][0],this.Elev_Area[8][1]],
+                    [this.Elev_Area[9][0],this.Elev_Area[9][1]]]
+                    
                     stormPonding = {
                         "pondOption": 2,
                         "pond_bottom_elev": this.pond_bottom_elev,
@@ -1301,7 +1313,7 @@ module StreamStats.Controllers {
                         "OS_Crest_EL": this.OS_Crest_EL,
                         "Seepage_Bottom": this.Seepage_Bottom,
                         "Seepage_Side": this.Seepage_Side,
-                        "Elev_Area": this.Elev_Area
+                        "Elev_Area": elevation_area
                     }
                 }
             }
