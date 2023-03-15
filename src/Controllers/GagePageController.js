@@ -140,37 +140,6 @@ var StreamStats;
                 enumerable: false,
                 configurable: true
             });
-            Object.defineProperty(GagePageController.prototype, "StartYear", {
-                get: function () {
-                    return this._startYear;
-                },
-                set: function (val) {
-                    if (!this.spanYear)
-                        this.EndYear = val;
-                    if (val <= this.EndYear && val >= this.YearRange.floor)
-                        this._startYear = val;
-                },
-                enumerable: false,
-                configurable: true
-            });
-            Object.defineProperty(GagePageController.prototype, "EndYear", {
-                get: function () {
-                    return this._endYear;
-                },
-                set: function (val) {
-                    if (val >= this.StartYear && val <= this.YearRange.ceil)
-                        this._endYear = val;
-                },
-                enumerable: false,
-                configurable: true
-            });
-            Object.defineProperty(GagePageController.prototype, "YearRange", {
-                get: function () {
-                    return this._yearRange;
-                },
-                enumerable: false,
-                configurable: true
-            });
             GagePageController.prototype.Close = function () {
                 this.modalInstance.dismiss('cancel');
             };

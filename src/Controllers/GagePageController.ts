@@ -210,31 +210,6 @@ module StreamStats.Controllers {
         public formattedRatingCurve = []; // ethan
         public formattedUSGSMeasured = []; // ethan
         public ageQualityData = 'age'; //ethan
-
-
-        public spanYear: boolean;
-        private _startYear: number; 
-        public get StartYear(): number {
-            return this._startYear;
-        } 
-        public set StartYear(val: number) {
-            if (!this.spanYear) this.EndYear = val;
-            if (val <= this.EndYear && val >= this.YearRange.floor)
-                this._startYear = val;   
-        }
-           
-        private _endYear: number;  
-        public get EndYear(): number {
-            return this._endYear;
-        }
-        public set EndYear(val: number) {
-            if (val >= this.StartYear && val <= this.YearRange.ceil)
-                this._endYear = val;
-        }          
-        private _yearRange: any;
-        public get YearRange():any {
-            return this._yearRange;
-        }
         public dailyValuesOnly = [];
 
         //Constructor
@@ -818,6 +793,7 @@ module StreamStats.Controllers {
 
         } 
 
+        // using this to eventually show flood stage
         // public getFloodStage() {
         //     const url = 'https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage=' + this.nwsStations
         //     //console.log('flood stage data', url)
@@ -1498,89 +1474,9 @@ public createDailyRasterPlot(): void {
                         row.color = row.qualityColor
                     });
             };
-
-
-        // checkbox to show quality in discharge plot
-        // public qualityData = false; // starts with it unchecked
-        //     public toggleQualityData () {
-        //         console.log('this is quality data')
-        //         let chart = $('#chart3').highcharts();
-        //         if (this.getCorrectQualityColor) {
-        //         }
-        //             else {
-        //             this.getCorrectColor
-        //             }
-        //         };
-
-        // public ageMarker = false;
-        //     public toggleAgeMarker () {
-        //         let mType = 
-        //         let chart = $('#chart3').highcharts();
-        //         let series = chart.get('qMeasured');
-        //         if(this.mType == 'quality'){
-        //             add
-        //         }
-        //     }   
-        //             //checkbox to linear to log scale for discharge plot
-        // public logScaleDischarge = false; // starts with it uncehcked
-        // public toggleLogLinearDischarge () {
-        //     let chart = $('#chart3').highcharts();
-        //     if (this.logScaleDischarge) {
-        //         chart.yAxis[0].update({ type: 'logarithmic' });
-        //         chart.xAxis[0].update({ type: 'logarithmic' });
-        //     } else {
-        //         chart.yAxis[0].update({ type: 'linear' });
-        //         chart.xAxis[0].update({ type: 'linear' });
-        //     }
-        // }; 
             
-            // $(":input[name= 'markerHighlights']").on('change', function(){
-            //     var mType = $("input[name='markerHighlights']:checked").val();
-            //     var chart = $('#ratinggraph').highcharts();
-            //     var series = chart.get('qMeasured');
-            //     if(mType == 'quality'){
-            //         addQNotes('ratinggraph');
-            //         $.each(series.data, function(i, point) {
-            //             if(typeof(point.graphic) == 'undefined') return true;
-            //             if(point.graphic == null) return true;
-            //             point.graphic.attr({
-            //                 fill: this.qColor
-            //             });
-            //         });
-            //         $.each(series.userOptions.originalData,function(){
-            //             this.color =  this.qColor;
-            //         });
-            //      }
-            //      else{
-            //         addQNotes('ratinggraph');
-            //         $.each(series.data, function(i, point) {
-            //             if(typeof(point.graphic) == 'undefined') return true;
-            //             if(point.graphic == null) return true;
-            //             point.graphic.attr({
-            //                 fill: this.aColor
-            //             });
-            //         });
-            //         $.each(series.userOptions.originalData,function(){
-            //             this.color =  this.aColor;
-            //         });
-            
-            //     }
-            
-            // });            
-        // //radio to change to age for discharge plot
-        // public ageDischarge = false; // starts with it uncehcked
-        //     public toggleAgeDischarge () {
-        //         let chart = $('#chart3').highcharts();
-        //         if (this.ageDischarge) {
-        //             chart.yAxis[0].update({ type: 'logarithmic' });
-        //             chart.xAxis[0].update({ type: 'logarithmic' });
-        //         } else {
-        //             chart.yAxis[0].update({ type: 'linear' });
-        //             chart.xAxis[0].update({ type: 'linear' });
-        //         }
-        //     };     
-
-                    // scope.slider_draggable_range = {
+            // to be used to create a slide based on month or year
+            // scope.slider_draggable_range = {
             //     minValue: 1,
             //     maxValue: 8,
             //     options: {
